@@ -5,12 +5,13 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -50,11 +51,13 @@ class PaymentReceivedPage extends StatelessWidget {
     // Using read instead of select or watch is ok here,
     //  since the amounts can not be changed at this point anymore.
     final amountSat = context.read<ReceiveBloc>().state.confirmedAmountSat;
-    final lnSwap = context.read<ReceiveBloc>().state.lightningSwap;
+    final lnSwap = context.read<ReceiveBloc>().state.getSwap;
     final fees = lnSwap?.fees?.totalFees(amountSat) ?? 0;
     final finalAmount = (amountSat ?? 0) - fees;
-    final amountFiat =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+    final amountFiat = context
+        .read<ReceiveBloc>()
+        .state
+        .formattedConfirmedAmountFiat;
 
     return Center(
       child: Column(
@@ -103,26 +106,34 @@ class ReceiveDetailsButton extends StatelessWidget {
       child: BBButton.big(
         label: context.loc.receiveDetails,
         onPressed: () {
-          final transaction = context.read<ReceiveBloc>().state.transaction;
-          if (transaction.walletTransaction != null) {
-            context.pushNamed(
-              TransactionsRoute.transactionDetails.name,
-              pathParameters: {'txId': transaction.walletTransaction!.txId},
-              queryParameters: {
-                'walletId': transaction.walletTransaction!.walletId,
-              },
-            );
-          } else if (transaction.swap != null) {
-            context.pushNamed(
-              TransactionsRoute.swapTransactionDetails.name,
-              pathParameters: {'swapId': transaction.swap!.id},
-              queryParameters: {'walletId': transaction.swap!.walletId},
-            );
-          } else if (transaction.payjoin != null) {
-            context.pushNamed(
-              TransactionsRoute.payjoinTransactionDetails.name,
-              pathParameters: {'payjoinId': transaction.payjoin!.id},
-            );
+          final target = receiveDetailsTarget(
+            context.read<ReceiveBloc>().state,
+          );
+          switch (target?.kind) {
+            case ReceiveDetailsTargetKind.walletTransaction:
+              context.pushNamed(
+                TransactionsRoute.transactionDetails.name,
+                pathParameters: {'txId': target!.id},
+                queryParameters: {'walletId': target.walletId},
+              );
+            case ReceiveDetailsTargetKind.orderSwap:
+              context.pushNamed(
+                TransactionsRoute.orderSwapTransactionDetails.name,
+                pathParameters: {'localId': target!.id},
+              );
+            case ReceiveDetailsTargetKind.swap:
+              context.pushNamed(
+                TransactionsRoute.swapTransactionDetails.name,
+                pathParameters: {'swapId': target!.id},
+                queryParameters: {'walletId': target.walletId},
+              );
+            case ReceiveDetailsTargetKind.payjoin:
+              context.pushNamed(
+                TransactionsRoute.payjoinTransactionDetails.name,
+                pathParameters: {'payjoinId': target!.id},
+              );
+            case null:
+              break;
           }
         },
         bgColor: context.appColors.secondary,

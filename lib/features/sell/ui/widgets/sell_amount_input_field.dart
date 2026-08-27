@@ -8,16 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SellAmountInputField extends StatelessWidget {
   const SellAmountInputField({
     super.key,
-    required TextEditingController amountController,
-    required FocusNode focusNode,
-    required bool isFiatCurrencyInput,
-    FiatCurrency? fiatCurrency,
-    required void Function(bool isFiat) onIsFiatCurrencyInputChanged,
-  }) : _amountController = amountController,
-       _focusNode = focusNode,
-       _isFiatCurrencyInput = isFiatCurrencyInput,
-       _fiatCurrency = fiatCurrency,
-       _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged;
+    required this._amountController,
+    required this._focusNode,
+    required this._isFiatCurrencyInput,
+    this._fiatCurrency,
+    required this._onIsFiatCurrencyInputChanged,
+  });
 
   final TextEditingController _amountController;
   final FocusNode _focusNode;

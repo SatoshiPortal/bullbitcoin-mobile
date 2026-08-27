@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -71,11 +71,10 @@ class VaultSelectedPage extends StatelessWidget {
             if (provider == VaultProvider.googleDrive) ...[
               BBButton.big(
                 label: context.loc.recoverbullSeeMoreVaults,
-                onPressed:
-                    () => context.pushNamed(
-                      RecoverBullGoogleDriveRoute.listDriveVaults.name,
-                      extra: flow,
-                    ),
+                onPressed: () => context.pushNamed(
+                  RecoverBullGoogleDriveRoute.listDriveVaults.name,
+                  extra: flow,
+                ),
                 bgColor: context.appColors.transparent,
                 textColor: context.appColors.onSurface,
                 outlined: true,
@@ -88,11 +87,10 @@ class VaultSelectedPage extends StatelessWidget {
               ),
               child: BBButton.big(
                 label: context.loc.recoverbullDecryptVault,
-                onPressed:
-                    () => context.pushNamed(
-                      RecoverBullRoute.recoverbullFlows.name,
-                      extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
-                    ),
+                onPressed: () => context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
+                ),
                 bgColor: context.appColors.onSurface,
                 textColor: context.appColors.surface,
               ),

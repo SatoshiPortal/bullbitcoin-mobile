@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 class MempoolServerStatusIndicator extends StatelessWidget {
   final MempoolServerStatus status;
 
-  const MempoolServerStatusIndicator({
-    super.key,
-    required this.status,
-  });
+  const MempoolServerStatusIndicator({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +39,7 @@ class MempoolServerStatusIndicator extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: context.font.bodySmall?.copyWith(
-            fontSize: 12,
-            color: color,
-          ),
+          style: context.font.bodySmall?.copyWith(fontSize: 12, color: color),
         ),
       ],
     );

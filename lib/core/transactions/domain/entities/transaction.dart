@@ -1,5 +1,4 @@
-/// Abstract transaction — shared structure across Bitcoin, Liquid,
-/// and (in the future) Ark.
+/// Abstract transaction — shared structure across Bitcoin and Liquid.
 ///
 /// Every UTXO-based transaction has a txid, version, virtual size,
 /// locktime, a list of inputs, and a list of outputs.

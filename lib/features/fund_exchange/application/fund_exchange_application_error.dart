@@ -30,14 +30,34 @@ class UnsupportedJurisdiction extends FundExchangeApplicationError {
 
 class FetchFundingDetailsFailed extends FundExchangeApplicationError {
   final String message;
+  final String? code;
+  final Map<String, String>? messageData;
 
-  const FetchFundingDetailsFailed({required this.message});
+  const FetchFundingDetailsFailed({
+    required this.message,
+    this.code,
+    this.messageData,
+  });
 }
 
 class FetchInstitutionsFailed extends FundExchangeApplicationError {
   final String message;
+  final String? code;
+  final Map<String, String>? messageData;
+  final bool emptyList;
 
-  const FetchInstitutionsFailed({required this.message});
+  const FetchInstitutionsFailed({
+    required this.message,
+    this.code,
+    this.messageData,
+    this.emptyList = false,
+  });
+
+  const FetchInstitutionsFailed.emptyList()
+    : message = '',
+      code = null,
+      messageData = null,
+      emptyList = true;
 }
 
 class FundExchangeUnknownError extends FundExchangeApplicationError {

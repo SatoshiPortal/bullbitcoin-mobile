@@ -6,14 +6,10 @@ class NotificationMessageModel {
   final Map<String, dynamic> rawData;
 
   NotificationMessageModel.fromJson(Map<String, dynamic> json)
-      : type = json['type'] as String? ?? '',
-        orderId = json['orderId'] as String?,
-        rawData = json;
+    : type = json['type'] as String? ?? '',
+      orderId = json['orderId'] as String?,
+      rawData = json;
 
-  NotificationMessage toEntity() => NotificationMessage(
-        type: type,
-        orderId: orderId,
-        rawData: rawData,
-      );
+  NotificationMessage toEntity() =>
+      NotificationMessage(type: type, orderId: orderId, rawData: rawData);
 }
-

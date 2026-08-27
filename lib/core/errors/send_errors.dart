@@ -5,7 +5,7 @@ class SwapCreationException extends BullException {
 }
 
 class InsufficientFundsSwapException extends SwapCreationException {
-  InsufficientFundsSwapException() : super('Insufficient Funds');
+  InsufficientFundsSwapException() : super('insufficient_funds');
 }
 
 class InsufficientBalanceException extends BullException {

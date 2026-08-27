@@ -8,10 +8,9 @@ class LoadWalletsForNetworkUsecase {
   final SettingsRepository _settingsRepository;
 
   LoadWalletsForNetworkUsecase({
-    required WalletRepository walletRepository,
-    required SettingsRepository settingsRepository,
-  }) : _walletRepository = walletRepository,
-       _settingsRepository = settingsRepository;
+    required this._walletRepository,
+    required this._settingsRepository,
+  });
 
   Future<List<Wallet>> execute() async {
     try {

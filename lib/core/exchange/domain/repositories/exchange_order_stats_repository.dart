@@ -4,4 +4,3 @@ abstract class ExchangeOrderStatsRepository {
   /// Get order statistics for the current user
   Future<OrderStatsResponse> getOrderStats();
 }
-

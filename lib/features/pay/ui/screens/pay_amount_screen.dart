@@ -3,14 +3,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/pay_amount_input_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayAmountScreen extends StatefulWidget {
@@ -66,88 +65,88 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.payTitle)),
-              body: SafeArea(
-          child: BBKeyboardActions(
-            disableScroll: true,
-            focusNodes: [_amountNode],
-            child: Form(
-              key: _formKey,
-              child: ScrollableColumn(
-                crossAxisAlignment: .start,
-                children: [
-                  const Gap(24.0),
-                  PayAmountInputFields(
-                    amountController: _amountController,
-                    focusNode: _amountNode,
-                    fiatCurrency: currency,
-                  ),
-                  const Gap(24.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        Text(
-                          context.loc.payDescriptionLabel,
-                          style: context.font.bodyMedium?.copyWith(
-                            color: context.appColors.onSurfaceVariant,
-                          ),
+      body: SafeArea(
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode],
+          child: Form(
+            key: _formKey,
+            child: ScrollableColumn(
+              crossAxisAlignment: .start,
+              children: [
+                const Gap(24.0),
+                PayAmountInputFields(
+                  amountController: _amountController,
+                  focusNode: _amountNode,
+                  fiatCurrency: currency,
+                ),
+                const Gap(24.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Text(
+                        context.loc.payDescriptionLabel,
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.appColors.onSurfaceVariant,
                         ),
-                        const Gap(8.0),
-                        BBInputText(
-                          controller: _descriptionController,
-                          value: _descriptionController.text,
-                          hint: context.loc.payDescriptionHint,
-                          maxLength: 140,
-                          onChanged: (_) {},
-                        ),
-                      ],
-                    ),
+                      ),
+                      const Gap(8.0),
+                      BullInputText(
+                        controller: _descriptionController,
+                        value: _descriptionController.text,
+                        hint: context.loc.payDescriptionHint,
+                        maxLength: 140,
+                        onChanged: (_) {},
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  if (_needsKycUpgrade) ...[
-                    InfoCard(
-                      title: context.loc.buyInputKycPending,
-                      description: context.loc.buyInputKycMessage,
-                      bgColor: context.appColors.tertiary.withValues(alpha: 0.1),
-                      tagColor: context.appColors.onTertiary,
-                    ),
-                    const Gap(16.0),
-                    BBButton.big(
-                      label: context.loc.buyInputCompleteKyc,
-                      onPressed: () {
-                        context.pushReplacementNamed(
-                          ExchangeRoute.exchangeKyc.name,
-                        );
-                      },
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                    ),
-                  ] else
-                    BBButton.big(
-                      label: context.loc.payContinue,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final bloc = context.read<PayBloc>();
-                          bloc.add(
-                            PayEvent.amountInputContinuePressed(
-                              amountInput: _amountController.text,
-                              fiatCurrency: bloc.state.currency,
-                              paymentDescription:
-                                  _descriptionController.text.trim(),
-                            ),
-                          );
-                        }
-                      },
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
-                    ),
+                ),
+                const Spacer(),
+                if (_needsKycUpgrade) ...[
+                  InfoCard(
+                    title: context.loc.buyInputKycPending,
+                    description: context.loc.buyInputKycMessage,
+                    bgColor: context.appColors.tertiary.withValues(alpha: 0.1),
+                    tagColor: context.appColors.onTertiary,
+                  ),
                   const Gap(16.0),
-                ],
-              ),
+                  BBButton.big(
+                    label: context.loc.buyInputCompleteKyc,
+                    onPressed: () {
+                      context.pushReplacementNamed(
+                        ExchangeRoute.exchangeKyc.name,
+                      );
+                    },
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
+                  ),
+                ] else
+                  BBButton.big(
+                    label: context.loc.payContinue,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        final bloc = context.read<PayBloc>();
+                        bloc.add(
+                          PayEvent.amountInputContinuePressed(
+                            amountInput: _amountController.text,
+                            fiatCurrency: bloc.state.currency,
+                            paymentDescription: _descriptionController.text
+                                .trim(),
+                          ),
+                        );
+                      }
+                    },
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                  ),
+                const Gap(16.0),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

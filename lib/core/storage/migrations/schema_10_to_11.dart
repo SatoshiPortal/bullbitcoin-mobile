@@ -11,6 +11,7 @@ class Schema10To11 {
     await m.addColumn(settings, settings.themeMode);
 
     await m.alterTable(
+      // ignore: experimental_member_use
       TableMigration(
         schema11.autoSwap,
         columnTransformer: {

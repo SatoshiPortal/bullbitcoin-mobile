@@ -1,7 +1,10 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 
 class GetSupportChatMessagesUsecase {
   final ExchangeSupportChatRepository _mainnetRepository;
@@ -9,34 +12,31 @@ class GetSupportChatMessagesUsecase {
   final SettingsRepository _settingsRepository;
 
   GetSupportChatMessagesUsecase({
-    required ExchangeSupportChatRepository mainnetRepository,
-    required ExchangeSupportChatRepository testnetRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetRepository,
+    required this._testnetRepository,
+    required this._settingsRepository,
+  });
 
-  Future<List<SupportChatMessage>> execute({
+  @useResult
+  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>> execute({
     int? page,
     int? pageSize,
   }) async {
+    final ExchangeSupportChatRepository repository;
     try {
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet ? _testnetRepository : _mainnetRepository;
-
-      return await repo.getMessages(
-        page: page,
-        pageSize: pageSize,
+      repository = settings.environment.isTestnet
+          ? _testnetRepository
+          : _mainnetRepository;
+    } catch (e, st) {
+      log.warning(
+        'Failed to resolve support chat network',
+        error: e,
+        trace: st,
       );
-    } catch (e) {
-      throw GetSupportChatMessagesException('$e');
+      return Err(ExchangeSupportChatUnexpectedFailure('$e'));
     }
+
+    return repository.getMessages(page: page, pageSize: pageSize);
   }
 }
-
-class GetSupportChatMessagesException extends BullException {
-  GetSupportChatMessagesException(super.message);
-}
-

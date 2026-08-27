@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
   "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
   "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
@@ -271,10 +272,6 @@
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
   },
-  "settingsArkTitle": "Čeština",
-  "@settingsArkTitle": {
-    "description": "Title for the Ark protocol section in Bitcoin settings"
-  },
   "settingsDevModeWarningTitle": "Režim Dev",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
@@ -523,6 +520,7 @@
     "description": "Info text when always block is enabled"
   },
   "electrumServerAlreadyExists": "Tento server již existuje",
+  "electrumServerUnreachable": "Server je nedostupný. Zkontrolujte adresu a zkuste to znovu.",
   "@electrumServerAlreadyExists": {
     "description": "Error message when trying to add a duplicate server"
   },
@@ -687,10 +685,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "arkReceiveBoardingAddress": "BTC Boarding adresa",
-  "@arkReceiveBoardingAddress": {
-    "description": "Label for BTC boarding address"
-  },
   "sellSendPaymentTitle": "Potvrzení platby",
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
@@ -740,14 +734,6 @@
   "@recoverbullSelectErrorPrefix": {
     "description": "Prefix text shown before error messages"
   },
-  "bitboxErrorDeviceMismatch": "Detekována chyba zařízení.",
-  "@bitboxErrorDeviceMismatch": {
-    "description": "Error when connected device does not match expected device"
-  },
-  "arkReceiveBtcAddress": "BTC adresa",
-  "@arkReceiveBtcAddress": {
-    "description": "Label for Bitcoin address"
-  },
   "exchangeLandingRecommendedExchange": "Doporučené Bitcoin burza",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
@@ -759,10 +745,6 @@
   "recoverbullGoBackEdit": "<< Přejděte zpět a upravte",
   "@recoverbullGoBackEdit": {
     "description": "Button text to return to previous screen for editing"
-  },
-  "importWatchOnlyWalletGuides": "Průvodce peněženkami",
-  "@importWatchOnlyWalletGuides": {
-    "description": "Button label for wallet documentation and guides"
   },
   "receiveConfirming": "Potvrzení ... ({count}/{required})",
   "@receiveConfirming": {
@@ -871,10 +853,6 @@
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
   },
-  "arkAboutServerUrl": "URL serveru",
-  "@arkAboutServerUrl": {
-    "description": "Field label for server URL"
-  },
   "fundExchangeLabelRecipientAddress": "Adresa příjemce",
   "@fundExchangeLabelRecipientAddress": {
     "description": "Label for recipient address field"
@@ -892,6 +870,8 @@
     "description": "Screen title for Costa Rica bank transfer in Colones"
   },
   "appUnlockButton": "Čeština",
+  "appUnlockPinCheckError": "Nelze načíst nastavení zabezpečení. Restartujte prosím aplikaci.",
+  "appUnlockPinVerifyError": "Nelze ověřit váš PIN. Zkuste to prosím znovu.",
   "@appUnlockButton": {
     "description": "Button label to unlock the app"
   },
@@ -959,10 +939,6 @@
   "importQrDeviceJadeStep5": "Vyberte \"Wallet\" z seznamu možností",
   "@importQrDeviceJadeStep5": {
     "description": "Jade instruction step 5"
-  },
-  "arkSettled": "Čeština",
-  "@arkSettled": {
-    "description": "Label for settled balance in Ark balance breakdown"
   },
   "transactionFilterBuy": "Koupit",
   "@transactionFilterBuy": {
@@ -1108,10 +1084,6 @@
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
-  "arkReceiveSegmentBoarding": "Čeština",
-  "@arkReceiveSegmentBoarding": {
-    "description": "Segment option for Boarding (BTC) address type"
-  },
   "exchangeLandingLoginToUseSupport": "Přihlaste se nebo se zaregistrujte k použití chatu podpory pro výměnu souvisejících otázek.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -1128,10 +1100,6 @@
   "transactionLabelTransferStatus": "Stav převodu",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
-  },
-  "arkSessionDuration": "Doba trvání relace",
-  "@arkSessionDuration": {
-    "description": "Label for session duration field"
   },
   "buyAboveMaxAmountError": "Snažte se koupit nad maximálním množstvím.",
   "@buyAboveMaxAmountError": {
@@ -1152,10 +1120,6 @@
   "sendShowPsbt": "Zobrazit PSBT",
   "@sendShowPsbt": {
     "description": "Button to display PSBT for external signing"
-  },
-  "ledgerErrorUnknownOccurred": "Neznámá chyba nastala",
-  "@ledgerErrorUnknownOccurred": {
-    "description": "Error message when an unknown error occurs during Ledger operation"
   },
   "receiveAddress": "Zadejte adresu",
   "@receiveAddress": {
@@ -1228,10 +1192,6 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "arkSettleTransactions": "Settle Transakce",
-  "@arkSettleTransactions": {
-    "description": "Bottom sheet title for settling pending transactions"
-  },
   "transactionLabelConfirmationTime": "Doba potvrzení",
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
@@ -1251,10 +1211,6 @@
   "receiveShareAddress": "Sdílet adresu",
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
-  },
-  "arkTxPending": "Čeština",
-  "@arkTxPending": {
-    "description": "Status label for pending Ark transactions"
   },
   "payAboveMaxAmountError": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
   "@payAboveMaxAmountError": {
@@ -1388,10 +1344,6 @@
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
   },
-  "arkAvailable": "Dostupné",
-  "@arkAvailable": {
-    "description": "Label for available balance in Ark balance breakdown"
-  },
   "transactionSwapDescChainFailed": "Byl problém s vaším převodem. Máte-li finanční prostředky vráceny do 24 hodin.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
@@ -1399,10 +1351,6 @@
   "testBackupWarningMessage": "Bez zálohování, nakonec ztratíte přístup k vašim penězům. Je velmi důležité provést zálohu.",
   "@testBackupWarningMessage": {
     "description": "Warning message emphasizing importance of backups"
-  },
-  "arkNetwork": "Čeština",
-  "@arkNetwork": {
-    "description": "Label for network field"
   },
   "importWatchOnlyYpub": "čeština",
   "@importWatchOnlyYpub": {
@@ -1463,10 +1411,6 @@
   "swapErrorBalanceTooLow": "Zůstatek příliš nízký pro minimální výměnu množství",
   "@swapErrorBalanceTooLow": {
     "description": "Error when balance is below minimum swap limit"
-  },
-  "replaceByFeeErrorGeneric": "Chyba došlo při pokusu o nahrazení transakce",
-  "@replaceByFeeErrorGeneric": {
-    "description": "Generic error message for replace-by-fee operation failures"
   },
   "fundExchangeWarningTactic5": "Zeptají se, aby poslal Bitcoin na jinou platformu",
   "@fundExchangeWarningTactic5": {
@@ -1593,6 +1537,9 @@
   "@sendErrorInsufficientFundsForFees": {
     "description": "Error when wallet cannot cover transaction amount plus fees"
   },
+  "buyConfirmPayoutWallet": "Peněženka pro výplatu",
+  "buyPayoutMethodLiquid": "L-BTC na Liquid",
+  "buyPayoutMethodBitcoin": "BTC na blockchainu Bitcoin",
   "buyConfirmPayoutMethod": "Metoda výplaty",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
@@ -1613,10 +1560,6 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "arkSettleCancel": "Hledat",
-  "@arkSettleCancel": {
-    "description": "Cancel button on settle bottom sheet"
-  },
   "testBackupTapWordsInOrder": "Klepněte na slova obnovení ve slovech\nsprávnou objednávku",
   "@testBackupTapWordsInOrder": {
     "description": "Instruction header for word selection quiz"
@@ -1628,10 +1571,6 @@
   "testBackupButton": "Test zálohování",
   "@testBackupButton": {
     "description": "Button label to test backup"
-  },
-  "receiveNotePlaceholder": "Poznámka",
-  "@receiveNotePlaceholder": {
-    "description": "Placeholder text for note input field"
   },
   "sendChange": "Změna",
   "@sendChange": {
@@ -1734,19 +1673,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "labelErrorUnexpected": "Chybná chyba: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "arkStatusSettled": "Čeština",
-  "@arkStatusSettled": {
-    "description": "Status label for settled redeem transactions"
-  },
   "dcaWalletBitcoinSubtitle": "Minimální 0.001 BTC",
   "@dcaWalletBitcoinSubtitle": {
     "description": "Subtitle/description for Bitcoin wallet option"
@@ -1840,10 +1766,6 @@
   "@sendErrorInsufficientFundsForPayment": {
     "description": "Error when insufficient funds available"
   },
-  "arkAboutShow": "Zobrazit",
-  "@arkAboutShow": {
-    "description": "Button text to show hidden secret key"
-  },
   "fundExchangeETransferTitle": "E-Transfer detaily",
   "@fundExchangeETransferTitle": {
     "description": "Screen title for E-Transfer payment details"
@@ -1875,19 +1797,6 @@
   "receiveNote": "Poznámka",
   "@receiveNote": {
     "description": "Label for adding a note to a receive transaction"
-  },
-  "arkCopiedToClipboard": "{label} kopírovat do schránky",
-  "@arkCopiedToClipboard": {
-    "description": "SnackBar message when field is copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Adresa příjemce",
-  "@arkRecipientAddress": {
-    "description": "Label for recipient address input field"
   },
   "payLightningNetwork": "Bleskové sítě",
   "@payLightningNetwork": {
@@ -1972,10 +1881,6 @@
   "sellKYCApproved": "KYC schváleno",
   "@sellKYCApproved": {
     "description": "Status when verification complete"
-  },
-  "arkTransaction": "transakce",
-  "@arkTransaction": {
-    "description": "Singular form for transaction count"
   },
   "dcaFrequencyMonthly": "měsíc",
   "@dcaFrequencyMonthly": {
@@ -2152,10 +2057,6 @@
   "@revealingVaultKeyButton": {
     "description": "Button label shown while revealing vault key"
   },
-  "arkAboutNetwork": "Čeština",
-  "@arkAboutNetwork": {
-    "description": "Field label for network"
-  },
   "payLastName": "Poslední jméno",
   "@payLastName": {
     "description": "Label for last name field"
@@ -2221,10 +2122,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "torSettingsInfoDescription": "• Tor proxy se vztahuje pouze na Bitcoin (ne Liquid)\n• Výchozí port Orbot je 9050\n• Ujistěte se, že Orbot běží před povolením\n• Připojení může být pomalejší přes Tor",
-  "@torSettingsInfoDescription": {
-    "description": "Information about Tor proxy usage"
-  },
   "dcaAddressBitcoin": "Bitcoin adresa",
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
@@ -2250,10 +2147,6 @@
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
   },
-  "arkTxTypeBoarding": "Čeština",
-  "@arkTxTypeBoarding": {
-    "description": "Transaction type label for boarding transactions"
-  },
   "exchangeAmountInputValidationInsufficient": "Nedostatečná rovnováha",
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
@@ -2266,10 +2159,6 @@
         "type": "String"
       }
     }
-  },
-  "arkTransactions": "transakce",
-  "@arkTransactions": {
-    "description": "Plural form for transaction count"
   },
   "broadcastSignedTxCameraButton": "Čeština",
   "@broadcastSignedTxCameraButton": {
@@ -2287,10 +2176,6 @@
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
   },
-  "bitboxErrorNoActiveConnection": "Žádné aktivní připojení k zařízení BitBox.",
-  "@bitboxErrorNoActiveConnection": {
-    "description": "Error when there is no active connection to BitBox"
-  },
   "dcaFundAccountButton": "Fond vašeho účtu",
   "@dcaFundAccountButton": {
     "description": "Button label to navigate to funding screen"
@@ -2299,17 +2184,9 @@
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
   },
-  "arkSendTitle": "Odeslat",
-  "@arkSendTitle": {
-    "description": "AppBar title for Ark send screen"
-  },
   "transactionDetailLabelAmountReceived": "Množství přijaté",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
-  },
-  "bitboxCubitOperationTimeout": "Provozní doba. Prosím, zkuste to znovu.",
-  "@bitboxCubitOperationTimeout": {
-    "description": "Error interpretation for timeout"
   },
   "receivePaymentReceived": "Platba obdržela!",
   "@receivePaymentReceived": {
@@ -2368,6 +2245,7 @@
   "@mempoolCustomServerUrl": {
     "description": "Label for custom mempool server URL input field"
   },
+  "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "buyOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
   "@buyOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed buy order"
@@ -2429,10 +2307,6 @@
   "@sellSendPaymentOrderNumber": {
     "description": "Field label for order number"
   },
-  "arkDust": "Čeština",
-  "@arkDust": {
-    "description": "Label for dust amount field"
-  },
   "dcaConfirmPaymentMethod": "Způsob platby",
   "@dcaConfirmPaymentMethod": {
     "description": "Field label for payment method"
@@ -2464,10 +2338,6 @@
   "testBackupPassphrase": "Čeština",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "arkSetupEnable": "Povolit Ark",
-  "@arkSetupEnable": {
-    "description": "Button to enable Ark"
   },
   "walletDeletionErrorDefaultWallet": "Nelze odstranit výchozí peněženku.",
   "@walletDeletionErrorDefaultWallet": {
@@ -2599,10 +2469,6 @@
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
   },
-  "arkUnifiedAddressCopied": "Unifikovaná adresa kopírována",
-  "@arkUnifiedAddressCopied": {
-    "description": "SnackBar message when unified address is copied to clipboard"
-  },
   "transactionSwapDescLnSendCompleted": "Splatek blesku byla úspěšně odeslána! Vaše výměna je nyní kompletní.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
@@ -2691,6 +2557,7 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorUnsupportedQrCodeFormat": "Nepodporovaný formát QR kódu",
   "transactionLabelAmountReceived": "Množství přijaté",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
@@ -2978,10 +2845,6 @@
   "@paySecurityAnswer": {
     "description": "Label for security answer field"
   },
-  "walletArkInstantPayments": "Ark Instant platby",
-  "@walletArkInstantPayments": {
-    "description": "Title for Ark wallet card"
-  },
   "passwordLabel": "Heslo",
   "@passwordLabel": {
     "description": "Label for password input field"
@@ -3033,10 +2896,6 @@
   "payAddressRequired": "Vyžaduje se",
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
-  },
-  "arkTransactionDetails": "Detaily transakce",
-  "@arkTransactionDetails": {
-    "description": "AppBar title for transaction details page"
   },
   "payTotalAmount": "Celková částka",
   "@payTotalAmount": {
@@ -3152,10 +3011,6 @@
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
   },
-  "importColdcardButtonPurchase": "Nákup zařízení",
-  "@importColdcardButtonPurchase": {
-    "description": "ImportColdcardQ: Button to navigate to Coinkite store"
-  },
   "jadeStep15": "Nyní je připraveno k vysílání! Jakmile kliknete na vysílání, bude transakce zveřejněna na Bitcoin síti a prostředky budou odeslány.",
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
@@ -3176,26 +3031,9 @@
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
   },
-  "arkPreconfirmed": "Předpřipraveno",
-  "@arkPreconfirmed": {
-    "description": "Label for preconfirmed balance in Ark balance breakdown"
-  },
   "recoverbullSelectFileNotSelectedError": "Soubor není vybrán",
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
-  },
-  "arkDurationDay": "{days} den",
-  "@arkDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "Odeslat",
-  "@arkSendButton": {
-    "description": "Bottom button to navigate to send page"
   },
   "fundExchangeMethodSpeiTransferSubtitle": "Převod prostředků pomocí CLABE",
   "@fundExchangeMethodSpeiTransferSubtitle": {
@@ -3224,15 +3062,6 @@
   "paySelectActiveWallet": "Vyberte peněženku",
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
-  },
-  "arkDurationHours": "{hours} hodiny",
-  "@arkDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "logoutConfirmationTitle": "Potvrzení přihlášení",
   "@logoutConfirmationTitle": {
@@ -3363,10 +3192,6 @@
   "@receiveNewAddress": {
     "description": "Button label for generating a new receive address"
   },
-  "arkAmount": "Množství",
-  "@arkAmount": {
-    "description": "Label for transaction amount field in details table"
-  },
   "fundExchangeWarningTactic7": "Řekně, že se nemusíte obávat této varování",
   "@fundExchangeWarningTactic7": {
     "description": "Seventh scammer tactic warning"
@@ -3472,14 +3297,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "Maximální zůstatek 0,02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
-  "legacySeedViewScreenTitle": "Legacy Seeds",
-  "@legacySeedViewScreenTitle": {
-    "description": "AppBar title for legacy seeds screen"
-  },
   "pleaseWaitFetching": "Prosím, počkejte, když načteme váš záložní soubor.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -3499,10 +3316,6 @@
   "backupCompletedTitle": "Zálohování dokončeno!",
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
-  },
-  "arkDate": "Datum",
-  "@arkDate": {
-    "description": "Label for transaction date field in details table"
   },
   "psbtFlowInstructions": "Čeština",
   "@psbtFlowInstructions": {
@@ -3641,7 +3454,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "Koupili jste {amount}",
+  "buyYouBought": "Koupili jste {amount} za {fiatAmount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -3686,22 +3499,13 @@
   "@broadcastSignedTxReviewTransaction": {
     "description": "Section header for transaction review"
   },
-  "walletArkExperimental": "Experimentální",
-  "@walletArkExperimental": {
-    "description": "Description for Ark wallet indicating experimental status"
-  },
   "importQrDeviceKeystoneStep5": "Vyberte \"BULL\" ze seznamu peněženek",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "electrumLoadFailedError": "Vypnuto načíst servery{reason}",
+  "electrumLoadFailedError": "Vypnuto načíst servery",
   "@electrumLoadFailedError": {
-    "description": "Error message when loading servers fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when loading servers fails"
   },
   "ledgerVerifyAddressLabel": "Adresa pro ověření:",
   "@ledgerVerifyAddressLabel": {
@@ -3748,10 +3552,6 @@
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
   },
-  "arkReceiveUnifiedCopied": "Unifikovaná adresa kopírována",
-  "@arkReceiveUnifiedCopied": {
-    "description": "Snackbar message when unified address copied"
-  },
   "importQrDeviceJadeStep9": "Skenujte QR kód, který vidíte na vašem zařízení.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
@@ -3791,10 +3591,6 @@
   "backupInstruction3": "Každý s přístupem ke svému 12 slovu zálohování může ukrást vaše bitcoiny. Skrýt to dobře.",
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
-  },
-  "arkRedeemButton": "Čeština",
-  "@arkRedeemButton": {
-    "description": "Confirm button to execute collaborative redeem"
   },
   "fundExchangeLabelBeneficiaryAddress": "Beneficiární adresa",
   "@fundExchangeLabelBeneficiaryAddress": {
@@ -4016,10 +3812,6 @@
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
     "description": "Recommendation text for when to use physical backup"
   },
-  "bitboxCubitHandshakeFailed": "Vypnuto k vytvoření zabezpečeného připojení. Prosím, zkuste to znovu.",
-  "@bitboxCubitHandshakeFailed": {
-    "description": "Error interpretation for handshake failure"
-  },
   "sendErrorAmountAboveSwapLimits": "Výše uvedené limity pro výměnu",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
@@ -4092,10 +3884,6 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "arkForfeitAddress": "Profeit adresu",
-  "@arkForfeitAddress": {
-    "description": "Label for forfeit address field"
-  },
   "swapTransferRefundedTitle": "Převod vracení poplatků",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
@@ -4132,10 +3920,6 @@
   "@recoverbullTestCompletedTitle": {
     "description": "Success title after completing backup test"
   },
-  "arkBtcAddress": "BTC adresa",
-  "@arkBtcAddress": {
-    "description": "Label for the Bitcoin address field"
-  },
   "transactionFilterReceive": "Čeština",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -4147,10 +3931,6 @@
   "payBumpFee": "Bump poplatek",
   "@payBumpFee": {
     "description": "Button to increase fee of pending transaction"
-  },
-  "arkCancelButton": "Hledat",
-  "@arkCancelButton": {
-    "description": "Cancel button label in settle bottom sheet"
   },
   "bitboxActionImportWalletProcessingSubtext": "Nastavení pouze peněženky...",
   "@bitboxActionImportWalletProcessingSubtext": {
@@ -4171,10 +3951,6 @@
   "fundExchangeMethodSinpeTransferSubtitle": "Přeneste kolo pomocí SINPE",
   "@fundExchangeMethodSinpeTransferSubtitle": {
     "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "arkInstantPayments": "Ark Instant Platby",
-  "@arkInstantPayments": {
-    "description": "Main page title in top bar"
   },
   "sendEstimatedDelivery": "Odhadovaná dodávka ~ ",
   "@sendEstimatedDelivery": {
@@ -4203,6 +3979,14 @@
   "allSeedViewPassphraseLabel": "Heslo:",
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
+  },
+  "allSeedViewErrorFetch": "Nepodařilo se načíst seedy. Zkuste to prosím znovu.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "allSeedViewErrorDelete": "Nepodařilo se smazat seed. Zkuste to prosím znovu.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
   },
   "dcaBuyingMessage": "Kupujete {amount} každý {frequency} prostřednictvím {network}, pokud máte prostředky ve vašem účtu.",
   "@dcaBuyingMessage": {
@@ -4293,10 +4077,6 @@
   "@exchangeLandingFeature1": {
     "description": "First feature bullet point"
   },
-  "bitboxCubitPermissionDenied": "Odmítnuto USB povolení. Prosím, uveďte povolení k přístupu k zařízení BitBox.",
-  "@bitboxCubitPermissionDenied": {
-    "description": "Error interpretation for permission denied"
-  },
   "swapTransferTo": "Převod na",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
@@ -4379,10 +4159,6 @@
   "@buyInputTitle": {
     "description": "AppBar title for buy input screen"
   },
-  "arkSendRecipientTitle": "Odeslat na pomoc",
-  "@arkSendRecipientTitle": {
-    "description": "Title for the ark send recipient page"
-  },
   "importMnemonicImport": "Čeština",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
@@ -4390,10 +4166,6 @@
   "recoverbullPasswordTooShort": "Heslo musí být nejméně 6 znaků dlouhé",
   "@recoverbullPasswordTooShort": {
     "description": "Validation error for passwords under minimum length"
-  },
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "@arkAddressPlaceholder": {
-    "description": "Placeholder text for recipient address input"
   },
   "payNetwork": "Čeština",
   "@payNetwork": {
@@ -4411,10 +4183,6 @@
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
-  "arkBoardingConfirmed": "Potvrdil",
-  "@arkBoardingConfirmed": {
-    "description": "Label for confirmed boarding balance in Ark balance breakdown"
-  },
   "exchangeFileUploadInstructionsWithParams": "Nahrajte až {maxFiles} soubory. Podporované formáty: PDF, JPG, PNG, GIF, HEIC. Maximální velikost souboru: 10MB na soubor.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -4431,10 +4199,6 @@
   "backupWalletVaultProviderTakeYourTime": "Udělejte si čas",
   "@backupWalletVaultProviderTakeYourTime": {
     "description": "Tag for custom location provider"
-  },
-  "arkSettleIncludeRecoverable": "Zaude obnovitelné vtxos",
-  "@arkSettleIncludeRecoverable": {
-    "description": "Toggle label for including recoverable vtxos"
   },
   "ledgerWalletTypeSegwitDescription": "Nativní SegWit - Doporučené",
   "@ledgerWalletTypeSegwitDescription": {
@@ -4504,10 +4268,6 @@
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
   },
-  "labelErrorSystemCannotDelete": "Systémové štítky nelze odstranit.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "copyDialogButton": "Čeština",
   "@copyDialogButton": {
     "description": "Button in modal dialog to copy value to clipboard"
@@ -4560,10 +4320,6 @@
   "@fundExchangeLabelIbanCrcOnly": {
     "description": "Label for IBAN field - Colones only"
   },
-  "arkServerPubkey": "Server pubkey",
-  "@arkServerPubkey": {
-    "description": "Label for server public key field"
-  },
   "testBackupPhysicalBackupDescription": "Sepsat 12 slov na kus papíru. Udržujte je bezpečné a ujistěte se, že je neztrácejí.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4595,10 +4351,6 @@
   "receiveWaitForSenderToFinish": "Počkejte na odesílateli k dokončení transakce payjoin",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
-  },
-  "arkSetupTitle": "Ark Nastavení",
-  "@arkSetupTitle": {
-    "description": "AppBar title for Ark setup screen"
   },
   "seedsignerStep3": "Skenovat QR kód zobrazený v peněžence Bull",
   "@seedsignerStep3": {
@@ -4744,10 +4496,6 @@
   "@fundExchangeLabelRecipientName": {
     "description": "Label for recipient name field (alternative to beneficiary name)"
   },
-  "arkToday": "Dnes",
-  "@arkToday": {
-    "description": "Date label for transactions from today"
-  },
   "importQrDeviceJadeStep2": "Zvolte režim \"QR\" z hlavního menu",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
@@ -4801,10 +4549,6 @@
   "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro swapy.",
   "@sendErrorHardwareWalletCannotSwap": {
     "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
-  },
-  "arkNoBalanceData": "Nejsou k dispozici žádné údaje o rovnováze",
-  "@arkNoBalanceData": {
-    "description": "Message shown when Ark balance data is not available"
   },
   "autoswapWarningCardTitle": "Autoswap je povoleno",
   "@autoswapWarningCardTitle": {
@@ -5005,10 +4749,6 @@
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
   },
-  "arkReceiveCopyAddress": "Kopírovat adresu",
-  "@arkReceiveCopyAddress": {
-    "description": "Copy address button label"
-  },
   "testBackupErrorWriteFailed": "Napište úložiště selhalo: {error}",
   "@testBackupErrorWriteFailed": {
     "description": "Error when writing verification status to storage fails",
@@ -5038,10 +4778,6 @@
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
-  "arkSendAmountTitle": "Zadejte částku",
-  "@arkSendAmountTitle": {
-    "description": "Title for the ark send amount page"
-  },
   "addressViewAddress": "Čeština",
   "@addressViewAddress": {
     "description": "Label for address field"
@@ -5049,10 +4785,6 @@
   "payOnChainFee": "On-Chain poplatek",
   "@payOnChainFee": {
     "description": "Label for Bitcoin on-chain transaction fee"
-  },
-  "arkReceiveUnifiedAddress": "Unifikovaná adresa (BIP21)",
-  "@arkReceiveUnifiedAddress": {
-    "description": "Label for unified BIP21 address"
   },
   "sellHowToPayInvoice": "Jak chcete zaplatit tuto fakturu?",
   "@sellHowToPayInvoice": {
@@ -5118,17 +4850,9 @@
   "@fundExchangeCrIbanUsdLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (legal ID number in Costa Rica) for USD"
   },
-  "arkSettleDescription": "Konečné transakce a zahrnují obnovitelné vtxos, pokud je to nutné",
-  "@arkSettleDescription": {
-    "description": "Description explaining what settling transactions does"
-  },
   "backupWalletHowToDecideVaultCustomRecommendation": "Vlastní umístění: ",
   "@backupWalletHowToDecideVaultCustomRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "arkSendSuccessMessage": "Vaše transakce Ark byla úspěšná!",
-  "@arkSendSuccessMessage": {
-    "description": "Success message shown after Ark send transaction completes"
   },
   "sendSats": "čeština",
   "@sendSats": {
@@ -5207,10 +4931,6 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "transactionPayjoinNoProposal": "Ne přijímání payjoin návrh z přijímače?",
-  "@transactionPayjoinNoProposal": {
-    "description": "Message displayed when payjoin proposal is not received"
-  },
   "importQrDevicePassportStep4": "Zvolte \"Připojit peněženku\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
@@ -5253,14 +4973,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "arkUnilateralExitDelay": "Oddávkové zpoždění",
-  "@arkUnilateralExitDelay": {
-    "description": "Label for unilateral exit delay field"
-  },
-  "arkStatusPending": "Čeština",
-  "@arkStatusPending": {
-    "description": "Status label for pending transactions"
-  },
   "importWatchOnlyXpub": "čeština",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
@@ -5268,10 +4980,6 @@
   "dcaInsufficientBalanceTitle": "Nedostatečná rovnováha",
   "@dcaInsufficientBalanceTitle": {
     "description": "InfoCard title when user has insufficient funds"
-  },
-  "arkType": "Typ",
-  "@arkType": {
-    "description": "Label for transaction type field in details table"
   },
   "backupImportanceMessage": "Bez zálohování, nakonec ztratíte přístup k vašim penězům. Je velmi důležité provést zálohu.",
   "@backupImportanceMessage": {
@@ -5300,10 +5008,6 @@
   "systemLabelPayjoin": "Čeština",
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
-  },
-  "arkSetupExperimentalWarning": "Ark je stále experimentální.\n\nVaše Ark peněženka je odvozena od své hlavní peněženky. Není potřeba žádné další zálohování, vaše stávající peněženka zálohuje vaše prostředky Ark.\n\nPokračováním souhlasíte s experimentálním charakterem Ark a rizikem ztráty finančních prostředků.\n\nVývojka poznámka : Ark tajemství je odvozen od hlavní peněženky semíněné pomocí libovolné derivace BIP-85 (index 11811).",
-  "@arkSetupExperimentalWarning": {
-    "description": "Ark experimental warning text"
   },
   "keyServerLabel": "Key Server ",
   "@keyServerLabel": {
@@ -5585,15 +5289,6 @@
   "@backupWalletGoogleDrivePrivacyMessage1": {
     "description": "First part of privacy message about Google Drive data"
   },
-  "labelErrorUnsupportedType": "Tento typ {type} není podporován",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "description": "Fee rate format",
@@ -5769,19 +5464,6 @@
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
   },
-  "legacySeedViewNoSeedsMessage": "Nebyly nalezeny žádné starší semena.",
-  "@legacySeedViewNoSeedsMessage": {
-    "description": "Message shown when no legacy seeds are found"
-  },
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "description": "Dust value format",
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - Zvýšení jasu obrazovky ve vašem zařízení",
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
@@ -5802,10 +5484,6 @@
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
   },
-  "arkSettleTitle": "Settle Transakce",
-  "@arkSettleTitle": {
-    "description": "Settle bottom sheet title"
-  },
   "sendErrorInsufficientBalanceForSwap": "Není dostatek rovnováhy, abyste zaplatili tento swap pomocí kapaliny a ne v rámci výměnných limitů platit přes Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -5813,10 +5491,6 @@
   "psbtFlowJadeTitle": "Blokstream Jade PSBT Čeština",
   "@psbtFlowJadeTitle": {
     "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
-  "torSettingsDescUnknown": "Nelze určit Tor status. Ujistěte se, že Orbot je nainstalován a spuštěn.",
-  "@torSettingsDescUnknown": {
-    "description": "Description when Tor status is unknown"
   },
   "transactionFilterPayjoin": "Čeština",
   "@transactionFilterPayjoin": {
@@ -5865,10 +5539,6 @@
   "sendReceiveNetworkFee": "Obdržet Síťový poplatek",
   "@sendReceiveNetworkFee": {
     "description": "Label for network fee on receive side"
-  },
-  "arkTxPayment": "Platba",
-  "@arkTxPayment": {
-    "description": "Transaction type label for Ark payment transactions"
   },
   "importQrDeviceSeedsignerStep6": "Zvolte možnost \"Sparrow\" jako možnost exportu",
   "@importQrDeviceSeedsignerStep6": {
@@ -5957,10 +5627,6 @@
   "@physicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes time"
   },
-  "arkIncludeRecoverableVtxos": "Zaude obnovitelné vtxos",
-  "@arkIncludeRecoverableVtxos": {
-    "description": "Label for toggle switch to include recoverable vtxos when settling"
-  },
   "payCompletedDescription": "Vaše platba byla dokončena a příjemci obdrželi prostředky.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -6005,10 +5671,6 @@
   "@transactionDetailLabelTransactionId": {
     "description": "Label for transaction ID in details"
   },
-  "arkReceiveTitle": "Ark Obdržet",
-  "@arkReceiveTitle": {
-    "description": "AppBar title for Ark receive screen"
-  },
   "payDebitCardNumberHint": "Zadejte číslo debetní karty",
   "@payDebitCardNumberHint": {
     "description": "Hint for debit card number input"
@@ -6048,10 +5710,6 @@
   "exchangeFeatureSelfCustody": "• Koupit Bitcoin přímo na self-custody",
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
-  },
-  "arkBoardingUnconfirmed": "Boarding Unconfirmed",
-  "@arkBoardingUnconfirmed": {
-    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
   },
   "fundExchangeLabelPaymentDescription": "Popis platby",
   "@fundExchangeLabelPaymentDescription": {
@@ -6174,10 +5832,6 @@
   "coldcardStep9": "Jakmile je transakce importována ve vaší studené kartě, zkontrolujte cílovou adresu a částku.",
   "@coldcardStep9": {
     "description": "Coldcard instruction for reviewing transaction"
-  },
-  "sendErrorArkExperimentalOnly": "Žádosti o platbu ARK jsou k dispozici pouze z experimentální funkce Ark.",
-  "@sendErrorArkExperimentalOnly": {
-    "description": "Error when ARK payment is attempted without experimental feature enabled"
   },
   "exchangeKycComplete": "Kompletní KYC",
   "@exchangeKycComplete": {
@@ -6448,15 +6102,6 @@
   "@broadcastSignedTxTo": {
     "description": "Label for destination address"
   },
-  "arkAboutDurationDays": "{days} dny",
-  "@arkAboutDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "Podrobnosti o platbě",
   "@payPaymentDetails": {
     "description": "Section header for payment information"
@@ -6546,10 +6191,6 @@
   "@customLocationRecommendationText": {
     "description": "Text explaining when to use custom location"
   },
-  "arkAboutForfeitAddress": "Profeit adresu",
-  "@arkAboutForfeitAddress": {
-    "description": "Field label for forfeit address"
-  },
   "kruxStep13": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
@@ -6583,14 +6224,9 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "Vymazat vlastní server{reason}",
+  "electrumDeleteFailedError": "Vymazat vlastní server",
   "@electrumDeleteFailedError": {
-    "description": "Error message when deleting custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when deleting custom server fails"
   },
   "receiveBoltzSwapFee": "Boltz Swap poplatek",
   "@receiveBoltzSwapFee": {
@@ -6607,10 +6243,6 @@
   "takeYourTimeTag": "Udělejte si čas",
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
-  },
-  "arkAboutDust": "Čeština",
-  "@arkAboutDust": {
-    "description": "Field label for dust amount"
   },
   "ledgerSuccessVerifyDescription": "Adresa byla ověřena na vašem zařízení Ledger.",
   "@ledgerSuccessVerifyDescription": {
@@ -6644,10 +6276,6 @@
   "@buySelfie": {
     "description": "Type of document required"
   },
-  "arkAboutSecretKey": "Tajný klíč",
-  "@arkAboutSecretKey": {
-    "description": "Label for secret key field in about page"
-  },
   "sellMxnBalance": "Čeština Čeština",
   "@sellMxnBalance": {
     "description": "Display text for MXN balance payout method"
@@ -6663,10 +6291,6 @@
   "wordsDropdownSuffix": " slova",
   "@wordsDropdownSuffix": {
     "description": "Suffix for mnemonic length dropdown"
-  },
-  "arkTxTypeRedeem": "Čeština",
-  "@arkTxTypeRedeem": {
-    "description": "Transaction type label for redeem transactions"
   },
   "receiveVerifyAddressOnLedger": "Ověřit adresu na Ledger",
   "@receiveVerifyAddressOnLedger": {
@@ -6785,10 +6409,6 @@
   "@mempoolCustomServerLabel": {
     "description": "Label badge for custom server"
   },
-  "arkAboutSessionDuration": "Doba trvání relace",
-  "@arkAboutSessionDuration": {
-    "description": "Field label for session duration"
-  },
   "transferFeeLabel": "Transfer poplatek",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -6875,6 +6495,12 @@
     "description": "Section header for QR code display"
   },
   "appSettingsDevModeTitle": "Režim Dev",
+  "exchangeTestnetBasicAuthTitle": "Přihlašovací údaje testnet burzy",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth pro webové stránky testnet burzy (přihlášení a KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Uživatelské jméno",
+  "exchangeTestnetBasicAuthPasswordLabel": "Heslo",
+  "exchangeTestnetBasicAuthClearButton": "Vymazat",
+  "exchangeTestnetBasicAuthSaveButton": "Uložit",
   "@appSettingsDevModeTitle": {
     "description": "Title for the developer mode toggle in app settings"
   },
@@ -6886,17 +6512,9 @@
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
-  "replaceByFeeErrorTransactionConfirmed": "Původní transakce byla potvrzena",
-  "@replaceByFeeErrorTransactionConfirmed": {
-    "description": "Error message when original transaction is already confirmed"
-  },
   "rbfErrorFeeTooLow": "Musíte zvýšit poplatek minimálně 1 sat/vbyte ve srovnání s původní transakcí",
   "@rbfErrorFeeTooLow": {
     "description": "Error when new fee rate is not high enough"
-  },
-  "ledgerErrorMissingDerivationPathSign": "Derivační cesta je nutná pro přihlášení",
-  "@ledgerErrorMissingDerivationPathSign": {
-    "description": "Error message when derivation path is missing for signing"
   },
   "backupWalletTitle": "Zálohování vaší peněženky",
   "@backupWalletTitle": {
@@ -6905,15 +6523,6 @@
   "jadeStep10": "Klikněte na tlačítka pro přihlášení do Vaší Jade.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "arkAboutDurationHour": "{hours} hodina",
-  "@arkAboutDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
   },
   "bitboxScreenUnknownError": "Neznámá chyba nastala",
   "@bitboxScreenUnknownError": {
@@ -6939,21 +6548,9 @@
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "arkAboutTitle": "O nás",
-  "@arkAboutTitle": {
-    "description": "AppBar title for Ark about screen"
-  },
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address field"
-  },
   "sellSendPaymentCalculating": "Výpočet...",
   "@sellSendPaymentCalculating": {
     "description": "Calculating fees message"
-  },
-  "arkRecoverableVtxos": "Obnovitelné Vtxos",
-  "@arkRecoverableVtxos": {
-    "description": "Label for switch to include recoverable vtxos in redeem"
   },
   "psbtFlowTransactionImported": "Transakce bude dovážena v peněžence Bull Bitcoin.",
   "@psbtFlowTransactionImported": {
@@ -6974,10 +6571,6 @@
   "kruxStep4": "Klikněte na Vložte z kamery",
   "@kruxStep4": {
     "description": "Krux instruction step 4"
-  },
-  "bitboxErrorInvalidMagicBytes": "Neplatný formát PSBT detekován.",
-  "@bitboxErrorInvalidMagicBytes": {
-    "description": "Error when PSBT has invalid magic bytes"
   },
   "sellErrorRecalculateFees": "Přepočtení poplatků: {error}",
   "@sellErrorRecalculateFees": {
@@ -7131,10 +6724,6 @@
   "@fundExchangeInfoTransferCodeRequired": {
     "description": "Important info about transfer code requirement for Costa Rica transfers"
   },
-  "arkBoardingExitDelay": "Pozdní zpoždění",
-  "@arkBoardingExitDelay": {
-    "description": "Label for boarding exit delay field"
-  },
   "exchangeDcaFrequencyHour": "hodina",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7158,10 +6747,6 @@
   "importQrDeviceSuccess": "Peněženka úspěšně dovezena",
   "@importQrDeviceSuccess": {
     "description": "Success message after import"
-  },
-  "arkTxSettlement": "Hledat",
-  "@arkTxSettlement": {
-    "description": "Transaction type label for Ark settlement transactions"
   },
   "autoswapEnable": "Povolit automatické přenos",
   "@autoswapEnable": {
@@ -7195,7 +6780,7 @@
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Nahrát {count} {count, plural, =1{soubor} other{souborů}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -7391,10 +6976,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "arkAboutEsploraUrl": "Esplora URL",
-  "@arkAboutEsploraUrl": {
-    "description": "Field label for Esplora URL"
-  },
   "backupKeyExampleWarning": "Například pokud používáte Disk Google pro záložní soubor, nepoužívejte Disk Google pro váš záložní klíč.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -7467,10 +7048,6 @@
   "backupSettingsBackupKey": "Backup klíč",
   "@backupSettingsBackupKey": {
     "description": "AppBar title for view backup key screen"
-  },
-  "arkTransactionId": "ID transakce",
-  "@arkTransactionId": {
-    "description": "Label for transaction ID field in details table"
   },
   "payInvoiceCopied": "Faktury zkopírované do schránky",
   "@payInvoiceCopied": {
@@ -7609,14 +7186,9 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "Neúspěšné uložení priority serveru{reason}",
+  "electrumSavePriorityFailedError": "Neúspěšné uložení priority serveru",
   "@electrumSavePriorityFailedError": {
-    "description": "Error message when saving server priority fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when saving server priority fails"
   },
   "globalDefaultLiquidWalletLabel": "Okamžité platby",
   "@globalDefaultLiquidWalletLabel": {
@@ -7642,7 +7214,7 @@
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
-  "fundExchangeMethodInstantSepa": "Okamžité SEPA",
+  "fundExchangeMethodInstantSepa": "Okamžitý a standardní SEPA převod",
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
@@ -7654,10 +7226,6 @@
         "type": "String"
       }
     }
-  },
-  "importWatchOnlyBuyDevice": "Koupit zařízení",
-  "@importWatchOnlyBuyDevice": {
-    "description": "Button label to purchase a hardware wallet device"
   },
   "sellMinimumAmount": "Minimální cena prodeje: {amount}",
   "@sellMinimumAmount": {
@@ -7705,7 +7273,7 @@
   "exportTransactionsButton": "Exportovat CSV",
   "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
   "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Nepodařilo se exportovat transakce.",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -7740,10 +7308,6 @@
   "payNetworkError": "Chyba sítě. Prosím, zkuste to znovu",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
-  },
-  "sendNetworkFeesLabel": "Odeslat poplatky",
-  "@sendNetworkFeesLabel": {
-    "description": "Label for sending network fees in chain swap"
   },
   "electrumUnknownError": "Došlo k chybě",
   "@electrumUnknownError": {
@@ -7786,10 +7350,6 @@
         "format": "decimalPattern"
       }
     }
-  },
-  "arkSendConfirmedBalance": "Potvrzení rovnováhy",
-  "@arkSendConfirmedBalance": {
-    "description": "Confirmed balance label"
   },
   "sellFastest": "Čeština",
   "@sellFastest": {
@@ -7852,10 +7412,6 @@
   "@exchangeBrandName": {
     "description": "The Bull Bitcoin brand name displayed on exchange screens"
   },
-  "torSettingsPortHelper": "Výchozí port Orbot: 9050",
-  "@torSettingsPortHelper": {
-    "description": "Helper text explaining default Orbot port"
-  },
   "submitButton": "Odeslat",
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
@@ -7899,10 +7455,6 @@
   "backupSettingsSecurityWarning": "Bezpečnostní upozornění",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
-  },
-  "arkCopyAddress": "Kopírovat adresu",
-  "@arkCopyAddress": {
-    "description": "Button label to expand and show address details for copying"
   },
   "sendScheduleFor": "Plán pro {date}",
   "@sendScheduleFor": {
@@ -8031,10 +7583,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "legacySeedViewPassphrasesLabel": "Protézy:",
-  "@legacySeedViewPassphrasesLabel": {
-    "description": "Label for passphrases section"
-  },
   "receiveAddressCopied": "Adresa kopírována do schránky",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -8072,39 +7620,13 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "ledgerErrorMissingDerivationPathVerify": "Derivační cesta je nutná pro ověření",
-  "@ledgerErrorMissingDerivationPathVerify": {
-    "description": "Error message when derivation path is missing for verification"
-  },
   "recoverbullErrorVaultNotSet": "Vault není nastaven",
   "@recoverbullErrorVaultNotSet": {
     "description": "Error when attempting operation without selected vault"
   },
-  "ledgerErrorMissingScriptTypeSign": "Typ skriptu je nutné pro přihlášení",
-  "@ledgerErrorMissingScriptTypeSign": {
-    "description": "Error message when script type is missing for signing"
-  },
   "electrumFormatError": "Použijte hostitel:port formát (např.:50001)",
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
-  },
-  "arkAboutDurationDay": "{days} den",
-  "@arkAboutDurationDay": {
-    "description": "Duration format for singular day",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} hodina",
-  "@arkDurationHour": {
-    "description": "Duration format for singular hour",
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
   },
   "transactionFeesDeductedFrom": "Tyto poplatky budou odečteny z výše uvedené částky",
   "@transactionFeesDeductedFrom": {
@@ -8134,10 +7656,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "arkPending": "Čeština",
-  "@arkPending": {
-    "description": "Label for pending balance in breakdown"
-  },
   "transactionOrderLabelOrderStatus": "Stav zakázky",
   "@transactionOrderLabelOrderStatus": {
     "description": "Label for order status"
@@ -8162,10 +7680,6 @@
   "transactionStatusPending": "Čeština",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "bitboxCubitConnectionFailed": "Připojil se k zařízení BitBox. Prosím zkontrolujte, zda je vaše připojení.",
-  "@bitboxCubitConnectionFailed": {
-    "description": "Error interpretation for connection failure"
   },
   "importQrDeviceScanning": "Skenování...",
   "@importQrDeviceScanning": {
@@ -8219,10 +7733,6 @@
   "recoverbullGoogleDriveDeleteButton": "Čeština",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
-  },
-  "arkBalanceBreakdownTooltip": "Rozdělení rovnováhy",
-  "@arkBalanceBreakdownTooltip": {
-    "description": "Tooltip for info button that opens balance breakdown"
   },
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Koupit",
   "@exchangeDcaDeactivateTitle": {
@@ -8282,10 +7792,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Zařízení není spárováno. Nejdříve vyplňte proces párování.",
-  "@bitboxCubitDeviceNotPaired": {
-    "description": "Error interpretation for device not paired"
-  },
   "sellCrcBalance": "Čeština Čeština",
   "@sellCrcBalance": {
     "description": "Display text for CRC balance payout method"
@@ -8323,10 +7829,6 @@
   "@payPriceRefreshIn": {
     "description": "Text before countdown timer"
   },
-  "bitboxCubitOperationCancelled": "Provoz byl zrušen. Prosím, zkuste to znovu.",
-  "@bitboxCubitOperationCancelled": {
-    "description": "Error interpretation for cancelled operation"
-  },
   "passportStep3": "Skenovat QR kód zobrazený v peněžence Bull",
   "@passportStep3": {
     "description": "Passport instruction step 3"
@@ -8343,10 +7845,6 @@
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
-  "arkSendConfirmTitle": "Odeslat",
-  "@arkSendConfirmTitle": {
-    "description": "Title for the ark send confirmation page"
-  },
   "importQrDeviceSeedsignerStep1": "Moc na zařízení SeedSigner",
   "@importQrDeviceSeedsignerStep1": {
     "description": "SeedSigner instruction step 1"
@@ -8354,10 +7852,6 @@
   "exchangeRecipientsTitle": "Příjemci",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
-  },
-  "legacySeedViewEmptyPassphrase": "(prázdný)",
-  "@legacySeedViewEmptyPassphrase": {
-    "description": "Text shown for empty passphrase"
   },
   "importWatchOnlyDerivationPath": "Derivační cesta",
   "@importWatchOnlyDerivationPath": {
@@ -8404,6 +7898,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Údaje o platbě nelze načíst v tomto okamžiku. Prosím, přejděte zpět a zkuste to znovu, vyzvednout další způsob platby nebo vrátit později.",
+  "fundExchangeErrorTitleOrdPo404": "Platební možnost není k dispozici",
+  "fundExchangeErrorTitleRcpPo404": "Platební možnost není dostupná",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE není k dispozici",
+  "fundExchangeErrorTitleOrdKyc400": "Chybějící požadavky KYC",
+  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Neplatná data financování COP",
+  "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtuální platba není aktivována",
+  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro příjemce SEPA s IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Neplatný požadavek",
+  "fundExchangeErrorRcp400": "Neplatný požadavek",
+  "fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
+  "fundExchangeErrorRcpPo404": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
+  "fundExchangeErrorRcpPosinpe404": "Pro přístup k této možnosti financování musí být vaše telefonní číslo registrováno v síti SINPE v Kostarice.",
+  "fundExchangeErrorFetchingBankCodes": "Chyba při načítání bankovních kódů. Zkuste to prosím později znovu.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
@@ -8755,10 +8264,6 @@
   "@dcaConfirmAmount": {
     "description": "Field label for amount"
   },
-  "arkBalanceBreakdown": "Rozbití rovnováhy",
-  "@arkBalanceBreakdown": {
-    "description": "Title of bottom sheet showing balance breakdown"
-  },
   "seedsignerStep8": "Jakmile je transakce importována ve vašem SeedSigneru, měli byste zvolit semeno, kterou chcete podepsat.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
@@ -8766,10 +8271,6 @@
   "sellSendPaymentPriceRefresh": "Cena bude obnovena v ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "arkAboutCopy": "Čeština",
-  "@arkAboutCopy": {
-    "description": "Copy button label"
   },
   "recoverbullPasswordRequired": "Heslo je vyžadováno",
   "@recoverbullPasswordRequired": {
@@ -8782,10 +8283,6 @@
   "payFirstName": "Jméno",
   "@payFirstName": {
     "description": "Label for first name field"
-  },
-  "arkNoTransactionsYet": "Žádné transakce.",
-  "@arkNoTransactionsYet": {
-    "description": "Empty state message shown when user has no transaction history"
   },
   "recoverViaCloudDescription": "Obnovení zálohování přes cloud pomocí PINu.",
   "@recoverViaCloudDescription": {
@@ -8892,10 +8389,6 @@
   "@payAccountNumber": {
     "description": "Label for account number"
   },
-  "arkSatsUnit": "čeština",
-  "@arkSatsUnit": {
-    "description": "Unit label for satoshis in Ark transaction details"
-  },
   "payMinimumAmount": "Minimální: {amount}",
   "@payMinimumAmount": {
     "description": "Label showing minimum payment amount",
@@ -8977,52 +8470,21 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "Přeskočit nastavení: {error}",
-  "@autoswapSaveError": {
-    "description": "Error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Standardní výběr",
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "arkSettleButton": "Čeština",
-  "@arkSettleButton": {
-    "description": "Settle button label"
-  },
-  "electrumAddFailedError": "Přešel přidat vlastní server{reason}",
+  "electrumAddFailedError": "Přešel přidat vlastní server",
   "@electrumAddFailedError": {
-    "description": "Error message when adding custom server fails",
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
+    "description": "Error message when adding custom server fails"
   },
   "transactionDetailLabelTransferFees": "Převod poplatků",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "arkAboutDurationHours": "{hours} hodiny",
-  "@arkAboutDurationHours": {
-    "description": "Duration format for plural hours",
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "Generické peněženky",
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
-  },
-  "arkEsploraUrl": "Esplora URL",
-  "@arkEsploraUrl": {
-    "description": "Label for Esplora URL field"
   },
   "backupSettingsNotTested": "Netestováno",
   "@backupSettingsNotTested": {
@@ -9101,10 +8563,6 @@
   "@exchangeLoginButton": {
     "description": "Button label for logging in or signing up to the exchange"
   },
-  "arkAboutHide": "Čeština",
-  "@arkAboutHide": {
-    "description": "Button text to hide visible secret key"
-  },
   "ledgerProcessingVerify": "Zobrazit adresu na Ledger ...",
   "@ledgerProcessingVerify": {
     "description": "Status message shown while verifying address on Ledger"
@@ -9112,10 +8570,6 @@
   "coreScreensFeePriorityLabel": "Prioritní priority",
   "@coreScreensFeePriorityLabel": {
     "description": "Label for fee priority field"
-  },
-  "arkSendPendingBalance": "Výpadek    ",
-  "@arkSendPendingBalance": {
-    "description": "Pending balance label"
   },
   "coreScreensLogsTitle": "Přihlášení",
   "@coreScreensLogsTitle": {
@@ -9252,10 +8706,6 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "arkSendSuccessTitle": "Odeslat úspěšný",
-  "@arkSendSuccessTitle": {
-    "description": "Title shown after successful Ark send transaction"
-  },
   "importQrDevicePassportStep3": "Zvolte \"Manage účet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
@@ -9344,15 +8794,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "labelErrorNotFound": "Štítky \"{label}\" nebyl nalezen.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Privátní platba",
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
@@ -9376,10 +8817,6 @@
   "autoswapRecipientWallet": "Pomocné Bitcoin Peněženka",
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
-  },
-  "arkUnifiedAddressBip21": "Unifikovaná adresa (BIP21)",
-  "@arkUnifiedAddressBip21": {
-    "description": "Label for the BIP21 unified address field"
   },
   "pickPasswordOrPinButton": "Vyberte {pinOrPassword} místo >>",
   "@pickPasswordOrPinButton": {
@@ -9519,10 +8956,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "Cílová rovnováha 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "Výplatní částka",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -9553,6 +8986,7 @@
     }
   },
   "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "bip85NoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
   "@oopsSomethingWentWrong": {
     "description": "Error title when something goes wrong"
   },
@@ -9679,10 +9113,6 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Přeskočit nastavení",
-  "@autoswapAutoSaveError": {
-    "description": "Error message when auto-save on disable fails"
-  },
   "exchangeAccountInfoVerificationLightVerification": "Světelná ověření",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
@@ -9702,10 +9132,6 @@
   "dcaConfirmAutoMessage": "Koupit objednávky budou automaticky umístěny na tyto nastavení. Můžete je kdykoli vypnout.",
   "@dcaConfirmAutoMessage": {
     "description": "DCA auto-placement message"
-  },
-  "arkCollaborativeRedeem": "Spolupráce s Redeem",
-  "@arkCollaborativeRedeem": {
-    "description": "Bottom sheet title for collaborative redeem for BTC address sends"
   },
   "usePasswordInsteadButton": "Použití {pinOrPassword} namísto >>",
   "@usePasswordInsteadButton": {
@@ -9773,6 +9199,10 @@
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
+  "ledgerErrorDeviceBusy": "Váš Ledger používá jiný program. Zavřete jej (například Ledger Live) a zkuste to znovu.",
+  "@ledgerErrorDeviceBusy": {
+    "description": "Error message when another program is communicating with the Ledger device"
+  },
   "ledgerErrorNoConnection": "Nejsou k dispozici žádné připojení Ledger",
   "@ledgerErrorNoConnection": {
     "description": "Error message when no Ledger connection is available"
@@ -9836,14 +9266,6 @@
   "coreSwapsLnReceivePending": "Swap zatím nebyl iniciován.",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
-  },
-  "arkSendConfirmMessage": "Před odesláním prosím potvrďte podrobnosti o vaší transakci.",
-  "@arkSendConfirmMessage": {
-    "description": "Message displayed on send confirmation page"
-  },
-  "bitcoinSettingsLegacySeedsTitle": "Legacy Seeds",
-  "@bitcoinSettingsLegacySeedsTitle": {
-    "description": "Title for the legacy seeds section in Bitcoin settings"
   },
   "transactionDetailLabelPayjoinCreationTime": "Payjoin vytváření času",
   "@transactionDetailLabelPayjoinCreationTime": {
@@ -9966,14 +9388,6 @@
   "@exchangeAppSettingsDefaultCurrencyLabel": {
     "description": "Label for default currency setting in exchange app settings"
   },
-  "arkSendRecipientError": "Zadejte příjemce",
-  "@arkSendRecipientError": {
-    "description": "Error message when recipient field is empty"
-  },
-  "arkArkAddress": "Ark adresa",
-  "@arkArkAddress": {
-    "description": "Label for the Ark address field"
-  },
   "payRecipientName": "Název příjemce",
   "@payRecipientName": {
     "description": "Label for recipient name"
@@ -9985,10 +9399,6 @@
   "bitboxActionVerifyAddressButton": "Ověřit adresu",
   "@bitboxActionVerifyAddressButton": {
     "description": "Button text for verify address"
-  },
-  "torSettingsInfoTitle": "Důležité informace",
-  "@torSettingsInfoTitle": {
-    "description": "Title for the Tor information card"
   },
   "importColdcardInstructionsStep7": "Na mobilním zařízení klepněte na \"open camera\"",
   "@importColdcardInstructionsStep7": {
@@ -10145,19 +9555,6 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "Chyba načítání více adres: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "description": "Error message displayed when pagination of addresses fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Čeština",
-  "@arkCopy": {
-    "description": "Button label to copy field value to clipboard"
-  },
   "sendBuildingTransaction": "Stavební transakce...",
   "@sendBuildingTransaction": {
     "description": "Status while constructing transaction"
@@ -10199,10 +9596,6 @@
   "@fundExchangeLabelBankName": {
     "description": "Label for bank name field"
   },
-  "ledgerErrorMissingScriptTypeVerify": "Typ skriptu je nutné pro ověření",
-  "@ledgerErrorMissingScriptTypeVerify": {
-    "description": "Error message when script type is missing for verification"
-  },
   "backupWalletEncryptedVaultDescription": "Anonymní zálohování se silným šifrováním pomocí cloudu.",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
@@ -10214,10 +9607,6 @@
   "payExternalWallet": "Externí peněženka",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "arkPendingBalance": "Výpadek",
-  "@arkPendingBalance": {
-    "description": "Label for pending balance row"
   },
   "fundExchangeInfoBankCountryUk": "Naše banka je Česká republika.",
   "@fundExchangeInfoBankCountryUk": {
@@ -10272,15 +9661,6 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "addressViewErrorLoadingAddresses": "Adresy chyb: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "description": "Error message displayed when addresses fail to load",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Typ připojení není iniciován.",
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
@@ -10289,10 +9669,14 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "ledgerErrorUnknown": "Neznámá chyba",
-  "@ledgerErrorUnknown": {
-    "description": "Generic error message for unknown Ledger errors"
-  },
+  "ledgerErrorPermissionDenied": "Pro připojení k zařízením Ledger jsou vyžadována oprávnění Bluetooth.",
+  "ledgerErrorNoDevicesFound": "Nebyla nalezena žádná zařízení Ledger. Ujistěte se, že je vaše zařízení zapnuté a má povolené Bluetooth.",
+  "ledgerErrorMultipleDevicesFound": "Bylo nalezeno více zařízení Ledger. Ujistěte se, že je v blízkosti pouze jedno zařízení.",
+  "ledgerErrorDeviceNotFound": "Zařízení Ledger nebylo nalezeno.",
+  "ledgerErrorDeviceMismatch": "Byla zjištěna neshoda zařízení.",
+  "ledgerErrorInvalidPsbt": "Byl zjištěn neplatný formát PSBT.",
+  "ledgerErrorMissingDerivationPath": "Je vyžadována odvozovací cesta",
+  "ledgerErrorMissingScriptType": "Je vyžadován typ skriptu",
   "payBelowMinAmount": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
   "@payBelowMinAmount": {
     "description": "Error message when payment amount is below minimum"
@@ -10375,10 +9759,6 @@
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
-  "arkSendRecipientLabel": "Adresa příjemce",
-  "@arkSendRecipientLabel": {
-    "description": "Label for recipient address field"
-  },
   "defaultWalletsLabel": "Výchozí peněženky",
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
@@ -10398,10 +9778,6 @@
   "dcaConfirmFrequencyHourly": "Každou hodinu",
   "@dcaConfirmFrequencyHourly": {
     "description": "Hourly frequency label"
-  },
-  "legacySeedViewMnemonicLabel": "Čeština",
-  "@legacySeedViewMnemonicLabel": {
-    "description": "Label for mnemonic words display"
   },
   "sellSwiftCode": "SWIFT/BIC Kód",
   "@sellSwiftCode": {
@@ -10423,10 +9799,6 @@
   "testBackupGoogleDrivePrivacyPart5": "sdílet s Bull Bitcoin.",
   "@testBackupGoogleDrivePrivacyPart5": {
     "description": "Fifth part of privacy message"
-  },
-  "arkTotal": "Celkem",
-  "@arkTotal": {
-    "description": "Label for total balance in breakdown"
   },
   "bitboxActionSignTransactionSuccessSubtext": "Vaše transakce byla úspěšně podepsána.",
   "@bitboxActionSignTransactionSuccessSubtext": {
@@ -10494,10 +9866,6 @@
   "@sellReceiveAmount": {
     "description": "Label showing fiat amount to receive"
   },
-  "bitboxCubitInvalidResponse": "Neplatný od BitBox zařízení. Prosím, zkuste to znovu.",
-  "@bitboxCubitInvalidResponse": {
-    "description": "Error interpretation for invalid response"
-  },
   "transactionDetailLabelTransferFee": "Transfer poplatek",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
@@ -10505,10 +9873,6 @@
   "importQrDeviceKruxStep5": "Skenujte QR kód, který vidíte na vašem zařízení.",
   "@importQrDeviceKruxStep5": {
     "description": "Krux instruction step 5"
-  },
-  "arkStatus": "Stav",
-  "@arkStatus": {
-    "description": "Label for transaction status field in details table"
   },
   "fundExchangeHelpTransferCode": "Přidejte to jako důvod pro přenos",
   "@fundExchangeHelpTransferCode": {
@@ -10644,6 +10008,8 @@
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
+  "fundExchangeRestrictedTitle": "Financování není k dispozici",
+  "fundExchangeRestrictedMessage": "Financování není pro váš účet k dispozici. Pro více informací kontaktujte podporu.",
   "fundExchangeWarningTitle": "Podívejte se na podvodníky",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
@@ -10817,18 +10183,6 @@
   "electrumSaveFailedError": "Vypnuto uložit pokročilé možnosti",
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
-  },
-  "arkSettleTransactionCount": "Settle {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "description": "Button label showing number of unsettled transactions",
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
   },
   "bitboxScreenWalletTypeLabel": "Typ peněženky:",
   "@bitboxScreenWalletTypeLabel": {
@@ -11062,10 +10416,6 @@
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
   },
-  "arkReceiveButton": "Čeština",
-  "@arkReceiveButton": {
-    "description": "Bottom button to navigate to receive page"
-  },
   "electrumRetryCountNegativeError": "Retry Počet nemůže být negativní",
   "@electrumRetryCountNegativeError": {
     "description": "Validation error for negative Retry Count value"
@@ -11130,10 +10480,6 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "arkSettleMessage": "Konečné transakce a zahrnují obnovitelné vtxos, pokud je to nutné",
-  "@arkSettleMessage": {
-    "description": "Settle bottom sheet explanation"
-  },
   "receiveCopyInvoice": "Kopírovat fakturu",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -11157,10 +10503,6 @@
   "recoverbullGoogleDriveDeleteConfirmation": "Přejete-li si odstranit tuto zálohu klenby? Tato akce nelze zrušit.",
   "@recoverbullGoogleDriveDeleteConfirmation": {
     "description": "Confirmation message for deleting a vault backup"
-  },
-  "arkReceiveArkAddress": "Ark adresa",
-  "@arkReceiveArkAddress": {
-    "description": "Label for Ark address"
   },
   "googleDriveSignInMessage": "Budete muset zaregistrovat do Disku Google",
   "@googleDriveSignInMessage": {
@@ -11191,10 +10533,6 @@
       }
     }
   },
-  "arkServerUrl": "URL serveru",
-  "@arkServerUrl": {
-    "description": "Label for server URL field"
-  },
   "importMnemonicSelectType": "Vyberte typ peněženky pro import",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -11206,15 +10544,6 @@
   "importQrDeviceKeystoneStep1": "Moc na klíče",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
-  },
-  "arkDurationDays": "{days} dny",
-  "@arkDurationDays": {
-    "description": "Duration format for plural days",
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 determinační entropies",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -11333,10 +10662,6 @@
   "@buyKYCLevel2": {
     "description": "Enhanced verification tier"
   },
-  "receiveAmount": "Množství (volitelné)",
-  "@receiveAmount": {
-    "description": "Optional amount field for invoice"
-  },
   "testBackupErrorSelectAllWords": "Prosím vyberte všechny slova",
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
@@ -11439,10 +10764,6 @@
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
-  "arkAboutBoardingExitDelay": "Pozdní zpoždění",
-  "@arkAboutBoardingExitDelay": {
-    "description": "Field label for boarding exit delay"
-  },
   "receiveConfirmedInFewSeconds": "Bude potvrzeno během několika sekund",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
@@ -11512,10 +10833,6 @@
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
   },
-  "arkConfirmedBalance": "Potvrzení rovnováhy",
-  "@arkConfirmedBalance": {
-    "description": "Label for confirmed balance row"
-  },
   "walletAddressTypeNativeSegwit": "Nativní Segwit",
   "@walletAddressTypeNativeSegwit": {
     "description": "Address type for BIP84 wallets"
@@ -11566,10 +10883,6 @@
   "@backupWalletPhysicalBackupTitle": {
     "description": "Title for physical backup option"
   },
-  "arkTxBoarding": "Čeština",
-  "@arkTxBoarding": {
-    "description": "Transaction type label for Ark boarding transactions"
-  },
   "bitboxActionVerifyAddressSuccess": "Ověřeno úspěšně",
   "@bitboxActionVerifyAddressSuccess": {
     "description": "Success text for verify address"
@@ -11593,15 +10906,6 @@
   "payTotal": "Celkem",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
-  },
-  "autoswapSaveErrorMessage": "Přeskočit nastavení: {error}",
-  "@autoswapSaveErrorMessage": {
-    "description": "SnackBar error message when save fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "Blesková adresa",
   "@exchangeDcaAddressLabelLightning": {
@@ -11672,10 +10976,6 @@
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
   },
-  "arkAboutUnilateralExitDelay": "Oddávkové zpoždění",
-  "@arkAboutUnilateralExitDelay": {
-    "description": "Field label for unilateral exit delay"
-  },
   "payUnsupportedInvoiceType": "Nepodporuje typ faktury",
   "@payUnsupportedInvoiceType": {
     "description": "Error for unknown invoice format"
@@ -11705,7 +11005,13 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Vysílání...",
-  "broadcastSignedTxBroadcastError": "Nepodařilo se odvysílat transakci",
+  "broadcastSignedTxBroadcastError": "Vaši transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "importWatchOnlyErrorNoWalletSelected": "Nejprve vložte nebo naskenujte veřejný klíč nebo deskriptor.",
+  "importWatchOnlyErrorLabelRequired": "Před importem pojmenujte svou peněženku.",
+  "importWatchOnlyErrorInvalidFormat": "Tohle nevypadá jako platný veřejný klíč nebo deskriptor. Zkontrolujte, co jste vložili.",
+  "importWatchOnlyErrorImportFailed": "Tuto peněženku pouze pro sledování se nepodařilo importovat. Zkontrolujte údaje a zkuste to znovu.",
+  "broadcastSignedTxErrorInvalidTransaction": "Tohle nevypadá jako platná podepsaná transakce. Ujistěte se, že jste vložili celý PSBT nebo celou transakci.",
+  "broadcastSignedTxErrorInvalidPushTx": "Z tohoto štítku se nepodařilo načíst transakci. Zkuste skenování znovu.",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -11757,15 +11063,6 @@
   "encryptedVaultDescription": "Anonymní zálohování se silným šifrováním pomocí cloudu.",
   "@encryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "arkAboutCopiedMessage": "{label} kopírovat do schránky",
-  "@arkAboutCopiedMessage": {
-    "description": "Snackbar message when field copied",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "swapAmountLabel": "Množství",
   "@swapAmountLabel": {
@@ -11916,10 +11213,6 @@
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
   },
-  "arkAboutServerPubkey": "Server pubkey",
-  "@arkAboutServerPubkey": {
-    "description": "Field label for server pubkey"
-  },
   "receiveReceiveAmount": "Přijmout částku",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
@@ -12000,10 +11293,6 @@
   "@sellAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "arkTxTypeCommitment": "Přihlášení",
-  "@arkTxTypeCommitment": {
-    "description": "Transaction type label for commitment transactions"
-  },
   "exchangeReferralsJoinMissionTitle": "Připojte se k misii",
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
@@ -12043,10 +11332,6 @@
   "bitboxScreenConnectDevice": "Připojte zařízení BitBox",
   "@bitboxScreenConnectDevice": {
     "description": "Main text when in initial state"
-  },
-  "arkYesterday": "Včera",
-  "@arkYesterday": {
-    "description": "Date label for transactions from yesterday"
   },
   "amountRequestedLabel": "Požadovaná částka: {amount}",
   "@amountRequestedLabel": {
@@ -12105,19 +11390,6 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "arkAboutDurationSeconds": "{seconds} vteřin(y)",
-  "@arkAboutDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkContinueButton": "Pokračovat",
-  "@arkContinueButton": {
-    "description": "Continue button text used in ark send flow"
-  },
   "transactionStatusSwapExpired": "Swap vypršel",
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
@@ -12138,15 +11410,6 @@
   "@pinButtonChange": {
     "description": "Button label when PIN already exists"
   },
-  "arkDurationMinutes": "{minutes} minut(y)",
-  "@arkDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "payExpired": "Vypršelo",
   "@payExpired": {
     "description": "Status label for expired invoice"
@@ -12154,15 +11417,6 @@
   "transactionPayjoinStatusExpired": "Vypršelo",
   "@transactionPayjoinStatusExpired": {
     "description": "Payjoin status: expired"
-  },
-  "arkDurationSeconds": "{seconds} vteřin(y)",
-  "@arkDurationSeconds": {
-    "description": "Duration format for seconds",
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
   },
   "transactionDetailLabelPayjoinExpired": "Vypršelo",
   "@transactionDetailLabelPayjoinExpired": {
@@ -12187,15 +11441,6 @@
   "walletBalanceUnconfirmedIncoming": "Zpracovávám",
   "@walletBalanceUnconfirmedIncoming": {
     "description": "Label for unconfirmed incoming balance"
-  },
-  "arkDurationMinute": "{minutes} minuta",
-  "@arkDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
   },
   "transactionDetailLabelPayjoinCompleted": "Hotovo",
   "@transactionDetailLabelPayjoinCompleted": {
@@ -12224,10 +11469,6 @@
   "transactionSwapProgressInProgress": "Zpracovávám",
   "@transactionSwapProgressInProgress": {
     "description": "Generic swap progress step: in progress"
-  },
-  "arkStatusConfirmed": "Potvrzeno",
-  "@arkStatusConfirmed": {
-    "description": "Status label for confirmed boarding transactions"
   },
   "pinStatusCheckingDescription": "Ověřování PINu",
   "@pinStatusCheckingDescription": {
@@ -12282,10 +11523,6 @@
       }
     }
   },
-  "arkSendConfirm": "Potvrdit",
-  "@arkSendConfirm": {
-    "description": "Confirm button on send screen"
-  },
   "recoverbullRecoveryContinueButton": "Pokračovat",
   "@recoverbullRecoveryContinueButton": {
     "description": "Button text to proceed with importing the wallet"
@@ -12293,10 +11530,6 @@
   "confirmButtonLabel": "Potvrdit",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
-  },
-  "arkConfirmed": "Potvrzeno",
-  "@arkConfirmed": {
-    "description": "Label for confirmed balance in breakdown"
   },
   "withdrawRecipientsContinue": "Pokračovat",
   "@withdrawRecipientsContinue": {
@@ -12342,10 +11575,6 @@
   "@swapContinue": {
     "description": "Continue button on swap amount screen"
   },
-  "arkReceiveSegmentArk": "Ark",
-  "@arkReceiveSegmentArk": {
-    "description": "Segment option for Ark address type"
-  },
   "swapContinueButton": "Pokračovat",
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
@@ -12353,14 +11582,6 @@
   "pinSecurityTitle": "Bezpečnostní PIN",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "receiveArkNetwork": "Ark",
-  "@receiveArkNetwork": {
-    "description": "Ark Instant Payments option"
-  },
-  "arkConfirmButton": "Potvrdit",
-  "@arkConfirmButton": {
-    "description": "Confirm button to proceed with send transaction"
   },
   "pinStatusSettingUpDescription": "Nastavování PINu",
   "@pinStatusSettingUpDescription": {
@@ -12382,15 +11603,6 @@
   "@appUnlockScreenTitle": {
     "description": "Title of the app unlock screen"
   },
-  "arkAboutDurationMinutes": "{minutes} minut(y)",
-  "@arkAboutDurationMinutes": {
-    "description": "Duration format for plural minutes",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "pinButtonConfirm": "Potvrdit",
   "@pinButtonConfirm": {
     "description": "Button label to submit confirmed PIN"
@@ -12402,15 +11614,6 @@
   "continueButton": "Pokračovat",
   "@continueButton": {
     "description": "Default button text for success state"
-  },
-  "arkAboutDurationMinute": "{minutes} minuta",
-  "@arkAboutDurationMinute": {
-    "description": "Duration format for singular minute",
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
   },
   "pinConfirmMismatchError": "PIN nesouhlasí",
   "@pinConfirmMismatchError": {
@@ -12448,7 +11651,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Tímto odešlete žádost o smazání účtu našemu týmu podpory. Váš účet bude smazán do 5 pracovních dnů.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12460,41 +11663,17 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Žádost o smazání účtu odeslána",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Vaše žádost o smazání účtu byla odeslána. Bude zpracována do 5 pracovních dnů.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
-  },
-  "homeLegacyStorageWithNoBackupTitle": "Naléhavé: Je vyžadována záloha a přeinstalace",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Aplikace, kterou používáte, využívá software, který bude brzy ukončen. Postupujte prosím podle těchto kroků:\n\n1. Zálohujte svou peněženku\n2. Odinstalujte aplikaci. Zcela ji smažte ze svého telefonu.\n3. Přeinstalujte nejnovější verzi aplikace\n4. Použijte možnost obnovení místo \"vytvoření nové peněženky\".\n\nVaše prostředky jsou v bezpečí a aplikaci můžete nyní nadále používat, ale proveďte to co nejdříve, abyste zabránili selhání aplikace v blízké budoucnosti.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Vyžadována akce: Přeinstalujte aplikaci",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Aplikace, kterou používáte, využívá software, který bude brzy ukončen. Postupujte prosím podle těchto kroků:\n\n1. Zálohujte svou peněženku\n2. Odinstalujte aplikaci. Zcela ji smažte ze svého telefonu.\n3. Přeinstalujte nejnovější verzi aplikace\n4. Použijte možnost obnovení místo \"vytvoření nové peněženky\".\n\nVaše prostředky jsou v bezpečí a aplikaci můžete nyní nadále používat, ale proveďte to co nejdříve, abyste zabránili selhání aplikace v blízké budoucnosti.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Zálohovat nyní",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Později",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
   "backButton": "Zpět",
   "@backButton": {
@@ -12527,10 +11706,6 @@
   "errorReportingStandardLogsTitle": "Standardní protokoly",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Vždy zapnuto — umožňuje nám vidět, zda se vaše peněženka bezpečně migruje mezi verzemi aplikace.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Použijte svou zálohu",
   "@appInitErrorHasBackupTitle": {
@@ -12614,8 +11789,7 @@
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Otevřete aplikaci do 24 hodin, abyste dokončili svůj swap.",
+  "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
   "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "coreScreensResolvingInputs": "Načítání vstupů transakce...",
   "coreScreensFeeRateLabel": "Sazba poplatku",
@@ -12625,7 +11799,6 @@
   "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
   "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
   "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
-  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
   "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
   "addressViewerTitle": "Adresa",
   "viewerTapToCopy": "Klepněte pro kopírování",
@@ -12648,6 +11821,7 @@
   "recipientsPayoutMethod": "Způsob platby",
   "recipientsFilterByJurisdiction": "Filtrovat podle jurisdikce:",
   "recipientsListEmpty": "Nenalezeni žádní příjemci.",
+  "recipientsListLoadError": "Příjemce se nepodařilo načíst. Zatažením dolů to zkuste znovu.",
   "recipientsContinue": "Pokračovat",
   "recipientsJurisdictionAll": "Všechny jurisdikce",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -12706,7 +11880,7 @@
   "recipientsFieldBankAccountNumberHint": "Zadejte číslo bankovního účtu",
   "recipientsCopDocCc": "Cédula de Ciudadanía",
   "recipientsCopDocCe": "Cédula de Extranjería",
-  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocNit": "Daňové identifikační číslo (NIT)",
   "recipientsCopDocPassport": "Pas",
   "recipientsCopDocTi": "Tarjeta de Identidad",
   "recipientsCopDocRegistroCivil": "Registro Civil",
@@ -12749,8 +11923,6 @@
   "exchangeFileUploadTapToReupload": "Klepněte pro opětovné nahrání",
   "exchangeSupportChatAttachmentImage": "Obrázek",
   "exchangeSupportChatAttachmentUnknownFile": "Neznámý soubor",
-  "exchangeSupportChatPermissionDenied": "Oprávnění zamítnuto.",
-  "exchangeSupportChatPermissionDeniedSettings": "Oprávnění zamítnuto. Povolte přístup k fotogalerii v Nastavení.",
   "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
   "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
   "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
@@ -12798,5 +11970,619 @@
   "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
   "onboardingAdvancedOptionsDone": "Hotovo",
   "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu"
+  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu",
+  "pinCodeSaveError": "PIN nelze uložit. Zkuste to prosím znovu.",
+  "pinCodeDeleteError": "PIN nelze smazat. Zkuste to prosím znovu.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
+  "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu.",
+  "mempoolErrorInvalidUrl": "Neplatná adresa serveru. Zadejte platnou doménu nebo IP adresu.",
+  "labelErrorUnexpected": "Chybná chyba: {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "importMnemonicEmptyLabelError": "Pro import mnemoniky je nutný štítek",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "labelErrorSystemCannotDelete": "Systémové štítky nelze odstranit.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelErrorUnsupportedType": "Tento typ {type} není podporován",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Štítky \"{label}\" nebyl nalezen.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEstimatedDeliveryHours": "hodiny",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time of a few hours"
+  },
+  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
+  "walletButtonCoins": "Spravovat mince",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Mince",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, one{1 mince} few{{count} mince} many{{count} mince} other{{count} mincí}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Zmrazené",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "K utracení",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Žádné zmrazené",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Řazení a filtr",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "zobrazeno {visible} z {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, one{1 neutracený výstup} few{{count} neutracené výstupy} many{{count} neutraceného výstupu} other{{count} neutracených výstupů}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Synchronizovat",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Vymazat vše",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Částka: od nejvyšší",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Částka: od nejnižší",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Datum: nejnovější",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Datum: nejstarší",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Klíčenka",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Vše",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Příjem",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Výdaj",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Stav zmrazení",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Vše",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Zmrazené",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Nezmrazené",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Štítky",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Obnovit",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Použít",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, one{1 vybraná} few{{count} vybrané} many{{count} vybrané} other{{count} vybraných}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Vybrat vše",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Zmrazit",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Rozmrazit",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Zpět",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, one{Zmrazit 1 minci?} few{Zmrazit {count} mince?} many{Zmrazit {count} mince?} other{Zmrazit {count} mincí?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Zmrazené mince zůstávají v peněžence, ale jsou vyloučeny z utrácení, dokud je nerozmrazíte.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Zmrazením těchto mincí zůstanete bez zůstatku k utracení.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, one{1 mince zmrazena · vyloučena z utrácení} few{{count} mince zmrazeny · vyloučeny z utrácení} many{{count} mince zmrazeno · vyloučeno z utrácení} other{{count} mincí zmrazeno · vyloučeno z utrácení}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, one{1 mince rozmrazena} few{{count} mince rozmrazeny} many{{count} mince rozmrazeno} other{{count} mincí rozmrazeno}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, one{1 potvrzení} few{{count} potvrzení} many{{count} potvrzení} other{{count} potvrzení}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "Čeká se",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Zatím žádné mince",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Mince se zde zobrazí, jakmile přijmete bitcoin.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Žádné odpovídající mince",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Vymazat filtry",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Zkusit znovu",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Přejetím mince ji zmrazíte · dlouhým stiskem vyberete",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Nepodařilo se načíst vaše mince. Obnovte tažením dolů a zkuste to znovu.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Nepodařilo se zmrazit vybrané mince. Zkuste to prosím znovu.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Nepodařilo se rozmrazit vybrané mince. Zkuste to prosím znovu.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Něco se pokazilo. Zkuste to prosím znovu.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, one{1 UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} zmrazeno",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Filtrovat podle data",
+  "logsViewerShowingCount": "Zobrazeno {shown} z {total} záznamů",
+  "logsViewerClearFilter": "Vymazat filtr",
+  "logsViewerShareButton": "Sdílet",
+  "logsShareOptionShare": "Sdílet",
+  "logsShareOptionExport": "Exportovat",
+  "logsExportedMessage": "Záznamy byly úspěšně exportovány",
+  "logsExportFailedMessage": "Export záznamů se nezdařil",
+  "coreSwapsStatusRefunded": "Vráceno",
+  "swapRestoreTitle": "Obnovení swapu",
+  "swapRestoreActionable": "{count, plural, =0{Žádné swapy k obnovení} =1{Můžete se pokusit obnovit 1 swap. Možná je již v konečném stavu.} other{Můžete se pokusit obnovit {count} swapů. Upozorňujeme, že některé z nich již mohou být v konečném stavu.}}",
+  "swapRestoreNoSwaps": "Nebyly nalezeny žádné swapy k obnovení",
+  "swapRestoreRecoverableSection": "Obnovitelné",
+  "swapRestoreAllSection": "Všechny swapy",
+  "swapRestoreFailed": "Swapy se nepodařilo obnovit",
+  "swapRestoreKindLightningSend": "Odeslání přes Lightning",
+  "swapRestoreKindLightningReceive": "Příjem přes Lightning",
+  "swapRestoreKindCrossChain": "Mezi řetězci",
+  "swapRescueTitle": "Záchrana swapu",
+  "swapRescueTypeLabel": "Typ",
+  "swapRescueStatusLabel": "Stav",
+  "swapRescueAmountLabel": "Částka",
+  "swapRescueRouteLabel": "Trasa",
+  "swapRescueCreatedLabel": "Vytvořeno",
+  "swapRescueIdLabel": "ID swapu",
+  "swapRescueWalletLabel": "Obnovit do peněženky",
+  "swapRescueWalletHint": "Vyberte peněženku",
+  "swapRescueButton": "Obnovit",
+  "swapRescueSuccess": "Swap obnoven — nyní bude pokračovat",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Kontrola...",
+  "mempoolServerStatusUnknown": "Neznámý",
+  "mempoolCustomServerSaveFailed": "Nepodařilo se uložit server",
+  "mempoolCustomServerInfoDescription": "Mempool servery se používají k odhadu poplatků a k otevření prohlížeče bloků při zobrazení podrobností transakce.",
+  "mempoolCustomServerUseSsl": "Použít SSL",
+  "mempoolCustomServerSslAutoDetected": "(Automaticky zjištěno)",
+  "mempoolCustomServerSslHelpText": "U lokálních serverů (.local, privátní IP adresy) a Tor serverů (.onion) bývá SSL obvykle vypnuté. U veřejných IP adres a domén byste měli SSL používat.",
+  "mempoolErrorSameAsDefault": "Tato adresa URL je stejná jako výchozí server. Použijte prosím jinou adresu URL.",
+  "mempoolErrorConnectionTimeout": "Časový limit připojení vypršel. Server může být pomalý nebo nedostupný.",
+  "mempoolErrorHostNotFound": "Tento server se nepodařilo najít. Zkontrolujte adresu URL a zkuste to znovu.",
+  "mempoolErrorConnectionFailed": "Nelze se připojit k serveru. Zkontrolujte své síťové připojení a zkuste to znovu.",
+  "mempoolErrorNotMempoolServer": "Tato adresa URL nevypadá jako mempool server. Ověřte prosím adresu.",
+  "mempoolErrorServerUnavailable": "Server je nedostupný. Zkuste to prosím později.",
+  "mempoolErrorServerError": "Na serveru došlo k chybě. Zkuste to prosím později.",
+  "mempoolErrorInvalidResponse": "Server vrátil neplatnou odpověď.",
+  "mempoolErrorSaveServerFailed": "Nepodařilo se uložit server",
+  "mempoolErrorLoadFailed": "Nepodařilo se načíst data mempool serveru",
+  "mempoolErrorDeleteFailed": "Nepodařilo se odstranit vlastní server",
+  "receivePayjoinNoUtxos": "Nejprve přijměte prostředky, abyste to mohli povolit.\nK použití payjoin jsou potřeba UTXO.",
+  "receiveLiquidRiskDisclosureLabel": "Platby budou převedeny na Liquid L-BTC (nikoli BTC). Více informací.",
+  "payViewReceipt": "Zobrazit účtenku",
+  "paySinpeReceipt": "Účtenka SINPE",
+  "transactionFilterWithdraw": "Výběr",
+  "transactionFilterPay": "Platba",
+  "transactionFilterFunding": "Financování",
+  "transactionFilterReward": "Odměna",
+  "transactionFilterRefund": "Vrácení",
+  "transactionFilterBalanceAdjustment": "Úprava",
+  "transactionListLoadingFailed": "Transakce se nepodařilo načíst.",
+  "transactionLabelNetworkFees": "Síťové poplatky",
+  "walletLiquidRiskDisclosureLabel": "Tyto prostředky jsou Liquid L-BTC (nikoli BTC). Více informací.",
+  "liquidRiskDisclosureSemanticLabel": "Otevřít upozornění na rizika Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Upozornění na rizika Liquid Bitcoin v peněžence Instant Payments",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "fundExchangeScamConsentError": "Nepodařilo se zaregistrovat váš souhlas. Zkuste to prosím znovu.",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Kolumbie",
+  "autoswapActiveCardTitle": "Autoswap je aktivní",
+  "autoswapWarningExplanationBold": "automaticky",
+  "autoswapInfoConsentMessage": "Autoswap je momentálně povolen, ale nespustí se, dokud s tím nebudete souhlasit. Chcete ho ponechat zapnutý?",
+  "nfcNotAvailable": "Toto zařízení nepodporuje NFC",
+  "nfcDisabled": "NFC je vypnuté. Zapněte ho v nastavení.",
+  "nfcInvalidData": "Nebyla nalezena žádná podporovaná data NFC",
+  "nfcConnectionLost": "Připojení NFC bylo ztraceno. Přiložte zařízení k NFC štítku a zkuste to znovu.",
+  "nfcWriteFailed": "Přenos NFC selhal. Zkuste to prosím znovu.",
+  "nfcError": "Chyba NFC: {error}",
+  "deleteLogsTitle": "Smazat logy",
+  "logsDeletedMessage": "Logy smazány",
+  "sendSelfTransfer": "Vlastní převod",
+  "sendCoordinatingPayjoinTransaction": "Koordinace transakce Payjoin.",
+  "sendErrorInvoiceExpired": "Platnost této faktury vypršela. Požádejte příjemce o novou fakturu.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Zvažte financování Instant Payments, abyste mohli provádět menší platby.",
+  "psbtFlowSignViaNfc": "Podepsat přes NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Přiložte {deviceName} pro odeslání PSBT přes NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Coldcard Q Pokyny",
+  "psbtFlowColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
+  "psbtFlowColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
+  "psbtFlowColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "psbtFlowColdcardQStep3": "Zvolte preferovaný způsob podepisování:",
+  "psbtFlowColdcardQStep4": "Pro QR kód:",
+  "psbtFlowColdcardQStep5": "   - Na Coldcard Q vyberte možnost \"Scan any QR code\"",
+  "psbtFlowColdcardQStep6": "   - Naskenujte QR kód zobrazený v peněžence Bull",
+  "psbtFlowColdcardQStep7": "   - Pokud máte problém se skenováním:",
+  "psbtFlowColdcardQStep8": "     - Zvyšte jas obrazovky na svém zařízení",
+  "psbtFlowColdcardQStep9": "     - Pohybujte červeným laserem nahoru a dolů přes QR kód",
+  "psbtFlowColdcardQStep10": "     - Zkuste zařízení trochu oddálit",
+  "psbtFlowColdcardQStep11": "Pro NFC:",
+  "psbtFlowColdcardQStep12": "   - Na Coldcard Q vyberte \"Ready to Sign\" a poté klepněte na tlačítko NFC",
+  "psbtFlowColdcardQStep13": "   - Přiložte telefon ke Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Počkejte na přenos PSBT",
+  "psbtFlowColdcardQStep15": "Jakmile je transakce importována ve vašem Coldcard Q, zkontrolujte cílovou adresu a částku.",
+  "psbtFlowColdcardQStep16": "Klepnutím na tlačítka podepište transakci na svém Coldcard Q.",
+  "psbtFlowColdcardQStep17": "Coldcard Q poté zobrazí QR kód podepsané transakce nebo připraví přenos přes NFC.",
+  "psbtFlowColdcardQStep18": "Pokud jste podepsali pomocí QR, klepněte v peněžence Bull Bitcoin na \"I'm done\".",
+  "psbtFlowColdcardQStep19": "Peněženka Bull Bitcoin vás požádá o naskenování QR kódu podepsané transakce nebo o její přijetí přes NFC.",
+  "psbtFlowColdcardQStep20": "   - Pro QR: naskenujte QR kód na Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Pro NFC: přiložte telefon ke Coldcard Q",
+  "psbtFlowColdcardQStep22": "Podepsaná transakce bude importována do peněženky Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Nyní je připravena k vysílání. Jakmile klepnete na vysílání, transakce bude zveřejněna na síti Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "psbtFlowColdcardMk4Step3": "Na Coldcard Mk4 vyberte \"Ready to Sign\" a poté stiskněte tlačítko s číslem 3",
+  "psbtFlowColdcardMk4Step4": "Přiložte telefon ke Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Počkejte na přenos PSBT",
+  "psbtFlowColdcardMk4Step6": "Jakmile je transakce importována ve vašem Coldcard Mk4, zkontrolujte cílovou adresu a částku.",
+  "psbtFlowColdcardMk4Step7": "Klepnutím na tlačítka podepište transakci na svém Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "Coldcard Mk4 poté připraví podepsanou transakci k přenosu přes NFC.",
+  "psbtFlowColdcardMk4Step9": "V peněžence Bull Bitcoin klepněte na NFC na obrazovce vysílání.",
+  "psbtFlowColdcardMk4Step10": "Přiložte telefon ke Coldcard Mk4, abyste přijali podepsanou transakci.",
+  "psbtFlowColdcardMk4Step11": "Podepsaná transakce bude importována do peněženky Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Zkontrolujte podrobnosti transakce v peněžence Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Nyní je připravena k vysílání. Jakmile klepnete na vysílání, transakce bude zveřejněna na síti Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Přiložte Coldcard, abyste přijali podepsanou transakci přes NFC",
+  "importColdcardInvalidWalletData": "Neplatná data peněženky Coldcard",
+  "importColdcardConnectTitle": "Připojení {deviceName}",
+  "importColdcardConnectDescription": "Importujte deskriptor peněženky z vašeho {deviceName}",
+  "importColdcardScanNfcSheetTitle": "Přiložte {deviceName} pro import deskriptoru peněženky přes NFC",
+  "importColdcardQInstructionsTitle": "Coldcard Q Pokyny",
+  "importColdcardQStep1": "Přihlášení do zařízení Coldcard Q",
+  "importColdcardQStep2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "importColdcardQStep3": "Vyberte nabídku \"Advanced/Settings\"",
+  "importColdcardQStep4": "Klikněte na \"export wallet\"",
+  "importColdcardQStep5": "Jako typ exportu vyberte \"descriptor\"",
+  "importColdcardQStep6": "Na první obrazovce stiskněte \"Enter\"",
+  "importColdcardQStep7": "Na druhé obrazovce stiskněte \"Enter\"",
+  "importColdcardQStep8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
+  "importColdcardQStep9": "Pro QR klepněte na zařízení na tlačítko QR kódu. Na zařízení se poté zobrazí QR kód",
+  "importColdcardQStep10": "Pro NFC klepněte na zařízení na tlačítko NFC",
+  "importColdcardQStep11": "Klepněte na tlačítko \"Open the camera\" / \"Scan NFC\"",
+  "importColdcardQStep12": "Naskenujte QR kód zobrazený na vašem zařízení, nebo přiložte NFC telefonu na NFC Coldcard",
+  "importColdcardQStep13": "To je vše!",
+  "importColdcardMk4InstructionsTitle": "Coldcard Mk4 Pokyny",
+  "importColdcardMk4Step1": "Přihlášení do zařízení Coldcard Mk4",
+  "importColdcardMk4Step2": "Pokud máte passphrase, zadejte ji (volitelné)",
+  "importColdcardMk4Step3": "Vyberte nabídku \"Advanced/Settings\"",
+  "importColdcardMk4Step4": "Klikněte na \"export wallet\"",
+  "importColdcardMk4Step5": "Jako typ exportu vyberte \"descriptor\"",
+  "importColdcardMk4Step6": "Na první obrazovce stiskněte \"Enter\"",
+  "importColdcardMk4Step7": "Na druhé obrazovce stiskněte \"Enter\"",
+  "importColdcardMk4Step8": "Vyberte typ adresy (pokud si nejste jisti, použijte Segwit)",
+  "importColdcardMk4Step9": "Klikněte na číslo 3 pro spuštění NFC na Coldcard",
+  "importColdcardMk4Step10": "Klikněte na tlačítko \"Scan NFC\"",
+  "importColdcardMk4Step11": "Přiložte NFC telefonu na NFC Coldcard",
+  "importColdcardMk4Step12": "To je vše!",
+  "fundExchangeCopDailyLimitWarning": "Pokud překročíte svůj denní transakční limit, transakce selže. Budete muset kontaktovat zákaznickou podporu.",
+  "fundExchangeCopSenderName": "Jméno odesílatele",
+  "fundExchangeCopIssuingBank": "Vydávající banka",
+  "fundExchangeCopSelectBankError": "Vyberte prosím vydávající banku",
+  "fundExchangeCopAmount": "Částka",
+  "fundExchangeCopEnterAmountError": "Zadejte částku",
+  "fundExchangeCopValidAmountError": "Zadejte platnou částku",
+  "fundExchangeCopGeneratePaymentLink": "Vygenerovat platební odkaz",
+  "fundExchangeCopRedirectMessage": "Budete přesměrováni na externí stránku, kde provedete platbu.",
+  "fundExchangeCopOpenPaymentLink": "Otevřít platební odkaz",
+  "fundExchangeCopFailedToOpenLink": "Nepodařilo se otevřít platební odkaz. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "priceChartFailedToLoad": "Nepodařilo se načíst historii cen",
+  "priceFailedToLoad": "Nepodařilo se načíst cenu",
+  "statusScreenTryAgain": "Zkusit znovu",
+  "statusScreenContinue": "Pokračovat",
+  "noteVisibleToSenderNotice": "Tato poznámka bude viditelná příjemci vašeho QR kódu nebo faktury.",
+  "viewerAddressTab": "Adresa",
+  "viewerPaymentUriTab": "Platební URI",
+  "settingsErrorReportingTitle": "Hlášení chyb",
+  "errorReportingProgramTitle": "Program hlášení chyb",
+  "errorReportingProgramDescriptionP1": "Pomozte nám vylepšit Bull tím, že se zapojíte do našeho programu hlášení chyb.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin odesílá anonymizovaná hlášení o chybách, když něco přestane fungovat.",
+  "errorReportingProgramDescriptionP3": "Díky tomu vidíme, kolik uživatelů daná chyba postihuje, a můžeme podle toho stanovit prioritu oprav. Bez toho nemáme žádný způsob, jak dopad změřit.",
+  "errorReportingProgramDescriptionP4": "Hlášení jsou odesílána pouze na server Bull, nikdy třetím stranám.",
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin je open source, takže si můžete ověřit, co se odesílá.",
+  "errorReportingAcceptButton": "Přijmout",
+  "errorReportingCancelButton": "Zrušit",
+  "errorReportingRestartSnackbar": "Restartujte aplikaci, aby se tato změna projevila",
+  "backupWarningTitle": "ZÁLOHUJTE SVOU PENĚŽENKU HNED TEĎ",
+  "backupWarningBackupNow": "ANO",
+  "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
+  "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
+  "logsViewerDeleteTitle": "Smazat logy",
+  "logsViewerDeleteConfirmation": "Opravdu chcete smazat všechny logy? Tuto akci nelze vrátit zpět.",
+  "logsViewerDeleteButton": "Smazat",
+  "logsViewerCancelButton": "Zrušit",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "mempoolErrorUnexpected": "Došlo k neočekávané chybě",
+  "mempoolErrorUpdateSettingsFailed": "Nepodařilo se aktualizovat nastavení: {error}",
+  "sendSubSatVbyteWarning": "Transakce s poplatkem pod 1 sat/vB se mohou potvrzovat déle a nemusí se rozšířit na všechny uzly.",
+  "sendBelowMinFeeRateError": "Poplatek musí být alespoň 0,1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Pro připojení k zařízení BitBox02 Nova je zapotřebí oprávnění Bluetooth.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth není k dispozici. Zapněte Bluetooth a zkuste to znovu.",
+  "bitboxErrorNoBleDevicesFound": "V okolí nebyl nalezen žádný BitBox02 Nova. Zkontrolujte Bluetooth a zkuste to znovu.",
+  "bitboxErrorMultipleBleDevicesFound": "Bylo nalezeno více zařízení BitBox02 Nova. Ujistěte se, že je v okolí pouze jedno, a zkuste to znovu.",
+  "bitboxErrorOperationFailed": "Operace BitBox se nezdařila. Zkuste to prosím znovu.",
+  "bitboxScreenConnectSubtextBluetooth": "Ujistěte se, že BitBox02 Nova je odemčen a Bluetooth je zapnutý.",
+  "bitboxScreenScanningSubtextBluetooth": "Hledáte v okolí zařízení BitBox02 Nova...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "BitBox02 Nova Odstraňování problémů",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Pokud se vaše zařízení stále nepřipojí s aplikací, zkuste následující:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Ujistěte se, že je zapnutý Bluetooth a že je pro tuto aplikaci povolen.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Ujistěte se, že je Bluetooth zapnutý na vašem BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Restartujte BitBox02 Nova a zkuste se připojit znovu.",
+  "sendErrorInsufficientBalanceFrozenHint": "Nedostatečný disponibilní zůstatek – {amount} je zmrazeno. Rozmrazte mince v sekci Spravovat mince, abyste je mohli použít.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Hotovo",
+  "consolidationFailedBody": "Došlo k neočekávané chybě. Vaše prostředky jsou v bezpečí: žádná transakce nebyla odeslána. Zkuste to prosím znovu.",
+  "consolidationFailedTitle": "Konsolidace selhala",
+  "consolidationInProgress": "Konsolidace…",
+  "consolidationRequiredTitle": "Konsolidovat peněženku",
+  "consolidationRequiredTitleNamed": "Konsolidovat peněženku {walletName}",
+  "consolidationRowAmount": "Částka",
+  "consolidationRowNetworkFees": "Síťové poplatky",
+  "consolidationRowOutputs": "Výstupy",
+  "consolidationRowTransactions": "Transakce",
+  "consolidationScreenDescription": "Příliš mnoho výstupů může způsobit nestabilitu peněženky. Konsolidace je sloučí do menšího počtu, aby peněženka správně fungovala.",
+  "consolidationScreenTitle": "Konsolidovat",
+  "consolidationSuccessBody": "Vaše mince se slučují. Dokončí se, jakmile to síť potvrdí.",
+  "consolidationSuccessTitle": "Konsolidace zahájena",
+  "transactionStatusPayjoinAborted": "Payjoin přerušen",
+  "transactionDetailLabelPayjoinAborted": "Přerušeno",
+  "transactionDetailLabelPayjoinFeeContribution": "Příspěvek na poplatek Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin přidá jednu z vašich mincí jako další vstup do platby, aby se zlepšilo soukromí. Těžební poplatek za tento přidaný vstup se odečte od částky, kterou obdržíte (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Upozornění k Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Upozornění k Payjoin",
+  "settingsPayjoinAdvancedTitle": "Rozšířená nastavení Payjoin",
+  "receiveAdditionalInformation": "Další informace",
+  "receiveAdditionalInformationPlaceholder": "Přidejte částku nebo zprávu pro odesílatele",
+  "receiveMessageForSender": "Zpráva pro odesílatele",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin je povolen, ale tato peněženka zatím nemá zůstatek, kterým by mohla přispět. Aktivuje se, jakmile obdržíte prostředky.",
+  "announcementAutoswapDescription": "Váš Liquid se automaticky směňuje za Bitcoin.",
+  "addressViewErrorWalletNotFound": "Tuto peněženku nelze najít.",
+  "addressViewErrorLoadFailed": "Vaše adresy se nepodařilo načíst. Zkuste to prosím znovu.",
+  "coreSwapsStatusNotStarted": "Nezahájeno",
+  "coreSwapsStatusAwaitingPayment": "Čeká na platbu",
+  "coreSwapsStatusAwaitingConfirmation": "Čeká na potvrzení",
+  "coreSwapsStatusUnderReview": "Probíhá kontrola",
+  "coreSwapsStatusRejected": "Zamítnuto",
+  "coreSwapsStatusCanceled": "Zrušeno",
+  "coreSwapsStatusPaymentDeadlineExpired": "Platební lhůta vypršela",
+  "coreSwapsStatusScheduled": "Naplánováno",
+  "coreSwapsStatusAwaitingClaim": "Čeká na vyzvednutí",
+  "coreSwapsStatusUnknown": "Neznámé",
+  "sendSwapExpiredTitle": "Objednávka vypršela",
+  "sendSwapExpiredMessage": "Tato objednávka vypršela před odesláním jakýchkoli prostředků. Z vaší peněženky nebylo nic odesláno.",
+  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
+  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
+  "torSettingsBootstrapProgress": "Připojování… {percent} %",
+  "recoverbullPhaseNetworkInfo": "Načítání informací o síti",
+  "recoverbullLongestStep": "Toto je nejdelší krok. První spuštění může trvat déle než minutu.",
+  "recoverbullTorOffline": "Zdá se, že není k dispozici připojení k internetu.",
+  "recoverbullTorClockSkewed": "Hodiny zařízení jdou špatně, takže Tor nemůže ověřit certifikáty uzlů. Zkontrolujte nastavení data a času.",
+  "recoverbullTorCantStart": "Tor se nyní nedokázal připojit. Zkuste to prosím znovu.",
+  "recoverbullServerUnreachableTorOk": "Tor funguje, ale zálohovací server neodpověděl. Hned po prvním spuštění to může chvíli trvat.",
+  "torSettingsEmbeddedTitle": "Vestavěný Tor",
+  "torSettingsEmbeddedDescription": "Vestavěný Tor používá RecoverBull a servery Bitcoin Electrum s adresou .onion. Ostatní provoz aplikace zůstává přímý.",
+  "torSettingsTransportMode": "Způsob připojení",
+  "torSettingsModeAutomatic": "Automaticky",
+  "torSettingsModeDirect": "Přímé",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
+  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
+  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
+  "torSettingsActiveTransport": "Aktivní transport: {transport}",
+  "settingsScreenPrivacyTitle": "Soukromí obrazovky",
+  "settingsScreenPrivacyDisabledMessage": "Snímky obrazovky jsou nyní na citlivých obrazovkách povoleny",
+  "settingsSearchHint": "Hledat v nastavení",
+  "settingsSearchNoResults": "Nebyla nalezena žádná nastavení.",
+  "settingsSearchMempoolKeywords": "průzkumník bloků|odhad poplatků|transakční poplatky|mempool API",
+  "settingsSearchExchangeKeywords": "účet|účet u směnárny|obchodování|nákup a prodej",
+  "settingsSearchWalletBackupKeywords": "záloha|obnovení|obnovení peněženky|záloha seed fráze",
+  "settingsSearchStartBackupKeywords": "vytvořit zálohu|uložit zálohu|zálohovat peněženku",
+  "settingsSearchRecoverbullKeywords": "šifrovaná záloha|cloudová záloha|šifrovaný trezor|obnovení z trezoru|Recoverbull",
+  "settingsSearchLabelsKeywords": "štítky peněženky|štítky transakcí|BIP329|import štítků|export štítků",
+  "settingsSearchTransactionHistoryKeywords": "export transakcí|vyexportovat transakce|CSV|historie peněženky",
+  "settingsSearchBitcoinSettingsKeywords": "nastavení Bitcoinu|nastavení sítě|nastavení peněženky",
+  "settingsSearchAppSettingsKeywords": "předvolby aplikace|nastavení aplikace|obecná nastavení",
+  "settingsSearchBtcMapKeywords": "BTC Map|bitcoinová mapa|mapa obchodníků|místa přijímající bitcoin",
+  "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",
+  "settingsSearchServicesStatusKeywords": "stav služeb|stav systému|online|výpadek",
+  "settingsSearchWalletsKeywords": "správa peněženek|podrobnosti peněženky|bitcoinové peněženky",
+  "settingsSearchImportWalletKeywords": "přidat peněženku|obnovit peněženku|importovat mnemonickou frázi|peněženka pouze pro sledování|hardwarová peněženka",
+  "settingsSearchBroadcastTransactionKeywords": "odeslat podepsanou transakci|publikovat transakci|surová transakce|hex transakce|PSBT",
+  "settingsSearchPayjoinKeywords": "soukromí Payjoin|společná transakce|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "automatická směna|automatický swap|automatický převod|zůstatek okamžité peněženky|Autoswap",
+  "settingsSearchElectrumKeywords": "bitcoinový uzel|uzel Electrum|vlastní server|osobní uzel|Electrum",
+  "settingsSearchTestnetModeKeywords": "testovací síť|Bitcoin testnet|Liquid testnet|testovací režim|Testnet",
+  "settingsSearchSeedViewerKeywords": "seed fráze|fráze pro obnovení|mnemonická fráze|záložní slova|zobrazit seed",
+  "settingsSearchBip85Keywords": "deterministická entropie|odvozené seedy|odvozená entropie|BIP85",
+  "settingsSearchLanguageKeywords": "národní prostředí|překlad|jazyk zobrazení|preferovaný jazyk",
+  "settingsSearchThemeKeywords": "vzhled|tmavý režim|světlý režim|systémový motiv",
+  "settingsSearchCurrencyKeywords": "fiat měna|místní měna|výchozí měna|směnná měna",
+  "settingsSearchSecurityPinKeywords": "PIN kód|přístupový kód|zámek aplikace|ověření|změnit PIN",
+  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí",
+  "settingsSearchLogsKeywords": "debug logy|diagnostické logy|protokoly aplikace|exportovat logy",
+  "settingsSearchDevModeKeywords": "vývojářský režim|vývojová nastavení|debug režim|pokročilé testování",
+  "settingsSearchTestnetCredentialsKeywords": "přihlašovací údaje testnetu|přihlášení k testnetu|uživatelské jméno testnetu|heslo testnetu|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "hlášení pádů|hlášení chyb|diagnostika|telemetrie|chybové logy",
+  "settingsSearchScreenPrivacyKeywords": "snímky obrazovky|nahrávání obrazovky|ochrana proti zachycení obrazovky|soukromí",
+  "settingsSearchStartTyping": "Začněte psát a zobrazí se výsledky.",
+  "exchangeSupportChatLoadMessagesError": "Nepodařilo se načíst zprávy. Zkuste to prosím znovu.",
+  "exchangeSupportChatSendMessageError": "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.",
+  "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
+  "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
+  "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé"
 }

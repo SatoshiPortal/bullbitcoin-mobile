@@ -11,11 +11,16 @@ class PayCoinSelectionBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxos = context.select(
-      (PayBloc bloc) => bloc.state is PayPaymentState
-          ? (bloc.state as PayPaymentState).utxos
-          : <WalletUtxo>[],
-    );
+    // D7: frozen coins are never selectable for spending — hide them so the
+    // sheet only ever offers spendable outputs (mirrors Send).
+    final utxos = context
+        .select(
+          (PayBloc bloc) => bloc.state is PayPaymentState
+              ? (bloc.state as PayPaymentState).utxos
+              : <WalletUtxo>[],
+        )
+        .where((u) => !u.isFrozen)
+        .toList();
 
     final selectedUtxos = context.select(
       (PayBloc bloc) => bloc.state is PayPaymentState

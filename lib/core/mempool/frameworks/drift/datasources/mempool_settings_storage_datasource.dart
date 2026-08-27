@@ -6,8 +6,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class MempoolSettingsStorageDatasource {
   final SqliteDatabase _sqlite;
 
-  const MempoolSettingsStorageDatasource({required SqliteDatabase sqlite})
-    : _sqlite = sqlite;
+  const MempoolSettingsStorageDatasource({required this._sqlite});
 
   Future<void> store(MempoolSettingsModel settings) async {
     try {

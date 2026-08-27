@@ -9,21 +9,18 @@ class GetExchangeUserSummaryUsecase {
   final SettingsRepository _settingsRepository;
 
   GetExchangeUserSummaryUsecase({
-    required ExchangeUserRepository mainnetExchangeUserRepository,
-    required ExchangeUserRepository testnetExchangeUserRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeUserRepository = mainnetExchangeUserRepository,
-       _testnetExchangeUserRepository = testnetExchangeUserRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeUserRepository,
+    required this._testnetExchangeUserRepository,
+    required this._settingsRepository,
+  });
 
   Future<UserSummary> execute() async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeUserRepository
-              : _mainnetExchangeUserRepository;
+      final repo = isTestnet
+          ? _testnetExchangeUserRepository
+          : _mainnetExchangeUserRepository;
       final userSummary = await repo.getUserSummary();
 
       if (userSummary == null) {

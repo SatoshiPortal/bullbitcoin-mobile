@@ -22,9 +22,8 @@ class WalletRouter {
       return NoTransitionPage(
         key: state.pageKey,
         child: BlocListener<WalletBloc, WalletState>(
-          listenWhen:
-              (previous, current) =>
-                  !previous.noWalletsFound && current.noWalletsFound,
+          listenWhen: (previous, current) =>
+              !previous.noWalletsFound && current.noWalletsFound,
           listener: (context, state) {
             // If no wallets are found, redirect to the onboarding screen
             //  to allow the user to create or restore a wallet.

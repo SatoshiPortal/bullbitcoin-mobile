@@ -16,6 +16,7 @@ class Schema3To4 {
     final metadatas = schema4.walletMetadatas;
 
     await m.alterTable(
+      // ignore: experimental_member_use
       TableMigration(
         metadatas,
         columnTransformer: {

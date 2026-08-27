@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaSuccessScreen extends StatelessWidget {
@@ -68,8 +68,8 @@ class DcaSuccessScreen extends StatelessWidget {
                   DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(
                     amount,
                   ),
-                  DcaBuyFrequency.monthly => context.loc
-                      .dcaSuccessMessageMonthly(amount),
+                  DcaBuyFrequency.monthly =>
+                    context.loc.dcaSuccessMessageMonthly(amount),
                 },
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: .center,

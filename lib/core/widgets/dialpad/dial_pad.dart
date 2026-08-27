@@ -10,6 +10,7 @@ class DialPad extends StatelessWidget {
     required this.onBackspacePressed,
     this.disableFeedback = false,
     this.onlyDigits = false,
+    this.enabled = true,
   });
 
   final Function(String) onNumberPressed;
@@ -17,10 +18,14 @@ class DialPad extends StatelessWidget {
   final bool disableFeedback;
   final bool onlyDigits;
 
+  /// When false, every key is inert and dimmed — e.g. while an unlock
+  /// cooldown is running.
+  final bool enabled;
+
   Widget numPadButton(BuildContext context, String num) {
     return Expanded(
       child: InkWell(
-        onTap: () => onNumberPressed(num),
+        onTap: enabled ? () => onNumberPressed(num) : null,
         splashFactory: disableFeedback ? NoSplash.splashFactory : null,
         highlightColor: disableFeedback ? context.appColors.transparent : null,
         child: SizedBox(
@@ -29,7 +34,9 @@ class DialPad extends StatelessWidget {
             child: BBText(
               num,
               style: context.font.headlineMedium?.copyWith(fontSize: 20),
-              color: context.appColors.onSurface,
+              color: enabled
+                  ? context.appColors.onSurface
+                  : context.appColors.textMuted,
             ),
           ),
         ),
@@ -40,7 +47,7 @@ class DialPad extends StatelessWidget {
   Widget backspaceButton(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap: onBackspacePressed,
+        onTap: enabled ? onBackspacePressed : null,
         splashFactory: disableFeedback ? NoSplash.splashFactory : null,
         highlightColor: disableFeedback ? context.appColors.transparent : null,
         child: SizedBox(
@@ -48,7 +55,9 @@ class DialPad extends StatelessWidget {
           child: Center(
             child: Icon(
               Icons.backspace_outlined,
-              color: context.appColors.onSurface,
+              color: enabled
+                  ? context.appColors.onSurface
+                  : context.appColors.textMuted,
             ),
           ),
         ),

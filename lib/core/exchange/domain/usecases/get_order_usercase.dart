@@ -10,12 +10,10 @@ class GetOrderUsecase {
   final SettingsRepository _settingsRepository;
 
   GetOrderUsecase({
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._settingsRepository,
+  });
 
   Future<Order> execute({required String orderId}) async {
     try {

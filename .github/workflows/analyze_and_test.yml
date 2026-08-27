@@ -1,94 +1,367 @@
 name: Analyze and Test
 
 on:
-    pull_request:
-        branches:
-            - main
-            - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+  # The funded Payjoin fixture spends from shared testnet wallets. It does not
+  # run for the concurrent develop stack; workflow_dispatch lets a reviewer run
+  # it for an arbitrary branch.
+  workflow_dispatch:
 
+# Checkout + tests only; no writes to the repo via the token.
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+# Cancel superseded runs on the same PR — these builds are heavy (Rust FRB
+# crates + Flutter SDK + Linux GTK app + integration tests), so don't run stale
+# commits to completion when newer ones are pushed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Three cheap prechecks gate two independent jobs split at the FRB boundary.
+# `checks` (analyze + fix +
+# format + unit tests) never compiles the Rust FRB crates — unit tests run on
+# the Dart VM against the bindings' Dart side only — so it reports in ~11min.
+# `integration` builds and launches the real Linux GTK app (Rust + GTK), the
+# ~28min long pole, in parallel. Both pay the same setup prefix (composite
+# action below); build_runner (~6.5min) dominates it — caching its output is
+# the known follow-up. Neither job `needs:` the other on purpose: the split
+# exists so the fast signal never waits for the slow one.
 jobs:
-    analyze_and_test:
-        runs-on: ubuntu-24.04
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v6
+  classification:
+    name: Detect docs-only PR
+    runs-on: ubuntu-24.04
+    outputs:
+      run_app_checks: ${{ steps.classify.outputs.run_app_checks }}
+    steps:
+      - name: Classify pull request files
+        id: classify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
 
-            # Caches below are restored before any toolchain step that uses
-            # them, so the SDK download / pub resolve / crate fetch on a cold
-            # runner only pays out on a cache miss. The pub cache also holds the
-            # bull_sdk git clone; the Cargo cache holds its transitive crates.io
-            # deps. All three keys derive from lockfiles, so they self-invalidate
-            # when deps change. pubspec.lock pins the bull_sdk commit, so it is
-            # the right key for the Cargo cache (there is no repo-root Cargo.lock).
-            - name: Cache Flutter SDK (FVM)
-              uses: actions/cache@v5
-              with:
-                  path: ~/fvm/versions
-                  key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "run_app_checks=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-            - name: Cache pub (hosted + git deps)
-              uses: actions/cache@v5
-              with:
-                  path: ~/.pub-cache
-                  key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-                  restore-keys: pub-${{ runner.os }}-
+          api_url="https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}/files"
+          page=1
+          file_count=0
+          run_app_checks=false
 
-            - name: Cache Cargo (FRB native crates)
-              uses: actions/cache@v5
-              with:
-                  path: |
-                      ~/.cargo/registry
-                      ~/.cargo/git
-                  key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-                  restore-keys: cargo-${{ runner.os }}-
+          while :; do
+            response=$(curl --fail-with-body --silent --show-error \
+              --retry 2 --retry-delay 1 --max-time 30 \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "${api_url}?per_page=100&page=${page}")
 
-            - name: Install FVM
-              run: |
-                  curl -fsSL https://fvm.app/install.sh | bash -s -- 4.0.5
-                  echo "$HOME/fvm/bin" >> $GITHUB_PATH
+            if ! jq -e 'type == "array"' >/dev/null <<<"$response"; then
+              echo "Changed-file API returned a non-array response" >&2
+              exit 1
+            fi
+            if ! jq -e 'all(.[]; type == "object" and (.filename | type == "string"))' >/dev/null <<<"$response"; then
+              echo "Changed-file API returned an invalid file entry" >&2
+              exit 1
+            fi
 
-            - run: make fvm-check
-            - run: make deps
-            - run: make build-runner
-            - run: make translations
+            page_count=$(jq 'length' <<<"$response")
+            while IFS= read -r path; do
+              file_count=$((file_count + 1))
+              case "$path" in
+                *.md|docs/*|LICENSE|.gitignore|.git-blame-ignore-revs|.github/ISSUE_TEMPLATE/*)
+                  ;;
+                *)
+                  run_app_checks=true
+                  ;;
+              esac
+            done < <(jq -r '.[].filename // empty' <<<"$response")
 
-            - name: Create .env file
-              run: |
-                  echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
-                  echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
+            (( page_count < 100 )) && break
+            page=$((page + 1))
+          done
 
-            - name: Linter shouldn't raise errors, warnings or infos
-              run: fvm flutter analyze --fatal-warnings --fatal-infos
+          if (( file_count == 0 )); then
+            echo "Changed-file enumeration returned an impossible empty set" >&2
+            exit 1
+          fi
 
-            - name: dart fix should have nothing to suggest
-              run: |
-                  output=$(fvm dart fix --dry-run)
-                  echo "$output"
-                  echo "$output" | grep -q "Nothing to fix!"
+          echo "Enumerated ${file_count} changed file(s); application checks: ${run_app_checks}"
+          echo "run_app_checks=${run_app_checks}" >> "$GITHUB_OUTPUT"
 
-            - name: Unit tests must pass
-              run: make unit-test
+  action-pins:
+    name: Check action pins
+    runs-on: ubuntu-24.04
+    steps:
+      # Bootstrap from the immutable commit that introduced the checker. This
+      # lets the introducing PR verify itself before the file exists on the
+      # base branch; checker upgrades require an explicit SHA bump here.
+      - name: Checkout candidate tree (data only)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: candidate
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Checkout trusted checker
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: trusted
+          ref: 79342f5f4e761f020453d0f78e42b15791f08faf
+          persist-credentials: false
+      - name: Verify external action pins
+        run: bash trusted/tools/check_action_pins.sh "$GITHUB_WORKSPACE/candidate"
 
-            - name: Install Linux desktop for integration tests
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y \
-                    clang lld cmake ninja-build pkg-config \
-                    libgtk-3-dev liblzma-dev libstdc++-12-dev \
-                    libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
-                    dbus gnome-keyring \
-                    xdg-desktop-portal xdg-desktop-portal-gtk \
-                    libsqlite3-dev xvfb xauth
+  readiness:
+    name: PR readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip PR readiness for manual runs
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: echo "PR readiness is not applicable to a manual workflow run."
+      # Bootstrap from the immutable commit that introduced the policy. This
+      # lets the introducing PR verify itself before the file exists on the
+      # base branch; policy upgrades require an explicit SHA bump here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          script: |
+            const { readiness } = require('./tools/pr_governance/policy');
+            const owner = context.repo.owner, name = context.repo.repo;
+            let cursor = null, refs = [];
+            do {
+              const data = await github.graphql(`query($owner:String!,$name:String!,$number:Int!,$cursor:String){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ author{login} labels(first:100){nodes{name}} closingIssuesReferences(first:100,after:$cursor){nodes{state repository{nameWithOwner} labels(first:100){nodes{name}}} pageInfo{hasNextPage endCursor}}}}}`, { owner, name, number: context.issue.number, cursor });
+              const pr = data.repository.pullRequest;
+              if (!pr) core.setFailed('Pull request metadata is unavailable');
+              if (!global.pr) global.pr = { repository: { nameWithOwner: `${owner}/${name}` }, author: pr.author, labels: pr.labels.nodes, closingIssuesReferences: [] };
+              refs = refs.concat(pr.closingIssuesReferences.nodes); cursor = pr.closingIssuesReferences.pageInfo.hasNextPage ? pr.closingIssuesReferences.pageInfo.endCursor : null;
+            } while (cursor);
+            global.pr.closingIssuesReferences = refs;
+            const result = readiness(global.pr);
+            if (!result.ready) core.setFailed(`PR is not ready: ${result.reason}. Link an open local issue labelled ready, or use the no-issue-needed exemption.`);
+            else core.info(`PR readiness passed (${result.reason})`);
 
-            # The tests build and launch the real Linux GTK app, which needs a
-            # display to init even though the tests themselves render nothing —
-            # on a headless runner the app aborts at startup ("log reader
-            # stopped unexpectedly / Unable to start the app on the device").
-            # xvfb-run gives it a virtual X server. dbus-run-session + an
-            # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
-            - name: Integration tests (Linux desktop)
-              run: |
-                  xvfb-run -a dbus-run-session -- bash -c '
-                    echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
-                    make integration-test
-                  '
+  checks:
+    needs: [classification, action-pins, readiness]
+    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Static checks and unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Kept deliberately: a local .dart_tool can reach 16GB and a stock x64
+      # runner has ~21GB free, so dropping this risks turning every PR red on
+      # "No space left on device". The setup action logs `df -h` — only drop
+      # this once a few runs prove comfortable headroom.
+      - name: Free disk space
+        # Pinned to a commit SHA (not the mutable v1.3.1 tag): third-party action
+        # on a runner that can hold PR test secrets — a retag must not run here.
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      # The gates below reference steps.setup.outcome — if this `id` is ever
+      # renamed, the expression silently evaluates to '' and every check
+      # SKIPS (job goes green with nothing run). Keep id and gates in sync.
+      - name: Flutter setup
+        id: setup
+        uses: ./.github/actions/flutter-setup
+
+      # The four static checks are gated on `!cancelled()` + setup success
+      # instead of the implicit success(): one CI run surfaces ALL static
+      # failures instead of stopping at the first (they're independent and
+      # cheap, ~1.5min combined). `!cancelled()` (not `always()`) so a
+      # superseded run cancelled by the concurrency group stops immediately.
+      # Each gate is a makefile target so the definition lives in one place; `make checks` runs this whole job locally.
+      - name: Linter shouldn't raise errors, warnings or infos
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make analyze
+
+      - name: bull_ui import boundary (coins/ui imports only package:bull_ui)
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make bull-ui-check
+
+      - name: dart fix should have nothing to suggest
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make fix-check
+
+      # The gate's filter regex and pipefail rationale live in the makefile's format-check target; the staged-files variant in .git_hooks/pre-commit keeps its own copy of the regex.
+      - name: dart format should have nothing to change
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make format-check
+
+      # Default success() gate on purpose: if any static check above is red,
+      # skip the tests — the PR needs another push anyway.
+      - name: Unit tests must pass
+        run: make unit-test
+
+  integration:
+    needs: [classification, action-pins, readiness]
+    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Integration tests
+    # arm64: free 4-vCPU runners for public repos, native arm execution — the
+    # Rust FRB compile is exactly the workload that benefits. If this arch
+    # surfaces a toolchain wart, revert this job to ubuntu-24.04 + the
+    # jlumbroso free-disk-space step (see checks job) in one commit.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # This job builds the FRB Rust crates, the Flutter SDK toolchain and the
+      # Linux desktop app on one runner. The arm64 partner image is leaner
+      # than x64 (more free space, and the x64-oriented free-disk-space action
+      # doesn't apply), so reclaim the few big preinstalled dirs inline;
+      # `|| true` because they may not exist on this image. The setup action
+      # logs `df -h` to confirm headroom.
+      - name: Free disk space (inline, arch-agnostic)
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
+          df -h /
+
+      # cargokit builds the FRB crates via `rustup run stable cargo`; the
+      # leaner arm64 partner image may lack rustup (the x64 image ships it).
+      # Idempotent: installs rustup if absent, then ensures the stable
+      # toolchain exists either way (newer rustup does not auto-install
+      # toolchains on `rustup run`).
+      - name: Ensure rustup + stable toolchain
+        run: |
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          else
+            rustup toolchain install stable --profile minimal
+          fi
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+        with:
+          cargo-cache: 'true'
+
+      # Compiler cache for the FRB Rust crates (the dominant cost of the app
+      # build), backed by the GitHub Actions cache. Pinned to a commit SHA:
+      # third-party action on a runner that holds PR test secrets.
+      # RUSTC_WRAPPER is exported at the test step below; cargokit's cargo
+      # inherits it from the environment.
+      - name: Setup sccache
+        uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
+
+      - name: Install Linux desktop for integration tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang lld cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev \
+            libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
+            dbus gnome-keyring \
+            xdg-desktop-portal xdg-desktop-portal-gtk \
+            libsqlite3-dev xvfb xauth
+
+      # The tests build and launch the real Linux GTK app, which needs a
+      # display to init even though the tests themselves render nothing —
+      # on a headless runner the app aborts at startup ("log reader
+      # stopped unexpectedly / Unable to start the app on the device").
+      # xvfb-run gives it a virtual X server. dbus-run-session + an
+      # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
+      # Tests read the mnemonics via Platform.environment, so the secrets are
+      # exported as real env vars (not a .env file, which nothing loads). When a
+      # secret is unset (e.g. on forks) the var is empty and the funded-testnet
+      # groups skip themselves — "use the mnemonic if available".
+      - name: Integration tests (Linux desktop)
+        env:
+          TEST_ALICE_MNEMONIC: ${{ secrets.ENV_TEST_ALICE_MNEMONIC }}
+          TEST_BOB_MNEMONIC: ${{ secrets.ENV_TEST_BOB_MNEMONIC }}
+          # The fixture spends from these two shared wallets. It runs as a final
+          # delivery gate on PRs to main, rather than for every develop PR in a
+          # stack, and can still be run manually for an arbitrary branch.
+          RUN_FUNDED_PAYJOIN_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
+          SCCACHE_GHA_ENABLED: "true"
+          RUSTC_WRAPPER: sccache
+          # sccache cannot cache incremental compilation artifacts; disabling
+          # incremental makes every rustc invocation cacheable (and is the
+          # standard sccache-in-CI pairing — CI never reuses incremental state
+          # anyway).
+          CARGO_INCREMENTAL: "0"
+        run: |
+          xvfb-run -a dbus-run-session -- bash -c '
+            echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
+            make integration-test
+          '
+
+  ci:
+    name: CI
+    if: ${{ !cancelled() }}
+    needs: [classification, action-pins, readiness, checks, integration]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require the expected checks
+        env:
+          CLASSIFICATION_RESULT: ${{ needs.classification.result }}
+          RUN_APP_CHECKS: ${{ needs.classification.outputs.run_app_checks }}
+          ACTION_PINS_RESULT: ${{ needs.action-pins.result }}
+          READINESS_RESULT: ${{ needs.readiness.result }}
+          CHECKS_RESULT: ${{ needs.checks.result }}
+          INTEGRATION_RESULT: ${{ needs.integration.result }}
+        run: |
+          set -euo pipefail
+
+          [[ "$CLASSIFICATION_RESULT" == success ]] || {
+            echo "Classification result was ${CLASSIFICATION_RESULT}, expected success" >&2
+            exit 1
+          }
+          [[ "$ACTION_PINS_RESULT" == success ]] || {
+            echo "Action-pin result was ${ACTION_PINS_RESULT}, expected success" >&2
+            exit 1
+          }
+
+          [[ "$READINESS_RESULT" == success ]] || {
+            echo "PR readiness result was ${READINESS_RESULT}, expected success" >&2
+            exit 1
+          }
+
+          case "$RUN_APP_CHECKS" in
+            true)
+              [[ "$CHECKS_RESULT" == success ]] || {
+                echo "Application checks result was ${CHECKS_RESULT}, expected success" >&2
+                exit 1
+              }
+              [[ "$INTEGRATION_RESULT" == success ]] || {
+                echo "Integration result was ${INTEGRATION_RESULT}, expected success" >&2
+                exit 1
+              }
+              ;;
+            false)
+              [[ "$CHECKS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
+                echo "Docs-only PR expected both application jobs to be skipped; got checks=${CHECKS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
+                exit 1
+              }
+              ;;
+            *)
+              echo "Classification output was '${RUN_APP_CHECKS}', expected true or false" >&2
+              exit 1
+              ;;
+          esac

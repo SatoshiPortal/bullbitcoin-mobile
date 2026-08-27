@@ -3,20 +3,22 @@ import 'dart:io';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
-import 'package:bb_mobile/features/ark/router.dart';
-import 'package:bb_mobile/features/ark_setup/router.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_tor_status_visibility_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/coins/ui/coins_router.dart';
+import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
-import 'package:bb_mobile/features/import_coldcard_q/router.dart';
+import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
@@ -36,6 +38,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
@@ -60,9 +63,7 @@ class AppRouter {
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
-    observers: [
-      SentryNavigatorObserver(enableAutoTransactions: false),
-    ],
+    observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
     routes: [
       ShellRoute(
         notifyRootObserver: true,
@@ -75,8 +76,13 @@ class AppRouter {
               location.contains('/support-chat') ||
               location.contains('/login-support');
 
-          return BlocProvider(
-            create: (_) => locator<PriceChartCubit>(),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => locator<PriceChartCubit>()),
+              BlocProvider(
+                create: (_) => locator<AnnouncementsCubit>()..refresh(),
+              ),
+            ],
             child: PopScope(
               canPop: false,
               onPopInvokedWithResult: (didPop, _) {
@@ -85,53 +91,68 @@ class AppRouter {
               child: LegacyStorageWarningOverlay(
                 child: BackupWarningOverlay(
                   child: Scaffold(
-                    // The app bar of the exchange tab is done with a sliver app bar
-                    // on the ExchangeHomeScreen itself.
+                    // The app bar of the exchange tab is rendered by the
+                    // ExchangeHomeScreen itself, as an overlay.
                     appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                     extendBodyBehindAppBar: true,
                     body: child,
                     bottomNavigationBar: isSupportChat
                         ? null
-                        : BottomNavigationBar(
-                            currentIndex: tabIndex,
-                            onTap: (index) {
-                              if (index == 0) {
-                                context.goNamed(WalletRoute.walletHome.name);
-                              } else {
-                                // Exchange tab
-                                if (Platform.isIOS) {
-                                  final isSuperuser =
-                                      context
-                                          .read<SettingsCubit>()
-                                          .state
-                                          .isSuperuser ??
-                                      false;
-                                  if (isSuperuser) {
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              EmbeddedTorStatusScope(
+                                shouldShow: () =>
+                                    locator<GetTorStatusVisibilityUsecase>()
+                                        .execute(),
+                                child: EmbeddedTorStatusIndicator(),
+                              ),
+                              BottomNavigationBar(
+                                currentIndex: tabIndex,
+                                onTap: (index) {
+                                  if (index == 0) {
                                     context.goNamed(
-                                      ExchangeRoute.exchangeHome.name,
+                                      WalletRoute.walletHome.name,
                                     );
                                   } else {
-                                    context.goNamed(
-                                      ExchangeRoute.exchangeLanding.name,
-                                    );
+                                    // Exchange tab
+                                    if (Platform.isIOS) {
+                                      final isSuperuser =
+                                          context
+                                              .read<SettingsCubit>()
+                                              .state
+                                              .isSuperuser ??
+                                          false;
+                                      if (isSuperuser) {
+                                        context.goNamed(
+                                          ExchangeRoute.exchangeHome.name,
+                                        );
+                                      } else {
+                                        context.goNamed(
+                                          ExchangeRoute.exchangeLanding.name,
+                                        );
+                                      }
+                                    } else {
+                                      context.goNamed(
+                                        ExchangeRoute.exchangeHome.name,
+                                      );
+                                    }
                                   }
-                                } else {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeHome.name,
-                                  );
-                                }
-                              }
-                            },
-                            items: [
-                              BottomNavigationBarItem(
-                                icon: const Icon(Icons.currency_bitcoin),
-                                label: context.loc.navigationTabWallet,
-                                backgroundColor: context.appColors.background,
-                              ),
-                              BottomNavigationBarItem(
-                                icon: const Icon(Icons.attach_money),
-                                label: context.loc.navigationTabExchange,
-                                backgroundColor: context.appColors.background,
+                                },
+                                items: [
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(Icons.currency_bitcoin),
+                                    label: context.loc.navigationTabWallet,
+                                    backgroundColor:
+                                        context.appColors.background,
+                                  ),
+                                  BottomNavigationBarItem(
+                                    icon: const Icon(Icons.attach_money),
+                                    label: context.loc.navigationTabExchange,
+                                    backgroundColor:
+                                        context.appColors.background,
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -146,12 +167,14 @@ class AppRouter {
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,
+      ConsolidationRouter.route,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,
+      CoinsRouter.route,
       SwapRouter.route,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,
@@ -163,7 +186,7 @@ class AppRouter {
       BroadcastSignedTxRouter.route,
       PsbtRouterConfig.route,
       ImportWalletRouter.route,
-      ImportColdcardRouter.route,
+      ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
       DcaRouter.route,
@@ -171,8 +194,6 @@ class AppRouter {
       Bip85EntropyRouter.route,
       ElectrumSettingsRouter.route,
       MempoolSettingsRoute.route,
-      ArkSetupRouter.route,
-      ArkRouter.route,
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,

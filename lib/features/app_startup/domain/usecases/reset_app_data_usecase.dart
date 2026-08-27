@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repositor
 class ResetAppDataUsecase {
   final PinCodeRepository _pinCodeRepository;
 
-  ResetAppDataUsecase({required PinCodeRepository pinCodeRepository})
-    : _pinCodeRepository = pinCodeRepository;
+  ResetAppDataUsecase({required this._pinCodeRepository});
 
   Future<void> execute() async {
     await _pinCodeRepository.deletePinCode();

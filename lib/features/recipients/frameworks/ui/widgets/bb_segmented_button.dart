@@ -56,20 +56,19 @@ class BBSegmentedButton extends StatelessWidget {
               for (final item in items)
                 item: Text(
                   labels?[item] ?? item,
-                  style:
-                      item == selected
-                          ? context.font.labelLarge?.copyWith(
-                            color: context.appColors.primary,
-                          )
-                          : disabledItems.contains(item)
-                          ? context.font.labelMedium?.copyWith(
-                            color: context.appColors.outline.withValues(
-                              alpha: 0.5,
-                            ),
-                          )
-                          : context.font.labelMedium?.copyWith(
-                            color: context.appColors.outline,
+                  style: item == selected
+                      ? context.font.labelLarge?.copyWith(
+                          color: context.appColors.primary,
+                        )
+                      : disabledItems.contains(item)
+                      ? context.font.labelMedium?.copyWith(
+                          color: context.appColors.outline.withValues(
+                            alpha: 0.5,
                           ),
+                        )
+                      : context.font.labelMedium?.copyWith(
+                          color: context.appColors.outline,
+                        ),
                 ),
             },
           ),

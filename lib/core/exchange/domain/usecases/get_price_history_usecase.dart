@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dar
 class GetPriceHistoryUsecase {
   final PriceRepository _priceRepository;
 
-  GetPriceHistoryUsecase({required PriceRepository priceRepository})
-    : _priceRepository = priceRepository;
+  GetPriceHistoryUsecase({required this._priceRepository});
 
   Future<List<Rate>> execute({
     required String fromCurrency,

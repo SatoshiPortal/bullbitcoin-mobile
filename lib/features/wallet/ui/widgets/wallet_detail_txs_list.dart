@@ -15,16 +15,25 @@ class WalletDetailTxsList extends StatelessWidget {
     return BlocSelector<
       TransactionsCubit,
       TransactionsState,
-      ({Map<int, List<Transaction>>? txsByDay, Object? err})
+      ({
+        Map<int, List<Transaction>>? txsByDay,
+        List<Transaction>? ongoingSwaps,
+        Object? err,
+      })
     >(
-      selector: (state) =>
-          (txsByDay: state.filteredTransactionsByDay, err: state.err),
+      selector: (state) => (
+        txsByDay: state.filteredTransactionsByDay,
+        ongoingSwaps: state.ongoingSwaps,
+        err: state.err,
+      ),
       builder: (context, selected) => TransactionsByDayList(
         transactionsByDay: selected.txsByDay,
+        ongoingSwaps: selected.ongoingSwaps,
         errorMessage: selected.err != null
             ? context.loc.transactionListLoadingFailed
             : null,
         sliver: sliver,
+        onDetailsClosed: context.read<TransactionsCubit>().refreshLabels,
       ),
     );
   }

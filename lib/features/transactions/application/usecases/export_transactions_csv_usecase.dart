@@ -10,10 +10,9 @@ class ExportTransactionsCsvUsecase {
   final TransactionExportFormatter _formatter;
 
   ExportTransactionsCsvUsecase({
-    required GetTransactionsUsecase getTransactionsUsecase,
-    required TransactionExportFormatter formatter,
-  }) : _getTransactionsUsecase = getTransactionsUsecase,
-       _formatter = formatter;
+    required this._getTransactionsUsecase,
+    required this._formatter,
+  });
 
   Future<String> execute({DateTime? start, DateTime? end}) async {
     if (start != null && end != null && start.isAfter(end)) {
@@ -22,8 +21,15 @@ class ExportTransactionsCsvUsecase {
 
     final transactions = await _getTransactionsUsecase.execute();
 
+    // Preserve the input's UTC-ness when rounding up to the next day:
+    // building a plain (local) DateTime from a UTC end's wall-clock fields
+    // shifted the inclusive-day boundary by the machine's UTC offset, so
+    // the same export included or excluded edge transactions depending on
+    // the device's timezone.
     final exclusiveEnd = end == null
         ? null
+        : end.isUtc
+        ? DateTime.utc(end.year, end.month, end.day + 1)
         : DateTime(end.year, end.month, end.day + 1);
 
     final filtered = transactions.where((tx) {

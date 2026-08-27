@@ -4,9 +4,11 @@ import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -49,6 +51,7 @@ Future<void> main({bool isInitialized = false}) async {
     bip85Repository: bip85Repository,
     walletRepository: walletRepository,
     seedRepository: seedRepository,
+    settingsRepository: locator<SettingsRepository>(),
   );
 
   setUpAll(() async {
@@ -72,11 +75,13 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Execute the usecase
         final result = await usecase.execute(length: length, alias: 'test');
+        expect(result, isA<Ok>());
+        final (:derivation, mnemonic: resultMnemonic) = (result as Ok).value;
 
         // Verify the derivation path
-        expect(result.derivation, "39'/0'/12'/0'");
-        expect(result.mnemonic, isA<bip39.Mnemonic>());
-        expect(result.mnemonic.length, equals(length));
+        expect(derivation, "39'/0'/12'/0'");
+        expect(resultMnemonic, isA<bip39.Mnemonic>());
+        expect(resultMnemonic.length, equals(length));
 
         // Verify the derivation was stored in the database
         final storedDerivations = await bip85Datasource.fetchAll();
@@ -88,7 +93,8 @@ Future<void> main({bool isInitialized = false}) async {
         expect(firstDerivation.alias, 'test');
         expect(firstDerivation.application, Bip85ApplicationColumn.bip39);
 
-        // Get the xprv from the seed
+        // Get the xprv from the default-wallet seed (the outer `mnemonic`),
+        // i.e. the same seed the usecase derives from — NOT the derived result.
         final xprv = Bip32Derivation.getXprvFromSeed(
           Uint8List.fromList(mnemonic.seed),
           Network.bitcoinMainnet,
@@ -103,21 +109,25 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         // Verify both results are identical
-        expect(result.mnemonic.sentence, directBip85Mnemonic.sentence);
+        expect(resultMnemonic.sentence, directBip85Mnemonic.sentence);
       });
 
       test('Two derivations with index bump and different lengths', () async {
         // Execute the usecase first time
-        final a = await usecase.execute(
+        final aResult = await usecase.execute(
           length: bip39.MnemonicLength.words12,
           alias: 'First derivation',
         );
+        expect(aResult, isA<Ok>());
+        final (:derivation, mnemonic: aMnemonic) = (aResult as Ok).value;
 
         // Execute the usecase second time
-        final b = await usecase.execute(
+        final bResult = await usecase.execute(
           length: bip39.MnemonicLength.words24,
           alias: 'Second derivation',
         );
+        expect(bResult, isA<Ok>());
+        final (derivation: _, mnemonic: bMnemonic) = (bResult as Ok).value;
 
         // Get the xprv from the seed
         final xprv = Bip32Derivation.getXprvFromSeed(
@@ -139,7 +149,7 @@ Future<void> main({bool isInitialized = false}) async {
         expect(first.alias, 'First derivation');
         expect(first.application, equals(Bip85ApplicationColumn.bip39));
         expect(
-          a.mnemonic.sentence,
+          aMnemonic.sentence,
           bip85.Bip85Entropy.deriveMnemonic(
             xprvBase58: xprv,
             language: bip39.Language.english,
@@ -154,7 +164,7 @@ Future<void> main({bool isInitialized = false}) async {
         expect(second.alias, 'Second derivation');
         expect(second.application, equals(Bip85ApplicationColumn.bip39));
         expect(
-          b.mnemonic.sentence,
+          bMnemonic.sentence,
           bip85.Bip85Entropy.deriveMnemonic(
             xprvBase58: xprv,
             language: bip39.Language.english,

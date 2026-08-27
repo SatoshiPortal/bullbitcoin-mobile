@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/recipients/application/ports/recipients_gatew
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/cad_biller_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_model.dart';
@@ -11,9 +12,9 @@ import 'package:dio/dio.dart';
 class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   final Dio _authenticatedApiClient;
   final String _recipientsPath = '/ak/api-recipients';
+  static const _apiVersion = '2.0.0';
 
-  BullbitcoinApiRecipientsGateway({required Dio authenticatedApiClient})
-    : _authenticatedApiClient = authenticatedApiClient;
+  BullbitcoinApiRecipientsGateway({required this._authenticatedApiClient});
 
   // These methods ignore `isTestnet` because this instance is bound to one environment
   // and the Dio client is already authenticated via interceptor.
@@ -33,6 +34,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         'method': 'createRecipientFiat',
         'params': {'element': detailsModel.toJson()},
       },
+      options: Options(headers: {'x-api-version': _apiVersion}),
     );
     if (resp.statusCode != 200) {
       throw Exception('Failed to create fiat recipient');
@@ -62,7 +64,17 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
     required bool isTestnet,
     int page = 1,
     int pageSize = 50,
+    List<RecipientType>? recipientTypes,
+    bool? isOwner,
+    String? search,
   }) async {
+    final filters = <String, dynamic>{
+      if (recipientTypes != null && recipientTypes.isNotEmpty)
+        'recipientTypeFiat': recipientTypes.map((t) => t.value).toList(),
+      'isOwner': ?isOwner,
+      if (search != null && search.isNotEmpty) 'search': search,
+    };
+
     final resp = await _authenticatedApiClient.post(
       _recipientsPath,
       data: {
@@ -70,10 +82,11 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         'id': '0',
         'method': fiatOnly ? 'listRecipientsFiat' : 'listRecipients',
         'params': {
-          // The API expects 1-based page indexing, so we add 1 to the 0-based page parameter.
           'paginator': {'page': page, 'pageSize': pageSize},
+          if (filters.isNotEmpty) 'filters': filters,
         },
       },
+      options: Options(headers: {'x-api-version': _apiVersion}),
     );
 
     if (resp.statusCode != 200) {
@@ -85,8 +98,17 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
       throw Exception('Failed to list fiat recipients: $error');
     }
 
-    final totalElements = resp.data['result']['totalElements'] as int;
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    final result = resp.data['result'] as Map<String, dynamic>?;
+    if (result == null) {
+      throw Exception('Failed to list fiat recipients: missing result');
+    }
+
+    final totalElementsRaw = result['totalElements'];
+    if (totalElementsRaw is! num) {
+      throw Exception('Failed to list fiat recipients: invalid totalElements');
+    }
+    final totalElements = totalElementsRaw.toInt();
+    final elements = result['elements'] as List<dynamic>?;
     if (elements == null) {
       return (recipients: <Recipient>[], totalRecipients: totalElements);
     }

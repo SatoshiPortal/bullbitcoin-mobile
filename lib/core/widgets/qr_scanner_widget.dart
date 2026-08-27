@@ -101,7 +101,9 @@ class _ScannerState extends State<QrScannerWidget> {
       if (_urReader.isComplete) {
         if (_urReader.decoded != null) {
           setState(() => _progressText = 'Scanning completed');
-          widget.onScanned(_urReader.decoded!.toString());
+          final decoded = _urReader.decoded!.toString();
+          _urReader.reset();
+          widget.onScanned(decoded);
         } else {
           setState(() => _progressText = 'UR decoding failed');
         }
@@ -112,6 +114,7 @@ class _ScannerState extends State<QrScannerWidget> {
         error: e,
         trace: StackTrace.current,
       );
+      _urReader.reset();
       setState(() => _progressText = 'UR processing failed');
     }
   }

@@ -9,14 +9,11 @@ class ElectrumServer {
   int _priority;
 
   ElectrumServer._({
-    required String url,
-    required ElectrumServerNetwork network,
-    required bool isCustom,
-    required int priority,
-  }) : _url = url,
-       _network = network,
-       _isCustom = isCustom,
-       _priority = priority;
+    required this._url,
+    required this._network,
+    required this._isCustom,
+    required this._priority,
+  });
 
   // Create a new custom server
   //  (validates URL and adds protocol based on enableSsl for Bitcoin network)

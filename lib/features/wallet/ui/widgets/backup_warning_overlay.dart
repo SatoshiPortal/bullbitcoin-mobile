@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupWarningOverlay extends StatelessWidget {
@@ -143,9 +143,9 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                     BBButton.big(
                       label: context.loc.backupWarningBackupLater,
                       onPressed: () {
-                        context
-                            .read<WalletBloc>()
-                            .add(const DismissBackupWarning());
+                        context.read<WalletBloc>().add(
+                          const DismissBackupWarning(),
+                        );
                       },
                       bgColor: context.appColors.surface,
                       textColor: context.appColors.onSurface,

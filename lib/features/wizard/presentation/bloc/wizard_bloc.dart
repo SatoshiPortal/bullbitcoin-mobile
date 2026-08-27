@@ -20,12 +20,8 @@ part 'wizard_state.dart';
 /// reads the blob, flushes touched fields to SQLite, calls
 /// `markComplete()` again (idempotent), and clears pending.
 class WizardBloc extends Bloc<WizardEvent, WizardState> {
-  WizardBloc({
-    required SavePendingWizardChoicesUsecase savePending,
-    required MarkWizardCompleteUsecase markComplete,
-  }) : _savePending = savePending,
-       _markComplete = markComplete,
-       super(const WizardState()) {
+  WizardBloc({required this._savePending, required this._markComplete})
+    : super(const WizardState()) {
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
@@ -38,7 +34,9 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
   final MarkWizardCompleteUsecase _markComplete;
 
   void _onThemePicked(_WizardThemePicked event, Emitter<WizardState> emit) {
-    emit(state.copyWith(choices: state.choices.copyWith(themeMode: event.mode)));
+    emit(
+      state.copyWith(choices: state.choices.copyWith(themeMode: event.mode)),
+    );
   }
 
   void _onLanguagePicked(
@@ -46,9 +44,7 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     Emitter<WizardState> emit,
   ) {
     emit(
-      state.copyWith(
-        choices: state.choices.copyWith(language: event.language),
-      ),
+      state.copyWith(choices: state.choices.copyWith(language: event.language)),
     );
   }
 

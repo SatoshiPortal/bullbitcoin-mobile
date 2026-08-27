@@ -121,26 +121,56 @@ class QrDeviceInstructions {
     );
   }
 
-  static Future<void> showColdcardInstructions(BuildContext context) {
+  static Future<void> showColdcardQInstructions(BuildContext context) {
     return InstructionsBottomSheet.show(
       context,
-      title: context.loc.coldcardInstructionsTitle,
+      title: context.loc.psbtFlowColdcardQInstructionsTitle,
       instructions: [
-        context.loc.coldcardStep1,
-        context.loc.coldcardStep2,
-        context.loc.coldcardStep3,
-        context.loc.coldcardStep4,
-        context.loc.coldcardStep5,
-        context.loc.coldcardStep6,
-        context.loc.coldcardStep7,
-        context.loc.coldcardStep8,
-        context.loc.coldcardStep9,
-        context.loc.coldcardStep10,
-        context.loc.coldcardStep11,
-        context.loc.coldcardStep12,
-        context.loc.coldcardStep13,
-        context.loc.coldcardStep14,
-        context.loc.coldcardStep15,
+        context.loc.psbtFlowColdcardQStep1,
+        context.loc.psbtFlowColdcardQStep2,
+        context.loc.psbtFlowColdcardQStep3,
+        context.loc.psbtFlowColdcardQStep4,
+        context.loc.psbtFlowColdcardQStep5,
+        context.loc.psbtFlowColdcardQStep6,
+        context.loc.psbtFlowColdcardQStep7,
+        context.loc.psbtFlowColdcardQStep8,
+        context.loc.psbtFlowColdcardQStep9,
+        context.loc.psbtFlowColdcardQStep10,
+        context.loc.psbtFlowColdcardQStep11,
+        context.loc.psbtFlowColdcardQStep12,
+        context.loc.psbtFlowColdcardQStep13,
+        context.loc.psbtFlowColdcardQStep14,
+        context.loc.psbtFlowColdcardQStep15,
+        context.loc.psbtFlowColdcardQStep16,
+        context.loc.psbtFlowColdcardQStep17,
+        context.loc.psbtFlowColdcardQStep18,
+        context.loc.psbtFlowColdcardQStep19,
+        context.loc.psbtFlowColdcardQStep20,
+        context.loc.psbtFlowColdcardQStep21,
+        context.loc.psbtFlowColdcardQStep22,
+        context.loc.psbtFlowColdcardQStep23,
+      ],
+    );
+  }
+
+  static Future<void> showColdcardMk4Instructions(BuildContext context) {
+    return InstructionsBottomSheet.show(
+      context,
+      title: context.loc.psbtFlowColdcardMk4InstructionsTitle,
+      instructions: [
+        context.loc.psbtFlowColdcardMk4Step1,
+        context.loc.psbtFlowColdcardMk4Step2,
+        context.loc.psbtFlowColdcardMk4Step3,
+        context.loc.psbtFlowColdcardMk4Step4,
+        context.loc.psbtFlowColdcardMk4Step5,
+        context.loc.psbtFlowColdcardMk4Step6,
+        context.loc.psbtFlowColdcardMk4Step7,
+        context.loc.psbtFlowColdcardMk4Step8,
+        context.loc.psbtFlowColdcardMk4Step9,
+        context.loc.psbtFlowColdcardMk4Step10,
+        context.loc.psbtFlowColdcardMk4Step11,
+        context.loc.psbtFlowColdcardMk4Step12,
+        context.loc.psbtFlowColdcardMk4Step13,
       ],
     );
   }

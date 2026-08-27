@@ -5,8 +5,8 @@ class OrderModel {
   final String orderType;
   final String? orderSubtype;
   final int orderNumber;
-  final double exchangeRateAmount;
-  final String exchangeRateCurrency;
+  final double? exchangeRateAmount;
+  final String? exchangeRateCurrency;
   final double? indexRateAmount;
   final String? indexRateCurrency;
   final double payinAmount;
@@ -24,7 +24,7 @@ class OrderModel {
   final String payinMethod;
   final String payoutMethod;
   final String triggerType;
-  final String confirmationDeadline;
+  final String? confirmationDeadline;
   final String? bitcoinTransactionId;
   final String? lnUrl;
   final String? lightningVoucherExpiresAt;
@@ -43,6 +43,14 @@ class OrderModel {
   final String? securityAnswer;
   final String? paymentDescription;
   final double? unbatchedBuyOnchainFees;
+  // The customer's payjoin BIP21 URI. On a buy the app generates it and sends
+  // it with the order; on a sell or a payment the backend produces it. Kept as
+  // the raw string: it is handed to the payjoin PDK verbatim, and re-encoding a
+  // canonical URI is how it gets corrupted.
+  final String? bip21URI;
+  // Raw JSON, like `message` and `payinAmountChanged` above; turned into
+  // OrderPayjoinDetails in toEntity.
+  final Map<String, dynamic>? payjoinDetails;
   final String? referenceNumber;
   final String? originName;
   final String? originCedula;
@@ -52,8 +60,8 @@ class OrderModel {
     required this.orderType,
     this.orderSubtype,
     required this.orderNumber,
-    required this.exchangeRateAmount,
-    required this.exchangeRateCurrency,
+    this.exchangeRateAmount,
+    this.exchangeRateCurrency,
     this.indexRateAmount,
     this.indexRateCurrency,
     required this.payinAmount,
@@ -71,7 +79,7 @@ class OrderModel {
     required this.payinMethod,
     required this.payoutMethod,
     required this.triggerType,
-    required this.confirmationDeadline,
+    this.confirmationDeadline,
     this.bitcoinTransactionId,
     this.lnUrl,
     this.lightningVoucherExpiresAt,
@@ -90,6 +98,8 @@ class OrderModel {
     this.securityAnswer,
     this.paymentDescription,
     this.unbatchedBuyOnchainFees,
+    this.bip21URI,
+    this.payjoinDetails,
     this.referenceNumber,
     this.originName,
     this.originCedula,
@@ -101,26 +111,30 @@ class OrderModel {
       orderType: json['orderType'] as String,
       orderSubtype: json['orderSubtype'] as String?,
       orderNumber: json['orderNumber'] as int,
-      exchangeRateAmount: (json['exchangeRateAmount'] as num).toDouble(),
-      exchangeRateCurrency: json['exchangeRateCurrency'] as String,
+      // Nullable per the server contract: reward, funding, refund and
+      // balance-adjustment orders carry no exchange rate and no deadline. The
+      // amounts and the status strings are read defensively for the same
+      // reason — an admin-initiated order has no real pay-in side.
+      exchangeRateAmount: (json['exchangeRateAmount'] as num?)?.toDouble(),
+      exchangeRateCurrency: json['exchangeRateCurrency'] as String?,
       indexRateAmount: (json['indexRateAmount'] as num?)?.toDouble(),
       indexRateCurrency: json['indexRateCurrency'] as String?,
-      payinAmount: (json['payinAmount'] as num).toDouble(),
-      payinCurrency: json['payinCurrency'] as String,
-      payoutAmount: (json['payoutAmount'] as num).toDouble(),
-      payoutCurrency: json['payoutCurrency'] as String,
-      orderStatus: json['orderStatus'] as String,
-      payinStatus: json['payinStatus'] as String,
-      payoutStatus: json['payoutStatus'] as String,
+      payinAmount: (json['payinAmount'] as num?)?.toDouble() ?? 0,
+      payinCurrency: json['payinCurrency'] as String? ?? '',
+      payoutAmount: (json['payoutAmount'] as num?)?.toDouble() ?? 0,
+      payoutCurrency: json['payoutCurrency'] as String? ?? '',
+      orderStatus: json['orderStatus'] as String? ?? '',
+      payinStatus: json['payinStatus'] as String? ?? '',
+      payoutStatus: json['payoutStatus'] as String? ?? '',
       scheduledPayoutTime: json['scheduledPayoutTime'] as String?,
       createdAt: json['createdAt'] as String,
       completedAt: json['completedAt'] as String?,
       message: json['message'] as Map<String, dynamic>?,
       sentAt: json['sentAt'] as String?,
-      payinMethod: json['payinMethod'] as String,
-      payoutMethod: json['payoutMethod'] as String,
+      payinMethod: json['payinMethod'] as String? ?? '',
+      payoutMethod: json['payoutMethod'] as String? ?? '',
       triggerType: json['triggerType'] as String,
-      confirmationDeadline: json['confirmationDeadline'] as String,
+      confirmationDeadline: json['confirmationDeadline'] as String?,
       bitcoinTransactionId: json['bitcoinTransactionId'] as String?,
       lnUrl: json['lnUrl'] as String?,
       lightningVoucherExpiresAt: json['lightningVoucherExpiresAt'] as String?,
@@ -139,7 +153,10 @@ class OrderModel {
       securityQuestion: json['securityQuestion'] as String?,
       securityAnswer: json['securityAnswer'] as String?,
       paymentDescription: json['paymentDescription'] as String?,
-      unbatchedBuyOnchainFees: json['unbatchedBuyOnchainFees'] as double?,
+      unbatchedBuyOnchainFees: (json['unbatchedBuyOnchainFees'] as num?)
+          ?.toDouble(),
+      bip21URI: json['bip21URI'] as String?,
+      payjoinDetails: json['payjoinDetails'] as Map<String, dynamic>?,
       referenceNumber: json['referenceNumber'] as String?,
       originName: json['originName'] as String?,
       originCedula: json['originCedula'] as String?,
@@ -189,19 +206,31 @@ class OrderModel {
     'securityAnswer': securityAnswer,
     'paymentDescription': paymentDescription,
     'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
+    'bip21URI': bip21URI,
+    'payjoinDetails': payjoinDetails,
     'referenceNumber': referenceNumber,
     'originName': originName,
     'originCedula': originCedula,
   };
 
+  /// Whether this order settled through [txId].
+  ///
+  /// A payjoin replaces the transaction the customer originally built, so the
+  /// order's own payin/payout txid and the transaction that actually reached the
+  /// chain can differ. Both are checked, otherwise a payjoin stops being linked
+  /// back to its order.
+  bool matchesTxId(String txId) =>
+      bitcoinTransactionId == txId ||
+      liquidTransactionId == txId ||
+      payjoinDetails?['txid'] == txId;
+
   Order toEntity({required bool isTestnet}) {
-    final orderMsg =
-        message != null && message is Map<String, dynamic>
-            ? OrderMessage(
-              code: message?['code']?.toString() ?? '',
-              message: message?['message']?.toString() ?? '',
-            )
-            : OrderMessage(code: '', message: '');
+    final orderMsg = message != null && message is Map<String, dynamic>
+        ? OrderMessage(
+            code: message?['code']?.toString() ?? '',
+            message: message?['message']?.toString() ?? '',
+          )
+        : OrderMessage(code: '', message: '');
 
     final orderTypeEnum = OrderType.fromValue(orderType);
     final payinMethodEnum = OrderPaymentMethod.fromValue(payinMethod);
@@ -209,30 +238,35 @@ class OrderModel {
     final orderStatusEnum = OrderStatus.fromValue(orderStatus);
     final payinStatusEnum = OrderPayinStatus.fromValue(payinStatus);
     final payoutStatusEnum = OrderPayoutStatus.fromValue(payoutStatus);
-    final confirmationDeadlineDt = DateTime.parse(confirmationDeadline);
+    final confirmationDeadlineDt = confirmationDeadline != null
+        ? DateTime.tryParse(confirmationDeadline!)
+        : null;
     final createdAtDt = DateTime.parse(createdAt);
-    final completedAtDt =
-        completedAt != null ? DateTime.tryParse(completedAt!) : null;
+    final completedAtDt = completedAt != null
+        ? DateTime.tryParse(completedAt!)
+        : null;
     final sentAtDt = sentAt != null ? DateTime.tryParse(sentAt!) : null;
-    final scheduledPayoutTimeDt =
-        scheduledPayoutTime != null
-            ? DateTime.tryParse(scheduledPayoutTime!)
-            : null;
-    final lightningVoucherExpiresAtDt =
-        lightningVoucherExpiresAt != null
-            ? DateTime.tryParse(lightningVoucherExpiresAt!)
-            : null;
+    final scheduledPayoutTimeDt = scheduledPayoutTime != null
+        ? DateTime.tryParse(scheduledPayoutTime!)
+        : null;
+    final lightningVoucherExpiresAtDt = lightningVoucherExpiresAt != null
+        ? DateTime.tryParse(lightningVoucherExpiresAt!)
+        : null;
     final payinAmountChangedObj =
         payinAmountChanged != null && payinAmountChanged is Map<String, dynamic>
-            ? PayinAmountChanged(
-              requestedAmount:
-                  (payinAmountChanged['requestedAmount'] as num?)?.toDouble() ??
-                  0,
-              receivedAmount:
-                  (payinAmountChanged['receivedAmount'] as num?)?.toDouble() ??
-                  0,
-            )
-            : null;
+        ? PayinAmountChanged(
+            requestedAmount:
+                (payinAmountChanged['requestedAmount'] as num?)?.toDouble() ??
+                0,
+            receivedAmount:
+                (payinAmountChanged['receivedAmount'] as num?)?.toDouble() ?? 0,
+          )
+        : null;
+    // txid is the only field mapped — see OrderPayjoinDetails for why. It stays
+    // null until the exchange has actually seen the payjoin transaction.
+    final payjoinDetailsObj = payjoinDetails != null
+        ? OrderPayjoinDetails(txid: payjoinDetails!['txid'] as String?)
+        : null;
 
     switch (orderTypeEnum) {
       case OrderType.buy:
@@ -274,6 +308,8 @@ class OrderModel {
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
           unbatchedBuyOnchainFees: unbatchedBuyOnchainFees,
+          bip21URI: bip21URI,
+          payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
         );
       case OrderType.sell:
@@ -318,6 +354,8 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
+          bip21URI: bip21URI,
+          payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
         );
       case OrderType.fiatPayment:
@@ -360,6 +398,8 @@ class OrderModel {
           payinAmountChanged: payinAmountChangedObj,
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
+          bip21URI: bip21URI,
+          payjoinDetails: payjoinDetailsObj,
           isTestnet: isTestnet,
           referenceNumber: referenceNumber,
           originName: originName,
@@ -529,6 +569,34 @@ class OrderModel {
           beneficiaryName: beneficiaryName,
           beneficiaryLabel: beneficiaryLabel,
           beneficiaryAccountNumber: beneficiaryAccountNumber,
+          paymentDescription: paymentDescription,
+          completedAt: completedAtDt,
+          sentAt: sentAtDt,
+          isTestnet: isTestnet,
+        );
+      case OrderType.sellUsdt:
+      case OrderType.unknown:
+        return Order.generic(
+          orderId: orderId,
+          orderType: orderTypeEnum,
+          orderTypeName: orderType,
+          orderSubtype: orderSubtype,
+          message: orderMsg,
+          orderNumber: orderNumber,
+          payinAmount: payinAmount,
+          payinCurrency: payinCurrency,
+          payoutAmount: payoutAmount,
+          payoutCurrency: payoutCurrency,
+          exchangeRateAmount: exchangeRateAmount,
+          exchangeRateCurrency: exchangeRateCurrency,
+          payinMethod: payinMethodEnum,
+          payoutMethod: payoutMethodEnum,
+          orderStatus: orderStatusEnum,
+          payinStatus: payinStatusEnum,
+          payoutStatus: payoutStatusEnum,
+          confirmationDeadline: confirmationDeadlineDt,
+          createdAt: createdAtDt,
+          scheduledPayoutTime: scheduledPayoutTimeDt,
           paymentDescription: paymentDescription,
           completedAt: completedAtDt,
           sentAt: sentAtDt,

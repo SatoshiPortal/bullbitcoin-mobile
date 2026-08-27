@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:bip85_entropy/bip85_entropy.dart';
-import 'package:hex/hex.dart';
+import 'package:convert/convert.dart' as convert;
 
 class RecoverbullBip85Utils {
   static final CustomApplication recoverbullApplication =
@@ -43,7 +43,7 @@ class RecoverbullBip85Utils {
       path: clearedPath,
     );
     final octets32 = derivation.sublist(0, 32);
-    return HEX.encode(octets32);
+    return convert.hex.encode(octets32);
   }
 
   static int _getRandomIndex() {

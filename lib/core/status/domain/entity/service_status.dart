@@ -2,7 +2,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'service_status.freezed.dart';
 
-enum ServiceStatus { online, offline, unknown }
+/// [disabled]: the service is intentionally turned off by the user (e.g.
+/// payjoin off in settings), so it is neither reachable-checked nor a
+/// problem — distinct from [unknown] (not checked / indeterminate).
+enum ServiceStatus { online, offline, unknown, disabled }
 
 @freezed
 sealed class ServiceStatusInfo with _$ServiceStatusInfo {
@@ -17,6 +20,7 @@ sealed class ServiceStatusInfo with _$ServiceStatusInfo {
   bool get isOnline => status == ServiceStatus.online;
   bool get isOffline => status == ServiceStatus.offline;
   bool get isUnknown => status == ServiceStatus.unknown;
+  bool get isDisabled => status == ServiceStatus.disabled;
 }
 
 @freezed
@@ -46,14 +50,6 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       ),
     )
     ServiceStatusInfo liquidElectrum,
-    @Default(
-      ServiceStatusInfo(
-        status: ServiceStatus.unknown,
-        name: 'Boltz',
-        lastChecked: null,
-      ),
-    )
-    ServiceStatusInfo boltz,
     @Default(
       ServiceStatusInfo(
         status: ServiceStatus.unknown,
@@ -94,14 +90,6 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       ),
     )
     ServiceStatusInfo recoverbull,
-    @Default(
-      ServiceStatusInfo(
-        status: ServiceStatus.unknown,
-        name: 'Ark',
-        lastChecked: null,
-      ),
-    )
-    ServiceStatusInfo ark,
     @Default(null) DateTime? lastChecked,
   }) = _AllServicesStatus;
 
@@ -111,13 +99,12 @@ sealed class AllServicesStatus with _$AllServicesStatus {
       internetConnection.isOnline &&
       bitcoinElectrum.isOnline &&
       liquidElectrum.isOnline &&
-      boltz.isOnline &&
-      payjoin.isOnline &&
+      // Payjoin is opt-in: disabled is not a fault (see _checkPayjoinService).
+      (payjoin.isOnline || payjoin.isDisabled) &&
       pricer.isOnline &&
       mempool.isOnline &&
       (tor.isOnline || tor.isUnknown) &&
-      (recoverbull.isOnline || recoverbull.isUnknown) &&
-      (ark.isOnline || ark.isUnknown);
+      (recoverbull.isOnline || recoverbull.isUnknown);
 
   bool get hasAnyServiceOffline => !allServicesOnline;
 }

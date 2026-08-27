@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -9,5 +10,6 @@ sealed class Bip329LabelsState with _$Bip329LabelsState {
   const factory Bip329LabelsState.exportSuccess() = _ExportSuccess;
   const factory Bip329LabelsState.importSuccess({required int labelsCount}) =
       _ImportSuccess;
-  const factory Bip329LabelsState.error({required String message}) = _Error;
+  const factory Bip329LabelsState.error({required LabelFailure failure}) =
+      _Error;
 }

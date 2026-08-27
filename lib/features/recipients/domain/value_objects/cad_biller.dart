@@ -8,9 +8,7 @@ class CadBiller {
   final String _payeeCode;
   final String _payeeName;
 
-  const CadBiller._({required String payeeCode, required String payeeName})
-    : _payeeCode = payeeCode,
-      _payeeName = payeeName;
+  const CadBiller._({required this._payeeCode, required this._payeeName});
 
   factory CadBiller.create({
     required String payeeCode,

@@ -14,11 +14,8 @@ enum Bip85EntropyRoute {
 
 class Bip85EntropyRouter {
   static final route = ShellRoute(
-    builder:
-        (context, state, child) => BlocProvider(
-          create: (_) => locator<Bip85EntropyCubit>(),
-          child: child,
-        ),
+    builder: (context, state, child) =>
+        BlocProvider(create: (_) => locator<Bip85EntropyCubit>(), child: child),
     routes: [
       GoRoute(
         name: Bip85EntropyRoute.bip85Home.name,

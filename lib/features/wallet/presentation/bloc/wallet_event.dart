@@ -9,14 +9,14 @@ class WalletStarted extends WalletEvent {
 }
 
 class WalletRefreshed extends WalletEvent {
-  const WalletRefreshed({this.force = false});
+  const WalletRefreshed({this.trigger = SyncTrigger.automatic});
 
-  /// When `true`, bypasses the [SyncCoordinator] per-kind throttle. Reserved
-  /// for explicit user gestures such as pull-to-refresh. Default callers
-  /// (route-aware navigation triggers, environment changes, post-startup)
-  /// leave this `false` so back-pop-to-home doesn't burn the network on
-  /// every navigation.
-  final bool force;
+  /// Why the refresh was requested. [SyncTrigger.user] (pull-to-refresh and
+  /// other explicit gestures) bypasses the [SyncCoordinator] per-kind
+  /// throttle; [SyncTrigger.automatic] (route-aware navigation triggers,
+  /// environment changes, post-startup, post-delete) respects it so
+  /// back-pop-to-home doesn't burn the network on every navigation.
+  final SyncTrigger trigger;
 }
 
 class WalletSyncStarted extends WalletEvent {
@@ -37,10 +37,6 @@ class WalletDeleted extends WalletEvent {
   const WalletDeleted(this.walletId);
 }
 
-class StartTorInitialization extends WalletEvent {
-  const StartTorInitialization();
-}
-
 class BlockAutoSwapUntilNextExecution extends WalletEvent {
   const BlockAutoSwapUntilNextExecution();
 }
@@ -53,22 +49,9 @@ class ExecuteAutoSwapFeeOverride extends WalletEvent {
   const ExecuteAutoSwapFeeOverride();
 }
 
-class RefreshArkWalletBalance extends WalletEvent {
-  final int? amount;
-  const RefreshArkWalletBalance({this.amount});
-}
-
 class ElectrumSyncResultChanged extends WalletEvent {
   final ElectrumSyncResult result;
   const ElectrumSyncResultChanged(this.result);
-}
-
-class DismissAutoSwapWarning extends WalletEvent {
-  const DismissAutoSwapWarning();
-}
-
-class DisableAutoSwap extends WalletEvent {
-  const DisableAutoSwap();
 }
 
 class DismissBackupWarning extends WalletEvent {

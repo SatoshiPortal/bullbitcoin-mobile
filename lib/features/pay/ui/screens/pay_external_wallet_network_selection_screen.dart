@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const PayExternalWalletNetworkSelectionScreen({super.key});
@@ -46,14 +46,13 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     shape: const Border(),
                     title: Text(context.loc.payBitcoinOnchain),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingPayOrder
-                            ? null
-                            : () => context.read<PayBloc>().add(
-                              const PayEvent.externalWalletNetworkSelected(
-                                network: OrderBitcoinNetwork.bitcoin,
-                              ),
+                    onTap: isCreatingPayOrder
+                        ? null
+                        : () => context.read<PayBloc>().add(
+                            const PayEvent.externalWalletNetworkSelected(
+                              network: OrderBitcoinNetwork.bitcoin,
                             ),
+                          ),
                   ),
                   const Gap(24.0),
                   ListTile(
@@ -61,14 +60,13 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     shape: const Border(),
                     title: Text(context.loc.payLightningNetwork),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingPayOrder
-                            ? null
-                            : () => context.read<PayBloc>().add(
-                              const PayEvent.externalWalletNetworkSelected(
-                                network: OrderBitcoinNetwork.lightning,
-                              ),
+                    onTap: isCreatingPayOrder
+                        ? null
+                        : () => context.read<PayBloc>().add(
+                            const PayEvent.externalWalletNetworkSelected(
+                              network: OrderBitcoinNetwork.lightning,
                             ),
+                          ),
                   ),
                   const Gap(24.0),
                   ListTile(
@@ -76,14 +74,13 @@ class PayExternalWalletNetworkSelectionScreen extends StatelessWidget {
                     shape: const Border(),
                     title: Text(context.loc.payLiquidNetwork),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap:
-                        isCreatingPayOrder
-                            ? null
-                            : () => context.read<PayBloc>().add(
-                              const PayEvent.externalWalletNetworkSelected(
-                                network: OrderBitcoinNetwork.liquid,
-                              ),
+                    onTap: isCreatingPayOrder
+                        ? null
+                        : () => context.read<PayBloc>().add(
+                            const PayEvent.externalWalletNetworkSelected(
+                              network: OrderBitcoinNetwork.liquid,
                             ),
+                          ),
                   ),
                   const Gap(24.0),
                   const _PayError(),
@@ -103,10 +100,9 @@ class _PayError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final payError = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayWalletSelectionState
-              ? (bloc.state as PayWalletSelectionState).error
-              : null,
+      (PayBloc bloc) => bloc.state is PayWalletSelectionState
+          ? (bloc.state as PayWalletSelectionState).error
+          : null,
     );
 
     if (payError == null) return const SizedBox.shrink();

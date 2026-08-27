@@ -21,12 +21,15 @@ class TxList extends StatelessWidget {
 
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
 
+    final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
+
     if (err != null) {
       return TransactionsByDayList(
         transactionsByDay: const {},
         ongoingSwaps: ongoingSwaps,
         errorMessage: context.loc.transactionListLoadingFailed,
         sliver: sliver,
+        onDetailsClosed: refreshLabels,
       );
     }
 
@@ -44,6 +47,7 @@ class TxList extends StatelessWidget {
       transactionsByDay: txsByDay,
       ongoingSwaps: showOngoingSwaps ? ongoingSwaps : [],
       sliver: sliver,
+      onDetailsClosed: refreshLabels,
     );
   }
 }

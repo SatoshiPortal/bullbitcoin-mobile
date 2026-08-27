@@ -1,5 +1,18 @@
 part of 'transfer_bloc.dart';
 
+enum AmountValidationError { minimum, maximum }
+
+SwapStatus transferSwapStatusForOrderSwap(OrderSwapLocalStatus status) =>
+    switch (status) {
+      OrderSwapLocalStatus.completed => SwapStatus.completed,
+      OrderSwapLocalStatus.refunded => SwapStatus.refunded,
+      OrderSwapLocalStatus.expired => SwapStatus.expired,
+      OrderSwapLocalStatus.failed => SwapStatus.failed,
+      OrderSwapLocalStatus.payinBroadcast ||
+      OrderSwapLocalStatus.payoutInProgress => SwapStatus.paid,
+      _ => SwapStatus.pending,
+    };
+
 @freezed
 sealed class TransferState with _$TransferState {
   const factory TransferState({
@@ -17,12 +30,23 @@ sealed class TransferState with _$TransferState {
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
     SwapCreationException? swapCreationException,
+    // Set when the Liquid swap-funding build fails because the wallet has too
+    // many UTXOs to spend in a single transaction and needs consolidating.
+    @Default(false) bool consolidationRequired,
+    SwapFailure? swapFailure,
     ChainSwap? swap,
+    OrderSwapRecord? orderSwap,
     @Default('') String signedPsbt,
     int? bitcoinAbsoluteFeesSat,
     int? liquidAbsoluteFeesSat,
     @Default(false) bool isConfirming,
     ConfirmTransactionException? confirmTransactionException,
+    // Set when a freshly-built Bitcoin tx fails the relay-floor re-assert
+    // (an absolute custom fee that cleared the pre-build gate against a stale
+    // vsize but lands below the floor at the real, larger vsize). Mirrors
+    // SendState.buildTransactionException — surfaced on the confirm page and
+    // accompanied by a cleared signedPsbt so the below-relay tx can't broadcast.
+    BuildTransactionException? buildTransactionException,
     @Default('') String txId,
     @Default(false) bool sendToExternal,
     @Default('') String externalAddress,
@@ -34,6 +58,17 @@ sealed class TransferState with _$TransferState {
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     NetworkFee? customFee,
+    // Arm/disarm snapshot — set by TransferCustomFeeArmed, cleared by
+    // TransferCustomFeeChanged / TransferFeeOptionSelected /
+    // TransferCustomFeeDisarmed. Internal to the custom-fee modal flow;
+    // gates the rollback. UI must not read these directly.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Mirrors SendState.feePreviewCache exactly — see that doc for the
+    // BDK-coin-selection rationale. Cleared on any input-shape change.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
     List<WalletUtxo>? utxos,
     int? bitcoinTxSize,
     double? exchangeRate,
@@ -135,6 +170,14 @@ sealed class TransferState with _$TransferState {
     return fromWallet != null && !isSameChainTransfer;
   }
 
+  /// Max is a trigger, not a flag: the amount simply equals the computed
+  /// maximum, however it got there. A max send drains the wallet, which is
+  /// incompatible with guaranteeing an exact receivable amount.
+  bool get isMaxSelected {
+    final max = maxAmountSat;
+    return max != null && max > 0 && inputAmountSat == max;
+  }
+
   int get selectedUtxoTotalSat {
     return selectedUtxos.fold(
       0,
@@ -195,7 +238,7 @@ sealed class TransferState with _$TransferState {
     return amountValidationError != null || isInsufficientBalance;
   }
 
-  String? get amountValidationError {
+  AmountValidationError? get amountValidationError {
     if (amount.isEmpty) return null;
 
     if (inputAmountSat <= 0) return null;
@@ -207,17 +250,11 @@ sealed class TransferState with _$TransferState {
     if (limits == null) return null;
 
     if (limits.min > inputAmountSat) {
-      final minAmount = bitcoinUnit == BitcoinUnit.btc
-          ? ConvertAmount.satsToBtc(limits.min)
-          : limits.min;
-      return 'Minimum amount is ${minAmount.toString()} $displayFromCurrencyCode';
+      return AmountValidationError.minimum;
     }
 
     if (limits.max < inputAmountSat) {
-      final maxAmount = bitcoinUnit == BitcoinUnit.btc
-          ? ConvertAmount.satsToBtc(limits.max)
-          : limits.max;
-      return 'Maximum amount is ${maxAmount.toString()} $displayFromCurrencyCode';
+      return AmountValidationError.maximum;
     }
 
     return null;

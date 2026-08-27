@@ -8,12 +8,10 @@ class ConvertCurrencyToSatsAmountUsecase {
   final SettingsRepository _settingsRepository;
 
   ConvertCurrencyToSatsAmountUsecase({
-    required ExchangeRateRepository mainnetExchangeRateRepository,
-    required ExchangeRateRepository testnetExchangeRateRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeRateRepository = mainnetExchangeRateRepository,
-       _testnetExchangeRateRepository = testnetExchangeRateRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeRateRepository,
+    required this._testnetExchangeRateRepository,
+    required this._settingsRepository,
+  });
 
   Future<BigInt> execute({
     required double amountFiat,
@@ -23,10 +21,9 @@ class ConvertCurrencyToSatsAmountUsecase {
       final settings = await _settingsRepository.fetch();
       final currency = settings.currencyCode;
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeRateRepository
-              : _mainnetExchangeRateRepository;
+      final repo = isTestnet
+          ? _testnetExchangeRateRepository
+          : _mainnetExchangeRateRepository;
       final availableCurrencies = await repo.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {

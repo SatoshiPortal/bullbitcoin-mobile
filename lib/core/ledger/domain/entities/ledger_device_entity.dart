@@ -3,10 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'ledger_device_entity.freezed.dart';
 
-enum LedgerConnectionType {
-  ble,
-  usb,
-}
+enum LedgerConnectionType { ble, usb }
 
 @freezed
 abstract class LedgerDeviceEntity with _$LedgerDeviceEntity {

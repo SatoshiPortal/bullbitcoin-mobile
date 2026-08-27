@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
@@ -43,52 +43,43 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
             color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
-              child:
-                  isLoading
-                      ? const LoadingLineContent()
-                      : DropdownButtonFormField<String>(
-                        initialValue: selectedCurrency ?? initialCurrency?.code,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                          ),
-                        ),
-                        dropdownColor: context.appColors.surface,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: context.appColors.onSurface,
-                        ),
-                        items:
-                            currencies.map((currency) {
-                              final balance =
-                                  balances
-                                      ?.where(
-                                        (b) => b.currencyCode == currency.code,
-                                      )
-                                      .firstOrNull;
-                              return DropdownMenuItem<String>(
-                                value: currency.code,
-                                child: Text(
-                                  '${currency.symbol} ${currency.code} ${balance != null ? '- ${FormatAmount.fiat(balance.amount, currency.code, simpleFormat: true)}' : ''}',
-                                  style: context.font.headlineSmall,
-                                ),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            onCurrencyChanged(value);
-                          }
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return context
-                                .loc
-                                .exchangeCurrencyDropdownValidation;
-                          }
-                          return null;
-                        },
+              child: isLoading
+                  ? const LoadingLineContent()
+                  : DropdownButtonFormField<String>(
+                      initialValue: selectedCurrency ?? initialCurrency?.code,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                       ),
+                      dropdownColor: context.appColors.surface,
+                      icon: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: context.appColors.onSurface,
+                      ),
+                      items: currencies.map((currency) {
+                        final balance = balances
+                            ?.where((b) => b.currencyCode == currency.code)
+                            .firstOrNull;
+                        return DropdownMenuItem<String>(
+                          value: currency.code,
+                          child: Text(
+                            '${currency.symbol} ${currency.code} ${balance != null ? '- ${FormatAmount.fiat(balance.amount, currency.code, simpleFormat: true)}' : ''}',
+                            style: context.font.headlineSmall,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          onCurrencyChanged(value);
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return context.loc.exchangeCurrencyDropdownValidation;
+                        }
+                        return null;
+                      },
+                    ),
             ),
           ),
         ),

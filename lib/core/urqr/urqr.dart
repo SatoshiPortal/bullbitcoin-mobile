@@ -36,9 +36,13 @@ class UrQrGenerator {
 }
 
 class UrQrReader {
+  static const int maxMultipartParts = 1000;
+  static const int maxMultipartMessageSize = 1024 * 1024;
+
   URDecoder urDecoder = URDecoder();
   Object? decoded;
   String? _currentType;
+  int? _currentSequenceCount;
   final Set<String> _processedQrCodes = <String>{};
 
   int get processedParts => urDecoder.processedPartsCount();
@@ -73,12 +77,22 @@ class UrQrReader {
       if (!multipart) {
         payload = URDecoder.decode(data).cbor;
       } else {
+        _validateMultipartFrame(data);
+        final match = RegExp(r'^ur:([^/]+)/').firstMatch(data)!;
+        final type = match.group(1)!;
+        final sequenceCount = _sequenceCount(data);
+        if ((_currentType != null && _currentType != type) ||
+            (_currentSequenceCount != null &&
+                _currentSequenceCount != sequenceCount)) {
+          throw UrStreamChanged();
+        }
         final success = urDecoder.receivePart(data);
         if (!success) {
           throw FailedToReceiveUrPart();
         }
 
         _currentType = type;
+        _currentSequenceCount = sequenceCount;
 
         if (urDecoder.isComplete()) {
           if (urDecoder.isSuccess()) {
@@ -107,6 +121,7 @@ class UrQrReader {
       }
       throw EmptyPayload();
     } catch (e) {
+      reset();
       if (e is UrQrError) {
         rethrow;
       }
@@ -115,10 +130,37 @@ class UrQrReader {
     }
   }
 
+  void _validateMultipartFrame(String data) {
+    final match = RegExp(r'^ur:[^/]+/(\d+)-(\d+)/([^/]+)$').firstMatch(data);
+    if (match == null) {
+      throw InvalidUrSequence();
+    }
+
+    final sequenceNumber = int.parse(match.group(1)!);
+    final sequenceCount = int.parse(match.group(2)!);
+    // Note: sequenceNumber may legitimately exceed sequenceCount. Animated
+    // URs are fountain-coded (BCR-2020-005): once the pure fragments 1..N
+    // have played, the stream keeps emitting mixed parts N+1, N+2, ... so a
+    // decoder that missed frames can still recover. Rejecting those parts
+    // breaks scanning of any stream the camera joins mid-animation.
+    if (sequenceNumber < 1 ||
+        sequenceCount > maxMultipartParts ||
+        data.length > maxMultipartMessageSize) {
+      throw UrSequenceLimitExceeded();
+    }
+  }
+
+  int _sequenceCount(String data) {
+    final match = RegExp(r'^ur:[^/]+/\d+-(\d+)/').firstMatch(data);
+    if (match == null) throw InvalidUrSequence();
+    return int.parse(match.group(1)!);
+  }
+
   void reset() {
     urDecoder = URDecoder();
     decoded = null;
     _currentType = null;
+    _currentSequenceCount = null;
     _processedQrCodes.clear();
   }
 }
@@ -172,32 +214,23 @@ class CryptoHdKey {
 
   CryptoHdKey.fromCbor(Uint8List payload) {
     try {
-      final map = cbor.decode(payload) as Map;
-
-      keyData = (map[3] as CborList).cast<int>();
-      chainCode = (map[4] as CborList).cast<int>();
-
-      final networkData = map[5] as CborMap;
-      final networkValue = (networkData[CborValue(2)] as CborSmallInt?)?.value;
-      network = networkValue == 0 ? HdKeyNetwork.mainnet : HdKeyNetwork.testnet;
-      parentFingerprint = (map[8] as CborSmallInt?)?.value;
-
-      final pathData = map[6] as CborMap;
-      final path = pathData[CborValue(1)] as CborList?;
-      if (path != null) {
-        keypath = [];
-        for (int i = 0; i < path.length; i += 2) {
-          keypath!.add(
-            Index(
-              (path[i] as CborSmallInt).value,
-              (path[i + 1] as CborBool).value,
-            ),
-          );
-        }
+      final rawMap = cbor.decode(payload) as Map;
+      final map = <int, dynamic>{};
+      for (final entry in rawMap.entries) {
+        map[_cborInt(entry.key)] = entry.value;
       }
+      CryptoHdKey.fromCborMap(map)._copyTo(this);
     } catch (e) {
       throw InvalidCborData();
     }
+  }
+
+  void _copyTo(CryptoHdKey target) {
+    target.keyData = keyData;
+    target.chainCode = chainCode;
+    target.network = network;
+    target.parentFingerprint = parentFingerprint;
+    target.keypath = keypath;
   }
 
   CryptoHdKey.fromCborMap(Map map) {
@@ -232,6 +265,18 @@ class CryptoHdKey {
     } catch (e) {
       throw InvalidCborData();
     }
+  }
+
+  @override
+  String toString() {
+    if (network == null || derivationPath == null || xpub == null) {
+      throw InvalidCborData();
+    }
+    return Descriptor.fromStrings(
+      fingerprint: (parentFingerprint ?? 0).toRadixString(16).padLeft(8, '0'),
+      path: derivationPath!,
+      xpub: xpub!,
+    ).external;
   }
 }
 
@@ -439,6 +484,12 @@ class CryptoAccount {
   }
 }
 
+int _cborInt(Object key) {
+  if (key is CborSmallInt) return key.value;
+  if (key is int) return key;
+  throw InvalidCborData();
+}
+
 String? _derivationToBipType(String path) {
   if (path.contains("/84'") || path.contains("/84h")) return 'bip84';
   if (path.contains("/49'") || path.contains("/49h")) return 'bip49';
@@ -551,6 +602,18 @@ class UnsupportedUrType extends UrQrError {
 
 class InvalidCborData extends UrQrError {
   InvalidCborData() : super('Invalid CBOR data format');
+}
+
+class InvalidUrSequence extends UrQrError {
+  InvalidUrSequence() : super('Invalid UR sequence format');
+}
+
+class UrSequenceLimitExceeded extends UrQrError {
+  UrSequenceLimitExceeded() : super('UR sequence exceeds safe scanner limits');
+}
+
+class UrStreamChanged extends UrQrError {
+  UrStreamChanged() : super('UR stream parameters changed');
 }
 
 class MissingMasterFingerprint extends UrQrError {

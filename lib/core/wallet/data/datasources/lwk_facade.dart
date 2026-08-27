@@ -25,11 +25,17 @@ class LwkFacade {
   static Future<void> delete(WalletModel walletModel) async {
     try {
       final dbPath = await _getDbPath(walletModel.hexId);
-      final dbFile = File(dbPath);
+      // dbPath is the base dir lwk_wollet's with_legacy_fs_store builds on
+      // (dbPath/<network>/enc_cache/<descriptor hash>/...), not a file —
+      // File(dbPath).exists() always returns false for it, so the
+      // UpdateOnDifferentStatus heal (see lwk_wallet_datasource.dart) that
+      // calls this to wipe the cache and retry always threw
+      // WalletError.notFound instead of actually deleting anything.
+      final dbDir = Directory(dbPath);
 
-      if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
+      if (!await dbDir.exists()) throw WalletError.notFound(walletModel.id);
       log.fine('Found LwkDb');
-      await dbFile.delete(recursive: true);
+      await dbDir.delete(recursive: true);
     } catch (e) {
       log.warning('Failed to delete LwkDb', error: e);
       rethrow;
@@ -42,8 +48,8 @@ class LwkFacade {
         throw Exception('Wallet is not an LWK wallet');
       }
       final network = walletModel.isTestnet
-          ? lwk.Network.testnet
-          : lwk.Network.mainnet;
+          ? lwk.LiquidNetwork.testnet
+          : lwk.LiquidNetwork.mainnet;
       final descriptor = lwk.Descriptor(
         ctDescriptor: walletModel.combinedCtDescriptor,
       );
@@ -69,8 +75,8 @@ class LwkFacade {
         throw Exception('Wallet is not an LWK wallet');
       }
       final network = walletModel.isTestnet
-          ? lwk.Network.testnet
-          : lwk.Network.mainnet;
+          ? lwk.LiquidNetwork.testnet
+          : lwk.LiquidNetwork.mainnet;
       final descriptor = await lwk.Descriptor.newConfidential(
         mnemonic: walletModel.mnemonic,
         network: network,

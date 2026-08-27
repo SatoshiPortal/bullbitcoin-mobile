@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -30,9 +30,8 @@ class TransactionsScreen extends StatelessWidget {
             context.pop();
           },
           actionIcon: Icons.file_download,
-          onAction: () => context.pushNamed(
-            TransactionsRoute.exportTransactions.name,
-          ),
+          onAction: () =>
+              context.pushNamed(TransactionsRoute.exportTransactions.name),
         ),
         backgroundColor: context.appColors.onPrimary,
         elevation: 0,
@@ -50,10 +49,9 @@ class _Screen extends StatelessWidget {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return BBPullableBody(
       onRefresh: () async {
-        // User gesture — bypass the coordinator throttle.
-        final bloc = context.read<WalletBloc>();
-        bloc.add(const WalletRefreshed(force: true));
-        await bloc.stream.firstWhere((state) => !state.isRefreshing);
+        // Wait for the chain sync (bitcoin + liquid + swaps) to actually
+        // finish before reloading the local tx list.
+        await context.read<WalletBloc>().refresh();
         if (!context.mounted) return;
         await context.read<TransactionsCubit>().loadTxs();
       },
@@ -65,7 +63,10 @@ class _Screen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBText(
-                context.loc.transactionError(err.toString()),
+                // `err` is a domain failure whose `toString()` is the Dart
+                // default ("Instance of '…'"). Never interpolate it into a
+                // user-facing string; the raw reason belongs in the logs.
+                context.loc.oopsSomethingWentWrong,
                 style: context.font.bodyLarge,
                 color: context.appColors.error,
               ),

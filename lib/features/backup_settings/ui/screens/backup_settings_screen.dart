@@ -2,17 +2,18 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -37,46 +38,68 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
-              title: context.loc.backupSettingsScreenTitle,
-              onBack: () => context.pop(),
+    return BlocListener<BackupSettingsCubit, BackupSettingsState>(
+      listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
+      listener: (context, state) {
+        SnackBarUtils.showSnackBar(
+          context,
+          state.failure!.toTranslated(context),
+        );
+      },
+      child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+        builder: (context, state) {
+          final items = settingsItemsOf(context);
+          return Scaffold(
+            appBar: AppBar(
+              forceMaterialTransparency: true,
+              automaticallyImplyLeading: false,
+              flexibleSpace: TopBar(
+                title: context.loc.backupSettingsScreenTitle,
+                onBack: () => context.pop(),
+              ),
             ),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: _BackupTestStatusWidget(),
-                    ),
-                    const Gap(40),
-                    const _StartBackupButton(),
-                    if (state.lastEncryptedBackup != null)
-                      const _ViewVaultKeyButton(),
-                    if (state.lastEncryptedBackup != null ||
-                        state.lastPhysicalBackup != null)
-                      const _TestBackupButton(),
-                    const _RecoverBullSettingsButton(),
-                    const _Bip329LabelsButton(),
-                    const _TransactionHistoryButton(),
-                    if (state.error != null) ErrorWidget(error: state.error!),
-                  ],
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: _BackupTestStatusWidget(),
+                      ),
+                      const Gap(40),
+                      items
+                          .byId(SettingsItemId.startBackup)
+                          .buildTile(
+                            context,
+                            iconColor: context.appColors.primary,
+                          ),
+                      if (state.lastEncryptedBackup != null)
+                        const _ViewVaultKeyButton(),
+                      if (state.lastEncryptedBackup != null ||
+                          state.lastPhysicalBackup != null)
+                        const _TestBackupButton(),
+                      items
+                          .byId(SettingsItemId.recoverbull)
+                          .buildTile(
+                            context,
+                            iconColor: context.appColors.secondary,
+                            textColor: context.appColors.secondary,
+                          ),
+                      items.byId(SettingsItemId.labels).buildTile(context),
+                      items
+                          .byId(SettingsItemId.transactionHistory)
+                          .buildTile(context),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -150,23 +173,6 @@ class _TestBackupButton extends StatelessWidget {
   }
 }
 
-class _StartBackupButton extends StatelessWidget {
-  const _StartBackupButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.save_as,
-      iconColor: context.appColors.primary,
-      title: context.loc.backupSettingsStartBackup,
-      onTap: () => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
-      ),
-    );
-  }
-}
-
 class _ViewVaultKeyButton extends StatelessWidget {
   const _ViewVaultKeyButton();
 
@@ -187,103 +193,6 @@ class _ViewVaultKeyButton extends StatelessWidget {
             ),
           );
         }
-      },
-    );
-  }
-}
-
-class ErrorWidget extends StatelessWidget {
-  final Object error;
-
-  const ErrorWidget({required this.error});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.appColors.error),
-      ),
-      child: Column(
-        crossAxisAlignment: .start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: context.appColors.error,
-                size: 20,
-              ),
-              const Gap(8),
-              Text(
-                context.loc.backupSettingsError,
-                style: context.font.titleSmall?.copyWith(
-                  color: context.appColors.error,
-                  fontWeight: .bold,
-                ),
-              ),
-            ],
-          ),
-          const Gap(8),
-          Text(
-            error.toString(),
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.error,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TransactionHistoryButton extends StatelessWidget {
-  const _TransactionHistoryButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.file_download,
-      title: context.loc.transactionHistoryTitle,
-      onTap: () =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
-    );
-  }
-}
-
-class _Bip329LabelsButton extends StatelessWidget {
-  const _Bip329LabelsButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.sell,
-      title: context.loc.backupSettingsLabelsButton,
-      onTap: () => context.push(LabelsRouter.route.path),
-    );
-  }
-}
-
-class _RecoverBullSettingsButton extends StatelessWidget {
-  const _RecoverBullSettingsButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.cloud_circle,
-      iconColor: context.appColors.secondary,
-      textColor: context.appColors.secondary,
-      title: context.loc.backupSettingsRecoverBullSettings,
-      onTap: () {
-        context.pushNamed(
-          RecoverBullRoute.recoverbullFlows.name,
-          extra: RecoverBullFlowsExtra(
-            flow: RecoverBullFlow.settings,
-            vault: null,
-          ),
-        );
       },
     );
   }

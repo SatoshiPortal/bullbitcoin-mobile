@@ -27,35 +27,34 @@ class RecoverBullGoogleDriveRouter {
       final flow = state.extra! as RecoverBullFlow;
 
       return BlocProvider(
-        create:
-            (_) => RecoverBullGoogleDriveBloc(
-              flow: flow,
-              fetchAllDriveFileMetadataUsecase:
-                  locator<FetchAllDriveFileMetadataUsecase>(),
-              fetchDriveBackupUsecase: locator<FetchVaultFromDriveUsecase>(),
-              deleteDriveFileUsecase: locator<DeleteDriveFileUsecase>(),
-              exportDriveFileUsecase: locator<ExportDriveFileUsecase>(),
-            ),
-        child: BlocListener<
-          RecoverBullGoogleDriveBloc,
-          RecoverBullGoogleDriveState
-        >(
-          listenWhen:
-              (previous, current) =>
+        create: (_) => RecoverBullGoogleDriveBloc(
+          flow: flow,
+          fetchAllDriveFileMetadataUsecase:
+              locator<FetchAllDriveFileMetadataUsecase>(),
+          fetchDriveBackupUsecase: locator<FetchVaultFromDriveUsecase>(),
+          deleteDriveFileUsecase: locator<DeleteDriveFileUsecase>(),
+          exportDriveFileUsecase: locator<ExportDriveFileUsecase>(),
+        ),
+        child:
+            BlocListener<
+              RecoverBullGoogleDriveBloc,
+              RecoverBullGoogleDriveState
+            >(
+              listenWhen: (previous, current) =>
                   previous.selectedVault == null &&
                       current.selectedVault != null ||
                   previous.selectedVault != current.selectedVault,
-          listener: (context, state) {
-            context.pushNamed(
-              RecoverBullRoute.recoverbullFlows.name,
-              extra: RecoverBullFlowsExtra(
-                flow: flow,
-                vault: state.selectedVault,
-              ),
-            );
-          },
-          child: const DriveVaultsListPage(),
-        ),
+              listener: (context, state) {
+                context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(
+                    flow: flow,
+                    vault: state.selectedVault,
+                  ),
+                );
+              },
+              child: const DriveVaultsListPage(),
+            ),
       );
     },
   );

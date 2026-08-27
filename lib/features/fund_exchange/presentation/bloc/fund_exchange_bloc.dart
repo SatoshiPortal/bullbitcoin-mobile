@@ -20,17 +20,11 @@ part 'fund_exchange_bloc.freezed.dart';
 
 class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required GetFundingDetailsUsecase getFundingDetailsUsecase,
-    required ListFundingInstitutionsUsecase listFundingInstitutionsUsecase,
-    required RegisterResponsibilityConsentUsecase
-    registerResponsibilityConsentUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _getFundingDetailsUsecase = getFundingDetailsUsecase,
-       _listFundingInstitutionsUsecase = listFundingInstitutionsUsecase,
-       _registerResponsibilityConsentUsecase =
-           registerResponsibilityConsentUsecase,
-       super(const FundExchangeState()) {
+    required this._getExchangeUserSummaryUsecase,
+    required this._getFundingDetailsUsecase,
+    required this._listFundingInstitutionsUsecase,
+    required this._registerResponsibilityConsentUsecase,
+  }) : super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeFundingInstitutionsRequested>(
       _onFundingInstitutionsRequested,
@@ -83,6 +77,10 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         ListFundingInstitutionsQuery(jurisdictionCode: event.jurisdiction.code),
       );
 
+      if (result.institutions.isEmpty) {
+        throw const FetchInstitutionsFailed.emptyList();
+      }
+
       emit(state.copyWith(fundingInstitutions: result.institutions));
     } on FundExchangeApplicationError catch (e) {
       emit(
@@ -105,7 +103,9 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     if (state.shouldShowScamWarningConsent) {
       emit(
         state.copyWith(
-          pendingConsentAction: PendingFundingDetailsAction(event.fundingMethod),
+          pendingConsentAction: PendingFundingDetailsAction(
+            event.fundingMethod,
+          ),
         ),
       );
       return;
@@ -245,6 +245,14 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     FundExchangeFundingDetailsErrorCleared event,
     Emitter<FundExchangeState> emit,
   ) async {
-    emit(state.copyWith(getExchangeFundingDetailsException: null));
+    emit(
+      state.copyWith(
+        getExchangeFundingDetailsException: null,
+        listFundingInstitutionsException: null,
+        fundingInstitutions: event.resetInstitutions
+            ? null
+            : state.fundingInstitutions,
+      ),
+    );
   }
 }

@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/bip85/domain/activate_bip85_derivation_usecase.da
 import 'package:bb_mobile/core/bip85/domain/alias_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/bip85/domain/fetch_all_derivations_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/revoke_bip85_derivation_usecase.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -30,6 +30,7 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
@@ -38,14 +39,10 @@ class Bip85DerivationsLocator {
         bip85Repository: locator<Bip85Repository>(),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
-    locator.registerFactory<FetchAllBip85DerivationsUsecase>(
-      () => FetchAllBip85DerivationsUsecase(
-        bip85Repository: locator<Bip85Repository>(),
-      ),
-    );
     locator.registerFactory<AliasBip85DerivationUsecase>(
       () => AliasBip85DerivationUsecase(
         bip85Repository: locator<Bip85Repository>(),

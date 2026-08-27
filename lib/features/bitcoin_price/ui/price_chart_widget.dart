@@ -7,13 +7,14 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 extension _CurrencyIconExtension on String {
@@ -46,101 +47,114 @@ class PriceChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PriceChartCubit, PriceChartState>(
-      builder: (context, state) {
-        final rates = state.prices;
-        final hasNoLocalData = rates.isEmpty;
+    return BlocListener<BitcoinPriceBloc, BitcoinPriceState>(
+      listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
+      listener: (context, state) {
+        BullSnackBar.show(
+          context,
+          message: state.failure!.toTranslated(context),
+        );
+      },
+      child: BlocBuilder<PriceChartCubit, PriceChartState>(
+        builder: (context, state) {
+          final rates = state.prices;
+          final hasNoLocalData = rates.isEmpty;
 
-        if (state.error != null && hasNoLocalData) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BBText(
-                  context.loc.priceChartFailedToLoad,
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.onPrimary,
-                  ),
-                ),
-                const Gap(16),
-                IconButton(
-                  onPressed: () {
-                    context.read<PriceChartCubit>().loadPriceHistory(
-                      currency: state.currency,
-                    );
-                  },
-                  icon: Icon(
-                    Icons.refresh,
-                    color: context.appColors.onPrimary,
-                    size: 32,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (state.isLoading || hasNoLocalData) {
-          if (state.isLoading) {
+          if (state.failure != null && hasNoLocalData) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: context.appColors.onPrimary),
-                  const Gap(16),
                   BBText(
-                    context.loc.priceChartFetchingHistory,
+                    state.failure!.toTranslated(context),
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.onPrimary,
+                    ),
+                  ),
+                  const Gap(16),
+                  IconButton(
+                    onPressed: () {
+                      context.read<PriceChartCubit>().loadPriceHistory(
+                        currency: state.currency,
+                      );
+                    },
+                    icon: Icon(
+                      Icons.refresh,
+                      color: context.appColors.onPrimary,
+                      size: 32,
                     ),
                   ),
                 ],
               ),
             );
           }
-          return const SizedBox.shrink();
-        }
-        final selectedIndex = state.selectedDataPointIndex;
-        final currency =
-            state.currency ??
-            context.select((SettingsCubit cubit) => cubit.state.currencyCode) ??
-            'CAD';
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 40.0),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  const Gap(72),
-                  if (selectedIndex != null && selectedIndex < rates.length)
-                    _PriceDisplay(
-                      rate: rates[selectedIndex],
-                      currency: currency,
-                    )
-                  else if (rates.isNotEmpty)
-                    _PriceDisplay(rate: rates.last, currency: currency),
-                  const Gap(16),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: _Chart(
-                        rates: rates,
-                        selectedIndex: selectedIndex,
-                        onTap: (index) {
-                          context.read<PriceChartCubit>().selectDataPoint(
-                            index,
-                          );
-                        },
+          if (state.isLoading || hasNoLocalData) {
+            if (state.isLoading) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: context.appColors.onPrimary,
+                    ),
+                    const Gap(16),
+                    BBText(
+                      context.loc.priceChartFetchingHistory,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onPrimary,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          final selectedIndex = state.selectedDataPointIndex;
+          final currency =
+              state.currency ??
+              context.select(
+                (SettingsCubit cubit) => cubit.state.currencyCode,
+              ) ??
+              'CAD';
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 40.0),
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    const Gap(72),
+                    if (selectedIndex != null && selectedIndex < rates.length)
+                      _PriceDisplay(
+                        rate: rates[selectedIndex],
+                        currency: currency,
+                      )
+                    else if (rates.isNotEmpty)
+                      _PriceDisplay(rate: rates.last, currency: currency),
+                    const Gap(16),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: _Chart(
+                          rates: rates,
+                          selectedIndex: selectedIndex,
+                          onTap: (index) {
+                            context.read<PriceChartCubit>().selectDataPoint(
+                              index,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -294,10 +308,7 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
   late Animation<double> _lineAnimation;
   late AnimationController _pulseAnimationController;
   late Animation<double> _pulseAnimation;
-  late AnimationController _dotPositionController;
-  late Animation<double> _dotPositionAnimation;
-  int _previousIndex = 0;
-  bool _isDragging = false;
+  late final Listenable _chartAnimations;
 
   @override
   void initState() {
@@ -316,42 +327,25 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _pulseAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
-    _pulseAnimationController.repeat(reverse: true);
+    _pulseAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0.8, end: 1.2), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: 1.2, end: 1.0), weight: 1),
+        ]).animate(
+          CurvedAnimation(
+            parent: _pulseAnimationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+    _pulseAnimationController.forward();
 
-    _dotPositionController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _dotPositionAnimation = CurvedAnimation(
-      parent: _dotPositionController,
-      curve: Curves.easeOutCubic,
-    );
-  }
-
-  @override
-  void didUpdateWidget(_Chart oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    final currentIndex =
-        widget.selectedIndex ?? _touchedIndex ?? (widget.rates.length - 1);
-    if (currentIndex != _previousIndex && !_isDragging) {
-      _previousIndex = currentIndex;
-      _dotPositionController.reset();
-      _dotPositionController.forward();
-    }
+    _chartAnimations = Listenable.merge([_lineAnimation, _pulseAnimation]);
   }
 
   @override
   void dispose() {
     _lineAnimationController.dispose();
     _pulseAnimationController.dispose();
-    _dotPositionController.dispose();
     super.dispose();
   }
 
@@ -370,11 +364,6 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
         widget.selectedIndex ?? _touchedIndex ?? rates.length - 1;
 
     return GestureDetector(
-      onHorizontalDragStart: (_) {
-        setState(() {
-          _isDragging = true;
-        });
-      },
       onHorizontalDragUpdate: (details) {
         final box = context.findRenderObject() as RenderBox?;
         if (box == null) return;
@@ -392,11 +381,6 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
           widget.onTap(index);
         }
       },
-      onHorizontalDragEnd: (_) {
-        setState(() {
-          _isDragging = false;
-        });
-      },
       onTapDown: (details) {
         final box = context.findRenderObject() as RenderBox?;
         if (box == null) return;
@@ -412,28 +396,20 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
         });
         widget.onTap(index);
       },
-      child: AnimatedBuilder(
-        animation: Listenable.merge([
-          _lineAnimation,
-          _pulseAnimation,
-          _dotPositionAnimation,
-        ]),
-        builder: (context, child) {
-          return CustomPaint(
-            size: Size.infinite,
-            painter: _ChartPainter(
-              prices: prices,
-              minPrice: minPrice - padding,
-              maxPrice: maxPrice + padding,
-              lineColor: context.appColors.onPrimary,
-              selectedIndex: displayIndex,
-              lineAnimation: _lineAnimation.value,
-              pulseScale: _pulseAnimation.value,
-              dotColor: context.appColors.onTertiary,
-              borderColor: context.appColors.onPrimary,
-            ),
-          );
-        },
+      child: CustomPaint(
+        size: Size.infinite,
+        painter: _ChartPainter(
+          prices: prices,
+          minPrice: minPrice - padding,
+          maxPrice: maxPrice + padding,
+          lineColor: context.appColors.onPrimary,
+          selectedIndex: displayIndex,
+          lineAnimation: _lineAnimation,
+          pulseAnimation: _pulseAnimation,
+          repaint: _chartAnimations,
+          dotColor: context.appColors.onTertiary,
+          borderColor: context.appColors.onPrimary,
+        ),
       ),
     );
   }
@@ -447,18 +423,19 @@ class _ChartPainter extends CustomPainter {
     required this.lineColor,
     this.selectedIndex,
     required this.lineAnimation,
-    required this.pulseScale,
+    required this.pulseAnimation,
+    required Listenable repaint,
     required this.dotColor,
     required this.borderColor,
-  });
+  }) : super(repaint: repaint);
 
   final List<double> prices;
   final double minPrice;
   final double maxPrice;
   final Color lineColor;
   final int? selectedIndex;
-  final double lineAnimation;
-  final double pulseScale;
+  final Animation<double> lineAnimation;
+  final Animation<double> pulseAnimation;
   final Color dotColor;
   final Color borderColor;
 
@@ -481,7 +458,7 @@ class _ChartPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    final visibleCount = (prices.length * lineAnimation).ceil();
+    final visibleCount = (prices.length * lineAnimation.value).ceil();
     final startIndex = (prices.length - visibleCount).clamp(
       0,
       prices.length - 1,
@@ -541,7 +518,7 @@ class _ChartPainter extends CustomPainter {
       final normalizedPrice = (prices[selectedIndex!] - minPrice) / priceRange;
       final y = size.height - (normalizedPrice * size.height);
 
-      final dotRadius = 6.0 * pulseScale;
+      final dotRadius = 6.0 * pulseAnimation.value;
       final glowRadius = dotRadius + 4;
 
       final glowPaint = Paint()
@@ -570,7 +547,10 @@ class _ChartPainter extends CustomPainter {
   bool shouldRepaint(_ChartPainter oldDelegate) {
     return oldDelegate.prices != prices ||
         oldDelegate.selectedIndex != selectedIndex ||
-        oldDelegate.lineAnimation != lineAnimation ||
-        oldDelegate.pulseScale != pulseScale;
+        oldDelegate.lineColor != lineColor ||
+        oldDelegate.dotColor != dotColor ||
+        oldDelegate.borderColor != borderColor ||
+        oldDelegate.minPrice != minPrice ||
+        oldDelegate.maxPrice != maxPrice;
   }
 }

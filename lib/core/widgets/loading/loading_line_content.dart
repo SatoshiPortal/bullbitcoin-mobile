@@ -25,7 +25,11 @@ class LoadingLineContent extends StatelessWidget {
           mainAxisSize: .min,
           crossAxisAlignment: .start,
           children: [
-            Container(width: width, height: height, color: context.appColors.surface),
+            Container(
+              width: width,
+              height: height,
+              color: context.appColors.surface,
+            ),
           ],
         ),
       ),

@@ -6,10 +6,9 @@ class CheckBackupUsecase {
   final SettingsRepository _settingsRepository;
 
   CheckBackupUsecase({
-    required WalletRepository walletRepository,
-    required SettingsRepository settingsRepository,
-  }) : _walletRepository = walletRepository,
-       _settingsRepository = settingsRepository;
+    required this._walletRepository,
+    required this._settingsRepository,
+  });
 
   Future<bool> execute() async {
     try {

@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -34,9 +36,17 @@ class LabelsTableItem extends StatelessWidget {
               child: LabelsWidget(
                 labels: labels,
                 onDelete: (label) async {
-                  await context
+                  final result = await context
                       .read<TransactionDetailsCubit>()
                       .deleteTransactionNote(label);
+                  if (result case Err(:final failure)) {
+                    if (context.mounted) {
+                      SnackBarUtils.showSnackBar(
+                        context,
+                        failure.toTranslated(context),
+                      );
+                    }
+                  }
                 },
               ),
             ),

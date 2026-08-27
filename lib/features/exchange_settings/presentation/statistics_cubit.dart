@@ -4,9 +4,8 @@ import 'package:bb_mobile/features/exchange_settings/presentation/statistics_sta
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StatisticsCubit extends Cubit<StatisticsState> {
-  StatisticsCubit({required GetOrderStatsUsecase getOrderStatsUsecase})
-    : _getOrderStatsUsecase = getOrderStatsUsecase,
-      super(const StatisticsState());
+  StatisticsCubit({required this._getOrderStatsUsecase})
+    : super(const StatisticsState());
 
   final GetOrderStatsUsecase _getOrderStatsUsecase;
 

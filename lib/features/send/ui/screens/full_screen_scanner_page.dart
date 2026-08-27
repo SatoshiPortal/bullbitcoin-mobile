@@ -36,8 +36,8 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
     } catch (e) {
       data = (qr, null);
       widget.onScannedPaymentRequest(data);
+      if (mounted) context.pop();
     }
-    setState(() {});
   }
 
   @override
@@ -58,10 +58,9 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
                 textStyle: context.font.labelMedium,
                 textColor: context.appColors.onPrimary,
                 onPressed: () {},
-                label:
-                    data.$1.length > 30
-                        ? '${data.$1.substring(0, 10)}…${data.$1.substring(data.$1.length - 10)}'
-                        : data.$1,
+                label: data.$1.length > 30
+                    ? '${data.$1.substring(0, 10)}…${data.$1.substring(data.$1.length - 10)}'
+                    : data.$1,
                 bgColor: context.appColors.transparent,
               ),
             ),

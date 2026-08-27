@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,154 +34,150 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
         ),
         extendBodyBehindAppBar: true,
         body: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                  const Gap(32),
-                  Center(
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          Assets.logos.bbLogoSmall.path,
-                          width: 120,
-                          height: 120,
-                        ),
-                        const Gap(16),
-                        BBText(
-                          context.loc.exchangeBrandName,
-                          style: AppFonts.textTitleTheme.textStyle.copyWith(
-                            color: context.appColors.primary,
-                            fontSize: 64,
-                          ),
-                        ),
-                        const Gap(12),
-                        BBText(
-                          context.loc.exchangeLandingRecommendedExchange,
-                          style: context.font.headlineSmall?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                      ],
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              const Gap(32),
+              Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                      Assets.logos.bbLogoSmall.path,
+                      width: 120,
+                      height: 120,
                     ),
-                  ),
-                  const Gap(32),
-                  // Features List Box
-                  Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      border: Border.all(
+                    const Gap(16),
+                    BBText(
+                      context.loc.exchangeBrandName,
+                      style: AppFonts.textTitleTheme.textStyle.copyWith(
                         color: context.appColors.primary,
-                        width: 0,
+                        fontSize: 64,
                       ),
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        BBText(
-                          context.loc.exchangeFeatureSelfCustody,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                        const Gap(12),
-                        BBText(
-                          context.loc.exchangeFeatureDcaOrders,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                        const Gap(12),
-                        BBText(
-                          context.loc.exchangeFeatureSellBitcoin,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                        const Gap(12),
-                        BBText(
-                          context.loc.exchangeFeatureBankTransfers,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                        const Gap(12),
-                        BBText(
-                          context.loc.exchangeFeatureCustomerSupport,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                        const Gap(12),
-                        BBText(
-                          context.loc.exchangeFeatureUnifiedHistory,
-                          style: context.font.bodyLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                      ],
+                    const Gap(12),
+                    BBText(
+                      context.loc.exchangeLandingRecommendedExchange,
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
                     ),
-                  ),
-                  const Gap(16),
-                  // Disclaimer Box
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: context.appColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: .start,
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: context.appColors.onSurface,
-                          size: 20,
-                        ),
-                        const Gap(8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: .start,
-                            children: [
-                              BBText(
-                                context
-                                    .loc
-                                    .exchangeLandingDisclaimerNotAvailable,
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.appColors.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Gap(40),
-                  // Call-to-Action Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: BBButton.big(
-                      label: context.loc.exchangeGoToWebsiteButton,
-                      onPressed: () async {
-                        final Uri url = Uri.parse(
-                          'https://app.bullbitcoin.com',
-                        );
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(
-                            url,
-                            mode: LaunchMode.externalApplication,
-                          );
-                        }
-                      },
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                    ),
-                  ),
-                  const Gap(32),
-                ],
+                  ],
+                ),
               ),
-            ),
+              const Gap(32),
+              // Features List Box
+              Container(
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: context.appColors.primary,
+                    width: 0,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    BBText(
+                      context.loc.exchangeFeatureSelfCustody,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(12),
+                    BBText(
+                      context.loc.exchangeFeatureDcaOrders,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(12),
+                    BBText(
+                      context.loc.exchangeFeatureSellBitcoin,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(12),
+                    BBText(
+                      context.loc.exchangeFeatureBankTransfers,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(12),
+                    BBText(
+                      context.loc.exchangeFeatureCustomerSupport,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const Gap(12),
+                    BBText(
+                      context.loc.exchangeFeatureUnifiedHistory,
+                      style: context.font.bodyLarge?.copyWith(
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(16),
+              // Disclaimer Box
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.appColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: context.appColors.onSurface,
+                      size: 20,
+                    ),
+                    const Gap(8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          BBText(
+                            context.loc.exchangeLandingDisclaimerNotAvailable,
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(40),
+              // Call-to-Action Button
+              SizedBox(
+                width: double.infinity,
+                child: BBButton.big(
+                  label: context.loc.exchangeGoToWebsiteButton,
+                  onPressed: () async {
+                    final Uri url = Uri.parse('https://app.bullbitcoin.com');
+                    if (await canLaunchUrl(url)) {
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  },
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
+                ),
+              ),
+              const Gap(32),
+            ],
+          ),
+        ),
       ),
     );
   }

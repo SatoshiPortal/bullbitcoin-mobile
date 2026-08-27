@@ -10,11 +10,12 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart'; // FundExchangePresentationError
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class FundExchangeCopBankTransferInputScreen extends StatefulWidget {
   const FundExchangeCopBankTransferInputScreen({super.key});
@@ -314,12 +315,7 @@ class _FundExchangeCopBankTransferInputScreenState
                     ),
                     const Gap(32.0),
                     if (_fundingDetailsError != null) ...[
-                      BBText(
-                        context.loc.fundExchangeErrorLoadingDetails,
-                        style: theme.textTheme.bodyMedium,
-                        color: theme.colorScheme.error,
-                        textAlign: TextAlign.center,
-                      ),
+                      FundExchangeErrorText(error: _fundingDetailsError!),
                       const Gap(8.0),
                     ],
                     BBButton.big(

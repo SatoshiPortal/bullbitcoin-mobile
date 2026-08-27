@@ -12,18 +12,17 @@ class LiquidWalletRepository {
   final LwkWalletDatasource _lwkWallet;
 
   LiquidWalletRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _seed = seedDatasource,
+  }) : _seed = seedDatasource,
        _lwkWallet = lwkWalletDatasource;
 
   Future<String> buildPset({
     required String walletId,
     required String address,
     int? amountSat,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     bool? drain,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
@@ -45,7 +44,7 @@ class LiquidWalletRepository {
       wallet: wallet,
       address: address,
       amountSat: amountSat,
-      networkFee: networkFee,
+      feeRate: feeRate,
       drain: drain ?? false,
     );
 
@@ -55,6 +54,48 @@ class LiquidWalletRepository {
   Future<(int, int)> getPsetSizeAndAbsoluteFees({required String pset}) async {
     final (size, fees) = await _lwkWallet.decodeAbsoluteFeesFromPset(pset);
     return (size, fees);
+  }
+
+  Future<int> getLbtcUtxoCount({required String walletId}) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isLiquid) {
+      throw Exception('Wallet $walletId is not a Liquid wallet');
+    }
+    final wallet = WalletModel.publicLwk(
+      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      isTestnet: metadata.isTestnet,
+      id: metadata.id,
+    );
+    return _lwkWallet.getLbtcUtxoCount(wallet: wallet);
+  }
+
+  Future<List<String>> consolidate({
+    required String walletId,
+    required RelativeFee feeRate,
+    required int highUtxoThreshold,
+    required int maximumInputs,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+    if (!metadata.isLiquid) {
+      throw Exception('Wallet $walletId is not a Liquid wallet');
+    }
+    final wallet = WalletModel.publicLwk(
+      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      isTestnet: metadata.isTestnet,
+      id: metadata.id,
+    );
+    return _lwkWallet.consolidate(
+      wallet: wallet,
+      feeRate: feeRate,
+      highUtxoThreshold: highUtxoThreshold,
+      maximumInputs: maximumInputs,
+    );
   }
 
   Future<String> signPset({

@@ -61,12 +61,7 @@ class FileUploadResult {
 }
 
 /// Status of a file in the upload queue
-enum FileUploadStatus {
-  pending,
-  uploading,
-  success,
-  failed,
-}
+enum FileUploadStatus { pending, uploading, success, failed }
 
 /// Entity representing a file in the upload process
 class UploadingFile {
@@ -102,10 +97,7 @@ class FileValidationResult {
   final bool isValid;
   final FileValidationError? error;
 
-  const FileValidationResult({
-    required this.isValid,
-    this.error,
-  });
+  const FileValidationResult({required this.isValid, this.error});
 
   factory FileValidationResult.valid() {
     return const FileValidationResult(isValid: true);

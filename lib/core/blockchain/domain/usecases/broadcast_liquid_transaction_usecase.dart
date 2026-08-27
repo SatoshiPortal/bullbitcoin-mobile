@@ -8,9 +8,8 @@ class BroadcastLiquidTransactionUsecase {
 
   BroadcastLiquidTransactionUsecase({
     required LiquidBlockchainRepository liquidBlockchainRepository,
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository,
-       _liquidBlockchain = liquidBlockchainRepository;
+    required this._settingsRepository,
+  }) : _liquidBlockchain = liquidBlockchainRepository;
 
   Future<String> execute(String signedPset, {bool? isTestnet}) async {
     try {

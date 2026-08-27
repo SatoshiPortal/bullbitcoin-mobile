@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
@@ -42,20 +41,32 @@ class ReceiveRouter {
       //  of the incoming route
       final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
 
-      // Make sure the ReceiveScaffold with the network selection is not rebuild
-      //  when switching networks, so keep it outside of the BlocProvider.
-      return ReceiveScaffold(
-        wallet: wallet,
-        child: BlocProvider<ReceiveBloc>(
-          create: (_) => locator<ReceiveBloc>(param1: wallet),
+      // The BlocProvider wraps the whole ReceiveScaffold (not just its child)
+      //  so the scaffold's TopBar can host a bloc-aware payjoin toggle. The
+      //  scaffold itself doesn't listen — it only rebuilds via the narrowly
+      //  scoped selectors inside its TopBar action — so switching networks
+      //  still doesn't rebuild it.
+      return BlocProvider<ReceiveBloc>(
+        create: (_) => locator<ReceiveBloc>(param1: wallet),
+        child: ReceiveScaffold(
+          wallet: wallet,
           child: MultiBlocListener(
             listeners: [
               BlocListener<ReceiveBloc, ReceiveState>(
                 listenWhen: (previous, current) =>
                     // makes sure it doesn't go from payment received to payment in progress again
                     previous.isPaymentReceived != true &&
-                    previous.isPaymentInProgress != true &&
-                    current.isPaymentInProgress == true,
+                    ((previous.isPaymentInProgress != true &&
+                            current.isPaymentInProgress == true) ||
+                        // A payjoin session can be first observed past
+                        // `requested` (proposed, or already terminal) if the
+                        // stream subscription raced a fast sender or a resume:
+                        // any post-`started` status means the payjoin flow owns
+                        // the UX from here (see isPayjoinFlowOwningNavigation) —
+                        // navigate into the payjoin screen, which renders the
+                        // right in-progress or terminal flavor.
+                        (previous.isPayjoinFlowOwningNavigation != true &&
+                            current.isPayjoinFlowOwningNavigation == true)),
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final type = state.type;
@@ -66,14 +77,22 @@ class ReceiveRouter {
                   // it uses the root navigator and so doesn't have the ReceiveBloc
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
-                      state.payjoin?.status == PayjoinStatus.requested) {
-                    context.goNamed(
-                      ReceiveRoute.payjoinInProgress.name,
-                      extra: bloc,
-                    );
+                      state.isPayjoinFlowOwningNavigation) {
+                    if (state.payjoin?.isCompleted == true) {
+                      context.goNamed(
+                        TransactionsRoute.payjoinTransactionDetails.name,
+                        pathParameters: {'payjoinId': state.payjoin!.id},
+                        queryParameters: {'returnHome': 'true'},
+                      );
+                    } else {
+                      context.goNamed(
+                        ReceiveRoute.payjoinInProgress.name,
+                        extra: bloc,
+                      );
+                    }
                   } else if (type == ReceiveType.lightning) {
                     context.goNamed(
-                      ReceiveRoute.lightningPaymentInProgress.path,
+                      ReceiveRoute.lightningPaymentInProgress.name,
                       extra: bloc,
                     );
                   }
@@ -81,8 +100,21 @@ class ReceiveRouter {
               ),
               BlocListener<ReceiveBloc, ReceiveState>(
                 listenWhen: (previous, current) =>
+                    previous.hasTerminalOrderSwapFailure != true &&
+                    current.hasTerminalOrderSwapFailure,
+                listener: (context, state) {
+                  context.goNamed(ReceiveRoute.receiveLightning.name);
+                },
+              ),
+              BlocListener<ReceiveBloc, ReceiveState>(
+                listenWhen: (previous, current) =>
                     previous.isPaymentReceived != true &&
-                    current.isPaymentReceived == true,
+                    current.isPaymentReceived == true &&
+                    // The payjoin-in-progress screen (on the root navigator)
+                    // owns navigation once a payjoin session exists past
+                    // `started`; don't let this generic listener whisk the
+                    // user away before they can read the payjoin outcome.
+                    !current.isPayjoinFlowOwningNavigation,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final type = state.type;
@@ -128,8 +160,17 @@ class ReceiveRouter {
           //  in the bitcoin flow.
           final bloc = context.read<ReceiveBloc>();
           final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
-          bloc.add(ReceiveBitcoinStarted(wallet));
-          return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
+          // Same guard as the lightning and liquid routes: this pageBuilder
+          // re-runs when popping back from the child amount route, and an
+          // unconditional restart wipes the confirmed amount and message the
+          // user just entered there. Type mismatch only — comparing the
+          // route-extra wallet would revert an in-flow dropdown switch on
+          // pop-back (the extra still holds the wallet the flow was entered
+          // with), and a fresh entry always has a null type anyway.
+          if (bloc.state.type != ReceiveType.bitcoin) {
+            bloc.add(ReceiveBitcoinStarted(wallet));
+          }
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(
@@ -179,12 +220,8 @@ class ReceiveRouter {
           GoRoute(
             name: ReceiveRoute.lightningQr.name,
             path: ReceiveRoute.lightningQr.path,
-            pageBuilder: (context, state) {
-              final wallet = state.extra is Wallet
-                  ? state.extra! as Wallet
-                  : null;
-              return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
-            },
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveQrPage()),
             routes: [
               GoRoute(
                 name: ReceiveRoute.lightningAmount.name,
@@ -236,8 +273,7 @@ class ReceiveRouter {
             bloc.add(const ReceiveLiquidStarted());
           }
 
-          final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
-          return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(

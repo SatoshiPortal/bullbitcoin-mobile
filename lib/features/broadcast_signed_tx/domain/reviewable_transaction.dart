@@ -36,14 +36,18 @@ class ReviewableTransaction {
 
   /// Transaction fee in satoshis.
   /// For Liquid, uses the explicit fee field. For Bitcoin, computed as inputs − outputs.
-  int get feeSat => switch (transaction) {
-    LiquidTransaction(:final feeSat) => feeSat,
-    _ => totalInputsSat - totalOutputsSat,
-  };
+  int? get feeSat {
+    final fee = switch (transaction) {
+      LiquidTransaction(:final feeSat) => feeSat,
+      _ => totalInputsSat - totalOutputsSat,
+    };
+    return fee < 0 ? null : fee;
+  }
 
   /// Fee rate in sat/vbyte, or null if vsize is zero.
-  double? get feeRate =>
-      transaction.vsize > 0 ? feeSat / transaction.vsize : null;
+  double? get feeRate => transaction.vsize > 0 && feeSat != null
+      ? feeSat! / transaction.vsize
+      : null;
 
   /// Whether the change output is known.
   bool get hasChange => changeOutputIndex != null;

@@ -22,12 +22,9 @@ abstract class DefaultWalletsState with _$DefaultWalletsState {
 
   bool get hasDefaultWallets => defaultWallets?.hasAnyWallet ?? false;
 
-  String get currentBitcoinAddress =>
-      defaultWallets?.bitcoinAddress ?? '';
-  String get currentLightningAddress =>
-      defaultWallets?.lightningAddress ?? '';
-  String get currentLiquidAddress =>
-      defaultWallets?.liquidAddress ?? '';
+  String get currentBitcoinAddress => defaultWallets?.bitcoinAddress ?? '';
+  String get currentLightningAddress => defaultWallets?.lightningAddress ?? '';
+  String get currentLiquidAddress => defaultWallets?.liquidAddress ?? '';
 
   bool get isEditing => editingWalletType != null;
 
@@ -53,4 +50,3 @@ abstract class DefaultWalletsState with _$DefaultWalletsState {
     }
   }
 }
-

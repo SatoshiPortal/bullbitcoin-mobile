@@ -9,15 +9,17 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_canada_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_costa_rica_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_europe_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_method_list_tile.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_restricted_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class FundExchangeMethodSelectionScreen extends StatefulWidget {
   const FundExchangeMethodSelectionScreen({super.key});
@@ -83,6 +85,10 @@ class _FundExchangeMethodSelectionScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isFundingRestricted = context.select(
+      (FundExchangeBloc bloc) =>
+          bloc.state.isStarted && bloc.state.isFundingRestricted,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -121,75 +127,87 @@ class _FundExchangeMethodSelectionScreenState
                   style: theme.textTheme.displaySmall,
                 ),
                 const Gap(8.0),
-                BBText(
-                  context.loc.fundExchangeAccountSubtitle,
-                  style: theme.textTheme.headlineSmall,
-                ),
-                const Gap(24.0),
-                if (jurisdiction == null)
-                  const LoadingLineContent(height: 56)
-                else
-                  FundExchangeJurisdictionDropdown(
-                    initialValue: jurisdiction!,
-                    onChanged: (value) {
-                      setState(() {
-                        jurisdiction = value;
-                      });
-                    },
-                  ),
-                const Gap(24.0),
-                if (jurisdiction == null)
-                  const LoadingBoxContent(height: 200)
-                else
-                  switch (jurisdiction!) {
-                    FundingJurisdiction.canada =>
-                      const FundExchangeCanadaMethods(),
-                    FundingJurisdiction.europe =>
-                      const FundExchangeEuropeMethods(),
-                    FundingJurisdiction.mexico => FundExchangeMethodListTile(
-                      title: context.loc.fundExchangeSpeiTransfer,
-                      subtitle: context.loc.fundExchangeSpeiSubtitle,
-                      onTap: () {
-                        context.read<FundExchangeBloc>().add(
-                          const FundExchangeEvent.fundingDetailsRequested(
-                            fundingMethod: SpeiTransfer(),
-                          ),
-                        );
-                      },
-                    ),
-                    FundingJurisdiction.costaRica =>
-                      const FundExchangeCostaRicaMethods(),
-                    FundingJurisdiction.argentina => FundExchangeMethodListTile(
-                      title: context.loc.fundExchangeBankTransfer,
-                      subtitle: context.loc.fundExchangeBankTransferSubtitle,
-                      onTap: () {
-                        context.read<FundExchangeBloc>().add(
-                          const FundExchangeEvent.fundingDetailsRequested(
-                            fundingMethod: ArsBankTransfer(),
-                          ),
-                        );
-                      },
-                    ),
-                    FundingJurisdiction.colombia => FundExchangeMethodListTile(
-                      title: context.loc.fundExchangeBankTransfer,
-                      subtitle: context.loc.fundExchangeBankTransferSubtitle,
-                      onTap: () {
-                        context.read<FundExchangeBloc>().add(
-                          const FundExchangeEvent.fundingInstitutionsRequested(
-                            jurisdiction: FundingJurisdiction.colombia,
-                          ),
-                        );
-                      },
-                    ),
-                  },
-                if (_fundingDetailsError != null || _institutionsError != null) ...[
+                if (isFundingRestricted) ...[
                   const Gap(16.0),
+                  const FundExchangeRestrictedCard(),
+                ] else ...[
                   BBText(
-                    context.loc.fundExchangeErrorLoadingDetails,
-                    style: theme.textTheme.bodyMedium,
-                    color: theme.colorScheme.error,
-                    textAlign: TextAlign.center,
+                    context.loc.fundExchangeAccountSubtitle,
+                    style: theme.textTheme.headlineSmall,
                   ),
+                  const Gap(24.0),
+                  if (jurisdiction == null)
+                    const LoadingLineContent(height: 56)
+                  else
+                    FundExchangeJurisdictionDropdown(
+                      initialValue: jurisdiction!,
+                      onChanged: (value) {
+                        context.read<FundExchangeBloc>().add(
+                          const FundExchangeEvent.fundingDetailsErrorCleared(
+                            resetInstitutions: true,
+                          ),
+                        );
+                        setState(() {
+                          jurisdiction = value;
+                          _fundingDetailsError = null;
+                          _institutionsError = null;
+                        });
+                      },
+                    ),
+                  const Gap(24.0),
+                  if (jurisdiction == null)
+                    const LoadingBoxContent(height: 200)
+                  else
+                    switch (jurisdiction!) {
+                      FundingJurisdiction.canada =>
+                        const FundExchangeCanadaMethods(),
+                      FundingJurisdiction.europe =>
+                        const FundExchangeEuropeMethods(),
+                      FundingJurisdiction.mexico => FundExchangeMethodListTile(
+                        title: context.loc.fundExchangeSpeiTransfer,
+                        subtitle: context.loc.fundExchangeSpeiSubtitle,
+                        onTap: () {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.fundingDetailsRequested(
+                              fundingMethod: SpeiTransfer(),
+                            ),
+                          );
+                        },
+                      ),
+                      FundingJurisdiction.costaRica =>
+                        const FundExchangeCostaRicaMethods(),
+                      FundingJurisdiction.argentina =>
+                        FundExchangeMethodListTile(
+                          title: context.loc.fundExchangeBankTransfer,
+                          subtitle:
+                              context.loc.fundExchangeBankTransferSubtitle,
+                          onTap: () {
+                            context.read<FundExchangeBloc>().add(
+                              const FundExchangeEvent.fundingDetailsRequested(
+                                fundingMethod: ArsBankTransfer(),
+                              ),
+                            );
+                          },
+                        ),
+                      FundingJurisdiction.colombia => FundExchangeMethodListTile(
+                        title: context.loc.fundExchangeBankTransfer,
+                        subtitle: context.loc.fundExchangeBankTransferSubtitle,
+                        onTap: () {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.fundingInstitutionsRequested(
+                              jurisdiction: FundingJurisdiction.colombia,
+                            ),
+                          );
+                        },
+                      ),
+                    },
+                  if (_fundingDetailsError != null ||
+                      _institutionsError != null) ...[
+                    const Gap(16.0),
+                    FundExchangeErrorText(
+                      error: _fundingDetailsError ?? _institutionsError!,
+                    ),
+                  ],
                 ],
               ],
             ),

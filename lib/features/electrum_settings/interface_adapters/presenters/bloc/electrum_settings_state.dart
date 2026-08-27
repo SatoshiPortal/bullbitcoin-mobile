@@ -15,8 +15,8 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     @Default(false) bool isPrioritizingCustomServer,
     @Default(false) bool isDeletingCustomServer,
     @Default(false) bool isSavingAdvancedOptions,
-    ElectrumServersException? electrumServersError,
-    AdvancedOptionsException? advancedOptionsError,
+    ElectrumServersFailure? electrumServersError,
+    AdvancedOptionsFailure? advancedOptionsError,
   }) = _ElectrumSettingsState;
   const ElectrumSettingsState._();
 
@@ -46,5 +46,15 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     return allServers.every(
       (server) => server.status == ElectrumServerStatus.offline,
     );
+  }
+
+  bool get activeOnionServersAreOffline {
+    final activeServers = customServers.isNotEmpty
+        ? customServers
+        : defaultServers;
+    return activeServers.any((server) => server.isOnion) &&
+        activeServers.every(
+          (server) => server.status == ElectrumServerStatus.offline,
+        );
   }
 }

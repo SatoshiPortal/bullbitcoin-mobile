@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
 
 class Bip85DerivationWidget extends StatefulWidget {
   final Bip85DerivationEntity derivation;
@@ -28,6 +29,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
   bool _isObscured = true;
   bool _isEditingAlias = false;
   late TextEditingController _aliasController;
+  Timer? _clipboardClearTimer;
 
   @override
   void initState() {
@@ -47,6 +49,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
 
   @override
   void dispose() {
+    _clipboardClearTimer?.cancel();
     _aliasController.dispose();
     super.dispose();
   }
@@ -156,11 +159,16 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: TextEditingController(text: widget.entropy),
-                    obscureText: _isObscured,
-                    readOnly: true,
-                    decoration: const InputDecoration(border: InputBorder.none),
+                  child: Semantics(
+                    excludeSemantics: true,
+                    child: TextField(
+                      controller: TextEditingController(text: widget.entropy),
+                      obscureText: _isObscured,
+                      readOnly: true,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(
@@ -174,6 +182,11 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                   icon: Icon(Icons.copy, color: context.appColors.onSurface),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: widget.entropy));
+                    _clipboardClearTimer?.cancel();
+                    _clipboardClearTimer = Timer(
+                      const Duration(seconds: 30),
+                      () => Clipboard.setData(const ClipboardData(text: '')),
+                    );
                     SnackBarUtils.showCopiedSnackBar(context);
                   },
                 ),

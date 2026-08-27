@@ -1,4 +1,5 @@
 {
+  "settingsBtcMapTitle": "Карта",
   "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо:",
   "backupWarningLoseReasonLostPhone": "Втратите телефон",
   "backupWarningLoseReasonDeletedApp": "Видалите застосунок",
@@ -26,30 +27,6 @@
       }
     }
   },
-  "arkAboutDurationSeconds": "{seconds} секунд",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinute": "{minutes} хвилин",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "arkAboutDurationMinutes": "{minutes} хвилин",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "durationMinute": "{minutes} хвилин",
   "@durationMinute": {
     "placeholders": {
@@ -60,31 +37,6 @@
   },
   "exchangeSettingsSecuritySettingsTitle": "Налаштування безпеки",
   "transactionNoteUpdateButton": "Оновлення",
-  "arkAboutTitle": "Про",
-  "arkDurationSeconds": "{seconds} секунд",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinute": "{minutes} хвилин",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
-  "arkDurationMinutes": "{minutes} хвилин",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "appStartupContactSupportButton": "Контакти",
   "ledgerHelpTitle": "Ledger усунення несправностей",
   "fundExchangeLabelBankAccountCountry": "Країна банківського рахунку",
@@ -210,7 +162,6 @@
   "settingsTorSettingsTitle": "Налаштування Tor",
   "settingsRecoverbullTitle": "Реcoverbull",
   "settingsLanguageTitle": "Українська",
-  "settingsArkTitle": "Арк",
   "settingsDevModeWarningTitle": "Режим Dev",
   "settingsDevModeWarningMessage": "Цей режим є ризикованим. За допомогою цього ви підтверджуєте, що ви можете втратити гроші",
   "walletDetailsDeletingMessage": "Видалення гаманця ...",
@@ -224,7 +175,6 @@
   "bitcoinSettingsWalletsTitle": "Гаманець",
   "bitcoinSettingsElectrumServerTitle": "Налаштування серверів Electrum",
   "bitcoinSettingsAutoTransferTitle": "Налаштування автопередача",
-  "bitcoinSettingsLegacySeedsTitle": "Насіння спадщини",
   "bitcoinSettingsImportWalletTitle": "Імпорт Гаманець",
   "bitcoinSettingsBroadcastTransactionTitle": "Трансмісія",
   "bitcoinSettingsTestnetModeTitle": "Режим тестування",
@@ -232,6 +182,12 @@
   "logSettingsLogsTitle": "Логін",
   "logSettingsErrorLoadingMessage": "Журнали завантаження помилок: ",
   "appSettingsDevModeTitle": "Режим Dev",
+  "exchangeTestnetBasicAuthTitle": "Облікові дані testnet біржі",
+  "exchangeTestnetBasicAuthDescription": "HTTP basic auth для веб-сторінок testnet біржі (вхід та KYC).",
+  "exchangeTestnetBasicAuthUsernameLabel": "Ім'я користувача",
+  "exchangeTestnetBasicAuthPasswordLabel": "Пароль",
+  "exchangeTestnetBasicAuthClearButton": "Очистити",
+  "exchangeTestnetBasicAuthSaveButton": "Зберегти",
   "currencySettingsDefaultFiatCurrencyLabel": "Валюта за замовчуванням",
   "exchangeSettingsAccountInformationTitle": "Інформація про обліковий запис",
   "exchangeSettingsReferralsTitle": "Реферали",
@@ -316,7 +272,6 @@
   "receivePayjoinActivated": "Payjoin активований",
   "receiveLightningInvoice": "Освітлювальний рахунок",
   "receiveAddress": "Отримати адресу",
-  "receiveAmount": "Сума (за бажанням)",
   "receiveNoteLabel": "Зареєструватися",
   "receiveEnterHere": "Увійти.",
   "receiveSwapID": "Обмін ID",
@@ -332,7 +287,6 @@
   "receivePaymentInProgress": "Плата за прогрес",
   "receivePayjoinInProgress": "Payjoin в прогресі",
   "receiveFeeExplanation": "Цей збір буде відхилений від суми, відправленого",
-  "receiveNotePlaceholder": "Зареєструватися",
   "receiveReceiveAmount": "Отримувати Amount",
   "receiveSendNetworkFee": "Закупи хостинг »",
   "receiveServerNetworkFees": "Статус на сервери",
@@ -618,7 +572,6 @@
   "transactionNoteEditTitle": "Редагувати замітку",
   "transactionNoteHint": "Зареєструватися",
   "transactionNoteSaveButton": "Зберегти",
-  "transactionPayjoinNoProposal": "Чи не приймається пропозиція платника?",
   "transactionPayjoinSendWithout": "Відправлення без плати",
   "transactionSwapProgressInitiated": "Ініціюється",
   "transactionSwapProgressPaymentMade": "Оплата\nЗроблено",
@@ -716,11 +669,11 @@
   "walletBalanceUnconfirmedIncoming": "Прогрес",
   "walletButtonReceive": "Отримати",
   "walletButtonSend": "Відправити",
-  "walletArkInstantPayments": "Арк Миттєві платежі",
-  "walletArkExperimental": "Експериментальні",
   "fundExchangeTitle": "Фінансування",
   "fundExchangeAccountTitle": "Оберіть Ваш рахунок",
   "fundExchangeAccountSubtitle": "Оберіть країну та спосіб оплати",
+  "fundExchangeRestrictedTitle": "Поповнення недоступне",
+  "fundExchangeRestrictedMessage": "Поповнення недоступне для вашого облікового запису. Будь ласка, зверніться до служби підтримки для отримання додаткової інформації.",
   "fundExchangeWarningTitle": "Дивитися для шампанів",
   "fundExchangeWarningTactic2": "Ми пропонуємо Вам кредит",
   "fundExchangeWarningTactic3": "Повідомляємо, що вони працюють за боргу або податкову збірку",
@@ -829,7 +782,7 @@
   "buyPayoutMethod": "Спосіб виплати",
   "buyAwaitingConfirmation": "Підтвердження ",
   "buyConfirmPurchase": "Підтвердити покупку",
-  "buyYouBought": "Ви придбали {amount}",
+  "buyYouBought": "Ви придбали {amount} за {fiatAmount}",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -952,6 +905,21 @@
   "fundExchangeLabelRecipientNameArs": "Ім'я одержувача",
   "fundExchangeLabelCvu": "КВУ",
   "fundExchangeErrorLoadingDetails": "У зв'язку з тим, що платіж не може бути завантажений. Будь ласка, поверніть і спробуйте знову, оберіть інший спосіб оплати або поверніть пізніше.",
+  "fundExchangeErrorTitleOrdPo404": "Спосіб оплати недоступний",
+  "fundExchangeErrorTitleRcpPo404": "Спосіб оплати недоступний",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE недоступний",
+  "fundExchangeErrorTitleOrdKyc400": "Відсутні вимоги KYC",
+  "fundExchangeErrorOrdKyc400": "У вас немає вимог KYC для цієї дії: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Невірні дані для поповнення в COP",
+  "fundExchangeErrorOrdCop400": "Невірні дані запиту для поповнення в COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Віртуальний платіж не активовано",
+  "fundExchangeErrorOrdCsrcp400": "Будь ласка, активуйте опцію віртуального платежу для отримувача SEPA з IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Невірний запит",
+  "fundExchangeErrorRcp400": "Невірний запит",
+  "fundExchangeErrorOrdPo404": "Немає доступного способу оплати",
+  "fundExchangeErrorRcpPo404": "У вас немає необхідних дозволів для доступу до цього способу поповнення. Або ваш KYC недостатній, або цей спосіб недоступний для вашого облікового запису",
+  "fundExchangeErrorRcpPosinpe404": "Щоб отримати доступ до цього способу поповнення, ваш номер телефону має бути зареєстрований у мережі SINPE в Коста-Риці.",
+  "fundExchangeErrorFetchingBankCodes": "Помилка під час отримання банківських кодів. Будь ласка, спробуйте пізніше.",
   "fundExchangeSinpeDescriptionBold": "вона буде відхилена.",
   "fundExchangeSinpeAddedToBalance": "Після того, як платіж буде відправлено, він буде додано до Вашого балансу рахунку.",
   "fundExchangeSinpeWarningNoBitcoin": "Не покласти",
@@ -1065,11 +1033,6 @@
   "testCompletedSuccessTitle": "Випробувано успішно!",
   "testCompletedSuccessMessage": "Ви можете відновити доступ до втраченого біткойн-гаманця",
   "gotItButton": "Про нас",
-  "legacySeedViewScreenTitle": "Насіння спадщини",
-  "legacySeedViewNoSeedsMessage": "Не знайдено насіння спадщини.",
-  "legacySeedViewMnemonicLabel": "Мінуси",
-  "legacySeedViewPassphrasesLabel": "Пасфраси:",
-  "legacySeedViewEmptyPassphrase": "(порожня)",
   "enterBackupKeyManuallyTitle": "Введіть ключ резервного копіювання вручну",
   "enterBackupKeyManuallyDescription": "Якщо ви експортували ключ резервного копіювання і зберігайте його в локації, що знаходиться на території, ви можете ввести його вручну тут. Інакше, повернутися до попереднього екрану.",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
@@ -1133,6 +1096,9 @@
   "buyConfirmYouPay": "Ви платите",
   "buyConfirmYouReceive": "Ви отримуєте",
   "buyConfirmBitcoinPrice": "Ціна Bitcoin",
+  "buyConfirmPayoutWallet": "Гаманець для виплати",
+  "buyPayoutMethodLiquid": "L-BTC у мережі Liquid",
+  "buyPayoutMethodBitcoin": "BTC у мережі Bitcoin",
   "buyConfirmPayoutMethod": "Спосіб виплати",
   "buyConfirmExternalWallet": "Зовнішні біткоїни гаманець",
   "buyConfirmAwaitingConfirmation": "Підтвердження ",
@@ -1216,6 +1182,7 @@
   },
   "autoswapAlwaysBlockEnabledInfo": "При включенні автоперевезення з комісією над встановленим лімітом завжди буде заблоковано",
   "electrumServerAlreadyExists": "Цей сервер вже існує",
+  "electrumServerUnreachable": "Сервер недоступний. Перевірте адресу та спробуйте ще раз.",
   "sellPaymentMethod": "Спосіб оплати",
   "importColdcardInstructionsStep2": "Вкажіть прохід, якщо це можливо",
   "satsSuffix": " атласне",
@@ -1243,7 +1210,6 @@
   "exchangeCurrencyDropdownTitle": "Оберіть валюту",
   "importQrDeviceImporting": "Імпорт гаманця ...",
   "rbfFastest": "Швидке",
-  "arkReceiveBoardingAddress": "Bitcoin до USD",
   "recoverbullReenterConfirm": "Будь ласка, перейменуйте свій {inputType}, щоб підтвердити.",
   "@recoverbullReenterConfirm": {
     "placeholders": {
@@ -1259,12 +1225,9 @@
   "recoverbullSelectVaultImportSuccess": "Ви успішно імпортували",
   "mempoolServerNotUsed": "Не використовується (активний сервер)",
   "recoverbullSelectErrorPrefix": "Помилка:",
-  "bitboxErrorDeviceMismatch": "Виявлено неправильний пристрій.",
-  "arkReceiveBtcAddress": "Bitcoin у USD",
   "exchangeLandingRecommendedExchange": "Bitcoin у USD",
   "backupWalletHowToDecideVaultMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
   "recoverbullGoBackEdit": "<< Повернутися і редагувати",
-  "importWatchOnlyWalletGuides": "Направлення стін",
   "receiveConfirming": "Підтвердження... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -1282,7 +1245,6 @@
   "sendBroadcastingTransaction": "Трансляція угоди.",
   "swapReceiveExactAmountLabel": "Отримати точний розмір",
   "swapInsufficientFunds": "Недостатньо коштів",
-  "arkContinueButton": "Продовжити",
   "ledgerImportButton": "Імпорт",
   "dcaActivate": "Активувати продаж",
   "labelInputLabel": "Етикетка",
@@ -1297,10 +1259,11 @@
       }
     }
   },
-  "arkAboutServerUrl": "Статус на сервери",
   "save": "Зберегти",
   "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
   "appUnlockButton": "Розблокувати",
+  "appUnlockPinCheckError": "Не вдалося завантажити налаштування безпеки. Будь ласка, перезапустіть додаток.",
+  "appUnlockPinVerifyError": "Не вдалося перевірити ваш PIN. Будь ласка, спробуйте ще раз.",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
   "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",
@@ -1319,7 +1282,6 @@
   "importQrDeviceSpecterStep7": "Вимкнено \"Використання SLIP-132\"",
   "customLocationTitle": "Місцезнаходження",
   "importQrDeviceJadeStep5": "Виберіть \"Валет\" з списку варіантів",
-  "arkSettled": "Шахрайство",
   "approximateFiatPrefix": "до",
   "ledgerActionFailedMessage": "{action} В’язаний",
   "@ledgerActionFailedMessage": {
@@ -1357,10 +1319,8 @@
   "fundExchangeLabelTransitNumber": "Кількість переходів",
   "buyDocumentUpload": "Документи",
   "sendTransferFeeDescription": "Це загальна плата, яка відхилена від суми, відправленого",
-  "arkReceiveSegmentBoarding": "Дошка",
   "seedsignerStep12": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на SeedSigner. Сканування.",
   "psbtFlowKeystoneTitle": "Інструкція Keystone",
-  "arkSessionDuration": "Тривалість сеансу",
   "buyAboveMaxAmountError": "Ви намагаєтеся придбати над максимальною кількістю.",
   "electrumTimeoutWarning": "Ваш час ({timeoutValue} секунди) нижче рекомендованого значення ({recommended} секунд) для цього Stop Gap.",
   "@electrumTimeoutWarning": {
@@ -1374,7 +1334,6 @@
     }
   },
   "sendShowPsbt": "Показати PSBT",
-  "ledgerErrorUnknownOccurred": "Невідомі помилки",
   "broadcastSignedTxAmount": "Сума",
   "hwJade": "Блокстрім Jade",
   "keystoneStep14": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
@@ -1393,11 +1352,9 @@
   },
   "backupWalletEncryptedVaultTag": "Легкий і простий (1 хвилину)",
   "payBroadcastFailed": "Радіоканал не вдалося",
-  "arkSettleTransactions": "Шахрайські операції",
   "bitboxScreenSegwitBip84": "Сегвейт (BIP84)",
   "bitboxScreenConnectingSubtext": "Створення безпечного підключення...",
   "receiveShareAddress": "Адреса електронної пошти",
-  "arkTxPending": "Закінчення",
   "sharedWithBullBitcoin": "bitcoin у USD.",
   "jadeStep7": "   - Утримайте QR-код стаціонарним і відцентровим",
   "allSeedViewIUnderstandButton": "Я витримую",
@@ -1431,9 +1388,7 @@
   "receiveShareInvoice": "Надіслати запит",
   "dcaUnableToGetConfig": "Неможливо отримати конфігурацію DCA",
   "exchangeAuthLoginFailed": "Логін",
-  "arkAvailable": "В наявності",
   "testBackupWarningMessage": "Без резервної копії ви в кінцевому підсумку втратите доступ до ваших грошей. Важливо зробити резервну копію.",
-  "arkNetwork": "Мережа",
   "importWatchOnlyYpub": "й",
   "ledgerVerifyTitle": "Перевірити адресу на Ledger",
   "recoverbullSwitchToPassword": "Підберіть пароль замість",
@@ -1446,7 +1401,6 @@
   "payEstimatedFee": "Орієнтовна Fee",
   "sendSendAmount": "Надіслати",
   "swapErrorBalanceTooLow": "Баланс занадто низький для мінімальної кількості клаптів",
-  "replaceByFeeErrorGeneric": "При спробі замінити операцію",
   "rbfCustomFee": "Спеціальний Fee",
   "importQrDeviceFingerprint": "Друк",
   "importWatchOnlyDescriptor": "Дескриптор",
@@ -1475,7 +1429,6 @@
   "dcaCancelButton": "Зареєструватися",
   "dcaConfirmNetworkLiquid": "Рідина",
   "emptyMnemonicWordsError": "Введіть всі слова вашої мнемоніки",
-  "arkSettleCancel": "Зареєструватися",
   "testBackupTapWordsInOrder": "Натисніть кнопку відновлення в\nправо",
   "coreScreensInternalTransfer": "Внутрішній переказ",
   "sendSwapWillTakeTime": "Під час підтвердження",
@@ -1502,15 +1455,6 @@
   "appStartupErrorMessage": "Не вдалося запустити застосунок. Спробуйте повністю його закрити та перезапустити. Якщо помилка повторюється, зверніться до підтримки та поділіться логами.",
   "appStartupErrorMessageWithBackup": "Не вдалося ініціалізувати. Видаліть і перевстановіть, щоб виправити.",
   "payPasteInvoice": "Паста Invoice",
-  "labelErrorUnexpected": "Несподівана помилка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "arkStatusSettled": "Шахрайство",
   "dcaWalletBitcoinSubtitle": "Міні 0.001 BTC",
   "bitboxScreenEnterPasswordSubtext": "Введіть пароль на пристрої BitBox.",
   "systemLabelSwaps": "Обмін",
@@ -1536,22 +1480,12 @@
   "dcaWalletSelectionContinueButton": "Продовжити",
   "pinButtonChange": "Зміна PIN",
   "sendErrorInsufficientFundsForPayment": "Не вистачає коштів, доступних для цього платежу.",
-  "arkAboutShow": "Почати",
   "fundExchangeETransferTitle": "Деталі E-Transfer",
   "autoswapWarningOkButton": "ЗАРЕЄСТРУВАТИСЯ",
   "swapTitle": "Внутрішній переказ",
   "sendOutputTooSmall": "Вихід нижче обмеження пилу",
   "copiedToClipboardMessage": "Скопіювати до буферу",
   "torSettingsStatusConnected": "Зв'язатися",
-  "arkCopiedToClipboard": "{label} скопіювати до буферу",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "arkRecipientAddress": "Адреса одержувача",
   "shareLogsLabel": "Журнали",
   "ledgerSuccessVerifyTitle": "Перевірити адресу на Ledger ...",
   "backupSettingsFailedToDeriveKey": "Переміщений для відновлення ключа резервного копіювання",
@@ -1565,7 +1499,6 @@
   "swapTransferRefundedMessage": "Переказ було успішно повернено.",
   "seedsignerStep5": "   - Збільшення яскравості екрану на вашому пристрої",
   "sellKYCApproved": "KYC затверджено",
-  "arkTransaction": "контакти",
   "dcaFrequencyMonthly": "місяць",
   "buyKYCLevel": "КИЇВ Рівень",
   "passportInstructionsTitle": "Інструкції щодо Паспорту Фонду",
@@ -1607,7 +1540,6 @@
     }
   },
   "loginButton": "ЛОГІН",
-  "arkAboutNetwork": "Мережа",
   "psbtFlowLoginToDevice": "Увійти до пристрою {device}",
   "@psbtFlowLoginToDevice": {
     "placeholders": {
@@ -1620,7 +1552,6 @@
   "jadeInstructionsTitle": "Блокстрім Jade PSBT Інструкції",
   "scanNfcButton": "Сканер NFC",
   "testBackupChooseVaultLocation": "Виберіть місце розташування",
-  "torSettingsInfoDescription": "• Tor proxy only стосується Біткойн (не Рідкий)\n• Портфоліо Орбота 9050\n• Забезпечити Орбот, що працює перед наданням\n• Підключення може бути повільніше через Tor",
   "dcaAddressBitcoin": "Bitcoin адреса",
   "sendErrorAmountBelowMinimum": "Розмір нижче мінімального ліміту застібки: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
@@ -1632,7 +1563,6 @@
   },
   "recoverbullGoogleDriveErrorFetchFailed": "Заборонено фіксувати помилки з Google Диску",
   "systemLabelExchangeBuy": "Купити",
-  "arkTxTypeBoarding": "Дошка",
   "exchangeAmountInputValidationInsufficient": "Недостатній баланс",
   "psbtFlowReviewTransaction": "Після того, як угода імпортується в {device}, перевірте адресу призначення та суму.",
   "@psbtFlowReviewTransaction": {
@@ -1642,15 +1572,11 @@
       }
     }
   },
-  "arkTransactions": "операції",
   "broadcastSignedTxCameraButton": "Камери",
   "importQrDeviceJadeName": "Блокстрім Jade",
   "importWalletImportMnemonic": "Імпортний мнемічний",
   "bip85NextMnemonic": "Далі Mnemonic",
-  "bitboxErrorNoActiveConnection": "Не активне підключення до пристрою BitBox.",
   "dcaFundAccountButton": "Оберіть Ваш рахунок",
-  "arkSendTitle": "Відправити",
-  "bitboxCubitOperationTimeout": "Час роботи. Будь ласка, спробуйте знову.",
   "backupWalletHowToDecideVaultCloudSecurity": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
   "coldcardStep13": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на Coldcard. Сканування.",
   "psbtFlowIncreaseBrightness": "Збільшення яскравості екрану на вашому пристрої",
@@ -1668,6 +1594,7 @@
     }
   },
   "mempoolCustomServerUrl": "Статус на сервери",
+  "buyUnexpectedError": "Не вдалося створити ваше замовлення. Спробуйте ще раз або зверніться до підтримки.",
   "buyOrderAlreadyConfirmedError": "Цей замовлення було підтверджено.",
   "sendServerNetworkFees": "Статус на сервери",
   "importWatchOnlyImport": "Імпорт",
@@ -1684,13 +1611,11 @@
     }
   },
   "recoverbullGoogleDriveNoBackupsFound": "Не знайдено резервних копій",
-  "arkDust": "Пиломатеріали",
   "dcaConfirmPaymentMethod": "Спосіб оплати",
   "backupWalletErrorGoogleDriveConnection": "З'єднання з Google Диском",
   "payEnterInvoice": "Вхід",
   "broadcastSignedTxPasteHint": "Вставити PSBT або транзакцій HEX",
   "testBackupPassphrase": "Проксимус",
-  "arkSetupEnable": "Увімкнути Ark",
   "confirmTransferTitle": "Підтвердження трансферу",
   "payFeeBreakdown": "Fee Покарання",
   "sellAmount": "Сума на продаж",
@@ -1714,7 +1639,6 @@
   "featureComingSoonTitle": "Характеристика Сходження Незабаром",
   "swapProgressRefundInProgress": "Повернення коштів в Прогрес",
   "sendErrorBitcoinWalletRequired": "Біткойн-гаманець повинен бути використаний для блискавки",
-  "arkUnifiedAddressCopied": "Єдиний адресний скопійований",
   "exchangeDcaCancelDialogCancelButton": "Зареєструватися",
   "withdrawConfirmPhone": "Зареєструватися",
   "allSeedViewOldWallets": "Старі Wallets ({count})",
@@ -1744,6 +1668,7 @@
   "hwChooseDevice": "Виберіть апаратний гаманець, який ви хочете підключитися",
   "torSettingsConnectionStatus": "Статус на сервери",
   "sendErrorInvalidAddressOrInvoice": "Плата за неоплату Bitcoin або Invoice",
+  "sendErrorUnsupportedQrCodeFormat": "Непідтримуваний формат QR-коду",
   "recoverbullRecoveryTitle": "Recoverbull відновлення",
   "broadcastSignedTxScanQR": "Сканування QR-коду з вашого апаратного гаманця",
   "ledgerSuccessSignDescription": "Ви успішно підписалися на Вашу операцію.",
@@ -1816,7 +1741,6 @@
   "buyOrderNotFoundError": "Не знайдено замовлення. Будь ласка, спробуйте знову.",
   "backupWalletGoogleDrivePrivacyMessage2": "не буде ",
   "payAddressRequired": "Обов'язкова інформація",
-  "arkTransactionDetails": "Деталі транзакції",
   "payTotalAmount": "Загальна кількість",
   "autoswapWarningDontShowAgain": "Не показувати цю попередження знову.",
   "sellInsufficientBalance": "Недостатній баланс гаманця",
@@ -1847,36 +1771,17 @@
   },
   "kruxStep15": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "fundExchangeETransferLabelSecretQuestion": "Таємне питання",
-  "importColdcardButtonPurchase": "Пристрої закупівель",
   "jadeStep15": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "payActualFee": "Актуальна Fee",
   "electrumValidateDomain": "Діє домен",
   "importQrDeviceJadeFirmwareWarning": "Переконайтеся, що ваш пристрій оновлено до останньої прошивки",
-  "arkPreconfirmed": "Підтвердження",
   "recoverbullSelectFileNotSelectedError": "Файл не вибрано",
-  "arkDurationDay": "{days} день",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
-  "arkSendButton": "Відправити",
   "fundExchangeMethodSpeiTransferSubtitle": "Перерахування коштів за допомогою CLABE",
   "importQrDeviceJadeStep3": "Дотримуйтесь інструкцій пристрою, щоб розблокувати Jade",
   "sendSigningFailed": "Не вдалося",
   "bitboxErrorDeviceNotPaired": "Пристрої непаровані. Будь ласка, заповніть процес паріння першим.",
   "transferIdLabel": "Трансфер ID",
   "paySelectActiveWallet": "Виберіть гаманець",
-  "arkDurationHours": "{hours} годин",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "dcaFrequencyHourly": "час",
   "swapValidationSelectFromWallet": "Будь ласка, виберіть гаманець для перенесення",
   "sendSwapInitiated": "Обмін ініціюється",
@@ -1900,7 +1805,6 @@
   "payCoinjoinInProgress": "CoinJoin в прогрес ...",
   "testBackupAllWordsSelected": "Ви вибрали всі слова",
   "ledgerProcessingImportSubtext": "Налаштування вашого годинникового гаманця ...",
-  "arkAmount": "Сума",
   "importQrDeviceSpecterStep1": "Потужність на пристрої Specter",
   "bitboxActionImportWalletTitle": "Імпорт BitBox Wallet",
   "backupSettingsError": "Помилка",
@@ -1922,11 +1826,9 @@
   "informationWillNotLeave": "Інформація ",
   "backupWalletInstructionSecurityRisk": "Будь-який з доступом до вашого 12 резервного копіювання може вкрасти ваші біткоїни. Приховати його добре.",
   "torSettingsPortNumber": "Номер порту",
-  "autoswapWarningTriggerAmount": "Максимальний баланс 0.02 BTC",
   "pleaseWaitFetching": "Будь ласка, почекайте, коли ми фіксуємо файл резервного копіювання.",
   "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
   "electrumReset": "Зареєструватися",
-  "arkDate": "Дата",
   "psbtFlowInstructions": "Інструкції",
   "systemLabelExchangeSell": "Продати",
   "electrumStopGapNegativeError": "Стоп Gap не може бути негативним",
@@ -1972,7 +1874,7 @@
   "autoswapLoadSettingsError": "Переміщення для завантаження параметрів автоматичного затискання",
   "broadcastSignedTxReviewTransaction": "Огляд транзакцій",
   "importQrDeviceKeystoneStep5": "Виберіть \"BULL\" зі списку гаманців",
-  "electrumLoadFailedError": "Переміщені на серверах навантаження{reason}",
+  "electrumLoadFailedError": "Переміщені на серверах навантаження",
   "@electrumLoadFailedError": {
     "placeholders": {
       "reason": {
@@ -1994,7 +1896,6 @@
     }
   },
   "psbtFlowTroubleScanningTitle": "Якщо у вас є проблеми сканування:",
-  "arkReceiveUnifiedCopied": "Єдиний адресний скопійований",
   "importQrDeviceJadeStep9": "Скануйте QR-код, який ви бачите на вашому пристрої.",
   "exchangeKycLight": "Світло",
   "seedsignerInstructionsTitle": "SeedSigner Інструкції",
@@ -2002,7 +1903,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "Будь ласка, перевірте код пари на пристрої BitBox ...",
   "recoverbullKeyServer": "Статус на сервери ",
   "recoverbullPasswordTooCommon": "Цей пароль занадто поширений. Будь ласка, оберіть інший",
-  "arkRedeemButton": "Мали",
   "fundExchangeLabelBeneficiaryAddress": "Адреса отримувача",
   "testBackupVerify": "Видання",
   "electrumAdvancedOptions": "Додаткові параметри",
@@ -2036,7 +1936,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "bitcoin у USD.",
   "recoverbullSelectQuickAndEasy": "Швидкий і простий",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Ви впевнені, що ваші можливості оперативної безпеки приховати і зберегти ваші слова насіннєвих.",
-  "bitboxCubitHandshakeFailed": "Не вдалося встановити безпечне з'єднання. Будь ласка, спробуйте знову.",
   "sendErrorAmountAboveSwapLimits": "Сума вище лімітів закрутки",
   "backupWalletHowToDecideBackupEncryptedVault": "Зашифрована схованка запобігає вам з тих, хто шукає крадіжку вашої резервної копії. Ви також не зможете втратити резервну копію, оскільки вона буде зберігатися у хмарі. Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Існує невелика ймовірність, що веб-сервер, який зберігає ключ шифрування резервної копії. У цьому випадку безпека резервного копіювання у хмарному обліковому записі може бути на ризику.",
   "seedsignerStep11": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
@@ -2047,7 +1946,6 @@
   "importQrDeviceKeystoneStep6": "На вашому мобільному натисніть \"відкрити камеру\"",
   "bip85Hex": "ХЕКС",
   "receiveLightningNetwork": "Освітлення",
-  "arkForfeitAddress": "Реєстрація",
   "swapTransferRefundedTitle": "Повернення коштів",
   "bitboxErrorConnectionFailed": "Ввімкніть підключення до пристрою BitBox. Будь ласка, перевірте підключення.",
   "dcaInsufficientBalanceDescription": "Ви не маєте достатнього балансу для створення цього замовлення.",
@@ -2055,16 +1953,13 @@
   "importColdcardSuccess": "Гаманець холодної картки імпортований",
   "withdrawUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
   "recoverbullTestCompletedTitle": "Випробувано успішно!",
-  "arkBtcAddress": "Bitcoin у USD",
   "exchangeDcaFrequencyDay": "день",
   "payBumpFee": "Бампер Фе",
-  "arkCancelButton": "Зареєструватися",
   "bitboxActionImportWalletProcessingSubtext": "Налаштування вашого годинникового гаманця ...",
   "psbtFlowDone": "Я зробив",
   "exchangeHomeDepositButton": "Депозити",
   "testBackupRecoverWallet": "Відновлення гаманця",
   "fundExchangeMethodSinpeTransferSubtitle": "Трансфер Колони за допомогою SINPE",
-  "arkInstantPayments": "Миттєві платежі Ark",
   "coreScreensTransferIdLabel": "Трансфер ID",
   "anErrorOccurred": "Помилки",
   "sellIBAN": "ІБАН",
@@ -2108,7 +2003,6 @@
   },
   "importColdcardScanning": "Сканування ...",
   "exchangeLandingFeature1": "Купити Bitcoin прямо на самоктоди",
-  "bitboxCubitPermissionDenied": "Відхилено дозвіл USB. Будь ласка, надайте дозвіл на доступ до пристрою BitBox.",
   "swapTransferTo": "Трансфер до",
   "bitcoinSettingsMempoolServerTitle": "Налаштування сервера Mempool",
   "selectCoinsManuallyLabel": "Виберіть монети вручну",
@@ -2116,16 +2010,12 @@
   "appUnlockAttemptSingular": "невдала спроба",
   "importQrDevicePassportStep2": "Введіть Ваш кошик",
   "buyExpressWithdrawalDesc": "Отримати Bitcoin миттєво після оплати",
-  "arkSendRecipientTitle": "Надіслати одержувачу",
   "importMnemonicImport": "Імпорт",
   "recoverbullPasswordTooShort": "Пароль має бути принаймні 6 символів",
-  "arkAddressPlaceholder": "ark1qp9wsjfpsj5v5ex022v6 ..",
   "sendBuildFailed": "Не вдалося побудувати операцію",
   "paySwapFee": "Обмін Fee",
-  "arkBoardingConfirmed": "Підтвердження",
   "broadcastSignedTxTitle": "Трансмісія",
   "backupWalletVaultProviderTakeYourTime": "Зробіть свій час",
-  "arkSettleIncludeRecoverable": "Включіть відновлені vtxos",
   "ledgerWalletTypeSegwitDescription": "Native SegWit - Рекомендований",
   "payPaymentFailed": "Не вдалося",
   "sendRefundProcessed": "Опрацьовується Ваше повернення.",
@@ -2137,22 +2027,18 @@
   "electrumStopGap": "Зупинити Gap",
   "payBroadcastingTransaction": "Трансляція транзакцій...",
   "bip329LabelsImportButton": "Імпорт етикеток",
-  "arkStatusConfirmed": "Підтвердження",
   "withdrawConfirmAmount": "Сума",
-  "labelErrorSystemCannotDelete": "Система не може бути видалена.",
   "copyDialogButton": "Партнерство",
   "bitboxActionImportWalletProcessing": "Імпорт гаманця",
   "swapConfirmTransferTitle": "Підтвердження трансферу",
   "recoverbullSwitchToPIN": "Підібрати PIN замість",
   "electrumServerOffline": "Оффлайн",
   "sendTransferFee": "Плата за трансфер",
-  "arkServerPubkey": "Статус на сервери",
   "testBackupPhysicalBackupDescription": "Написати 12 слів на аркуші паперу. Збережіть їх безпечно і переконайтеся, що не втратити їх.",
   "sendInitiatingSwap": "Ініціюється ковпа ...",
   "testBackupErrorIncorrectOrder": "Некоректне слово замовлення. Будь ласка, спробуйте знову.",
   "importColdcardInstructionsStep6": "Виберіть \"Bull Bitcoin\" як варіант експорту",
   "swapValidationSelectToWallet": "Будь ласка, виберіть гаманець для перенесення",
-  "arkSetupTitle": "Арк Настроювання",
   "seedsignerStep3": "Сканування QR-коду, показаного в булл-гаманці",
   "sellErrorLoadUtxos": "Надіслане навантаження UTXOs: {error}",
   "@sellErrorLoadUtxos": {
@@ -2200,7 +2086,6 @@
   "sendFeeRateTooLow": "Платна швидкість занадто низька",
   "exchangeLandingRestriction": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "payFailedPayments": "В'язниця",
-  "arkToday": "Сьогодні",
   "importQrDeviceJadeStep2": "Виберіть \"QR Mode\" з основного меню",
   "rbfErrorAlreadyConfirmed": "Підтверджено оригінальну операцію",
   "psbtFlowMoveBack": "Спробуйте перемістити пристрій назад трохи",
@@ -2209,7 +2094,6 @@
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
   "sendErrorHardwareWalletCannotSwap": "Апаратні гаманці не можна використовувати для обмінів.",
   "sendErrorInvoiceMustContainAmount": "Рахунок повинен містити суму",
-  "arkNoBalanceData": "Немає даних балансу",
   "autoswapWarningCardTitle": "Автообмін увімкнено.",
   "autoswapMaxBalance": "Max Миттєвий баланс гаманця",
   "importQrDeviceImport": "Імпорт",
@@ -2257,7 +2141,6 @@
   "fundExchangeLabelTransferCode": "Поштовий індекс (за умови оплати)",
   "ledgerInstructionsIos": "Переконайтеся, що ваш Ledger розблоковується з підтримкою Bitcoin і Bluetooth.",
   "replaceByFeeScreenTitle": "Замінити платіж",
-  "arkReceiveCopyAddress": "Статус на сервери",
   "testBackupErrorWriteFailed": "{error}",
   "@testBackupErrorWriteFailed": {
     "placeholders": {
@@ -2268,10 +2151,8 @@
   },
   "exchangeDcaNetworkLightning": "Мережа Lightning",
   "exchangeHomeWithdrawButton": "Зняття",
-  "arkSendAmountTitle": "Вхід",
   "addressViewAddress": "Контакти",
   "payOnChainFee": "На-Чаїн Фе",
-  "arkReceiveUnifiedAddress": "Єдина адреса (BIP21)",
   "payUseCoinjoin": "Використовуйте CoinJoin",
   "autoswapWarningExplanation": "Коли ваш баланс перевищить максимальний баланс, буде ініційовано обмін. Цільовий баланс залишиться у вашому гаманці миттєвих платежів, а залишок буде обміняний у ваш безпечний гаманець Bitcoin.",
   "recoverbullVaultRecoveryTitle": "Recoverbull відновлення",
@@ -2287,9 +2168,7 @@
   },
   "pinStatusLoading": "Завантаження",
   "ledgerSuccessAddressVerified": "Адреса перевірено успішно!",
-  "arkSettleDescription": "Закінчуйте операції з кредитування та включають відновлювані vtxos, якщо це потрібно",
   "backupWalletHowToDecideVaultCustomRecommendation": "Місцезнаходження: ",
-  "arkSendSuccessMessage": "Ваша угода Ark була успішною!",
   "electrumInvalidTimeoutError": "Нормативне визначення часу: {value}",
   "@electrumInvalidTimeoutError": {
     "placeholders": {
@@ -2326,16 +2205,12 @@
   "sellRoutingNumber": "Номер маршрутизації",
   "sellDailyLimitReached": "Щоденне обмеження продажу",
   "requiredHint": "Потрібні",
-  "arkUnilateralExitDelay": "Затримка одностороннього виходу",
-  "arkStatusPending": "Закінчення",
   "importWatchOnlyXpub": "хаб",
   "dcaInsufficientBalanceTitle": "Недостатній баланс",
-  "arkType": "Тип",
   "testBackupGoogleDrivePermission": "Google попросить Вас поділитися персональною інформацією з цією програмою.",
   "testBackupErrorUnexpectedSuccess": "Невибагливий успіх: резервне копіювання повинно відповідати існуючому гаманцю",
   "coreScreensReceiveAmountLabel": "Отримувати Amount",
   "systemLabelPayjoin": "Офіціант",
-  "arkSetupExperimentalWarning": "Арк ще експериментальний.\n\nВаш гаманець Ark виводиться з вашого основного гаманця. Немає додаткового резервного копіювання, ваш існуючий резервний гаманець відновлює ваші кошти Ark.\n\nПродовжуючи визнаєте експериментальну природу Арка і ризик втрати коштів.\n\nЗамітка розробника : секрет Ark походить від основного насіння гаманця за допомогою довільного видалення BIP-85 (index 11811).",
   "recoverbullEnterToView": "Будь ласка, введіть {inputType}, щоб переглянути свій ключ за замовчуванням.",
   "@recoverbullEnterToView": {
     "placeholders": {
@@ -2411,14 +2286,6 @@
   },
   "rbfErrorNoFeeRate": "Оберіть тариф",
   "backupWalletGoogleDrivePrivacyMessage1": "Інформація ",
-  "labelErrorUnsupportedType": "Цей тип {type} не підтримується",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats} sat/vB",
   "@paySatsPerByte": {
     "placeholders": {
@@ -2461,22 +2328,12 @@
   "importMnemonicSelectScriptType": "Імпортний мнемічний",
   "recoverbullConnectingTor": "Підключення до Key Server над Tor.\nЦе може прийняти до хвилини.",
   "recoverbullEnterVaultKeyInstead": "Введіть ключ vault замість",
-  "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - Збільшення яскравості екрану на вашому пристрої",
   "importMnemonicEmpty": "Зручність",
   "electrumBitcoinServerInfo": "Адреса сервера в форматі: host:port (наприклад, приклад.com:50001)",
   "recoverbullErrorServiceUnavailable": "Сервіс 0 Будь ласка, перевірте підключення.",
-  "arkSettleTitle": "Шахрайські операції",
   "sendErrorInsufficientBalanceForSwap": "Чи не достатньо балансу для оплати за допомогою Рідини і не в межах обмежених обмежень для оплати через Біткойн.",
   "psbtFlowJadeTitle": "Блокстрім Jade PSBT Інструкції",
-  "torSettingsDescUnknown": "Неможливо визначити Статус на сервери Забезпечити Orbot встановлюється і працює.",
   "importQrDeviceKeystoneStep8": "У гаманці BULL виберіть бажаний тип деривації. Якщо ви не впевнені, виберіть \"Segwit (BIP84)\"",
   "dcaContinueButton": "Продовжити",
   "buyStandardWithdrawalDesc": "Отримуйте Біткойн після сплати очистки (1-3 днів)",
@@ -2485,7 +2342,6 @@
   "coreScreensNetworkFeesLabel": "Мережеві збори",
   "kruxStep9": "   - Спробуйте перемістити пристрій назад трохи",
   "sendReceiveNetworkFee": "Отримувати Мережі",
-  "arkTxPayment": "Оплата",
   "importQrDeviceSeedsignerStep6": "Виберіть \"Воронь\" як варіант експорту",
   "swapValidationMaximumAmount": "Максимальна сума {amount} {currency}",
   "@swapValidationMaximumAmount": {
@@ -2522,21 +2378,18 @@
   "exchangeSupportChatEmptyState": "Немає повідомлень. Почати розмову!",
   "electrumRetryCountEmptyError": "Рятівний граф не може бути порожнім",
   "ledgerErrorBitcoinAppNotOpen": "Будь ласка, відкрийте додаток Bitcoin на пристрої Ledger і спробуйте знову.",
-  "arkIncludeRecoverableVtxos": "Включіть відновлені vtxos",
   "recoverbullConnecting": "Підключення",
   "swapExternalAddressHint": "Введіть адресу зовнішнього гаманця",
   "torSettingsDescConnecting": "Створення Тор підключення",
   "ledgerWalletTypeLegacyDescription": "P2PKH - Старший формат",
   "dcaConfirmationDescription": "Купити замовлення будуть розміщені автоматично на ці налаштування. Ви можете відключити їх в будь-який час.",
   "appleICloudProvider": "Яблуко iCloud",
-  "arkReceiveTitle": "Ark Отримати",
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Зашифрована сорочка: ",
   "seedsignerStep9": "Огляд адреси призначення та суми, а також підтвердження реєстрації на вашому SeedSigner.",
   "logoutButton": "Зареєструватися",
   "payReplaceByFee": "Заміна-By-Fee (RBF)",
   "pinButtonCreate": "Створення PIN",
   "exchangeFeatureSelfCustody": "• Купити Біткойн прямо на самоктоди",
-  "arkBoardingUnconfirmed": "Посадка Непідтверджена",
   "payAmountTooHigh": "Сума перевищує максимальну кількість",
   "dcaConfirmPaymentBalance": "{currency} баланс",
   "@dcaConfirmPaymentBalance": {
@@ -2572,7 +2425,6 @@
   "importQrDeviceSpecterStep4": "Дотримуйтесь запитань щодо обраного способу",
   "importWalletImportWatchOnly": "Імпорт годинник",
   "coldcardStep9": "Після того, як угода була імпортована в холодильнику, перевірте адресу призначення і суму.",
-  "sendErrorArkExperimentalOnly": "Від експериментальної функції Ark доступні платіжні запити ARK.",
   "exchangeKycComplete": "Завершіть КИЇВ",
   "sellBitcoinPriceLabel": "Ціна Bitcoin",
   "receiveCopyAddress": "Статус на сервери",
@@ -2622,14 +2474,6 @@
   "dcaConfirmOrderType": "Тип замовлення",
   "recoverbullGoogleDriveErrorDeleteFailed": "Заборонено видалити сховище з Google Диску",
   "broadcastSignedTxTo": "До",
-  "arkAboutDurationDays": "{days} дні",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "Деталі оплати",
   "bitboxActionVerifyAddressTitle": "Перевірити адресу на BitBox",
   "psbtSignTransaction": "Реєстрація",
@@ -2654,7 +2498,6 @@
   "jadeStep14": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "importColdcardError": "Заборонено імпортувати Coldcard",
   "customLocationRecommendationText": "ви впевнені, що ви не втратите файл за замовчуванням і він все ще буде доступний, якщо ви втратите свій телефон.",
-  "arkAboutForfeitAddress": "Реєстрація",
   "kruxStep13": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
   "confirmLogoutMessage": "Ви впевнені, що ви хочете увійти з вашого облікового запису Bitcoin Bull? Щоб отримати доступ до функцій обміну.",
   "dcaSuccessMessageDaily": "Купити {amount} кожен день",
@@ -2665,7 +2508,7 @@
       }
     }
   },
-  "electrumDeleteFailedError": "Видаліть користувальницький сервер{reason}",
+  "electrumDeleteFailedError": "Видаліть користувальницький сервер",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2676,7 +2519,6 @@
   "swapInfoBanner": "Трансфер Біткойн безшовно між вашими гаманцями. Тільки тримайте кошти в Миттєвій Платіжній гаманці на день-на добу.",
   "payRBFEnabled": "РБФ включено",
   "takeYourTimeTag": "Зробіть свій час",
-  "arkAboutDust": "Пиломатеріали",
   "ledgerSuccessVerifyDescription": "Адреса була перевірена на пристрої Ledger.",
   "bip85Title": "BIP85 Визначення ентропії",
   "sendSwapTimeout": "Обмін часу",
@@ -2685,9 +2527,7 @@
   "sendSwapInProgressBitcoin": "Ведуться ковпа. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "electrumDeleteServerTitle": "Видалити користувальницький сервер",
   "buySelfie": "Селфі з ID",
-  "arkAboutSecretKey": "Таємний ключ",
   "wordsDropdownSuffix": " слова",
-  "arkTxTypeRedeem": "Мали",
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
   "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
   "importWatchOnlyLabel": "Етикетка",
@@ -2710,7 +2550,6 @@
   "importWatchOnlyZpub": "зоп",
   "testBackupNext": "Про нас",
   "mempoolCustomServerLabel": "КУСТОМ",
-  "arkAboutSessionDuration": "Тривалість сеансу",
   "transferFeeLabel": "Плата за трансфер",
   "pinValidationError": "PIN повинен бути принаймні {minLength} цифр довго",
   "@pinValidationError": {
@@ -2738,32 +2577,18 @@
   "recoverbullGoogleDriveScreenTitle": "Google Диски",
   "receiveQRCode": "QR-код",
   "payDecodeFailed": "Заборонено декодувати рахунок",
-  "arkSendConfirm": "Підтвердження",
-  "replaceByFeeErrorTransactionConfirmed": "Підтверджено оригінальну операцію",
   "rbfErrorFeeTooLow": "Ви повинні збільшити плату за принаймні 1 sat/vbyte порівняно з оригінальною угодою",
-  "ledgerErrorMissingDerivationPathSign": "Зняття потрібно для підписання",
   "jadeStep10": "Натисніть кнопку, щоб зареєструвати операцію на Jade.",
-  "arkAboutDurationHour": "{hours} час",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "bitboxScreenUnknownError": "Невідомі помилки",
   "electrumPrivacyNoticeTitle": "Повідомлення про конфіденційність",
   "payOpenChannelRequired": "Відкриття телеканалу необхідно для оплати",
   "coldcardStep1": "Ввійти до пристрою Coldcard Q",
-  "arkSendRecipientHint": "ark1qp9wsjfpsj5v5ex022v6 ..",
-  "arkRecoverableVtxos": "Відновлений Vtxos",
   "psbtFlowTransactionImported": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "testBackupGoogleDriveSignIn": "Ви повинні зареєструватися на Google Диску",
   "sendTransactionSignedLedger": "Заява, підписана успішно з Ledger",
   "recoverbullRecoveryContinueButton": "Продовжити",
   "payTimeoutError": "Розстрочка платежу. Будь ласка, перевірте статус",
   "kruxStep4": "Натисніть завантаження з камери",
-  "bitboxErrorInvalidMagicBytes": "Виявлено неточний формат PSBT.",
   "sellErrorRecalculateFees": "Плата за перерахунок: {error}",
   "@sellErrorRecalculateFees": {
     "placeholders": {
@@ -2809,13 +2634,11 @@
   "coreScreensServerNetworkFeesLabel": "Статус на сервери",
   "dcaFrequencyValidationError": "Виберіть частоту",
   "recoverbullVaultSelected": "Вибрані",
-  "arkBoardingExitDelay": "Затримка виходу",
   "exchangeDcaFrequencyHour": "час",
   "payRBFDisabled": "RBF відключені",
   "exchangeAuthLoginFailedOkButton": "ЗАРЕЄСТРУВАТИСЯ",
   "exchangeKycCardTitle": "Завершіть КИЇВ",
   "importQrDeviceSuccess": "Гаманець імпортований успішно",
-  "arkTxSettlement": "Проживання",
   "autoswapEnable": "Увімкнути автоматичне перенесення",
   "coreScreensFromLabel": "З",
   "backupWalletGoogleDriveSignInTitle": "Ви повинні зареєструватися на Google Диску",
@@ -2841,7 +2664,6 @@
   "payEnterAmountTitle": "Вхід",
   "payInvalidAddress": "Неоплатна адреса",
   "appUnlockAttemptPlural": "невдалих спроб",
-  "arkConfirmed": "Підтвердження",
   "importQrDevicePassportStep6": "Виберіть \"Single-sig\"",
   "withdrawRecipientsContinue": "Продовжити",
   "enterPinAgainMessage": "Введіть своє {pinOrPassword} знову, щоб продовжити.",
@@ -2860,7 +2682,6 @@
   "bitboxActionVerifyAddressSuccessSubtext": "Ця адреса була перевірена на пристрої BitBox.",
   "dcaNetworkLightning": "Мережа Lightning",
   "backupWalletHowToDecideVaultCloudRecommendationText": "ви хочете переконатися, що ви ніколи не втратите доступ до файлу за замовчуванням, навіть якщо ви втратите ваші пристрої.",
-  "arkAboutEsploraUrl": "Веб-сайт",
   "importColdcardInstructionsStep3": "Navigate до \"Advanced/Tools\"",
   "buyPhotoID": "Фото ID",
   "appStartupErrorTitle": "Помилка старту",
@@ -2879,7 +2700,6 @@
   "importQrDeviceSpecterStep5": "Виберіть \"Майстерські публічні ключі\"",
   "allSeedViewDeleteWarningTitle": "УВАГА!",
   "backupSettingsBackupKey": "Зворотній зв'язок",
-  "arkTransactionId": "Код транзакції",
   "payInvoiceCopied": "Invoice copied до буфера",
   "recoverbullEncryptedVaultCreated": "Зашифрований Vault створений!",
   "addressViewChangeAddressesComingSoon": "Змінити адреси, що надходяться",
@@ -2911,7 +2731,7 @@
   "dcaBackToHomeButton": "Головна",
   "importQrDeviceKruxInstructionsTitle": "Krux Інструкції",
   "importQrDeviceKeystoneInstructionsTitle": "Інструкція Keystone",
-  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера {reason}",
+  "electrumSavePriorityFailedError": "Не вдалося зберегти пріоритет сервера ",
   "@electrumSavePriorityFailedError": {
     "placeholders": {
       "reason": {
@@ -2923,7 +2743,7 @@
   "sendTypeSwap": "Обмін",
   "sendErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "bitboxActionSignTransactionSuccess": "Успішно заблоковано операцію",
-  "fundExchangeMethodInstantSepa": "Миттєвий СЕПА",
+  "fundExchangeMethodInstantSepa": "Миттєвий і стандартний SEPA-переказ",
   "buyVerificationFailed": "Перевірка не вдалося: {reason}",
   "@buyVerificationFailed": {
     "placeholders": {
@@ -2932,7 +2752,6 @@
       }
     }
   },
-  "importWatchOnlyBuyDevice": "Купити пристрій",
   "sellMinimumAmount": "Мінімальна сума продажу: {amount}",
   "@sellMinimumAmount": {
     "placeholders": {
@@ -2956,7 +2775,7 @@
   "exportTransactionsButton": "Експорт CSV",
   "exportTransactionsSuccess": "Транзакції успішно експортовано",
   "exportTransactionsEmpty": "Немає транзакцій для експорту за вибраний період",
-  "exportTransactionsError": "Failed to export transactions",
+  "exportTransactionsError": "Не вдалося експортувати транзакції.",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
@@ -2971,7 +2790,6 @@
   "hwSeedSigner": "НасінняСинер",
   "bitboxActionUnlockDeviceButton": "Розблокувати пристрій",
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
-  "sendNetworkFeesLabel": "Відправка мереж",
   "electrumUnknownError": "Помилки",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
   "recoverbullSelectDecryptVault": "Розшифрування за замовчуванням",
@@ -2987,7 +2805,6 @@
       }
     }
   },
-  "arkSendConfirmedBalance": "Підтверджений баланс",
   "payCancelPayment": "Відправити платіж",
   "ledgerInstructionsAndroidUsb": "Зареєструватися Ledger розблоковано за допомогою додатку Bitcoin, що відкривається і з'єднує його через USB.",
   "allSeedViewTitle": "Вид на насіння",
@@ -3004,7 +2821,6 @@
   "leaveYourPhone": "залишити свій телефон і ",
   "sendFastFee": "Швидкий",
   "exchangeBrandName": "БУЛ БІТКОІН",
-  "torSettingsPortHelper": "Портфоліо Орбота: 9050",
   "submitButton": "Подати заявку",
   "bitboxScreenTryAgainButton": "Зареєструватися",
   "dcaConfirmTitle": "Підтвердження Купити",
@@ -3012,7 +2828,6 @@
   "backupSettingsPhysicalBackup": "Фізичний фон",
   "importColdcardDescription": "Імпорт сканера гаманця QR-коду від вашого Coldcard Q",
   "backupSettingsSecurityWarning": "Попередження про безпеку",
-  "arkCopyAddress": "Статус на сервери",
   "sendScheduleFor": "Графік роботи {date}",
   "@sendScheduleFor": {
     "placeholders": {
@@ -3065,32 +2880,13 @@
   "backupSettingsKeyServer": "Статус на сервери ",
   "connectHardwareWalletColdcardQ": "Холодна картка Q",
   "seedsignerStep2": "Натисніть сканування",
-  "ledgerErrorMissingDerivationPathVerify": "Для перевірки необхідно пройти процедуру зарахування",
   "recoverbullErrorVaultNotSet": "Не встановлено",
-  "ledgerErrorMissingScriptTypeSign": "Тип скрипта необхідний для підписання",
   "dcaSetupContinue": "Продовжити",
   "electrumFormatError": "Використовуйте хост:порт формат (наприклад, приклад.com:50001)",
-  "arkAboutDurationDay": "{days} день",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
-  "arkDurationHour": "{hours} час",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyTitle": "Імпорт годинник",
   "cancel": "Зареєструватися",
   "logsViewerTitle": "Логін",
   "recoverbullTorNotStarted": "Не розпочато",
-  "arkPending": "Закінчення",
   "testBackupCreatedAt": "Створено:",
   "dcaSetRecurringBuyTitle": "Встановити Recurring Купити",
   "psbtFlowSignTransactionOnDevice": "Натисніть кнопку, щоб зареєструвати операцію {device}.",
@@ -3101,7 +2897,6 @@
       }
     }
   },
-  "bitboxCubitConnectionFailed": "Ввімкніть підключення до пристрою BitBox. Будь ласка, перевірте підключення.",
   "importQrDeviceScanning": "Сканування ...",
   "importWalletKeystone": "Головна",
   "testBackupConfirm": "Підтвердження",
@@ -3117,7 +2912,6 @@
   },
   "payLightningFee": "Освітлення Fee",
   "recoverbullGoogleDriveDeleteButton": "Видалення",
-  "arkBalanceBreakdownTooltip": "Поломка балансу",
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Купити",
   "testBackupLastBackupTest": "Останнє оновлення: {timestamp}",
   "@testBackupLastBackupTest": {
@@ -3137,7 +2931,6 @@
       }
     }
   },
-  "bitboxCubitDeviceNotPaired": "Пристрої непаровані. Будь ласка, заповніть процес паріння першим.",
   "replaceByFeeActivatedLabel": "Замініть активоване",
   "sendPaymentProcessing": "Опрацьовується платіж. До хвилини",
   "electrumDefaultServersInfo": "Щоб захистити конфіденційність, сервери за замовчуванням не використовуються при налаштуванні користувацьких серверів.",
@@ -3149,11 +2942,9 @@
       }
     }
   },
-  "bitboxCubitOperationCancelled": "Операція скасована. Будь ласка, спробуйте знову.",
   "passportStep3": "Сканування QR-коду, показаного в булл-гаманці",
   "jadeStep5": "Якщо у вас є проблеми сканування:",
   "electrumProtocolError": "Не містить протоколу (ssl:// або tcp://).",
-  "arkSendConfirmTitle": "Підтвердження",
   "importQrDeviceSeedsignerStep1": "Потужність на пристрої SeedSigner",
   "importWatchOnlyDerivationPath": "Деприація шлях",
   "sendErrorBroadcastFailed": "Ввімкнути трансляцію. Перевірити підключення мережі і спробувати знову.",
@@ -3229,11 +3020,8 @@
   "recoverbullSelectBackupFileNotValidError": "Recoverbull резервний файл не діє",
   "swapErrorInsufficientFunds": "Не вдалося побудувати операцію. Як правило, через недостатні кошти для покриття зборів і суми.",
   "dcaConfirmAmount": "Сума",
-  "arkBalanceBreakdown": "Поломка балансу",
   "seedsignerStep8": "Після того, як угода була імпортована у вашому SeedSigner, ви повинні вибрати насіння, яке ви хочете зареєструватися.",
-  "arkAboutCopy": "Партнерство",
   "recoverbullPasswordRequired": "Необхідний пароль",
-  "arkNoTransactionsYet": "Ніяких операцій.",
   "importWatchOnlySigningDevice": "Пристрої реєстрації",
   "receiveInvoiceExpired": "Войце розширюється",
   "ledgerButtonManagePermissions": "Керування додатками",
@@ -3254,7 +3042,6 @@
   "urDecodingFailedMessage": "Ур декодування не вдалося",
   "bitboxScreenWaitingConfirmation": "Очікується підтвердження на BitBox02...",
   "payCannotBumpFee": "Не платите за цю операцію",
-  "arkSatsUnit": "атласне",
   "payMinimumAmount": "Мінімальне: {amount}",
   "@payMinimumAmount": {
     "placeholders": {
@@ -3272,18 +3059,9 @@
   "recoverbullWaiting": "Чекати",
   "backupWalletVaultProviderGoogleDrive": "Українська",
   "bitboxCubitDeviceNotFound": "Не знайдено пристрій BitBox. Будь ласка, підключіть пристрій і спробуйте знову.",
-  "autoswapSaveError": "Не вдалося зберегти налаштування: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Стандартний знімок",
   "swapContinue": "Продовжити",
-  "arkSettleButton": "Смітт",
-  "electrumAddFailedError": "Заборонено додавати користувацький сервер{reason}",
+  "electrumAddFailedError": "Заборонено додавати користувацький сервер",
   "@electrumAddFailedError": {
     "placeholders": {
       "reason": {
@@ -3291,16 +3069,7 @@
       }
     }
   },
-  "arkAboutDurationHours": "{hours} годин",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "Генетичні гаманці",
-  "arkEsploraUrl": "Веб-сайт",
   "backupSettingsNotTested": "Не тестувати",
   "googleDrivePrivacyMessage": "Google попросить Вас поділитися персональною інформацією з цією програмою.",
   "errorGenericTitle": "Опери Хтось пішов неправильно",
@@ -3323,10 +3092,8 @@
   "recoverbullErrorVaultCreatedKeyNotStored": "Переміщений файл Vault створений, але ключ не зберігається в сервері",
   "exchangeSupportChatWalletIssuesInfo": "Цей чат є тільки для обміну пов'язаними з питань, пов'язаних з фондуванням / купівлі / продажу / виведення / оплати.\nДля гаманця пов'язані питання, приєднатися до групи телеграм, натиснувши тут.",
   "exchangeLoginButton": "Увійти",
-  "arkAboutHide": "Приват",
   "ledgerProcessingVerify": "Показати адресу на Ledger ...",
   "coreScreensFeePriorityLabel": "Пріоритетність",
-  "arkSendPendingBalance": "Торговий баланс    ",
   "coreScreensLogsTitle": "Логін",
   "recoverbullVaultKeyInput": "Vault ключ",
   "testBackupErrorWalletMismatch": "Резервне копіювання не відповідає існуючому гаманцю",
@@ -3336,7 +3103,6 @@
   "importQrDevicePassportStep5": "Виберіть опцію \"Ворна\"",
   "psbtFlowClickPsbt": "Натисніть PSBT",
   "sendInvoicePaid": "Пайд пароля",
-  "arkReceiveSegmentArk": "Арк",
   "autoswapRecipientWalletInfo": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
   "importWalletKrux": "Кошик",
   "swapContinueButton": "Продовжити",
@@ -3372,13 +3138,11 @@
   "backupWalletLastBackupTest": "Останній тест резервного копіювання: ",
   "keystoneStep1": "Увійти на пристрій Keystone",
   "keystoneStep3": "Сканування QR-коду, показаного в булл-гаманці",
-  "arkSendSuccessTitle": "Відправити",
   "importQrDevicePassportStep3": "Виберіть \"Управлінський рахунок\"",
   "exchangeAuthErrorMessage": "Помилкові помилки, будь ласка, спробуйте увійти знову.",
   "bitboxActionSignTransactionTitle": "Реєстрація",
   "testBackupGoogleDrivePrivacyPart3": "залишити свій телефон і ",
   "dcaAmountLabel": "Сума",
-  "receiveArkNetwork": "Арк",
   "swapMaxButton": "МАКС",
   "importQrDeviceSeedsignerStep8": "Сканування QR-коду, що відображається на вашому SeedSigner",
   "electrumDeletePrivacyNotice": "Повідомлення про конфіденційність:\n\nВикористання власного вузла забезпечує, що жодна третя сторона може зв'язатися з вашим IP-адресою з вашими операціями. Після видалення останнього користувацького сервера ви будете підключені до сервера BullBitcoin.\n.\n",
@@ -3391,21 +3155,12 @@
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
   "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
-  "labelErrorNotFound": "Етикетка \"X7X\" не знайдено.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "Приватний платіж",
   "autoswapDefaultWalletLabel": "Bitcoin гаманець",
   "recoverbullTestSuccessDescription": "Ви можете відновити доступ до втраченого біткойн-гаманця",
   "dcaDeactivate": "Deactivate Recurring Купити",
   "exchangeAuthLoginFailedTitle": "Логін",
   "autoswapRecipientWallet": "Отримувач Bitcoin Wallet",
-  "arkUnifiedAddressBip21": "Єдина адреса (BIP21)",
   "pickPasswordOrPinButton": "Виберіть {pinOrPassword} замість >>",
   "@pickPasswordOrPinButton": {
     "placeholders": {
@@ -3426,7 +3181,6 @@
   "swapTransferCompletedMessage": "Ви чекали! Передача успішно завершено.",
   "electrumDelete": "Видалення",
   "testBackupGoogleDrivePrivacyPart4": "ні ",
-  "arkConfirmButton": "Підтвердження",
   "sendCoinControl": "Монета управління",
   "withdrawSuccessOrderDetails": "Деталі замовлення",
   "exchangeLandingConnect": "Підключіть свій обліковий запис Біткойн",
@@ -3441,7 +3195,6 @@
   "savingToDevice": "Збереження вашого пристрою.",
   "bitboxActionImportWalletButton": "Імпорт",
   "fundExchangeLabelSwiftCode": "SWIFT код",
-  "autoswapWarningBaseBalance": "Цільовий баланс 0.01 BTC",
   "importQrDeviceSpecterStep6": "Виберіть \"Single key\"",
   "importQrDeviceJadeStep10": "Що це!",
   "importQrDevicePassportStep8": "На мобільному пристрої натисніть \"відкрита камера\"",
@@ -3454,6 +3207,7 @@
     }
   },
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "bip85NoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
   "pinStatusSettingUpDescription": "Налаштування коду PIN",
   "swapFromLabel": "З",
   "importQrDeviceKeystoneStep4": "Натисніть \"Connect Software Wallet\"",
@@ -3479,10 +3233,8 @@
       }
     }
   },
-  "autoswapAutoSaveError": "Не вдалося зберегти налаштування",
   "exchangeFeatureBankTransfers": "• Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "dcaConfirmAutoMessage": "Купити замовлення будуть розміщені автоматично на ці налаштування. Ви можете відключити їх в будь-який час.",
-  "arkCollaborativeRedeem": "Колегативний червоний",
   "usePasswordInsteadButton": "{pinOrPassword} замість >>",
   "@usePasswordInsteadButton": {
     "placeholders": {
@@ -3508,6 +3260,7 @@
   "testBackupDoNotShare": "НЕ ЗДОРОВ'Я",
   "kruxInstructionsTitle": "Krux Інструкції",
   "backupSettingsViewVaultKey": "Переглянути Vault Головна",
+  "ledgerErrorDeviceBusy": "Інша програма використовує ваш Ledger. Будь ласка, закрийте її (наприклад, Ledger Live) і спробуйте знову.",
   "ledgerErrorNoConnection": "Немає підключень Ledger",
   "testBackupSuccessButton": "Про нас",
   "importWalletLedger": "Клей",
@@ -3518,7 +3271,6 @@
   "withdrawSuccessTitle": "Зняття ініціації",
   "paySendAll": "Відправити",
   "payLowPriority": "Низький",
-  "arkSendConfirmMessage": "Будь ласка, підтвердіть деталі вашої угоди перед відправленням.",
   "backupWalletBestPracticesTitle": "Кращі практики",
   "memorizePasswordWarning": "Ви повинні запам'ятати цей {pinOrPassword} для відновлення доступу до вашого гаманця. Потрібно не менше 6 цифр. Якщо ви втратите це {pinOrPassword} ви не можете відновити резервну копію.",
   "@memorizePasswordWarning": {
@@ -3549,10 +3301,7 @@
   "swapProgressRefundMessage": "Помилки з переказом. Ваше повернення здійснюється в процесі.",
   "passportStep4": "Якщо у вас є проблеми сканування:",
   "electrumNetworkBitcoin": "Bitcoin у USD",
-  "arkSendRecipientError": "Введіть одержувача",
-  "arkArkAddress": "Арк адреса",
   "bitboxActionVerifyAddressButton": "Адреса електронної пошти",
-  "torSettingsInfoTitle": "Важлива інформація",
   "importColdcardInstructionsStep7": "На мобільному пристрої натисніть \"відкрита камера\"",
   "testBackupStoreItSafe": "Зберігайте його кудись безпечно.",
   "bitboxScreenTroubleshootingSubtitle": "По-перше, переконайтеся, що пристрій BitBox02 підключений до вашого телефону USB-порту. Якщо пристрій все ще не підключений до програми, спробуйте наступне:",
@@ -3599,15 +3348,6 @@
   },
   "recoverbullSelectFetchDriveFilesError": "Заборонено фіксувати всі резервні копії приводу",
   "psbtFlowLoadFromCamera": "Натисніть завантаження з камери",
-  "addressViewErrorLoadingMoreAddresses": "{error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "arkCopy": "Партнерство",
   "sendBuildingTransaction": "Будівельна угода...",
   "electrumConfirm": "Підтвердження",
   "bitboxActionPairDeviceSuccessSubtext": "Пристрій BitBox тепер попарюється і готовий до використання.",
@@ -3616,11 +3356,9 @@
   "sellOrderFailed": "Продати замовлення",
   "payInvalidAmount": "Сума недійсна",
   "fundExchangeLabelBankName": "Назва банку",
-  "ledgerErrorMissingScriptTypeVerify": "Тип скрипта необхідний для перевірки",
   "backupWalletEncryptedVaultDescription": "Анонімне резервне копіювання з використанням сильного шифрування за допомогою хмари.",
   "sellRateExpired": "Курс обміну. Відновити ...",
   "recoverbullConfirm": "Підтвердження",
-  "arkPendingBalance": "Торговий баланс",
   "dcaConfirmNetworkBitcoin": "Bitcoin у USD",
   "seedsignerStep14": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "importMnemonicTransactions": "{count} операції",
@@ -3633,16 +3371,15 @@
   },
   "rbfTitle": "Замінити платіж",
   "backupWalletVaultProviderCustomLocation": "Місцезнаходження",
-  "addressViewErrorLoadingAddresses": "Адреса завантаження: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "Тип підключення не ініціюється.",
-  "ledgerErrorUnknown": "Невідома помилка",
+  "ledgerErrorPermissionDenied": "Для підключення до пристроїв Ledger потрібні дозволи Bluetooth.",
+  "ledgerErrorNoDevicesFound": "Пристрої Ledger не знайдено. Переконайтеся, що ваш пристрій увімкнено та Bluetooth активовано.",
+  "ledgerErrorMultipleDevicesFound": "Знайдено декілька пристроїв Ledger. Переконайтеся, що поблизу лише один пристрій.",
+  "ledgerErrorDeviceNotFound": "Пристрій Ledger не знайдено.",
+  "ledgerErrorDeviceMismatch": "Виявлено невідповідність пристрою.",
+  "ledgerErrorInvalidPsbt": "Виявлено недійсний формат PSBT.",
+  "ledgerErrorMissingDerivationPath": "Потрібен шлях деривації",
+  "ledgerErrorMissingScriptType": "Потрібен тип скрипту",
   "ledgerProcessingVerifySubtext": "Будь ласка, підтвердіть адресу на пристрої Ledger.",
   "recoverbullRecoveryTransactionsLabel": "{count}",
   "@recoverbullRecoveryTransactionsLabel": {
@@ -3669,7 +3406,6 @@
   "exchangeSupportChatMessageEmptyError": "Повідомлення не може бути порожнім",
   "payViewTransaction": "Перегляд транзакцій",
   "ledgerInstructionsAndroidDual": "Переконайтеся, що ваш Ledger розблокований, застосунок Біткоїн відкритий та увімкнено Bluetooth.",
-  "arkSendRecipientLabel": "Адреса одержувача",
   "jadeStep9": "Після того, як угода імпортується в Jade, перевірте адресу призначення і суму.",
   "ledgerWalletTypeNestedSegwitDescription": "П2ВПХ-нестед-в-П2Ш",
   "dcaConfirmFrequencyHourly": "Час",
@@ -3683,7 +3419,6 @@
     }
   },
   "testBackupGoogleDrivePrivacyPart5": "bitcoin у USD.",
-  "arkTotal": "Всього",
   "bitboxActionSignTransactionSuccessSubtext": "Ви успішно підписалися на Вашу операцію.",
   "backupWalletInstructionLosePhone": "Якщо ви втратите або перейдете свій телефон, або якщо ви встановите додаток Bull Bitcoin, ваші біткоїни будуть втрачені назавжди.",
   "recoverbullConnected": "Зв'язатися",
@@ -3703,9 +3438,7 @@
   "importQrDeviceSeedsignerStep7": "На мобільному пристрої натисніть Open Camera",
   "addressViewChangeAddressesDescription": "Показати гаманець Зміна адрес",
   "sellReceiveAmount": "Ви отримаєте",
-  "bitboxCubitInvalidResponse": "Інвалідна відповідь від пристрою BitBox. Будь ласка, спробуйте знову.",
   "importQrDeviceKruxStep5": "Скануйте QR-код, який ви бачите на вашому пристрої.",
-  "arkStatus": "Статус на сервери",
   "fundExchangeHelpTransferCode": "Додати це з причини передачі",
   "mempoolCustomServerEdit": "Редагування",
   "importQrDeviceKruxStep2": "Натисніть розширений публічний ключ",
@@ -3774,17 +3507,6 @@
   "testBackupSuccessMessage": "Ви можете відновити доступ до втраченого біткойн-гаманця",
   "electrumTimeout": "Розклад (секунди)",
   "electrumSaveFailedError": "Не вдалося зберегти розширені параметри",
-  "arkSettleTransactionCount": "Сіетл {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenWalletTypeLabel": "Тип гаманця:",
   "importQrDeviceKruxStep6": "Що це!",
   "recoverbullRecoveryErrorMissingDerivationPath": "Файл резервного копіювання відсутній шлях видалення.",
@@ -3860,7 +3582,6 @@
   },
   "recoverbullErrorFetchKeyFailed": "Вимкнено до ключа за замовчуванням від сервера",
   "sendSwapInProgressInvoice": "Ведуться ковпа. Оплатити рахунок за кілька секунд.",
-  "arkReceiveButton": "Отримати",
   "electrumRetryCountNegativeError": "Рівний граф не може бути негативним",
   "importQrDeviceJadeStep4": "Виберіть \"Оптіони\" з основного меню",
   "backupWalletSavingToDeviceTitle": "Збереження вашого пристрою.",
@@ -3870,13 +3591,11 @@
   "autoswapRecipientWalletLabel": "Отримувач Bitcoin Wallet",
   "coreScreensConfirmTransfer": "Підтвердження трансферу",
   "recoverbullRetry": "Птиця",
-  "arkSettleMessage": "Закінчуйте операції з кредитування та включають відновлювані vtxos, якщо це потрібно",
   "receiveCopyInvoice": "Статус на сервери",
   "walletAutoTransferBlockedTitle": "Авто Трансфер блокується",
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Інструкції",
   "paySendMax": "Макс",
   "recoverbullGoogleDriveDeleteConfirmation": "Ви впевнені, що ви хочете видалити цю резервну копію? Ця дія не може бути неоновою.",
-  "arkReceiveArkAddress": "Арк адреса",
   "googleDriveSignInMessage": "Ви повинні зареєструватися на Google Диску",
   "passportStep9": "Натисніть кнопку, щоб зареєструвати операцію на паспорті.",
   "electrumDeleteConfirmation": "Ви впевнені, що ви хочете видалити цей сервер?\n\n{serverUrl}",
@@ -3887,18 +3606,9 @@
       }
     }
   },
-  "arkServerUrl": "Статус на сервери",
   "importMnemonicSelectType": "Виберіть тип гаманця для імпорту",
   "fundExchangeMethodArsBankTransfer": "Банківський переказ",
   "importQrDeviceKeystoneStep1": "Увімкніть ваш Keystone",
-  "arkDurationDays": "{days} дні",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferAmount": "Сума переказу",
   "feePriorityLabel": "Пріоритетність",
   "coreScreensToLabel": "До",
@@ -3955,7 +3665,6 @@
   },
   "receiveLiquidNetwork": "Рідина",
   "autoswapSettingsTitle": "Налаштування автопередача",
-  "arkAboutBoardingExitDelay": "Затримка виходу",
   "backupWalletInstructionNoPassphrase": "Ваше резервне копіювання не захищено пасфальним способом. Створіть новий гаманець.",
   "sendSwapFailed": "Не вдалося. Ваше повернення буде оброблятися найближчим часом.",
   "sellNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
@@ -3975,7 +3684,6 @@
       }
     }
   },
-  "arkConfirmedBalance": "Підтверджений баланс",
   "payMaximumAmount": "{amount}",
   "@payMaximumAmount": {
     "placeholders": {
@@ -3993,7 +3701,6 @@
     }
   },
   "backupWalletPhysicalBackupTitle": "Фізична резервна копія",
-  "arkTxBoarding": "Дошка",
   "bitboxActionVerifyAddressSuccess": "Адреса Успішно",
   "psbtImDone": "Я зробив",
   "bitboxScreenSelectWalletType": "Виберіть гаманець Тип",
@@ -4001,14 +3708,6 @@
   "torSettingsTitle": "Налаштування Tor",
   "backupSettingsRevealing": "Відновлення ...",
   "payTotal": "Всього",
-  "autoswapSaveErrorMessage": "Не вдалося зберегти налаштування: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Адреса блискавки",
   "addressViewTitle": "Адреса Подробиці",
   "bitboxScreenManagePermissionsButton": "Керування додатками",
@@ -4027,14 +3726,19 @@
     }
   },
   "payFeeBumpFailed": "Бампер не вдалося",
-  "arkAboutUnilateralExitDelay": "Затримка одностороннього виходу",
   "payUnsupportedInvoiceType": "Непідтриманий тип рахунку",
   "seedsignerStep13": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "autoswapRecipientWalletDefaultLabel": "Bitcoin гаманець",
   "dcaPaymentMethodLabel": "Спосіб оплати",
   "swapProgressPendingMessage": "Передача здійснюється в процесі. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "broadcastSignedTxBroadcasting": "Трансляція...",
-  "broadcastSignedTxBroadcastError": "Не вдалося транслювати транзакцію",
+  "broadcastSignedTxBroadcastError": "Не вдалося передати вашу транзакцію. Перевірте підключення до інтернету та спробуйте ще раз.",
+  "importWatchOnlyErrorNoWalletSelected": "Спочатку вставте або відскануйте публічний ключ чи дескриптор.",
+  "importWatchOnlyErrorLabelRequired": "Дайте гаманцю назву перед імпортом.",
+  "importWatchOnlyErrorInvalidFormat": "Це не схоже на дійсний публічний ключ або дескриптор. Перевірте, що ви вставили.",
+  "importWatchOnlyErrorImportFailed": "Не вдалося імпортувати цей гаманець лише для перегляду. Будь ласка, перевірте дані та спробуйте ще раз.",
+  "broadcastSignedTxErrorInvalidTransaction": "Це не схоже на дійсну підписану транзакцію. Переконайтеся, що ви вставили повний PSBT або транзакцію.",
+  "broadcastSignedTxErrorInvalidPushTx": "Не вдалося зчитати транзакцію з цієї мітки. Будь ласка, спробуйте відсканувати ще раз.",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",
@@ -4051,14 +3755,6 @@
   "testBackupEncryptedVaultTitle": "Зашифрована сорочка",
   "dcaWalletTypeLiquid": "Рідина (LBTC)",
   "fundExchangeLabelInstitutionNumber": "Номер установи",
-  "arkAboutCopiedMessage": "{label} скопіювати до буферу",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "swapAmountLabel": "Сума",
   "recoverbullSelectCustomLocation": "Місцезнаходження",
   "sellConfirmOrder": "Підтвердити замовлення",
@@ -4095,7 +3791,6 @@
   "recoverbullTestRecovery": "Відновлення даних",
   "sellNetAmount": "Чистий розмір",
   "willNot": "не буде ",
-  "arkAboutServerPubkey": "Статус на сервери",
   "pinManageDescription": "Управління безпекою PIN",
   "bitboxActionUnlockDeviceProcessing": "Розблокування пристрою",
   "seedsignerStep4": "Якщо у вас є проблеми сканування:",
@@ -4108,7 +3803,6 @@
   "exchangeDcaViewSettings": "Перегляд налаштувань",
   "payRetryPayment": "Плата за лікування",
   "exchangeSupportChatTitle": "Підтримка чату",
-  "arkTxTypeCommitment": "Приват",
   "customLocationRecommendation": "Місцезнаходження: ",
   "fundExchangeMethodCrIbanUsd": "Коста-Рика IBAN (USD)",
   "recoverbullErrorSelectVault": "Ввімкнено до вибору за замовчуванням",
@@ -4116,7 +3810,6 @@
   "receiveDescription": "Опис (за бажанням)",
   "bitboxScreenVerifyAddress": "Адреса електронної пошти",
   "bitboxScreenConnectDevice": "Підключення пристрою BitBox",
-  "arkYesterday": "Погода",
   "amountRequestedLabel": "{amount}",
   "@amountRequestedLabel": {
     "placeholders": {
@@ -4220,7 +3913,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "Завантажити {count} {count, plural, =1{файл} other{файлів}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4371,17 +4064,15 @@
   "mempoolErrorSameAsDefault": "Ця URL-адреса така ж, як сервер за замовчуванням. Будь ласка, використовуйте іншу URL-адресу.",
   "mempoolErrorConnectionTimeout": "Час з'єднання вичерпано. Сервер може бути повільним або недоступним.",
   "mempoolErrorHostNotFound": "Сервер не знайдено. Перевірте URL та спробуйте знову.",
-  "mempoolErrorTorNotRunning": "Не вдається досягти .onion адреси. Переконайтеся, що Tor/Orbot запущений, і спробуйте знову.",
   "mempoolErrorConnectionFailed": "Не вдалося підключитися до сервера. Перевірте мережеве з'єднання та спробуйте знову.",
   "mempoolErrorNotMempoolServer": "Ця URL-адреса не є сервером mempool. Перевірте адресу.",
   "mempoolErrorServerUnavailable": "Сервер недоступний. Спробуйте пізніше.",
   "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
   "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
-  "mempoolErrorUnexpected": "Сталася неочікувана помилка",
-  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер: {error}",
-  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool: {error}",
-  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
+  "mempoolErrorInvalidUrl": "Недійсна URL-адреса сервера. Введіть дійсний домен або IP-адресу.",
+  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер",
+  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool",
+  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер",
   "settingsErrorReportingTitle": "Звіт про помилки",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4458,7 +4149,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Це надішле запит на видалення облікового запису до нашої служби підтримки. Ваш обліковий запис буде видалено протягом 5 робочих днів.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -4470,41 +4161,17 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Запит на видалення облікового запису надіслано",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Ваш запит на видалення облікового запису надіслано. Його буде опрацьовано протягом 5 робочих днів.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
-  },
-  "homeLegacyStorageWithNoBackupTitle": "Терміново: необхідне резервне копіювання та переустановлення",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Необхідна дія: Перевстановіть додаток",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Зробити копію зараз",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Пізніше",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
   "backButton": "Назад",
   "@backButton": {
@@ -4537,10 +4204,6 @@
   "errorReportingStandardLogsTitle": "Стандартні журнали",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "Завжди ввімкнено — дозволяє нам бачити, чи ваш гаманець безпечно переходить між версіями застосунку.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "Використайте резервну копію",
   "@appInitErrorHasBackupTitle": {
@@ -4624,8 +4287,7 @@
   "legacyStorageAcceptRisksCheckbox": "Я приймаю ризики відсутності резервної копії",
   "legacyStorageHasBackupImportantBody": "Будь ласка, не пропускайте цей процес, якщо тільки вам не потрібно терміново скористатися гаманцем або ви не очікуєте на завершення свопу.",
   "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
+  "walletSetupErrorTryAgain": "Щось пішло не так під час налаштування вашого гаманця. Будь ласка, спробуйте ще раз.",
   "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
   "coreScreensResolvingInputs": "Розв'язання входів транзакції...",
   "coreScreensFeeRateLabel": "Ставка комісії",
@@ -4635,7 +4297,6 @@
   "coreScreensFetchFailed": "Не вдалося отримати транзакцію {txid} з Electrum.",
   "coreScreensInputResolutionFailed": "Вхід не знайдено: вихід {vout} з {parentTxId} не існує.",
   "coreScreensParseFailed": "Не вдалося розібрати транзакцію: {message}.",
-  "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
   "coreScreensNoServersAvailable": "Немає доступних серверів Electrum.",
   "addressViewerTitle": "Адреса",
   "viewerTapToCopy": "Натисніть для копіювання",
@@ -4658,6 +4319,7 @@
   "recipientsPayoutMethod": "Спосіб виплати",
   "recipientsFilterByJurisdiction": "Фільтр за юрисдикцією:",
   "recipientsListEmpty": "Одержувачів не знайдено.",
+  "recipientsListLoadError": "Не вдалося завантажити отримувачів. Потягніть вниз, щоб повторити.",
   "recipientsContinue": "Продовжити",
   "recipientsJurisdictionAll": "Усі юрисдикції",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",
@@ -4759,8 +4421,6 @@
   "exchangeFileUploadTapToReupload": "Торкніться, щоб завантажити знову",
   "exchangeSupportChatAttachmentImage": "Зображення",
   "exchangeSupportChatAttachmentUnknownFile": "Невідомий файл",
-  "exchangeSupportChatPermissionDenied": "Доступ заборонено.",
-  "exchangeSupportChatPermissionDeniedSettings": "Доступ заборонено. Будь ласка, надайте доступ до бібліотеки фотографій у Налаштуваннях.",
   "exchangeSupportChatPickFilesFailed": "Не вдалося вибрати файли. Спробуйте ще раз.",
   "exchangeSupportChatAttachLogsFailed": "Не вдалося прикріпити журнали. Спробуйте ще раз.",
   "exchangeSupportChatFetchFileDataFailed": "Не вдалося отримати дані файлу.",
@@ -4808,5 +4468,572 @@
   "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
   "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android"
+  "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android",
+  "pinCodeSaveError": "Не вдалося зберегти ваш PIN. Будь ласка, спробуйте ще раз.",
+  "pinCodeDeleteError": "Не вдалося видалити ваш PIN. Будь ласка, спробуйте ще раз.",
+  "pinCodeNotSetError": "No PIN code has been set.",
+  "bitcoinPriceExchangeRateUnavailable": "Обмінний курс недоступний. Будь ласка, спробуйте пізніше.",
+  "priceChartLoadFailed": "Дані графіка цін не вдалося завантажити. Будь ласка, спробуйте знову.",
+  "allSeedViewErrorFetch": "Не вдалося завантажити сіди. Будь ласка, спробуйте ще раз.",
+  "@allSeedViewErrorFetch": {
+    "description": "Error shown when seeds cannot be loaded"
+  },
+  "importMnemonicEmptyLabelError": "Для імпорту мнемоніки потрібна мітка",
+  "@importMnemonicEmptyLabelError": {
+    "description": "Error message when user tries to import a mnemonic without a label"
+  },
+  "allSeedViewErrorDelete": "Не вдалося видалити сід. Будь ласка, спробуйте ще раз.",
+  "@allSeedViewErrorDelete": {
+    "description": "Error shown when seed deletion fails"
+  },
+  "sendEstimatedDeliveryHours": "години",
+  "labelErrorUnexpected": "Несподівана помилка: {message}",
+  "@labelErrorUnexpected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Система не може бути видалена.",
+  "labelErrorUnsupportedType": "Цей тип {type} не підтримується",
+  "@labelErrorUnsupportedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorNotFound": "Етикетку \"{label}\" не знайдено.",
+  "@labelErrorNotFound": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolErrorUnexpected": "Сталася неочікувана помилка",
+  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
+  "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
+  "walletButtonCoins": "Керувати монетами",
+  "@walletButtonCoins": {
+    "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
+  },
+  "coinsTitle": "Монети",
+  "@coinsTitle": {
+    "description": "Title of the Coins (UTXO) screen"
+  },
+  "coinsSummaryCoinsCount": "{count, plural, one{{count} монета} few{{count} монети} many{{count} монет} other{{count} монети}}",
+  "@coinsSummaryCoinsCount": {
+    "description": "Coin count in the summary bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFrozen": "Заморожено",
+  "@coinsFrozen": {
+    "description": "Label for the frozen amount stat and frozen pill"
+  },
+  "coinsSpendable": "Доступно для витрат",
+  "@coinsSpendable": {
+    "description": "Label for the spendable amount sub-stat"
+  },
+  "coinsNoneFrozen": "Нічого не заморожено",
+  "@coinsNoneFrozen": {
+    "description": "Sub-text shown in the frozen stat when nothing is frozen"
+  },
+  "coinsSortFilter": "Сортування та фільтр",
+  "@coinsSortFilter": {
+    "description": "Label for the sort & filter sheet button"
+  },
+  "coinsShownOf": "Показано {visible} з {total}",
+  "@coinsShownOf": {
+    "description": "Result count shown when the list is filtered",
+    "placeholders": {
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnspentOutputsCount": "{count, plural, one{{count} невитрачений вихід} few{{count} невитрачені виходи} many{{count} невитрачених виходів} other{{count} невитрачених виходів}}",
+  "@coinsUnspentOutputsCount": {
+    "description": "Result count shown when the list is unfiltered",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSync": "Синхронізувати",
+  "@coinsSync": {
+    "description": "Label for the manual sync button on the Coins screen"
+  },
+  "coinsClearAll": "Очистити все",
+  "@coinsClearAll": {
+    "description": "Label for the clear-all-filters action"
+  },
+  "coinsSortAmountDesc": "Сума: від більшої до меншої",
+  "@coinsSortAmountDesc": {
+    "description": "Sort option: amount descending"
+  },
+  "coinsSortAmountAsc": "Сума: від меншої до більшої",
+  "@coinsSortAmountAsc": {
+    "description": "Sort option: amount ascending"
+  },
+  "coinsSortDateNew": "Дата: найновіші",
+  "@coinsSortDateNew": {
+    "description": "Sort option: newest first"
+  },
+  "coinsSortDateOld": "Дата: найстаріші",
+  "@coinsSortDateOld": {
+    "description": "Sort option: oldest first"
+  },
+  "coinsKeychain": "Ланцюжок ключів",
+  "@coinsKeychain": {
+    "description": "Label for the keychain filter segment"
+  },
+  "coinsKeychainAll": "Усі",
+  "@coinsKeychainAll": {
+    "description": "Keychain filter option: all"
+  },
+  "coinsKeychainReceive": "Отримання",
+  "@coinsKeychainReceive": {
+    "description": "Keychain filter / badge: receive (external) keychain"
+  },
+  "coinsKeychainChange": "Решта",
+  "@coinsKeychainChange": {
+    "description": "Keychain filter / badge: change (internal) keychain"
+  },
+  "coinsFrozenStatus": "Статус заморожування",
+  "@coinsFrozenStatus": {
+    "description": "Label for the frozen-status filter segment"
+  },
+  "coinsFrozenStatusAll": "Усі",
+  "@coinsFrozenStatusAll": {
+    "description": "Frozen-status filter option: all"
+  },
+  "coinsFrozenStatusFrozen": "Заморожені",
+  "@coinsFrozenStatusFrozen": {
+    "description": "Frozen-status filter option: frozen only"
+  },
+  "coinsFrozenStatusUnfrozen": "Незаморожені",
+  "@coinsFrozenStatusUnfrozen": {
+    "description": "Frozen-status filter option: unfrozen only"
+  },
+  "coinsLabels": "Мітки",
+  "@coinsLabels": {
+    "description": "Label for the labels filter section"
+  },
+  "coinsReset": "Скинути",
+  "@coinsReset": {
+    "description": "Reset filters button in the sort & filter sheet"
+  },
+  "coinsApply": "Застосувати",
+  "@coinsApply": {
+    "description": "Apply filters button in the sort & filter sheet"
+  },
+  "coinsSelectedCount": "{count, plural, one{Вибрано {count}} few{Вибрано {count}} many{Вибрано {count}} other{Вибрано {count}}}",
+  "@coinsSelectedCount": {
+    "description": "Selection count in the selection app bar / action bar",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsSelectAll": "Вибрати все",
+  "@coinsSelectAll": {
+    "description": "Selects all unfrozen visible coins"
+  },
+  "coinsFreeze": "Заморозити",
+  "@coinsFreeze": {
+    "description": "Freeze action label"
+  },
+  "coinsUnfreeze": "Розморозити",
+  "@coinsUnfreeze": {
+    "description": "Unfreeze action label"
+  },
+  "coinsUndo": "Скасувати",
+  "@coinsUndo": {
+    "description": "Undo action on the unfreeze toast"
+  },
+  "coinsFreezeConfirmTitle": "{count, plural, one{Заморозити {count} монету?} few{Заморозити {count} монети?} many{Заморозити {count} монет?} other{Заморозити {count} монети?}}",
+  "@coinsFreezeConfirmTitle": {
+    "description": "Title of the freeze confirmation dialog",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsFreezeConfirmBody": "Заморожені монети залишаються у вашому гаманці, але виключаються з витрачання, доки ви їх не розморозите.",
+  "@coinsFreezeConfirmBody": {
+    "description": "Body of the freeze confirmation dialog"
+  },
+  "coinsFreezeZeroWarning": "Заморожування цих монет залишить вас без доступного для витрат балансу.",
+  "@coinsFreezeZeroWarning": {
+    "description": "Warning shown when freezing would drop spendable balance to zero"
+  },
+  "coinsFrozenToast": "{count, plural, one{{count} монету заморожено · виключено з витрачання} few{{count} монети заморожено · виключено з витрачання} many{{count} монет заморожено · виключено з витрачання} other{{count} монети заморожено · виключено з витрачання}}",
+  "@coinsFrozenToast": {
+    "description": "Toast shown after freezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsUnfrozenToast": "{count, plural, one{{count} монету розморожено} few{{count} монети розморожено} many{{count} монет розморожено} other{{count} монети розморожено}}",
+  "@coinsUnfrozenToast": {
+    "description": "Toast shown after unfreezing coins",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsConfsCount": "{count, plural, one{{count} підтвердження} few{{count} підтвердження} many{{count} підтверджень} other{{count} підтвердження}}",
+  "@coinsConfsCount": {
+    "description": "Confirmation count pill",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "coinsPending": "В очікуванні",
+  "@coinsPending": {
+    "description": "Confirmation pill text for an unconfirmed (0-conf) coin"
+  },
+  "coinsEmptyTitle": "Поки що немає монет",
+  "@coinsEmptyTitle": {
+    "description": "Empty-state title when the wallet has no UTXOs"
+  },
+  "coinsEmptyBody": "Монети зʼявляться тут, щойно ви отримаєте біткоїн.",
+  "@coinsEmptyBody": {
+    "description": "Empty-state body when the wallet has no UTXOs"
+  },
+  "coinsFilteredEmptyTitle": "Немає відповідних монет",
+  "@coinsFilteredEmptyTitle": {
+    "description": "Title shown when filters exclude all coins"
+  },
+  "coinsClearFilters": "Очистити фільтри",
+  "@coinsClearFilters": {
+    "description": "Button to clear filters from the filtered-empty state"
+  },
+  "coinsErrorRetry": "Повторити",
+  "@coinsErrorRetry": {
+    "description": "Retry button on the Coins error state"
+  },
+  "coinsSwipeHint": "Проведіть по монеті, щоб заморозити · утримуйте, щоб вибрати",
+  "@coinsSwipeHint": {
+    "description": "Footer hint shown when not selecting"
+  },
+  "coinsErrorLoadFailed": "Не вдалося завантажити ваші монети. Потягніть, щоб оновити та спробувати знову.",
+  "@coinsErrorLoadFailed": {
+    "description": "Error message when loading UTXOs fails"
+  },
+  "coinsErrorFreezeFailed": "Не вдалося заморозити вибрані монети. Будь ласка, спробуйте ще раз.",
+  "@coinsErrorFreezeFailed": {
+    "description": "Error message when freezing fails"
+  },
+  "coinsErrorUnfreezeFailed": "Не вдалося розморозити вибрані монети. Будь ласка, спробуйте ще раз.",
+  "@coinsErrorUnfreezeFailed": {
+    "description": "Error message when unfreezing fails"
+  },
+  "coinsErrorUnexpected": "Щось пішло не так. Будь ласка, спробуйте ще раз.",
+  "@coinsErrorUnexpected": {
+    "description": "Generic Coins error message for unexpected failures"
+  },
+  "walletCoinsEntryUtxoCount": "{count, plural, one{{count} UTXO} few{{count} UTXO} many{{count} UTXO} other{{count} UTXO}}",
+  "@walletCoinsEntryUtxoCount": {
+    "description": "UTXO count in the wallet-detail Manage coins entry subtitle",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletCoinsEntryFrozen": "{amount} заморожено",
+  "@walletCoinsEntryFrozen": {
+    "description": "Frozen-amount clause in the wallet-detail Manage coins entry subtitle, e.g. '0.0133 BTC frozen'",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "logsViewerFilterByDate": "Фільтр за датою",
+  "logsViewerShowingCount": "Показано {shown} з {total} записів",
+  "logsViewerClearFilter": "Очистити фільтр",
+  "logsViewerShareButton": "Поділитися",
+  "logsShareOptionShare": "Поділитися",
+  "logsShareOptionExport": "Експорт",
+  "logsExportedMessage": "Журнали успішно експортовано",
+  "logsExportFailedMessage": "Не вдалося експортувати журнали",
+  "coreSwapsStatusRefunded": "Повернення",
+  "swapRestoreTitle": "Відновлення свопів",
+  "swapRestoreActionable": "{count, plural, =0{Немає свопів для відновлення} one{Можна спробувати відновити {count} своп. Можливо, він уже перебуває в кінцевому статусі.} few{Можна спробувати відновити {count} свопи. Зауважте, деякі з них можуть уже перебувати в кінцевому статусі.} many{Можна спробувати відновити {count} свопів. Зауважте, деякі з них можуть уже перебувати в кінцевому статусі.} other{Можна спробувати відновити {count} свопи. Зауважте, деякі з них можуть уже перебувати в кінцевому статусі.}}",
+  "swapRestoreNoSwaps": "Не знайдено свопів для відновлення",
+  "swapRestoreRecoverableSection": "Можна відновити",
+  "swapRestoreAllSection": "Усі свопи",
+  "swapRestoreFailed": "Не вдалося відновити свопи",
+  "swapRestoreKindLightningSend": "Відправлення Lightning",
+  "swapRestoreKindLightningReceive": "Отримання Lightning",
+  "swapRestoreKindCrossChain": "Крос-чейн",
+  "swapRescueTitle": "Порятунок свопу",
+  "swapRescueTypeLabel": "Тип",
+  "swapRescueStatusLabel": "Статус",
+  "swapRescueAmountLabel": "Сума",
+  "swapRescueRouteLabel": "Маршрут",
+  "swapRescueCreatedLabel": "Створено",
+  "swapRescueIdLabel": "ID свопу",
+  "swapRescueWalletLabel": "Відновити в гаманець",
+  "swapRescueWalletHint": "Виберіть гаманець",
+  "swapRescueButton": "Відновити",
+  "swapRescueSuccess": "Своп відновлено — тепер він продовжиться",
+  "receivePayjoinNoUtxos": "Спочатку отримайте кошти, щоб увімкнути цю функцію.\nДля використання payjoin потрібні UTXO.",
+  "receiveLiquidRiskDisclosureLabel": "Платежі буде конвертовано в Liquid L-BTC (не BTC). Дізнатися більше.",
+  "payViewReceipt": "Переглянути квитанцію",
+  "paySinpeReceipt": "Квитанція SINPE",
+  "transactionFilterWithdraw": "Зняття",
+  "transactionFilterPay": "Оплата",
+  "transactionFilterFunding": "Поповнення",
+  "transactionFilterReward": "Винагорода",
+  "transactionFilterRefund": "Повернення",
+  "transactionFilterBalanceAdjustment": "Коригування",
+  "transactionListLoadingFailed": "Не вдалося завантажити транзакції.",
+  "transactionLabelNetworkFees": "Мережеві збори",
+  "walletLiquidRiskDisclosureLabel": "Ці кошти — це Liquid L-BTC (не BTC). Дізнатися більше.",
+  "liquidRiskDisclosureSemanticLabel": "Відкрити розкриття ризиків Liquid Bitcoin",
+  "liquidRiskDisclosureTitle": "Розкриття ризиків Liquid Bitcoin гаманця миттєвих платежів",
+  "liquidRiskDisclosureBody": "The funds in the Instant Payment Wallet are not \"real\" Bitcoin. They are Liquid Network Bitcoin (L-BTC), a Bitcoin-backed token which exists on a separate ledger called a \"sidechain\".\n\nEach Liquid Bitcoin is backed 1:1 by real Bitcoin using a transparent peg mechanism maintained by a federation of 15 companies. The Bitcoin reserves held by the Liquid Federation are fully auditable, and anybody can verify that every Liquid Bitcoin is backed by a real Bitcoin.\n\nKeeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange. However, holding your money as Liquid Bitcoin in the Instant Bitcoin Payments wallet is far less secure than holding it as real Bitcoin in the Secure Bitcoin Wallet.\n\nLiquid Network payments are faster, cheaper and more private than regular Bitcoin payments. You have full self-custody of the Liquid Bitcoin assets in the Instant Payments Wallet and you don't need any permission from anyone to send and receive payments.\n\nYou are fully and exclusively responsible for securing access to your wallet backup, without which nobody can restore access to your Liquid Bitcoin assets.\n\nThe real-world value of the L-BTC depends on your ability to redeem them for real Bitcoin, which in turn depends on swap providers that are members of the Liquid Network, which in turn depends on the Liquid Network federation never being compromised or shut down.\n\nIn other words, in the event that Liquid Network federation members become unable or unwilling to redeem your Liquid Bitcoin for real Bitcoin, the value of L-BTC tokens would become worthless.\n\n> Recommendation\n> Only keep small amounts in the Instant Payments Wallet. Keep your savings in the Secure Bitcoin Wallet or in an imported hardware wallet.\n\n## What is the Instant Payments Wallet?\n\nEvery time you receive a Lightning Network payment with the Instant Payment Wallet, the sender's funds are actually received by a 3rd party swap provider, converted to Liquid Bitcoin and sent to your wallet.\n\nEvery time you send a Lightning Network payment with this wallet, you are actually sending a Liquid Bitcoin payment to a 3rd party swap provider which converts them to real Bitcoin on the Lightning Network and sends a Lightning Network payment to the recipient.\n\nThese swaps are fully non-custodial and trustless, meaning that there is no way for the swap provider to steal your funds. Bull Bitcoin is not involved in making those swap transactions and does not require or store any personal information.\n\n## What should I do with this wallet?\n\nThe Instant Payments Wallet is designed for you to be able to receive Bitcoin payments (or buying Bitcoin) and send Bitcoin payments (or sell Bitcoin) on a day-to-day basis without paying Bitcoin network fees.\n\nIf you are a merchant or you are accumulating Bitcoin, use this wallet to receive payments below 0.01 BTC and, once you have accumulated over 0.01 BTC, transfer those Bitcoins to the Secure Bitcoin Wallet or any other self-custodial Bitcoin wallet.\n\nIf you want to spend your Bitcoin, transfer a small amount in the Instant Payment Wallet and use it to pay for your expenses. When you run out of funds in the Instant Payments Wallet, simply refill it.\n\n## What is auto-swap and how does it work?\n\nAuto-swap, also called Auto-Transfer, is a feature invented by Bull Bitcoin which automatically converts Liquid Network Bitcoin (L-BTC) to Bitcoin (BTC) once the L-BTC amount in your wallet reaches a defined threshold.\n\nAuto-swap is enabled by default:\n\n- **Maximum Instant Wallet balance:** 0.01 BTC\n- **Target balance after auto-swap:** 0.005 BTC\n- **Minimum transfer amount:** 0.005 BTC\n\nWhen your balance reaches 0.01 BTC, a transfer will be initiated as soon as you open the app and any funds in excess of 0.005 BTC will be converted from L-BTC to BTC.\n\n### Example\n\nIf you have 0.012 L-BTC and auto-swap is enabled, a transfer of 0.007 L-BTC will be initiated and your remaining L-BTC will be 0.005 L-BTC, and your BTC balance will be increased by 0.007 BTC.\n\n## How do I fund or withdraw L-BTC from the Instant Bitcoin Wallet?\n\nTo fund the wallet with \"real\" Bitcoin, click \"Receive\" and select \"Lightning Network\". To withdraw L-BTC, click \"Send\" and paste a Lightning invoice.\n\n## How does the backup work?\n\nThe Instant Bitcoin Wallet uses the same backup seed words as the Secure Bitcoin Wallet. You only need one backup for both wallets.\n\n## Should I use the Instant Payments wallet instead of a non-custodial Lightning Network Wallet?\n\nUsing a non-custodial Lightning Network wallet such as Phoenix Wallet will give you a higher degree of security. Because you will have to deal with Lightning Network channel management, it may be less convenient and harder to use.\n\nBecause Lightning channels require on-chain transactions to be opened and closed, and because you will likely need to pay a fee to Lightning service providers, it may in some cases be more expensive to use a fully non-custodial Lightning wallet.\n\nIf you are able and willing to use a fully non-custodial pure Lightning wallet, we highly recommend you try Phoenix Wallet.\n\n## What are the transaction fees?\n\nEach payment in and out of the Instant Payments Wallet implies two Liquid Network transactions. These are typically very small and should be around 0.00000050 BTC (50 sats).\n\nIf you are receiving or sending Lightning Network payments with the Secure Bitcoin Wallet, you will have to pay for two on-chain Bitcoin transactions every payment, which can be quite expensive.\n\nIn addition, the swap provider may also charge swap fees. At the moment, the swap provider (Boltz) charges the following fees:\n\n- **Receiving Lightning Network payments in the Instant Payment Wallet:** 0.25%\n- **Sending Lightning Network payments from the Instant Payment Wallet:** 0.1%\n- **Receiving Lightning Network payments in the Secure Bitcoin Wallet:** 0.5%\n- **Sending Lightning Network payments from the Secure Bitcoin Wallet:** 0.1%",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Колумбія",
+  "nfcNotAvailable": "NFC не підтримується на цьому пристрої",
+  "nfcDisabled": "NFC вимкнено. Увімкніть його в налаштуваннях.",
+  "nfcInvalidData": "Не знайдено підтримуваних даних NFC",
+  "nfcConnectionLost": "З'єднання NFC втрачено. Тримайте пристрій біля NFC-мітки та спробуйте ще раз.",
+  "nfcWriteFailed": "Передавання через NFC не вдалося. Спробуйте ще раз.",
+  "nfcError": "Помилка NFC: {error}",
+  "sendCoordinatingPayjoinTransaction": "Узгодження транзакції Payjoin.",
+  "sendErrorInvoiceExpired": "Термін дії цього рахунку минув. Попросіть отримувача створити новий рахунок.",
+  "psbtFlowSignViaNfc": "Підписати через NFC",
+  "psbtFlowSignViaNfcSheetTitle": "Піднесіть {deviceName}, щоб надіслати PSBT через NFC",
+  "psbtFlowColdcardQInstructionsTitle": "Інструкції для Coldcard Q",
+  "psbtFlowColdcardMk4InstructionsTitle": "Інструкції для Coldcard Mk4",
+  "psbtFlowColdcardQStep1": "Увійдіть у свій пристрій Coldcard Q",
+  "psbtFlowColdcardQStep2": "Додайте парольну фразу, якщо вона у вас є (необов'язково)",
+  "psbtFlowColdcardQStep3": "Виберіть бажаний спосіб підписання:",
+  "psbtFlowColdcardQStep4": "Для QR-коду:",
+  "psbtFlowColdcardQStep5": "   - Виберіть «Scan any QR code» на своєму Coldcard Q",
+  "psbtFlowColdcardQStep6": "   - Відскануйте QR-код, показаний у гаманці Bull",
+  "psbtFlowColdcardQStep7": "   - Якщо виникають проблеми зі скануванням:",
+  "psbtFlowColdcardQStep8": "     - Збільште яскравість екрана на вашому пристрої",
+  "psbtFlowColdcardQStep9": "     - Рухайте червоним лазером вгору і вниз над QR-кодом",
+  "psbtFlowColdcardQStep10": "     - Спробуйте трохи відсунути пристрій назад",
+  "psbtFlowColdcardQStep11": "Для NFC:",
+  "psbtFlowColdcardQStep12": "   - Виберіть «Ready to Sign» на своєму Coldcard Q, потім натисніть кнопку NFC",
+  "psbtFlowColdcardQStep13": "   - Піднесіть телефон до Coldcard Q",
+  "psbtFlowColdcardQStep14": "   - Зачекайте, поки PSBT передасться",
+  "psbtFlowColdcardQStep15": "Коли транзакцію буде імпортовано в ваш Coldcard Q, перевірте адресу отримувача та суму.",
+  "psbtFlowColdcardQStep16": "Натисніть кнопки, щоб підписати транзакцію на вашому Coldcard Q.",
+  "psbtFlowColdcardQStep17": "Після цього Coldcard Q покаже QR-код підписаної транзакції або підготує передавання через NFC.",
+  "psbtFlowColdcardQStep18": "Якщо ви підписали за допомогою QR, натисніть «I'm done» у гаманці Bull Bitcoin.",
+  "psbtFlowColdcardQStep19": "Гаманець Bull Bitcoin попросить вас відсканувати QR-код підписаної транзакції або скористатися NFC, щоб отримати її.",
+  "psbtFlowColdcardQStep20": "   - Для QR: відскануйте QR-код на Coldcard Q",
+  "psbtFlowColdcardQStep21": "   - Для NFC: піднесіть телефон до Coldcard Q",
+  "psbtFlowColdcardQStep22": "Підписану транзакцію буде імпортовано в гаманець Bull Bitcoin.",
+  "psbtFlowColdcardQStep23": "Тепер вона готова до трансляції. Щойно ви натиснете кнопку трансляції, транзакцію буде опубліковано в мережі Bitcoin.",
+  "psbtFlowColdcardMk4Step1": "Увійдіть у свій пристрій Coldcard Mk4",
+  "psbtFlowColdcardMk4Step2": "Додайте парольну фразу, якщо вона у вас є (необов'язково)",
+  "psbtFlowColdcardMk4Step3": "Виберіть «Ready to Sign» на своєму Coldcard Mk4, потім натисніть кнопку 3",
+  "psbtFlowColdcardMk4Step4": "Піднесіть телефон до Coldcard Mk4",
+  "psbtFlowColdcardMk4Step5": "Зачекайте, поки PSBT передасться",
+  "psbtFlowColdcardMk4Step6": "Коли транзакцію буде імпортовано в ваш Coldcard Mk4, перевірте адресу отримувача та суму.",
+  "psbtFlowColdcardMk4Step7": "Натисніть кнопки, щоб підписати транзакцію на вашому Coldcard Mk4.",
+  "psbtFlowColdcardMk4Step8": "Після цього Coldcard Mk4 підготує підписану транзакцію для передавання через NFC.",
+  "psbtFlowColdcardMk4Step9": "У гаманці Bull Bitcoin натисніть NFC на екрані трансляції.",
+  "psbtFlowColdcardMk4Step10": "Піднесіть телефон до Coldcard Mk4, щоб отримати підписану транзакцію.",
+  "psbtFlowColdcardMk4Step11": "Підписану транзакцію буде імпортовано в гаманець Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step12": "Перевірте деталі транзакції в гаманці Bull Bitcoin.",
+  "psbtFlowColdcardMk4Step13": "Тепер вона готова до трансляції. Щойно ви натиснете кнопку трансляції, транзакцію буде опубліковано в мережі Bitcoin.",
+  "importWalletColdcardMk4": "Coldcard Mk4",
+  "broadcastSignedTxNfcButton": "NFC",
+  "broadcastSignedTxColdcardNfcSheetTitle": "Піднесіть Coldcard, щоб отримати підписану транзакцію через NFC",
+  "importColdcardInvalidWalletData": "Недійсні дані гаманця Coldcard",
+  "importColdcardConnectTitle": "Підключити {deviceName}",
+  "importColdcardConnectDescription": "Імпортуйте дескриптор гаманця з вашого {deviceName}",
+  "importColdcardScanNfcSheetTitle": "Піднесіть {deviceName}, щоб імпортувати дескриптор гаманця через NFC",
+  "importColdcardQInstructionsTitle": "Інструкції для Coldcard Q",
+  "importColdcardQStep1": "Увійдіть у свій пристрій Coldcard Q",
+  "importColdcardQStep2": "Додайте парольну фразу, якщо вона у вас є (необов'язково)",
+  "importColdcardQStep3": "Виберіть розширене меню/меню налаштувань",
+  "importColdcardQStep4": "Натисніть «export wallet»",
+  "importColdcardQStep5": "Виберіть «descriptor» як тип експорту",
+  "importColdcardQStep6": "Натисніть «Enter» на першому екрані",
+  "importColdcardQStep7": "Натисніть «Enter» на другому екрані",
+  "importColdcardQStep8": "Виберіть тип адреси (використовуйте Segwit, якщо не впевнені)",
+  "importColdcardQStep9": "Для QR натисніть кнопку QR-коду на пристрої. Він покаже QR-код на екрані пристрою",
+  "importColdcardQStep10": "Для NFC натисніть кнопку NFC на пристрої",
+  "importColdcardQStep11": "Натисніть кнопку «Open the camera» / «Scan NFC»",
+  "importColdcardQStep12": "Відскануйте QR-код, який бачите на пристрої, або піднесіть NFC телефона до NFC Coldcard",
+  "importColdcardQStep13": "Готово!",
+  "importColdcardMk4InstructionsTitle": "Інструкції для Coldcard Mk4",
+  "importColdcardMk4Step1": "Увійдіть у свій пристрій Coldcard Mk4",
+  "importColdcardMk4Step2": "Додайте парольну фразу, якщо вона у вас є (необов'язково)",
+  "importColdcardMk4Step3": "Виберіть розширене меню/меню налаштувань",
+  "importColdcardMk4Step4": "Натисніть «export wallet»",
+  "importColdcardMk4Step5": "Виберіть «descriptor» як тип експорту",
+  "importColdcardMk4Step6": "Натисніть «Enter» на першому екрані",
+  "importColdcardMk4Step7": "Натисніть «Enter» на другому екрані",
+  "importColdcardMk4Step8": "Виберіть тип адреси (використовуйте Segwit, якщо не впевнені)",
+  "importColdcardMk4Step9": "Натисніть цифру 3, щоб увімкнути NFC на Coldcard",
+  "importColdcardMk4Step10": "Натисніть кнопку «Scan NFC»",
+  "importColdcardMk4Step11": "Піднесіть NFC телефона до NFC Coldcard",
+  "importColdcardMk4Step12": "Готово!",
+  "fundExchangeCopDailyLimitWarning": "Якщо ви перевищите денний ліміт транзакцій, транзакція не вдасться. Вам доведеться звернутися до служби підтримки.",
+  "fundExchangeCopSenderName": "Ім'я відправника",
+  "fundExchangeCopIssuingBank": "Банк-емітент",
+  "fundExchangeCopSelectBankError": "Будь ласка, виберіть банк-емітент",
+  "fundExchangeCopAmount": "Сума",
+  "fundExchangeCopEnterAmountError": "Будь ласка, введіть суму",
+  "fundExchangeCopValidAmountError": "Будь ласка, введіть дійсну суму",
+  "fundExchangeCopGeneratePaymentLink": "Створити посилання на оплату",
+  "fundExchangeCopRedirectMessage": "Вас буде перенаправлено на зовнішню сторінку для здійснення оплати.",
+  "fundExchangeCopOpenPaymentLink": "Відкрити посилання на оплату",
+  "fundExchangeCopFailedToOpenLink": "Не вдалося відкрити посилання на оплату. Спробуйте ще раз або зверніться до служби підтримки.",
+  "noteVisibleToSenderNotice": "Ця примітка буде видима отримувачу вашого QR-коду або рахунку.",
+  "viewerAddressTab": "Адреса",
+  "viewerPaymentUriTab": "URI платежу",
+  "transactionSwapOpenWithin24h": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
+  "logsViewerDeleteTitle": "Видалити журнали",
+  "logsViewerDeleteConfirmation": "Ви впевнені, що хочете видалити всі журнали? Цю дію не можна скасувати.",
+  "logsViewerDeleteButton": "Видалити",
+  "logsViewerCancelButton": "Скасувати",
+  "mempoolCustomServerSsl": "SSL",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "importWatchOnlyXpubLabel": "XPUB",
+  "sendSubSatVbyteWarning": "Транзакції з комісією менше 1 sat/vB можуть підтверджуватися довше і можуть не поширитися на всі вузли.",
+  "sendBelowMinFeeRateError": "Комісія має становити щонайменше 0.1 sat/vB.",
+  "bitboxErrorBluetoothPermissionDenied": "Для підключення до BitBox02 Nova потрібен дозвіл на використання Bluetooth.",
+  "bitboxErrorBluetoothUnavailable": "Bluetooth недоступний. Увімкніть Bluetooth і спробуйте ще раз.",
+  "bitboxErrorNoBleDevicesFound": "Поблизу не знайдено BitBox02 Nova. Перевірте Bluetooth і спробуйте ще раз.",
+  "bitboxErrorMultipleBleDevicesFound": "Знайдено кілька пристроїв BitBox02 Nova. Залиште поблизу лише один і спробуйте ще раз.",
+  "bitboxErrorOperationFailed": "Операція BitBox не вдалася. Спробуйте ще раз.",
+  "bitboxScreenConnectSubtextBluetooth": "Переконайтеся, що ваш BitBox02 Nova розблокований і Bluetooth увімкнено.",
+  "bitboxScreenScanningSubtextBluetooth": "Пошук BitBox02 Nova поблизу...",
+  "bitboxScreenTroubleshootingBluetoothTitle": "Усунення несправностей BitBox02 Nova",
+  "bitboxScreenTroubleshootingBluetoothSubtitle": "Якщо пристрій усе ще не підключається до застосунку, спробуйте таке:",
+  "bitboxScreenTroubleshootingBluetoothStep1": "Переконайтеся, що Bluetooth увімкнено та дозволено для цього застосунку.",
+  "bitboxScreenTroubleshootingBluetoothStep2": "Переконайтеся, що Bluetooth увімкнено на вашому BitBox02 Nova.",
+  "bitboxScreenTroubleshootingBluetoothStep3": "Перезапустіть BitBox02 Nova і спробуйте підключитися знову.",
+  "sendErrorInsufficientBalanceFrozenHint": "Недостатньо доступного для витрат балансу — {amount} заморожено. Розморозьте монети в розділі «Керувати монетами», щоб використати їх.",
+  "importWalletBitBox": "BitBox02",
+  "importWalletBitBoxNova": "BitBox02 Nova",
+  "consolidationDone": "Готово",
+  "consolidationFailedBody": "Сталася неочікувана помилка. Ваші кошти в безпеці: транзакцію не було надіслано. Спробуйте ще раз.",
+  "consolidationFailedTitle": "Помилка консолідації",
+  "consolidationInProgress": "Консолідація…",
+  "consolidationRequiredTitle": "Консолідувати гаманець",
+  "consolidationRequiredTitleNamed": "Консолідувати гаманець {walletName}",
+  "consolidationRowAmount": "Сума",
+  "consolidationRowNetworkFees": "Комісії мережі",
+  "consolidationRowOutputs": "Виходи",
+  "consolidationRowTransactions": "Транзакції",
+  "consolidationScreenDescription": "Забагато виходів можуть зробити гаманець нестабільним. Консолідація об’єднує їх у меншу кількість, щоб гаманець працював належно.",
+  "consolidationScreenTitle": "Консолідувати",
+  "consolidationSuccessBody": "Ваші монети об’єднуються. Це завершиться після підтвердження мережею.",
+  "consolidationSuccessTitle": "Консолідацію розпочато",
+  "transactionStatusPayjoinAborted": "Payjoin скасовано",
+  "transactionDetailLabelPayjoinAborted": "Скасовано",
+  "transactionDetailLabelPayjoinFeeContribution": "Внесок комісії Payjoin",
+  "transactionPayjoinFeeContributionExplanation": "Payjoin додає одну з ваших монет як додатковий вхід до платежу для покращення конфіденційності. Комісія за майнінг цього доданого входу віднімається від суми, яку ви отримуєте (BIP78).",
+  "settingsPayjoinDisclaimerTitle": "Попередження про Payjoin",
+  "settingsPayjoinDisclaimerRowLabel": "Попередження про Payjoin",
+  "settingsPayjoinAdvancedTitle": "Розширені налаштування Payjoin",
+  "receiveAdditionalInformation": "Додаткова інформація",
+  "receiveAdditionalInformationPlaceholder": "Додайте суму або повідомлення для відправника",
+  "receiveMessageForSender": "Повідомлення для відправника",
+  "sendPayjoinLabel": "Payjoin",
+  "receivePayjoinAwaitingFunds": "Payjoin увімкнено, але в цьому гаманці ще немає коштів для участі. Він активується, щойно ви отримаєте кошти.",
+  "announcementAutoswapDescription": "Ваш Liquid автоматично обмінюється на Bitcoin.",
+  "addressViewErrorWalletNotFound": "Не вдалося знайти цей гаманець.",
+  "addressViewErrorLoadFailed": "Не вдалося завантажити ваші адреси. Спробуйте ще раз.",
+  "coreSwapsStatusNotStarted": "Не розпочато",
+  "coreSwapsStatusAwaitingPayment": "Очікування оплати",
+  "coreSwapsStatusAwaitingConfirmation": "Очікування підтвердження",
+  "coreSwapsStatusUnderReview": "На розгляді",
+  "coreSwapsStatusRejected": "Відхилено",
+  "coreSwapsStatusCanceled": "Скасовано",
+  "coreSwapsStatusPaymentDeadlineExpired": "Термін оплати минув",
+  "coreSwapsStatusScheduled": "Заплановано",
+  "coreSwapsStatusAwaitingClaim": "Очікування отримання",
+  "coreSwapsStatusUnknown": "Невідомо",
+  "sendSwapExpiredTitle": "Термін заявки минув",
+  "sendSwapExpiredMessage": "Термін дії цієї заявки минув до відправлення коштів. З вашого гаманця нічого не відправлено.",
+  "torSettingsStatusCensored": "Схоже, з'єднання фільтрується",
+  "torSettingsDescCensored": "Tor не зміг дістатися до мережі. Зазвичай це означає, що з'єднання фільтрують.",
+  "torSettingsBootstrapProgress": "Підключення… {percent}%",
+  "recoverbullPhaseNetworkInfo": "Отримання відомостей про мережу",
+  "recoverbullLongestStep": "Це найдовший крок. Перший запуск може тривати понад хвилину.",
+  "recoverbullTorOffline": "Схоже, інтернет-з'єднання відсутнє.",
+  "recoverbullTorClockSkewed": "Годинник пристрою збився, тому Tor не може перевірити сертифікати вузлів. Перевірте дату й час.",
+  "recoverbullTorCantStart": "Наразі Tor не зміг підключитися. Спробуйте ще раз.",
+  "recoverbullServerUnreachableTorOk": "Tor працює, але сервер резервних копій не відповів. Одразу після першого запуску це може зайняти трохи часу.",
+  "torSettingsEmbeddedTitle": "Вбудований Tor",
+  "torSettingsEmbeddedDescription": "Вбудований Tor використовують RecoverBull і сервери Bitcoin Electrum з адресою .onion. Решта трафіку застосунку лишається прямою.",
+  "torSettingsTransportMode": "Спосіб підключення",
+  "torSettingsModeAutomatic": "Автоматично",
+  "torSettingsModeDirect": "Пряме",
+  "torSettingsModeSnowflake": "Snowflake",
+  "torSettingsModeAutomaticDescription": "Спершу пробує пряме підключення до Tor, а якщо мережа, схоже, блокує Tor, використовує Snowflake.",
+  "torSettingsModeDirectDescription": "Підключається до мережі Tor напряму, без підключуваного транспорту.",
+  "torSettingsModeSnowflakeDescription": "Використовує волонтерські проксі Snowflake, щоб дістатися Tor із фільтрованої мережі.",
+  "torSettingsActiveTransport": "Активний транспорт: {transport}",
+  "settingsScreenPrivacyTitle": "Конфіденційність екрана",
+  "settingsScreenPrivacyDisabledMessage": "Знімки екрана тепер дозволені на конфіденційних екранах",
+  "settingsSearchHint": "Пошук у налаштуваннях",
+  "settingsSearchNoResults": "Налаштувань не знайдено.",
+  "settingsSearchMempoolKeywords": "оглядач блоків|оцінка комісії|комісії транзакцій|mempool API",
+  "settingsSearchExchangeKeywords": "обліковий запис|акаунт біржі|торгівля|купівля та продаж",
+  "settingsSearchWalletBackupKeywords": "резервна копія|відновлення|відновити гаманець|резервна копія seed-фрази",
+  "settingsSearchStartBackupKeywords": "створити резервну копію|зберегти резервну копію|зробити копію гаманця",
+  "settingsSearchRecoverbullKeywords": "зашифрована резервна копія|хмарна резервна копія|зашифроване сховище|відновлення зі сховища|Recoverbull",
+  "settingsSearchLabelsKeywords": "мітки гаманця|мітки транзакцій|BIP329|імпорт міток|експорт міток",
+  "settingsSearchTransactionHistoryKeywords": "експорт транзакцій|вивантажити транзакції|CSV|історія гаманця",
+  "settingsSearchBitcoinSettingsKeywords": "налаштування Bitcoin|налаштування мережі|налаштування гаманця",
+  "settingsSearchAppSettingsKeywords": "параметри застосунку|налаштування застосунку|загальні налаштування",
+  "settingsSearchBtcMapKeywords": "BTC Map|карта Bitcoin|карта продавців|місця оплати біткоїном",
+  "settingsSearchTermsOfServiceKeywords": "умови використання|юридична інформація|угода користувача|TOS",
+  "settingsSearchServicesStatusKeywords": "стан сервісів|стан системи|онлайн|збій",
+  "settingsSearchWalletsKeywords": "керування гаманцями|відомості про гаманець|Bitcoin-гаманці",
+  "settingsSearchImportWalletKeywords": "додати гаманець|відновити гаманець|імпорт мнемонічної фрази|гаманець лише для перегляду|апаратний гаманець",
+  "settingsSearchBroadcastTransactionKeywords": "надіслати підписану транзакцію|опублікувати транзакцію|сира транзакція|hex транзакції|PSBT",
+  "settingsSearchPayjoinKeywords": "конфіденційність Payjoin|спільна транзакція|Payjoin|P2EP",
+  "settingsSearchAutoswapKeywords": "автоматичний обмін|автоматичний swap|автоматичне переказування|баланс миттєвого гаманця|Autoswap",
+  "settingsSearchElectrumKeywords": "Bitcoin-вузол|вузол Electrum|власний сервер|особистий вузол|Electrum",
+  "settingsSearchTestnetModeKeywords": "тестова мережа|Bitcoin testnet|Liquid testnet|режим тестування|Testnet",
+  "settingsSearchSeedViewerKeywords": "seed-фраза|фраза відновлення|мнемонічна фраза|слова резервної копії|показати seed",
+  "settingsSearchBip85Keywords": "детермінована ентропія|дочірні seed-фрази|похідна ентропія|BIP85",
+  "settingsSearchLanguageKeywords": "локаль|переклад|мова інтерфейсу|бажана мова",
+  "settingsSearchThemeKeywords": "вигляд|темний режим|світлий режим|системна тема",
+  "settingsSearchCurrencyKeywords": "фіатна валюта|місцева валюта|валюта за замовчуванням|валюта конвертації",
+  "settingsSearchSecurityPinKeywords": "PIN-код|код доступу|блокування застосунку|автентифікація|змінити PIN",
+  "settingsSearchTorKeywords": "Tor-проксі|Orbot|onion-маршрутизація|вбудований Tor|мережа приватності",
+  "settingsSearchLogsKeywords": "журнали налагодження|діагностичні журнали|журнали застосунку|експорт журналів",
+  "settingsSearchDevModeKeywords": "режим розробника|налаштування розробки|режим налагодження|розширене тестування",
+  "settingsSearchTestnetCredentialsKeywords": "облікові дані testnet|вхід у testnet|ім’я користувача testnet|пароль testnet|Basic Auth",
+  "settingsSearchErrorReportingKeywords": "звіти про збої|звіти про помилки|діагностика|телеметрія|журнали помилок",
+  "settingsSearchScreenPrivacyKeywords": "знімки екрана|запис екрана|захист від захоплення екрана|конфіденційність",
+  "settingsSearchStartTyping": "Почніть вводити, щоб побачити результати.",
+  "exchangeSupportChatLoadMessagesError": "Не вдалося завантажити повідомлення. Спробуйте ще раз.",
+  "exchangeSupportChatSendMessageError": "Не вдалося надіслати повідомлення. Спробуйте ще раз.",
+  "exchangeSupportChatLoadAttachmentError": "Не вдалося відкрити вкладення. Спробуйте ще раз.",
+  "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
+  "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими"
 }

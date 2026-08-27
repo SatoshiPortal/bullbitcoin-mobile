@@ -23,16 +23,22 @@ class ExchangeKycScreen extends StatefulWidget {
 class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   late final WebViewController _controller = WebViewController();
   late final String _bbKycUrl;
+  String? _basicAuthUsername;
+  String? _basicAuthPassword;
 
   @override
   void initState() {
     super.initState();
 
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment == Environment.testnet;
+    final settingsState = context.read<SettingsCubit>().state;
+    final isTestnet = settingsState.environment == Environment.testnet;
     _bbKycUrl = isTestnet
         ? ApiServiceConstants.bbKycTestUrl
         : ApiServiceConstants.bbKycUrl;
+    if (isTestnet) {
+      _basicAuthUsername = settingsState.exchangeTestnetBasicAuthUsername;
+      _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
+    }
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -92,11 +98,14 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             }
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
+            final username = _basicAuthUsername;
+            final password = _basicAuthPassword;
+            if (username == null || password == null) {
+              request.onCancel();
+              return;
+            }
             request.onProceed(
-              WebViewCredential(
-                user: ApiServiceConstants.basicAuthUsername,
-                password: ApiServiceConstants.basicAuthPassword,
-              ),
+              WebViewCredential(user: username, password: password),
             );
           },
           onPageStarted: (String url) {},

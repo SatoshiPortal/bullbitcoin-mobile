@@ -1,22 +1,15 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 
 class WatchSwapUsecase {
-  final SwapWatcherService _watcher;
+  final BoltzSwapRepository _swapRepository;
 
-  WatchSwapUsecase({required SwapWatcherService watcherService})
-    : _watcher = watcherService;
+  WatchSwapUsecase({required this._swapRepository});
 
   Stream<Swap> execute(String swapId) {
     try {
-      return _watcher.swapStream.where((s) {
-        log.info(
-          '[WatchSwapUsecase] swapId: ${s.id}, swap status: ${s.status}',
-        );
-        return s.id == swapId;
-      });
+      return _swapRepository.watchSwap(swapId: swapId);
     } catch (e) {
       throw WatchSwapException(e.toString());
     }

@@ -13,17 +13,9 @@ sealed class WalletState with _$WalletState {
     @Default(null) Object? error,
     @Default(0) int unconfirmedIncomingBalance,
     @Default(false) bool isRefreshing,
-    @Default(false) bool autoSwapFeeLimitExceeded,
-    @Default(null) double? currentSwapFeePercent,
-    @Default(null) AutoSwap? autoSwapSettings,
-    @Default(false) bool autoSwapExecuting,
     @Default(false) bool isDeletingWallet,
     WalletError? walletDeletionError,
     @Default(false) bool isCheckingServiceStatus,
-    @Default(null) ArkWalletEntity? arkWallet,
-    @Default(0) int arkBalanceSat,
-    @Default(false) bool isArkWalletLoading,
-    @Default(false) bool isArkWalletSetup,
     @Default(false) bool backupWarningDismissed,
     @Default(false) bool isOnLegacyStorage,
     @Default(false) bool legacyStorageWarningDismissed,
@@ -46,7 +38,7 @@ sealed class WalletState with _$WalletState {
   bool get noWalletsFound => noWalletsFoundException != null;
 
   int totalBalance() => wallets.fold<int>(
-    arkBalanceSat,
+    0,
     (previousValue, element) => previousValue + element.balanceSat.toInt(),
   );
 
@@ -65,22 +57,5 @@ sealed class WalletState with _$WalletState {
 
   bool showLegacyStorageWarning() {
     return isOnLegacyStorage && !legacyStorageWarningDismissed;
-  }
-
-  bool showAutoSwapDefaultEnabledWarning() {
-    if (autoSwapSettings == null ||
-        !autoSwapSettings!.enabled ||
-        !autoSwapSettings!.showWarning) {
-      return false;
-    }
-    final liquidWallet = defaultLiquidWallet();
-    if (liquidWallet == null) return false;
-    return autoSwapSettings!.passedRequiredBalance(
-      liquidWallet.balanceSat.toInt(),
-    );
-  }
-
-  bool showAutoSwapActiveStatus() {
-    return autoSwapSettings != null && autoSwapSettings!.enabled;
   }
 }

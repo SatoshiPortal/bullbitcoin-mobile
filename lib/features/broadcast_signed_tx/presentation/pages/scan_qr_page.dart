@@ -27,11 +27,11 @@ class ScanQrPage extends StatelessWidget {
                 resolution: ResolutionPreset.high,
                 scanDelay:
                     state
-                            .bbqr
-                            .parts
-                            .isNotEmpty // if scanning bbqr, reduce delay
-                        ? const Duration(milliseconds: 50)
-                        : const Duration(milliseconds: 100),
+                        .bbqr
+                        .parts
+                        .isNotEmpty // if scanning bbqr, reduce delay
+                    ? const Duration(milliseconds: 50)
+                    : const Duration(milliseconds: 100),
               ),
 
               Positioned(

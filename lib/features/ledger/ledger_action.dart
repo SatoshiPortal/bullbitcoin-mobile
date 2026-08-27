@@ -1,6 +1,3 @@
-
-
-
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

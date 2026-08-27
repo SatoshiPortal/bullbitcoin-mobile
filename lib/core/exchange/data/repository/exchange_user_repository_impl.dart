@@ -14,12 +14,10 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   final bool _isTestnet;
 
   ExchangeUserRepositoryImpl({
-    required BullbitcoinApiDatasource bullbitcoinApiDatasource,
-    required BullbitcoinApiKeyDatasource bullbitcoinApiKeyDatasource,
-    required bool isTestnet,
-  }) : _bullbitcoinApiDatasource = bullbitcoinApiDatasource,
-       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource,
-       _isTestnet = isTestnet;
+    required this._bullbitcoinApiDatasource,
+    required this._bullbitcoinApiKeyDatasource,
+    required this._isTestnet,
+  });
 
   @override
   Future<UserSummary?> getUserSummary() async {

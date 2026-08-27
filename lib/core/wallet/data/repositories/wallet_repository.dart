@@ -31,14 +31,12 @@ class WalletRepository {
       StreamController<ElectrumSyncResult>.broadcast();
 
   WalletRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required ElectrumServersPort serversPort,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource,
-       _serversPort = serversPort {
+    required this._serversPort,
+  }) : _bdkWallet = bdkWalletDatasource,
+       _lwkWallet = lwkWalletDatasource {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
@@ -117,6 +115,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
     );
   }
 
@@ -131,9 +130,11 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets(onlyDefaults: true);
+    final allWallets = await getWallets();
     for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) throw 'Wallet already exists';
+      if (wallet.id == metadata.id) {
+        throw WalletAlreadyExistsException(metadata.id);
+      }
     }
 
     await _walletMetadataDatasource.store(metadata);
@@ -156,6 +157,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
     );
   }
 
@@ -176,9 +178,11 @@ class WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
-    final allWallets = await getWallets(onlyDefaults: true);
+    final allWallets = await getWallets();
     for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) throw 'Wallet already exists';
+      if (wallet.id == metadata.id) {
+        throw WalletAlreadyExistsException(metadata.id);
+      }
     }
 
     await _walletMetadataDatasource.store(metadata);
@@ -201,6 +205,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
     );
   }
 
@@ -231,6 +236,7 @@ class WalletRepository {
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
       balanceSat: balance.totalSat,
+      confirmedBalanceSat: balance.confirmedSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
       latestEncryptedBackup: metadata.latestEncryptedBackup != null
@@ -292,6 +298,7 @@ class WalletRepository {
             signer: entry.value.signer.toEntity(),
             signerDevice: entry.value.signerDevice?.toEntity(),
             balanceSat: balances[entry.key].totalSat,
+            confirmedBalanceSat: balances[entry.key].confirmedSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
             latestEncryptedBackup: entry.value.latestEncryptedBackup != null

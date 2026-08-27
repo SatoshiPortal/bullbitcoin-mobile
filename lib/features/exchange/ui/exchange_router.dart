@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.d
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
@@ -96,8 +97,8 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
-        final fromSupport =
-            state.uri.queryParameters['from'] == 'support';
+        final draft = state.extra as ExchangeSupportChatDraft?;
+        final fromSupport = state.uri.queryParameters['from'] == 'support';
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
@@ -105,12 +106,15 @@ class ExchangeRouter {
                 previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, exchangeState) {
               if (fromSupport) {
-                final isIOSNonSuperuser = Platform.isIOS &&
+                final isIOSNonSuperuser =
+                    Platform.isIOS &&
                     !(context.read<SettingsCubit>().state.isSuperuser ?? false);
                 context.goNamed(
-                  ExchangeSupportChatRoute.supportChat.name,
-                  queryParameters:
-                      isIOSNonSuperuser ? {} : {'from': 'exchange'},
+                  ExchangeSupportChatFacade.routeName,
+                  queryParameters: isIOSNonSuperuser
+                      ? {}
+                      : {'from': 'exchange'},
+                  extra: draft,
                 );
                 return;
               }

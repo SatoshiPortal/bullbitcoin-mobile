@@ -4,11 +4,12 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,8 +19,12 @@ class SwapInProgressPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swap = context.select((TransferBloc bloc) => bloc.state.swap);
+    final orderSwap = context.select(
+      (TransferBloc bloc) => bloc.state.orderSwap,
+    );
 
     return PopScope(
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           return;
@@ -103,8 +108,9 @@ class SwapInProgressPage extends StatelessWidget {
                           textAlign: .center,
                         ),
                       ],
-                      if (swap?.status == SwapStatus.completed &&
-                          swap?.refundTxid != null) ...[
+                      if (swap?.status == SwapStatus.refunded ||
+                          (swap?.status == SwapStatus.completed &&
+                              swap?.refundTxid != null)) ...[
                         Text(
                           context.loc.swapTransferRefundedTitle,
                           style: context.font.headlineLarge?.copyWith(
@@ -121,32 +127,55 @@ class SwapInProgressPage extends StatelessWidget {
                           textAlign: .center,
                         ),
                       ],
+                      if (swap?.status == SwapStatus.failed ||
+                          swap?.status == SwapStatus.expired) ...[
+                        Text(
+                          swap?.status == SwapStatus.failed
+                              ? context.loc.transactionStatusSwapFailed
+                              : context.loc.transactionStatusSwapExpired,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.error,
+                          ),
+                        ),
+                        const Gap(8),
+                        Text(
+                          swap?.status == SwapStatus.failed
+                              ? context.loc.transactionSwapDescChainFailed
+                              : context.loc.transactionSwapDescChainExpired,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
+                          maxLines: 4,
+                          textAlign: .center,
+                        ),
+                      ],
                     ],
                   ),
                 ),
                 const Spacer(flex: 2),
-                if (swap?.status != SwapStatus.completed) ...[
-                  if (swap?.status != SwapStatus.completed) ...[
-                    InfoCard(
-                      description: context.loc.swapDoNotUninstallWarning,
-                      tagColor: context.appColors.tertiary,
-                      bgColor: context.appColors.warningContainer,
-                      boldDescription: true,
-                    ),
-                    const Gap(12),
-                    InfoCard(
-                      description: context.loc.transactionSwapOpenWithin24h,
-                      tagColor: context.appColors.tertiary,
-                      bgColor: context.appColors.warningContainer,
-                      boldDescription: true,
-                    ),
-                  ],
+                if (orderSwap?.order?.requiresManualReview == true) ...[
+                  OrderSwapUnderReviewCard(orderSwap: orderSwap!),
+                  const Gap(16),
+                ],
+                if (!(swap?.status.isTerminal ?? false)) ...[
+                  InfoCard(
+                    description: context.loc.swapDoNotUninstallWarning,
+                    tagColor: context.appColors.tertiary,
+                    bgColor: context.appColors.warningContainer,
+                    boldDescription: true,
+                  ),
+                  const Gap(12),
+                  InfoCard(
+                    description: context.loc.transactionSwapOpenWithin24h,
+                    tagColor: context.appColors.tertiary,
+                    bgColor: context.appColors.warningContainer,
+                    boldDescription: true,
+                  ),
                   const Gap(16),
                 ],
                 BBButton.big(
                   label: context.loc.swapGoHomeButton,
-                  onPressed: () =>
-                      context.goNamed(WalletRoute.walletHome.name),
+                  onPressed: () => context.goNamed(WalletRoute.walletHome.name),
                   bgColor: context.appColors.secondary,
                   textColor: context.appColors.onSecondary,
                 ),

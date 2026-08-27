@@ -20,7 +20,9 @@ enum BroadcastSignedTxRoute {
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      final unsignedPsbt = state.extra is String ? state.extra! as String : null;
+      final unsignedPsbt = state.extra is String
+          ? state.extra! as String
+          : null;
 
       return BlocProvider(
         create: (_) => locator<BroadcastSignedTxCubit>(param1: unsignedPsbt),
@@ -36,15 +38,10 @@ class BroadcastSignedTxRouter {
           GoRoute(
             name: BroadcastSignedTxRoute.broadcastScanQr.name,
             path: BroadcastSignedTxRoute.broadcastScanQr.path,
-            builder:
-                (context, state) => BlocListener<
-                  BroadcastSignedTxCubit,
-                  BroadcastSignedTxState
-                >(
-                  listenWhen:
-                      (previous, state) =>
-                          previous.transaction == null &&
-                          state.transaction != null,
+            builder: (context, state) =>
+                BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+                  listenWhen: (previous, state) =>
+                      previous.transaction == null && state.transaction != null,
                   listener: (context, state) => context.pop(),
                   child: const ScanQrPage(),
                 ),
@@ -52,15 +49,10 @@ class BroadcastSignedTxRouter {
           GoRoute(
             name: BroadcastSignedTxRoute.broadcastScanNfc.name,
             path: BroadcastSignedTxRoute.broadcastScanNfc.path,
-            builder:
-                (context, state) => BlocListener<
-                  BroadcastSignedTxCubit,
-                  BroadcastSignedTxState
-                >(
-                  listenWhen:
-                      (previous, state) =>
-                          previous.transaction == null &&
-                          state.transaction != null,
+            builder: (context, state) =>
+                BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+                  listenWhen: (previous, state) =>
+                      previous.transaction == null && state.transaction != null,
                   listener: (context, state) => context.pop(),
                   child: const ScanNfcPage(),
                 ),

@@ -10,14 +10,14 @@ class MempoolSettingsRoute {
   static const String path = '/mempool-settings';
 
   static GoRoute get route => GoRoute(
-        name: name,
-        path: path,
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: BlocProvider(
-            create: (_) => locator<MempoolSettingsCubit>(),
-            child: const MempoolSettingsScreen(),
-          ),
-        ),
-      );
+    name: name,
+    path: path,
+    pageBuilder: (context, state) => MaterialPage(
+      key: state.pageKey,
+      child: BlocProvider(
+        create: (_) => locator<MempoolSettingsCubit>(),
+        child: const MempoolSettingsScreen(),
+      ),
+    ),
+  );
 }

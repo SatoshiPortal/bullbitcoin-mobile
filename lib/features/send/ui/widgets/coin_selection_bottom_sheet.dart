@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class CoinSelectionBottomSheet extends StatelessWidget {
@@ -26,7 +26,13 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     final fiatCurrency = context.select(
       (SendCubit send) => send.state.fiatCurrencyCode,
     );
-    final utxos = context.select((SendCubit send) => send.state.utxos);
+    // D7: frozen coins are never selectable for spending. Hide them so the
+    // sheet only ever offers spendable outputs (isFrozen is already populated
+    // by getWalletUtxos — no extra fetch needed here).
+    final utxos = context
+        .select((SendCubit send) => send.state.utxos)
+        .where((u) => !u.isFrozen)
+        .toList();
     final selectedUtxos = context.select(
       (SendCubit send) => send.state.selectedUtxos,
     );

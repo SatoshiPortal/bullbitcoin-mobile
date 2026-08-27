@@ -16,6 +16,8 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 		<key>CFBundleName</key>
 		<string>com.bullbitcoin.app</string>
 		<key>CFBundlePackageType</key>
@@ -24,6 +26,12 @@
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
 		<string>????</string>
+		<key>NFCReaderUsageDescription</key>
+		<string>Connect with your hardware wallet over NFC</string>
+		<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+		<array/>
+		<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
+		<array/>
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>
@@ -51,6 +59,10 @@
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
 		<key>NSBluetoothAlwaysUsageDescription</key>
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>The app itself never collects your location. Location access is only requested if a website opened in the in-app browser asks for it</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>The app itself never collects your location. Location access is only requested if a website opened in the in-app browser asks for it</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIDesignRequiresCompatibility</key>
@@ -79,7 +91,6 @@
 		<array>
 			<string>com.bullbitcoin.mobile.bitcoin-sync-id</string>
 			<string>com.bullbitcoin.mobile.liquid-sync-id</string>
-			<string>com.bullbitcoin.mobile.swaps-sync-id</string>
 			<string>com.bullbitcoin.mobile.logs-prune-id</string>
 			<string>com.bullbitcoin.mobile.services-check-id</string>
 		</array>

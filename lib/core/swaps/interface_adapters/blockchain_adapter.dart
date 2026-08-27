@@ -4,10 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
 class BlockchainAdapter implements BlockchainPort {
   final BroadcastLiquidTransactionUsecase _broadcastLiquidTransactionUsecase;
 
-  BlockchainAdapter({
-    required BroadcastLiquidTransactionUsecase
-    broadcastLiquidTransactionUsecase,
-  }) : _broadcastLiquidTransactionUsecase = broadcastLiquidTransactionUsecase;
+  BlockchainAdapter({required this._broadcastLiquidTransactionUsecase});
 
   @override
   Future<String> broadcastLiquidTransaction({

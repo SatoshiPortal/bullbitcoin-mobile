@@ -1,0 +1,6 @@
+# Revisions listed here are skipped by `git blame`.
+# Configure once locally:  git config blame.ignoreRevsFile .git-blame-ignore-revs
+# GitHub honors this file automatically in its blame UI.
+
+# style: apply Dart tall-style formatter across the codebase (Dart 3.7+ tall style)
+9c1106069896c703b6a99816218c35bad36e2eac

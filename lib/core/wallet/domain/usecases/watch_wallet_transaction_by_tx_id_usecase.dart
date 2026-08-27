@@ -10,10 +10,9 @@ class WatchWalletTransactionByTxIdUsecase {
   final WalletRepository _walletRepository;
 
   const WatchWalletTransactionByTxIdUsecase({
-    required WalletTransactionRepository walletTransactionRepository,
-    required WalletRepository walletRepository,
-  }) : _walletTransactionRepository = walletTransactionRepository,
-       _walletRepository = walletRepository;
+    required this._walletTransactionRepository,
+    required this._walletRepository,
+  });
 
   Stream<WalletTransaction> execute({
     required String walletId,

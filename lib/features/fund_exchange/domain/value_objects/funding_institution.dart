@@ -6,9 +6,7 @@ class FundingInstitution {
   final String _code;
   final String _name;
 
-  const FundingInstitution._({required String code, required String name})
-    : _code = code,
-      _name = name;
+  const FundingInstitution._({required this._code, required this._name});
 
   factory FundingInstitution.create({
     required String code,

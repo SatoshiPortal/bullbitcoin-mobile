@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -114,7 +114,7 @@ class WalletCard extends StatelessWidget {
                   child: FadingLinearProgress(
                     trigger: isSyncing,
                     backgroundColor: context.appColors.transparent,
-                    foregroundColor: context.appColors.onSecondaryFixed,
+                    foregroundColor: context.appColors.secondary,
                     height: 3.0,
                   ),
                 ),

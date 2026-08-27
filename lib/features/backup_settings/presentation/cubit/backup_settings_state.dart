@@ -10,6 +10,6 @@ sealed class BackupSettingsState with _$BackupSettingsState {
     @Default(false) bool isDefaultEncryptedBackupTested,
     DateTime? lastEncryptedBackup,
     @Default(BackupSettingsStatus.initial) BackupSettingsStatus status,
-    Object? error,
+    BackupSettingsFailure? failure,
   }) = _BackupSettingsState;
 }

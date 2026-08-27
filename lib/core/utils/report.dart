@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -14,13 +13,6 @@ enum MigrationType { install, upgrade }
 /// can filter on it server-side. `null` falls through to `category=error`
 /// for [Report.error] and `category=none` for [Report.shout].
 enum ReportCategory { migration, error }
-
-/// Breadcrumb categories whose `message`/`data` are considered safe to
-/// keep on the wire — neither carries wallet payloads nor user identity.
-/// Anything outside this set has its message + data stripped in
-/// `beforeSend`, so cubit-state breadcrumbs (which can hold addresses,
-/// balances, descriptors, txids) never leave the device.
-const _safeBreadcrumbCategories = <String>{'navigation', 'app.lifecycle'};
 
 class Report {
   static const _consentKey = 'error_reporting_consent';
@@ -60,17 +52,10 @@ class Report {
   /// from/to tags and so `SentryFlutter.init` can read consent. Safe
   /// to call before Sentry is initialized — no capture here.
   static Future<void> init({bool? wizardConsent}) async {
-    // Debug-only guard: a schema bump that forgets to add an entry to
-    // `_schemaToVersion` would silently emit `'schema-N'` as the from-
-    // version tag for every upgrade event. Catching it here means a
-    // forgotten map entry surfaces on the first dev launch after the
-    // bump rather than weeks later in Sentry filters.
-    assert(
-      _schemaToVersion.containsKey(SqliteDatabase.currentSchemaVersion),
-      'Add an entry for schema ${SqliteDatabase.currentSchemaVersion} to '
-      'Report._schemaToVersion when bumping '
-      'SqliteDatabase.currentSchemaVersion',
-    );
+    // `_schemaToVersion` maps historical schemas to the app versions that
+    // shipped them. It is no longer extended for new schema bumps — an
+    // unlisted schema simply tags as `'schema-N'` via [_versionFromSchema],
+    // which is an acceptable from-version label for upgrade events.
 
     final info = await PackageInfo.fromPlatform();
     final to = '${info.version}+${info.buildNumber}';
@@ -121,6 +106,7 @@ class Report {
 
       // ── Screen content capture
       options.attachScreenshot = false;
+      // ignore: experimental_member_use
       options.attachViewHierarchy = false;
       options.replay.sessionSampleRate = 0.0;
       options.replay.onErrorSampleRate = 0.0;
@@ -141,6 +127,7 @@ class Report {
       options.propagateTraceparent = false;
 
       // ── Profiling
+      // ignore: experimental_member_use
       options.profilesSampleRate = 0.0;
 
       // ── Misc reporting
@@ -166,6 +153,8 @@ class Report {
       options.enableAppLifecycleBreadcrumbs = consent;
       options.tracesSampleRate = consent ? 0.2 : 0.0; // 0.2 instead of 1.0
       options.anrEnabled = consent;
+      options.enableWatchdogTerminationTracking = consent;
+      options.enableAppHangTracking = consent;
 
       // ── Final scrub. No consent → no event, no exceptions (even
       //    install/upgrade milestones tagged `category=migration`).
@@ -188,30 +177,37 @@ class Report {
         event.user = uid == null ? null : SentryUser(id: uid);
         event.request = null;
 
-        for (final ex in event.exceptions ?? <SentryException>[]) {
-          ex.stackTrace?.frames.forEach((f) => f.vars.clear());
-        }
-
-        event.threads?.forEach((t) {
-          t.stacktrace?.frames.forEach((f) => f.vars.clear());
-        });
-
-        // Whitelisted categories keep their message + data so we can
-        // reproduce the user journey leading up to the crash. Everything
-        // else (notably `state` from the bloc integration, which mirrors
-        // cubit state and can contain wallet data) is stripped down to
-        // metadata only.
+        // Breadcrumbs are minimized first; route arguments and all other
+        // payloads are never safe to transmit.
         event.breadcrumbs = event.breadcrumbs?.map((b) {
-          final isSafe = _safeBreadcrumbCategories.contains(b.category);
           return Breadcrumb(
             category: b.category,
             level: b.level,
             timestamp: b.timestamp,
             type: b.type,
-            message: isSafe ? b.message : null,
-            data: isSafe ? b.data : null,
+            message: null,
+            data: null,
           );
         }).toList();
+
+        // Some SDK frame maps are unmodifiable. Failure to clear one must not
+        // prevent the already-minimized event from being sent.
+        try {
+          for (final ex in event.exceptions ?? <SentryException>[]) {
+            for (final f in ex.stackTrace?.frames ?? []) {
+              try {
+                f.vars.clear();
+              } catch (_) {}
+            }
+          }
+          for (final t in event.threads ?? <SentryThread>[]) {
+            for (final f in t.stacktrace?.frames ?? []) {
+              try {
+                f.vars.clear();
+              } catch (_) {}
+            }
+          }
+        } catch (_) {}
 
         return event;
       };
@@ -265,10 +261,10 @@ class Report {
     fromVersion ??= _versionFromSchema(from);
   }
 
-  /// Maps a drift schema number to the first released app version that
-  /// shipped with that schema. Append a new entry here whenever
-  /// [SqliteDatabase.currentSchemaVersion] is bumped — the assert in
-  /// [init] enforces coverage for the current schema in debug builds.
+  /// Maps a historical drift schema number to the released app version(s)
+  /// that shipped with that schema. Not extended for new schema bumps — an
+  /// unlisted schema falls back to `'schema-N'` via [_versionFromSchema].
+  /// Retained for the from-version tagging of upgrades off older schemas.
   static const Map<int, String> _schemaToVersion = {
     1: 'v5.0.0..v5.2.0',
     2: 'v5.3.0',
@@ -281,7 +277,8 @@ class Report {
     9: 'v6.3.3..v6.3.8',
     10: 'v6.4.0..v6.4.3',
     11: 'v6.5.0..v6.5.4',
-    12: 'v6.6.0+',
+    12: 'v6.6.0..v6.11.1',
+    13: 'v6.12.0+',
   };
 
   static String _versionFromSchema(int schema) =>

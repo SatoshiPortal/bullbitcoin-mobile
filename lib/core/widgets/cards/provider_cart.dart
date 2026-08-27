@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/widgets/cards/tag_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class ProviderCard extends StatefulWidget {
   final VaultProvider provider;
@@ -67,10 +67,7 @@ class _ProviderCardState extends State<ProviderCard>
                   SizedBox(
                     width: 48,
                     height: 48,
-                    child: Image.asset(
-                      widget.provider.iconPath,
-                      fit: .cover,
-                    ),
+                    child: Image.asset(widget.provider.iconPath, fit: .cover),
                   ),
                   const Gap(12),
                   Expanded(

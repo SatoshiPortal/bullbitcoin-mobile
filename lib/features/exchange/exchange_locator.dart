@@ -17,14 +17,14 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeCubit>(
       () => ExchangeCubit(
         saveExchangeApiKeyUsecase: locator.get<SaveExchangeApiKeyUsecase>(),
-        getExchangeUserSummaryUsecase:
-            locator.get<GetExchangeUserSummaryUsecase>(),
+        getExchangeUserSummaryUsecase: locator
+            .get<GetExchangeUserSummaryUsecase>(),
         saveUserPreferencesUsecase: locator.get<SaveUserPreferencesUsecase>(),
         deleteExchangeApiKeyUsecase: locator.get<DeleteExchangeApiKeyUsecase>(),
         getAnnouncementsUsecase: locator.get<GetAnnouncementsUsecase>(),
         exchangeNotificationService: locator.get<ExchangeNotificationService>(),
-        sendSupportChatMessageUsecase:
-            locator.get<SendSupportChatMessageUsecase>(),
+        sendSupportChatMessageUsecase: locator
+            .get<SendSupportChatMessageUsecase>(),
       ),
     );
   }

@@ -29,12 +29,37 @@ sealed class PayState with _$PayState {
     required FiatPaymentOrder payOrder,
     @Default(false) bool isConfirmingPayment,
     @Default(false) bool isPolling,
+    // Txid of the payin transaction once it is on the wire. Acts as a latch:
+    // the send path must never run again for this order (#2522).
+    String? payinBroadcastTxid,
     PayError? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(true) bool replaceByFee,
+    @Default(true) bool isPayjoinEnabled,
     double? exchangeRateEstimate,
+    // Bitcoin fee selection (#2521), mirroring SellPaymentState: the payin is
+    // built at the rate picked in the shared fee modal, not a hardcoded
+    // Fastest.
+    FeeOptions? bitcoinFees,
+    NetworkFee? customFee,
+    @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    // Arm/disarm snapshot for the custom-fee field: typing commits `custom` so
+    // the preset tiles deselect, and dismissal either finalizes the value or
+    // rolls back to these. Internal to the modal flow; the UI must not read
+    // them.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
+    // Real fees read from unsigned PSBTs, one slot per tier, so the modal never
+    // shows rate × vsize arithmetic. Display only: the confirmation rebuilds
+    // the payin at the committed rate rather than broadcasting a cached PSBT,
+    // because a price-lock refresh can move the payin amount.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
+    // vsize of the last payin build — needed to express an absolute custom fee
+    // as a rate for the relay-floor checks.
+    int? bitcoinTxSize,
   }) = PayPaymentState;
   const factory PayState.success({required FiatPaymentOrder payOrder}) =
       PaySuccessState;
@@ -71,9 +96,10 @@ sealed class PayState with _$PayState {
   }
 
   FiatCurrency get currency => switch (this) {
-    PayRecipientSelectionState(:final userSummary) => userSummary != null
-        ? FiatCurrency.fromCode(userSummary.currency!)
-        : FiatCurrency.cad,
+    PayRecipientSelectionState(:final userSummary) =>
+      userSummary != null
+          ? FiatCurrency.fromCode(userSummary.currency!)
+          : FiatCurrency.cad,
     PayAmountInputState(:final selectedRecipient) => FiatCurrency.fromCode(
       selectedRecipient.currencyCode,
     ),
@@ -89,22 +115,22 @@ sealed class PayState with _$PayState {
   };
 
   // Backward step: drop forward state, reset transients on the destination.
-  PayRecipientSelectionState? get cleanRecipientSelectionState => switch (this) {
-    final PayRecipientSelectionState s => s.copyWith(
-      isLoadingUserSummary: false,
-      error: null,
-    ),
-    PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
-      userSummary: userSummary,
-    ),
-    PayWalletSelectionState(:final userSummary) => PayRecipientSelectionState(
-      userSummary: userSummary,
-    ),
-    PayPaymentState(:final userSummary) => PayRecipientSelectionState(
-      userSummary: userSummary,
-    ),
-    PaySuccessState() => null,
-  };
+  PayRecipientSelectionState? get cleanRecipientSelectionState =>
+      switch (this) {
+        final PayRecipientSelectionState s => s.copyWith(
+          isLoadingUserSummary: false,
+          error: null,
+        ),
+        PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
+          userSummary: userSummary,
+        ),
+        PayWalletSelectionState(:final userSummary) =>
+          PayRecipientSelectionState(userSummary: userSummary),
+        PayPaymentState(:final userSummary) => PayRecipientSelectionState(
+          userSummary: userSummary,
+        ),
+        PaySuccessState() => null,
+      };
 
   PayAmountInputState? get cleanAmountInputState => switch (this) {
     final PayAmountInputState s => s.copyWith(error: null),
@@ -191,6 +217,8 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
     List<WalletUtxo>? utxos,
     int? absoluteFees,
     double? exchangeRateEstimate,
+    FeeOptions? bitcoinFees,
+    int? bitcoinTxSize,
   }) {
     return PayPaymentState(
       userSummary: userSummary,
@@ -202,6 +230,8 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
       absoluteFees: absoluteFees,
       exchangeRateEstimate: exchangeRateEstimate,
       utxos: utxos ?? [],
+      bitcoinFees: bitcoinFees,
+      bitcoinTxSize: bitcoinTxSize,
     );
   }
 
@@ -230,6 +260,28 @@ extension PayPaymentStateX on PayPaymentState {
   bool get isExternalWallet => selectedWallet == null;
   bool get canConfirmPayment => isInternalWallet && selectedUtxos.isNotEmpty;
   bool get isProcessing => isConfirmingPayment || isPolling;
+  bool get isPayinBroadcast => payinBroadcastTxid != null;
+
+  /// Fee the payin must be built at, resolved from the committed selection.
+  /// Null while the presets have not loaded (or custom was selected with no
+  /// value) — the caller decides, rather than silently reverting to Fastest,
+  /// which is the bug #2521 describes.
+  NetworkFee? get selectedFee => switch (selectedFeeOption) {
+    FeeSelection.fastest => bitcoinFees?.fastest,
+    FeeSelection.economic => bitcoinFees?.economic,
+    FeeSelection.slow => bitcoinFees?.slow,
+    FeeSelection.custom => customFee,
+  };
+
+  /// Fee selection is only editable before the confirmation starts: the
+  /// transaction on its way to the network was built at the committed rate, so
+  /// rebuilding under it would pay a different fee than the one shown. Liquid
+  /// payins have no fee choice at all.
+  bool get canEditFees =>
+      !isConfirmingPayment &&
+      !isPayinBroadcast &&
+      selectedWallet != null &&
+      !selectedWallet!.isLiquid;
 
   String get bip21InvoiceData {
     final order = payOrder;

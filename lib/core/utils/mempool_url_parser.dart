@@ -1,13 +1,18 @@
-enum MempoolUrlValidationError { empty, invalidFormat, hasPath, invalidDomain }
+enum MempoolUrlValidationError {
+  empty,
+  invalidFormat,
+  hasPath,
+  invalidDomain,
+  hasUserInfo,
+  hasQueryOrFragment,
+  invalidPort,
+}
 
 class MempoolUrlParser {
   /// Normalizes a mempool URL by removing protocol and trailing slashes
   static String normalizeUrl(String url) {
-    return url
-        .replaceFirst(RegExp(r'^https?://'), '')
-        .replaceFirst(RegExp(r'/$'), '')
-        .toLowerCase()
-        .trim();
+    final parsed = parse(url);
+    return parsed.cleanUrl;
   }
 
   /// Parses and validates Mempool server URL and determines SSL setting
@@ -27,32 +32,37 @@ class MempoolUrlParser {
     if (trimmedInput.isEmpty) throw MempoolUrlValidationError.empty;
 
     bool enableSsl = true;
-    String urlWithoutProtocol = trimmedInput;
-
-    if (trimmedInput.startsWith('https://')) {
-      enableSsl = true;
-      urlWithoutProtocol = trimmedInput.substring(8);
-    } else if (trimmedInput.startsWith('http://')) {
+    var url = trimmedInput;
+    if (url.startsWith('https://')) {
+      url = url.substring(8);
+    } else if (url.startsWith('http://')) {
       enableSsl = false;
-      urlWithoutProtocol = trimmedInput.substring(7);
+      url = url.substring(7);
     }
-
-    String cleanedUrl = urlWithoutProtocol.replaceFirst(RegExp(r'/$'), '');
-
-    if (cleanedUrl.isEmpty) {
+    final uri = Uri.parse('${enableSsl ? 'https' : 'http'}://$url');
+    if (uri.host.isEmpty) {
       throw MempoolUrlValidationError.invalidFormat;
     }
-
-    if (cleanedUrl.contains('/')) {
+    if (uri.userInfo.isNotEmpty) {
+      throw MempoolUrlValidationError.hasUserInfo;
+    }
+    if (uri.query.isNotEmpty || uri.fragment.isNotEmpty) {
+      throw MempoolUrlValidationError.hasQueryOrFragment;
+    }
+    if (uri.path.isNotEmpty && uri.path != '/') {
       throw MempoolUrlValidationError.hasPath;
     }
-
-    final hostname = cleanedUrl.split(':').first;
+    if (uri.hasPort && (uri.port < 1 || uri.port > 65535)) {
+      throw MempoolUrlValidationError.invalidPort;
+    }
+    final hostname = uri.host.toLowerCase().replaceFirst(RegExp(r'\.$'), '');
     if (!hostname.contains('.') && hostname != 'localhost') {
       throw MempoolUrlValidationError.invalidDomain;
     }
-
-    return (cleanUrl: cleanedUrl, enableSsl: enableSsl);
+    return (
+      cleanUrl: uri.hasPort ? '$hostname:${uri.port}' : hostname,
+      enableSsl: enableSsl,
+    );
   }
 
   static ({String cleanUrl, bool enableSsl})? tryParse(String input) {

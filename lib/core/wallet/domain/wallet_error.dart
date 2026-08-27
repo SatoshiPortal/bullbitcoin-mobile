@@ -12,3 +12,9 @@ sealed class WalletError with _$WalletError {
   const factory WalletError.unexpected(String message) = UnexpectedWalletError;
   const WalletError._();
 }
+
+class WalletAlreadyExistsException implements Exception {
+  final String walletId;
+
+  const WalletAlreadyExistsException(this.walletId);
+}

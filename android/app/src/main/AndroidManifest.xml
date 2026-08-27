@@ -5,7 +5,11 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
     />
-    <!-- <uses-permission android:name="android.permission.NFC"/> -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false"
+    />
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="false"
@@ -71,12 +75,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="bitcoin" />
             </intent-filter>
             <!-- USB device attached intent filter for BitBox02 -->
             <intent-filter>

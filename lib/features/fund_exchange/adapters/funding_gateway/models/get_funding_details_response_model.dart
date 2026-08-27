@@ -38,9 +38,8 @@ sealed class GetFundingDetailsResponseModel
 
   const GetFundingDetailsResponseModel._();
 
-  factory GetFundingDetailsResponseModel.fromJson(
-    Map<String, dynamic> json,
-  ) => _$GetFundingDetailsResponseModelFromJson(json);
+  factory GetFundingDetailsResponseModel.fromJson(Map<String, dynamic> json) =>
+      _$GetFundingDetailsResponseModelFromJson(json);
 
   FundingDetails toDomain({required FundingMethod method}) {
     return switch (method) {

@@ -6,8 +6,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class VerifyChainSwapAmountSendUsecase {
   final WalletRepository _walletRepository;
 
-  VerifyChainSwapAmountSendUsecase({required WalletRepository walletRepository})
-    : _walletRepository = walletRepository;
+  VerifyChainSwapAmountSendUsecase({required this._walletRepository});
 
   Future<void> execute({
     required String psbtOrPset,

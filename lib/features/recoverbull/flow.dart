@@ -20,6 +20,9 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
   final _navigatorKey = GlobalKey<NavigatorState>();
   final _fetchPermissionUsecase = locator<FetchPermissionUsecase>();
 
+  /// Guards the one-shot connection kickoff below.
+  bool _connectionRequested = false;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -41,9 +44,22 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
         final hasPermission = snapshot.data ?? false;
         if (!hasPermission) {
           page = const RequestPermissionPage();
-        } else {
-          context.read<RecoverBullBloc>().add(const OnTorInitialization());
-          context.read<RecoverBullBloc>().add(const OnServerCheck());
+        } else if (!_connectionRequested) {
+          // Dispatched once, and after the frame rather than during it.
+          //
+          // This used to fire on every rebuild of the FutureBuilder, which
+          // started a second key-server check on top of the one already in
+          // flight — the duplicated "waiting for Tor" traces came from here, not
+          // from two isolates. Repeated dispatch also makes any Tor restart
+          // unsafe: a rebuild storm would tear the client down mid-bootstrap.
+          //
+          // `OnServerCheck` is not dispatched here: `OnTorInitialization`
+          // already chains to it once Tor is up, so sending both raced them.
+          _connectionRequested = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            context.read<RecoverBullBloc>().add(const OnTorInitialization());
+          });
         }
 
         return PopScope(

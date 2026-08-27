@@ -53,7 +53,10 @@ abstract class StatisticsState with _$StatisticsState {
         .map(
           (stat) => FormattedBillerStat(
             displayName: stat.displayName,
-            formattedAmount: FormatAmount.fiat(stat.totalAmount, stats.currency),
+            formattedAmount: FormatAmount.fiat(
+              stat.totalAmount,
+              stats.currency,
+            ),
             tradeCount: stat.tradeCount,
           ),
         )
@@ -63,9 +66,7 @@ abstract class StatisticsState with _$StatisticsState {
   List<String> _formatAmounts(List<AmountByCurrencyCode>? amounts) {
     if (amounts == null || amounts.isEmpty) return ['0'];
 
-    return amounts
-        .map((a) => FormatAmount.fiat(a.value, a.currency))
-        .toList();
+    return amounts.map((a) => FormatAmount.fiat(a.value, a.currency)).toList();
   }
 
   List<String> _formatTradeCounts(List<AmountByCurrencyCode>? counts) {

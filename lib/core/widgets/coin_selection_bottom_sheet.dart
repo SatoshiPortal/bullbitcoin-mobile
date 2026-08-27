@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
@@ -43,7 +43,13 @@ class _CommonCoinSelectionBottomSheetState
   @override
   void initState() {
     super.initState();
-    _selectedUtxos = List.of(widget.initialSelectedUtxos);
+    // Only keep pre-selected coins that are actually selectable (present in
+    // [utxos]). Callers hide frozen coins (D7), so a coin selected earlier and
+    // frozen since must not linger in the selection — it can't be shown or
+    // deselected here and would otherwise inflate the total / "sufficient" check.
+    _selectedUtxos = widget.initialSelectedUtxos
+        .where(widget.utxos.contains)
+        .toList();
   }
 
   void _onUtxoTapped(WalletUtxo utxo) {

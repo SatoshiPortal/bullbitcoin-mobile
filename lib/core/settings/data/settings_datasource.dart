@@ -2,19 +2,21 @@ import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
+import 'package:bull_tor/tor.dart';
 
 class SettingsDatasource {
   final SqliteDatabase _sqlite;
 
-  SettingsDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  SettingsDatasource({required this._sqlite});
 
   Future<void> store(SettingsModel model) async {
     await _sqlite.into(_sqlite.settings).insert(model.toSqlite());
   }
 
   Future<SettingsModel> fetch() async {
-    final row =
-        await _sqlite.managers.settings.filter((f) => f.id(1)).getSingle();
+    final row = await _sqlite.managers.settings
+        .filter((f) => f.id(1))
+        .getSingle();
     return SettingsModel.fromSqlite(row);
   }
 
@@ -60,15 +62,28 @@ class SettingsDatasource {
     );
   }
 
-  Future<void> setUseTorProxy(bool useTorProxy) async {
+  Future<void> setTorProxy({required bool enabled, required int port}) async {
     await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), useTorProxy: Value(useTorProxy)),
+      (f) => f(
+        id: const Value(1),
+        useTorProxy: Value(enabled),
+        torProxyPort: Value(port),
+      ),
     );
   }
 
-  Future<void> setTorProxyPort(int port) async {
+  Future<void> setTorTransportMode(TorTransportMode mode) async {
     await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), torProxyPort: Value(port)),
+      (f) => f(id: const Value(1), torTransportMode: Value(mode.name)),
+    );
+  }
+
+  Future<void> setLastSuccessfulTorTransport(TorTransport transport) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(
+        id: const Value(1),
+        lastSuccessfulTorTransport: Value(transport.name),
+      ),
     );
   }
 
@@ -81,6 +96,26 @@ class SettingsDatasource {
   Future<void> setErrorReportingEnabled(bool enabled) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), isErrorReportingEnabled: Value(enabled)),
+    );
+  }
+
+  Future<void> setScreenCaptureProtectionEnabled(bool enabled) async {
+    await _sqlite.managers.settings.update(
+      (f) =>
+          f(id: const Value(1), screenCaptureProtectionEnabled: Value(enabled)),
+    );
+  }
+
+  Future<void> setExchangeTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(
+        id: const Value(1),
+        exchangeTestnetBasicAuthUsername: Value(username),
+        exchangeTestnetBasicAuthPassword: Value(password),
+      ),
     );
   }
 }

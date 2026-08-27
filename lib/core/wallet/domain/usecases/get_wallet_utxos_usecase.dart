@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository
 class GetWalletUtxosUsecase {
   final WalletUtxoRepository _utxoRepository;
 
-  GetWalletUtxosUsecase({required WalletUtxoRepository utxoRepository})
-    : _utxoRepository = utxoRepository;
+  GetWalletUtxosUsecase({required this._utxoRepository});
 
   Future<List<WalletUtxo>> execute({required String walletId}) async {
     try {

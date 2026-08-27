@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/mode
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class NequiCopForm extends StatefulWidget {
   const NequiCopForm({super.key, this.hookError});

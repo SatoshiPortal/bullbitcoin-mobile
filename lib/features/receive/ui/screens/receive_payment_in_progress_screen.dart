@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ReceivePaymentInProgressScreen extends StatelessWidget {
@@ -47,8 +47,10 @@ class PaymentInProgressPage extends StatelessWidget {
     // Using read instead of select or watch is ok here,
     //  since the amounts can not be changed at this point anymore.
     final amountSat = context.read<ReceiveBloc>().state.confirmedAmountSat;
-    final amountFiat =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+    final amountFiat = context
+        .read<ReceiveBloc>()
+        .state
+        .formattedConfirmedAmountFiat;
 
     final isBitcoin = context.select<ReceiveBloc, bool>(
       (bloc) => bloc.state.isBitcoin,

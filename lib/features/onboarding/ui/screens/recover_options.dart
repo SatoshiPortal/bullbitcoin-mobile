@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class OnboardingRecoverOptions extends StatefulWidget {
@@ -36,36 +36,27 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
           children: [
             const Gap(16),
             BackupOptionCard(
-              icon: Image.asset(
-                Assets.misc.encryptedVault.path,
-                fit: .contain,
-              ),
+              icon: Image.asset(Assets.misc.encryptedVault.path, fit: .contain),
               title: context.loc.onboardingEncryptedVault,
               description: context.loc.onboardingEncryptedVaultDescription,
-              onTap:
-                  () => {
-                    context.pushNamed(
-                      RecoverBullRoute.recoverbullFlows.name,
-                      extra: RecoverBullFlowsExtra(
-                        flow: RecoverBullFlow.recoverVault,
-                        vault: null,
-                      ),
-                    ),
-                  },
+              onTap: () => {
+                context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(
+                    flow: RecoverBullFlow.recoverVault,
+                    vault: null,
+                  ),
+                ),
+              },
             ),
             const Gap(16),
             BackupOptionCard(
-              icon: Image.asset(
-                Assets.misc.physicalBackup.path,
-                fit: .contain,
-              ),
+              icon: Image.asset(Assets.misc.physicalBackup.path, fit: .contain),
               title: context.loc.onboardingPhysicalBackup,
               description: context.loc.onboardingPhysicalBackupDescription,
 
-              onTap:
-                  () => context.pushNamed(
-                    OnboardingRoute.recoverFromPhysical.name,
-                  ),
+              onTap: () =>
+                  context.pushNamed(OnboardingRoute.recoverFromPhysical.name),
             ),
           ],
         ),

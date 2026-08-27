@@ -20,8 +20,7 @@ class TestnetModeSwitch extends StatelessWidget {
                 'wallets will be hidden until you switch back. '
                 'Some services may require restarting the app.',
       confirmLabel: 'I understand',
-      onConfirm: () =>
-          context.read<SettingsCubit>().toggleTestnetMode(enable),
+      onConfirm: () => context.read<SettingsCubit>().toggleTestnetMode(enable),
     );
   }
 

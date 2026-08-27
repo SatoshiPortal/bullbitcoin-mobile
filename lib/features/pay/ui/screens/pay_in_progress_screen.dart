@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,10 +46,9 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
     _pollingTimer?.cancel();
     _hasStartedPolling = true;
     _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final order =
-          context.read<PayBloc>().state is PaySuccessState
-              ? (context.read<PayBloc>().state as PaySuccessState).payOrder
-              : null;
+      final order = context.read<PayBloc>().state is PaySuccessState
+          ? (context.read<PayBloc>().state as PaySuccessState).payOrder
+          : null;
 
       if (order != null) {
         context.read<PayBloc>().add(
@@ -64,13 +63,27 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
     _pollingTimer = null;
   }
 
+  /// The copy follows the polled order: once the payin is confirmed onchain the
+  /// message says so, instead of asking the user to keep waiting for a
+  /// confirmation that already happened.
+  String _description(BuildContext context, FiatPaymentOrder order) {
+    final amount = order.payoutAmountToDisplay;
+    final recipient = order.recipientToDisplay ?? context.loc.payNotAvailable;
+
+    return order.isPayinCompleted
+        ? context.loc.payPaymentPayinConfirmedDescriptionDetails(
+            amount,
+            recipient,
+          )
+        : context.loc.payPaymentInProgressDescriptionDetails(amount, recipient);
+  }
+
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PaySuccessState
-              ? (bloc.state as PaySuccessState).payOrder
-              : null,
+      (PayBloc bloc) => bloc.state is PaySuccessState
+          ? (bloc.state as PaySuccessState).payOrder
+          : null,
     );
 
     return BlocListener<PayBloc, PayState>(
@@ -134,15 +147,17 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                     context.loc.payPaymentInProgress,
                     style: context.font.titleLarge,
                   ),
-                  const Gap(10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Text(
-                      context.loc.payPaymentInProgressDescription,
-                      style: context.font.bodyMedium,
-                      textAlign: .center,
+                  if (order != null) ...[
+                    const Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      child: Text(
+                        _description(context, order),
+                        style: context.font.bodyMedium,
+                        textAlign: .center,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

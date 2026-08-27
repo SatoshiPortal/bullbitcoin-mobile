@@ -1,12 +1,49 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_tor/tor.dart';
 
 class TorConnectionStatusCard extends StatelessWidget {
-  final TorStatus status;
-  const TorConnectionStatusCard({super.key, required this.status});
+  final TorConnectionState connection;
+  final String? routeLabel;
+  final bool external;
+  final VoidCallback? onRetry;
+
+  const TorConnectionStatusCard({
+    super.key,
+    required this.connection,
+    this.routeLabel,
+    this.external = false,
+    this.onRetry,
+  });
+
+  /// Whether the blockage looks like the network filtering Tor traffic.
+  ///
+  /// Advisory: the underlying diagnostic is best-effort upstream, so this
+  /// offers an explanation, it does not assert that the user is censored.
+  bool get _looksCensored => switch (connection) {
+    TorConnecting(:final diagnostic) => diagnostic?.suggestsCensorship ?? false,
+    // A bootstrap that gave up still carries why it gave up, and that is the
+    // moment this matters most: in `direct` mode nothing falls back to
+    // Snowflake, so without this the user is told to "try again" with no hint
+    // that changing transport is the actual fix.
+    TorUnavailable(failure: TorBootstrapFailure(:final diagnostic)) =>
+      diagnostic?.suggestsCensorship ?? false,
+    _ => false,
+  };
+
+  _VisualStatus get _status => switch (connection) {
+    TorReady() => _VisualStatus.online,
+    TorConnecting() => _VisualStatus.connecting,
+    TorUnavailable() => _VisualStatus.offline,
+    TorUninitialized() || TorStopped() => _VisualStatus.unknown,
+  };
+
+  bool get _showRetry =>
+      external &&
+      onRetry != null &&
+      (_status == _VisualStatus.offline || _status == _VisualStatus.unknown);
 
   @override
   Widget build(BuildContext context) {
@@ -16,65 +53,115 @@ class TorConnectionStatusCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            Text(context.loc.torSettingsConnectionStatus, style: context.font.titleMedium),
+            Text(
+              external
+                  ? context.loc.torSettingsLocalProxyStatus
+                  : context.loc.torSettingsConnectionStatus,
+              style: context.font.titleMedium,
+            ),
             const Gap(16),
             Row(
               children: [
-                _StatusIndicator(status: status),
+                _StatusIndicator(status: _status),
                 const Gap(12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: .start,
                     children: [
                       Text(
-                        _getStatusTitle(context, status),
+                        _getStatusTitle(context),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: .w600,
                         ),
                       ),
                       const Gap(4),
                       Text(
-                        _getStatusDescription(context, status),
+                        _getStatusDescription(context),
                         style: context.font.bodySmall?.copyWith(
                           color: context.appColors.onSurface.withValues(
                             alpha: 0.7,
                           ),
                         ),
                       ),
+                      if (routeLabel != null) ...[
+                        const Gap(4),
+                        Text(routeLabel!, style: context.font.bodySmall),
+                      ],
                     ],
                   ),
                 ),
               ],
             ),
+            if (_showRetry) ...[
+              const Gap(12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onRetry,
+                  child: Text(context.loc.torSettingsRetry),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  String _getStatusTitle(BuildContext context, TorStatus status) {
-    switch (status) {
-      case TorStatus.online:
+  String _getStatusTitle(BuildContext context) {
+    if (external) {
+      return switch (_status) {
+        _VisualStatus.online => context.loc.torSettingsExternalProxyReachable,
+        _VisualStatus.connecting =>
+          context.loc.torSettingsExternalProxyChecking,
+        _VisualStatus.offline =>
+          context.loc.torSettingsExternalProxyUnavailable,
+        _VisualStatus.unknown => context.loc.torSettingsExternalProxyNotChecked,
+      };
+    }
+    if (_looksCensored) return context.loc.torSettingsStatusCensored;
+    final progress = switch (connection) {
+      TorConnecting(:final progress) => progress,
+      _ => null,
+    };
+    if (progress != null && progress > 0) {
+      return context.loc.torSettingsBootstrapProgress((progress * 100).round());
+    }
+    switch (_status) {
+      case _VisualStatus.online:
         return context.loc.torSettingsStatusConnected;
-      case TorStatus.connecting:
+      case _VisualStatus.connecting:
         return context.loc.torSettingsStatusConnecting;
-      case TorStatus.offline:
+      case _VisualStatus.offline:
         return context.loc.torSettingsStatusDisconnected;
-      case TorStatus.unknown:
+      case _VisualStatus.unknown:
         return context.loc.torSettingsStatusUnknown;
     }
   }
 
-  String _getStatusDescription(BuildContext context, TorStatus status) {
-    switch (status) {
-      case TorStatus.online:
+  String _getStatusDescription(BuildContext context) {
+    if (external) {
+      return switch (_status) {
+        _VisualStatus.online =>
+          context.loc.torSettingsExternalProxyReachableDescription,
+        _VisualStatus.connecting =>
+          context.loc.torSettingsExternalProxyCheckingDescription,
+        _VisualStatus.offline =>
+          context.loc.torSettingsExternalProxyUnavailableDescription,
+        _VisualStatus.unknown =>
+          context.loc.torSettingsExternalProxyNotCheckedDescription,
+      };
+    }
+    if (_looksCensored) return context.loc.torSettingsDescCensored;
+    switch (_status) {
+      case _VisualStatus.online:
         return context.loc.torSettingsDescConnected;
-      case TorStatus.connecting:
+      case _VisualStatus.connecting:
         return context.loc.torSettingsDescConnecting;
-      case TorStatus.offline:
+      case _VisualStatus.offline:
         return context.loc.torSettingsDescDisconnected;
-      case TorStatus.unknown:
-        return context.loc.torSettingsDescUnknown;
+      case _VisualStatus.unknown:
+        return context.loc.torSettingsEmbeddedStatusUnknownDescription;
     }
   }
 }
@@ -82,7 +169,7 @@ class TorConnectionStatusCard extends StatelessWidget {
 class _StatusIndicator extends StatelessWidget {
   const _StatusIndicator({required this.status});
 
-  final TorStatus status;
+  final _VisualStatus status;
 
   @override
   Widget build(BuildContext context) {
@@ -96,44 +183,45 @@ class _StatusIndicator extends StatelessWidget {
         color: color.withValues(alpha: 0.1),
       ),
       child: Center(
-        child:
-            status == TorStatus.connecting
-                ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(color),
-                  ),
-                )
-                : Icon(_getStatusIcon(status), color: color, size: 24),
+        child: status == _VisualStatus.connecting
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                ),
+              )
+            : Icon(_getStatusIcon(status), color: color, size: 24),
       ),
     );
   }
 
-  Color _getStatusColor(BuildContext context, TorStatus status) {
+  Color _getStatusColor(BuildContext context, _VisualStatus status) {
     switch (status) {
-      case TorStatus.online:
+      case _VisualStatus.online:
         return context.appColors.success;
-      case TorStatus.connecting:
+      case _VisualStatus.connecting:
         return context.appColors.warning;
-      case TorStatus.offline:
+      case _VisualStatus.offline:
         return context.appColors.error;
-      case TorStatus.unknown:
+      case _VisualStatus.unknown:
         return context.appColors.onSurface.withValues(alpha: 0.5);
     }
   }
 
-  IconData _getStatusIcon(TorStatus status) {
+  IconData _getStatusIcon(_VisualStatus status) {
     switch (status) {
-      case TorStatus.online:
+      case _VisualStatus.online:
         return Icons.check_circle;
-      case TorStatus.connecting:
+      case _VisualStatus.connecting:
         return Icons.hourglass_empty;
-      case TorStatus.offline:
+      case _VisualStatus.offline:
         return Icons.cancel;
-      case TorStatus.unknown:
+      case _VisualStatus.unknown:
         return Icons.help_outline;
     }
   }
 }
+
+enum _VisualStatus { online, connecting, offline, unknown }

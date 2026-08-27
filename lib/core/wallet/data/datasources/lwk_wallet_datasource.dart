@@ -11,7 +11,9 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
 
@@ -49,12 +51,12 @@ class LwkWalletDatasource {
       }).value;
 
       final balance = BalanceModel(
-        confirmedSat: BigInt.from(lBtcAssetBalance),
+        confirmedSat: lBtcAssetBalance,
         immatureSat: BigInt.zero,
         trustedPendingSat: BigInt.zero,
         untrustedPendingSat: BigInt.zero,
-        spendableSat: BigInt.from(lBtcAssetBalance),
-        totalSat: BigInt.from(lBtcAssetBalance),
+        spendableSat: lBtcAssetBalance,
+        totalSat: lBtcAssetBalance,
       );
 
       return balance;
@@ -378,26 +380,113 @@ class LwkWalletDatasource {
 
   Future<String> buildPset({
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
     required WalletModel wallet,
   }) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      if (networkFee.isAbsolute) {
-        throw Exception('Absolute fee is not supported for liquid yet!');
-      }
-      log.info(networkFee.value.toDouble().toString());
+      // LWK accepts sat/kvByte as a double. Our RelativeFee stores sat/kwu,
+      // and 1 sat/kwu = 4 sat/kvByte, so the conversion is exact integer
+      // arithmetic promoted to double — no precision loss at the SDK boundary.
       final pset = await lwkWallet.buildLbtcTx(
         sats: BigInt.from(amountSat ?? 0),
         outAddress: address,
-        feeRate: networkFee.value.toDouble() * 1000,
+        feeRate: feeRate.satPerKvbyte,
         drain: drain,
       );
       final decoded = await lwkWallet.decodeTx(pset: pset);
       log.info(decoded.absoluteFees.toString());
       return pset;
+    } catch (e) {
+      if (e is lwk.LwkError) {
+        if (e.msg.contains(_lwkInsufficientFundsMarker)) {
+          throw InsufficientFundsException(e.msg);
+        }
+        // A build failure on a wallet whose confirmed L-BTC UTXO count exceeds
+        // the Liquid confidential-tx input limit is almost certainly the
+        // ">256 inputs" case.
+        if (await _exceedsLiquidInputLimit(wallet)) {
+          throw ConsolidationRequiredException(e.msg);
+        }
+        throw e.msg;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  /// Number of confidential-tx inputs above which a Liquid transaction can no
+  /// longer be built (the true protocol maximum is 256).
+  static const int maxLiquidTxInputs = 256;
+
+  /// LWK reports a shortfall as plain text, e.g.
+  /// `InsufficientFunds { missing_sats: 21, asset_id: ..., is_token: false }`.
+  /// Matching the text is all the SDK gives us, so it stays in this file.
+  static const String _lwkInsufficientFundsMarker = 'InsufficientFunds';
+
+  /// Number of L-BTC UTXOs in the wallet — the count that matters for the
+  /// 256-input limit (asset-filtered, mirroring lwk's `utxoStatus`). Drives
+  /// consolidation detection.
+  Future<int> getLbtcUtxoCount({required WalletModel wallet}) async {
+    try {
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final utxos = await lwkWallet.utxos();
+      final network = wallet.isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
+      final lbtcAssetId = _lBtcAssetId(network);
+      final lbtcCount = utxos
+          .where((u) => u.unblinded.asset == lbtcAssetId)
+          .length;
+      return lbtcCount;
+    } catch (e) {
+      if (e is lwk.LwkError) {
+        throw e.msg;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  Future<bool> _exceedsLiquidInputLimit(WalletModel wallet) async {
+    try {
+      return await getLbtcUtxoCount(wallet: wallet) > maxLiquidTxInputs;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Build the unsigned consolidation PSETs for a wallet, sweeping up to
+  /// [maximumInputs] confirmed L-BTC UTXOs each into a single output. Returns
+  /// empty when the wallet holds <= [highUtxoThreshold] UTXOs.
+  ///
+  /// KNOWN LIMITATION (accepted for this self-transfer-only scope, not fund-
+  /// unsafe but a privacy/UX gap — see the consolidation feature's own
+  /// tracking issue for a follow-up): each batch's drain address is chosen
+  /// natively (lwk-dart), incrementing from `wallet.address(None)`'s
+  /// sync-derived last-unused index — there is no persisted, app-level
+  /// reservation of that index the way normal receive-address generation
+  /// has. If `consolidate` is called again before a sync completes (e.g. two
+  /// consolidation rounds in quick succession, or racing an unrelated
+  /// address-generating action), the same address could be handed out
+  /// twice. This is a privacy/bookkeeping concern (address reuse), not a
+  /// fund-safety one — no funds can be lost, only linked on-chain.
+  Future<List<String>> consolidate({
+    required WalletModel wallet,
+    required RelativeFee feeRate,
+    required int highUtxoThreshold,
+    required int maximumInputs,
+  }) async {
+    try {
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
+      final psets = await lwkWallet.consolidate(
+        feeRate: feeRate.satPerKvbyte,
+        highUtxoThreshold: highUtxoThreshold,
+        maximumInputs: maximumInputs,
+      );
+      return psets;
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;
@@ -414,7 +503,9 @@ class LwkWalletDatasource {
     try {
       final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
       final signedPset = await lwkWallet.signTx(
-        network: wallet.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+        network: wallet.isTestnet
+            ? lwk.LiquidNetwork.testnet
+            : lwk.LiquidNetwork.mainnet,
         pset: pset,
         mnemonic: wallet.mnemonic,
       );
@@ -435,7 +526,7 @@ class LwkWalletDatasource {
       // final decoded = await lwkWallet.decodeTx(pset: pset);
       return (
         decoded.discountedVsize.toInt(),
-        decoded.absoluteFees.first.value,
+        decoded.absoluteFees.first.value.toInt(),
       );
     } catch (e) {
       if (e is lwk.LwkError) {
@@ -526,12 +617,12 @@ class LwkWalletDatasource {
 }
 
 extension NetworkX on Network {
-  lwk.Network get lwkNetwork {
+  lwk.LiquidNetwork get lwkNetwork {
     switch (this) {
       case Network.liquidMainnet:
-        return lwk.Network.mainnet;
+        return lwk.LiquidNetwork.mainnet;
       case Network.liquidTestnet:
-        return lwk.Network.testnet;
+        return lwk.LiquidNetwork.testnet;
       default:
         throw UnsupportedLwkNetworkException('$name is not supported by LWK');
     }

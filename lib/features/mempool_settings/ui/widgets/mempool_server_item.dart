@@ -108,8 +108,8 @@ class MempoolServerItem extends StatelessWidget {
                               onTap: isProcessing
                                   ? null
                                   : () => context
-                                      .read<MempoolSettingsCubit>()
-                                      .checkServerStatus(server),
+                                        .read<MempoolSettingsCubit>()
+                                        .checkServerStatus(server),
                               child: Icon(
                                 Icons.refresh,
                                 size: 16,

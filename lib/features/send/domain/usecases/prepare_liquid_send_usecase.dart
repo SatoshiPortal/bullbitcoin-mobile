@@ -1,19 +1,19 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 
 class PrepareLiquidSendUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
-  PrepareLiquidSendUsecase({
-    required LiquidWalletRepository liquidWalletRepository,
-  }) : _liquidWalletRepository = liquidWalletRepository;
+  PrepareLiquidSendUsecase({required this._liquidWalletRepository});
 
   Future<String> execute({
     required String walletId,
     required String address,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     int? amountSat,
     bool drain = false,
   }) async {
@@ -26,11 +26,15 @@ class PrepareLiquidSendUsecase {
         walletId: walletId,
         address: address,
         amountSat: drain ? null : amountSat,
-        networkFee: networkFee,
+        feeRate: feeRate,
         drain: drain,
       );
       return psbt;
     } on NoSpendableUtxoException {
+      rethrow;
+    } on ConsolidationRequiredException {
+      rethrow;
+    } on InsufficientFundsException {
       rethrow;
     } catch (e) {
       throw PrepareLiquidSendException(e.toString());

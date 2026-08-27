@@ -16,6 +16,7 @@ sealed class BuyEvent with _$BuyEvent {
   const factory BuyEvent.createOrder() = _BuyCreateOrder;
   const factory BuyEvent.refreshOrder({String? orderId}) = _BuyRefreshOrder;
   const factory BuyEvent.confirmOrder() = _BuyConfirmOrder;
+  const factory BuyEvent.payjoinToggled(bool enabled) = _BuyPayjoinToggled;
   const factory BuyEvent.accelerateTransactionPressed(String orderId) =
       _BuyAccelerateTransactionPressed;
   const factory BuyEvent.accelerateTransactionConfirmed() =

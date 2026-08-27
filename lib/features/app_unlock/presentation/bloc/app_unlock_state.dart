@@ -15,12 +15,15 @@ sealed class AppUnlockState with _$AppUnlockState {
     @Default(0) int timeoutSeconds,
     @Default(true) bool obscurePinCode,
     @Default(false) bool showError,
-    Object? error,
+    AppUnlockFailure? failure,
   }) = _AppUnlockState;
   const AppUnlockState._();
 
   bool get canSubmit =>
       pinCode.length >= minPinCodeLength &&
       pinCode.length <= maxPinCodeLength &&
-      !isVerifying;
+      !isVerifying &&
+      // An active cooldown bars submission: the usecase would refuse to
+      // verify anyway, so don't even arm the button.
+      timeoutSeconds == 0;
 }

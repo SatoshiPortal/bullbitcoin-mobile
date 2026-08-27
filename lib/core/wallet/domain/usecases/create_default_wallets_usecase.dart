@@ -13,14 +13,11 @@ class CreateDefaultWalletsUsecase {
   final WalletRepository _wallet;
 
   CreateDefaultWalletsUsecase({
-    required SeedRepository seedRepository,
-    required SettingsRepository settingsRepository,
-    required MnemonicGenerator mnemonicGenerator,
+    required this._seedRepository,
+    required this._settingsRepository,
+    required this._mnemonicGenerator,
     required WalletRepository walletRepository,
-  }) : _seedRepository = seedRepository,
-       _settingsRepository = settingsRepository,
-       _mnemonicGenerator = mnemonicGenerator,
-       _wallet = walletRepository;
+  }) : _wallet = walletRepository;
 
   Future<List<Wallet>> execute({
     List<String>? mnemonicWords,

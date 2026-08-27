@@ -110,6 +110,15 @@ abstract class Wallet with _$Wallet {
     required SignerEntity signer,
     required SignerDeviceEntity? signerDevice,
     required BigInt balanceSat,
+    // Confirmed-only component of balanceSat (excludes trusted/untrusted
+    // pending and immature funds). Nullable/optional so every existing
+    // construction site doesn't need updating at once; consumers that care
+    // about "genuinely spendable now" (e.g. payjoin eligibility, which needs
+    // a real confirmed UTXO to contribute as a proposal input) must treat
+    // null as "not yet known" rather than falling back to balanceSat, or
+    // they silently reintroduce the total-vs-confirmed gap this exists to
+    // close.
+    BigInt? confirmedBalanceSat,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
     DateTime? latestEncryptedBackup,
@@ -136,8 +145,7 @@ abstract class Wallet with _$Wallet {
   String get walletTypeString {
     String name = switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
-      Network.liquidMainnet ||
-      Network.liquidTestnet => 'Liquid and Lightning network',
+      Network.liquidMainnet || Network.liquidTestnet => 'Liquid and Lightning',
     };
     if (isWatchOnly) name = 'Watch-Only';
     if (isWatchSigner) name = 'Watch-Signer';

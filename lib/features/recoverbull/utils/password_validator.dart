@@ -27,7 +27,11 @@ class PasswordValidator {
     return context.loc.recoverbullPasswordTooCommon;
   }
 
-  static String? validateMatching(String password, String confirmPassword, BuildContext context) {
+  static String? validateMatching(
+    String password,
+    String confirmPassword,
+    BuildContext context,
+  ) {
     if (areMatching(password, confirmPassword)) return null;
     return context.loc.recoverbullPasswordMismatch;
   }

@@ -5,10 +5,9 @@ class MempoolSettings {
   final bool _useForFeeEstimation;
 
   MempoolSettings._({
-    required MempoolServerNetwork network,
-    required bool useForFeeEstimation,
-  })  : _network = network,
-        _useForFeeEstimation = useForFeeEstimation;
+    required this._network,
+    required this._useForFeeEstimation,
+  });
 
   factory MempoolSettings.create({
     required MempoolServerNetwork network,
@@ -34,10 +33,7 @@ class MempoolSettings {
   bool get useForFeeEstimation => _useForFeeEstimation;
 
   MempoolSettings updateUseForFeeEstimation(bool value) {
-    return MempoolSettings._(
-      network: _network,
-      useForFeeEstimation: value,
-    );
+    return MempoolSettings._(network: _network, useForFeeEstimation: value);
   }
 
   @override

@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/exchange_amount_input_fie
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class WithdrawAmountInputFields extends StatelessWidget {
   const WithdrawAmountInputFields({

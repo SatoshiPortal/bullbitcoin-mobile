@@ -10,7 +10,7 @@ import 'package:drift/drift.dart';
 class Bip85Datasource {
   final SqliteDatabase _sqlite;
 
-  Bip85Datasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  Bip85Datasource({required this._sqlite});
 
   Future<({String derivation, String hex})> deriveHex({
     required String xprvBase58,

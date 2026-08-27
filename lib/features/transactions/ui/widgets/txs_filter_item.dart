@@ -21,25 +21,22 @@ class TxsFilterItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? context.appColors.onSurface
-                  : context.appColors.transparent,
+          color: isSelected
+              ? context.appColors.onSurface
+              : context.appColors.transparent,
           borderRadius: BorderRadius.circular(2.0),
           border: Border.all(
-            color:
-                isSelected
-                    ? context.appColors.onSurface
-                    : context.appColors.border,
+            color: isSelected
+                ? context.appColors.onSurface
+                : context.appColors.border,
           ),
         ),
         child: BBText(
           title,
           style: context.font.bodyMedium?.copyWith(
-            color:
-                isSelected
-                    ? context.appColors.surface
-                    : context.appColors.onSurface,
+            color: isSelected
+                ? context.appColors.surface
+                : context.appColors.onSurface,
           ),
         ),
       ),

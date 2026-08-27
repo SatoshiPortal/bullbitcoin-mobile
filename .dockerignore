@@ -20,3 +20,42 @@ app-*.aab
 .tmp_apk_diff/
 reproducibility/bullbitcoin_*_verification/
 reproducibility/reproducibility_test_*/
+
+# Secrets — must never enter a build image layer, even one that's later
+# deleted (secrets baked into an intermediate layer persist in the image
+# cache/registry history). .gitignore already excludes these from commits;
+# .dockerignore does not inherit .gitignore, so they need their own entries.
+# NOTE: dockerignore patterns follow Go filepath.Match, NOT gitignore: a bare
+# `*.keystore` matches only at the context root, so nested paths need `**/`.
+# Two keystores are re-included below (the `!` lines): debug.keystore for
+# debug/local builds, and beta-upload.keystore so build.gradle can sign the beta
+# channel inside the image — the CI runner is already the secret boundary there.
+# android/key-beta.properties is not matched by any exclude here, so it too
+# stays available for beta signing. Everything else keeps secrets out of layers.
+**/.env
+android/key.properties
+**/*.keystore
+**/*.jks
+!android/app/debug.keystore
+!android/app/beta-upload.keystore
+
+# Stale host-generated code. Most of these are gitignored and regenerated inside
+# the image by `make build-runner` / `make translations`; .dockerignore doesn't
+# inherit .gitignore, so without these entries a locally generated (and possibly
+# stale) file gets COPYed in ahead of the in-image regeneration. (`**/*.g.dart`
+# also matches one tracked file, packages/bull_ui_catalogue/lib/main.directories.g.dart,
+# but that's a widgetbook-catalogue artifact the app APK build never uses, so
+# excluding it from the build context is harmless.)
+lib/generated/
+**/*.freezed.dart
+**/*.g.dart
+untranslated-messages.txt
+integration_test/all_test.dart
+
+# Editor/scratch/log artifacts irrelevant to the build
+**/*.swp
+bull_logs.tsv
+
+# Host-extracted build artifacts that don't match the BULL-*.apk/aab globs
+# above (e.g. verification-workflow output named without an extension)
+BULL-release-*

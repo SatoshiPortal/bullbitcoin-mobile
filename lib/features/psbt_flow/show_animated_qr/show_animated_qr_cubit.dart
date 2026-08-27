@@ -11,10 +11,8 @@ class ShowAnimatedQrCubit extends Cubit<ShowAnimatedQrState> {
   final QrType qrType;
   Timer? _timer;
 
-  ShowAnimatedQrCubit({
-    required this.psbt,
-    required this.qrType,
-  }) : super(const ShowAnimatedQrState()) {
+  ShowAnimatedQrCubit({required this.psbt, required this.qrType})
+    : super(const ShowAnimatedQrState()) {
     _generateQrParts();
   }
 
@@ -24,37 +22,39 @@ class ShowAnimatedQrCubit extends Cubit<ShowAnimatedQrState> {
 
       final parts = switch (qrType) {
         QrType.bbqr => await Bbqr.splitPsbt(psbt),
-        QrType.urqr => UrQrGenerator.generatePsbtUr(psbt, fragmentLength: state.fragmentLength),
+        QrType.urqr => UrQrGenerator.generatePsbtUr(
+          psbt,
+          fragmentLength: state.fragmentLength,
+        ),
         QrType.none => <String>[],
       };
 
-      emit(state.copyWith(
-        isLoading: false,
-        parts: parts,
-        currentIndex: 0,
-        error: null,
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          parts: parts,
+          currentIndex: 0,
+          error: null,
+        ),
+      );
 
       if (parts.isNotEmpty) {
         _startCycling();
       }
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      ));
+      emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
   void _startCycling() {
     _timer?.cancel();
-    
+
     final interval = switch (qrType) {
       QrType.bbqr => const Duration(seconds: 2),
       QrType.urqr => const Duration(seconds: 1),
       QrType.none => const Duration(seconds: 2),
     };
-    
+
     _timer = Timer.periodic(interval, (_) {
       if (state.parts.isNotEmpty) {
         final nextIndex = (state.currentIndex + 1) % state.parts.length;

@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/mode
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class InteracEmailCadForm extends StatefulWidget {
   const InteracEmailCadForm({super.key, this.hookError});

@@ -4,8 +4,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 class SignLiquidTxUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
-  SignLiquidTxUsecase({required LiquidWalletRepository liquidWalletRepository})
-    : _liquidWalletRepository = liquidWalletRepository;
+  SignLiquidTxUsecase({required this._liquidWalletRepository});
 
   Future<String> execute({
     required String pset,

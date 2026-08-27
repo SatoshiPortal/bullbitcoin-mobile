@@ -25,16 +25,15 @@ class BuyConfirmDetailRow extends StatelessWidget {
           ),
 
           Expanded(
-            child:
-                value == null
-                    ? const LoadingLineContent()
-                    : Text(
-                      value!,
-                      textAlign: .end,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: context.appColors.secondary,
-                      ),
+            child: value == null
+                ? const LoadingLineContent()
+                : Text(
+                    value!,
+                    textAlign: .end,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: context.appColors.secondary,
                     ),
+                  ),
           ),
         ],
       ),

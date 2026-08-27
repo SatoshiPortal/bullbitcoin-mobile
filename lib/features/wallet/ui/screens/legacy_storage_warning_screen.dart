@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_stora
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_screen_scaffold.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_step_row.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class LegacyStorageWarningScreen extends StatelessWidget {
   const LegacyStorageWarningScreen({

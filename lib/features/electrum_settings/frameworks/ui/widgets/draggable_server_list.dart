@@ -3,34 +3,15 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
+import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/electrum_servers_error_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/server_list_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
-import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/electrum_servers_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
-
-  String _getErrorMessage(
-    BuildContext context,
-    ElectrumServersException error,
-  ) {
-    return switch (error) {
-      LoadFailedException(reason: final r) => context.loc
-          .electrumLoadFailedError(r != null ? ': $r' : ''),
-      SavePriorityFailedException(reason: final r) => context.loc
-          .electrumSavePriorityFailedError(r != null ? ': $r' : ''),
-      AddFailedException(reason: final r) => context.loc.electrumAddFailedError(
-        r != null ? ': $r' : '',
-      ),
-      DeleteFailedException(reason: final r) => context.loc
-          .electrumDeleteFailedError(r != null ? ': $r' : ''),
-      ElectrumServerAlreadyExistsException() =>
-        context.loc.electrumServerAlreadyExists,
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +72,9 @@ class DraggableServerList extends StatelessWidget {
           ReorderableListView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            // TODO: migrate to onReorderItem (newIndex is pre-adjusted for the
+            // removed item) and drop the index adjustment in ElectrumSettingsBloc.
+            // ignore: deprecated_member_use
             onReorder: (oldIndex, newIndex) {
               context.read<ElectrumSettingsBloc>().add(
                 ElectrumCustomServersPrioritized(
@@ -126,11 +110,7 @@ class DraggableServerList extends StatelessWidget {
         ],
         const Gap(16),
         if (electrumServersError != null) ...[
-          InfoCard(
-            description: _getErrorMessage(context, electrumServersError),
-            tagColor: context.appColors.error,
-            bgColor: context.appColors.errorContainer,
-          ),
+          ElectrumServersErrorCard(failure: electrumServersError),
           const Gap(16),
         ],
         TextButton.icon(

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class FundExchangeDetail extends StatelessWidget {
   const FundExchangeDetail({
@@ -39,13 +39,12 @@ class FundExchangeDetail extends StatelessWidget {
               ? BBText(value!, style: theme.textTheme.bodyLarge)
               : const LoadingLineContent(),
           trailing: IconButton(
-            onPressed:
-                value != null
-                    ? () {
-                      final data = ClipboardData(text: value!);
-                      Clipboard.setData(data);
-                    }
-                    : null,
+            onPressed: value != null
+                ? () {
+                    final data = ClipboardData(text: value!);
+                    Clipboard.setData(data);
+                  }
+                : null,
             icon: const Icon(Icons.copy),
           ),
         ),

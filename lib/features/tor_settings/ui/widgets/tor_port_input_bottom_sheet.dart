@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class TorPortInputBottomSheet extends StatefulWidget {
@@ -113,7 +113,7 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
                   labelText: context.loc.torSettingsPortNumber,
                   hintText: context.loc.torSettingsPortHint,
                   border: const OutlineInputBorder(),
-                  helperText: context.loc.torSettingsPortHelper,
+                  helperText: context.loc.torSettingsLocalProxyPortHelper,
                 ),
                 validator: (value) => _validatePort(value, context),
                 onFieldSubmitted: (_) => _submit(),

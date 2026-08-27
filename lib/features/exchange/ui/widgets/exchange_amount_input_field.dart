@@ -6,30 +6,22 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:intl/intl.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
   const ExchangeAmountInputField({
     super.key,
-    bool isLoading = false,
-    BitcoinUnit? bitcoinUnit,
-    required TextEditingController amountController,
-    FocusNode? focusNode,
-    bool isFiatCurrencyInput = true,
-    FiatCurrency? fiatCurrency,
-    void Function(bool isFiat)? onIsFiatCurrencyInputChanged,
-    UserBalance? fiatBalance,
-    bool canExceedBalance = false,
-  }) : _isLoading = isLoading,
-       _bitcoinUnit = bitcoinUnit,
-       _amountController = amountController,
-       _focusNode = focusNode,
-       _isFiatCurrencyInput = isFiatCurrencyInput,
-       _fiatCurrency = fiatCurrency,
-       _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged,
-       _fiatBalance = fiatBalance,
-       _canExceedBalance = canExceedBalance;
+    this._isLoading = false,
+    this._bitcoinUnit,
+    required this._amountController,
+    this._focusNode,
+    this._isFiatCurrencyInput = true,
+    this._fiatCurrency,
+    this._onIsFiatCurrencyInputChanged,
+    this._fiatBalance,
+    this._canExceedBalance = false,
+  });
 
   final bool _isLoading;
   final BitcoinUnit? _bitcoinUnit;

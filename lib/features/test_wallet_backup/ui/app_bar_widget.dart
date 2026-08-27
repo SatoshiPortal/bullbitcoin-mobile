@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wal
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget {
@@ -48,7 +48,7 @@ class AppBarWidget extends StatelessWidget {
               );
 
               if (selectedWalletId != null) {
-                bloc.add(LoadMnemonicForWallet(wallet: selectedWallet!));
+                bloc.add(WalletSelected(wallet: selectedWallet!));
               }
             },
           ),
@@ -86,10 +86,7 @@ Future<String?> _showWalletPicker({
               children: [
                 const Spacer(),
                 IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: context.appColors.secondary,
-                  ),
+                  icon: Icon(Icons.close, color: context.appColors.secondary),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -122,7 +119,7 @@ Future<String?> _showWalletPicker({
               onPressed: () {
                 final wallet = wallets[controller.selectedItem];
                 context.read<TestWalletBackupBloc>().add(
-                  LoadMnemonicForWallet(wallet: wallet),
+                  WalletSelected(wallet: wallet),
                 );
                 Navigator.of(context).pop();
               },

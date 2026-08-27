@@ -15,18 +15,13 @@ class ElectrumSettings {
   static const int maxTimeout = 300; // 5 minutes
 
   ElectrumSettings({
-    required int stopGap,
-    required int timeout,
-    required int retry,
-    required bool validateDomain,
-    required ElectrumServerNetwork network,
-    String? socks5,
-  }) : _stopGap = stopGap,
-       _timeout = timeout,
-       _retry = retry,
-       _validateDomain = validateDomain,
-       _network = network,
-       _socks5 = socks5;
+    required this._stopGap,
+    required this._timeout,
+    required this._retry,
+    required this._validateDomain,
+    required this._network,
+    this._socks5,
+  });
 
   int get stopGap => _stopGap;
   int get timeout => _timeout;

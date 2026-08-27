@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -9,19 +9,17 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 enum SendType { send, swap }
 
 class CommonSendConfirmTopArea extends StatelessWidget {
   const CommonSendConfirmTopArea({
     super.key,
-    required String formattedConfirmedAmountBitcoin,
-    required SendType sendType,
-    bool? sendToExternal,
-  }) : _formattedConfirmedAmountBitcoin = formattedConfirmedAmountBitcoin,
-       _sendType = sendType,
-       _sendToExternal = sendToExternal;
+    required this._formattedConfirmedAmountBitcoin,
+    required this._sendType,
+    this._sendToExternal,
+  });
   final String _formattedConfirmedAmountBitcoin;
   final SendType _sendType;
   final bool? _sendToExternal;
@@ -111,22 +109,18 @@ class CommonInfoRow extends StatelessWidget {
 
 class CommonOnchainSendInfoSection extends StatelessWidget {
   const CommonOnchainSendInfoSection({
-    required String sendWalletLabel,
-    required String receiveWalletLabel,
-    required String formattedBitcoinAmount,
-    required String formattedFiatEquivalent,
-    required String absoluteFees,
-    required String selectedFeeOptionTitle,
-    VoidCallback? onFeePriorityTap,
-    bool isToSelf = false,
-  }) : _sendWalletLabel = sendWalletLabel,
-       _receiveWalletLabel = receiveWalletLabel,
-       _formattedBitcoinAmount = formattedBitcoinAmount,
-       _formattedFiatEquivalent = formattedFiatEquivalent,
-       _absoluteFees = absoluteFees,
-       _selectedFeeOptionTitle = selectedFeeOptionTitle,
-       _onFeePriorityTap = onFeePriorityTap,
-       _isToSelf = isToSelf;
+    required this._sendWalletLabel,
+    required this._receiveWalletLabel,
+    required this._formattedBitcoinAmount,
+    required this._formattedFiatEquivalent,
+    required this._absoluteFees,
+    required this._selectedFeeOptionTitle,
+    this._onFeePriorityTap,
+    this._isToSelf = false,
+    this._payjoinToggleValue,
+    this._onPayjoinToggleChanged,
+    this._note = '',
+  });
   final String _sendWalletLabel;
   final String _receiveWalletLabel;
   final String _formattedBitcoinAmount;
@@ -135,6 +129,14 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final String _selectedFeeOptionTitle;
   final VoidCallback? _onFeePriorityTap;
   final bool _isToSelf;
+
+  /// Payjoin toggle row: shown when [_payjoinToggleValue] is non-null (i.e.
+  /// a payjoin is available for this send), letting the sender choose NOT to
+  /// payjoin. The value mirrors the feature's will-attempt state so the
+  /// switch and the sign path can never disagree.
+  final bool? _payjoinToggleValue;
+  final ValueChanged<bool>? _onPayjoinToggleChanged;
+  final String _note;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
@@ -176,6 +178,32 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
                   color: context.appColors.secondary,
                   size: 20,
                 ),
+              ),
+            ),
+          ],
+          if (_payjoinToggleValue != null) ...[
+            _divider(context),
+            CommonInfoRow(
+              title: context.loc.sendPayjoinLabel,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: BBSwitch(
+                  value: _payjoinToggleValue,
+                  onChanged: _onPayjoinToggleChanged,
+                ),
+              ),
+            ),
+          ],
+          if (_note.isNotEmpty) ...[
+            _divider(context),
+            CommonInfoRow(
+              title: context.loc.receiveNote,
+              details: BBText(
+                _note,
+                style: context.font.bodyLarge?.copyWith(
+                  color: context.appColors.secondary,
+                ),
+                textAlign: .end,
               ),
             ),
           ],
@@ -247,18 +275,13 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
 
 class CommonLnSwapSendInfoSection extends StatelessWidget {
   const CommonLnSwapSendInfoSection({
-    required String sendWalletLabel,
-    required String paymentRequestAddress,
-    required String formattedBitcoinAmount,
-    required String formattedFiatEquivalent,
-    required String swapId,
-    required String totalSwapFees,
-  }) : _sendWalletLabel = sendWalletLabel,
-       _paymentRequestAddress = paymentRequestAddress,
-       _formattedBitcoinAmount = formattedBitcoinAmount,
-       _formattedFiatEquivalent = formattedFiatEquivalent,
-       _swapId = swapId,
-       _totalSwapFees = totalSwapFees;
+    required this._sendWalletLabel,
+    required this._paymentRequestAddress,
+    required this._formattedBitcoinAmount,
+    required this._formattedFiatEquivalent,
+    required this._swapId,
+    required this._totalSwapFees,
+  });
   final String _sendWalletLabel;
   final String _paymentRequestAddress;
   final String _formattedBitcoinAmount;
@@ -577,12 +600,16 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: .end,
               mainAxisSize: .min,
               children: [
-                BBText(
-                  swap.id,
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
+                Expanded(
+                  child: BBText(
+                    swap.id,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.secondary,
+                    ),
+                    textAlign: .end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: .end,
                 ),
                 const Gap(4),
                 InkWell(
@@ -674,10 +701,9 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
 
 class CommonSendBottomButtons extends StatelessWidget {
   const CommonSendBottomButtons({
-    required bool disableSendButton,
-    required Function onSendPressed,
-  }) : _disableSendButton = disableSendButton,
-       _onSendPressed = onSendPressed;
+    required this._disableSendButton,
+    required this._onSendPressed,
+  });
 
   final bool _disableSendButton;
   final Function _onSendPressed;
@@ -697,10 +723,9 @@ class CommonSendBottomButtons extends StatelessWidget {
 class CommonConfirmSendButton extends StatelessWidget {
   const CommonConfirmSendButton({
     super.key,
-    required bool disableSendButton,
-    required Function onPressed,
-  }) : _disableSendButton = disableSendButton,
-       _onPressed = onPressed;
+    required this._disableSendButton,
+    required this._onPressed,
+  });
   final bool _disableSendButton;
   final Function _onPressed;
 
@@ -719,18 +744,13 @@ class CommonConfirmSendButton extends StatelessWidget {
 }
 
 class CommonConfirmSendErrorSection extends StatelessWidget {
-  const CommonConfirmSendErrorSection({
-    required BuildTransactionException? buildError,
-    required ConfirmTransactionException? confirmError,
-  }) : _buildError = buildError,
-       _confirmError = confirmError;
+  const CommonConfirmSendErrorSection({required this.errorMessage});
 
-  final BuildTransactionException? _buildError;
-  final ConfirmTransactionException? _confirmError;
+  final String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
-    if (_buildError != null) {
+    if (errorMessage != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -744,41 +764,17 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
             ),
             const Gap(8),
             BBText(
-              _buildError.message,
+              errorMessage!,
               style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-          ],
-        ),
-      );
-    }
-    if (_confirmError != null) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            BBText(
-              context.loc.sendErrorConfirmationFailed,
-              style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
               textAlign: .center,
             ),
             const Gap(8),
-            BBText(
-              _confirmError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
           ],
         ),
       );
-    } else {
-      return const SizedBox.shrink();
     }
+    return const SizedBox.shrink();
   }
 }

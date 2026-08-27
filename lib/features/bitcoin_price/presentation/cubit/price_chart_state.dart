@@ -7,7 +7,7 @@ sealed class PriceChartState with _$PriceChartState {
     @Default([]) List<Rate> prices,
     String? currency,
     int? selectedDataPointIndex,
-    Object? error,
+    PriceChartFailure? failure,
     @Default(false) bool showChart,
   }) = _PriceChartState;
 

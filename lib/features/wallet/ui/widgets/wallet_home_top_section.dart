@@ -12,29 +12,35 @@ import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
   const WalletHomeTopSection({super.key});
 
+  /// Height of the dark area behind the balance (and the price chart, when it
+  /// is toggled on).
+  static const double _balanceAreaHeight = 264;
+
+  /// Distance from the top of the dark area down to the balance.
+  static const double _balanceTopSpacing = 123;
+
+  /// How far the [ActionCard] hangs below the dark area.
+  static const double _actionCardOverhang = 76;
+
+  /// Fixed height of the section.
+  static const double _height = _balanceAreaHeight + _actionCardOverhang;
+
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      height: 264 + 78 + 46,
+      height: _height,
       child: Stack(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 264 + 78,
-                // color: Colors.red,
-                child: _UI(),
-              ),
-              // const Gap(40),
-            ],
+            children: [SizedBox(height: _balanceAreaHeight, child: _UI())],
           ),
           Positioned(
             bottom: 0,
@@ -111,9 +117,8 @@ class _Amounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Gap(32),
+        Gap(WalletHomeTopSection._balanceTopSpacing),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
@@ -140,7 +145,6 @@ class _BtcTotalAmt extends StatelessWidget {
     final showSkeleton =
         walletState.status == WalletStatus.initial ||
         walletState.status == WalletStatus.loading ||
-        walletState.isArkWalletLoading ||
         bitcoinUnit == null;
 
     if (showSkeleton) {
@@ -166,8 +170,7 @@ class _FiatAmt extends StatelessWidget {
     final walletState = context.select((WalletBloc bloc) => bloc.state);
     final showBalanceLoading =
         walletState.status == WalletStatus.initial ||
-        walletState.status == WalletStatus.loading ||
-        walletState.isArkWalletLoading;
+        walletState.status == WalletStatus.loading;
 
     return HomeFiatBalance(
       balanceSat: walletState.totalBalance(),

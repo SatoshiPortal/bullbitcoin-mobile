@@ -59,7 +59,8 @@ sealed class BitBoxAction with _$BitBoxAction {
       unlockDevice: () => context.loc.bitboxActionUnlockDeviceSuccessSubtext,
       pairDevice: () => context.loc.bitboxActionPairDeviceSuccessSubtext,
       importWallet: () => context.loc.bitboxActionImportWalletSuccessSubtext,
-      signTransaction: () => context.loc.bitboxActionSignTransactionSuccessSubtext,
+      signTransaction: () =>
+          context.loc.bitboxActionSignTransactionSuccessSubtext,
       verifyAddress: () => context.loc.bitboxActionVerifyAddressSuccessSubtext,
     );
   }
@@ -71,7 +72,8 @@ sealed class BitBoxAction with _$BitBoxAction {
       importWallet: () => context.loc.bitboxActionImportWalletProcessingSubtext,
       signTransaction: () =>
           context.loc.bitboxActionSignTransactionProcessingSubtext,
-      verifyAddress: () => context.loc.bitboxActionVerifyAddressProcessingSubtext,
+      verifyAddress: () =>
+          context.loc.bitboxActionVerifyAddressProcessingSubtext,
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 class WalletMetadataDatasource {
   final SqliteDatabase _sqlite;
 
-  WalletMetadataDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  WalletMetadataDatasource({required this._sqlite});
 
   Future<void> store(WalletMetadataModel metadata) async {
     final companion = metadata.toSqlite();
@@ -14,10 +14,9 @@ class WalletMetadataDatasource {
   }
 
   Future<WalletMetadataModel?> fetch(String walletId) async {
-    final row =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final row = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (row == null) return null;
     return WalletMetadataModelMapper.fromSqlite(row);

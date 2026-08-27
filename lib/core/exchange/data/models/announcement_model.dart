@@ -25,4 +25,3 @@ sealed class AnnouncementModel with _$AnnouncementModel {
     );
   }
 }
-

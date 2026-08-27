@@ -9,4 +9,3 @@ class NotificationMessage {
     required this.rawData,
   });
 }
-

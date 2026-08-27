@@ -6,10 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SellAmountCurrencyDropdown extends StatelessWidget {
   const SellAmountCurrencyDropdown({
     super.key,
-    String? selectedCurrency,
-    required ValueChanged<String> onCurrencyChanged,
-  }) : _selectedCurrency = selectedCurrency,
-       _onCurrencyChanged = onCurrencyChanged;
+    this._selectedCurrency,
+    required this._onCurrencyChanged,
+  });
 
   final String? _selectedCurrency;
   final ValueChanged<String> _onCurrencyChanged;

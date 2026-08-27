@@ -36,27 +36,17 @@ class KycUploadRequestModel {
 }
 
 /// Enum for KYC document types
-enum KycDocType {
-  id,
-  proofOfAddress,
-  other,
-}
+enum KycDocType { id, proofOfAddress, other }
 
 /// Enum for KYC source details
-enum KycSourceDetail {
-  secureUpload,
-  kyc,
-}
+enum KycSourceDetail { secureUpload, kyc }
 
 /// Model for KYC upload response
 class KycUploadResponseModel {
   final String? documentId;
   final String? status;
 
-  const KycUploadResponseModel({
-    this.documentId,
-    this.status,
-  });
+  const KycUploadResponseModel({this.documentId, this.status});
 
   factory KycUploadResponseModel.fromJson(Map<String, dynamic> json) {
     return KycUploadResponseModel(
@@ -72,4 +62,3 @@ class KycUploadResponseModel {
     );
   }
 }
-

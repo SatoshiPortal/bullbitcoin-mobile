@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 class WatchCurrencyChangesUsecase {
   final SettingsRepository _settingsRepository;
 
-  WatchCurrencyChangesUsecase({required SettingsRepository settingsRepository})
-    : _settingsRepository = settingsRepository;
+  WatchCurrencyChangesUsecase({required this._settingsRepository});
 
   Stream<String> execute() {
     try {

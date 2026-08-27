@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullRadius;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +38,10 @@ class BorderedTappableTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final decoration = BoxDecoration(
       color: backgroundColor ?? context.appColors.onSecondary,
-      borderRadius: BorderRadius.circular(8),
+      // BullRadius.xxs: the design's card/button radius — this tile
+      // previously hardcoded 8, making every tile visibly rounder than
+      // the rest of the design system.
+      borderRadius: BorderRadius.circular(BullRadius.xxs),
       border: Border.all(color: context.appColors.secondaryFixedDim),
     );
     final body = Padding(padding: padding, child: child);
@@ -50,7 +54,7 @@ class BorderedTappableTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(BullRadius.xxs),
         child: Ink(decoration: decoration, child: body),
       ),
     );

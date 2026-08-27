@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_field.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class SellScreen extends StatefulWidget {

@@ -65,9 +65,41 @@ cp "$REPO_ROOT/BULL-${MODE}.apk" "$WORK_DIR/build2.apk"
 echo "Saved: $WORK_DIR/build2.apk"
 sha256sum "$WORK_DIR/build2.apk"
 
-# --- Decode both APKs ---
+# --- Compare (authoritative) ---
+# Raw per-entry content hash comparison — see compare_apk_entries.sh for why
+# this, not a diff of apktool's decoded output, is the actual verdict. Both
+# builds are unsigned here (same MODE built twice), so the only legitimate
+# exclusion is the same one used everywhere else: legacy JAR signature files.
 echo ""
-echo -e "${YELLOW}=== Decoding APKs ===${NC}"
+echo "=== Comparing raw entry contents ==="
+# Capture the exit code in the `else` branch: after a bare `if cmd; then ...;
+# fi` whose condition is false and whose `then` branch is skipped, bash resets
+# $? to 0, so reading it after `fi` would lose the real status. The `else`
+# branch runs while $? still holds the condition's exit code.
+if raw_diff=$($CTR run --rm \
+    -v "$WORK_DIR":/work:ro \
+    -v "$SCRIPT_DIR/compare_apk_entries.sh":/compare.sh:ro \
+    "$VERIFY_TOOLS_IMAGE" \
+    sh /compare.sh /work/build1.apk /work/build2.apk 2>&1); then
+    echo -e "${GREEN}BUILD IS REPRODUCIBLE${NC}"
+    echo "Both builds are identical (excluding legacy JAR signature files)."
+    exit 0
+else
+    raw_rc=$?
+fi
+
+# exit 1 = real per-entry differences; exit 2 = the comparison could not run
+# (unreadable/corrupt APK). Both fail closed; distinguish them in the output.
+if [[ "$raw_rc" -ge 2 ]]; then
+    echo -e "${RED}COMPARISON COULD NOT COMPLETE (unreadable APK) — treating as NOT reproducible${NC}"
+else
+    echo -e "${RED}DIFFERENCES FOUND${NC}"
+fi
+echo "$raw_diff" | tee "$WORK_DIR/raw_diff.txt"
+
+# --- Decode both APKs for a human-readable explanation ---
+echo ""
+echo -e "${YELLOW}=== Decoding APKs for diagnostic diff ===${NC}"
 
 $CTR run --rm \
     -v "$WORK_DIR":/work \
@@ -75,19 +107,10 @@ $CTR run --rm \
     sh -c "apktool d -f -o /work/decoded1 /work/build1.apk && \
            apktool d -f -o /work/decoded2 /work/build2.apk"
 
-# --- Compare ---
+diff_output=$(diff -r -x "MANIFEST.MF" -x "*.RSA" -x "*.SF" -x "*.EC" -x "*.DSA" \
+    "$WORK_DIR/decoded1" "$WORK_DIR/decoded2" || true)
+echo "$diff_output" | tee "$WORK_DIR/diff.txt"
 echo ""
-echo "=== Comparing pre-signature contents ==="
-diff_output=$(diff -r "$WORK_DIR/decoded1" "$WORK_DIR/decoded2" | grep -v META-INF || true)
-
-if [[ -z "$diff_output" ]]; then
-    echo -e "${GREEN}BUILD IS REPRODUCIBLE${NC}"
-    echo "Both builds are identical (excluding META-INF signatures)."
-    exit 0
-else
-    echo -e "${RED}DIFFERENCES FOUND${NC}"
-    echo "$diff_output" | tee "$WORK_DIR/diff.txt"
-    echo ""
-    echo "Full diff saved to: $WORK_DIR/diff.txt"
-    exit 1
-fi
+echo "Raw entry diff saved to: $WORK_DIR/raw_diff.txt"
+echo "Diagnostic decoded diff saved to: $WORK_DIR/diff.txt"
+exit 1

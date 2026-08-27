@@ -23,16 +23,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final ElectrumServersPort _serversPort;
 
   WalletTransactionRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
-    required LabelsFacade labelsFacade,
-    required BdkWalletDatasource bdkWalletTransactionDatasource,
-    required LwkWalletDatasource lwkWalletTransactionDatasource,
-    required ElectrumServersPort serversPort,
-  }) : _labelsFacade = labelsFacade,
-       _walletMetadataDatasource = walletMetadataDatasource,
-       _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
-       _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
-       _serversPort = serversPort;
+    required this._walletMetadataDatasource,
+    required this._labelsFacade,
+    required this._bdkWalletTransactionDatasource,
+    required this._lwkWalletTransactionDatasource,
+    required this._serversPort,
+  });
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({

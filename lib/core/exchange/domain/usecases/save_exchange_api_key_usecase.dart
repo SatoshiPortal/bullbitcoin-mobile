@@ -8,10 +8,9 @@ class SaveExchangeApiKeyUsecase {
   final SettingsRepository _settingsRepository;
 
   SaveExchangeApiKeyUsecase({
-    required ExchangeApiKeyRepository exchangeApiKeyRepository,
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository,
-       _exchangeApiKeyRepository = exchangeApiKeyRepository;
+    required this._exchangeApiKeyRepository,
+    required this._settingsRepository,
+  });
 
   Future<void> execute({
     required Map<String, dynamic> apiKeyResponseData,

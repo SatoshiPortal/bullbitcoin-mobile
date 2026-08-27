@@ -9,9 +9,12 @@ class SwapCoinSelectionBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxos = context.select(
-      (TransferBloc bloc) => bloc.state.utxos ?? <WalletUtxo>[],
-    );
+    // D7: frozen coins are never selectable for spending — hide them so the
+    // sheet only ever offers spendable outputs (mirrors Send).
+    final utxos = context
+        .select((TransferBloc bloc) => bloc.state.utxos ?? <WalletUtxo>[])
+        .where((u) => !u.isFrozen)
+        .toList();
 
     final selectedUtxos = context.select(
       (TransferBloc bloc) => bloc.state.selectedUtxos,

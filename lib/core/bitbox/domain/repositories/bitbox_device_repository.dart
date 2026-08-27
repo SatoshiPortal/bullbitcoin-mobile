@@ -1,25 +1,37 @@
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
+import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:meta/meta.dart';
 
 abstract class BitBoxDeviceRepository {
-  Future<List<BitBoxDeviceEntity>> scanDevices();
+  @useResult
+  Future<Result<List<BitBoxDeviceEntity>, BitBoxFailure>> scanDevices();
 
-  Future<void> connectDevice(BitBoxDeviceEntity device);
+  @useResult
+  Future<Result<void, BitBoxFailure>> connectDevice(BitBoxDeviceEntity device);
 
-  Future<String> unlockDevice(BitBoxDeviceEntity device);
+  @useResult
+  Future<Result<String, BitBoxFailure>> unlockDevice(BitBoxDeviceEntity device);
 
-  Future<String> pairDevice(BitBoxDeviceEntity device);
+  @useResult
+  Future<Result<String, BitBoxFailure>> pairDevice(BitBoxDeviceEntity device);
 
-  Future<String> getXpub(
+  @useResult
+  Future<Result<String, BitBoxFailure>> getXpub(
     BitBoxDeviceEntity device, {
     required String derivationPath,
     required ScriptType scriptType,
     required bool isTestnet,
   });
 
-  Future<String> getMasterFingerprint(BitBoxDeviceEntity device);
+  @useResult
+  Future<Result<String, BitBoxFailure>> getMasterFingerprint(
+    BitBoxDeviceEntity device,
+  );
 
-  Future<String> signPsbt(
+  @useResult
+  Future<Result<String, BitBoxFailure>> signPsbt(
     BitBoxDeviceEntity device, {
     required String psbt,
     required String derivationPath,
@@ -27,7 +39,8 @@ abstract class BitBoxDeviceRepository {
     required bool isTestnet,
   });
 
-  Future<bool> verifyAddress(
+  @useResult
+  Future<Result<bool, BitBoxFailure>> verifyAddress(
     BitBoxDeviceEntity device, {
     required String address,
     required String derivationPath,
@@ -35,6 +48,8 @@ abstract class BitBoxDeviceRepository {
     required bool isTestnet,
   });
 
-  Future<void> disconnectConnection(BitBoxDeviceEntity device);
-  Future<void> dispose();
+  Future<Result<void, BitBoxFailure>> disconnectConnection(
+    BitBoxDeviceEntity device,
+  );
+  Future<Result<void, BitBoxFailure>> dispose();
 }

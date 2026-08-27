@@ -6,7 +6,9 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_failure_l10n.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_method_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/watch_only_details_widget.dart';
@@ -16,7 +18,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
@@ -32,6 +34,8 @@ class ImportWatchOnlyScreen extends StatelessWidget {
         importWatchOnlyDescriptorUsecase:
             locator<ImportWatchOnlyDescriptorUsecase>(),
         importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
+        parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
+        settingsRepository: locator(),
       )..init(),
       child: Scaffold(
         appBar: AppBar(
@@ -47,8 +51,11 @@ class ImportWatchOnlyScreen extends StatelessWidget {
               context.read<WalletBloc>().add(const WalletStarted());
               context.goNamed(WalletRoute.walletHome.name);
             }
-            if (state.error.isNotEmpty) {
-              SnackBarUtils.showSnackBar(context, state.error);
+            if (state.failure != null) {
+              SnackBarUtils.showSnackBar(
+                context,
+                state.failure!.toTranslated(context),
+              );
             }
           },
           builder: (context, state) {
@@ -71,10 +78,10 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
-                        if (state.error.isNotEmpty)
+                        if (state.failure != null)
                           Center(
                             child: BBText(
-                              state.error,
+                              state.failure!.toTranslated(context),
                               style: TextStyle(color: context.appColors.error),
                             ),
                           ),

@@ -21,6 +21,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     @Default([]) List<Label> txLabels,
     @Default([]) List<Label> addressLabels,
     @Default(false) bool isFrozen,
+    @Default(0) int confirmations,
   }) = BitcoinWalletUtxo;
 
   factory WalletUtxo.liquid({
@@ -37,6 +38,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     @Default([]) List<Label> txLabels,
     @Default([]) List<Label> addressLabels,
     @Default(false) bool isFrozen,
+    @Default(0) int confirmations,
   }) = LiquidWalletUtxo;
 
   const WalletUtxo._();
@@ -45,4 +47,7 @@ sealed class WalletUtxo with _$WalletUtxo {
     BitcoinWalletUtxo(:final address) => address,
     LiquidWalletUtxo(:final confidentialAddress) => confidentialAddress,
   };
+
+  /// Whether the UTXO has at least one confirmation (threshold 1).
+  bool get isConfirmed => confirmations > 0;
 }

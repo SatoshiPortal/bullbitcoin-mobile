@@ -8,18 +8,25 @@ class NormalizedMempoolUrl {
   final String _normalized;
   final bool _enableSsl;
 
-  NormalizedMempoolUrl(String url, {bool enableSsl = true})
-      : _normalized = url.isEmpty ? '' : MempoolUrlParser.normalizeUrl(url),
-        _enableSsl = enableSsl;
+  NormalizedMempoolUrl(String url, {this._enableSsl = true})
+    : _normalized = url.isEmpty ? '' : _normalize(url);
+
+  static String _normalize(String url) {
+    return MempoolUrlParser.tryParse(url)?.cleanUrl ??
+        url.trim().toLowerCase().replaceFirst(RegExp(r'\.$'), '');
+  }
 
   /// create from an already normalized URL (e.g., from database)
-  NormalizedMempoolUrl.fromNormalized(this._normalized, {bool enableSsl = true})
-      : _enableSsl = enableSsl;
+  NormalizedMempoolUrl.fromNormalized(
+    this._normalized, {
+    this._enableSsl = true,
+  });
 
   String get value => _normalized;
   bool get enableSsl => _enableSsl;
 
-  String get fullUrl => _enableSsl ? 'https://$_normalized' : 'http://$_normalized';
+  String get fullUrl =>
+      _enableSsl ? 'https://$_normalized' : 'http://$_normalized';
 
   @override
   bool operator ==(Object other) =>
@@ -32,5 +39,6 @@ class NormalizedMempoolUrl {
   int get hashCode => _normalized.hashCode ^ _enableSsl.hashCode;
 
   @override
-  String toString() => 'NormalizedMempoolUrl($_normalized, enableSsl: $_enableSsl)';
+  String toString() =>
+      'NormalizedMempoolUrl($_normalized, enableSsl: $_enableSsl)';
 }

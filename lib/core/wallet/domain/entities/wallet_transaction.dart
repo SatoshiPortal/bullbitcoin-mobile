@@ -61,11 +61,14 @@ sealed class WalletTransaction with _$WalletTransaction {
     }
     if (isToSelf) {
       return outputs.first;
-    } else if (direction == WalletTransactionDirection.incoming) {
-      return outputs.firstWhere((output) => output.isOwn);
-    } else {
-      return outputs.firstWhere((output) => !output.isOwn);
     }
+    // The ownership flags can disagree with the direction heuristic (missed
+    // self-transfers, unrecognized Liquid outputs, swap legs) — return null
+    // instead of throwing so callers degrade to "no address".
+    final matches = direction == WalletTransactionDirection.incoming
+        ? outputs.where((output) => output.isOwn)
+        : outputs.where((output) => !output.isOwn);
+    return matches.firstOrNull;
   }
 
   String? get toAddress => destinationOutput?.address;

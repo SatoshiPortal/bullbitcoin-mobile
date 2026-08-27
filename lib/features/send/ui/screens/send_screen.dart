@@ -11,9 +11,9 @@ import 'package:bb_mobile/core/utils/logger.dart';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -31,18 +32,23 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
-import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
+import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
+import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -194,7 +200,7 @@ class AddressField extends StatelessWidget {
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
 
-    return BBInputText(
+    return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
       hint: context.loc.sendPasteAddressOrInvoice,
@@ -225,47 +231,29 @@ class AddressErrorSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balanceError = context.select(
-      (SendCubit cubit) => cubit.state.insufficientBalanceException,
+    final failure = context.select((SendCubit cubit) => cubit.state.failure);
+    final frozenBalanceSat = context.select(
+      (SendCubit cubit) => cubit.state.frozenBalanceSat,
     );
-    final swapError = context.select(
-      (SendCubit cubit) => cubit.state.swapCreationException,
+    final formattedFrozenBalance = context.select(
+      (SendCubit cubit) => cubit.state.formattedFrozenBalance,
     );
-    final invalidAddress = context.select(
-      (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
-    );
-    if (balanceError != null) {
+    if (failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
-          context.loc.sendErrorInsufficientBalanceForPayment,
+          // #2337: when the shortfall is only because coins are frozen, point
+          // the user at Manage coins instead of a dead-end "not enough balance".
+          failure is SendInsufficientBalanceFailure && frozenBalanceSat > 0
+              ? context.loc.sendErrorInsufficientBalanceFrozenHint(
+                  formattedFrozenBalance,
+                )
+              : failure.toTranslated(context),
           style: context.font.bodyMedium,
           color: context.appColors.error,
           textAlign: .center,
           maxLines: 2,
         ),
-      );
-    }
-    if (swapError != null) {
-      return BBText(
-        swapError is AmountlessInvoiceException
-            ? context.loc.sendErrorInvoiceMustContainAmount
-            : swapError is ExpiredInvoiceException
-            ? context.loc.sendErrorInvoiceExpired
-            : swapError.message,
-        style: context.font.bodyMedium,
-        color: context.appColors.error,
-        textAlign: .center,
-        maxLines: 2,
-      );
-    }
-    if (invalidAddress != null) {
-      return BBText(
-        context.loc.sendErrorInvalidAddressOrInvoice,
-        style: context.font.bodyMedium,
-        color: context.appColors.error,
-        textAlign: .center,
-        maxLines: 2,
       );
     }
     return const SizedBox(height: 21);
@@ -321,6 +309,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appColors.background,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -361,16 +350,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                 },
                 child: BlocBuilder<SendCubit, SendState>(
                   builder: (context, state) {
-                    final balanceError = context.select(
-                      (SendCubit cubit) =>
-                          cubit.state.insufficientBalanceException,
+                    final failure = context.select(
+                      (SendCubit cubit) => cubit.state.failure,
                     );
-                    final swapLimitsError = context.select(
-                      (SendCubit cubit) => cubit.state.swapLimitsException,
-                    );
-                    final swapCreationError = context.select(
-                      (SendCubit cubit) => cubit.state.swapCreationException,
-                    );
+                    final balanceError =
+                        failure is SendInsufficientBalanceFailure;
+                    final swapLimitsError =
+                        failure is SendAmountOutOfBoundsFailure
+                        ? failure
+                        : null;
                     final walletHasBalance = context.select(
                       (SendCubit cubit) => cubit.state.walletHasBalance,
                     );
@@ -391,10 +379,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                         .select<SendCubit, List<String>>(
                           (bloc) => bloc.state.inputAmountCurrencyCodes,
                         );
-                    final buildError = context.select(
-                      (SendCubit cubit) =>
-                          cubit.state.buildTransactionException,
-                    );
+                    final buildError = failure is SendTransactionBuildFailure;
                     final selectedWallet = context.select(
                       (SendCubit cubit) => cubit.state.selectedWallet!,
                     );
@@ -403,186 +388,224 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     );
                     return IgnorePointer(
                       ignoring: state.amountConfirmedClicked,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            ColoredBox(
-                              color: context.appColors.onSecondary,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0,
-                                ),
-                                child: DropdownButtonFormField<Wallet>(
-                                  alignment: Alignment.centerLeft,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  icon: Icon(
-                                    Icons.keyboard_arrow_down,
-                                    color: context.appColors.secondary,
-                                  ),
-                                  iconSize: 24,
-                                  initialValue: selectedWallet,
-                                  items: wallets.map((w) {
-                                    return DropdownMenuItem(
-                                      value: w,
-                                      child: Text(
-                                        w.displayLabel(context),
-                                        style: context.font.headlineSmall,
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      context
-                                          .read<SendCubit>()
-                                          .updateSelectedWallet(value);
-                                    }
-                                  },
-                                ),
+                      child: Column(
+                        crossAxisAlignment: .stretch,
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
                               ),
-                            ),
-                            const Gap(10),
-                            PriceInput(
-                              currency: inputCurrency,
-                              amountEquivalent:
-                                  state.formattedAmountInputEquivalent,
-                              availableCurrencies: availableInputCurrencies,
-                              amountController: _amountController,
-                              onCurrencyChanged: (currencyCode) {
-                                _setIsMax(false);
-                                context.read<SendCubit>().onCurrencyChanged(
-                                  currencyCode,
-                                );
-                              },
-                              error: balanceError != null
-                                  ? context
-                                        .loc
-                                        .sendErrorInsufficientBalanceForPayment
-                                  : (!walletHasBalance &&
-                                        amountConfirmedClicked)
-                                  ? context.loc.sendInsufficientBalance
-                                  : swapLimitsError != null
-                                  ? _getSwapLimitsErrorMessage(
-                                      context,
-                                      swapLimitsError,
-                                    )
-                                  : swapCreationError != null
-                                  ? _swapCreationErrorMessage(
-                                      context,
-                                      swapCreationError,
-                                    )
-                                  : null,
-                              focusNode: _amountFocusNode,
-                              readOnly: _isMax,
-                              isMax: _isMax,
-                            ),
-                            if (swapLimitsError?.suggestInstantPayments == true)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 6),
-                                child: BBText(
-                                  context
-                                      .loc
-                                      .sendErrorAmountBelowSwapLimitsBitcoin,
-                                  style: context.font.bodySmall,
-                                  color: context.appColors.error,
-                                  maxLines: 3,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            Gap(Device.screen.height * 0.02),
-                            BorderedTappableTile(
-                              onTap: () async {
-                                final cubit = context.read<SendCubit>();
-                                final saved = await LabelEntryBottomSheet.label(
-                                  context,
-                                  title: context.loc.transactionNoteAddTitle,
-                                  initialValue: state.label.isEmpty
-                                      ? null
-                                      : state.label,
-                                  hint: context.loc.transactionNoteHint,
-                                  suggestionsFuture: cubit
-                                      .fetchDistinctLabels(),
-                                );
-                                if (saved == null || !context.mounted) return;
-                                cubit.noteChanged(saved);
-                              },
-                              child: Row(
+                              child: Column(
+                                crossAxisAlignment: .stretch,
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        BBText(
-                                          '${context.loc.receiveNote} (optional)',
-                                          style: context.font.bodyLarge,
+                                  ColoredBox(
+                                    color: context.appColors.onSecondary,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0,
+                                      ),
+                                      child: DropdownButtonFormField<Wallet>(
+                                        alignment: Alignment.centerLeft,
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.zero,
+                                        ),
+                                        icon: Icon(
+                                          Icons.keyboard_arrow_down,
                                           color: context.appColors.secondary,
                                         ),
-                                        const Gap(4),
-                                        BBText(
-                                          state.label.isEmpty
-                                              ? context.loc.receiveEnterHere
-                                              : state.label,
-                                          style: context.font.bodyMedium,
-                                          maxLines: 4,
-                                          overflow: TextOverflow.ellipsis,
+                                        iconSize: 24,
+                                        initialValue: selectedWallet,
+                                        items: wallets.map((w) {
+                                          return DropdownMenuItem(
+                                            value: w,
+                                            child: Text(
+                                              w.displayLabel(context),
+                                              style: context.font.headlineSmall,
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            context
+                                                .read<SendCubit>()
+                                                .updateSelectedWallet(value);
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  const Gap(10),
+                                  PriceInput(
+                                    currency: inputCurrency,
+                                    amountEquivalent:
+                                        state.formattedAmountInputEquivalent,
+                                    availableCurrencies:
+                                        availableInputCurrencies,
+                                    amountController: _amountController,
+                                    onCurrencyChanged: (currencyCode) {
+                                      _setIsMax(false);
+                                      context
+                                          .read<SendCubit>()
+                                          .onCurrencyChanged(currencyCode);
+                                    },
+                                    error: balanceError
+                                        ? (state.frozenBalanceSat > 0
+                                              ? context.loc
+                                                    .sendErrorInsufficientBalanceFrozenHint(
+                                                      state
+                                                          .formattedFrozenBalance,
+                                                    )
+                                              : context
+                                                    .loc
+                                                    .sendErrorInsufficientBalanceForPayment)
+                                        : (!walletHasBalance &&
+                                              amountConfirmedClicked)
+                                        ? context.loc.sendInsufficientBalance
+                                        : swapLimitsError != null
+                                        ? _getSwapLimitsErrorMessage(
+                                            context,
+                                            swapLimitsError,
+                                          )
+                                        : failure?.toTranslated(context),
+                                    focusNode: _amountFocusNode,
+                                    readOnly: _isMax,
+                                    isMax: _isMax,
+                                  ),
+                                  if (swapLimitsError?.suggestInstantPayments ==
+                                      true)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 6),
+                                      child: BBText(
+                                        context
+                                            .loc
+                                            .sendErrorAmountBelowSwapLimitsBitcoin,
+                                        style: context.font.bodySmall,
+                                        color: context.appColors.error,
+                                        maxLines: 3,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  Gap(Device.screen.height * 0.02),
+                                  BorderedTappableTile(
+                                    onTap: () async {
+                                      final cubit = context.read<SendCubit>();
+                                      final saved =
+                                          await LabelEntryBottomSheet.label(
+                                            context,
+                                            title: context
+                                                .loc
+                                                .transactionNoteAddTitle,
+                                            initialValue: state.label.isEmpty
+                                                ? null
+                                                : state.label,
+                                            hint:
+                                                context.loc.transactionNoteHint,
+                                            suggestionsFuture: cubit
+                                                .fetchDistinctLabels(),
+                                          );
+                                      if (saved == null || !context.mounted) {
+                                        return;
+                                      }
+                                      cubit.noteChanged(saved);
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              BBText(
+                                                '${context.loc.receiveNote} (optional)',
+                                                style: context.font.bodyLarge,
+                                                color:
+                                                    context.appColors.secondary,
+                                              ),
+                                              const Gap(4),
+                                              BBText(
+                                                state.label.isEmpty
+                                                    ? context
+                                                          .loc
+                                                          .receiveEnterHere
+                                                    : state.label,
+                                                style: context.font.bodyMedium,
+                                                maxLines: 4,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                          color: context.appColors.secondary,
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.edit,
-                                    size: 20,
-                                    color: context.appColors.secondary,
+                                  const Gap(48),
+                                  Divider(
+                                    height: 1,
+                                    color: context.appColors.secondaryFixedDim,
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    child: BalanceRow(
+                                      balance: state.formattedWalletBalance(),
+                                      currencyCode: '',
+                                      isMax: _isMax,
+                                      onMaxToggled: !isLightning && !isChainSwap
+                                          ? (value) {
+                                              _setIsMax(value);
+                                              context
+                                                  .read<SendCubit>()
+                                                  .amountChanged(isMax: value);
+                                              if (!value) {
+                                                _amountFocusNode.requestFocus();
+                                              }
+                                            }
+                                          : null,
+                                      walletLabel: selectedWallet.label,
+                                    ),
+                                  ),
+                                  if (state.consolidationRequired) ...[
+                                    const Gap(16),
+                                    ConsolidationRequiredCard(
+                                      title: context
+                                          .loc
+                                          .consolidationRequiredTitle,
+                                      onTap: () => context.pushNamed(
+                                        ConsolidationRoute.consolidation.name,
+                                        pathParameters: {
+                                          'walletId': selectedWallet.id,
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                  if (buildError) ...[
+                                    const Gap(16),
+                                    const _SendError(),
+                                  ],
                                 ],
                               ),
                             ),
-                            const Gap(48),
-                            Divider(
-                              height: 1,
-                              color: context.appColors.secondaryFixedDim,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              16,
+                              8,
+                              16,
+                              math.max(16, Device.screen.height * 0.04),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: BalanceRow(
-                                balance: state.formattedWalletBalance(),
-                                currencyCode: '',
-                                isMax: _isMax,
-                                onMaxToggled: !isLightning && !isChainSwap
-                                    ? (value) {
-                                        _setIsMax(value);
-                                        context.read<SendCubit>().amountChanged(
-                                          isMax: value,
-                                        );
-                                        if (!value) {
-                                          _amountFocusNode.requestFocus();
-                                        }
-                                      }
-                                    : null,
-                                walletLabel: selectedWallet.label,
-                              ),
+                            child: SendAmountConfirmButton(
+                              amountController: _amountController,
                             ),
-                            if (buildError != null) ...[
-                              const Gap(16),
-                              const _SendError(),
-                            ],
-
-                            const Spacer(),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                bottom: Device.screen.height * 0.04,
-                              ),
-                              child: SendAmountConfirmButton(
-                                amountController: _amountController,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -664,14 +687,21 @@ class SendConfirmScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap != null,
+    final orderSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
     );
-    final isChainSwap = context.select(
-      (SendCubit cubit) => cubit.state.chainSwap != null,
-    );
+    final isLnSwap =
+        orderSwap != null &&
+        (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
+            orderSwap.outNetwork == OrderSwapNetwork.lightning);
+    final isChainSwap =
+        context.select((SendCubit cubit) => cubit.state.chainSwap != null) ||
+        (orderSwap != null && !isLnSwap);
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid ?? false,
+    );
+    final isUnconfidentialLiquidDestination = context.select(
+      (SendCubit cubit) => cubit.state.isUnconfidentialLiquidDestination,
     );
     return Scaffold(
       appBar: AppBar(
@@ -712,6 +742,10 @@ class SendConfirmScreen extends StatelessWidget {
                       const _LiquidOnchainSendInfoSection()
                     else
                       const _OnchainTransactionReview(),
+                    if (isUnconfidentialLiquidDestination) ...[
+                      const Gap(16),
+                      const _UnconfidentialLiquidWarning(),
+                    ],
                     const Gap(40),
                     const _SendError(),
                     const _BottomButtons(),
@@ -731,15 +765,13 @@ class _SendError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buildError = context.select(
-      (SendCubit cubit) => cubit.state.buildTransactionException,
-    );
+    final failure = context.select((SendCubit cubit) => cubit.state.failure);
+    final buildError = failure is SendTransactionBuildFailure;
+    final confirmError = failure is SendTransactionConfirmationFailure
+        ? failure
+        : null;
 
-    final confirmError = context.select(
-      (SendCubit cubit) => cubit.state.confirmTransactionException,
-    );
-
-    if (buildError != null) {
+    if (buildError) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: BBText(
@@ -932,6 +964,13 @@ class _OnchainTransactionReview extends StatelessWidget {
     final isToSelf = context.select(
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
+    final label = context.select((SendCubit cubit) => cubit.state.label);
+    final isPayjoinAvailable = context.select(
+      (SendCubit cubit) => cubit.state.isPayjoinAvailable,
+    );
+    final willAttemptPayjoin = context.select(
+      (SendCubit cubit) => cubit.state.willAttemptPayjoin,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -944,20 +983,42 @@ class _OnchainTransactionReview extends StatelessWidget {
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: selectedFeeOption.title(),
           isToSelf: isToSelf,
+          payjoinToggleValue: isPayjoinAvailable ? willAttemptPayjoin : null,
+          onPayjoinToggleChanged: (attempt) =>
+              context.read<SendCubit>().togglePayjoin(attempt),
+          note: label,
           onFeePriorityTap: hasFinalizedTx
               ? null
               : () async {
                   final sendCubit = context.read<SendCubit>();
                   final selected = await BlurredBottomSheet.show<String>(
                     context: context,
-                    child: BlocProvider.value(
-                      value: sendCubit,
-                      child: const FeeOptionsModal(),
+                    child: FeeOptionsModal(
+                      viewState: sendCubit,
+                      actions: sendCubit,
+                      defaultAbsoluteCustomFee: false,
+                      customFeeColors: FeeModalCustomFeeColors(
+                        tile: context.appColors.surface,
+                        shadow: context.appColors.border,
+                        unselectedIcon: context.appColors.textMuted,
+                      ),
                     ),
                   );
                   if (selected != null) {
+                    // User tapped a preset tile inside the modal —
+                    // commit it. feeOptionSelected clears any arm
+                    // state the user may have left from typing.
                     final fee = FeeSelectionName.fromString(selected);
-                    await context.read<SendCubit>().feeOptionSelected(fee);
+                    await sendCubit.feeOptionSelected(fee);
+                  } else {
+                    // User dismissed the modal (tap outside, back,
+                    // swipe). If they had typed a custom rate, the
+                    // cubit is armed — finalize it: commit if valid,
+                    // roll back if below the 0.1 sat/vB floor. This
+                    // is the replacement for the old explicit
+                    // "Confirm Custom Fee" button — typing IS the
+                    // selection, dismissing IS the apply.
+                    await sendCubit.finalizeArmedCustomFee();
                   }
                 },
         ),
@@ -998,6 +1059,7 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
 
+    final label = context.select((SendCubit cubit) => cubit.state.label);
     return CommonOnchainSendInfoSection(
       sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
       receiveWalletLabel: paymentRequestAddress,
@@ -1005,8 +1067,25 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       formattedFiatEquivalent: '~$formattedFiatEquivalent',
       absoluteFees: formattedAbsoluteFees,
       selectedFeeOptionTitle: '',
+      note: label,
       // Liquid has fixed fees — no fee priority selector
       onFeePriorityTap: null,
+    );
+  }
+}
+
+/// Warns that the destination Liquid address is unconfidential: the amount
+/// sent to it will be publicly visible on-chain.
+class _UnconfidentialLiquidWarning extends StatelessWidget {
+  const _UnconfidentialLiquidWarning();
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      title: context.loc.sendUnconfidentialLiquidWarning,
+      description: context.loc.sendUnconfidentialLiquidWarningDescription,
+      tagColor: context.appColors.error,
+      bgColor: context.appColors.errorContainer,
     );
   }
 }
@@ -1025,7 +1104,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
-    final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
+    final swap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
+    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1034,6 +1115,13 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     );
     final isSlowPayment = context.select(
       (SendCubit cubit) => cubit.state.isSlowPayment,
+    );
+    final label = context.select((SendCubit cubit) => cubit.state.label);
+    final networkFee = context.select(
+      (SendCubit cubit) => cubit.state.absoluteFees,
+    );
+    final swapFee = context.select(
+      (SendCubit cubit) => cubit.state.totalSwapFees,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1052,11 +1140,31 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: context.loc.sendSwapId,
-            details: BBText(
-              swap!.id,
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: BBText(
+                    swap!.order!.orderNumber.toString(),
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                    textAlign: .end,
+                  ),
+                ),
+                const Gap(4),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(
+                      ClipboardData(text: swap.order!.orderNumber.toString()),
+                    );
+                  },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
           ),
           _divider(context),
@@ -1071,6 +1179,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
+                    textAlign: TextAlign.end,
                   ),
                 ),
                 const Gap(4),
@@ -1090,56 +1199,72 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-
-          if (swap.sendAmount != null)
+          if (label.isNotEmpty) ...[
             InfoRow(
-              title: context.loc.sendSendAmount,
-              details: Column(
-                crossAxisAlignment: .end,
-                children: [
-                  CurrencyText(
-                    swap.paymentAmount,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                  ),
-                ],
+              title: context.loc.receiveNote,
+              details: BBText(
+                label,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+                textAlign: .end,
               ),
             ),
+            _divider(context),
+          ],
+          InfoRow(
+            title: context.loc.sendSendAmount,
+            details: Column(
+              crossAxisAlignment: .end,
+              children: [
+                CurrencyText(
+                  swap.order!.payinAmountSat.toInt(),
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.secondary,
+                ),
+              ],
+            ),
+          ),
           _divider(context),
-          if (swap.receieveAmount != null)
+          InfoRow(
+            title: context.loc.sendReceiveAmount,
+            details: Column(
+              crossAxisAlignment: .end,
+              children: [
+                CurrencyText(
+                  swap.order!.payoutAmountSat.toInt(),
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  color: context.appColors.secondary,
+                ),
+              ],
+            ),
+          ),
+          _divider(context),
+          if (networkFee != null) ...[
             InfoRow(
-              title: context.loc.sendReceiveAmount,
-              details: Column(
-                crossAxisAlignment: .end,
-                children: [
-                  CurrencyText(
-                    swap.receieveAmount!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                  ),
-                ],
+              title: context.loc.sendSendNetworkFee,
+              details: CurrencyText(
+                networkFee,
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+                textAlign: TextAlign.end,
               ),
             ),
-          if (swap.receieveAmount != null) _divider(context),
-          if (swap.fees?.lockupFee != null)
+            _divider(context),
+          ],
+          if (swapFee != null)
             InfoRow(
-              title: context.loc.sendNetworkFeesLabel,
-              details: Column(
-                crossAxisAlignment: .end,
-                children: [
-                  CurrencyText(
-                    swap.fees!.lockupFee!,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                  ),
-                ],
+              title: context.loc.sendTransferFee,
+              details: CurrencyText(
+                swapFee,
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+                textAlign: TextAlign.end,
               ),
             ),
-          if (swap.fees?.lockupFee != null) _divider(context),
-          _SwapFeeBreakdown(fees: swap.fees),
           if (showFeeWarning == true) ...[
             const Gap(16),
             _HighFeeWarning(feePercent),
@@ -1280,7 +1405,17 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
-    final swap = context.select((SendCubit cubit) => cubit.state.chainSwap);
+    final legacySwap = context.select(
+      (SendCubit cubit) => cubit.state.chainSwap,
+    );
+    final orderSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
+    );
+    final swapId = orderSwap?.order?.orderNumber.toString() ?? legacySwap!.id;
+    final sendAmount =
+        orderSwap?.order?.payinAmountSat.toInt() ?? legacySwap!.sendAmount!;
+    final receiveAmount =
+        orderSwap?.order?.payoutAmountSat.toInt() ?? legacySwap?.receieveAmount;
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1307,11 +1442,29 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: context.loc.sendSwapId,
-            details: BBText(
-              swap!.id,
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: BBText(
+                    swapId,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                    textAlign: .end,
+                  ),
+                ),
+                const Gap(4),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: swapId));
+                  },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
           ),
           _divider(context),
@@ -1326,6 +1479,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
+                    textAlign: TextAlign.end,
                   ),
                 ),
                 const Gap(4),
@@ -1351,7 +1505,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               crossAxisAlignment: .end,
               children: [
                 CurrencyText(
-                  swap.sendAmount!,
+                  sendAmount,
                   showFiat: false,
                   style: context.font.bodyLarge,
                   color: context.appColors.secondary,
@@ -1360,14 +1514,14 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          if (swap.receieveAmount != null)
+          if (receiveAmount != null)
             InfoRow(
               title: context.loc.sendReceiveAmount,
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
                   CurrencyText(
-                    swap.receieveAmount!,
+                    receiveAmount,
                     showFiat: false,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
@@ -1375,7 +1529,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 ],
               ),
             ),
-          if (swap.receieveAmount != null) _divider(context),
+          if (receiveAmount != null) _divider(context),
           if (absoluteFees != null)
             InfoRow(
               title: context.loc.sendSendNetworkFee,
@@ -1392,7 +1546,23 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               ),
             ),
           if (absoluteFees != null) _divider(context),
-          _SwapFeeBreakdown(fees: swap.fees),
+          if (legacySwap != null)
+            _SwapFeeBreakdown(fees: legacySwap.fees)
+          else if (orderSwap != null &&
+              orderSwap.order!.payinAmountSat >
+                  orderSwap.order!.payoutAmountSat)
+            InfoRow(
+              title: context.loc.sendTransferFee,
+              details: CurrencyText(
+                (orderSwap.order!.payinAmountSat -
+                        orderSwap.order!.payoutAmountSat)
+                    .toInt(),
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.appColors.secondary,
+                textAlign: TextAlign.end,
+              ),
+            ),
           const Gap(16),
 
           const _SlowPaymentWarning(),
@@ -1485,7 +1655,7 @@ class SendSendingScreen extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isLnInvoicePaid,
     );
     final isLnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap != null,
+      (SendCubit cubit) => cubit.state.lightningOrder != null,
     );
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
@@ -1493,12 +1663,29 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
+    // Same canonical getter the manual-fallback button on the transaction
+    // details screen is gated on (Payjoin.canManuallyBroadcastOriginal) —
+    // reusing it here, rather than a hand-rolled `proposalPsbt == null`
+    // check, means this countdown can never linger past the point where a
+    // proposal has arrived or the session has expired.
+    final showFallbackCountdown = context.select(
+      (SendCubit cubit) =>
+          cubit.state.payjoinSender?.canManuallyBroadcastOriginal ?? false,
+    );
+    final payjoinExpiresAt = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.expiresAt,
+    );
+    // Computed once per build — acceptable, the screen rebuilds on each cubit
+    // emit; deliberately not adding a ticker to the bloc for this.
+    final isImminent =
+        payjoinExpiresAt != null &&
+        payjoinExpiresAt.difference(DateTime.now()) <= const Duration(hours: 1);
 
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: const TopBar(title: 'Send'),
+        flexibleSpace: TopBar(title: context.loc.sendTitle),
         actions: [
           CloseButton(
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
@@ -1565,6 +1752,30 @@ class SendSendingScreen extends StatelessWidget {
                   maxLines: 4,
                   textAlign: TextAlign.center,
                 ),
+                if (showFallbackCountdown &&
+                    payjoinExpiresAt != null &&
+                    isImminent) ...[
+                  const Gap(8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BBText(
+                        context.loc.sendPayjoinFallbackCountdown,
+                        style: context.font.bodyMedium,
+                        color: context.appColors.secondary,
+                      ),
+                      const Gap(4),
+                      Countdown(
+                        until: payjoinExpiresAt.add(
+                          const Duration(
+                            seconds: PayjoinConstants.directoryPollingInterval,
+                          ),
+                        ),
+                        onTimeout: () {},
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ],
           ),
@@ -1605,16 +1816,29 @@ class SendSucessScreen extends StatelessWidget {
     final payjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender,
     );
-    final lnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap,
+    final orderSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningOrder,
     );
     final chainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap,
     );
-    final isLnSwap = lnSwap != null;
-    final isChainSwap = chainSwap != null;
-    final isSwap = isLnSwap || isChainSwap;
-
+    final isLnSwap =
+        orderSwap != null &&
+        (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
+            orderSwap.outNetwork == OrderSwapNetwork.lightning);
+    final isChainSwap = chainSwap != null || (orderSwap != null && !isLnSwap);
+    // An order that expired before payin holds no funds — show expiry, not refund.
+    final expiredBeforePayin =
+        orderSwap != null &&
+        orderSwap.localStatus == OrderSwapLocalStatus.expired &&
+        orderSwap.localPayinTransactionId == null;
+    // Decides whether the View Details button appears.
+    final hasDetails =
+        walletTransaction != null ||
+        (orderSwap != null
+            ? orderSwap.localPayinTransactionId != null &&
+                  orderSwap.sourceWalletId != null
+            : chainSwap != null || payjoin != null);
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -1636,9 +1860,20 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  if (lnSwap?.status == SwapStatus.failed ||
-                      lnSwap?.status == SwapStatus.expired ||
-                      lnSwap?.status == SwapStatus.refundable ||
+                  if (expiredBeforePayin) ...[
+                    BBText(
+                      context.loc.sendSwapExpiredTitle,
+                      style: context.font.headlineLarge,
+                      textAlign: .center,
+                    ),
+                    BBText(
+                      context.loc.sendSwapExpiredMessage,
+                      style: context.font.headlineLarge,
+                      textAlign: .center,
+                    ),
+                  ] else if (orderSwap?.localStatus ==
+                          OrderSwapLocalStatus.failed ||
+                      orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
                       chainSwap?.status == SwapStatus.failed ||
                       chainSwap?.status == SwapStatus.expired ||
                       chainSwap?.status == SwapStatus.refundable) ...[
@@ -1652,10 +1887,10 @@ class SendSucessScreen extends StatelessWidget {
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                  ] else if ((isLnSwap &&
-                          lnSwap.status == SwapStatus.completed &&
-                          lnSwap.refundTxid != null) ||
-                      (isChainSwap &&
+                  ] else if ((orderSwap != null &&
+                          orderSwap.localStatus ==
+                              OrderSwapLocalStatus.refunded) ||
+                      (chainSwap != null &&
                           chainSwap.status == SwapStatus.completed &&
                           chainSwap.refundTxid != null)) ...[
                     BBText(
@@ -1669,8 +1904,8 @@ class SendSucessScreen extends StatelessWidget {
                       textAlign: .center,
                     ),
                   ] else if (isLnSwap &&
-                      (lnSwap.status == SwapStatus.canCoop ||
-                          lnSwap.status == SwapStatus.completed)) ...[
+                      orderSwap.localStatus ==
+                          OrderSwapLocalStatus.completed) ...[
                     Gif(
                       image: AssetImage(Assets.animations.successTick.path),
                       autostart: Autostart.once,
@@ -1684,8 +1919,7 @@ class SendSucessScreen extends StatelessWidget {
                     ),
                   ] else if (isLnSwap &&
                       !isBitcoin &&
-                      lnSwap.status != SwapStatus.canCoop &&
-                      lnSwap.status != SwapStatus.completed)
+                      orderSwap.localStatus != OrderSwapLocalStatus.completed)
                     BBText(
                       context.loc.sendPaymentProcessing,
                       style: context.font.headlineLarge,
@@ -1705,11 +1939,28 @@ class SendSucessScreen extends StatelessWidget {
                       context.loc.sendSwapWillTakeTime,
                       style: context.font.labelSmall,
                     ),
-                  ] else
+                  ] else ...[
                     BBText(
                       context.loc.sendSuccessfullySent,
                       style: context.font.bodyLarge,
                     ),
+                    // A payjoin send that completed via the plain-broadcast
+                    // fallback (receiver declined/expired or the payjoin
+                    // negotiation failed). The user explicitly expected a
+                    // payjoin, so say that it didn't happen instead of
+                    // presenting the fallback as indistinguishable from a
+                    // successful payjoin.
+                    if (payjoin != null && payjoin.isAborted) ...[
+                      const Gap(8),
+                      BBText(
+                        context.loc.sendSentWithoutPayjoin,
+                        style: context.font.bodyMedium,
+                        color: context.appColors.secondary,
+                        maxLines: 4,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                   const Gap(8),
                   BBText(
                     amount,
@@ -1728,8 +1979,12 @@ class SendSucessScreen extends StatelessWidget {
                 ],
               ),
             ),
+            if (orderSwap?.order?.requiresManualReview == true) ...[
+              const Gap(16),
+              OrderSwapUnderReviewCard(orderSwap: orderSwap!),
+            ],
             const Spacer(flex: 2),
-            if (walletTransaction != null || isSwap || payjoin != null)
+            if (hasDetails)
               BBButton.big(
                 label: context.loc.sendViewDetails,
                 onPressed: () {
@@ -1742,16 +1997,20 @@ class SendSucessScreen extends StatelessWidget {
                         'returnHome': 'true',
                       },
                     );
-                  } else if (isLnSwap) {
-                    context.pushNamed(
-                      TransactionsRoute.swapTransactionDetails.name,
-                      pathParameters: {'swapId': lnSwap.id},
-                      queryParameters: {
-                        'walletId': lnSwap.walletId,
-                        'returnHome': 'true',
-                      },
-                    );
-                  } else if (isChainSwap) {
+                  } else if (orderSwap != null) {
+                    final txId = orderSwap.localPayinTransactionId;
+                    final walletId = orderSwap.sourceWalletId;
+                    if (txId != null && walletId != null) {
+                      context.pushNamed(
+                        TransactionsRoute.transactionDetails.name,
+                        pathParameters: {'txId': txId},
+                        queryParameters: {
+                          'walletId': walletId,
+                          'returnHome': 'true',
+                        },
+                      );
+                    }
+                  } else if (chainSwap != null) {
                     context.pushNamed(
                       TransactionsRoute.swapTransactionDetails.name,
                       pathParameters: {'swapId': chainSwap.id},
@@ -1761,10 +2020,22 @@ class SendSucessScreen extends StatelessWidget {
                       },
                     );
                   } else if (payjoin != null) {
+                    // Navigate by the on-chain txid, NOT payjoin.id: a
+                    //  sender's id IS the full BIP21 URI (address+amount) and
+                    //  would leak into the router location string. By this
+                    //  point the session is terminal, so txId (real payjoin)
+                    //  or originalTxId (fallback) is always the broadcast tx —
+                    //  and landing on the real transaction is better UX than
+                    //  the session placeholder.
                     context.pushNamed(
-                      TransactionsRoute.payjoinTransactionDetails.name,
-                      pathParameters: {'payjoinId': payjoin.id},
-                      queryParameters: {'returnHome': 'true'},
+                      TransactionsRoute.transactionDetails.name,
+                      pathParameters: {
+                        'txId': payjoin.txId ?? payjoin.originalTxId,
+                      },
+                      queryParameters: {
+                        'walletId': payjoin.walletId,
+                        'returnHome': 'true',
+                      },
                     );
                   }
                 },
@@ -1843,12 +2114,15 @@ class SignLedgerButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          SnackBarUtils.showSnackBar(
-            context,
-            context.loc.sendTransactionSignedLedger,
-          );
-          // Update the signedBitcoinTx with the result from Ledger
-          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+          final accepted = await context
+              .read<SendCubit>()
+              .updateSignedBitcoinTx(result);
+          if (accepted && context.mounted) {
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.sendTransactionSignedLedger,
+            );
+          }
         }
       },
       bgColor: context.appColors.secondary,
@@ -1894,7 +2168,17 @@ class SignBitBoxButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          final finalizedTx = await _finalizePsbt(result);
+          final String finalizedTx;
+          try {
+            finalizedTx = await _finalizePsbt(result);
+          } catch (_) {
+            if (!context.mounted) return;
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.sendErrorConfirmationFailed,
+            );
+            return;
+          }
           if (context.mounted) {
             await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
           }
@@ -1911,38 +2195,24 @@ class SignBitBoxButton extends StatelessWidget {
         final psbt = Psbt.fromBase64(signedPsbt);
         final builder = PsbtBuilder.fromPsbt(psbt);
         return builder.finalizeAll().toHex();
-      } else {
-        return signedPsbt;
       }
-    } catch (e) {
-      log.warning('Failed to finalize PSBT');
       return signedPsbt;
+    } catch (e, st) {
+      log.warning('Failed to finalize BitBox signed PSBT', error: e, trace: st);
+      Error.throwWithStackTrace(e, st);
     }
   }
 }
 
-String _swapCreationErrorMessage(
-  BuildContext context,
-  SwapCreationException error,
-) {
-  if (error is HardwareWalletSwapException) {
-    return context.loc.sendErrorHardwareWalletCannotSwap;
-  }
-  if (error is AmountlessInvoiceException) {
-    return context.loc.sendErrorInvoiceMustContainAmount;
-  }
-  return error.message;
-}
-
 String _getSwapLimitsErrorMessage(
   BuildContext context,
-  SwapLimitsException error,
+  SendAmountOutOfBoundsFailure error,
 ) {
-  if (error.isBelowMinimum) {
-    return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
+  if (error.minimumSat != null) {
+    return context.loc.sendErrorAmountBelowMinimum(error.minimumSat.toString());
   }
-  if (error.isAboveMaximum) {
-    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
+  if (error.maximumSat != null) {
+    return context.loc.sendErrorAmountAboveMaximum(error.maximumSat.toString());
   }
   return context.loc.sendErrorAmountBelowSwapLimits;
 }

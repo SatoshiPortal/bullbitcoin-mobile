@@ -13,6 +13,7 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required Uint8List scriptPubkey,
     required String address,
     required bool isExternalKeyChain,
+    @Default(0) int confirmations,
   }) = BitcoinWalletUtxoModel;
 
   factory WalletUtxoModel.liquid({
@@ -22,6 +23,7 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required String scriptPubkey,
     required String standardAddress,
     required String confidentialAddress,
+    @Default(0) int confirmations,
   }) = LiquidWalletUtxoModel;
 
   const WalletUtxoModel._();

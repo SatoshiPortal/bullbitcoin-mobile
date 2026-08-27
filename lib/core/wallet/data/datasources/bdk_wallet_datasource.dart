@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math';
+
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -13,9 +15,12 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:primitives/primitives.dart' show Outpoint;
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -141,6 +146,67 @@ class BdkWalletDatasource {
     return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
 
+  /// Returns a synchronous `isMine` check bound to a pre-loaded bdk wallet.
+  Future<bool Function(Uint8List)> createIsMineChecker({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    return (Uint8List scriptBytes) =>
+        bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
+  }
+
+  /// Returns a synchronous outpoint-ownership check bound to a pre-loaded bdk
+  /// wallet.
+  ///
+  /// Built from `listOutput()`, not `listUnspent()` or `getUtxo()`: those only
+  /// know the wallet's *unspent* outputs, so an output we owned and already
+  /// spent would answer "not mine". Answering over the full set leaves the
+  /// caller no gap to reason about. The set is a snapshot of the local index at
+  /// creation time — cheap, no network — so bind it per operation rather than
+  /// caching it across syncs.
+  Future<bool Function(Outpoint)> createOutpointIsMineChecker({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final owned = <Outpoint>{
+      for (final output in bdkWallet.listOutput())
+        (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
+    };
+    return owned.contains;
+  }
+
+  /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
+  /// wallet. Uses the same sign options as [signPsbt] — in particular
+  /// `allowAllSighashes: false`, since this signs the wallet's contribution
+  /// to an externally-supplied transaction (a payjoin proposal).
+  Future<String Function(String)> createPsbtSigner({
+    required PrivateBdkWalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+    return (String psbtBase64) {
+      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+      // Unlike signPsbt (the sender signing a complete transaction, where a
+      // non-finalized result is a genuine anomaly), this signs only the
+      // receiver's own contributed input into a multi-party payjoin
+      // proposal — the sender's inputs are still unsigned at this point by
+      // protocol design, so bdk's whole-PSBT finalization check is always
+      // false here. Don't log it: it isn't an error, and logging it on every
+      // successful payjoin would read like one.
+      bdkWallet.sign(
+        psbt: psbt,
+        signOptions: bdk.SignOptions(
+          trustWitnessUtxo: true,
+          assumeHeight: null,
+          allowAllSighashes: false,
+          tryFinalize: true,
+          signWithTapInternalKey: false,
+          allowGrinding: true,
+        ),
+      );
+      return psbt.serialize();
+    };
+  }
+
   Future<bool> isAddressMine(
     String address, {
     required WalletModel wallet,
@@ -196,21 +262,32 @@ class BdkWalletDatasource {
             ),
           )
           .toList();
-      txBuilder.addUtxos(outpoints: selectableOutPoints);
+      // bdk_dart's TxBuilder is immutable — every method returns a NEW
+      // builder instance rather than mutating in place. Discarding the
+      // return value (as this call did before) silently drops the manual
+      // UTXO selection and leaves BDK to pick inputs automatically.
+      txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
     }
 
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
     // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
-    if (!replaceByFee) txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    // Same immutable-builder pitfall as addUtxos above — must reassign.
+    if (!replaceByFee) {
+      txBuilder = txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    }
 
-    if (networkFee.isAbsolute) {
-      txBuilder = txBuilder.feeAbsolute(
-        feeAmount: bdk.Amount.fromSat(satoshi: networkFee.value.toInt()),
-      );
-    } else {
-      txBuilder = txBuilder.feeRate(
-        feeRate: bdk.FeeRate.fromSatPerVb(satVb: networkFee.value.round()),
-      );
+    switch (networkFee) {
+      case AbsoluteFee(:final sats):
+        txBuilder = txBuilder.feeAbsolute(
+          feeAmount: bdk.Amount.fromSat(satoshi: sats),
+        );
+      case RelativeFee(:final satPerKwu):
+        // sat/kwu is BDK's native u64 unit, so this is a zero-rounding
+        // pass-through. Using fromSatPerVb would force an int sat/vByte
+        // and silently drop fractional rates (the bug fixed in #2133).
+        txBuilder = txBuilder.feeRate(
+          feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: satPerKwu),
+        );
     }
 
     // Make sure utxos that are unspendable are not used
@@ -226,14 +303,23 @@ class BdkWalletDatasource {
     // TODO: MOVE THIS TO THE TRANSACTION REPOSITORY, the repository should check the unspendable and spendable inputs
     // and build the transaction accordingly or return an error
     if (unspendableOutPoints != null && unspendableOutPoints.isNotEmpty) {
-      // Check if there are unspents that are not in unspendableOutpoints so a transaction can be built
+      // Check if there are unspents that are not in the unspendable set so a
+      // transaction can be built. Compare by (txId, vout) value, NOT by
+      // bdk.OutPoint identity: OutPoint/Txid are opaque Rust handles with no
+      // `==` override, so a freshly-built OutPoint never equals listUnspent's.
+      // Set.contains on the objects would always miss, leaving the all-frozen
+      // case undetected (BDK would then fail with "insufficient funds" instead
+      // of NoSpendableUtxoException).
       final unspents = bdkWallet.listUnspent();
-      final unspendableOutPointsSet = unspendableOutPoints.toSet();
-      final unspendableUtxos = unspents.where((utxo) {
-        return unspendableOutPointsSet.contains(utxo.outpoint);
+      final unspendableKeys = unspendable!
+          .map((o) => '${o.txId}:${o.vout}')
+          .toSet();
+      final spendableUtxos = unspents.where((utxo) {
+        final key = '${utxo.outpoint.txid}:${utxo.outpoint.vout}';
+        return !unspendableKeys.contains(key);
       }).toList();
 
-      if (unspendableUtxos.length == unspents.length) {
+      if (spendableUtxos.isEmpty) {
         throw NoSpendableUtxoException('All unspents are unspendable');
       }
 
@@ -241,7 +327,18 @@ class BdkWalletDatasource {
     }
 
     // Finish the transaction building process
-    final psbt = txBuilder.finish(wallet: bdkWallet);
+    final bdk.Psbt psbt;
+    try {
+      psbt = txBuilder.finish(wallet: bdkWallet);
+    } on bdk.InsufficientFundsCreateTxException catch (e) {
+      // Mapped here so callers don't depend on a BDK type.
+      throw InsufficientFundsException(e.toString());
+    } on bdk.CoinSelectionCreateTxException catch (e) {
+      // The same situation reported through a different variant: BDK raises
+      // this one when the selection can't cover the outputs plus the fee,
+      // which is what hand-picked coins hit.
+      throw InsufficientFundsException(e.errorMessage);
+    }
 
     return psbt.serialize();
   }
@@ -311,6 +408,9 @@ class BdkWalletDatasource {
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final unspent = bdkWallet.listUnspent();
+    // Chain tip read once from the already-synced wallet (no extra network
+    // calls); reused for every utxo's confirmation count.
+    final tip = bdkWallet.latestCheckpoint().height;
     final utxos = await Future.wait(
       unspent.map((unspent) async {
         final address =
@@ -318,6 +418,16 @@ class BdkWalletDatasource {
               unspent.txout.scriptPubkey.toBytes(),
               isTestnet: wallet.isTestnet,
             );
+        // Confirmation count from the utxo's chain position (mirrors the
+        // handling in getTransactions); unconfirmed utxos report 0.
+        final chainPosition = unspent.chainPosition;
+        final confirmedHeight = chainPosition is bdk.ConfirmedChainPosition
+            ? chainPosition.confirmationBlockTime.blockId.height
+            : null;
+        final confirmations = confirmationsFromTip(
+          tip: tip,
+          height: confirmedHeight,
+        );
         return WalletUtxoModel.bitcoin(
           txId: unspent.outpoint.txid.toString(),
           vout: unspent.outpoint.vout,
@@ -327,6 +437,7 @@ class BdkWalletDatasource {
           // but we return an empty string in case it is for some reason
           address: address ?? '',
           isExternalKeyChain: unspent.keychain == bdk.KeychainKind.external_,
+          confirmations: confirmations,
         );
       }),
     );
@@ -629,13 +740,16 @@ class BdkWalletDatasource {
 
   Future<String> createUnsignedReplaceByFeePsbt({
     required String txid,
-    required double feeRate,
+    required RelativeFee feeRate,
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
+    // BumpFeeTxBuilder is rate-only by BDK design (BIP-125 requires a
+    // higher rate, not absolute, to replace). We hit it with sat/kwu so
+    // sub-1 sat/vByte bumps survive without precision loss.
     final tx = bdk.BumpFeeTxBuilder(
       txid: bdk.Txid.fromString(hex: txid),
-      feeRate: bdk.FeeRate.fromSatPerVb(satVb: feeRate.round()),
+      feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: feeRate.satPerKwu),
     );
     final psbt = tx.finish(wallet: bdkWallet);
     return psbt.serialize();
@@ -718,13 +832,11 @@ Future<void> _performFullScan(_SyncParams params) async {
   );
 
   final bdkWallet = await BdkFacade.createWallet(wallet);
-  final blockchain = bdk.ElectrumClient(
+  final blockchain = _createElectrumClient(
     url: params.electrumUrl,
-    socks5: params.electrumSocks5?.isNotEmpty == true
-        ? params.electrumSocks5
-        : null,
-    timeout: params.electrumTimeout.clamp(0, 255),
-    retry: params.electrumRetry.clamp(0, 255),
+    socks5: params.electrumSocks5,
+    timeout: params.electrumTimeout,
+    retry: params.electrumRetry,
     validateDomain: params.electrumValidateDomain,
   );
   try {
@@ -755,8 +867,12 @@ class UnsupportedBdkNetworkException extends BullException {
   UnsupportedBdkNetworkException(super.message);
 }
 
-class NoSpendableUtxoException extends BullException {
-  NoSpendableUtxoException(super.message);
+/// Confirmation count for an output confirmed at [height], given the current
+/// chain [tip]. A `null` height (unconfirmed) returns 0; the result is clamped
+/// to 0 to guard a reorg / mid-sync window where `tip < height` (D2).
+int confirmationsFromTip({required int tip, required int? height}) {
+  if (height == null) return 0;
+  return max(0, tip - height + 1);
 }
 
 class _DryScanParams {
@@ -795,13 +911,16 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
   final bdkNetwork = params.isTestnet
       ? bdk.Network.testnet
       : bdk.Network.bitcoin;
+  final bdkNetworkKind = params.isTestnet
+      ? bdk.NetworkKind.test
+      : bdk.NetworkKind.main;
 
   final bdkMnemonic = bdk.Mnemonic.fromEntropy(
     entropy: Uint8List.fromList(params.entropy),
   );
 
   final descriptorSecretKey = bdk.DescriptorSecretKey(
-    network: bdkNetwork,
+    networkKind: bdkNetworkKind,
     mnemonic: bdkMnemonic,
     password: params.passphrase,
   );
@@ -811,36 +930,36 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
       bdk.Descriptor.newBip84(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.external_,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
       bdk.Descriptor.newBip84(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.internal,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
     ),
     ScriptType.bip49 => (
       bdk.Descriptor.newBip49(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.external_,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
       bdk.Descriptor.newBip49(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.internal,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
     ),
     ScriptType.bip44 => (
       bdk.Descriptor.newBip44(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.external_,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
       bdk.Descriptor.newBip44(
         secretKey: descriptorSecretKey,
         keychainKind: bdk.KeychainKind.internal,
-        network: bdkNetwork,
+        networkKind: bdkNetworkKind,
       ),
     ),
   };
@@ -853,13 +972,11 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
     lookahead: 0,
   );
 
-  final blockchain = bdk.ElectrumClient(
+  final blockchain = _createElectrumClient(
     url: params.electrumUrl,
-    socks5: params.electrumSocks5?.isNotEmpty == true
-        ? params.electrumSocks5
-        : null,
-    timeout: params.electrumTimeout.clamp(0, 255),
-    retry: params.electrumRetry.clamp(0, 255),
+    socks5: params.electrumSocks5,
+    timeout: params.electrumTimeout,
+    retry: params.electrumRetry,
     validateDomain: params.electrumValidateDomain,
   );
 
@@ -887,3 +1004,32 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
 }
 
 int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);
+
+/// Creates a [bdk.ElectrumClient], retrying once on the rustls CryptoProvider
+/// install race across concurrent isolates (full scan, dry scan, sync).
+/// electrum-client's install_default check+install is not atomic, so two
+/// isolates can both see "not installed" and the loser fails. On retry the
+/// provider is already installed and the check short-circuits.
+bdk.ElectrumClient _createElectrumClient({
+  required String url,
+  required String? socks5,
+  required int timeout,
+  required int retry,
+  required bool validateDomain,
+}) {
+  bdk.ElectrumClient build() => bdk.ElectrumClient(
+    url: url,
+    socks5: socks5?.isNotEmpty == true ? socks5 : null,
+    timeout: timeout.clamp(0, 255),
+    retry: retry.clamp(0, 255),
+    validateDomain: validateDomain,
+  );
+  try {
+    return build();
+  } on bdk.CouldNotCreateConnectionElectrumException catch (e) {
+    if (e.errorMessage.contains('Failed to install CryptoProvider')) {
+      return build();
+    }
+    rethrow;
+  }
+}

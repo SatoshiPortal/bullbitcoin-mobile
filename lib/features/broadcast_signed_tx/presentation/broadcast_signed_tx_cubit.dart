@@ -4,12 +4,13 @@ import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
-import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,15 +19,13 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
 
   BroadcastSignedTxCubit({
-    required BroadcastBitcoinTransactionUsecase
-    broadcastBitcoinTransactionUsecase,
+    required this._broadcastBitcoinTransactionUsecase,
     String? unsignedPsbt,
-  }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+  }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
     try {
-      emit(state.copyWith(error: null));
+      emit(state.copyWith(failure: null));
       if (payload.startsWith('cHN')) {
         // Jade returns a non-finalized PSBT, but BDK doesn't finalize transactions it did not sign itself
         // So here we have to finalize the PSBT with bitcoin_base before we broadcast it
@@ -47,11 +46,8 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
           final tx = psbt.combine(other: signedPsbt);
 
-          // TODO: Check if we can't just do tx.finalize() here to get the finalized psbt
-          final finalPsbt = Psbt.deserialize(tx.extractTx().serialize());
-
-          final builder = PsbtBuilder.fromPsbt(finalPsbt);
-          finalTx = builder.finalizeAll().toHex();
+          tx.finalize();
+          finalTx = hex.encode(tx.extractTx().serialize());
         }
 
         emit(
@@ -68,8 +64,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         emit(state.copyWith(bbqr: bbqr));
         if (tx != null) emit(state.copyWith(transaction: tx));
       }
-    } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+    } catch (e, st) {
+      log.warning('Failed to scan QR transaction', error: e, trace: st);
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -78,12 +75,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   );
 
   Future<void> onNfcScanned(NFCTag tag) async {
-    emit(state.copyWith(error: null));
+    emit(state.copyWith(failure: null));
     try {
       final ndefRecords = await FlutterNfcKit.readNDEFRecords();
 
       if (ndefRecords.isEmpty) {
-        emit(state.copyWith(error: PushTxNoNdefRecordsError()));
+        emit(state.copyWith(failure: const InvalidPushTxFailure()));
         return;
       }
 
@@ -92,31 +89,42 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       final match = uriRegex.firstMatch(payload);
 
       if (match == null) {
-        emit(state.copyWith(error: PushTxNoUriError()));
+        emit(state.copyWith(failure: const InvalidPushTxFailure()));
         return;
       }
 
       final uriString = match.group(1)!;
       final pushTx = Uri.parse(uriString);
+      if (pushTx.scheme != 'https') {
+        throw FormatException('PushTx URI must use HTTPS');
+      }
       final fragmentParams = Uri.splitQueryString(pushTx.fragment);
 
       if (fragmentParams.isEmpty ||
           !fragmentParams.keys.contains('t') ||
           !fragmentParams.keys.contains('c')) {
-        emit(state.copyWith(error: PushTxMissingFragmentParamsError()));
+        emit(state.copyWith(failure: const InvalidPushTxFailure()));
         return;
       }
 
       final txBase64Url = base64Url.normalize(fragmentParams['t']!);
-      final _ = base64Url.normalize(fragmentParams['c']!);
+      final checksum = base64Url.normalize(fragmentParams['c']!);
 
-      final txBytesHex = hex.encode(base64Url.decode(txBase64Url));
+      final txBytes = base64Url.decode(txBase64Url);
+      final expectedChecksum = base64Url.encode(
+        sha256.convert(txBytes).bytes.sublist(0, 4),
+      );
+      if (checksum != expectedChecksum) {
+        throw FormatException('Invalid PushTx checksum');
+      }
+      final txBytesHex = hex.encode(txBytes);
 
       await tryParseTransaction(txBytesHex);
 
       emit(state.copyWith(pushTxUri: pushTx));
-    } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+    } catch (e, st) {
+      log.warning('Failed to scan NFC PushTx tag', error: e, trace: st);
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
@@ -124,15 +132,21 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     if (state.pushTxUri == null) return;
 
     try {
-      await launchUrl(state.pushTxUri!, mode: LaunchMode.externalApplication);
-      emit(state.copyWith(isBroadcasted: true));
-    } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+      final launched = await launchUrl(
+        state.pushTxUri!,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        throw Exception('Unable to open PushTx URI');
+      }
+    } catch (e, st) {
+      log.warning('Failed to open PushTx URI', error: e, trace: st);
+      emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
   }
 
   Future<void> tryParseTransaction(String input) async {
-    emit(state.copyWith(error: null));
+    emit(state.copyWith(failure: null));
     try {
       final tx = await BitcoinTx.fromPsbt(input);
       emit(
@@ -148,8 +162,13 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
             transaction: ParsedTx(format: TxFormat.hex, data: input, tx: tx),
           ),
         );
-      } catch (e) {
-        emit(state.copyWith(error: InvalidTxError()));
+      } catch (e, st) {
+        log.warning(
+          'Pasted input is not a valid PSBT or tx',
+          error: e,
+          trace: st,
+        );
+        emit(state.copyWith(failure: const InvalidTransactionFailure()));
       }
     }
   }
@@ -162,7 +181,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     }
     // Clear any error from a previous failed attempt so the stale message
     // doesn't linger under the spinner while the retry is in flight.
-    emit(state.copyWith(isBroadcasting: true, error: null));
+    emit(state.copyWith(isBroadcasting: true, failure: null));
     try {
       await _broadcastBitcoinTransactionUsecase.execute(
         state.transaction!.data,
@@ -180,7 +199,12 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         error: e,
         trace: st,
       );
-      emit(state.copyWith(error: BroadcastFailedError(), isBroadcasting: false));
+      emit(
+        state.copyWith(
+          failure: const BroadcastFailedFailure(),
+          isBroadcasting: false,
+        ),
+      );
     }
   }
 }

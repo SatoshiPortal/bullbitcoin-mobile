@@ -10,14 +10,15 @@ class RefreshSellOrderUsecase {
   final SettingsRepository _settingsRepository;
 
   RefreshSellOrderUsecase({
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._settingsRepository,
+  });
 
-  Future<SellOrder> execute({required String orderId}) async {
+  Future<SellOrder> execute({
+    required String orderId,
+    required String? expectedDepositAddress,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -25,6 +26,10 @@ class RefreshSellOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
       final order = await repo.refreshSellOrder(orderId);
+      validateSellOrderDepositAddress(
+        order: order,
+        expectedDepositAddress: expectedDepositAddress,
+      );
       return order;
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -33,5 +38,16 @@ class RefreshSellOrderUsecase {
       }
       throw SellError.unexpected(message: '$e');
     }
+  }
+}
+
+void validateSellOrderDepositAddress({
+  required SellOrder order,
+  required String? expectedDepositAddress,
+}) {
+  if (expectedDepositAddress == null ||
+      expectedDepositAddress.isEmpty ||
+      order.toAddress != expectedDepositAddress) {
+    throw const SellError.depositAddressChanged();
   }
 }

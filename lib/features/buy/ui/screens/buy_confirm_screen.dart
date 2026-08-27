@@ -7,12 +7,13 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});
@@ -34,17 +35,26 @@ class BuyConfirmScreen extends StatelessWidget {
     final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(payoutAmountSat)
         : FormatAmount.btc(buyOrder.payoutAmount);
+    // A buy order always carries a rate, but the model no longer guarantees one,
+    // so derive it from the two amounts rather than crash the screen.
     final formattedExchangeRate = FormatAmount.fiat(
-      buyOrder.exchangeRateAmount!,
-      buyOrder.exchangeRateCurrency!,
+      buyOrder.exchangeRateAmount ??
+          (payoutAmountBtc > 0 ? buyOrder.payinAmount / payoutAmountBtc : 0.0),
+      buyOrder.exchangeRateCurrency ?? buyOrder.payinCurrency,
     );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
-    final payoutMethod = selectedWallet == null
+    final payoutWallet = selectedWallet == null
         ? externalBitcoinWalletLabel
         : selectedWallet.displayLabel(context);
+    // With no wallet of ours selected the payout goes to an address the user
+    // pasted, so the order itself is the only source for the network.
+    final payoutMethod = buyPayoutMethodLabel(
+      context,
+      isLiquid: selectedWallet?.network.isLiquid ?? buyOrder.isLiquid,
+    );
 
     final isConfirmingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isConfirmingOrder,
@@ -52,7 +62,6 @@ class BuyConfirmScreen extends StatelessWidget {
     final isRefreshingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isRefreshingOrder,
     );
-
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.buyConfirmTitle)),
       body: SafeArea(
@@ -95,6 +104,10 @@ class BuyConfirmScreen extends StatelessWidget {
                   value: formattedExchangeRate,
                 ),
                 BuyConfirmDetailRow(
+                  label: context.loc.buyConfirmPayoutWallet,
+                  value: payoutWallet,
+                ),
+                BuyConfirmDetailRow(
                   label: context.loc.buyConfirmPayoutMethod,
                   value: payoutMethod,
                 ),
@@ -124,14 +137,15 @@ class BuyConfirmScreen extends StatelessWidget {
                       ),
                     ),
                     const Gap(4),
-                    Countdown(
-                      until: buyOrder.confirmationDeadline,
-                      onTimeout: () {
-                        context.read<BuyBloc>().add(
-                          const BuyEvent.refreshOrder(),
-                        );
-                      },
-                    ),
+                    if (buyOrder.confirmationDeadline case final deadline?)
+                      Countdown(
+                        until: deadline,
+                        onTimeout: () {
+                          context.read<BuyBloc>().add(
+                            const BuyEvent.refreshOrder(),
+                          );
+                        },
+                      ),
                   ],
                 ),
               const Gap(16),

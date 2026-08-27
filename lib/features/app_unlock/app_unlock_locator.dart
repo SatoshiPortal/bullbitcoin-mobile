@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/data/services/exponential_timeout_calculator.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
+import 'package:bb_mobile/features/app_unlock/domain/services/unlock_cooldown.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
@@ -25,6 +26,7 @@ class AppUnlockLocator {
     locator.registerLazySingleton<TimeoutCalculator>(
       () => ExponentialTimeoutCalculator(),
     );
+    locator.registerLazySingleton<UnlockCooldown>(() => UnlockCooldown());
 
     // Use cases
     locator.registerFactory<GetLatestUnlockAttemptUsecase>(
@@ -32,6 +34,7 @@ class AppUnlockLocator {
         failedUnlockAttemptsRepository:
             locator<FailedUnlockAttemptsRepository>(),
         timeoutCalculator: locator<TimeoutCalculator>(),
+        unlockCooldown: locator<UnlockCooldown>(),
       ),
     );
     locator.registerFactory<CheckPinCodeExistsUsecase>(
@@ -45,6 +48,7 @@ class AppUnlockLocator {
             locator<FailedUnlockAttemptsRepository>(),
         pinCodeRepository: locator<PinCodeRepository>(),
         timeoutCalculator: locator<TimeoutCalculator>(),
+        unlockCooldown: locator<UnlockCooldown>(),
       ),
     );
 

@@ -8,10 +8,9 @@ class GetWalletTransactionsUsecase {
   final WalletTransactionRepository _walletTransactionRepository;
 
   GetWalletTransactionsUsecase({
-    required SettingsRepository settingsRepository,
-    required WalletTransactionRepository walletTransactionRepository,
-  }) : _settingsRepository = settingsRepository,
-       _walletTransactionRepository = walletTransactionRepository;
+    required this._settingsRepository,
+    required this._walletTransactionRepository,
+  });
 
   Future<List<WalletTransaction>> execute({
     String? walletId,

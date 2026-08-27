@@ -19,6 +19,9 @@ class AppColors {
   final Color onTertiary;
   final Color tertiaryContainer;
 
+  // Asset colors (same in both themes)
+  final Color bitcoinOrange;
+
   // Surface colors
   final Color background;
   final Color surface;
@@ -44,6 +47,7 @@ class AppColors {
   final Color onError;
   final Color errorContainer;
   final Color success;
+  final Color onSuccess;
   final Color warning;
   final Color warningContainer;
   final Color info;
@@ -74,6 +78,7 @@ class AppColors {
     required this.tertiary,
     required this.onTertiary,
     required this.tertiaryContainer,
+    required this.bitcoinOrange,
     required this.background,
     required this.surface,
     required this.surfaceContainer,
@@ -92,6 +97,7 @@ class AppColors {
     required this.onError,
     required this.errorContainer,
     required this.success,
+    required this.onSuccess,
     required this.warning,
     required this.warningContainer,
     required this.info,
@@ -117,6 +123,7 @@ class AppColors {
     tertiary: Color(0xFFFFCC00),
     onTertiary: Color(0xFFFF9500),
     tertiaryContainer: Color(0xFFFFF4E6),
+    bitcoinOrange: Color(0xFFF7931A),
     background: Color(0xFFF5F5F5),
     surface: Color(0xFFFFFFFF),
     surfaceContainer: Color(0xFFF5F5F5),
@@ -135,6 +142,7 @@ class AppColors {
     onError: Color(0xFFFFFFFF),
     errorContainer: Color(0xFFFFEBEE),
     success: Color(0xFF34C759),
+    onSuccess: Color(0xFFFFFFFF),
     warning: Color(0xFFFB9300),
     warningContainer: Color(0xFFFFF4E6),
     info: Color(0xFF0063F7),
@@ -160,6 +168,7 @@ class AppColors {
     tertiary: Color(0xFFFFCC00),
     onTertiary: Color(0xFFFF9F0A),
     tertiaryContainer: Color(0xFF3D2D00),
+    bitcoinOrange: Color(0xFFF7931A),
     background: Color(0xFF000000),
     surface: Color(0xFF1C1C1E),
     surfaceContainer: Color(0xFF2C2C2E),
@@ -178,6 +187,7 @@ class AppColors {
     onError: Color(0xFFFFFFFF),
     errorContainer: Color(0xFF3D0000),
     success: Color(0xFF32D74B),
+    onSuccess: Color(0xFFFFFFFF),
     warning: Color(0xFFFF9F0A),
     warningContainer: Color(0xFF3D2D00),
     info: Color(0xFF0A84FF),
