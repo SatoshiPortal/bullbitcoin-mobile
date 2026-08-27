@@ -5038,5 +5038,6 @@
   "exchangeSupportChatSendMessageError": "No se pudo enviar tu mensaje. Inténtalo de nuevo.",
   "exchangeSupportChatLoadAttachmentError": "No se pudo abrir el archivo adjunto. Inténtalo de nuevo.",
   "statusCheckNoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
-  "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados"
+  "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados",
+  "onboardingBackupVerificationError": "Tu billetera fue recuperada, pero la verificación de la copia de seguridad no pudo completarse. Inténtalo de nuevo."
 }

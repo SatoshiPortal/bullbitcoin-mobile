@@ -14990,5 +14990,9 @@
   "statusCheckResultsMayBeOutdated": "Results may be outdated",
   "@statusCheckResultsMayBeOutdated": {
     "description": "Short warning shown next to the last-checked time when the most recent service status refresh failed"
+  },
+  "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
+  "@onboardingBackupVerificationError": {
+    "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
   }
 }
