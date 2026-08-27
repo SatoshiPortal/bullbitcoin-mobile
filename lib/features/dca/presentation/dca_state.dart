@@ -2,9 +2,7 @@ part of 'dca_bloc.dart';
 
 @freezed
 sealed class DcaState with _$DcaState {
-  const factory DcaState.initial({
-    GetExchangeUserSummaryException? getUserSummaryException,
-  }) = DcaInitialState;
+  const factory DcaState.initial({DcaFailure? failure}) = DcaInitialState;
   const factory DcaState.buyInput({
     required String? defaultLightningAddress,
     required List<UserBalance> balances,
@@ -27,7 +25,7 @@ sealed class DcaState with _$DcaState {
     String? lightningAddress,
     @Default(false) bool isDefaultLightningAddress,
     @Default(false) bool isConfirmingDca,
-    Object? error,
+    DcaFailure? failure,
   }) = DcaConfirmationState;
   const factory DcaState.success({
     required double amount,
@@ -38,7 +36,7 @@ sealed class DcaState with _$DcaState {
 
   String? get defaultLightningAddress {
     return when(
-      initial: (getUserSummaryException) => null,
+      initial: (failure) => null,
       buyInput: (defaultLightningAddress, balances, currency) =>
           defaultLightningAddress,
       walletSelection:
@@ -55,7 +53,7 @@ sealed class DcaState with _$DcaState {
             lightningAddress,
             isDefaultLightningAddress,
             isConfirmingDca,
-            error,
+            failure,
           ) {
             return defaultLightningAddress;
           },
@@ -91,7 +89,7 @@ sealed class DcaState with _$DcaState {
             lightningAddress,
             isDefaultLightningAddress,
             isConfirmingDca,
-            error,
+            failure,
           ) {
             return DcaBuyInputState(
               defaultLightningAddress: defaultLightningAddress,
@@ -125,7 +123,7 @@ sealed class DcaState with _$DcaState {
             lightningAddress,
             isDefaultLightningAddress,
             isConfirmingDca,
-            error,
+            failure,
           ) {
             return DcaWalletSelectionState(
               defaultLightningAddress: defaultLightningAddress,
@@ -151,7 +149,7 @@ sealed class DcaState with _$DcaState {
             lightningAddress,
             isDefaultLightningAddress,
             isConfirmingDca,
-            error,
+            failure,
           ) {
             return DcaConfirmationState(
               defaultLightningAddress: defaultLightningAddress,
@@ -163,7 +161,7 @@ sealed class DcaState with _$DcaState {
               lightningAddress: lightningAddress,
               isDefaultLightningAddress: isDefaultLightningAddress,
               isConfirmingDca: false,
-              error: null,
+              failure: null,
             );
           },
     );
@@ -171,7 +169,7 @@ sealed class DcaState with _$DcaState {
 
   FiatCurrency? get currency {
     return when(
-      initial: (getUserSummaryException) => null,
+      initial: (failure) => null,
       buyInput: (defaultLightningAddress, balances, currency) => currency,
       walletSelection:
           (defaultLightningAddress, balances, amount, currency, frequency) =>
@@ -187,7 +185,7 @@ sealed class DcaState with _$DcaState {
             lightningAddress,
             isDefaultLightningAddress,
             isConfirmingDca,
-            error,
+            failure,
           ) {
             return currency;
           },
@@ -196,7 +194,7 @@ sealed class DcaState with _$DcaState {
   }
 
   List<UserBalance> get balances => when(
-    initial: (getUserSummaryException) => [],
+    initial: (failure) => [],
     buyInput: (defaultLightningAddress, balances, currency) => balances,
     walletSelection:
         (defaultLightningAddress, balances, amount, currency, frequency) =>
@@ -212,7 +210,7 @@ sealed class DcaState with _$DcaState {
           lightningAddress,
           isDefaultLightningAddress,
           isConfirmingDca,
-          error,
+          failure,
         ) {
           return balances;
         },

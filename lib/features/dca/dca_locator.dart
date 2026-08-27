@@ -25,12 +25,6 @@ class DcaLocator {
         testnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'testnetExchangeUserRepository',
         ),
-        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
       ),
     );
     locator.registerFactory<SetDcaUsecase>(
@@ -44,6 +38,7 @@ class DcaLocator {
         wallet: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         walletAddressRepository: locator<WalletAddressRepository>(),
+        saveUserPreferencesUsecase: locator<SaveUserPreferencesUsecase>(),
       ),
     );
   }
@@ -53,7 +48,6 @@ class DcaLocator {
       () => DcaBloc(
         startDcaUsecase: locator<StartDcaUsecase>(),
         setDcaUsecase: locator<SetDcaUsecase>(),
-        saveUserPreferencesUsecase: locator<SaveUserPreferencesUsecase>(),
       ),
     );
   }
