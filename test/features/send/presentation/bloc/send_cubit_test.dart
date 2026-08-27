@@ -942,6 +942,34 @@ void main() {
       expect(cubit.state.loadingBestWallet, isFalse);
     });
 
+    test('ignores a stale submit result after the input changes', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == 'old-address' ? oldResult.future : newResult.future;
+      });
+
+      cubit.onChangedText('old-address');
+      final oldSubmit = cubit.continueOnAddressConfirmed();
+      cubit.onChangedText('new-address');
+      final newSubmit = cubit.continueOnAddressConfirmed();
+      newResult.completeError(StateError('new input is invalid'));
+      await newSubmit;
+      oldResult.complete(
+        const PaymentRequest.bitcoin(address: 'old', isTestnet: true),
+      );
+      await oldSubmit;
+
+      expect(cubit.state.copiedRawPaymentRequest, 'new-address');
+      expect(cubit.state.paymentRequest, isNull);
+      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+    });
+
     test('uses a scanned payment request without reparsing it', () async {
       const request = PaymentRequest.lnAddress(address: 'user@example.com');
       final cubit = buildCubit();
