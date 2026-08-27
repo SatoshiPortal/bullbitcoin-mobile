@@ -173,7 +173,8 @@ class SendContinueWithAddressButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
     final hasRecipientInput = context.select(
-      (SendCubit cubit) => cubit.state.copiedRawPaymentRequest.trim().isNotEmpty,
+      (SendCubit cubit) =>
+          cubit.state.copiedRawPaymentRequest.trim().isNotEmpty,
     );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,

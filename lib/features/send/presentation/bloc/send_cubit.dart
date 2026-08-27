@@ -317,13 +317,7 @@ class SendCubit extends Cubit<SendState>
         return;
       }
 
-      emit(
-        state.copyWith(
-          loadingBestWallet: true,
-          invoiceHasMrh: false,
-          failure: null,
-        ),
-      );
+      emit(state.copyWith(loadingBestWallet: true, failure: null));
       final PaymentRequest paymentRequest;
       if (cachedPaymentRequest != null) {
         paymentRequest = cachedPaymentRequest;
@@ -335,7 +329,9 @@ class SendCubit extends Cubit<SendState>
         } catch (_) {
           if (inputGeneration != _paymentRequestInputGeneration ||
               state.copiedRawPaymentRequest != rawPaymentRequest) {
-            emit(state.copyWith(loadingBestWallet: false, paymentRequest: null));
+            emit(
+              state.copyWith(loadingBestWallet: false, paymentRequest: null),
+            );
             return;
           }
           emit(
