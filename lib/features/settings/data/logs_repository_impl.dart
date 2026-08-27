@@ -47,9 +47,10 @@ class LogsRepositoryImpl implements LogsRepository {
   @override
   Future<Result<void, SettingsFailure>> share(List<LogEntry> entries) async {
     try {
-      await _shareDatasource.share(
-        entries.map((entry) => entry.rawLine).toList(),
-      );
+      final lines = entries.map((entry) => entry.rawLine).toList();
+      final contextLine = await _loggerDatasource.currentDiagnosticLogLine();
+      if (contextLine != null) lines.insert(0, contextLine);
+      await _shareDatasource.share(lines);
       return const Ok(null);
     } catch (error) {
       return Err(SettingsLogsFailure(error.toString()));
@@ -59,11 +60,10 @@ class LogsRepositoryImpl implements LogsRepository {
   @override
   Future<Result<bool, SettingsFailure>> export(List<LogEntry> entries) async {
     try {
-      return Ok(
-        await _exportDatasource.export(
-          entries.map((entry) => entry.rawLine).toList(),
-        ),
-      );
+      final lines = entries.map((entry) => entry.rawLine).toList();
+      final contextLine = await _loggerDatasource.currentDiagnosticLogLine();
+      if (contextLine != null) lines.insert(0, contextLine);
+      return Ok(await _exportDatasource.export(lines));
     } catch (error) {
       return Err(SettingsLogsFailure(error.toString()));
     }

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show InternetAddress, Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/diagnostic_context.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 
@@ -37,6 +38,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:bull_tor/tor.dart' as bull_tor;
 import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -62,6 +64,7 @@ void resumePayjoinsOnAppResume(
 }
 
 class Bull {
+  static final _diagnosticRuntime = DiagnosticRuntimeContext();
   static Future<void> init({String? payjoinDatabasePath}) async {
     await initLogs();
     // The pre-init wizard writes consent to prefs via the bloc's
@@ -82,6 +85,10 @@ class Bull {
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
     final settings = locator<SettingsRepository>();
+    _diagnosticRuntime.setTorLoader(
+      () => _loadTorContext(settings, locator<bull_tor.Tor>()),
+    );
+    await log.refreshDiagnosticContext();
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     if (Platform.isAndroid || Platform.isIOS) {
       await initWorkmanager();
@@ -115,7 +122,16 @@ class Bull {
   /// periodic task).
   static Future<void> initLogs({bool background = false}) async {
     final logDirectory = await getApplicationDocumentsDirectory();
-    log = Logger.replace(directory: logDirectory, background: background);
+    final diagnosticContextProvider = background
+        ? null
+        : DiagnosticContextProvider(
+            PlatformDiagnosticContextSource(runtime: _diagnosticRuntime),
+          );
+    log = Logger.replace(
+      directory: logDirectory,
+      background: background,
+      diagnosticContextLoader: diagnosticContextProvider?.load,
+    );
     await log.ensureLogsExist();
     if (!background) {
       // Cold-start prune for the FG file. `Logger.prune()` is
@@ -133,6 +149,61 @@ class Bull {
       // `_enqueue` and is a no-op if the file is small.
       unawaited(log.prune());
     }
+  }
+
+  static Future<DiagnosticTorContext> _loadTorContext(
+    SettingsRepository settings,
+    bull_tor.Tor client,
+  ) async {
+    final saved = await settings.fetch();
+    if (saved.useTorProxy) {
+      final state = await client.external.verify(
+        bull_tor.TorProxyEndpoint(
+          host: InternetAddress.loopbackIPv4.address,
+          port: saved.torProxyPort,
+        ),
+      );
+      return _diagnosticTorState(state, socksProxyConfigured: true);
+    }
+    return _diagnosticTorState(
+      client.embedded.current,
+      socksProxyConfigured: false,
+    );
+  }
+
+  static DiagnosticTorContext _diagnosticTorState(
+    bull_tor.TorConnectionState state, {
+    required bool socksProxyConfigured,
+  }) {
+    final source = state.source?.name;
+    final transport = switch (state) {
+      bull_tor.TorConnecting(:final transport) => transport?.name,
+      bull_tor.TorReady(:final route) => route.transport?.name,
+      _ => null,
+    };
+    final progress = switch (state) {
+      bull_tor.TorConnecting(:final progress?) =>
+        (progress * 100).round().clamp(0, 100),
+      _ => null,
+    };
+    final diagnostic = switch (state) {
+      bull_tor.TorConnecting(:final diagnostic) => diagnostic?.name,
+      _ => null,
+    };
+    return DiagnosticTorContext(
+      source: source,
+      state: switch (state) {
+        bull_tor.TorUninitialized() => 'uninitialized',
+        bull_tor.TorStopped() => 'stopped',
+        bull_tor.TorConnecting() => 'connecting',
+        bull_tor.TorReady() => 'ready',
+        bull_tor.TorUnavailable() => 'unavailable',
+      },
+      transport: transport,
+      progressPercent: progress,
+      diagnostic: diagnostic,
+      socksProxyConfigured: socksProxyConfigured,
+    );
   }
 
   static Future<void> initLocator({String? payjoinDatabasePath}) async {

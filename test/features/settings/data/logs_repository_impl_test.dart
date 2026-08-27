@@ -32,23 +32,60 @@ void main() {
       expect(exported, [newest, oldest]);
     },
   );
+
+  test('prepends a fresh diagnostic context to share and export', () async {
+    const rawLine = '2026-01-02T00:00:00.000Z\tWARNING\tnew';
+    const contextLine =
+        '2026-01-02T00:00:01.000Z\tCONFIG\t{"context_version":1}';
+    List<String>? shared;
+    List<String>? exported;
+    final repository = LogsRepositoryImpl(
+      _FakeLoggerDatasource(const [], contextLine: contextLine),
+      _FakeShareDatasource((lines) async => shared = lines),
+      _FakeExportDatasource((lines) async {
+        exported = lines;
+        return true;
+      }),
+    );
+    final entry = LogEntry(
+      rawLine: rawLine,
+      timestamp: DateTime(2026, 1, 2),
+      rawLevel: 'WARNING',
+      severity: LogSeverity.warning,
+      displayText: 'new',
+    );
+
+    await repository.share([entry]);
+    await repository.export([entry]);
+
+    expect(shared, [contextLine, rawLine]);
+    expect(exported, [contextLine, rawLine]);
+  });
 }
 
 class _FakeLoggerDatasource implements LoggerLogsDatasource {
   final List<String> lines;
+  final String? contextLine;
 
-  _FakeLoggerDatasource(this.lines);
+  _FakeLoggerDatasource(this.lines, {this.contextLine});
 
   @override
   Future<List<String>> read() async => lines;
 
   @override
   Future<void> delete() async {}
+
+  @override
+  Future<String?> currentDiagnosticLogLine() async => contextLine;
 }
 
 class _FakeShareDatasource implements ShareLogsDatasource {
+  final Future<void> Function(List<String>)? callback;
+
+  _FakeShareDatasource([this.callback]);
+
   @override
-  Future<void> share(List<String> lines) async {}
+  Future<void> share(List<String> lines) async => callback?.call(lines);
 }
 
 class _FakeExportDatasource implements ExportLogsDatasource {

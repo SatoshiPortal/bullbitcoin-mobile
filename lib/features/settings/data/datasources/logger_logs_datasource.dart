@@ -4,6 +4,8 @@ abstract interface class LoggerLogsDatasource {
   Future<List<String>> read();
 
   Future<void> delete();
+
+  Future<String?> currentDiagnosticLogLine();
 }
 
 class LoggerLogsDatasourceImpl implements LoggerLogsDatasource {
@@ -16,4 +18,8 @@ class LoggerLogsDatasourceImpl implements LoggerLogsDatasource {
 
   @override
   Future<void> delete() => _logger.deleteLogs();
+
+  @override
+  Future<String?> currentDiagnosticLogLine() =>
+      _logger.currentDiagnosticLogLine();
 }
