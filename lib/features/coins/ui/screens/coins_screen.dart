@@ -64,6 +64,10 @@ class CoinsScreen extends StatelessWidget {
                   ),
                   anyUnfrozen: state.anySelectedUnfrozen,
                   anyFrozen: state.anySelectedFrozen,
+                  onSweep: () => context.pop({
+                    for (final utxo in state.selectedUtxos)
+                      (txId: utxo.txId, vout: utxo.vout),
+                  }),
                   onFreeze: () => _confirmFreeze(context, state),
                   onUnfreeze: () => _unfreeze(
                     context,

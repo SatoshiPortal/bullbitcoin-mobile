@@ -36,6 +36,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -105,8 +106,9 @@ void main() {
 
   const utxoLargeAmountSat = 200000;
   const utxoSmallAmountSat = 30000;
-  // Both UTXOs share utxoLargeTxId (same funding tx); only vout differs.
+  // All test UTXOs share utxoLargeTxId (same funding tx); only vout differs.
   const utxoSmallVout = 1;
+  const utxoOtherAmountSat = 50000;
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('bdk_wallet_datasource_');
@@ -156,10 +158,14 @@ void main() {
     final addr1 = wallet.revealNextAddress(
       keychain: bdk.KeychainKind.external_,
     );
+    final addr2 = wallet.revealNextAddress(
+      keychain: bdk.KeychainKind.external_,
+    );
 
     final fundingTxBytes = _buildFundingTx([
       (script: addr0.address.scriptPubkey(), amountSat: utxoLargeAmountSat),
       (script: addr1.address.scriptPubkey(), amountSat: utxoSmallAmountSat),
+      (script: addr2.address.scriptPubkey(), amountSat: utxoOtherAmountSat),
     ]);
     final fundingTx = bdk.Transaction(transactionBytes: fundingTxBytes);
     final fundingTxid = fundingTx.computeTxid().toString();
@@ -179,8 +185,8 @@ void main() {
     final utxos = wallet.listUnspent();
     expect(
       utxos.length,
-      2,
-      reason: 'test setup: expected exactly 2 synthetic UTXOs after funding',
+      3,
+      reason: 'test setup: expected exactly 3 synthetic UTXOs after funding',
     );
 
     utxoLargeTxId = fundingTxid;
@@ -347,7 +353,11 @@ void main() {
         datasource.buildPsbt(
           wallet: walletModel,
           address: _externalTestnetAddress,
-          amountSat: utxoLargeAmountSat + utxoSmallAmountSat + 10000,
+          amountSat:
+              utxoLargeAmountSat +
+              utxoSmallAmountSat +
+              utxoOtherAmountSat +
+              10000,
           networkFee: const NetworkFee.relativeSatPerKwu(1000),
         ),
         throwsA(isA<InsufficientFundsException>()),
@@ -355,9 +365,9 @@ void main() {
     },
   );
 
-  // The amount fits the picked coin but not the fee. The large coin must be
-  // unspendable too: `addUtxos` only makes a coin required, so BDK would
-  // otherwise top the transaction up from it and never fall short.
+  // The amount fits the picked coin but not the fee. The other coins must be
+  // unspendable: `addUtxos` only makes a coin required, so BDK would otherwise
+  // top the transaction up from them and never fall short.
   test(
     'buildPsbt reports a fee-only shortfall as insufficient funds',
     () async {
@@ -379,9 +389,98 @@ void main() {
               isExternalKeyChain: true,
             ),
           ],
-          unspendable: [(txId: utxoLargeTxId, vout: utxoLargeVout)],
+          unspendable: [
+            (txId: utxoLargeTxId, vout: utxoLargeVout),
+            (txId: utxoLargeTxId, vout: 2),
+          ],
         ),
         throwsA(isA<InsufficientFundsException>()),
+      );
+    },
+  );
+
+  test(
+    'buildPsbt drains exactly the manually selected UTXOs to one recipient',
+    () async {
+      const feeSat = 1000;
+      final datasource = BdkWalletDatasource();
+
+      final psbt = await datasource.buildPsbt(
+        wallet: walletModel,
+        address: _externalTestnetAddress,
+        networkFee: const NetworkFee.absolute(feeSat),
+        drain: true,
+        selectedOnly: true,
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoLargeVout,
+            amountSat: BigInt.from(utxoLargeAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: 1,
+            amountSat: BigInt.from(utxoSmallAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+      );
+
+      final parsed = bdk.Psbt(psbtBase64: psbt);
+      final tx = parsed.extractTx();
+      final inputs = tx.input();
+      final outputs = tx.output();
+      final recipientScript = bdk.Address(
+        address: _externalTestnetAddress,
+        network: bdk.Network.testnet,
+      ).scriptPubkey();
+
+      expect(inputs, hasLength(2));
+      expect(
+        {
+          for (final input in inputs)
+            (
+              txId: input.previousOutput.txid.toString(),
+              vout: input.previousOutput.vout,
+            ),
+        },
+        {
+          (txId: utxoLargeTxId, vout: utxoLargeVout),
+          (txId: utxoLargeTxId, vout: 1),
+        },
+      );
+      expect(outputs, hasLength(1));
+      expect(
+        outputs.single.value.toSat(),
+        utxoLargeAmountSat + utxoSmallAmountSat - feeSat,
+      );
+      expect(outputs.single.scriptPubkey.toBytes(), recipientScript.toBytes());
+
+      tx.dispose();
+      parsed.dispose();
+    },
+  );
+
+  test(
+    'buildPsbt never treats an empty exact selection as a wallet drain',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          address: _externalTestnetAddress,
+          networkFee: const NetworkFee.absolute(1000),
+          drain: true,
+          selectedOnly: true,
+          selected: const [],
+        ),
+        throwsA(isA<SelectedInputsUnavailableException>()),
       );
     },
   );

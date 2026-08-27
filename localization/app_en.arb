@@ -15449,5 +15449,13 @@
   "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network|socks5|anonymous",
   "@settingsSearchTorKeywords": {
     "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
+  },
+  "coinsSweep": "Sweep",
+  "@coinsSweep": {
+    "description": "Action label for spending every satoshi from the selected coins to one recipient."
+  },
+  "coinsSweepTitle": "Sweep coins",
+  "@coinsSweepTitle": {
+    "description": "Title shown throughout the selected-coins sweep flow."
   }
 }

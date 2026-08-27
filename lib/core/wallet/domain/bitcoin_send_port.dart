@@ -10,6 +10,7 @@ abstract interface class BitcoinSendPort {
     bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
+    bool selectedOnly = false,
     bool? replaceByFee,
   });
 
