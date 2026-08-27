@@ -266,11 +266,8 @@ abstract class Wallet with _$Wallet {
 
   bool get isStandardLocalSingleSignatureWallet {
     final signer = singleSigner;
-    final key = singleDescriptorKey;
-    final type = scriptType;
     return signer?.signer == SignerEntity.local &&
-        isStandardSingleSignatureWallet &&
-        type?.standardAccount(key?.derivationPath, network) == 0;
+        isStandardSingleSignatureWallet;
   }
 
   bool get supportsLegacySend => isLiquid
@@ -278,7 +275,7 @@ abstract class Wallet with _$Wallet {
       : isStandardLocalSingleSignatureWallet ||
             (signsRemotely && isStandardSingleSignatureWallet);
 
-  bool get signsRemotely => isWatchSigner;
+  bool get signsRemotely => hasRemoteSigner;
   bool get isHardwareWallet => signerDevice != null;
   bool get isBitcoinHardwareWallet => isBitcoin && isHardwareWallet;
   bool get hasLocalSigner =>

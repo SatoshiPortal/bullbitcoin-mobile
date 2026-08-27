@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
@@ -25,8 +25,7 @@ class _MockPrepareBitcoinSend extends Mock
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockBitcoinSigningPort extends Mock implements BitcoinSigningPort {}
 
 class _MockBroadcastBitcoin extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
@@ -177,13 +176,13 @@ void main() {
     test(
       'a Bitcoin signing failure never carries the descriptor out',
       () async {
-        final bitcoinWallet = _MockBitcoinWalletRepository();
+        final bitcoinWallet = _MockBitcoinSigningPort();
         when(
           () => bitcoinWallet.signPsbt(any(), walletId: any(named: 'walletId')),
         ).thenThrow(Exception(_rawReason));
 
         final result = await SignPayPayinUsecase(
-          bitcoinWalletRepository: bitcoinWallet,
+          bitcoinSigningPort: bitcoinWallet,
           liquidWalletRepository: _MockLiquidWalletRepository(),
         ).bitcoin(psbt: 'psbt', walletId: 'wallet-1');
 
@@ -205,7 +204,7 @@ void main() {
       ).thenThrow(Exception(_rawReason));
 
       final result = await SignPayPayinUsecase(
-        bitcoinWalletRepository: _MockBitcoinWalletRepository(),
+        bitcoinSigningPort: _MockBitcoinSigningPort(),
         liquidWalletRepository: liquidWallet,
       ).liquid(pset: 'pset', walletId: 'wallet-1');
 

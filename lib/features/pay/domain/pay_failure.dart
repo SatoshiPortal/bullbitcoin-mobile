@@ -78,3 +78,15 @@ final class PayFeesUnavailableFailure extends PayFailure {
 final class PayUnexpectedFailure extends PayFailure {
   const PayUnexpectedFailure([super.logMessage]);
 }
+
+final class PayTransactionSigningFailedFailure extends PayFailure {
+  const PayTransactionSigningFailedFailure();
+}
+
+final class PaySelectedCoinsUnavailableFailure extends PayFailure {
+  const PaySelectedCoinsUnavailableFailure();
+}
+
+final class PaySelectedCoinsInsufficientFailure extends PayFailure {
+  const PaySelectedCoinsInsufficientFailure();
+}

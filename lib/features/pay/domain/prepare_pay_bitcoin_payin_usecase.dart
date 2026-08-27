@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -48,6 +49,13 @@ class PreparePayBitcoinPayinUsecase {
         txSize: prepared.txSize,
         isToSelf: prepared.isToSelf,
       ));
+    } on BitcoinCoinSelectionException catch (e) {
+      return Err(switch (e) {
+        SelectedBitcoinCoinsUnavailableException() =>
+          const PaySelectedCoinsUnavailableFailure(),
+        SelectedBitcoinCoinsInsufficientException() =>
+          const PaySelectedCoinsInsufficientFailure(),
+      });
     } on InsufficientFundsException catch (e, st) {
       // PrepareBitcoinSendUsecase rethrows this rather than wrapping it,
       // precisely so the caller can name it. The estimate's balance check

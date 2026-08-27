@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -7,11 +7,11 @@ import 'package:primitives/primitives.dart';
 
 /// Signs the sell payin on either network.
 class SignSellPayinUsecase {
-  final BitcoinWalletRepository _bitcoinWalletRepository;
+  final BitcoinSigningPort _bitcoinSigningPort;
   final LiquidWalletRepository _liquidWalletRepository;
 
   const SignSellPayinUsecase({
-    required this._bitcoinWalletRepository,
+    required this._bitcoinSigningPort,
     required this._liquidWalletRepository,
   });
 
@@ -22,12 +22,25 @@ class SignSellPayinUsecase {
     required String walletId,
   }) async {
     try {
-      final signedPsbt = await _bitcoinWalletRepository.signPsbt(
+      final signingResult = await _bitcoinSigningPort.signPsbt(
         psbt,
         walletId: walletId,
       );
-      final txSize = await _bitcoinWalletRepository.getTxSize(psbt: signedPsbt);
-      return Ok((signedPsbt: signedPsbt, txSize: txSize));
+      final ({String psbt, bool isFinalized}) signed;
+      switch (signingResult) {
+        case Ok(:final value):
+          signed = value;
+        case Err(:final failure):
+          return Err(SellUnexpectedFailure(failure.logMessage));
+      }
+      if (!signed.isFinalized) {
+        return const Err(SellUnexpectedFailure('Bitcoin signing incomplete'));
+      }
+      final txSize = await _bitcoinSigningPort.getTxSize(
+        psbt: signed.psbt,
+        walletId: walletId,
+      );
+      return Ok((signedPsbt: signed.psbt, txSize: txSize));
     } catch (e, st) {
       log.severe(
         message: 'Failed to sign the Bitcoin sell payin',

@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
@@ -90,9 +91,7 @@ class SendLocator {
       ),
     );
     locator.registerFactory<SignBitcoinTxUsecase>(
-      () => SignBitcoinTxUsecase(
-        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
-      ),
+      () => SignBitcoinTxUsecase(locator<BitcoinSigningPort>()),
     );
     locator.registerFactory<CreateSendSwapUsecase>(
       () => CreateSendSwapUsecase(

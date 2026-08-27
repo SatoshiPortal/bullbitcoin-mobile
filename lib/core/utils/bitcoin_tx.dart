@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bitcoin_base/bitcoin_base.dart';
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -59,15 +60,16 @@ class BitcoinTx {
   }
 
   static Future<BitcoinTx> fromPsbt(String psbtBase64) async {
+    final normalized = normalizeBitcoinPsbt(psbtBase64);
     // BDK extraction needs input metadata to compute fees, so finalized
     // PSBTs stripped of it must fall back to the bitcoin_base path, which
     // does not require that metadata (issue #2654).
     try {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+      final psbt = bdk.Psbt(psbtBase64: normalized);
       final txBytes = psbt.extractTx().serialize();
       return fromBytes(txBytes);
     } catch (_) {
-      final psbt = Psbt.fromBase64(psbtBase64);
+      final psbt = Psbt.fromBase64(normalized);
       final txBytes = PsbtBuilder.fromPsbt(psbt).finalizeAll().toBytes();
       return fromBytes(txBytes);
     }
