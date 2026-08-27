@@ -489,10 +489,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "dcaActivate": "تفعيل الشراء المتكرر",
-  "@dcaActivate": {
-    "description": "Label to activate DCA"
-  },
   "labelInputLabel": "Label",
   "@labelInputLabel": {
     "description": "Label for wallet label input field"
@@ -571,15 +567,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "Fastest - only for transactions below 30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
-  },
-  "dcaConfirmError": "حدث شيء خاطئ: {error}",
-  "@dcaConfirmError": {
-    "description": "DCA confirmation error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLiquid": "شبكة السائل",
   "@exchangeDcaNetworkLiquid": {
@@ -662,10 +649,6 @@
   "walletAddressTypeNestedSegwit": "Nested Segwit",
   "@walletAddressTypeNestedSegwit": {
     "description": "Address type for BIP49 wallets"
-  },
-  "dcaConfirmDeactivate": "نعم، إبطال مفعوله",
-  "@dcaConfirmDeactivate": {
-    "description": "Confirm deactivation button"
   },
   "exchangeLandingFeature2": "DCA, Limit orders and Auto-buy",
   "@exchangeLandingFeature2": {
@@ -1011,10 +994,6 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "dcaUnableToGetConfig": "غير قادر على الحصول على تشكيلة DCA",
-  "@dcaUnableToGetConfig": {
-    "description": "Error message when DCA config unavailable"
-  },
   "exchangeAuthLoginFailed": "Login Failed",
   "@exchangeAuthLoginFailed": {
     "description": "Login failure dialog title"
@@ -1202,10 +1181,6 @@
   "buyConfirmPayoutMethod": "طريقة الدفع",
   "@buyConfirmPayoutMethod": {
     "description": "Field label for payout method"
-  },
-  "dcaCancelButton": "إلغاء",
-  "@dcaCancelButton": {
-    "description": "Cancel button in DCA dialog"
   },
   "durationMinutes": "{minutes}دقائق",
   "@durationMinutes": {
@@ -1522,10 +1497,6 @@
   "@sellKYCApproved": {
     "description": "Status when verification complete"
   },
-  "dcaFrequencyMonthly": "الشهر",
-  "@dcaFrequencyMonthly": {
-    "description": "Monthly DCA frequency"
-  },
   "buyKYCLevel": "KYC الرتبة",
   "@buyKYCLevel": {
     "description": "Label for verification tier"
@@ -1676,10 +1647,6 @@
   "@bitboxErrorOperationCancelled": {
     "description": "Error when BitBox operation is cancelled"
   },
-  "dcaOrderTypeLabel": "نوع النظام",
-  "@dcaOrderTypeLabel": {
-    "description": "Label for order type detail row"
-  },
   "withdrawConfirmCard": "Card",
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
@@ -1770,10 +1737,6 @@
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
   },
-  "dcaAddressBitcoin": "عنوان بيتكوين",
-  "@dcaAddressBitcoin": {
-    "description": "Bitcoin address label"
-  },
   "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
@@ -1823,10 +1786,6 @@
   "bip85NextMnemonic": "التالي",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
-  },
-  "dcaFundAccountButton": "صندوق حسابك",
-  "@dcaFundAccountButton": {
-    "description": "Button label to navigate to funding screen"
   },
   "transactionFilterAll": "كل شيء",
   "@transactionFilterAll": {
@@ -2708,10 +2667,6 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "dcaFrequencyHourly": "ساعة",
-  "@dcaFrequencyHourly": {
-    "description": "Hourly DCA frequency"
-  },
   "swapValidationSelectFromWallet": "يرجى اختيار محفظة لنقل من",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
@@ -3238,10 +3193,6 @@
   "@transactionStatusConfirmed": {
     "description": "Status label for confirmed transactions"
   },
-  "dcaFrequencyDaily": "اليوم",
-  "@dcaFrequencyDaily": {
-    "description": "Daily DCA frequency"
-  },
   "transactionLabelSendAmount": "إرسال",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3314,10 +3265,6 @@
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
-  "dcaViewSettings": "بيئات اليقظة",
-  "@dcaViewSettings": {
-    "description": "Link to view DCA settings"
-  },
   "withdrawAmountContinue": "استمر",
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
@@ -3357,10 +3304,6 @@
   "payWhichWalletQuestion": "أي محفظة تريد أن تدفعها؟?",
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
-  },
-  "dcaHideSettings": "أماكن الاختباء",
-  "@dcaHideSettings": {
-    "description": "Link to hide DCA settings"
   },
   "exchangeDcaCancelDialogMessage": "خطّة شراء (بيتكوين) المتكررة ستتوقّف، والمشتريات المقرّرة ستنتهي للراحة، عليك أن تضع خطة جديدة.",
   "@exchangeDcaCancelDialogMessage": {
@@ -3518,10 +3461,6 @@
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
   },
-  "dcaInsufficientBalanceDescription": "ليس لديك توازن كافي لخلق هذا النظام.",
-  "@dcaInsufficientBalanceDescription": {
-    "description": "InfoCard description explaining insufficient balance error"
-  },
   "pinButtonContinue": "استمر",
   "@pinButtonContinue": {
     "description": "Button label to proceed after entering new PIN"
@@ -3609,21 +3548,6 @@
   "allSeedViewErrorDelete": "فشل حذف البذرة. يرجى المحاولة مرة أخرى.",
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
-  },
-  "dcaBuyingMessage": "أنت تشتري {amount} كل {frequency} عبر {network} طالما هناك أموال في حسابك.",
-  "@dcaBuyingMessage": {
-    "description": "DCA status message",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
   },
   "exchangeCurrencyDropdownValidation": "يرجى اختيار العملة",
   "@exchangeCurrencyDropdownValidation": {
@@ -4026,10 +3950,6 @@
   "@payFromWallet": {
     "description": "Label showing source wallet"
   },
-  "dcaConfirmRecurringBuyTitle": "إعادة تأكيد اشتري",
-  "@dcaConfirmRecurringBuyTitle": {
-    "description": "AppBar title for confirmation screen"
-  },
   "transactionSwapBitcoinToLiquid": "BTC - L-BTC",
   "@transactionSwapBitcoinToLiquid": {
     "description": "Label for Bitcoin to Liquid swap"
@@ -4292,10 +4212,6 @@
         "type": "String"
       }
     }
-  },
-  "dcaFrequencyWeekly": "الأسبوع",
-  "@dcaFrequencyWeekly": {
-    "description": "Weekly DCA frequency"
   },
   "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
   "@fundExchangeMethodRegularSepaSubtitle": {
@@ -4595,10 +4511,6 @@
   "importWatchOnlyXpub": "xpub",
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
-  },
-  "dcaInsufficientBalanceTitle": "الرصيد غير الكافي",
-  "@dcaInsufficientBalanceTitle": {
-    "description": "InfoCard title when user has insufficient funds"
   },
   "backupImportanceMessage": "بدون دعم، ستخسر في النهاية الوصول إلى مالك من المهم للغاية أن نقدم الدعم.",
   "@backupImportanceMessage": {
@@ -5103,10 +5015,6 @@
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
   },
-  "dcaContinueButton": "استمر",
-  "@dcaContinueButton": {
-    "description": "Button label to proceed to next step in DCA flow"
-  },
   "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
@@ -5242,10 +5150,6 @@
   "@torSettingsDescConnecting": {
     "description": "Description when Tor is connecting"
   },
-  "dcaConfirmationDescription": "وستوضع أوامر الشراء تلقائياً في هذه الأماكن. يمكنك تعطيلها في أي وقت.",
-  "@dcaConfirmationDescription": {
-    "description": "Explanation text at the top of confirmation screen"
-  },
   "exchangeAccountInfoVerificationNotVerified": "لم يتم التحقق منها",
   "@exchangeAccountInfoVerificationNotVerified": {
     "description": "Status label for not verified verification level"
@@ -5366,10 +5270,6 @@
   "recoverbullSelectAppleIcloud": "Apple iCloud",
   "@recoverbullSelectAppleIcloud": {
     "description": "Name label for Apple iCloud backup provider option"
-  },
-  "dcaAddressLightning": "عنوان البرق",
-  "@dcaAddressLightning": {
-    "description": "Lightning address label"
   },
   "keystoneStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
   "@keystoneStep13": {
@@ -5708,17 +5608,9 @@
   "@recoverbullPassword": {
     "description": "Label for password input type"
   },
-  "dcaNetworkLiquid": "شبكة السائل",
-  "@dcaNetworkLiquid": {
-    "description": "Liquid network label for DCA"
-  },
   "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
   "@fundExchangeMethodSinpeTransfer": {
     "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "dcaCancelTitle": "(ألغى (بيتكوين) المُتكرر؟?",
-  "@dcaCancelTitle": {
-    "description": "Dialog title for DCA cancellation"
   },
   "payFromAnotherWallet": "دفع محفظة بيتكوين أخرى",
   "@payFromAnotherWallet": {
@@ -5885,10 +5777,6 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "dcaNetworkBitcoin": "شبكة بيتكوين",
-  "@dcaNetworkBitcoin": {
-    "description": "Bitcoin network label for DCA"
-  },
   "swapTransferRefundInProgressMessage": "كان هناك خطأ في التحويل إسترجاع أموالك قيد التنفيذ.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
@@ -5978,10 +5866,6 @@
   "buyConfirmationTimeValue": "10دقائق",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
-  },
-  "dcaOrderTypeValue": "الشراء المتكرر",
-  "@dcaOrderTypeValue": {
-    "description": "Value for order type"
   },
   "ledgerConnectingMessage": "التواصل مع {deviceName}",
   "@ledgerConnectingMessage": {
@@ -6262,10 +6146,6 @@
   "@coreScreensServerNetworkFeesLabel": {
     "description": "Label for server network fees field"
   },
-  "dcaFrequencyValidationError": "يرجى اختيار التردد",
-  "@dcaFrequencyValidationError": {
-    "description": "Form validation error when no frequency is selected"
-  },
   "payAllCountries": "جميع البلدان",
   "@payAllCountries": {
     "description": "Option for all countries filter"
@@ -6500,10 +6380,6 @@
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "dcaNetworkLightning": "شبكة البرق",
-  "@dcaNetworkLightning": {
-    "description": "Lightning network label for DCA"
-  },
   "backupKeyExampleWarning": "على سبيل المثال، إذا استخدمت \"جوجل درايف\" لملفك الإحتياطي لا تستخدم \"جوجل درايف\" لمفتاحك الإحتياطي.",
   "@backupKeyExampleWarning": {
     "description": "Example warning about not using same cloud provider"
@@ -6653,15 +6529,6 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "dcaPaymentMethodValue": "{currency} الرصيد",
-  "@dcaPaymentMethodValue": {
-    "description": "Value for payment method with currency code placeholder",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "النقل المنجز",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
@@ -6682,10 +6549,6 @@
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Label for recipient name in SINPE transfer"
   },
-  "dcaScheduleDescription": "وستوضع عمليات شراء البتروجين تلقائياً وفقاً لهذا الجدول الزمني.",
-  "@dcaScheduleDescription": {
-    "description": "Explanation text at the top of DCA setup form"
-  },
   "keystoneInstructionsTitle": "Keystone Instructions",
   "@keystoneInstructionsTitle": {
     "description": "Title for Keystone signing instructions modal"
@@ -6697,10 +6560,6 @@
   "physicalBackupDescription": "أكتب 12 كلمة على قطعة من الورق أبقيهم بأمان وتأكدي من عدم فقدانهم.",
   "@physicalBackupDescription": {
     "description": "Description of physical backup method"
-  },
-  "dcaConfirmButton": "استمر",
-  "@dcaConfirmButton": {
-    "description": "Button label to confirm and activate DCA"
   },
   "dcaBackToHomeButton": "العودة إلى المنزل",
   "@dcaBackToHomeButton": {
@@ -6779,10 +6638,6 @@
   "pinStatusProcessing": "المعالجة",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "dcaCancelMessage": "خطّة شراء (بيتكوين) المتكررة ستتوقّف، والمشتريات المقرّرة ستنتهي للراحة، عليك أن تضع خطة جديدة.",
-  "@dcaCancelMessage": {
-    "description": "Dialog message for DCA cancellation"
   },
   "fundExchangeHelpPaymentDescription": "رمز نقلك.",
   "@fundExchangeHelpPaymentDescription": {
@@ -7183,10 +7038,6 @@
   "testBackupCreatedAt": "أنشئت في:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
-  },
-  "dcaSetRecurringBuyTitle": "شراء متكررة",
-  "@dcaSetRecurringBuyTitle": {
-    "description": "AppBar title for the main DCA setup screen"
   },
   "psbtFlowSignTransactionOnDevice": "اضغط على الأزرار لتوقيع الصفقة على {device} الخاص بك.",
   "@psbtFlowSignTransactionOnDevice": {
@@ -8229,10 +8080,6 @@
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
-  "dcaAmountLabel": "المبلغ",
-  "@dcaAmountLabel": {
-    "description": "Label for amount detail row"
-  },
   "walletNetworkLiquid": "شبكة السائل",
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
@@ -8308,10 +8155,6 @@
   "recoverbullTestSuccessDescription": "أنت قادر على استعادة الدخول إلى محفظة بيتكوين المفقودة",
   "@recoverbullTestSuccessDescription": {
     "description": "Description shown after successful recovery test"
-  },
-  "dcaDeactivate": "Deactivate Recurring Buy",
-  "@dcaDeactivate": {
-    "description": "Label to deactivate DCA"
   },
   "exchangeAuthLoginFailedTitle": "Login Failed",
   "@exchangeAuthLoginFailedTitle": {
@@ -8444,15 +8287,6 @@
   "payPayeeAccountNumberHint": "رقم حساب الدخول",
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "dcaConfirmationError": "حدث شيء خاطئ: {error}",
-  "@dcaConfirmationError": {
-    "description": "Error message displayed when confirmation fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "oopsSomethingWentWrong": "! شيء ما حدث",
   "bip85NoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
@@ -9414,10 +9248,6 @@
   "@sellErrorFeesNotCalculated": {
     "description": "Error message when transaction fees calculation failed"
   },
-  "dcaAddressLiquid": "العنوان السائل",
-  "@dcaAddressLiquid": {
-    "description": "Liquid address label"
-  },
   "buyVerificationInProgress": "التحقق من التقدم...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
@@ -10134,10 +9964,6 @@
       }
     }
   },
-  "dcaNetworkLabel": "الشبكة",
-  "@dcaNetworkLabel": {
-    "description": "Label for network detail row"
-  },
   "sendScanBitcoinQRCode": "إفحص أيّ شفرة (بيتكوين) أو (لايتنغ كي آر) لتدفع مع (بيتكوين).",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
@@ -10393,10 +10219,6 @@
   "@transactionOrderLabelPayinAmount": {
     "description": "Label for order payin amount"
   },
-  "dcaLightningAddressLabel": "عنوان البرق",
-  "@dcaLightningAddressLabel": {
-    "description": "Label for Lightning address detail row (shown only for Lightning network)"
-  },
   "electrumEnableSsl": "Enable SSL",
   "@electrumEnableSsl": {
     "description": "SSL toggle label in add custom server sheet"
@@ -10441,10 +10263,6 @@
   "seedsignerStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
   "@seedsignerStep13": {
     "description": "SeedSigner instruction about import completion"
-  },
-  "dcaPaymentMethodLabel": "طريقة الدفع",
-  "@dcaPaymentMethodLabel": {
-    "description": "Label for payment method detail row"
   },
   "swapProgressPendingMessage": "عملية النقل جارية صفقات (بيتكوين) قد تستغرق وقتاً لتأكيدها يمكنك العودة للمنزل والانتظار.",
   "@swapProgressPendingMessage": {
@@ -10610,10 +10428,6 @@
   "comingSoonDefaultMessage": "ويجري حاليا تطوير هذه السمة وستتاح قريبا.",
   "@comingSoonDefaultMessage": {
     "description": "Default message for features under development"
-  },
-  "dcaFrequencyLabel": "التردد",
-  "@dcaFrequencyLabel": {
-    "description": "Label for frequency detail row"
   },
   "ledgerErrorMissingAddress": "يلزم الحصول على عنوان للتحقق",
   "@ledgerErrorMissingAddress": {
@@ -12453,6 +12267,10 @@
   "transactionDetailLabelPayjoinAborted": "ملغى",
   "transactionDetailLabelPayjoinFeeContribution": "مساهمة رسوم Payjoin",
   "transactionPayjoinFeeContributionExplanation": "يضيف Payjoin إحدى عملاتك كمدخل إضافي للدفعة لتحسين الخصوصية. تُخصم رسوم التعدين لهذا المدخل الإضافي من المبلغ الذي تستلمه (BIP78).",
+  "dcaAccountUnavailableError": "تعذر تحميل حسابك. تحقق من اتصالك، وتأكد من تسجيل الدخول، ثم حاول مرة أخرى.",
+  "dcaLightningAddressRequiredError": "أدخل عنوان Lightning لاستلام مشترياتك.",
+  "dcaReceiveAddressError": "تعذر تجهيز عنوان استلام في محفظتك. يُرجى المحاولة مرة أخرى.",
+  "dcaOrderCreationError": "تعذر إنشاء الشراء المتكرر. يُرجى المحاولة لاحقًا.",
   "settingsPayjoinDisclaimerTitle": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinDisclaimerRowLabel": "إخلاء مسؤولية Payjoin",
   "settingsPayjoinAdvancedTitle": "إعدادات Payjoin المتقدمة",
