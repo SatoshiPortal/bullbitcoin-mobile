@@ -83,7 +83,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  explicit re-check inside the handler for defense in depth.
     on<ReceivePayjoinSettingChanged>(
       _onPayjoinSettingChanged,
-      transformer: restartable(),
+      // Persistence and the live watcher can report the same value. Filter
+      // adjacent duplicates before restartable so either arrival order keeps
+      // one handler, while enable -> disable is still preserved.
+      transformer: (events, mapper) =>
+          restartable<ReceivePayjoinSettingChanged>()(
+            events.distinct(
+              (previous, current) => previous.enabled == current.enabled,
+            ),
+            mapper,
+          ),
     );
     on<ReceivePayjoinToggled>(_onPayjoinToggled, transformer: droppable());
     on<ReceivePayjoinMinAmountChanged>(_onPayjoinMinAmountChanged);
@@ -935,12 +944,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       event.enabled,
       requestConsent: event.requestConsent,
     );
-    result.fold((_) {}, (failure) {
-      log.warning(
-        'Failed to toggle Payjoin from Receive: ${failure.logMessage}',
-      );
-      emit(state.copyWith(error: failure));
-    });
+    result.fold(
+      (updated) {
+        add(ReceivePayjoinSettingChanged(updated));
+      },
+      (failure) {
+        log.warning(
+          'Failed to toggle Payjoin from Receive: ${failure.logMessage}',
+        );
+        emit(state.copyWith(error: failure));
+      },
+    );
   }
 
   void _onPayjoinMinAmountChanged(
@@ -1004,8 +1018,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       );
     } else if (state.payjoin != null &&
         !_isPayjoinEligible(wallet, event.enabled)) {
-      await _payjoinSubscription?.cancel();
+      final payjoinSubscription = _payjoinSubscription;
+      _payjoinSubscription = null;
       emit(state.copyWith(payjoin: null));
+      await payjoinSubscription?.cancel();
     }
   }
 
