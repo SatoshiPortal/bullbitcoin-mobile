@@ -14759,5 +14759,469 @@
   "walletBackupSettingsRecoveryIncomplete": "Last recovery needs attention.",
   "@walletBackupSettingsRecoveryIncomplete": {
     "description": "Status shown when the last Bull backup recovery did not complete."
+  },
+  "btcpayAutoSweepWallet": "Auto-sweep received funds",
+  "@btcpayAutoSweepWallet": {
+    "description": "Toggle label for sweeping received funds from a BTCPay wallet to the default wallet"
+  },
+  "btcpayConnectionPairedAt": "Paired",
+  "@btcpayConnectionPairedAt": {
+    "description": "Label for when the BTCPay Server was paired"
+  },
+  "btcpayConnectionRails": "Rails",
+  "@btcpayConnectionRails": {
+    "description": "Label for the paired BTCPay payment rails"
+  },
+  "btcpayConnectionServer": "Server",
+  "@btcpayConnectionServer": {
+    "description": "Label for the paired BTCPay Server URL"
+  },
+  "btcpayConnectionStore": "Store",
+  "@btcpayConnectionStore": {
+    "description": "Label for the paired BTCPay Server store ID"
+  },
+  "btcpayConnectionTitle": "Connected BTCPay Server",
+  "@btcpayConnectionTitle": {
+    "description": "Title shown when a BTCPay Server is already paired"
+  },
+  "btcpayConnectionUncertainBody": "BTCPay pairing was submitted, but the app could not confirm completion. Check the BTCPay Server before retrying.",
+  "@btcpayConnectionUncertainBody": {
+    "description": "Body shown when BTCPay pairing may have completed but the app could not confirm it"
+  },
+  "btcpayConnectionUncertainTitle": "Pairing status uncertain",
+  "@btcpayConnectionUncertainTitle": {
+    "description": "Title shown when BTCPay pairing may have completed but the app could not confirm it"
+  },
+  "btcpayConnectionUpdatedAt": "Updated",
+  "@btcpayConnectionUpdatedAt": {
+    "description": "Label for when the BTCPay pairing state was last updated"
+  },
+  "btcpayConnectionWallets": "Wallets",
+  "@btcpayConnectionWallets": {
+    "description": "Label for the wallets shared with a paired BTCPay Server"
+  },
+  "btcpayHideWalletOnHome": "Hide wallet on Home",
+  "@btcpayHideWalletOnHome": {
+    "description": "Toggle label for hiding a BTCPay wallet on the Home screen"
+  },
+  "btcpayPairNew": "Pair new BTCPay",
+  "@btcpayPairNew": {
+    "description": "Button text to pair another BTCPay Server"
+  },
+  "btcpayPairingConfirmBody": "You are about to create or use dedicated {wallets} and share watch-only wallet descriptors with a BTCPay Server at {serverUrl}. That server can monitor payments received by these dedicated wallets. No private keys are shared. These wallets are derived from the same backup as your default wallets. The BTCPay Liquid wallet is hidden from your home screen and automatically sweeps received funds to your default Liquid wallet; you can change both settings later in BTCPay settings. Do you wish to proceed?",
+  "@btcpayPairingConfirmBody": {
+    "placeholders": {
+      "wallets": {
+        "type": "String"
+      },
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "btcpayPairingConfirmCancel": "Cancel",
+  "@btcpayPairingConfirmCancel": {
+    "description": "Cancel button text for the BTCPay pairing consent dialog"
+  },
+  "btcpayPairingConfirmRails": "Requested rails: {rails}",
+  "@btcpayPairingConfirmRails": {
+    "placeholders": {
+      "rails": {
+        "type": "String"
+      }
+    }
+  },
+  "btcpayPairingConfirmSubmit": "Pair and share details",
+  "@btcpayPairingConfirmSubmit": {
+    "description": "Confirm button text for the BTCPay pairing consent dialog"
+  },
+  "btcpayPairingConfirmTitle": "Pair BTCPay Server?",
+  "@btcpayPairingConfirmTitle": {
+    "description": "Title for the consent dialog before BTCPay wallet descriptors are shared"
+  },
+  "btcpayPairingGenericError": "Could not pair BTCPay Server.",
+  "@btcpayPairingGenericError": {
+    "description": "Generic error message when BTCPay pairing fails"
+  },
+  "btcpayPairingInvalidRequestError": "The SamRock pairing URL is invalid.",
+  "@btcpayPairingInvalidRequestError": {
+    "description": "Error shown when the BTCPay pairing URL cannot be parsed or is unsupported"
+  },
+  "btcpayPairingKeychainConflictError": "Dedicated BTCPay wallets already have different recovery metadata. Do not retry with this pairing request; contact support before continuing.",
+  "@btcpayPairingKeychainConflictError": {
+    "description": "Error shown when BTCPay wallet materialization conflicts with existing keychain manifest metadata"
+  },
+  "btcpayPairingLocalSetupError": "Dedicated BTCPay wallets were kept, but local setup did not finish. Retry to reuse them and finish setup.",
+  "@btcpayPairingLocalSetupError": {
+    "description": "Error shown when dedicated BTCPay wallets were prepared locally but setup failed before server submission"
+  },
+  "btcpayPairingOperationInProgress": "Wait for BTCPay pairing to finish before leaving.",
+  "@btcpayPairingOperationInProgress": {
+    "description": "Message shown when leaving BTCPay pairing is blocked during pairing"
+  },
+  "btcpayPairingRailBitcoin": "Bitcoin",
+  "@btcpayPairingRailBitcoin": {
+    "description": "Bitcoin rail label for BTCPay pairing"
+  },
+  "btcpayPairingRailLightning": "Lightning via Liquid/Boltz",
+  "@btcpayPairingRailLightning": {
+    "description": "Lightning rail label for BTCPay pairing through Liquid-backed Boltz setup"
+  },
+  "btcpayPairingRailLiquid": "Liquid",
+  "@btcpayPairingRailLiquid": {
+    "description": "Liquid rail label for BTCPay pairing"
+  },
+  "btcpayPairingRejectedError": "BTCPay Server rejected the pairing request. Dedicated BTCPay wallets were kept. Check the pairing URL or create a new pairing request in BTCPay, then retry.",
+  "@btcpayPairingRejectedError": {
+    "description": "Error shown when BTCPay Server rejects the SamRock pairing setup"
+  },
+  "btcpayPairingScanQr": "Scan pairing QR",
+  "@btcpayPairingScanQr": {
+    "description": "Button text for scanning a BTCPay SamRock pairing QR code"
+  },
+  "btcpayPairingSubmit": "Pair BTCPay",
+  "@btcpayPairingSubmit": {
+    "description": "Submit button text for BTCPay pairing"
+  },
+  "btcpayPairingSubmitting": "Pairing...",
+  "@btcpayPairingSubmitting": {
+    "description": "Submit button text while BTCPay pairing is in progress"
+  },
+  "btcpayPairingSuccess": "BTCPay paired successfully.",
+  "@btcpayPairingSuccess": {
+    "description": "Success message after BTCPay pairing completes"
+  },
+  "btcpayPairingSuccessTitle": "BTCPay Server connected",
+  "@btcpayPairingSuccessTitle": {
+    "description": "Success screen title after BTCPay pairing completes"
+  },
+  "btcpayPairingUncertainError": "BTCPay pairing may have completed. Check the BTCPay Server before retrying.",
+  "@btcpayPairingUncertainError": {
+    "description": "Error shown when BTCPay pairing was submitted but completion could not be confirmed"
+  },
+  "btcpayPairingUrlLabel": "SamRock pairing URL",
+  "@btcpayPairingUrlLabel": {
+    "description": "Label for the SamRock pairing URL input"
+  },
+  "btcpayPairingUrlRequired": "Enter a pairing URL",
+  "@btcpayPairingUrlRequired": {
+    "description": "Validation message when the BTCPay pairing URL is missing"
+  },
+  "btcpayPairingWalletsBitcoin": "Bitcoin wallet",
+  "@btcpayPairingWalletsBitcoin": {
+    "description": "Bitcoin wallet summary for BTCPay pairing"
+  },
+  "btcpayPairingWalletsBitcoinAndLiquid": "Liquid and Bitcoin wallets",
+  "@btcpayPairingWalletsBitcoinAndLiquid": {
+    "description": "Bitcoin and Liquid wallet summary for BTCPay pairing"
+  },
+  "btcpayPairingWalletsLiquid": "Liquid wallet",
+  "@btcpayPairingWalletsLiquid": {
+    "description": "Liquid wallet summary for BTCPay pairing"
+  },
+  "btcpaySettingsTitle": "BTCPay",
+  "@btcpaySettingsTitle": {
+    "description": "Title for the BTCPay settings screen"
+  },
+  "btcpaySettingsUnavailableBody": "Could not load your BTCPay connection. Retry before pairing a new server.",
+  "@btcpaySettingsUnavailableBody": {
+    "description": "Body shown when the initial BTCPay connection read fails"
+  },
+  "btcpaySettingsUnavailableTitle": "BTCPay settings unavailable",
+  "@btcpaySettingsUnavailableTitle": {
+    "description": "Title shown when the app cannot determine whether a BTCPay connection exists"
+  },
+  "btcpayWalletSettingsTitle": "Wallet Settings",
+  "@btcpayWalletSettingsTitle": {
+    "description": "Title for BTCPay wallet behavior settings"
+  },
+  "btcpayWalletSettingsUnavailable": "Could not load wallet settings. Retry before changing wallet behavior.",
+  "@btcpayWalletSettingsUnavailable": {
+    "description": "Message shown when BTCPay wallet behavior settings cannot be read"
+  },
+  "getPaidAdvancedSettingsTitle": "Advanced settings",
+  "@getPaidAdvancedSettingsTitle": {
+    "description": "Shared Get Paid product Advanced Settings section title / button label."
+  },
+  "getPaidDashboardDonationPageTitle": "Donation Page",
+  "@getPaidDashboardDonationPageTitle": {
+    "description": "Donation Page slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardLightningAddressTitle": "Lightning Address",
+  "@getPaidDashboardLightningAddressTitle": {
+    "description": "Lightning Address slot card title on the Get Paid hub"
+  },
+  "getPaidDashboardPosTitle": "Point of Sale",
+  "@getPaidDashboardPosTitle": {
+    "description": "Point of Sale slot card title on the Get Paid hub"
+  },
+  "getPaidLinkQrDownloadButton": "Download QR",
+  "@getPaidLinkQrDownloadButton": {
+    "description": "Get Paid link QR: label for the button that saves the QR code as a PNG image."
+  },
+  "getPaidLinkQrDownloadFailed": "Could not save the QR code. Please try again.",
+  "@getPaidLinkQrDownloadFailed": {
+    "description": "Get Paid link QR: shown when saving the QR PNG failed."
+  },
+  "getPaidLinkQrDownloadSaved": "QR code saved",
+  "@getPaidLinkQrDownloadSaved": {
+    "description": "Get Paid link QR: confirmation shown after the QR PNG is saved via the system Files dialog."
+  },
+  "getPaidNameChoiceChooseAlias": "Choose an alias",
+  "@getPaidNameChoiceChooseAlias": {
+    "description": "Action that reveals the permanent alias field for this surface."
+  },
+  "getPaidNameChoiceTitle": "Your nym is {nym}",
+  "@getPaidNameChoiceTitle": {
+    "description": "Header of the Point of Sale / Donation Page naming choice, naming the claimed nym.",
+    "placeholders": {
+      "nym": {
+        "type": "String"
+      }
+    }
+  },
+  "getPaidNymClaimBody": "This is a permanent anonymous identity linked to your Bitcoin wallet and will become your public Lightning Address.",
+  "@getPaidNymClaimBody": {
+    "description": "Owner-approved disclosure shown above the single nym field in the shared claim step."
+  },
+  "getPaidNymClaimHelper": "Use 1–32 lowercase letters, numbers, or internal hyphens.",
+  "@getPaidNymClaimHelper": {
+    "description": "Exact local syntax guidance for a permanent Bullnym nym."
+  },
+  "getPaidNymClaimSubmit": "Claim your nym",
+  "@getPaidNymClaimSubmit": {
+    "description": "Button that starts the permanent nym claim confirmation."
+  },
+  "getPaidNymClaimSubmitting": "Registering...",
+  "@getPaidNymClaimSubmitting": {
+    "description": "Button label while Lightning Address registration is submitting."
+  },
+  "getPaidNymClaimTitle": "Claim your Bull Nym",
+  "@getPaidNymClaimTitle": {
+    "description": "Title of the minimal Bull Nym claim step shown by every Get Paid activation flow when no nym is claimed yet."
+  },
+  "getPaidNymInvalid": "Use a valid name.",
+  "@getPaidNymInvalid": {
+    "description": "Failure message shown when the Lightning Address nym is invalid."
+  },
+  "getPaidNymLabel": "Name",
+  "@getPaidNymLabel": {
+    "description": "Label for the Lightning Address nym field."
+  },
+  "getPaidNymReserved": "That name is reserved. Choose another name.",
+  "@getPaidNymReserved": {
+    "description": "Safe message for local or server NymReserved validation."
+  },
+  "getPaidNymTaken": "That name is already owned. Choose another available name.",
+  "@getPaidNymTaken": {
+    "description": "Safe message for the stable NameTaken code."
+  },
+  "getPaidWalletAutoSweepInfo": "Automatically transfers funds received on this wallet to your main wallet.",
+  "@getPaidWalletAutoSweepInfo": {
+    "description": "Subtitle describing what the auto-sweep toggle does"
+  },
+  "getPaidWalletAutoSweepLabel": "Auto-sweep",
+  "@getPaidWalletAutoSweepLabel": {
+    "description": "Label for the reserved wallet auto-sweep toggle"
+  },
+  "getPaidWalletHideOnHomeInfo": "Keeps this wallet off your home screen wallet list.",
+  "@getPaidWalletHideOnHomeInfo": {
+    "description": "Subtitle describing what the hide-on-home toggle does"
+  },
+  "getPaidWalletHideOnHomeLabel": "Hide on home",
+  "@getPaidWalletHideOnHomeLabel": {
+    "description": "Label for the reserved wallet hide-on-home toggle"
+  },
+  "getPaidWalletHideOnHomeNeedsAutoSweep": "Available only while auto-sweep is on: a wallet keeping its funds stays on your home list.",
+  "@getPaidWalletHideOnHomeNeedsAutoSweep": {
+    "description": "Explains why Hide on home is unavailable: the wallet must be swept for hiding to be safe."
+  },
+  "getPaidWalletSettingsSectionTitle": "Wallet settings",
+  "@getPaidWalletSettingsSectionTitle": {
+    "description": "Section header for a Get Paid product's reserved wallet behavior controls"
+  },
+  "getPaidWalletSettingsUnavailable": "Wallet settings are temporarily unavailable. Try again.",
+  "@getPaidWalletSettingsUnavailable": {
+    "description": "Persistent warning shown when a Get Paid product cannot read its reserved wallet settings."
+  },
+  "lightningAddressActiveTitle": "Lightning address is active",
+  "@lightningAddressActiveTitle": {
+    "description": "Heading shown for an active wallet-owned Lightning Address found by lookup."
+  },
+  "lightningAddressAddressUnavailableBody": "The server did not return your Lightning Address. Try again.",
+  "@lightningAddressAddressUnavailableBody": {
+    "description": "Recoverable state shown when an older or malformed lookup response omits the server-owned Lightning Address."
+  },
+  "lightningAddressAdvancedSettings": "Advanced settings",
+  "@lightningAddressAdvancedSettings": {
+    "description": "Link that opens Lightning Address management settings."
+  },
+  "lightningAddressAlreadyAssigned": "This wallet already owns a permanent name. Its status is being reconciled.",
+  "@lightningAddressAlreadyAssigned": {
+    "description": "Snackbar for an NymAlreadyAssigned conflict."
+  },
+  "lightningAddressAlreadyAssignedBody": "Bullnym reports that this wallet already owns a name. Refresh status to use that name; a different name cannot be claimed.",
+  "@lightningAddressAlreadyAssignedBody": {
+    "description": "Safe reconciliation guidance for an NymAlreadyAssigned conflict."
+  },
+  "lightningAddressAlreadyAssignedTitle": "A permanent name is already assigned",
+  "@lightningAddressAlreadyAssignedTitle": {
+    "description": "Title shown while reconciling an NymAlreadyAssigned conflict."
+  },
+  "lightningAddressCapabilityUnavailableBody": "Your Lightning Address could not be loaded. Check your connection and try again.",
+  "@lightningAddressCapabilityUnavailableBody": {
+    "description": "Fail-closed capability error body."
+  },
+  "lightningAddressCapabilityUnavailableTitle": "Lightning Address unavailable",
+  "@lightningAddressCapabilityUnavailableTitle": {
+    "description": "Title when the Bullnym version capability check fails or conflicts with status."
+  },
+  "lightningAddressCheckStatusButton": "Check Status",
+  "@lightningAddressCheckStatusButton": {
+    "description": "Button label to retry Lightning Address status lookup."
+  },
+  "lightningAddressClaimRetryButton": "Try again",
+  "@lightningAddressClaimRetryButton": {
+    "description": "Retries the Lightning Address claim after the server did not respond."
+  },
+  "lightningAddressGenericError": "Lightning Address setup failed. Please try again.",
+  "@lightningAddressGenericError": {
+    "description": "Generic Lightning Address activation failure message."
+  },
+  "lightningAddressInactiveKnownTitle": "Lightning Address is inactive",
+  "@lightningAddressInactiveKnownTitle": {
+    "description": "Heading shown when Bullnym reports a known but inactive Lightning Address nym."
+  },
+  "lightningAddressLoadingStatus": "Checking permanent-name capability and status",
+  "@lightningAddressLoadingStatus": {
+    "description": "Accessibility announcement while Lightning Address capability and status load."
+  },
+  "lightningAddressLocalSetupFailedBody": "The address is registered, but the receive wallet still needs local setup before it is ready.",
+  "@lightningAddressLocalSetupFailedBody": {
+    "description": "Body shown when Bullnym reports an active Lightning Address but local receive wallet setup failed."
+  },
+  "lightningAddressLocalSetupFailedTitle": "Lightning Address is active",
+  "@lightningAddressLocalSetupFailedTitle": {
+    "description": "Heading shown when Bullnym reports an active Lightning Address but the local receive wallet setup needs retry."
+  },
+  "lightningAddressLocalSetupNotRetryableBody": "The address is registered, but the receive wallet could not finish local setup. Contact support before retrying.",
+  "@lightningAddressLocalSetupNotRetryableBody": {
+    "description": "Body shown when Bullnym reports an active Lightning Address but local receive wallet setup failed in a non-retryable way."
+  },
+  "lightningAddressLookupFailedBody": "Status could not be checked. Try again before registering.",
+  "@lightningAddressLookupFailedBody": {
+    "description": "Body shown when Lightning Address status lookup fails."
+  },
+  "lightningAddressLookupFailedTitle": "Status Check Failed",
+  "@lightningAddressLookupFailedTitle": {
+    "description": "Heading shown when Lightning Address status lookup fails."
+  },
+  "lightningAddressNetworkError": "Network error. Please try again.",
+  "@lightningAddressNetworkError": {
+    "description": "Failure message shown for a retryable Lightning Address network error before uncertain submission."
+  },
+  "lightningAddressNoDefaultBitcoinWalletError": "Set up a Bitcoin wallet before registering a Lightning Address.",
+  "@lightningAddressNoDefaultBitcoinWalletError": {
+    "description": "Error shown when Lightning Address registration cannot derive the default Bitcoin wallet key because no default Bitcoin wallet exists"
+  },
+  "lightningAddressNoServerResponseBody": "Bull Bitcoin did not answer in time, so nothing was claimed and nothing changed. Check your connection and try again.",
+  "@lightningAddressNoServerResponseBody": {
+    "description": "Body for a timed-out or unreachable Lightning Address claim: states that no name was claimed and to retry."
+  },
+  "lightningAddressOnlineToggleActive": "Active",
+  "@lightningAddressOnlineToggleActive": {
+    "description": "Label for the active Lightning Address availability switch."
+  },
+  "lightningAddressOnlineToggleActiveBody": "Switch Lightning address off, and people won't be able to send funds to it anymore",
+  "@lightningAddressOnlineToggleActiveBody": {
+    "description": "Explains what deactivating the Lightning Address does."
+  },
+  "lightningAddressOnlineToggleInactive": "Deactivated",
+  "@lightningAddressOnlineToggleInactive": {
+    "description": "Label for the inactive Lightning Address availability switch."
+  },
+  "lightningAddressOnlineToggleInactiveBody": "Switch Lightning address on to start receiving payments again",
+  "@lightningAddressOnlineToggleInactiveBody": {
+    "description": "Explains what reactivating the Lightning Address does."
+  },
+  "lightningAddressOnlineToggleSaving": "Refreshing Lightning Address availability",
+  "@lightningAddressOnlineToggleSaving": {
+    "description": "Accessibility announcement while an online/offline mutation is reconciled."
+  },
+  "lightningAddressOperationInProgress": "Lightning Address registration is still in progress.",
+  "@lightningAddressOperationInProgress": {
+    "description": "Snackbar shown when the user tries to leave during registration."
+  },
+  "lightningAddressPermanentNamesUnavailableBody": "This server does not support permanent-name controls. Lightning Address naming is hidden, while the rest of Bull Wallet and Get Paid remain available.",
+  "@lightningAddressPermanentNamesUnavailableBody": {
+    "description": "Fail-closed legacy-server explanation."
+  },
+  "lightningAddressPermanentNamesUnavailableTitle": "Permanent names unavailable",
+  "@lightningAddressPermanentNamesUnavailableTitle": {
+    "description": "Title when the configured Bullnym server does not advertise the permanent-name policy."
+  },
+  "lightningAddressRejected": "The server rejected this name.",
+  "@lightningAddressRejected": {
+    "description": "Failure message shown when the Bullnym server rejects registration."
+  },
+  "lightningAddressRetryAddressButton": "Try again",
+  "@lightningAddressRetryAddressButton": {
+    "description": "Button that reloads a permanent nym whose lookup response omitted its Lightning Address."
+  },
+  "lightningAddressRetrySetupButton": "Retry Setup",
+  "@lightningAddressRetrySetupButton": {
+    "description": "Button label to retry local Lightning Address receive wallet setup."
+  },
+  "lightningAddressServerTemporary": "The server could not register this name right now. Please try again.",
+  "@lightningAddressServerTemporary": {
+    "description": "Failure message shown when Bullnym returns a retryable server rejection."
+  },
+  "lightningAddressSetupFailed": "Setup failed before anything was submitted. Please try again.",
+  "@lightningAddressSetupFailed": {
+    "description": "Failure message shown when local wallet setup failed before server submission."
+  },
+  "lightningAddressTitle": "Lightning Address",
+  "@lightningAddressTitle": {
+    "description": "Title for the Lightning Address activation and status screen."
+  },
+  "lightningAddressToggleUncertain": "The availability change may have reached the server. Refresh status before trying again.",
+  "@lightningAddressToggleUncertain": {
+    "description": "Message for a network or timeout failure after an online/offline submission."
+  },
+  "lightningAddressTurnOffConfirmBody": "People will no longer be able to send funds to your Lightning Address. Your permanent names remain claimed, and your Donation Page and Point of Sale stay online and keep accepting payments.",
+  "@lightningAddressTurnOffConfirmBody": {
+    "description": "Explains effects and non-effects of turning off the Lightning Address"
+  },
+  "lightningAddressTurnOffConfirmCancel": "Keep online",
+  "@lightningAddressTurnOffConfirmCancel": {
+    "description": "Cancel action for turning off the Lightning Address"
+  },
+  "lightningAddressTurnOffConfirmSubmit": "Turn off",
+  "@lightningAddressTurnOffConfirmSubmit": {
+    "description": "Confirm action for turning off the Lightning Address"
+  },
+  "lightningAddressTurnOffConfirmTitle": "Turn off Lightning Address?",
+  "@lightningAddressTurnOffConfirmTitle": {
+    "description": "Title of the Lightning Address-specific turn-off confirmation"
+  },
+  "lightningAddressUncertainBody": "Registration may have succeeded. Check status before trying again.",
+  "@lightningAddressUncertainBody": {
+    "description": "Failure message shown when a post-submission Lightning Address error is uncertain."
+  },
+  "lightningAddressUncertainTitle": "Status Unknown",
+  "@lightningAddressUncertainTitle": {
+    "description": "Heading shown when registration submission may have succeeded but status is unknown."
+  },
+  "systemLabelAutomaticFallback": "Automatic fallback",
+  "@systemLabelAutomaticFallback": {
+    "description": "System label for the Bitcoin address reserved for automatic fallback settlement."
+  },
+  "systemLabelInvoice": "Invoice",
+  "@systemLabelInvoice": {
+    "description": "System label for invoice payout addresses"
+  },
+  "lightningAddressNoServerResponseTitle": "The server did not respond",
+  "@lightningAddressNoServerResponseTitle": {
+    "description": "Title shown when a Lightning Address claim timed out or the naming server was unreachable."
   }
 }

@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:bb_mobile/features/autosweep/public/autosweep_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -38,6 +39,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._initializeTorUsecase,
     required this._checkForTorInitializationOnStartupUsecase,
     required this._getUnconfirmedIncomingBalanceUsecase,
+    required this._autosweep,
     required this._deleteWalletUsecase,
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
@@ -64,6 +66,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final IsTorRequiredUsecase _checkForTorInitializationOnStartupUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
+  final AutosweepFacade _autosweep;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
@@ -268,6 +271,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
+      final sweepWarning = await _runAutoSweep(event.wallet);
       // Set sync status to false for the wallet that finished syncing
       final newSyncStatus = Map<String, bool>.from(state.syncStatus);
       newSyncStatus[event.wallet.id] = false;
@@ -279,6 +283,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           error: null,
           noWalletsFoundException: null,
           syncStatus: newSyncStatus,
+          warnings: [
+            ...state.warnings.where(
+              (warning) => warning.title != _autosweepWarningTitle,
+            ),
+            ?sweepWarning,
+          ],
         ),
       );
     } on NoWalletsFoundException catch (e) {
@@ -292,6 +302,30 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
+  }
+
+  static const _autosweepWarningTitle = 'Automatic sweep needs attention';
+
+  Future<WalletWarning?> _runAutoSweep(Wallet wallet) async {
+    final result = await _autosweep.run(wallet);
+    return switch (result) {
+      AutosweepFailed() => WalletWarning(
+        title: _autosweepWarningTitle,
+        description:
+            'A received payment could not be swept to your wallet automatically.',
+        actionRoute: 'walletHome',
+        type: WarningType.error,
+      ),
+      AutosweepSkipped(reason: AutosweepSkipReason.noDefaultWallet) =>
+        WalletWarning(
+          title: _autosweepWarningTitle,
+          description:
+              'Set a default wallet so received payments can be swept.',
+          actionRoute: 'walletHome',
+          type: WarningType.error,
+        ),
+      AutosweepSwept() || AutosweepSkipped() => null,
+    };
   }
 
   Future<void> _onElectrumSyncResultChanged(

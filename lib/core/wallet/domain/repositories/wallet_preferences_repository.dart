@@ -10,6 +10,26 @@ abstract interface class WalletPreferencesRepository {
   Future<Result<List<WalletPreferences>, WalletPreferencesFailure>> fetchAll();
 
   @useResult
+  Future<Result<WalletPreferences, WalletPreferencesFailure>> fetch(
+    String walletRef,
+  );
+
+  @useResult
+  Future<Result<WalletPreferences, WalletPreferencesFailure>>
+  applyBehaviorDefaults({
+    required String walletRef,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  });
+
+  @useResult
+  Future<Result<WalletPreferences, WalletPreferencesFailure>> updateBehavior({
+    required String walletRef,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  });
+
+  @useResult
   Future<Result<WalletPreferencesRecoveryApplyResult, WalletPreferencesFailure>>
   applyRecovered(List<WalletPreferencesRecoveryUpdate> updates);
 }

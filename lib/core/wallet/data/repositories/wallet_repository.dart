@@ -338,6 +338,24 @@ class WalletRepository {
         .toList(growable: false);
   }
 
+  /// Resolves default Bitcoin wallet identities without loading a wallet
+  /// engine or fetching balances.
+  Future<List<String>> getDefaultBitcoinWalletIds({
+    Environment? environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet),
+        )
+        .map((wallet) => wallet.id)
+        .toList(growable: false);
+  }
+
   Future<PreparedDeterministicWallet?> findMatchingDeterministicWallet({
     required MnemonicSeed seed,
     required DeterministicWalletSpec spec,

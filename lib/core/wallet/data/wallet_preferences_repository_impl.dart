@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_preferences_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_behavior_rule.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_preferences_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -37,6 +39,80 @@ final class WalletPreferencesRepositoryImpl
       return _preferencesStorageFailure('read', st);
     } on Exception catch (_, st) {
       return _preferencesStorageFailure('read', st);
+    }
+  }
+
+  @override
+  @useResult
+  Future<Result<WalletPreferences, WalletPreferencesFailure>> fetch(
+    String walletRef,
+  ) async {
+    try {
+      final metadata = await _metadata.fetch(walletRef);
+      return metadata == null
+          ? const Err(WalletPreferencesNotFoundFailure())
+          : Ok(_fromMetadata(metadata));
+    } on Exception catch (_, st) {
+      return _preferencesStorageFailure('read', st);
+    }
+  }
+
+  @override
+  @useResult
+  Future<Result<WalletPreferences, WalletPreferencesFailure>>
+  applyBehaviorDefaults({
+    required String walletRef,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) => _writeBehavior(
+    walletRef: walletRef,
+    requestedHideOnHome: hideOnHome,
+    requestedAutoSweepEnabled: autoSweepEnabled,
+    defaultsOnly: true,
+  );
+
+  @override
+  @useResult
+  Future<Result<WalletPreferences, WalletPreferencesFailure>> updateBehavior({
+    required String walletRef,
+    bool? hideOnHome,
+    bool? autoSweepEnabled,
+  }) => _writeBehavior(
+    walletRef: walletRef,
+    requestedHideOnHome: hideOnHome,
+    requestedAutoSweepEnabled: autoSweepEnabled,
+    defaultsOnly: false,
+  );
+
+  Future<Result<WalletPreferences, WalletPreferencesFailure>> _writeBehavior({
+    required String walletRef,
+    required bool? requestedHideOnHome,
+    required bool? requestedAutoSweepEnabled,
+    required bool defaultsOnly,
+  }) async {
+    try {
+      final metadata = await _metadata.fetch(walletRef);
+      if (metadata == null) {
+        return const Err(WalletPreferencesNotFoundFailure());
+      }
+      final hideOnHome = defaultsOnly
+          ? metadata.hideOnHome ?? requestedHideOnHome
+          : requestedHideOnHome ?? metadata.hideOnHome;
+      final autoSweep = defaultsOnly
+          ? metadata.autoSweepEnabled ?? requestedAutoSweepEnabled
+          : requestedAutoSweepEnabled ?? metadata.autoSweepEnabled;
+      final resolved = resolveWalletBehaviorChange(
+        hideOnHome: hideOnHome ?? false,
+        autoSweepEnabled: autoSweep ?? false,
+      );
+      final updated = metadata.copyWith(
+        hideOnHome: hideOnHome == null ? null : resolved.hideOnHome,
+        autoSweepEnabled: autoSweep == null ? null : resolved.autoSweepEnabled,
+      );
+      await _metadata.store(updated);
+      return Ok(_fromMetadata(updated));
+    } on Exception catch (_, st) {
+      return _preferencesStorageFailure('write', st);
     }
   }
 
@@ -83,6 +159,14 @@ final class WalletPreferencesRepositoryImpl
     }
   }
 }
+
+WalletPreferences _fromMetadata(WalletMetadataModel metadata) =>
+    WalletPreferences(
+      walletRef: metadata.id,
+      label: metadata.label,
+      hideOnHome: metadata.hideOnHome,
+      autoSweepEnabled: metadata.autoSweepEnabled,
+    );
 
 Result<T, WalletPreferencesFailure> _preferencesStorageFailure<T>(
   String operation,

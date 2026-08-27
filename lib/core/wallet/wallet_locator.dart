@@ -26,7 +26,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/apply_recovered_wallet_preferences_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_wallet_behavior_defaults_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_frozen_wallet_outpoints_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_default_bitcoin_wallet_fingerprints_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
@@ -38,6 +40,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/restore_frozen_wallet_outpoints_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -127,6 +130,16 @@ class WalletLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<GetDefaultBitcoinWalletFingerprintsUsecase>(
+      () => GetDefaultBitcoinWalletFingerprintsUsecase(
+        locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<ApplyWalletBehaviorDefaultsUsecase>(
+      () => ApplyWalletBehaviorDefaultsUsecase(
+        locator<WalletPreferencesRepository>(),
+      ),
+    );
     locator.registerFactory<ApplyRecoveredWalletPreferencesUsecase>(
       () => ApplyRecoveredWalletPreferencesUsecase(
         locator<WalletPreferencesRepository>(),
@@ -139,6 +152,9 @@ class WalletLocator {
       () => WatchWalletPreferenceChangesUsecase(
         locator<WalletPreferencesRepository>(),
       ),
+    );
+    locator.registerFactory<UpdateWalletBehaviorUsecase>(
+      () => UpdateWalletBehaviorUsecase(locator<WalletPreferencesRepository>()),
     );
     locator.registerFactory<GetFrozenWalletOutpointsUsecase>(
       () => GetFrozenWalletOutpointsUsecase(locator<WalletUtxoRepository>()),

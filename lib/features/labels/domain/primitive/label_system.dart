@@ -8,7 +8,13 @@ enum LabelSystem {
   payjoin,
   selfSpend,
   exchangeBuy,
-  exchangeSell;
+  exchangeSell,
+  invoice,
+  automaticFallback,
+  lightningAddress,
+  paymentPage,
+  pointOfSale,
+  btcpay;
 
   const LabelSystem();
 
@@ -19,6 +25,12 @@ enum LabelSystem {
     LabelSystem.selfSpend => selfSpendLabelSystem,
     LabelSystem.exchangeBuy => exchangeBuyLabelSystem,
     LabelSystem.exchangeSell => exchangeSellLabelSystem,
+    LabelSystem.invoice => invoiceLabelSystem,
+    LabelSystem.automaticFallback => automaticFallbackLabelSystem,
+    LabelSystem.lightningAddress => lightningAddressLabelSystem,
+    LabelSystem.paymentPage => paymentPageLabelSystem,
+    LabelSystem.pointOfSale => posLabelSystem,
+    LabelSystem.btcpay => btcpayLabelSystem,
   };
 
   static LabelSystem fromLabel(String label) {
@@ -29,6 +41,12 @@ enum LabelSystem {
       selfSpendLabelSystem => LabelSystem.selfSpend,
       exchangeBuyLabelSystem => LabelSystem.exchangeBuy,
       exchangeSellLabelSystem => LabelSystem.exchangeSell,
+      invoiceLabelSystem => LabelSystem.invoice,
+      automaticFallbackLabelSystem => LabelSystem.automaticFallback,
+      lightningAddressLabelSystem => LabelSystem.lightningAddress,
+      paymentPageLabelSystem => LabelSystem.paymentPage,
+      posLabelSystem => LabelSystem.pointOfSale,
+      btcpayLabelSystem => LabelSystem.btcpay,
       _ => throw ArgumentError('Invalid $LabelSystem: $label'),
     };
   }
@@ -50,6 +68,13 @@ enum LabelSystem {
       LabelSystem.selfSpend => context.loc.systemLabelSelfSpend,
       LabelSystem.exchangeBuy => context.loc.systemLabelExchangeBuy,
       LabelSystem.exchangeSell => context.loc.systemLabelExchangeSell,
+      LabelSystem.invoice => context.loc.systemLabelInvoice,
+      LabelSystem.automaticFallback => context.loc.systemLabelAutomaticFallback,
+      LabelSystem.lightningAddress =>
+        context.loc.getPaidDashboardLightningAddressTitle,
+      LabelSystem.paymentPage => context.loc.getPaidDashboardDonationPageTitle,
+      LabelSystem.pointOfSale => context.loc.getPaidDashboardPosTitle,
+      LabelSystem.btcpay => context.loc.btcpaySettingsTitle,
     };
   }
 

@@ -7,3 +7,7 @@ sealed class WalletPreferencesFailure extends Failure {
 final class WalletPreferencesStorageFailure extends WalletPreferencesFailure {
   const WalletPreferencesStorageFailure([super.logMessage]);
 }
+
+final class WalletPreferencesNotFoundFailure extends WalletPreferencesFailure {
+  const WalletPreferencesNotFoundFailure();
+}

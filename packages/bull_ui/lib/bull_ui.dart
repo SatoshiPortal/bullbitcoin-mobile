@@ -126,6 +126,7 @@ export 'src/inputs/bull_selectable_list.dart';
 export 'src/controls/bull_segmented.dart';
 export 'src/controls/bull_swipe_action.dart';
 export 'src/controls/bull_switch.dart';
+export 'src/controls/bull_wallet_behavior_switches.dart';
 
 // Feedback.
 export 'src/feedback/bull_countdown.dart';
