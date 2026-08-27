@@ -108,6 +108,10 @@ final class SendExchangeOrderMismatchFailure extends SendFailure {
   const SendExchangeOrderMismatchFailure([super.logMessage]);
 }
 
+final class SendTransactionSigningFailure extends SendFailure {
+  const SendTransactionSigningFailure([super.logMessage]);
+}
+
 final class SendTransactionConfirmationFailure extends SendFailure {
   final bool isBroadcastFailure;
 

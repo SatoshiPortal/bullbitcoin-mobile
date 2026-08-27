@@ -143,43 +143,71 @@ class BdkFacade {
       password: walletModel.passphrase,
     );
 
-    bdk.Descriptor? external;
-    bdk.Descriptor? internal;
+    late final bdk.Descriptor external;
+    late final bdk.Descriptor internal;
 
-    switch (walletModel.scriptType) {
-      case ScriptType.bip84:
-        external = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
+    if (walletModel.account == 0) {
+      switch (walletModel.scriptType) {
+        case ScriptType.bip84:
+          external = bdk.Descriptor.newBip84(
+            secretKey: secretKey,
+            keychainKind: bdk.KeychainKind.external_,
+            networkKind: networkKind,
+          );
+          internal = bdk.Descriptor.newBip84(
+            secretKey: secretKey,
+            keychainKind: bdk.KeychainKind.internal,
+            networkKind: networkKind,
+          );
+        case ScriptType.bip49:
+          external = bdk.Descriptor.newBip49(
+            secretKey: secretKey,
+            keychainKind: bdk.KeychainKind.external_,
+            networkKind: networkKind,
+          );
+          internal = bdk.Descriptor.newBip49(
+            secretKey: secretKey,
+            keychainKind: bdk.KeychainKind.internal,
+            networkKind: networkKind,
+          );
+        case ScriptType.bip44:
+          external = bdk.Descriptor.newBip44(
+            secretKey: secretKey,
+            keychainKind: bdk.KeychainKind.external_,
+            networkKind: networkKind,
+          );
+          internal = bdk.Descriptor.newBip44(
+            secretKey: secretKey,
+            keychainKind: bdk.KeychainKind.internal,
+            networkKind: networkKind,
+          );
+      }
+    } else {
+      final path = bdk.DerivationPath(
+        path:
+            "m/${walletModel.scriptType.purpose}'/"
+            "${walletModel.isTestnet ? 1 : 0}'/${walletModel.account}'",
+      );
+      final accountKey = secretKey.derive(path: path);
+      try {
+        external = bdk.Descriptor(
+          descriptor: _singleSignatureDescriptor(
+            walletModel.scriptType,
+            '$accountKey/0/*',
+          ),
           networkKind: networkKind,
         );
-        internal = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
+        internal = bdk.Descriptor(
+          descriptor: _singleSignatureDescriptor(
+            walletModel.scriptType,
+            '$accountKey/1/*',
+          ),
           networkKind: networkKind,
         );
-      case ScriptType.bip49:
-        external = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip44:
-        external = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
+      } finally {
+        accountKey.dispose();
+        path.dispose();
+      }
     }
 
     // Get the database path
@@ -219,6 +247,58 @@ class BdkFacade {
         persister: dbPersister,
         lookahead: _lookahead,
       );
+    }
+  }
+
+  static String _singleSignatureDescriptor(ScriptType scriptType, String key) =>
+      switch (scriptType) {
+        ScriptType.bip44 => 'pkh($key)',
+        ScriptType.bip49 => 'sh(wpkh($key))',
+        ScriptType.bip84 => 'wpkh($key)',
+      };
+
+  /// Creates an in-memory wallet from arbitrary Bitcoin descriptors.
+  ///
+  /// Callers must never persist or log descriptors containing private keys.
+  static bdk.Wallet createEphemeralDescriptorWallet({
+    required String descriptor,
+    required bool isTestnet,
+  }) {
+    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final descriptors = _expandTwoPathDescriptor(
+      descriptor: descriptor,
+      networkKind: networkKind,
+    );
+    final external = bdk.Descriptor(
+      descriptor: descriptors.external,
+      networkKind: networkKind,
+    );
+    try {
+      external.sanityCheck();
+      final internal = bdk.Descriptor(
+        descriptor: descriptors.internal,
+        networkKind: networkKind,
+      );
+      try {
+        internal.sanityCheck();
+        final persister = bdk.Persister.newInMemory();
+        try {
+          return bdk.Wallet(
+            descriptor: external,
+            changeDescriptor: internal,
+            network: network,
+            persister: persister,
+            lookahead: _lookahead,
+          );
+        } finally {
+          persister.dispose();
+        }
+      } finally {
+        internal.dispose();
+      }
+    } finally {
+      external.dispose();
     }
   }
 
@@ -321,6 +401,19 @@ class BdkFacade {
     identities.sort();
     return identities.join(':');
   }
+
+  static String descriptorForPolicyAnalysis(String descriptor) =>
+      descriptor.split('#').first.replaceAllMapped(
+        RegExp(
+          r'\[([0-9a-fA-F]{8})([^\]]*)\]'
+          r'((?:xpub|tpub)[1-9A-HJ-NP-Za-km-z]+)',
+        ),
+        (match) {
+          final xpub = match.group(3)!;
+          final fingerprint = Bip32Derivation.getBip32Xpub(xpub).fingerprintHex;
+          return '[$fingerprint${match.group(2)!}]$xpub';
+        },
+      );
 
   static List<BdkDescriptorKey> _descriptorKeys(String descriptor) {
     final keys = <BdkDescriptorKey>[];
@@ -473,6 +566,87 @@ class BdkFacade {
       );
     }
     return parsed.descriptor;
+  }
+
+  static ({String external, String internal}) _expandTwoPathDescriptor({
+    required String descriptor,
+    required bdk.NetworkKind networkKind,
+  }) {
+    final withoutChecksum = descriptor.split('#').first;
+    if (withoutChecksum.contains('xprv') || withoutChecksum.contains('tprv')) {
+      return _expandPrivateTwoPathDescriptor(
+        descriptor: withoutChecksum,
+        networkKind: networkKind,
+      );
+    }
+    final multipath = bdk.Descriptor(
+      descriptor: withoutChecksum,
+      networkKind: networkKind,
+    );
+    try {
+      multipath.sanityCheck();
+      if (!multipath.isMultipath()) {
+        throw const FormatException(
+          'Descriptor must define receiving and change paths',
+        );
+      }
+      final descriptors = multipath.toSingleDescriptors();
+      try {
+        if (descriptors.length != 2) {
+          throw const FormatException(
+            'Descriptor must define exactly two wallet paths',
+          );
+        }
+        return (
+          external: descriptors.first.toStringWithSecret(),
+          internal: descriptors.last.toStringWithSecret(),
+        );
+      } finally {
+        for (final descriptor in descriptors) {
+          descriptor.dispose();
+        }
+      }
+    } finally {
+      multipath.dispose();
+    }
+  }
+
+  static ({String external, String internal}) _expandPrivateTwoPathDescriptor({
+    required String descriptor,
+    required bdk.NetworkKind networkKind,
+  }) {
+    final multipath = RegExp(r'<([0-9]+);([0-9]+)>');
+    if (!multipath.hasMatch(descriptor)) {
+      throw const FormatException(
+        'Descriptor must define receiving and change paths',
+      );
+    }
+
+    String expand(int branch) =>
+        descriptor.replaceAllMapped(multipath, (match) => match.group(branch)!);
+
+    final external = bdk.Descriptor(
+      descriptor: expand(1),
+      networkKind: networkKind,
+    );
+    try {
+      external.sanityCheck();
+      final internal = bdk.Descriptor(
+        descriptor: expand(2),
+        networkKind: networkKind,
+      );
+      try {
+        internal.sanityCheck();
+        return (
+          external: external.toStringWithSecret(),
+          internal: internal.toStringWithSecret(),
+        );
+      } finally {
+        internal.dispose();
+      }
+    } finally {
+      external.dispose();
+    }
   }
 
   static String _normalizePublicSingleDescriptor({

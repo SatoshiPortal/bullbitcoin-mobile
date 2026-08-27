@@ -62,3 +62,21 @@ final class WalletLwkStatusConflictFailure extends WalletFailure {
 final class WalletUnexpectedFailure extends WalletFailure {
   const WalletUnexpectedFailure([super.logMessage]);
 }
+
+enum BitcoinSigningFailureKind {
+  invalidPsbt,
+  walletMismatch,
+  missingLocalOrigin,
+  missingUtxo,
+  frozenUtxo,
+  unsupportedSighash,
+  unsupportedPolicyPath,
+  incomplete,
+  unexpected,
+}
+
+final class BitcoinSigningFailure extends WalletFailure {
+  final BitcoinSigningFailureKind kind;
+
+  const BitcoinSigningFailure(this.kind, [super.logMessage]);
+}

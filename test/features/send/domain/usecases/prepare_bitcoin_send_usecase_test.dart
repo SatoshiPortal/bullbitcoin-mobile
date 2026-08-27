@@ -65,7 +65,10 @@ void main() {
       ),
     ).thenAnswer((_) async => 'psbt');
     when(
-      () => bitcoinWallet.getTxSize(psbt: any(named: 'psbt')),
+      () => bitcoinWallet.getTxSize(
+        psbt: any(named: 'psbt'),
+        walletId: any(named: 'walletId'),
+      ),
     ).thenAnswer((_) async => 110);
     when(
       () => bitcoinWallet.isAddressOfWallet(
