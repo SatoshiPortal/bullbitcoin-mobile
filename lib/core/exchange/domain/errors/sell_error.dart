@@ -27,6 +27,12 @@ sealed class SellError with _$SellError {
   /// operation, so the refreshed order is refused rather than paid.
   const factory SellError.depositAddressChanged() =
       DepositAddressChangedSellError;
+  const factory SellError.transactionSigningFailed() =
+      TransactionSigningFailedSellError;
+  const factory SellError.selectedCoinsUnavailable() =
+      SelectedCoinsUnavailableSellError;
+  const factory SellError.selectedCoinsInsufficient() =
+      SelectedCoinsInsufficientSellError;
   const factory SellError.unexpected({required String message}) =
       UnexpectedSellError;
   const factory SellError.insufficientBalance({
@@ -43,6 +49,11 @@ sealed class SellError with _$SellError {
     orderNotFound: () => context.loc.sellOrderNotFoundError,
     orderAlreadyConfirmed: () => context.loc.sellOrderAlreadyConfirmedError,
     depositAddressChanged: () => context.loc.sellDepositAddressChangedError,
+    transactionSigningFailed: () => context.loc.oopsSomethingWentWrong,
+    selectedCoinsUnavailable: () =>
+        context.loc.sendErrorSelectedCoinsUnavailable,
+    selectedCoinsInsufficient: () =>
+        context.loc.sendErrorSelectedCoinsInsufficient,
     unexpected: (message) => message,
     insufficientBalance: (_) => context.loc.sellInsufficientBalanceError,
   );

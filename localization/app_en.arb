@@ -14793,5 +14793,13 @@
   "importWatchOnlyErrorSignerOriginRequired": "This hardware signer export is missing its fingerprint and account path. Export a descriptor or an account xpub with key origin information.",
   "@importWatchOnlyErrorSignerOriginRequired": {
     "description": "Shown when a hardware-wallet xpub is missing the key origin needed for signing."
+  },
+  "sendErrorSelectedCoinsUnavailable": "One or more selected coins are no longer available.",
+  "@sendErrorSelectedCoinsUnavailable": {
+    "description": "Shown when a manually selected Bitcoin input is no longer spendable"
+  },
+  "sendErrorSelectedCoinsInsufficient": "Selected coins do not cover the amount and network fees.",
+  "@sendErrorSelectedCoinsInsufficient": {
+    "description": "Shown when manually selected Bitcoin inputs cannot cover the payment and fees"
   }
 }

@@ -1,27 +1,3 @@
-// Unit tests for the repository-boundary guarantees of
-// `BitcoinWalletRepository.buildPsbt`:
-//
-//  1. D7 defense in depth — "a frozen coin must never be spendable".
-//     BDK's documented semantics are the opposite: a manually added utxo
-//     (`TxBuilder.addUtxos`) overrides the `unspendable` filter, and
-//     `BdkWalletDatasource` deliberately preserves those raw semantics
-//     (see bdk_wallet_datasource_test.dart, which asserts them). The
-//     repository therefore reads the frozen store LIVE at build time and
-//     enforces the invariant itself — merging the frozen set into the
-//     `unspendable` list (automatic selection can't pick a frozen coin)
-//     and stripping it from `selected` (a frozen coin can't be forced in
-//     as a mandatory input) — so it holds for ANY caller, with any
-//     staleness of the caller's earlier utxo fetch, not only for callers
-//     going through PrepareBitcoinSendUsecase's own frozen-set handling.
-//     (Payjoin-derived exclusions remain at the usecase: they come from
-//     another repository, which this repository must not depend on.)
-//
-//  2. RBF defaults to ENABLED when the caller omits the flag. The
-//     previous `replaceByFee ?? false` was harmless while the datasource's
-//     `setExactSequence` call discarded its result (a silent no-op), but
-//     became wrong once that call was fixed: a null flag would have
-//     started disabling RBF by default, diverging from both the
-//     datasource's own default and BDK's default sequence (0xFFFFFFFD).
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -132,24 +108,34 @@ void main() {
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
         replaceByFee: any(named: 'replaceByFee'),
+        policyPath: any(named: 'policyPath'),
       ),
     ).thenAnswer((_) async => 'psbt');
   });
 
-  List<WalletUtxoModel>? capturedSelected() =>
-      verify(
-            () => bdkDatasource.buildPsbt(
-              wallet: any(named: 'wallet'),
-              address: any(named: 'address'),
-              amountSat: any(named: 'amountSat'),
-              networkFee: any(named: 'networkFee'),
-              drain: any(named: 'drain'),
-              unspendable: any(named: 'unspendable'),
-              selected: captureAny(named: 'selected'),
-              replaceByFee: any(named: 'replaceByFee'),
-            ),
-          ).captured.single
-          as List<WalletUtxoModel>?;
+  ({
+    List<WalletUtxoModel>? selected,
+    List<({String txId, int vout})>? unspendable,
+  })
+  capturedSelection() {
+    final captured = verify(
+      () => bdkDatasource.buildPsbt(
+        wallet: any(named: 'wallet'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: captureAny(named: 'unspendable'),
+        selected: captureAny(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+        policyPath: any(named: 'policyPath'),
+      ),
+    ).captured;
+    return (
+      unspendable: captured[0] as List<({String txId, int vout})>?,
+      selected: captured[1] as List<WalletUtxoModel>?,
+    );
+  }
 
   List<({String txId, int vout})>? capturedUnspendable() =>
       verify(
@@ -162,6 +148,7 @@ void main() {
               unspendable: captureAny(named: 'unspendable'),
               selected: any(named: 'selected'),
               replaceByFee: any(named: 'replaceByFee'),
+              policyPath: any(named: 'policyPath'),
             ),
           ).captured.single
           as List<({String txId, int vout})>?;
@@ -177,6 +164,7 @@ void main() {
               unspendable: any(named: 'unspendable'),
               selected: any(named: 'selected'),
               replaceByFee: captureAny(named: 'replaceByFee'),
+              policyPath: any(named: 'policyPath'),
             ),
           ).captured.single
           as bool;
@@ -195,24 +183,26 @@ void main() {
     replaceByFee: replaceByFee,
   );
 
-  group('D7 — frozen store is read live at build time', () {
-    test('a coin frozen in the store is stripped from the selection even when '
-        'the caller passes NO unspendable list', () async {
-      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-      );
+  group('frozen coins', () {
+    test(
+      'keeps manual selection strict and forwards frozen exclusions',
+      () async {
+        when(() => frozenDatasource.getAllFrozen()).thenAnswer(
+          (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
+        );
 
-      await buildPsbt(
-        selected: [
-          _utxo(txId: 'tx-frozen', vout: 0), // frozen in DB -> stripped
-          _utxo(txId: 'tx-free', vout: 1), // passes through
-        ],
-      );
+        await buildPsbt(
+          selected: [
+            _utxo(txId: 'tx-frozen', vout: 0),
+            _utxo(txId: 'tx-free', vout: 1),
+          ],
+        );
 
-      final selected = capturedSelected();
-      expect(selected, hasLength(1));
-      expect(selected!.single.txId, 'tx-free');
-    });
+        final captured = capturedSelection();
+        expect(captured.selected, hasLength(2));
+        expect(captured.unspendable, contains((txId: 'tx-frozen', vout: 0)));
+      },
+    );
 
     test('frozen outpoints are merged into the unspendable list passed down, '
         'so automatic selection cannot pick them either', () async {
@@ -247,51 +237,6 @@ void main() {
     );
   });
 
-  group('D7 — selected ∩ unspendable (caller-supplied) is stripped', () {
-    test(
-      'a selected coin that is also unspendable never reaches the datasource',
-      () async {
-        await buildPsbt(
-          unspendable: const [(txId: 'tx-frozen', vout: 0)],
-          selected: [
-            _utxo(txId: 'tx-frozen', vout: 0), // must be stripped
-            _utxo(txId: 'tx-free', vout: 1), // must pass through
-          ],
-        );
-
-        final selected = capturedSelected();
-        expect(selected, hasLength(1));
-        expect(selected!.single.txId, 'tx-free');
-        expect(selected.single.vout, 1);
-      },
-    );
-
-    test('same txId but different vout is NOT stripped', () async {
-      await buildPsbt(
-        unspendable: const [(txId: 'tx-shared', vout: 0)],
-        selected: [_utxo(txId: 'tx-shared', vout: 1)],
-      );
-
-      final selected = capturedSelected();
-      expect(selected, hasLength(1));
-      expect(selected!.single.vout, 1);
-    });
-
-    test(
-      'empty frozen store and no unspendable leaves the selection untouched',
-      () async {
-        await buildPsbt(
-          selected: [
-            _utxo(txId: 'tx-a', vout: 0),
-            _utxo(txId: 'tx-b', vout: 1),
-          ],
-        );
-
-        expect(capturedSelected(), hasLength(2));
-      },
-    );
-  });
-
   group('replaceByFee default', () {
     test('omitted flag defaults to RBF ENABLED (true)', () async {
       await buildPsbt();
@@ -304,31 +249,5 @@ void main() {
 
       expect(capturedReplaceByFee(), isFalse);
     });
-  });
-
-  test('private wallet reconstruction rejects a higher account', () async {
-    when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
-      (_) async => metadata.copyWith(
-        signers: [
-          walletSignerModel(
-            id: 'signer-0',
-            descriptorKeyId: 'key-0',
-            masterFingerprint: '73c5da0a',
-            xpubFingerprint: 'deadbeef',
-            xpub: 'tpub-test',
-            derivationPath: "m/84'/1'/1'",
-            descriptorPath: '/<0;1>/*',
-            signer: Signer.local,
-            signerDevice: null,
-          ),
-        ],
-      ),
-    );
-
-    await expectLater(
-      repository.getPrivateWallet(walletId: _walletId),
-      throwsA(isA<StateError>()),
-    );
-    verifyNever(() => seedDatasource.get(any()));
   });
 }

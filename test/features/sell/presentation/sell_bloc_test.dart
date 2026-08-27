@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -309,7 +310,10 @@ void main() {
         psbt: any(named: 'psbt'),
         walletId: any(named: 'walletId'),
       ),
-    ).thenAnswer((_) async => (signedPsbt: unsignedPsbt, txSize: 110));
+    ).thenAnswer(
+      (_) async =>
+          Ok((signedPsbt: unsignedPsbt, txSize: 110, isFinalized: true)),
+    );
     when(
       () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
     ).thenAnswer((_) async => expectedTxid);
@@ -1051,6 +1055,28 @@ void main() {
       // Let the confirmation settle so nothing emits after tearDown closes.
       await Future<void>.delayed(const Duration(seconds: 6));
     }, timeout: const Timeout(Duration(seconds: 60)));
+  });
+
+  test('reports an insufficient manual coin selection', () async {
+    when(
+      () => prepareBitcoinSend.execute(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        selectedInputs: any(named: 'selectedInputs'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).thenThrow(SelectedBitcoinCoinsInsufficientException());
+
+    bloc.add(const SellEvent.sendPaymentConfirmed());
+    final paymentState =
+        await bloc.stream.firstWhere(
+              (state) => state is SellPaymentState && state.error != null,
+            )
+            as SellPaymentState;
+
+    expect(paymentState.error, isA<SelectedCoinsInsufficientSellError>());
   });
 
   group('SellBloc — fee selection (#2521)', () {

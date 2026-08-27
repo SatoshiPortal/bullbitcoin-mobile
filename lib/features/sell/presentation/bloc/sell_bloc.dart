@@ -17,7 +17,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/liquid_tx.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -26,6 +27,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
@@ -695,13 +697,24 @@ class SellBloc extends Bloc<SellEvent, SellState>
             'bip21Present=${payjoinBip21 != null}, '
             'windowAvailable=${payjoinWindow != null}',
           );
-          final signedTx = await _signBitcoinTxUsecase.execute(
+          final signingResult = await _signBitcoinTxUsecase.execute(
             psbt: preparedSend.unsignedPsbt,
             walletId: wallet.id,
           );
+          final SignedBitcoinTransaction signedTx;
+          switch (signingResult) {
+            case Ok(:final value):
+              signedTx = value;
+            case Err():
+              _emitSendPaymentError(
+                emit,
+                const SellError.transactionSigningFailed(),
+              );
+              return;
+          }
           // Derived before broadcasting so the latch can be set on the very next
           // line: nothing may run between the broadcast and the latch.
-          final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
+          final tx = await BitcoinTx.fromPsbt(signedTx.signedPsbt);
           final txid = tx.txid;
           await _broadcastBitcoinTransactionUsecase.execute(
             signedTx.signedPsbt,
@@ -720,12 +733,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
       if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
       _emitSendPaymentError(emit, SellError.unexpected(message: e.message));
+    } on BitcoinCoinSelectionException catch (e) {
+      _emitSendPaymentError(emit, _sellCoinSelectionError(e));
     } on PrepareBitcoinSendException catch (e) {
       _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
     } on SignLiquidTxException catch (e) {
-      _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
-    } on SignBitcoinTxException catch (e) {
-      // Handle SellError and emit error state
       _emitSendPaymentError(emit, SellError.unexpected(message: e.toString()));
     } catch (e) {
       // Log unexpected errors
@@ -1158,6 +1170,15 @@ class SellBloc extends Bloc<SellEvent, SellState>
           ),
         );
       }
+    } on BitcoinCoinSelectionException catch (e) {
+      final liveAfterFailure = _currentPaymentState;
+      if (liveAfterFailure == null) return;
+      emit(
+        liveAfterFailure.copyWith(
+          absoluteFees: previousAbsoluteFees,
+          error: _sellCoinSelectionError(e),
+        ),
+      );
     } catch (e) {
       final liveAfterFailure = _currentPaymentState;
       if (liveAfterFailure == null) return;
@@ -1171,6 +1192,14 @@ class SellBloc extends Bloc<SellEvent, SellState>
       );
     }
   }
+
+  SellError _sellCoinSelectionError(BitcoinCoinSelectionException exception) =>
+      switch (exception) {
+        SelectedBitcoinCoinsUnavailableException() =>
+          const SellError.selectedCoinsUnavailable(),
+        SelectedBitcoinCoinsInsufficientException() =>
+          const SellError.selectedCoinsInsufficient(),
+      };
 
   /// Address the payin is (or will be) built for. The order's own address keeps
   /// the estimate honest — a build against one of our own addresses can differ

@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -65,7 +67,10 @@ void main() {
       ),
     ).thenAnswer((_) async => 'psbt');
     when(
-      () => bitcoinWallet.getTxSize(psbt: any(named: 'psbt')),
+      () => bitcoinWallet.getTxSize(
+        psbt: any(named: 'psbt'),
+        walletId: any(named: 'walletId'),
+      ),
     ).thenAnswer((_) async => 110);
     when(
       () => bitcoinWallet.isAddressOfWallet(
@@ -90,22 +95,6 @@ void main() {
       ),
     ).captured;
     return captured.single as List<Outpoint>?;
-  }
-
-  List<WalletUtxo>? capturedSelected() {
-    final captured = verify(
-      () => bitcoinWallet.buildPsbt(
-        walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
-        networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
-        unspendable: any(named: 'unspendable'),
-        selected: captureAny(named: 'selected'),
-        replaceByFee: any(named: 'replaceByFee'),
-      ),
-    ).captured;
-    return captured.single as List<WalletUtxo>?;
   }
 
   test(
@@ -266,7 +255,7 @@ void main() {
     },
   );
 
-  test('a selectedInput that is frozen is stripped before buildPsbt', () async {
+  test('rejects a frozen manual selection without building a PSBT', () async {
     when(
       () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => [(txId: 'tx-frozen', vout: 0)]);
@@ -275,20 +264,29 @@ void main() {
     ).thenAnswer((_) async => const Ok(<Outpoint>{}));
 
     final frozenInput = _utxo(txId: 'tx-frozen', vout: 0);
-    final spendableInput = _utxo(txId: 'tx-ok', vout: 1);
-
-    await usecase.execute(
-      walletId: walletId,
-      address: address,
-      networkFee: networkFee,
-      amountSat: 50000,
-      selectedInputs: [frozenInput, spendableInput],
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        address: address,
+        networkFee: networkFee,
+        amountSat: 50000,
+        selectedInputs: [frozenInput],
+      ),
+      throwsA(isA<SelectedBitcoinCoinsUnavailableException>()),
     );
 
-    final selected = capturedSelected()!;
-    expect(selected, hasLength(1));
-    expect(selected.single.txId, 'tx-ok');
-    expect(selected.any((u) => u.txId == 'tx-frozen'), isFalse);
+    verifyNever(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    );
   });
 
   test(
@@ -333,4 +331,55 @@ void main() {
       expect(captured[1] as List<WalletUtxo>?, hasLength(1));
     },
   );
+
+  test('forwards the selected descriptor policy path', () async {
+    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(
+      () => payjoin.reservedOutpoints(),
+    ).thenAnswer((_) async => const Ok(<Outpoint>{}));
+    final policyPath = BitcoinPolicyPath(
+      external: const {
+        'external-policy': [1],
+      },
+      internal: const {
+        'internal-policy': [1],
+      },
+      requiresRelativeTimelock: true,
+    );
+    when(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+        policyPath: policyPath,
+      ),
+    ).thenAnswer((_) async => 'psbt');
+
+    await usecase.execute(
+      walletId: walletId,
+      address: address,
+      networkFee: networkFee,
+      amountSat: 50000,
+      policyPath: policyPath,
+    );
+
+    verify(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+        policyPath: policyPath,
+      ),
+    ).called(1);
+  });
 }

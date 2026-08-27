@@ -13,7 +13,8 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -653,10 +655,21 @@ class PayBloc extends Bloc<PayEvent, PayState>
           );
           waitingForPayjoin = true;
         } else {
-          final signedTx = await _signBitcoinTxUsecase.execute(
+          final signingResult = await _signBitcoinTxUsecase.execute(
             psbt: preparedSend.unsignedPsbt,
             walletId: wallet.id,
           );
+          final SignedBitcoinTransaction signedTx;
+          switch (signingResult) {
+            case Ok(:final value):
+              signedTx = value;
+            case Err():
+              _emitSendPaymentError(
+                emit,
+                const PayError.transactionSigningFailed(),
+              );
+              return;
+          }
           final txid = await _broadcastBitcoinTransactionUsecase.execute(
             signedTx.signedPsbt,
             isPsbt: true,
@@ -667,11 +680,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
       if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
     } on PrepareLiquidSendException catch (e) {
       _emitSendPaymentError(emit, PayError.unexpected(message: e.message));
+    } on BitcoinCoinSelectionException catch (e) {
+      _emitSendPaymentError(emit, _payCoinSelectionError(e));
     } on PrepareBitcoinSendException catch (e) {
       _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
     } on SignLiquidTxException catch (e) {
-      _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
-    } on SignBitcoinTxException catch (e) {
       _emitSendPaymentError(emit, PayError.unexpected(message: e.toString()));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -1030,6 +1043,15 @@ class PayBloc extends Bloc<PayEvent, PayState>
           ),
         );
       }
+    } on BitcoinCoinSelectionException catch (e) {
+      final liveAfterFailure = _currentPaymentState;
+      if (liveAfterFailure == null) return;
+      emit(
+        liveAfterFailure.copyWith(
+          absoluteFees: previousAbsoluteFees,
+          error: _payCoinSelectionError(e),
+        ),
+      );
     } catch (e) {
       final liveAfterFailure = _currentPaymentState;
       if (liveAfterFailure == null) return;
@@ -1041,6 +1063,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
       );
     }
   }
+
+  PayError _payCoinSelectionError(BitcoinCoinSelectionException exception) =>
+      switch (exception) {
+        SelectedBitcoinCoinsUnavailableException() =>
+          const PayError.selectedCoinsUnavailable(),
+        SelectedBitcoinCoinsInsufficientException() =>
+          const PayError.selectedCoinsInsufficient(),
+      };
 
   PayPaymentState? get _currentPaymentState {
     final currentState = state;

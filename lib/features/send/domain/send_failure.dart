@@ -35,6 +35,14 @@ final class SendInsufficientFundsForFeesFailure extends SendFailure {
   const SendInsufficientFundsForFeesFailure([super.logMessage]);
 }
 
+final class SendSelectedCoinsUnavailableFailure extends SendFailure {
+  const SendSelectedCoinsUnavailableFailure([super.logMessage]);
+}
+
+final class SendSelectedCoinsInsufficientFailure extends SendFailure {
+  const SendSelectedCoinsInsufficientFailure([super.logMessage]);
+}
+
 final class SendAmountOutOfBoundsFailure extends SendFailure {
   final BigInt? minimumSat;
   final BigInt? maximumSat;
@@ -72,6 +80,10 @@ final class SendRateLimitedFailure extends SendFailure {
 
 final class SendTransactionBuildFailure extends SendFailure {
   const SendTransactionBuildFailure([super.logMessage]);
+}
+
+final class SendTransactionSigningFailure extends SendFailure {
+  const SendTransactionSigningFailure([super.logMessage]);
 }
 
 final class SendTransactionConfirmationFailure extends SendFailure {
