@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/application/dtos/requests/delete_custom_
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
@@ -169,7 +170,7 @@ void main() {
     });
 
     test(
-      'returns Unreachable failure when the socket check is offline',
+      'returns Unreachable failure when the Bitcoin probe is offline',
       () async {
         when(
           () => serverRepo.fetchByUrl(any()),
@@ -178,8 +179,12 @@ void main() {
           () => electrumSettingsRepo.fetchByNetwork(_network),
         ).thenAnswer((_) async => Ok(_settings()));
         when(
-          () => statusPort.checkSocket(
+          () => statusPort.checkElectrum(
             url: any(named: 'url'),
+            network: _network,
+            validateDomain: true,
+            timeout: any(named: 'timeout'),
+            retry: 1,
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -194,6 +199,61 @@ void main() {
       },
     );
 
+    test('keeps the preliminary socket check for Liquid', () async {
+      const liquidNetwork = ElectrumServerNetwork.liquidMainnet;
+      when(
+        () => serverRepo.fetchByUrl(any()),
+      ).thenAnswer((_) async => Ok(null));
+      when(() => electrumSettingsRepo.fetchByNetwork(liquidNetwork)).thenAnswer(
+        (_) async => Ok(
+          ElectrumSettings(
+            stopGap: 20,
+            timeout: 5,
+            retry: 1,
+            validateDomain: true,
+            network: liquidNetwork,
+          ),
+        ),
+      );
+      when(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).thenAnswer((_) async => ElectrumServerStatus.offline);
+
+      final result = await usecase.execute(
+        AddCustomServerRequest(
+          server: ElectrumServerDto(
+            url: 'liquid.example:995',
+            network: liquidNetwork,
+            isCustom: true,
+            priority: 0,
+          ),
+        ),
+      );
+
+      expect(result, isA<Err>());
+      verify(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).called(1);
+      verifyNever(
+        () => statusPort.checkElectrum(
+          url: any(named: 'url'),
+          network: liquidNetwork,
+          validateDomain: any(named: 'validateDomain'),
+          timeout: any(named: 'timeout'),
+          retry: any(named: 'retry'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      );
+    });
+
     test(
       'probes with the user validateDomain setting, not a fixed one',
       () async {
@@ -203,6 +263,7 @@ void main() {
         when(
           () => statusPort.checkSocket(
             url: any(named: 'url'),
+            timeout: any(named: 'timeout'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -214,6 +275,8 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: any(named: 'validateDomain'),
+            timeout: any(named: 'timeout'),
+            retry: any(named: 'retry'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -226,6 +289,8 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: false,
+            timeout: 5,
+            retry: 1,
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         ).called(1);
@@ -257,6 +322,8 @@ void main() {
             url: any(named: 'url'),
             network: _network,
             validateDomain: any(named: 'validateDomain'),
+            timeout: any(named: 'timeout'),
+            retry: any(named: 'retry'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         );
@@ -284,8 +351,12 @@ void main() {
         (_) async => ElectrumTorRoute(endpoint, () async => routeClosed = true),
       );
       when(
-        () => statusPort.checkSocket(
+        () => statusPort.checkElectrum(
           url: 'ssl://hidden.onion:50002',
+          network: _network,
+          validateDomain: true,
+          timeout: 30,
+          retry: 1,
           proxyEndpoint: endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.offline);
@@ -304,11 +375,22 @@ void main() {
       expect(result, isA<Err>());
       expect(routeClosed, isTrue);
       verify(
-        () => statusPort.checkSocket(
+        () => statusPort.checkElectrum(
           url: 'ssl://hidden.onion:50002',
+          network: _network,
+          validateDomain: true,
+          timeout: 30,
+          retry: 1,
           proxyEndpoint: endpoint,
         ),
       ).called(1);
+      verifyNever(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      );
     });
 
     test('passes a ready external route to a Bitcoin probe', () async {
@@ -341,6 +423,7 @@ void main() {
       when(
         () => statusPort.checkSocket(
           url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
           proxyEndpoint: externalRoute.endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -349,6 +432,8 @@ void main() {
           url: any(named: 'url'),
           network: _network,
           validateDomain: true,
+          timeout: 5,
+          retry: 1,
           proxyEndpoint: externalRoute.endpoint,
         ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -367,6 +452,23 @@ void main() {
           isCustom: true,
           externalProxyEnabled: true,
           externalProxyPort: externalRoute.endpoint.port,
+        ),
+      ).called(1);
+      verifyNever(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      );
+      verify(
+        () => statusPort.checkElectrum(
+          url: any(named: 'url'),
+          network: _network,
+          validateDomain: true,
+          timeout: 5,
+          retry: 1,
+          proxyEndpoint: externalRoute.endpoint,
         ),
       ).called(1);
     });
@@ -410,6 +512,7 @@ void main() {
       verifyNever(
         () => statusPort.checkSocket(
           url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
           proxyEndpoint: any(named: 'proxyEndpoint'),
         ),
       );
@@ -543,17 +646,41 @@ void main() {
         (_) async => ElectrumTorRoute(endpoint, () async => routeClosed = true),
       );
       when(
-        () => statusPort.checkSocket(url: server.url, proxyEndpoint: endpoint),
+        () => statusPort.checkElectrum(
+          url: server.url,
+          network: _network,
+          validateDomain: true,
+          timeout: 30,
+          retry: 1,
+          proxyEndpoint: endpoint,
+        ),
       ).thenAnswer((_) async => ElectrumServerStatus.online);
 
+      final updates = <LoadElectrumServerDataResponse>[];
       final result = await usecase.execute(
         LoadElectrumServerDataRequest(isLiquid: false),
+        onUpdate: updates.add,
       );
 
       expect(result, isA<Ok>());
+      expect(
+        updates.first.serverStatuses[server.url],
+        ElectrumServerStatus.unknown,
+      );
+      expect(
+        updates.last.serverStatuses[server.url],
+        ElectrumServerStatus.online,
+      );
       expect(routeClosed, isTrue);
       verify(
-        () => statusPort.checkSocket(url: server.url, proxyEndpoint: endpoint),
+        () => statusPort.checkElectrum(
+          url: server.url,
+          network: _network,
+          validateDomain: true,
+          timeout: 30,
+          retry: 1,
+          proxyEndpoint: endpoint,
+        ),
       ).called(1);
     });
 
@@ -612,8 +739,12 @@ void main() {
           (_) async => ElectrumTorRoute(externalRoute.endpoint, () async {}),
         );
         when(
-          () => statusPort.checkSocket(
+          () => statusPort.checkElectrum(
             url: any(named: 'url'),
+            network: _network,
+            validateDomain: true,
+            timeout: 30,
+            retry: 1,
             proxyEndpoint: externalRoute.endpoint,
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.online);
@@ -708,8 +839,12 @@ void main() {
           ),
         ).called(1);
         verifyNever(
-          () => statusPort.checkSocket(
+          () => statusPort.checkElectrum(
             url: any(named: 'url'),
+            network: any(named: 'network'),
+            validateDomain: any(named: 'validateDomain'),
+            timeout: any(named: 'timeout'),
+            retry: any(named: 'retry'),
             proxyEndpoint: any(named: 'proxyEndpoint'),
           ),
         );

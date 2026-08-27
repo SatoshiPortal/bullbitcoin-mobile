@@ -793,10 +793,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "वॉलेट",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "exchangeLandingLoginToUseSupport": "संपर्क संबंधित मुद्दों के लिए समर्थन चैट का उपयोग करने के लिए लॉगिन या साइन अप करें।।",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -2085,8 +2081,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "वॉलेट आयात करें",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "वॉलेट आयात करें",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google ड्राइव से जुड़ने में विफल रहा",
@@ -2450,10 +2446,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "वॉलेट विवरण",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "सुरक्षित Bitcoin वॉलेट",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -2544,10 +2536,6 @@
   "walletTypeWatchSigner": "Watch-Signer",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "वॉलेट बैकअप",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "ledgerConnectingSubtext": "सुरक्षित कनेक्शन स्थापित करना।",
   "@ledgerConnectingSubtext": {
@@ -3200,8 +3188,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "सेवाओं की स्थिति",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "सेवाओं की स्थिति",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "मूल्य रिफ्रेश होगा ",
@@ -3970,10 +3958,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "Mempool सर्वर सेटिंग्स",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "transactionSwapDescLnReceiveDefault": "आपका swap प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapDescLnReceiveDefault": {
@@ -4986,8 +4970,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "बिना नाम का वॉलेट",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "बिना नाम का वॉलेट",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "केवल €20,000 से अधिक लेनदेन के लिए उपयोग करें। छोटे लेनदेन के लिए, तत्काल SEPA विकल्प का उपयोग करें।।",
@@ -6000,10 +5984,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "बैकअप सेटिंग्स",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "नीचे बुल बिटकॉइन के बैंक विवरण का उपयोग करके अपने बैंक खाते से एक तार अंतरण भेजें। आपके बैंक को इन विवरणों के कुछ हिस्सों की आवश्यकता हो सकती है।।",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -6720,10 +6700,6 @@
   "dcaFrequencyValidationError": "एक आवृत्ति का चयन करें",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
-  },
-  "walletsListTitle": "वॉलेट विवरण",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "payAllCountries": "सभी देश",
   "@payAllCountries": {
@@ -7473,10 +7449,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "वॉल्ट देखें कुंजी",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "पासवर्ड मैच नहीं करते",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"
@@ -8130,10 +8102,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "वॉलेट नहीं मिला",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "विरासत",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -8423,10 +8391,6 @@
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "bitcoinSettingsElectrumServerTitle": "Electrum सर्वर सेटिंग्स",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
   "payRemoveRecipient": "Recipient निकालें",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -8615,10 +8579,6 @@
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "settingsBitcoinSettingsTitle": "Bitcoin सेटिंग्स",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "backupWalletHowToDecideBackupModalTitle": "कैसे तय करें",
   "@backupWalletHowToDecideBackupModalTitle": {
@@ -9145,10 +9105,6 @@
   "importQrDeviceKeystoneStep4": "\"कनेक्ट सॉफ्टवेयर वॉलेट\" टैप करें",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
-  },
-  "bitcoinSettingsAutoTransferTitle": "ऑटो ट्रांसफर सेटिंग्स",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "मूल लेनदेन",
   "@rbfOriginalTransaction": {
@@ -10013,10 +9969,6 @@
   "backupWalletErrorGoogleDriveSave": "Google ड्राइव को बचाने में विफल",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
-  },
-  "settingsTorSettingsTitle": "Tor सेटिंग्स",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "importQrDeviceKeystoneStep2": "इसे अपने पिन दर्ज करके अनलॉक करें",
   "@importQrDeviceKeystoneStep2": {
@@ -11415,10 +11367,6 @@
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
   },
-  "walletsListNoWalletsMessage": "कोई वॉलेट नहीं मिला",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
-  },
   "importWalletColdcardQ": "कोल्डकार्ड Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -12740,17 +12688,14 @@
   "settingsSearchNoResults": "कोई सेटिंग नहीं मिली।",
   "settingsSearchMempoolKeywords": "ब्लॉक एक्सप्लोरर|फीस अनुमान|लेनदेन शुल्क|mempool API",
   "settingsSearchExchangeKeywords": "खाता|एक्सचेंज खाता|ट्रेडिंग|खरीदना और बेचना",
-  "settingsSearchWalletBackupKeywords": "बैकअप|पुनर्प्राप्ति|वॉलेट पुनर्प्राप्त करें|सीड बैकअप",
   "settingsSearchStartBackupKeywords": "बैकअप बनाएँ|बैकअप सहेजें|वॉलेट का बैकअप लें",
   "settingsSearchRecoverbullKeywords": "एन्क्रिप्टेड बैकअप|क्लाउड बैकअप|एन्क्रिप्टेड वॉल्ट|वॉल्ट पुनर्प्राप्ति",
   "settingsSearchLabelsKeywords": "वॉलेट लेबल|लेनदेन लेबल|BIP329|लेबल आयात करें|लेबल निर्यात करें",
   "settingsSearchTransactionHistoryKeywords": "लेनदेन निर्यात करें|लेनदेन इतिहास निर्यात करें|CSV|वॉलेट इतिहास",
-  "settingsSearchBitcoinSettingsKeywords": "बिटकॉइन प्राथमिकताएँ|नेटवर्क सेटिंग्स|वॉलेट सेटिंग्स",
   "settingsSearchAppSettingsKeywords": "ऐप प्राथमिकताएँ|एप्लिकेशन सेटिंग्स|सामान्य सेटिंग्स",
   "settingsSearchBtcMapKeywords": "BTC Map|बिटकॉइन मानचित्र|व्यापारियों का मानचित्र|बिटकॉइन खर्च करने की जगहें",
   "settingsSearchTermsOfServiceKeywords": "नियम और शर्तें|कानूनी|उपयोगकर्ता समझौता|TOS",
   "settingsSearchServicesStatusKeywords": "सेवाओं की स्थिति|सिस्टम की स्थिति|ऑनलाइन|सेवा बाधित",
-  "settingsSearchWalletsKeywords": "वॉलेट प्रबंधित करें|वॉलेट विवरण|बिटकॉइन वॉलेट",
   "settingsSearchImportWalletKeywords": "वॉलेट जोड़ें|वॉलेट पुनर्प्राप्त करें|रिकवरी वाक्यांश आयात करें|केवल देखने वाला वॉलेट|हार्डवेयर वॉलेट",
   "settingsSearchBroadcastTransactionKeywords": "हस्ताक्षरित लेनदेन प्रसारित करें|लेनदेन भेजें|रॉ लेनदेन|लेनदेन hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin गोपनीयता|सहयोगी लेनदेन|P2EP",
@@ -12763,7 +12708,6 @@
   "settingsSearchThemeKeywords": "दिखावट|गहरा मोड|हल्का मोड|सिस्टम थीम|डार्क मोड|लाइट मोड",
   "settingsSearchCurrencyKeywords": "फ़िएट मुद्रा|स्थानीय मुद्रा|डिफ़ॉल्ट मुद्रा|एक्सचेंज मुद्रा",
   "settingsSearchSecurityPinKeywords": "PIN कोड|पासकोड|ऐप लॉक|प्रमाणीकरण|PIN बदलें",
-  "settingsSearchTorKeywords": "Tor प्रॉक्सी|Orbot|ऑनियन रूटिंग|अंतर्निहित Tor|गोपनीयता नेटवर्क",
   "settingsSearchLogsKeywords": "Debug लॉग|डायग्नोस्टिक लॉग|ऐप लॉग|लॉग निर्यात करें",
   "settingsSearchDevModeKeywords": "डेवलपर मोड|डेवलपमेंट सेटिंग्स|Debug मोड|उन्नत परीक्षण",
   "settingsSearchTestnetCredentialsKeywords": "Testnet उपयोगकर्ता क्रेडेंशियल|Testnet लॉगिन|Testnet उपयोगकर्ता नाम|Testnet पासवर्ड|Basic Auth",

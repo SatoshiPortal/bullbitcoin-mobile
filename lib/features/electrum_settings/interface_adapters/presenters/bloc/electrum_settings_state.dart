@@ -15,6 +15,7 @@ sealed class ElectrumSettingsState with _$ElectrumSettingsState {
     @Default(false) bool isPrioritizingCustomServer,
     @Default(false) bool isDeletingCustomServer,
     @Default(false) bool isSavingAdvancedOptions,
+    @Default(false) bool hasActiveCustomBitcoinOnionServer,
     ElectrumServersFailure? electrumServersError,
     AdvancedOptionsFailure? advancedOptionsError,
   }) = _ElectrumSettingsState;

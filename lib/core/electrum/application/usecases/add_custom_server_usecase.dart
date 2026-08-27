@@ -6,7 +6,9 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.d
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -74,22 +76,32 @@ class AddCustomServerUsecase {
         externalProxyEnabled: appSettings.useTorProxy,
         externalProxyPort: appSettings.torProxyPort,
       );
+      final effectiveTimeout = ElectrumConnection.resolveEffectiveTimeout(
+        url: server.url,
+        configuredTimeout: electrumSettings.timeout,
+      );
       try {
-        // Step 1: verify the TCP/SSL socket is reachable.
-        final socketStatus = await _serverStatusPort.checkSocket(
-          url: server.url,
-          proxyEndpoint: route?.endpoint,
-        );
-        if (socketStatus == ElectrumServerStatus.offline) {
-          return const Err(ElectrumServerUnreachableFailure());
+        // Bitcoin's BDK probe already establishes the socket and validates
+        // the protocol. Liquid keeps the separate socket check until its
+        // protocol probe uses the same production client stack.
+        if (server.network.isLiquid) {
+          final socketStatus = await _serverStatusPort.checkSocket(
+            url: server.url,
+            timeout: effectiveTimeout,
+            proxyEndpoint: route?.endpoint,
+          );
+          if (socketStatus == ElectrumServerStatus.offline) {
+            return const Err(ElectrumServerUnreachableFailure());
+          }
         }
 
-        // Step 2: verify the server actually serves chain data by fetching a
-        // known historical tx (falls back to server.version on testnets).
+        // Verify that the server actually serves chain data.
         final protocolStatus = await _serverStatusPort.checkElectrum(
           url: server.url,
           network: server.network,
           validateDomain: electrumSettings.validateDomain,
+          timeout: effectiveTimeout,
+          retry: electrumSettings.retry,
           proxyEndpoint: route?.endpoint,
         );
         if (protocolStatus == ElectrumServerStatus.offline) {

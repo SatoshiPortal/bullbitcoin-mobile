@@ -1,18 +1,26 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_tor/tor.dart';
 
+typedef BdkElectrumProbe =
+    Future<void> Function({
+      required String url,
+      required String? socks5,
+      required int timeout,
+      required int retry,
+      required bool validateDomain,
+      required bool isMainnet,
+    });
+
 class ServerStatusAdapter implements ServerStatusPort {
-  final ElectrumSocketConnector _socketConnector;
-
-  const ServerStatusAdapter(this._socketConnector);
-
   /// Bitcoin pizza day — first real-world BTC purchase, May 22 2010.
   static const _bitcoinMainnetProbeTxid =
       'cca7507897abc89628f450e8b1e0c6fca4ec3f7b34cccf55f3f531c659ff4d79';
@@ -20,6 +28,12 @@ class ServerStatusAdapter implements ServerStatusPort {
   /// First quantum-proof signature on Liquid mainnet.
   static const _liquidMainnetProbeTxid =
       'e079f31c58655e7b37477c6bb8f23aafaa942a86fe8c47f2970840a2c0829239';
+
+  final ElectrumSocketConnector _socketConnector;
+  final BdkElectrumProbe _bdkProbe;
+
+  ServerStatusAdapter(this._socketConnector, {BdkElectrumProbe? bdkProbe})
+    : _bdkProbe = bdkProbe ?? _runBdkProbe;
 
   @override
   Future<ElectrumServerStatus> checkSocket({
@@ -57,6 +71,7 @@ class ServerStatusAdapter implements ServerStatusPort {
     required ElectrumServerNetwork network,
     required bool validateDomain,
     int? timeout,
+    int? retry,
     TorProxyEndpoint? proxyEndpoint,
   }) async {
     try {
@@ -66,6 +81,18 @@ class ServerStatusAdapter implements ServerStatusPort {
       if (uri == null) return ElectrumServerStatus.offline;
 
       final effectiveTimeout = _resolveTimeout(uri, timeout);
+      if (network == ElectrumServerNetwork.bitcoinMainnet ||
+          network == ElectrumServerNetwork.bitcoinTestnet) {
+        await _bdkProbe(
+          url: url,
+          socks5: proxyEndpoint?.authority,
+          timeout: effectiveTimeout,
+          retry: retry ?? 0,
+          validateDomain: validateDomain,
+          isMainnet: network == ElectrumServerNetwork.bitcoinMainnet,
+        );
+        return ElectrumServerStatus.online;
+      }
       final probeTxid = _probeTxidFor(network);
 
       // Testnet has no stable probe tx — fall back to a server.version
@@ -125,8 +152,10 @@ class ServerStatusAdapter implements ServerStatusPort {
   /// Onion addresses need longer timeouts due to Tor circuit building.
   /// Default: 5 seconds for clearnet, 30 seconds for .onion addresses.
   int _resolveTimeout(Uri uri, int? timeout) {
-    final isOnion = ElectrumServerUrl.isOnionHost(uri.host);
-    return timeout ?? (isOnion ? 30 : 5);
+    return ElectrumConnection.resolveEffectiveTimeout(
+      url: uri.toString(),
+      configuredTimeout: timeout ?? 5,
+    );
   }
 
   /// Sends a JSON-RPC request and returns the raw response line. Plain, TLS
@@ -163,3 +192,44 @@ class ServerStatusAdapter implements ServerStatusPort {
     }
   }
 }
+
+Future<void> _runBdkProbe({
+  required String url,
+  required String? socks5,
+  required int timeout,
+  required int retry,
+  required bool validateDomain,
+  required bool isMainnet,
+}) => Isolate.run(() {
+  bdk.ElectrumClient buildClient() => bdk.ElectrumClient(
+    url: url,
+    socks5: socks5,
+    timeout: timeout.clamp(0, 255),
+    retry: retry.clamp(0, 255),
+    validateDomain: validateDomain,
+  );
+
+  late final bdk.ElectrumClient client;
+  try {
+    client = buildClient();
+  } on bdk.CouldNotCreateConnectionElectrumException catch (error) {
+    if (!error.errorMessage.contains('Failed to install CryptoProvider')) {
+      rethrow;
+    }
+    // Concurrent BDK isolates can race while installing rustls' global
+    // provider. The winner has installed it by the time this retry runs.
+    client = buildClient();
+  }
+  try {
+    client.blockHeadersSubscribe();
+    if (isMainnet) {
+      client.fetchTx(
+        txid: bdk.Txid.fromString(
+          hex: ServerStatusAdapter._bitcoinMainnetProbeTxid,
+        ),
+      );
+    }
+  } finally {
+    client.dispose();
+  }
+});

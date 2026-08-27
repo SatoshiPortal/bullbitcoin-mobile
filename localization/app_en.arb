@@ -332,21 +332,9 @@
   "@languageSettingsScreenTitle": {
     "description": "The title of the language settings screen"
   },
-  "backupSettingsScreenTitle": "Backup Settings",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "settingsExchangeSettingsTitle": "Exchange Settings",
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
-  },
-  "settingsWalletBackupTitle": "Wallet Backup",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
-  },
-  "settingsBitcoinSettingsTitle": "Bitcoin Settings",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "settingsSecurityPinTitle": "Security Pin",
   "@settingsSecurityPinTitle": {
@@ -473,13 +461,9 @@
   "@settingsGetHelpLabel": {
     "description": "Label for the Get Help support chat link in settings"
   },
-  "settingsServicesStatusTitle": "Services Status",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "Service Status",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
-  },
-  "settingsTorSettingsTitle": "Tor Settings",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "settingsRecoverbullTitle": "Recoverbull",
   "@settingsRecoverbullTitle": {
@@ -513,17 +497,9 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "walletOptionsUnnamedWalletFallback": "Unnamed Wallet",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
-  },
-  "walletOptionsNotFoundMessage": "Wallet not found",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
-  "walletOptionsWalletDetailsTitle": "Wallet Details",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
   },
   "addressViewAddressesTitle": "Addresses",
   "@addressViewAddressesTitle": {
@@ -572,18 +548,6 @@
   "walletDetailsCopyButton": "Copy",
   "@walletDetailsCopyButton": {
     "description": "Button label for copying wallet details to clipboard"
-  },
-  "bitcoinSettingsWalletsTitle": "Wallets",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
-  "bitcoinSettingsElectrumServerTitle": "Electrum Server Settings",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
-  "bitcoinSettingsMempoolServerTitle": "Mempool Server Settings",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "mempoolSettingsTitle": "Mempool Server",
   "@mempoolSettingsTitle": {
@@ -757,12 +721,8 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
-  },
-  "bitcoinSettingsImportWalletTitle": "Import Wallet",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "Import wallet",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "bitcoinSettingsBroadcastTransactionTitle": "Broadcast Transaction",
@@ -1224,14 +1184,6 @@
   "retry": "Retry",
   "@retry": {
     "description": "Generic retry button label"
-  },
-  "walletsListTitle": "Wallet details",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
-  },
-  "walletsListNoWalletsMessage": "No wallets found",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
   },
   "walletDeletionConfirmationTitle": "Delete Wallet",
   "@walletDeletionConfirmationTitle": {
@@ -4362,10 +4314,6 @@
   "exportingVaultButton": "Exporting...",
   "@exportingVaultButton": {
     "description": "Button label shown while exporting vault"
-  },
-  "viewVaultKeyButton": "View Vault Key",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
   },
   "revealingVaultKeyButton": "Revealing...",
   "@revealingVaultKeyButton": {
@@ -14701,10 +14649,6 @@
   "@settingsSearchExchangeKeywords": {
     "description": "Pipe-separated search aliases for Exchange. Search metadata; not displayed."
   },
-  "settingsSearchWalletBackupKeywords": "backup|recovery|recover wallet|seed backup",
-  "@settingsSearchWalletBackupKeywords": {
-    "description": "Pipe-separated search aliases for Wallet Backup. Search metadata; not displayed."
-  },
   "settingsSearchStartBackupKeywords": "create backup|save backup|back up wallet",
   "@settingsSearchStartBackupKeywords": {
     "description": "Pipe-separated search aliases for Start Backup. Search metadata; not displayed."
@@ -14721,10 +14665,6 @@
   "@settingsSearchTransactionHistoryKeywords": {
     "description": "Pipe-separated search aliases for Transaction History. Search metadata; not displayed."
   },
-  "settingsSearchBitcoinSettingsKeywords": "bitcoin preferences|network settings|wallet settings",
-  "@settingsSearchBitcoinSettingsKeywords": {
-    "description": "Pipe-separated search aliases for Bitcoin Settings. Search metadata; not displayed."
-  },
   "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
   "@settingsSearchAppSettingsKeywords": {
     "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
@@ -14740,10 +14680,6 @@
   "settingsSearchServicesStatusKeywords": "service health|system status|online|outage",
   "@settingsSearchServicesStatusKeywords": {
     "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
-  },
-  "settingsSearchWalletsKeywords": "manage wallets|wallet details|bitcoin wallets",
-  "@settingsSearchWalletsKeywords": {
-    "description": "Pipe-separated search aliases for Wallets. Search metadata; not displayed."
   },
   "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
   "@settingsSearchImportWalletKeywords": {
@@ -14792,10 +14728,6 @@
   "settingsSearchSecurityPinKeywords": "PIN code|passcode|app lock|authentication|change PIN",
   "@settingsSearchSecurityPinKeywords": {
     "description": "Pipe-separated search aliases for Security PIN. Search metadata; not displayed."
-  },
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion routing|embedded Tor|privacy network",
-  "@settingsSearchTorKeywords": {
-    "description": "Pipe-separated search aliases for Tor. Search metadata; not displayed."
   },
   "settingsSearchLogsKeywords": "debug logs|diagnostic logs|app logs|export logs",
   "@settingsSearchLogsKeywords": {
@@ -14982,6 +14914,54 @@
   "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
   "@exchangeSupportChatLoadAttachmentError": {
     "description": "Shown when downloading or opening a support chat attachment fails."
+  },
+  "settingsBackupTitle": "Backup",
+  "@settingsBackupTitle": {
+    "description": "Title for the wallet settings section"
+  },
+  "settingsSearchBackupKeywords": "backup|recovery|recover wallet|seed backup",
+  "@settingsSearchBackupKeywords": {
+    "description": "Pipe-separated search aliases for wallet settings"
+  },
+  "settingsAppTitle": "App",
+  "@settingsAppTitle": {
+    "description": "Root settings entry for app preferences"
+  },
+  "settingsWalletTitle": "Wallet",
+  "@settingsWalletTitle": {
+    "description": "Root settings entry for Bitcoin preferences"
+  },
+  "settingsExchangeTitle": "Exchange",
+  "@settingsExchangeTitle": {
+    "description": "Root settings entry for exchange preferences"
+  },
+  "torTitle": "Tor",
+  "@torTitle": {
+    "description": "Short title for Tor configuration entry points"
+  },
+  "bitcoinSettingsAutoTransferTitle": "Auto Transfer",
+  "@bitcoinSettingsAutoTransferTitle": {
+    "description": "Bitcoin settings list entry for automatic transfers"
+  },
+  "bitcoinSettingsElectrumServerTitle": "Electrum Server",
+  "@bitcoinSettingsElectrumServerTitle": {
+    "description": "Bitcoin settings list entry for Electrum server configuration"
+  },
+  "bitcoinSettingsMempoolServerTitle": "Mempool Server",
+  "@bitcoinSettingsMempoolServerTitle": {
+    "description": "Bitcoin settings list entry for Mempool server configuration"
+  },
+  "settingsWalletSettingsTitle": "Wallet Settings",
+  "@settingsWalletSettingsTitle": {
+    "description": "Title of the wallet settings screen"
+  },
+  "settingsSearchWalletSettingsKeywords": "wallet|bitcoin|network settings|on-chain settings|bitcoin settings",
+  "@settingsSearchWalletSettingsKeywords": {
+    "description": "Pipe-separated search aliases for wallet settings"
+  },
+  "electrumOnionUsesTorDescription": "This .onion server is routed through Tor.",
+  "@electrumOnionUsesTorDescription": {
+    "description": "Explains Tor routing when adding a custom onion Electrum server"
   },
   "statusCheckNoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
   "@statusCheckNoDefaultWalletError": {

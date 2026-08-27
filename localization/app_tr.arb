@@ -789,10 +789,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "Cüzdanlar",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "exchangeLandingLoginToUseSupport": "Değişimle ilgili sorunlar için destek sohbetini kullanmak üzere lütfen giriş yapın veya kaydolun.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -2077,8 +2073,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "Import Wallet",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "Import Wallet",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google Drive'a bağlanmak için başarısız oldu",
@@ -2442,10 +2438,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "Cüzdan Detayları",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "Güvenli Bitcoin cüzdanı",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -2536,10 +2528,6 @@
   "walletTypeWatchSigner": "Watch-Signer",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "Cüzdan yedekleme",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "ledgerConnectingSubtext": "Güvenli bağlantı kurmak...",
   "@ledgerConnectingSubtext": {
@@ -3192,8 +3180,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "Servis Durumu",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "Servis Durumu",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "Fiyat yenilenecek ",
@@ -3954,10 +3942,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "Mempool Server Ayarları",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "transactionSwapDescLnReceiveDefault": "Değişiminiz devam ediyor. Bu süreç otomatikdir ve tamamlamak için biraz zaman alabilir.",
   "@transactionSwapDescLnReceiveDefault": {
@@ -4966,8 +4950,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "Unnamed Wallet",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "Sadece 20.000 € üzerindeki işlemler için kullanın. Daha küçük işlemler için, Instant SEPA seçeneği kullanın.",
@@ -5972,10 +5956,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "Backup Ayarlar",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "Aşağıdaki Bull Bitcoin'in banka bilgilerini kullanarak banka hesabınızdan bir tel transfer gönderin. Bankanız bu ayrıntıların sadece bazı kısımları gerektirebilir.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -6683,10 +6663,6 @@
   "dcaFrequencyValidationError": "Lütfen bir frekansı seçin",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
-  },
-  "walletsListTitle": "Cüzdan detayları",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "payAllCountries": "Bütün ülkeler",
   "@payAllCountries": {
@@ -7419,10 +7395,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "Manzara Anahtar Anahtar Anahtar Anahtar",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "Şifreler eşleşmez",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"
@@ -8059,10 +8031,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "Cüzdan bulunamadı",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "Mirası",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -8352,10 +8320,6 @@
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "bitcoinSettingsElectrumServerTitle": "Electrum Server Ayarları",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
   "payRemoveRecipient": "Recipient",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -8540,10 +8504,6 @@
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "settingsBitcoinSettingsTitle": "Bitcoin Ayarlar",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "backupWalletHowToDecideBackupModalTitle": "Nasıl karar verilir",
   "@backupWalletHowToDecideBackupModalTitle": {
@@ -9070,10 +9030,6 @@
   "importQrDeviceKeystoneStep4": "\"Connect Software Wallet\"'a tıklayın",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
-  },
-  "bitcoinSettingsAutoTransferTitle": "Auto Transfer Ayarları",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "Orijinal işlem",
   "@rbfOriginalTransaction": {
@@ -9938,10 +9894,6 @@
   "backupWalletErrorGoogleDriveSave": "Google sürücüsünü kurtarmak için başarısız oldu",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
-  },
-  "settingsTorSettingsTitle": "Tor Ayarları",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "importQrDeviceKeystoneStep2": "Unlock it by enter your PIN",
   "@importQrDeviceKeystoneStep2": {
@@ -11306,10 +11258,6 @@
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
   },
-  "walletsListNoWalletsMessage": "Hiçbir cüzdan bulunamadı",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
-  },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -12550,17 +12498,14 @@
   "settingsSearchNoResults": "Ayar bulunamadı.",
   "settingsSearchMempoolKeywords": "blok gezgini|ücret tahmini|işlem ücretleri|mempool API",
   "settingsSearchExchangeKeywords": "hesap|borsa hesabı|alım satım|satın alma ve satma",
-  "settingsSearchWalletBackupKeywords": "yedekleme|kurtarma|cüzdanı kurtarma|seed yedeği",
   "settingsSearchStartBackupKeywords": "yedek oluşturma|yedeği kaydetme|cüzdanı yedekleme",
   "settingsSearchRecoverbullKeywords": "şifreli yedek|bulut yedeği|şifreli kasa|kasa kurtarma|Recoverbull",
   "settingsSearchLabelsKeywords": "cüzdan etiketleri|işlem etiketleri|BIP329|etiketleri içe aktar|etiketleri dışa aktar",
   "settingsSearchTransactionHistoryKeywords": "işlemleri dışa aktar|işlem dışa aktarma|CSV|cüzdan geçmişi",
-  "settingsSearchBitcoinSettingsKeywords": "Bitcoin tercihleri|ağ ayarları|cüzdan ayarları",
   "settingsSearchAppSettingsKeywords": "uygulama tercihleri|uygulama ayarları|genel ayarlar",
   "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin haritası|satıcı haritası|bitcoin harcanabilen yerler",
   "settingsSearchTermsOfServiceKeywords": "şartlar ve koşullar|yasal bilgiler|kullanıcı sözleşmesi|TOS",
   "settingsSearchServicesStatusKeywords": "hizmet durumu|sistem durumu|çevrimiçi|kesinti",
-  "settingsSearchWalletsKeywords": "cüzdanları yönet|cüzdan ayrıntıları|Bitcoin cüzdanları",
   "settingsSearchImportWalletKeywords": "cüzdan ekle|cüzdanı kurtar|anımsatıcı ifadeyi içe aktar|sadece izleme cüzdanı|donanım cüzdanı",
   "settingsSearchBroadcastTransactionKeywords": "imzalı işlemi yayınla|işlemi gönder|ham işlem|işlem hex kodu|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin gizliliği|ortak işlem|Payjoin|P2EP",
@@ -12573,7 +12518,6 @@
   "settingsSearchThemeKeywords": "görünüm|karanlık mod|aydınlık mod|sistem teması",
   "settingsSearchCurrencyKeywords": "itibari para birimi|yerel para birimi|varsayılan para birimi|döviz kuru para birimi",
   "settingsSearchSecurityPinKeywords": "PIN kodu|geçiş kodu|uygulama kilidi|kimlik doğrulama|PIN değiştir",
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion yönlendirme|gömülü Tor|gizlilik ağı",
   "settingsSearchLogsKeywords": "debug günlükleri|tanılama günlükleri|uygulama günlükleri|günlükleri dışa aktar",
   "settingsSearchDevModeKeywords": "geliştirici modu|geliştirme ayarları|debug modu|gelişmiş test",
   "settingsSearchTestnetCredentialsKeywords": "testnet kimlik bilgileri|testnet girişi|testnet kullanıcı adı|testnet parolası|Basic Auth",

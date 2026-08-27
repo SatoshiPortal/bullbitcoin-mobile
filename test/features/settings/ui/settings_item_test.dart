@@ -13,7 +13,6 @@ void main() {
     final localization = AppLocalizationsEn();
     final item = buildSettingsItems(
       localization: localization,
-      exchangeTitle: localization.settingsExchangeSettingsTitle,
     ).byId(SettingsItemId.importWallet);
     final router = GoRouter(
       routes: [
@@ -38,7 +37,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(localization.bitcoinSettingsImportWalletTitle));
+    await tester.tap(find.text(localization.walletSettingsImportWalletTitle));
     await tester.pumpAndSettle();
 
     expect(find.text('Import wallet destination'), findsOneWidget);

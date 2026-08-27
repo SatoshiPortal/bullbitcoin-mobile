@@ -693,10 +693,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "Wallets",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "exchangeLandingLoginToUseSupport": "Παρακαλούμε συνδεθείτε ή εγγραφείτε για να χρησιμοποιήσετε το chat υποστήριξης για θέματα που σχετίζονται με την ανταλλαγή.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -1767,8 +1763,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "Εισαγωγή Wallet",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "Εισαγωγή Wallet",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "payEnterInvoice": "Εισάγετε Invoice",
@@ -2076,10 +2072,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "Λεπτομέρειες Wallet",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "Secure Bitcoin πορτοφόλι",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -2156,10 +2148,6 @@
   "walletTypeWatchSigner": "Watch-Signer",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "Wallet Backup",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "ledgerConnectingSubtext": "Δημιουργία ασφαλούς σύνδεσης...",
   "@ledgerConnectingSubtext": {
@@ -2713,8 +2701,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "Υπηρεσίες status",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "Υπηρεσίες status",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "Η τιμή θα ανανεωθεί ",
@@ -3364,10 +3352,6 @@
   "swapTransferTo": "Μεταφορά",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
-  },
-  "bitcoinSettingsMempoolServerTitle": "Mempool Server Ρυθμίσεις",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "selectCoinsManuallyLabel": "Επιλέξτε νομίσματα",
   "@selectCoinsManuallyLabel": {
@@ -4206,8 +4190,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "Unnamed Wallet",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "Unnamed Wallet",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "Μόνο χρήση για συναλλαγές άνω των 20.000 ευρώ. Για μικρότερες συναλλαγές, χρησιμοποιήστε την επιλογή Instant SEPA.",
@@ -5071,10 +5055,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "Ρυθμίσεις Backup",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "Στείλτε μια μεταφορά καλωδίων από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις λεπτομέρειες της τράπεζας του Bull Bitcoin παρακάτω. Η τράπεζά σας μπορεί να απαιτεί μόνο μερικά μέρη αυτών των λεπτομερειών.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -5651,10 +5631,6 @@
   "coreScreensServerNetworkFeesLabel": "Δίκτυο server Fees",
   "@coreScreensServerNetworkFeesLabel": {
     "description": "Label for server network fees field"
-  },
-  "walletsListTitle": "Λεπτομέρειες Wallet",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "payAllCountries": "Όλες οι χώρες",
   "@payAllCountries": {
@@ -6285,10 +6261,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "Δείτε Vault Key Key Key",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "fundExchangeCrIbanUsdTransferCodeWarning": "Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"διαγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να συμπεριλάβετε αυτόν τον κώδικα, η πληρωμή σας μπορεί να απορριφθεί.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
     "description": "Warning about including transfer code in payment for USD transfers"
@@ -6798,10 +6770,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "Wallet δεν βρέθηκε",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "Legacy",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -7036,10 +7004,6 @@
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "bitcoinSettingsElectrumServerTitle": "Electrum Server Guidelines",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
   "payRemoveRecipient": "Αφαιρέστε Recipient",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -7212,10 +7176,6 @@
   "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "settingsBitcoinSettingsTitle": "Bitcoin ρυθμίσεις Bitcoin",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "backupSettingsLabel": "Wallet backup",
   "@backupSettingsLabel": {
@@ -7613,10 +7573,6 @@
   "importQrDeviceKeystoneStep4": "Πατήστε \"Connect Software Wallet\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
-  },
-  "bitcoinSettingsAutoTransferTitle": "Ρυθμίσεις αυτόματης μεταφοράς",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "Original συναλλαγή",
   "@rbfOriginalTransaction": {
@@ -8294,10 +8250,6 @@
   "coreSwapsLnReceiveCompleted": "Το Swap ολοκληρώνεται.",
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
-  },
-  "settingsTorSettingsTitle": "Οι ρυθμίσεις Tor",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "importQrDeviceKeystoneStep2": "Unlock it εισάγοντας το PIN σας",
   "@importQrDeviceKeystoneStep2": {
@@ -9492,10 +9444,6 @@
   "ledgerErrorMissingAddress": "Η διεύθυνση απαιτείται για επαλήθευση",
   "@ledgerErrorMissingAddress": {
     "description": "Error message when address is missing for verification"
-  },
-  "walletsListNoWalletsMessage": "Δεν υπάρχουν πορτοφόλια",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
   },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
@@ -12550,17 +12498,14 @@
   "settingsSearchNoResults": "Δεν βρέθηκαν ρυθμίσεις.",
   "settingsSearchMempoolKeywords": "εξερευνητής μπλοκ|εκτίμηση προμηθειών|προμήθειες συναλλαγών|mempool API",
   "settingsSearchExchangeKeywords": "λογαριασμός|λογαριασμός ανταλλακτηρίου|συναλλαγές|αγορά και πώληση",
-  "settingsSearchWalletBackupKeywords": "αντίγραφο ασφαλείας|ανάκτηση|ανάκτηση πορτοφολιού|αντίγραφο seed",
   "settingsSearchStartBackupKeywords": "δημιουργία αντιγράφου ασφαλείας|αποθήκευση αντιγράφου ασφαλείας|αντίγραφο πορτοφολιού",
   "settingsSearchRecoverbullKeywords": "κρυπτογραφημένο αντίγραφο ασφαλείας|αντίγραφο στο cloud|κρυπτογραφημένο θησαυροφυλάκιο|ανάκτηση θησαυροφυλακίου|Recoverbull",
   "settingsSearchLabelsKeywords": "ετικέτες πορτοφολιού|ετικέτες συναλλαγών|BIP329|εισαγωγή ετικετών|εξαγωγή ετικετών",
   "settingsSearchTransactionHistoryKeywords": "εξαγωγή συναλλαγών|εξαγωγή ιστορικού|CSV|ιστορικό πορτοφολιού",
-  "settingsSearchBitcoinSettingsKeywords": "ρυθμίσεις Bitcoin|ρυθμίσεις δικτύου|ρυθμίσεις πορτοφολιού",
   "settingsSearchAppSettingsKeywords": "προτιμήσεις εφαρμογής|ρυθμίσεις εφαρμογής|γενικές ρυθμίσεις",
   "settingsSearchBtcMapKeywords": "BTC Map|χάρτης Bitcoin|χάρτης εμπόρων|μέρη που δέχονται bitcoin",
   "settingsSearchTermsOfServiceKeywords": "όροι και προϋποθέσεις|νομικά|συμφωνία χρήστη|TOS",
   "settingsSearchServicesStatusKeywords": "κατάσταση υπηρεσιών|κατάσταση συστήματος|σε σύνδεση|διακοπή λειτουργίας",
-  "settingsSearchWalletsKeywords": "διαχείριση πορτοφολιών|λεπτομέρειες πορτοφολιού|πορτοφόλια Bitcoin",
   "settingsSearchImportWalletKeywords": "προσθήκη πορτοφολιού|ανάκτηση πορτοφολιού|εισαγωγή μνημονικής φράσης|πορτοφόλι μόνο παρακολούθησης|πορτοφόλι υλικού",
   "settingsSearchBroadcastTransactionKeywords": "μετάδοση υπογεγραμμένης συναλλαγής|δημοσίευση συναλλαγής|ακατέργαστη συναλλαγή|hex συναλλαγής|PSBT",
   "settingsSearchPayjoinKeywords": "ιδιωτικότητα Payjoin|συνεργατική συναλλαγή|Payjoin|P2EP",
@@ -12573,7 +12518,6 @@
   "settingsSearchThemeKeywords": "εμφάνιση|σκοτεινή λειτουργία|φωτεινή λειτουργία|θέμα συστήματος",
   "settingsSearchCurrencyKeywords": "παραστατικό νόμισμα|τοπικό νόμισμα|προεπιλεγμένο νόμισμα|νόμισμα μετατροπής",
   "settingsSearchSecurityPinKeywords": "κωδικός PIN|κωδικός πρόσβασης|κλείδωμα εφαρμογής|έλεγχος ταυτότητας|αλλαγή PIN",
-  "settingsSearchTorKeywords": "διακομιστής μεσολάβησης Tor|Orbot|δρομολόγηση onion|ενσωματωμένο Tor|δίκτυο ιδιωτικότητας",
   "settingsSearchLogsKeywords": "αρχεία καταγραφής debug|διαγνωστικά αρχεία|αρχεία εφαρμογής|εξαγωγή αρχείων καταγραφής",
   "settingsSearchDevModeKeywords": "λειτουργία προγραμματιστή|ρυθμίσεις ανάπτυξης|λειτουργία debug|προηγμένες δοκιμές",
   "settingsSearchTestnetCredentialsKeywords": "διαπιστευτήρια testnet|σύνδεση testnet|όνομα χρήστη testnet|κωδικός testnet|Basic Auth",

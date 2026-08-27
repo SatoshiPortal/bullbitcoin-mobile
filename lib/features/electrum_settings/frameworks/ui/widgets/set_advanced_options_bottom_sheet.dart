@@ -5,10 +5,15 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
+import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/electrum_settings_failure_l10n.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+bool shouldShowTorInAdvancedOptions(ElectrumSettingsState state) =>
+    !state.isLiquid && state.hasActiveCustomBitcoinOnionServer;
 
 class SetAdvancedOptionsBottomSheet extends StatefulWidget {
   const SetAdvancedOptionsBottomSheet({super.key});
@@ -18,9 +23,12 @@ class SetAdvancedOptionsBottomSheet extends StatefulWidget {
 
     return BlurredBottomSheet.show<void>(
       context: context,
-      child: BlocProvider.value(
-        value: bloc,
-        child: const SetAdvancedOptionsBottomSheet(),
+      child: TorSettingsScope.provideFrom(
+        context: context,
+        child: BlocProvider.value(
+          value: bloc,
+          child: const SetAdvancedOptionsBottomSheet(),
+        ),
       ),
     );
   }
@@ -399,6 +407,28 @@ class _SetAdvancedOptionsBottomSheetState
                         contentPadding: EdgeInsets.zero,
                         value: _validateDomain,
                         onChanged: (v) => setState(() => _validateDomain = v),
+                      ),
+                      BlocBuilder<ElectrumSettingsBloc, ElectrumSettingsState>(
+                        buildWhen: (previous, current) =>
+                            previous.isLiquid != current.isLiquid ||
+                            previous.hasActiveCustomBitcoinOnionServer !=
+                                current.hasActiveCustomBitcoinOnionServer,
+                        builder: (context, state) {
+                          if (!shouldShowTorInAdvancedOptions(state)) {
+                            return const SizedBox.shrink();
+                          }
+                          return Column(
+                            children: [
+                              const SizedBox(height: 8),
+                              SettingsEntryItem(
+                                icon: Icons.vpn_lock,
+                                title: context.loc.torTitle,
+                                onTap: () =>
+                                    TorSettingsBottomSheet.show(context),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),

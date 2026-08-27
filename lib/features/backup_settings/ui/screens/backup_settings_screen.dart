@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -54,7 +52,7 @@ class _Screen extends StatelessWidget {
               forceMaterialTransparency: true,
               automaticallyImplyLeading: false,
               flexibleSpace: TopBar(
-                title: context.loc.backupSettingsScreenTitle,
+                title: context.loc.settingsBackupTitle,
                 onBack: () => context.pop(),
               ),
             ),
@@ -76,8 +74,6 @@ class _Screen extends StatelessWidget {
                             context,
                             iconColor: context.appColors.primary,
                           ),
-                      if (state.lastEncryptedBackup != null)
-                        const _ViewVaultKeyButton(),
                       if (state.lastEncryptedBackup != null ||
                           state.lastPhysicalBackup != null)
                         const _TestBackupButton(),
@@ -88,10 +84,10 @@ class _Screen extends StatelessWidget {
                             iconColor: context.appColors.secondary,
                             textColor: context.appColors.secondary,
                           ),
-                      items.byId(SettingsItemId.labels).buildTile(context),
-                      items
-                          .byId(SettingsItemId.transactionHistory)
-                          .buildTile(context),
+                      if (state.lastEncryptedBackup != null)
+                        const _ViewVaultKeyButton(),
+                      for (final id in backupSettingsDataItemOrder)
+                        items.byId(id).buildTile(context),
                     ],
                   ),
                 ),
@@ -102,6 +98,17 @@ class _Screen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ViewVaultKeyButton extends StatelessWidget {
+  const _ViewVaultKeyButton();
+
+  @override
+  Widget build(BuildContext context) => SettingsEntryItem(
+    icon: Icons.vpn_key,
+    title: context.loc.backupSettingsViewVaultKey,
+    onTap: () => const RecoverBullFacade().openViewVaultKey(context),
+  );
 }
 
 class _BackupTestStatusWidget extends StatelessWidget {
@@ -169,31 +176,6 @@ class _TestBackupButton extends StatelessWidget {
         BackupSettingsSubroute.backupOptions.name,
         extra: BackupSettingsFlow.test,
       ),
-    );
-  }
-}
-
-class _ViewVaultKeyButton extends StatelessWidget {
-  const _ViewVaultKeyButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.vpn_key,
-      title: context.loc.backupSettingsViewVaultKey,
-      onTap: () async {
-        final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
-        if (confirmed == true) {
-          if (!context.mounted) return;
-          await context.pushNamed(
-            RecoverBullRoute.recoverbullFlows.name,
-            extra: RecoverBullFlowsExtra(
-              flow: RecoverBullFlow.viewVaultKey,
-              vault: null,
-            ),
-          );
-        }
-      },
     );
   }
 }

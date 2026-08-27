@@ -831,10 +831,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "Портфейли",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "seedsignerStep12": "Портфейлът Bull Bitcoin ще ви помоли да сканирате QR кода на SeedSigner. Сканирайте го.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -1815,8 +1811,8 @@
   "@sellSelectNetwork": {
     "description": "Screen title for network selection"
   },
-  "bitcoinSettingsImportWalletTitle": "Импортиране на портфейл",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "Импортиране на портфейл",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Неуспешно свързване с Google Drive",
@@ -2072,10 +2068,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "Детайли за портфейла",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "Сигурен портфейл за Биткойн",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -2154,10 +2146,6 @@
   "walletTypeWatchSigner": "Подписващ за наблюдение",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "Резервно копие на портфейла",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "transactionError": "Грешка - {error}",
   "@transactionError": {
@@ -2657,8 +2645,8 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "settingsServicesStatusTitle": "Статус на услугите",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "Статус на услугите",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "Цената ще се обнови след ",
@@ -3198,10 +3186,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "Настройки на мемпул сървър",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "selectCoinsManuallyLabel": "Изберете монетите ръчно",
   "@selectCoinsManuallyLabel": {
@@ -3925,8 +3909,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "Безименен портфейл",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "Безименен портфейл",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "Използвайте само за транзакции над €20 000. За по-малки транзакции използвайте опцията Instant SEPA.",
@@ -4671,10 +4655,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "Настройки за архивиране",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "Изпратете банков превод от вашата банкова сметка, използвайки банковите данни на Bull Bitcoin по-долу. Вашата банка може да изисква само някои от тези данни.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -5211,10 +5191,6 @@
   "@bitboxScreenVerifyOnDevice": {
     "description": "Instruction to verify address on device"
   },
-  "walletsListTitle": "Детайли на портфейла",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
-  },
   "payAllCountries": "Всички държави",
   "@payAllCountries": {
     "description": "Option for all countries filter"
@@ -5732,10 +5708,6 @@
   "exchangeStatisticsNoData": "Няма налична статистика",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
-  },
-  "viewVaultKeyButton": "Прегледай Vault ключ",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
   },
   "recoverbullPasswordMismatch": "Паролите не съвпадат",
   "@recoverbullPasswordMismatch": {
@@ -6282,10 +6254,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "Портфейлът не е намерен.",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "Класически",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -6494,10 +6462,6 @@
   "@transactionOrderLabelPayinStatus": {
     "description": "Label for order payin status"
   },
-  "bitcoinSettingsElectrumServerTitle": "Настройки на Electrum сървър",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
   "payRemoveRecipient": "Премахни получател",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -6642,10 +6606,6 @@
   "receiveSwapID": "ID за размяна",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "settingsBitcoinSettingsTitle": "Настройки на Биткойн",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "backupWalletHowToDecideBackupModalTitle": "Как да решите",
   "@backupWalletHowToDecideBackupModalTitle": {
@@ -6997,10 +6957,6 @@
   "settingsDevModeWarningTitle": "Режим за разработчици",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"
-  },
-  "bitcoinSettingsAutoTransferTitle": "Настройки за автоматично прехвърляне",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "Оригинална транзакция.",
   "@rbfOriginalTransaction": {
@@ -7697,10 +7653,6 @@
   "backupWalletErrorGoogleDriveSave": "Неуспешно запазване в Google Drive",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
-  },
-  "settingsTorSettingsTitle": "Настройки на Tor",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "receiveBitcoinTransactionWillTakeTime": "Транзакцията с Bitcoin ще отнеме известно време за потвърждение.",
   "@receiveBitcoinTransactionWillTakeTime": {
@@ -8774,10 +8726,6 @@
   "recoverbullCreatingVault": "Създаване на криптирано хранилище",
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
-  },
-  "walletsListNoWalletsMessage": "Няма намерени портфейли",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
   },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
@@ -10457,17 +10405,14 @@
   "settingsSearchNoResults": "Няма намерени настройки.",
   "settingsSearchMempoolKeywords": "блоков експлорър|оценка на таксите|такси за транзакции|mempool API",
   "settingsSearchExchangeKeywords": "акаунт|акаунт в борсата|търговия|купуване и продаване",
-  "settingsSearchWalletBackupKeywords": "резервно копие|възстановяване|възстановяване на портфейл|архив на seed фразата",
   "settingsSearchStartBackupKeywords": "създаване на резервно копие|запазване на резервно копие|архивиране на портфейла",
   "settingsSearchRecoverbullKeywords": "криптирано резервно копие|облачно резервно копие|криптиран трезор|възстановяване от трезор|Recoverbull",
   "settingsSearchLabelsKeywords": "етикети на портфейла|етикети на транзакциите|BIP329|импортиране на етикети|експортиране на етикети",
   "settingsSearchTransactionHistoryKeywords": "експортиране на транзакции|експорт на транзакции|CSV|история на портфейла",
-  "settingsSearchBitcoinSettingsKeywords": "настройки на Биткойн|мрежови настройки|настройки на портфейла",
   "settingsSearchAppSettingsKeywords": "предпочитания на приложението|настройки на приложението|общи настройки",
   "settingsSearchBtcMapKeywords": "BTC Map|биткойн карта|карта на търговците|места за плащане с биткойн",
   "settingsSearchTermsOfServiceKeywords": "общи условия|правна информация|потребителско споразумение|TOS",
   "settingsSearchServicesStatusKeywords": "състояние на услугите|системен статус|онлайн|прекъсване",
-  "settingsSearchWalletsKeywords": "управление на портфейли|подробности за портфейла|биткойн портфейли",
   "settingsSearchImportWalletKeywords": "добавяне на портфейл|възстановяване на портфейл|импортиране на мнемонична фраза|портфейл само за наблюдение|хардуерен портфейл",
   "settingsSearchBroadcastTransactionKeywords": "излъчване на подписана транзакция|публикуване на транзакция|сурова транзакция|hex на транзакция|PSBT",
   "settingsSearchPayjoinKeywords": "поверителност с Payjoin|съвместна транзакция|Payjoin|P2EP",
@@ -10480,7 +10425,6 @@
   "settingsSearchThemeKeywords": "външен вид|тъмен режим|светъл режим|системна тема",
   "settingsSearchCurrencyKeywords": "фиатна валута|местна валута|валута по подразбиране|валута за обмен",
   "settingsSearchSecurityPinKeywords": "PIN код|код за достъп|заключване на приложението|удостоверяване|смяна на PIN",
-  "settingsSearchTorKeywords": "Tor прокси|Orbot|onion маршрутизация|вграден Tor|мрежа за поверителност",
   "settingsSearchLogsKeywords": "debug логове|диагностични логове|логове на приложението|експортиране на логове",
   "settingsSearchDevModeKeywords": "режим за разработчици|настройки за разработка|debug режим|разширено тестване",
   "settingsSearchTestnetCredentialsKeywords": "данни за вход в testnet|testnet вход|testnet потребителско име|testnet парола|Basic Auth",

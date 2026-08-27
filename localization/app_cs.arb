@@ -130,14 +130,6 @@
   "@languageSettingsScreenTitle": {
     "description": "The title of the language settings screen"
   },
-  "backupSettingsScreenTitle": "Nastavení zálohování",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
-  "settingsWalletBackupTitle": "Peněženka Backup",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
-  },
   "translationWarningTitle": "Poznámka k překladu",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -256,10 +248,6 @@
     "description": "Label for the Github link in settings"
   },
   "settingsGetHelpLabel": "Získat pomoc",
-  "settingsTorSettingsTitle": "Nastavení Tor",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
-  },
   "settingsRecoverbullTitle": "Čeština",
   "@settingsRecoverbullTitle": {
     "description": "Title for the Recoverbull backup section in app settings"
@@ -292,17 +280,9 @@
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
-  "walletOptionsUnnamedWalletFallback": "Unnamed Peněženka",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "Unnamed Peněženka",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
-  },
-  "walletOptionsNotFoundMessage": "Peněženka nebyla nalezena",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
-  "walletOptionsWalletDetailsTitle": "Detaily peněženky",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
   },
   "addressViewAddressesTitle": "Odkazy",
   "@addressViewAddressesTitle": {
@@ -1079,10 +1059,6 @@
   "sendTransferFeeDescription": "To je celkový poplatek odečtený z výše uvedené částky",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
-  },
-  "bitcoinSettingsWalletsTitle": "Peněženky",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
   },
   "exchangeLandingLoginToUseSupport": "Přihlaste se nebo se zaregistrujte k použití chatu podpory pro výměnu souvisejících otázek.",
   "@exchangeLandingLoginToUseSupport": {
@@ -2315,8 +2291,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "Import Peněženka",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "Import Peněženka",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Připojil se k Disku Google",
@@ -3377,8 +3353,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "Stav služby",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "Stav služby",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "Cena bude obnovena v ",
@@ -4090,10 +4066,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "Nastavení serveru Mempool",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "transactionSwapDescLnReceiveDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnReceiveDefault": {
@@ -6700,10 +6672,6 @@
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
   },
-  "walletsListTitle": "Detaily peněženky",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
-  },
   "payAllCountries": "Všechny země",
   "@payAllCountries": {
     "description": "Option for all countries filter"
@@ -7427,10 +7395,6 @@
   "dcaConfirmTitle": "Potvrzení opakování Koupit",
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
-  },
-  "viewVaultKeyButton": "Zobrazit Vault Čeština",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
   },
   "recoverbullPasswordMismatch": "Heslo neodpovídají",
   "@recoverbullPasswordMismatch": {
@@ -8325,10 +8289,6 @@
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "bitcoinSettingsElectrumServerTitle": "Nastavení serveru Electrum",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
   "payRemoveRecipient": "Odebrat pomoc",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -8513,10 +8473,6 @@
   "receiveSwapID": "Změna ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "settingsBitcoinSettingsTitle": "Nastavení Bitcoinu",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "backupWalletHowToDecideBackupModalTitle": "Jak se rozhodnout",
   "@backupWalletHowToDecideBackupModalTitle": {
@@ -9015,10 +8971,6 @@
   "importQrDeviceKeystoneStep4": "Klepněte na \"Připojit software Peněženka\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
-  },
-  "bitcoinSettingsAutoTransferTitle": "Nastavení automatického přenosu",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "Původní transakce",
   "@rbfOriginalTransaction": {
@@ -11185,10 +11137,6 @@
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
   },
-  "walletsListNoWalletsMessage": "Žádné peněženky nalezené",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
-  },
   "importWalletColdcardQ": "Studená karta Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -12550,17 +12498,14 @@
   "settingsSearchNoResults": "Nebyla nalezena žádná nastavení.",
   "settingsSearchMempoolKeywords": "průzkumník bloků|odhad poplatků|transakční poplatky|mempool API",
   "settingsSearchExchangeKeywords": "účet|účet u směnárny|obchodování|nákup a prodej",
-  "settingsSearchWalletBackupKeywords": "záloha|obnovení|obnovení peněženky|záloha seed fráze",
   "settingsSearchStartBackupKeywords": "vytvořit zálohu|uložit zálohu|zálohovat peněženku",
   "settingsSearchRecoverbullKeywords": "šifrovaná záloha|cloudová záloha|šifrovaný trezor|obnovení z trezoru|Recoverbull",
   "settingsSearchLabelsKeywords": "štítky peněženky|štítky transakcí|BIP329|import štítků|export štítků",
   "settingsSearchTransactionHistoryKeywords": "export transakcí|vyexportovat transakce|CSV|historie peněženky",
-  "settingsSearchBitcoinSettingsKeywords": "nastavení Bitcoinu|nastavení sítě|nastavení peněženky",
   "settingsSearchAppSettingsKeywords": "předvolby aplikace|nastavení aplikace|obecná nastavení",
   "settingsSearchBtcMapKeywords": "BTC Map|bitcoinová mapa|mapa obchodníků|místa přijímající bitcoin",
   "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",
   "settingsSearchServicesStatusKeywords": "stav služeb|stav systému|online|výpadek",
-  "settingsSearchWalletsKeywords": "správa peněženek|podrobnosti peněženky|bitcoinové peněženky",
   "settingsSearchImportWalletKeywords": "přidat peněženku|obnovit peněženku|importovat mnemonickou frázi|peněženka pouze pro sledování|hardwarová peněženka",
   "settingsSearchBroadcastTransactionKeywords": "odeslat podepsanou transakci|publikovat transakci|surová transakce|hex transakce|PSBT",
   "settingsSearchPayjoinKeywords": "soukromí Payjoin|společná transakce|Payjoin|P2EP",
@@ -12573,7 +12518,6 @@
   "settingsSearchThemeKeywords": "vzhled|tmavý režim|světlý režim|systémový motiv",
   "settingsSearchCurrencyKeywords": "fiat měna|místní měna|výchozí měna|směnná měna",
   "settingsSearchSecurityPinKeywords": "PIN kód|přístupový kód|zámek aplikace|ověření|změnit PIN",
-  "settingsSearchTorKeywords": "Tor proxy|Orbot|onion směrování|vestavěný Tor|síť pro ochranu soukromí",
   "settingsSearchLogsKeywords": "debug logy|diagnostické logy|protokoly aplikace|exportovat logy",
   "settingsSearchDevModeKeywords": "vývojářský režim|vývojová nastavení|debug režim|pokročilé testování",
   "settingsSearchTestnetCredentialsKeywords": "přihlašovací údaje testnetu|přihlášení k testnetu|uživatelské jméno testnetu|heslo testnetu|Basic Auth",

@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_re
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -37,8 +38,9 @@ class LoadElectrumServerDataUsecase {
 
   @useResult
   Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> execute(
-    LoadElectrumServerDataRequest request,
-  ) async {
+    LoadElectrumServerDataRequest request, {
+    void Function(LoadElectrumServerDataResponse response)? onUpdate,
+  }) async {
     try {
       final isLiquid = request.isLiquid;
       final environment = await _environmentPort.getEnvironment();
@@ -75,9 +77,28 @@ class LoadElectrumServerDataUsecase {
       }
 
       final appSettings = await _settingsRepository.fetch();
-      final serverStatusMap = <String, ElectrumServerStatus>{};
+      final serverDtos = servers
+          .map((server) => ElectrumServerDto.fromDomain(server))
+          .toList();
+      final settingsDto = ElectrumSettingsDto.fromDomain(settings);
+      final serverStatusMap = {
+        for (final server in servers) server.url: ElectrumServerStatus.unknown,
+      };
+
+      LoadElectrumServerDataResponse response() =>
+          LoadElectrumServerDataResponse(
+            servers: serverDtos,
+            serverStatuses: Map.unmodifiable(serverStatusMap),
+            settings: settingsDto,
+          );
+
+      onUpdate?.call(response());
       await Future.wait(
         servers.map((server) async {
+          final effectiveTimeout = ElectrumConnection.resolveEffectiveTimeout(
+            url: server.url,
+            configuredTimeout: settings.timeout,
+          );
           ElectrumTorRoute? route;
           try {
             route = await _torSessionPort.open(
@@ -87,26 +108,24 @@ class LoadElectrumServerDataUsecase {
               externalProxyEnabled: appSettings.useTorProxy,
               externalProxyPort: appSettings.torProxyPort,
             );
-            serverStatusMap[server.url] = await _serverStatusPort.checkSocket(
+            serverStatusMap[server.url] = await _serverStatusPort.checkElectrum(
               url: server.url,
+              network: network,
+              validateDomain: settings.validateDomain,
+              timeout: effectiveTimeout,
+              retry: settings.retry,
               proxyEndpoint: route?.endpoint,
             );
           } on Exception {
             serverStatusMap[server.url] = ElectrumServerStatus.offline;
           } finally {
+            onUpdate?.call(response());
             await route?.close();
           }
         }),
       );
 
-      // Return the response DTO
-      return Ok(
-        LoadElectrumServerDataResponse(
-          servers: servers.map((e) => ElectrumServerDto.fromDomain(e)).toList(),
-          serverStatuses: serverStatusMap,
-          settings: ElectrumSettingsDto.fromDomain(settings),
-        ),
-      );
+      return Ok(response());
     } catch (e, st) {
       log.severe(
         message: 'Failed to load electrum server data',

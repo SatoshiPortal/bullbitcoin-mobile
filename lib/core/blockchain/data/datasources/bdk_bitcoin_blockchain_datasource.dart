@@ -34,7 +34,7 @@ class BdkBitcoinBlockchainDatasource {
       url: connection.url,
       socks5: connection.socks5?.isNotEmpty == true ? connection.socks5 : null,
       // electrum-client caps timeout/retry at u8 (255s, 255 retries).
-      timeout: connection.timeout.clamp(0, 255),
+      timeout: connection.effectiveTimeout.clamp(0, 255),
       retry: connection.retry.clamp(0, 255),
       validateDomain: connection.validateDomain,
     );

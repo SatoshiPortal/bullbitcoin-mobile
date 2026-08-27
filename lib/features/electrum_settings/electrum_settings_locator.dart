@@ -19,10 +19,7 @@ class ElectrumSettingsLocator {
       ),
     );
     locator.registerLazySingleton<ElectrumSettingsFacade>(
-      () => ElectrumSettingsFacade(
-        hasActiveCustomBitcoinOnionServerUsecase:
-            locator<HasActiveCustomBitcoinOnionServerUsecase>(),
-      ),
+      ElectrumSettingsFacade.new,
     );
     // Register the bloc
     locator.registerFactory<ElectrumSettingsBloc>(
@@ -34,6 +31,8 @@ class ElectrumSettingsLocator {
         deleteCustomServerUsecase: locator<DeleteCustomServerUsecase>(),
         setAdvancedElectrumOptionsUsecase:
             locator<SetAdvancedElectrumOptionsUsecase>(),
+        hasActiveCustomBitcoinOnionServerUsecase:
+            locator<HasActiveCustomBitcoinOnionServerUsecase>(),
       ),
     );
   }

@@ -17,8 +17,8 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -50,11 +50,16 @@ class WalletDetailScreen extends StatelessWidget {
           IconButton(
             onPressed: () {
               context.pushNamed(
-                SettingsRoute.walletOptions.name,
+                SettingsRoute.walletDetailsSelectedWallet.name,
                 pathParameters: {'walletId': walletId},
               );
             },
-            icon: const Icon(CupertinoIcons.settings),
+            icon: Image.asset(
+              Assets.icons.settingsLine.path,
+              width: 24,
+              height: 24,
+              color: context.appColors.onSurface,
+            ),
           ),
         ],
       ),

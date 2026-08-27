@@ -793,10 +793,6 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "กระเป๋าสตางค์",
-  "@bitcoinSettingsWalletsTitle": {
-    "description": "Title for the wallets section in Bitcoin settings"
-  },
   "exchangeLandingLoginToUseSupport": "กรุณาเข้าสู่ระบบหรือลงทะเบียนเพื่อใช้บริการแชทสําหรับรายงานที่เกี่ยวข้อง.",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -2085,8 +2081,8 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "bitcoinSettingsImportWalletTitle": "รหัส",
-  "@bitcoinSettingsImportWalletTitle": {
+  "walletSettingsImportWalletTitle": "รหัส",
+  "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "เชื่อมต่อกับ Google Drive",
@@ -2450,10 +2446,6 @@
   "@receiveConfirmed": {
     "description": "Status when fully confirmed"
   },
-  "walletOptionsWalletDetailsTitle": "รายละเอียด",
-  "@walletOptionsWalletDetailsTitle": {
-    "description": "Title for the wallet details screen"
-  },
   "sellSecureBitcoinWallet": "ลายนิ้วมือ Bitcoin",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -2544,10 +2536,6 @@
   "walletTypeWatchSigner": "ดูวิดีโอ",
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
-  },
-  "settingsWalletBackupTitle": "กระเป๋าสตางค์",
-  "@settingsWalletBackupTitle": {
-    "description": "Title for the wallet backup section in the settings menu"
   },
   "ledgerConnectingSubtext": "ระบบเชื่อมต่อที่ปลอดภัย ...",
   "@ledgerConnectingSubtext": {
@@ -3200,8 +3188,8 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "บริการ",
-  "@settingsServicesStatusTitle": {
+  "settingsServiceStatusTitle": "บริการ",
+  "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
   "sellPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
@@ -3970,10 +3958,6 @@
         "example": "PIN"
       }
     }
-  },
-  "bitcoinSettingsMempoolServerTitle": "การตั้งค่าเซิร์ฟเวอร์",
-  "@bitcoinSettingsMempoolServerTitle": {
-    "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
   "transactionSwapDescLnReceiveDefault": "บันทึกของคุณอยู่ในความคืบหน้า กระบวนการนี้ใช้โดยอัตโนมัติและอาจใช้เวลา.",
   "@transactionSwapDescLnReceiveDefault": {
@@ -4986,8 +4970,8 @@
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
-  "walletOptionsUnnamedWalletFallback": "ชื่อข้อความ",
-  "@walletOptionsUnnamedWalletFallback": {
+  "walletDetailsUnnamedWalletFallback": "ชื่อข้อความ",
+  "@walletDetailsUnnamedWalletFallback": {
     "description": "Fallback name displayed for wallets without a specified name"
   },
   "fundExchangeRegularSepaInfo": "ใช้การทําธุรกรรมข้างต้น€€ 20,000 สําหรับการทําธุรกรรมขนาดเล็กใช้ SEPA ทันที.",
@@ -6000,10 +5984,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "การตั้งค่าการสํารองข้อมูล",
-  "@backupSettingsScreenTitle": {
-    "description": "AppBar title for backup settings screen"
-  },
   "fundExchangeBankTransferWireDescription": "ส่งสายสายจากบัญชีธนาคารของคุณโดยใช้ข้อมูลธนาคาร Bitcoin บัญชีธนาคารของคุณอาจจําเป็นต้องใช้ชิ้นส่วนเหล่านี้.",
   "@fundExchangeBankTransferWireDescription": {
     "description": "Description of how to use bank transfer wire method"
@@ -6724,10 +6704,6 @@
   "dcaFrequencyValidationError": "เลือกความถี่",
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
-  },
-  "walletsListTitle": "รายละเอียด",
-  "@walletsListTitle": {
-    "description": "Title for the wallet details list screen"
   },
   "payAllCountries": "ประเทศ",
   "@payAllCountries": {
@@ -7477,10 +7453,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "viewVaultKeyButton": "มุมมอง คีย์",
-  "@viewVaultKeyButton": {
-    "description": "Button label to view vault key"
-  },
   "recoverbullPasswordMismatch": "รหัสผ่านไม่ตรงกับรหัสผ่าน",
   "@recoverbullPasswordMismatch": {
     "description": "Validation error when passwords don't match"
@@ -8130,10 +8102,6 @@
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "walletOptionsNotFoundMessage": "กระเป๋าสตางค์",
-  "@walletOptionsNotFoundMessage": {
-    "description": "Error message displayed when a wallet cannot be found"
-  },
   "importMnemonicLegacy": "การลงโทษ",
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
@@ -8423,10 +8391,6 @@
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "bitcoinSettingsElectrumServerTitle": "การตั้งค่าเซิร์ฟเวอร์",
-  "@bitcoinSettingsElectrumServerTitle": {
-    "description": "Title for the Electrum server settings section in Bitcoin settings"
-  },
   "payRemoveRecipient": "ลบค่า",
   "@payRemoveRecipient": {
     "description": "Button to remove a recipient from batch"
@@ -8615,10 +8579,6 @@
   "receiveSwapID": "รหัส",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "settingsBitcoinSettingsTitle": "การตั้งค่า Bitcoin",
-  "@settingsBitcoinSettingsTitle": {
-    "description": "Title for the Bitcoin settings section in the settings menu"
   },
   "backupWalletHowToDecideBackupModalTitle": "วิธีการตัดสินใจ",
   "@backupWalletHowToDecideBackupModalTitle": {
@@ -9145,10 +9105,6 @@
   "importQrDeviceKeystoneStep4": "แตะ \"เชื่อมต่อซอฟต์แวร์กระเป๋าสตางค์\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
-  },
-  "bitcoinSettingsAutoTransferTitle": "การตั้งค่าอัตโนมัติ",
-  "@bitcoinSettingsAutoTransferTitle": {
-    "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
   "rbfOriginalTransaction": "ธุรกรรมทั่วไป",
   "@rbfOriginalTransaction": {
@@ -10013,10 +9969,6 @@
   "backupWalletErrorGoogleDriveSave": "ค้นหา Google ไดรฟ์",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
-  },
-  "settingsTorSettingsTitle": "ปุ่ม",
-  "@settingsTorSettingsTitle": {
-    "description": "Title for the Tor settings section in app settings"
   },
   "importQrDeviceKeystoneStep2": "ปลดล็อกรหัสของคุณ",
   "@importQrDeviceKeystoneStep2": {
@@ -11415,10 +11367,6 @@
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
   },
-  "walletsListNoWalletsMessage": "ไม่มีกระเป๋าเงิน",
-  "@walletsListNoWalletsMessage": {
-    "description": "Message displayed when no wallets are found"
-  },
   "importWalletColdcardQ": "รถบัส",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -12554,17 +12502,14 @@
   "settingsSearchNoResults": "ไม่พบการตั้งค่า",
   "settingsSearchMempoolKeywords": "ตัวสำรวจบล็อก|ประมาณค่าธรรมเนียม|ค่าธรรมเนียมธุรกรรม|API เมมพูล",
   "settingsSearchExchangeKeywords": "บัญชี|บัญชีเอ็กซ์เชนจ์|ซื้อขาย|ซื้อและขาย",
-  "settingsSearchWalletBackupKeywords": "สำรองข้อมูล|กู้คืน|กู้คืนกระเป๋า|สำรองซีด",
   "settingsSearchStartBackupKeywords": "สร้างข้อมูลสำรอง|บันทึกข้อมูลสำรอง|สำรองกระเป๋า",
   "settingsSearchRecoverbullKeywords": "ข้อมูลสำรองเข้ารหัส|ข้อมูลสำรองบนคลาวด์|ห้องนิรภัยเข้ารหัส|กู้คืนห้องนิรภัย",
   "settingsSearchLabelsKeywords": "ป้ายกำกับกระเป๋า|ป้ายกำกับธุรกรรม|BIP329|นำเข้าป้ายกำกับ|ส่งออกป้ายกำกับ",
   "settingsSearchTransactionHistoryKeywords": "ส่งออกธุรกรรม|ส่งออกประวัติธุรกรรม|CSV|ประวัติกระเป๋า",
-  "settingsSearchBitcoinSettingsKeywords": "การตั้งค่าบิตคอยน์|การตั้งค่าเครือข่าย|การตั้งค่ากระเป๋า",
   "settingsSearchAppSettingsKeywords": "การกำหนดค่าแอป|การตั้งค่าแอปพลิเคชัน|การตั้งค่าทั่วไป",
   "settingsSearchBtcMapKeywords": "BTC Map|แผนที่บิตคอยน์|แผนที่ร้านค้า|สถานที่ใช้บิตคอยน์",
   "settingsSearchTermsOfServiceKeywords": "ข้อกำหนดและเงื่อนไข|ข้อมูลทางกฎหมาย|ข้อตกลงผู้ใช้|TOS",
   "settingsSearchServicesStatusKeywords": "สถานะบริการ|สถานะระบบ|ออนไลน์|บริการขัดข้อง",
-  "settingsSearchWalletsKeywords": "จัดการกระเป๋า|รายละเอียดกระเป๋า|กระเป๋าบิตคอยน์",
   "settingsSearchImportWalletKeywords": "เพิ่มกระเป๋า|กู้คืนกระเป๋า|นำเข้าคำช่วยจำ|กระเป๋าดูอย่างเดียว|กระเป๋าฮาร์ดแวร์",
   "settingsSearchBroadcastTransactionKeywords": "เผยแพร่ธุรกรรมที่ลงนามแล้ว|ส่งธุรกรรม|ธุรกรรมดิบ|เลขฐานสิบหกของธุรกรรม|PSBT",
   "settingsSearchPayjoinKeywords": "ความเป็นส่วนตัวของ Payjoin|ธุรกรรมร่วมกัน|P2EP",
@@ -12577,7 +12522,6 @@
   "settingsSearchThemeKeywords": "ลักษณะที่ปรากฏ|โหมดมืด|โหมดสว่าง|ธีมระบบ",
   "settingsSearchCurrencyKeywords": "สกุลเงินเฟียต|สกุลเงินท้องถิ่น|สกุลเงินเริ่มต้น|สกุลเงินแลกเปลี่ยน",
   "settingsSearchSecurityPinKeywords": "รหัส PIN|รหัสผ่าน|ล็อกแอป|การยืนยันตัวตน|เปลี่ยน PIN",
-  "settingsSearchTorKeywords": "พร็อกซี Tor|Orbot|การกำหนดเส้นทางแบบหัวหอม|Tor ในตัว|เครือข่ายความเป็นส่วนตัว",
   "settingsSearchLogsKeywords": "บันทึกดีบัก|บันทึกการวินิจฉัย|บันทึกแอป|ส่งออกบันทึก",
   "settingsSearchDevModeKeywords": "โหมดนักพัฒนา|การตั้งค่านักพัฒนา|โหมดดีบัก|การทดสอบขั้นสูง",
   "settingsSearchTestnetCredentialsKeywords": "ข้อมูลรับรองผู้ใช้เทสต์เน็ต|เข้าสู่ระบบเทสต์เน็ต|ชื่อผู้ใช้เทสต์เน็ต|รหัสผ่านเทสต์เน็ต|การยืนยันตัวตนพื้นฐาน",

@@ -89,6 +89,7 @@ class LwkWalletDatasource {
         await lwkWallet.sync_(
           electrumUrl: electrumServer.url,
           validateDomain: electrumServer.validateDomain,
+          timeout: electrumServer.effectiveTimeout,
         );
         //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
       } catch (e) {

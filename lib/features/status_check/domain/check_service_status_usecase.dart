@@ -27,7 +27,10 @@ class CheckServiceStatusUsecase {
   });
 
   @useResult
-  Future<Result<AllServicesStatus, StatusCheckFailure>> execute() async {
+  Future<Result<AllServicesStatus, StatusCheckFailure>> execute({
+    AllServicesStatus initialStatus = const AllServicesStatus(),
+    void Function(AllServicesStatus status)? onUpdate,
+  }) async {
     try {
       final List<Wallet> wallets;
       try {
@@ -43,6 +46,8 @@ class CheckServiceStatusUsecase {
 
       final serviceStatus = await _checkAllServiceStatusUsecase.execute(
         network: defaultWallet.network,
+        initialStatus: initialStatus,
+        onUpdate: onUpdate,
       );
 
       return Ok(serviceStatus);
