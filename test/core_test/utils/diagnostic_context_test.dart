@@ -35,7 +35,7 @@ class _DiagnosticContextSource implements DiagnosticContextSource {
 
   @override
   Future<DiagnosticResources> resources() async =>
-      DiagnosticResources(batteryPercent: await batteryLevel());
+      DiagnosticResources(batteryAvailablePercent: await batteryLevel());
 
   @override
   Future<DiagnosticTorContext> tor() async => const DiagnosticTorContext(
@@ -57,16 +57,14 @@ void main() {
     final json = jsonDecode(context.toLogMessage()) as Map<String, dynamic>;
     expect(json.keys, [
       'context_version',
-      'version',
-      'build',
+      'app',
       'system',
       'resources',
       'network',
       'tor',
     ]);
     expect(json['context_version'], 1);
-    expect(json['version'], '6.13.0');
-    expect(json['build'], '214');
+    expect(json['app'], '6.13.0+214');
     expect(json['system'], {
       'platform': 'android',
       'os_version': 'Android 14 (API 34)',
@@ -78,7 +76,7 @@ void main() {
       'ram_available_percent': 25,
       'disk_total_mb': 128000,
       'disk_available_percent': 25,
-      'battery_percent': 73,
+      'battery_available_percent': 73,
     });
     expect(json['network'], {
       'transports': ['mobile', 'vpn', 'wifi'],
@@ -105,9 +103,9 @@ void main() {
     ).load();
     final json = jsonDecode(context.toLogMessage()) as Map<String, dynamic>;
 
-    expect(json['version'], '6.13.0');
+    expect(json['app'], '6.13.0+214');
     expect((json['system'] as Map)['model'], 'Pixel 5');
-    expect((json['resources'] as Map)['battery_percent'], isNull);
+    expect((json['resources'] as Map)['battery_available_percent'], isNull);
     expect((json['resources'] as Map)['ram_total_mb'], 8000);
   });
 
@@ -124,7 +122,7 @@ void main() {
       'ram_available_percent': 100,
       'disk_total_mb': 128000,
       'disk_available_percent': 0,
-      'battery_percent': null,
+      'battery_available_percent': null,
     });
     expect(resources.toJson().containsKey('ram_available_mb'), isFalse);
     expect(resources.toJson().containsKey('disk_available_mb'), isFalse);

@@ -8,16 +8,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 /// The deliberately small, non-identifying context attached to support logs.
 final class DiagnosticContext {
-  final String version;
-  final String build;
+  final String app;
   final Map<String, Object?> system;
   final Map<String, Object?> resources;
   final Map<String, Object?> network;
   final Map<String, Object?> tor;
 
   const DiagnosticContext({
-    required this.version,
-    required this.build,
+    required this.app,
     required this.system,
     required this.resources,
     required this.network,
@@ -26,8 +24,7 @@ final class DiagnosticContext {
 
   String toLogMessage() => jsonEncode({
     'context_version': 1,
-    'version': version,
-    'build': build,
+    'app': app,
     'system': system,
     'resources': resources,
     'network': network,
@@ -101,14 +98,14 @@ final class DiagnosticResources {
   final int? ramAvailablePercent;
   final int? diskTotalMb;
   final int? diskAvailablePercent;
-  final int? batteryPercent;
+  final int? batteryAvailablePercent;
 
   const DiagnosticResources({
     this.ramTotalMb,
     this.ramAvailablePercent,
     this.diskTotalMb,
     this.diskAvailablePercent,
-    this.batteryPercent,
+    this.batteryAvailablePercent,
   });
 
   DiagnosticResources merge(DiagnosticDeviceContext? device) =>
@@ -124,7 +121,7 @@ final class DiagnosticResources {
               device?.diskTotalBytes,
               device?.diskAvailableBytes,
             ),
-        batteryPercent: batteryPercent,
+        batteryAvailablePercent: batteryAvailablePercent,
       );
 
   Map<String, Object?> toJson() => {
@@ -132,7 +129,7 @@ final class DiagnosticResources {
     'ram_available_percent': _clampPercent(ramAvailablePercent),
     'disk_total_mb': diskTotalMb,
     'disk_available_percent': _clampPercent(diskAvailablePercent),
-    'battery_percent': _clampPercent(batteryPercent),
+    'battery_available_percent': _clampPercent(batteryAvailablePercent),
   };
 }
 
@@ -164,13 +161,9 @@ class DiagnosticContextProvider {
     final transports = await _bestEffort(_source.networkTypes);
     final vpn = await _bestEffort(_source.vpnStatus);
     final tor = await _bestEffort(_source.tor);
-    final versionParts = (app ?? 'unknown').split('+');
 
     return DiagnosticContext(
-      version: versionParts.first,
-      build: versionParts.length > 1
-          ? versionParts.sublist(1).join('+')
-          : 'unknown',
+      app: app ?? 'unknown',
       system: {
         'platform': device?.platform ?? 'unknown',
         'os_version': device?.osVersion ?? 'unknown',
@@ -224,7 +217,7 @@ class PlatformDiagnosticContextSource implements DiagnosticContextSource {
 
   @override
   Future<DiagnosticResources> resources() async =>
-      DiagnosticResources(batteryPercent: await batteryLevel());
+      DiagnosticResources(batteryAvailablePercent: await batteryLevel());
 
   @override
   Future<DiagnosticDeviceContext> device() async {

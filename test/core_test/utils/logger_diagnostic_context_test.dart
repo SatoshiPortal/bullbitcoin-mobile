@@ -13,15 +13,14 @@ void main() {
       await directory.delete(recursive: true);
     });
     const context = DiagnosticContext(
-      version: '6.13.0',
-      build: '214',
+      app: '6.13.0+214',
       system: {
         'platform': 'android',
         'os_version': 'Android 14 (API 34)',
         'manufacturer': 'Google',
         'model': 'Pixel 5',
       },
-      resources: {'battery_percent': 73},
+      resources: {'battery_available_percent': 73},
       network: {
         'transports': ['wifi'],
         'vpn': 'inactive',
@@ -61,7 +60,7 @@ void main() {
     contents = await log.logsFile.readAsString();
     expect(contents, contains('Logs deleted'));
     expect(contents, contains('"context_version":1'));
-    expect(contents, contains('"version":"6.13.0"'));
+    expect(contents, contains('"app":"6.13.0+214"'));
     expect(contents, isNot(contains('"event"')));
     expect(
       contents
@@ -69,5 +68,24 @@ void main() {
           .where((line) => line.contains('"context_version":1')),
       hasLength(1),
     );
+  });
+
+  test('contains diagnostic failures without interrupting the app', () async {
+    final directory = await Directory.systemTemp.createTemp('logger-context-');
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    log = Logger.replace(
+      directory: directory,
+      diagnosticContextLoader: () => throw StateError('Context unavailable'),
+    );
+
+    await expectLater(log.ensureLogsExist(), completes);
+    await expectLater(log.refreshDiagnosticContext(), completes);
+    await expectLater(log.currentDiagnosticLogLine(), completion(isNull));
+
+    final contents = await log.logsFile.readAsString();
+    expect(contents, contains('Diagnostic context unavailable'));
   });
 }
