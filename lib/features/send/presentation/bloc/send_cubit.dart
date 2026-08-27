@@ -25,6 +25,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -48,6 +49,7 @@ import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_se
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
@@ -63,6 +65,7 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.da
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -79,6 +82,7 @@ class SendCubit extends Cubit<SendState>
   SendCubit({
     this._wallet,
     this.mode = const SendModeBitcoin(),
+    Set<Outpoint> initialSweepOutpoints = const {},
     required this._labelsFacade,
     required this._bestWalletUsecase,
     required this._detectBitcoinStringUsecase,
@@ -124,9 +128,20 @@ class SendCubit extends Cubit<SendState>
     required this._prepareSpPaymentForSendUsecase,
     required this._sendSpPaymentForSendUsecase,
     required this._refreshSpWalletForSendUsecase,
+    required this._resolveSweepInputsUsecase,
+    required this._validateSweepPaymentRequestUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
-       super(const SendState());
+       super(
+         SendState(
+           sweepOutpoints: Set.unmodifiable(initialSweepOutpoints),
+           sendType: initialSweepOutpoints.isEmpty
+               ? SendType.lightning
+               : SendType.bitcoin,
+           sendMax: initialSweepOutpoints.isNotEmpty,
+           loadingBestWallet: initialSweepOutpoints.isNotEmpty,
+         ),
+       );
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
@@ -190,6 +205,8 @@ class SendCubit extends Cubit<SendState>
 
   SpRecipient? _spRecipient;
   SpTxDraft? _spDraft;
+  final ResolveSweepInputsUsecase _resolveSweepInputsUsecase;
+  final ValidateSweepPaymentRequestUsecase _validateSweepPaymentRequestUsecase;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
@@ -277,7 +294,12 @@ class SendCubit extends Cubit<SendState>
     } else if (state.step == SendStep.amount) {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.confirm) {
-      emit(state.copyWith(step: SendStep.amount, failure: null));
+      emit(
+        state.copyWith(
+          step: state.isSweep ? SendStep.address : SendStep.amount,
+          failure: null,
+        ),
+      );
     }
   }
 
@@ -327,16 +349,48 @@ class SendCubit extends Cubit<SendState>
 
       await getCurrencies();
       await getExchangeRate();
+      if (state.isSweep) {
+        await _initializeSweep(state.sweepOutpoints);
+      }
       await loadFees();
     } catch (e) {
-      log.warning('Failed to load rates and fees', error: e);
-      // The raw reason stays in logMessage on purpose: issue #2632 settled
-      // that diagnostics live there while the UI renders the generic
-      // `oopsSomethingWentWrong` for this variant. Both halves are pinned by
-      // test/security_audit/issue_2632_test.dart — do not "sanitize" this to
-      // runtimeType without revisiting that decision.
-      emit(state.copyWith(failure: SendUnexpectedFailure(e.toString())));
+      log.warning('Failed to load wallet rates and fees', error: e);
+      emit(
+        state.copyWith(
+          loadingBestWallet: false,
+          failure: SendUnexpectedFailure(e.toString()),
+        ),
+      );
     }
+  }
+
+  Future<void> _initializeSweep(Set<Outpoint> outpoints) async {
+    final wallet = _wallet;
+    if (wallet == null || !wallet.isBitcoin) {
+      emit(
+        state.copyWith(
+          sweepOutpoints: outpoints,
+          sendType: SendType.bitcoin,
+          loadingBestWallet: false,
+          failure: const SendSelectedCoinsUnavailableFailure(),
+        ),
+      );
+      return;
+    }
+
+    await _setSelectedWallet(wallet, manual: true);
+    final unit = state.bitcoinUnit ?? BitcoinUnit.sats;
+    final totalSat = state.spendableBalanceSat;
+    final amount = unit == BitcoinUnit.btc
+        ? ConvertAmount.satsToBtc(totalSat).toStringAsFixed(8)
+        : totalSat.toString();
+    emit(
+      state.copyWith(
+        amount: state.failure == null ? amount : '',
+        inputAmountCurrencyCode: unit.code,
+        loadingBestWallet: false,
+      ),
+    );
   }
 
   /// Called when a payment request is detected directly from the scanner
@@ -344,6 +398,7 @@ class SendCubit extends Cubit<SendState>
     String scannedRawPaymentRequest,
     PaymentRequest? paymentRequest,
   ) async {
+    if (state.sweepDestinationBlocked) return;
     _startNewPaymentRequestInput();
     clearFailure();
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
@@ -358,7 +413,7 @@ class SendCubit extends Cubit<SendState>
         scannedRawPaymentRequest: scannedRawPaymentRequest,
         copiedRawPaymentRequest: sanitizedText,
         paymentRequest: paymentRequest,
-        sendMax: false,
+        sendMax: state.isSweep,
       ),
     );
     // Recipient is part of the cache fingerprint — a different address
@@ -371,6 +426,7 @@ class SendCubit extends Cubit<SendState>
 
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
+    if (state.sweepDestinationBlocked) return;
     final inputGeneration = _startNewPaymentRequestInput();
     final parsingCompleted = Completer<void>();
     _pendingPaymentRequestInput = (
@@ -388,7 +444,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: null,
-          sendMax: false,
+          sendMax: state.isSweep,
         ),
       );
       if (recipientCleared) clearBitcoinFeePreviews();
@@ -400,7 +456,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: paymentRequest,
-          sendMax: false,
+          sendMax: state.isSweep,
         ),
       );
     } catch (e) {
@@ -416,7 +472,7 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: null,
-          sendMax: false,
+          sendMax: state.isSweep,
         ),
       );
       if (recipientCleared) clearBitcoinFeePreviews();
@@ -429,6 +485,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> continueOnAddressConfirmed() async {
+    if (state.sweepDestinationBlocked) return;
     final inputGeneration = _paymentRequestInputGeneration;
     try {
       emit(state.copyWith(loadingBestWallet: true));
@@ -442,7 +499,10 @@ class SendCubit extends Cubit<SendState>
         await _confirmSpRecipient(state.copiedRawPaymentRequest);
         return;
       }
-      await unifiedBip21Prioritization(inputGeneration: inputGeneration);
+
+      if (!state.isSweep) {
+        await unifiedBip21Prioritization(inputGeneration: inputGeneration);
+      }
       if (inputGeneration != _paymentRequestInputGeneration) return;
 
       if (!state.hasValidPaymentRequest) {
@@ -454,6 +514,41 @@ class SendCubit extends Cubit<SendState>
                 : const SendInvalidPaymentRequestFailure(),
           ),
         );
+        return;
+      }
+
+      if (state.isSweep) {
+        final paymentRequest = state.paymentRequest!;
+        final wallet = _wallet ?? state.selectedBitcoinWallet;
+        if (wallet == null) {
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              failure: const SendInvalidPaymentRequestFailure(),
+            ),
+          );
+          return;
+        }
+        switch (_validateSweepPaymentRequestUsecase.execute(
+          wallet: wallet,
+          paymentRequest: paymentRequest,
+        )) {
+          case Err(:final failure):
+            emit(state.copyWith(loadingBestWallet: false, failure: failure));
+            return;
+          case Ok():
+        }
+        _applyEmbeddedPaymentLabel(paymentRequest);
+        await _setSelectedWallet(wallet, manual: true);
+        emit(
+          state.copyWith(
+            sendType: SendType.bitcoin,
+            sendMax: true,
+            loadingBestWallet: false,
+          ),
+        );
+        await loadFees();
+        await onAmountConfirmed();
         return;
       }
 
@@ -510,14 +605,7 @@ class SendCubit extends Cubit<SendState>
 
       // Pre-populate label from the embedded invoice description or BIP21 label
       // if the user hasn't manually set one already.
-      final embeddedLabel = switch (state.paymentRequest!) {
-        Bolt11PaymentRequest(description: final d) when d.isNotEmpty => d,
-        Bip21PaymentRequest(label: final l) when l.isNotEmpty => l,
-        _ => null,
-      };
-      if (embeddedLabel != null && state.label.isEmpty) {
-        emit(state.copyWith(label: embeddedLabel));
-      }
+      _applyEmbeddedPaymentLabel(state.paymentRequest!);
 
       await _setSelectedWallet(wallet, manual: false);
       if (inputGeneration != _paymentRequestInputGeneration) return;
@@ -609,6 +697,19 @@ class SendCubit extends Cubit<SendState>
           creatingSwap: false,
         ),
       );
+    }
+  }
+
+  void _applyEmbeddedPaymentLabel(PaymentRequest paymentRequest) {
+    final embeddedLabel = switch (paymentRequest) {
+      Bolt11PaymentRequest(description: final description)
+          when description.isNotEmpty =>
+        description,
+      Bip21PaymentRequest(label: final label) when label.isNotEmpty => label,
+      _ => null,
+    };
+    if (embeddedLabel != null && state.label.isEmpty) {
+      emit(state.copyWith(label: embeddedLabel));
     }
   }
 
@@ -1167,21 +1268,46 @@ class SendCubit extends Cubit<SendState>
           .where((u) => selectedOutpoints.contains(u.outpoint) && !u.isFrozen)
           .toList();
       final selectionWasLost =
+          !state.isSweep &&
           state.selectedUtxos.isNotEmpty &&
           refreshedSelection.length != state.selectedUtxos.length;
+      final sweepResolution = state.isSweep
+          ? await _resolveSweepInputsUsecase.execute(
+              outpoints: state.sweepOutpoints,
+              availableUtxos: utxos,
+            )
+          : null;
+      if (transactionGeneration != null &&
+          transactionGeneration != _transactionGeneration) {
+        return;
+      }
+      final selectedUtxos = switch (sweepResolution) {
+        Ok(:final value) => value,
+        Err() => const <WalletUtxo>[],
+        null => refreshedSelection,
+      };
+      final sweepSelectionWasLost = switch (sweepResolution) {
+        Err() => true,
+        _ => false,
+      };
       emit(
         state.copyWith(
           utxos: utxos,
-          selectedUtxos: refreshedSelection,
+          selectedUtxos: selectedUtxos,
           consolidationRequired: consolidationRequired,
-          failure: selectionWasLost
-              ? const SendSelectedCoinsUnavailableFailure(
-                  'A selected coin is no longer spendable',
-                )
-              : state.failure,
+          failure: switch (sweepResolution) {
+            Err(:final failure) => failure,
+            Ok() when state.failure is SendSelectedCoinsUnavailableFailure =>
+              null,
+            null when selectionWasLost =>
+              const SendSelectedCoinsUnavailableFailure(
+                'A selected coin is no longer spendable',
+              ),
+            _ => state.failure,
+          },
         ),
       );
-      if (selectionWasLost) {
+      if (selectionWasLost || sweepSelectionWasLost) {
         _invalidateSignedTransaction(
           cancelInFlightBuild: transactionGeneration == null,
         );
@@ -1435,6 +1561,7 @@ class SendCubit extends Cubit<SendState>
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
       drain: state.sendMax,
+      selectedOnly: state.isSweep,
     );
     // An input-shape change cleared the cache while we were building —
     // discard this now-stale result instead of repopulating an emptied
@@ -1496,6 +1623,7 @@ class SendCubit extends Cubit<SendState>
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
       drain: state.sendMax,
+      selectedOnly: state.isSweep,
     );
     // Discard if an input-shape change emptied the cache mid-build (see
     // previewBitcoinCustomFee).
@@ -1580,6 +1708,7 @@ class SendCubit extends Cubit<SendState>
     try {
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
         await loadFees();
+        if (generation != _transactionGeneration) return;
         if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
           return;
         }
@@ -1736,7 +1865,9 @@ class SendCubit extends Cubit<SendState>
         final cachedSlot = state.feePreviewCache.slotFor(
           state.selectedFeeOption,
         );
-        final canUseCache = cachedSlot.isCacheReady;
+        // Exact-input sweeps rebuild before signing so current frozen and
+        // Payjoin-reserved exclusions are applied.
+        final canUseCache = !state.isSweep && cachedSlot.isCacheReady;
         if (canUseCache && state.selectedUtxos.isNotEmpty) {
           await _validateBitcoinSelectionUsecase.execute(
             walletId: state.selectedWallet!.id,
@@ -1771,6 +1902,7 @@ class SendCubit extends Cubit<SendState>
                 replaceByFee: state.replaceByFee,
                 selectedInputs: state.selectedUtxos,
                 drain: drain,
+                selectedOnly: state.isSweep,
               );
         final builtFee = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: txPreparation.unsignedPsbt,
@@ -1794,6 +1926,7 @@ class SendCubit extends Cubit<SendState>
             return;
           }
         }
+        if (generation != _transactionGeneration) return;
         log.info(
           '[create-tx] built vsize=${txPreparation.txSize} '
           'realFee=$builtFee sats '
@@ -1845,7 +1978,7 @@ class SendCubit extends Cubit<SendState>
           if (generation != _transactionGeneration) return;
         }
 
-        if (state.selectedWallet!.signsRemotely) {
+        if (!state.selectedWallet!.signsLocally) {
           // psbt.fee() reads input/output deltas — works on unsigned PSBTs
           // since BDK finalizes coin selection at build time.
           final bitcoinAbsoluteFeesSat =
@@ -1917,6 +2050,15 @@ class SendCubit extends Cubit<SendState>
       if (generation != _transactionGeneration) return;
       _invalidateSignedTransaction();
       log.severe(error: e, trace: StackTrace.current);
+      if (e is SelectedInputsUnavailableException) {
+        emit(
+          state.copyWith(
+            failure: const SendSelectedCoinsUnavailableFailure(),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       if (e is ConsolidationRequiredException) {
         emit(
           state.copyWith(
@@ -2465,6 +2607,13 @@ class SendCubit extends Cubit<SendState>
     // Needed even though createTransaction() also clears: the payjoin-only
     // path below skips it, and a leftover failure blocks every retry.
     clearFailure();
+    if (state.isSweep) {
+      await loadUtxos();
+      if (state.failure != null) {
+        emit(state.copyWith(step: SendStep.confirm));
+        return;
+      }
+    }
     try {
       if (isSpMode) {
         await _sendSpTransaction();

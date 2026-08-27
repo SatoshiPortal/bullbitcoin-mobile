@@ -33,6 +33,7 @@ class PreviewBitcoinFeeUsecase {
     required bool replaceByFee,
     required List<WalletUtxo> selectedInputs,
     required bool drain,
+    bool selectedOnly = false,
   }) async {
     try {
       final tx = await _prepare.execute(
@@ -43,6 +44,7 @@ class PreviewBitcoinFeeUsecase {
         replaceByFee: replaceByFee,
         selectedInputs: selectedInputs,
         drain: drain,
+        selectedOnly: selectedOnly,
       );
       final fee = await _calculateFees.execute(psbt: tx.unsignedPsbt);
       return BitcoinFeePreviewSlot(

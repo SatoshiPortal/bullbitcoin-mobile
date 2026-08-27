@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';

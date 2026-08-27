@@ -54,6 +54,11 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
+String _sendFlowTitle(BuildContext context) {
+  final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
+  return isSweep ? context.loc.coinsSweepTitle : context.loc.sendTitle;
+}
+
 class SendScreen extends StatelessWidget {
   const SendScreen({super.key});
 
@@ -88,7 +93,7 @@ class SendAddressScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           color: context.appColors.background,
           onBack: () => context.pop(),
         ),
@@ -114,6 +119,10 @@ class SendAddressScreen extends StatelessWidget {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: OpenTheCameraWidget(
+                        disabled: context.select(
+                          (SendCubit cubit) =>
+                              cubit.state.sweepDestinationBlocked,
+                        ),
                         onScannedPaymentRequest: (data) => context
                             .read<SendCubit>()
                             .onScannedPaymentRequest(data.$1, data.$2),
@@ -181,13 +190,20 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
+    final sweepDestinationBlocked = context.select(
+      (SendCubit cubit) => cubit.state.sweepDestinationBlocked,
+    );
 
     return BullButton.big(
       label: context.loc.sendContinue,
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: !hasRecipientInput || loadingBestWallet || creatingSwap,
+      disabled:
+          !hasRecipientInput ||
+          loadingBestWallet ||
+          creatingSwap ||
+          sweepDestinationBlocked,
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
     );
@@ -202,10 +218,14 @@ class AddressField extends StatelessWidget {
     final address = context.select<SendCubit, String>(
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
+    final sweepDestinationBlocked = context.select(
+      (SendCubit cubit) => cubit.state.sweepDestinationBlocked,
+    );
 
     return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
+      disabled: sweepDestinationBlocked,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
         color: context.appColors.textMuted,
@@ -311,7 +331,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           onBack: () => context.read<SendCubit>().backClicked(),
         ),
       ),
@@ -717,7 +737,7 @@ class SendConfirmScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           onBack: () => context.read<SendCubit>().backClicked(),
         ),
       ),
@@ -919,7 +939,10 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          if (wallet != null && wallet.signsRemotely && !hasFinalizedTx)
+          if (!isSpMode &&
+              wallet != null &&
+              !wallet.signsLocally &&
+              !hasFinalizedTx)
             (wallet.signerDevice != null && wallet.signerDevice!.isLedger)
                 ? const SignLedgerButton()
                 : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
@@ -1720,7 +1743,7 @@ class SendSendingScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: BullTopBar(title: context.loc.sendTitle),
+        flexibleSpace: BullTopBar(title: _sendFlowTitle(context)),
         actions: [
           CloseButton(
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
@@ -1879,7 +1902,7 @@ class SendSucessScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: BullTopBar(
-          title: context.loc.sendTitle,
+          title: _sendFlowTitle(context),
           onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),

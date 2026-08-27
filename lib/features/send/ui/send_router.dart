@@ -1,6 +1,9 @@
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/features/send/public/send_route.dart';
+import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_screen.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
@@ -8,41 +11,27 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-enum SendRoute {
-  send('/send'),
-  requestIdentifier('request-identifier');
-
-  const SendRoute(this.path);
-
-  final String path;
-}
-
-class SendRouteArgs {
-  final Wallet? wallet;
-  final bool isSpMode;
-
-  const SendRouteArgs({this.wallet, this.isSpMode = false});
-
-  const SendRouteArgs.sp() : wallet = null, isSpMode = true;
-}
-
 class SendRouter {
   static final route = GoRoute(
     name: SendRoute.send.name,
     path: SendRoute.send.path,
     builder: (context, state) {
-      // Pass a preselected wallet to the send bloc if one is set in the URI
-      //  of the incoming route
       final args = state.extra is SendRouteArgs
           ? state.extra! as SendRouteArgs
           : null;
+      // A raw Wallet remains a supported route payload for regular sends.
       final wallet =
           args?.wallet ??
           (state.extra is Wallet ? state.extra! as Wallet : null);
       return BlocProvider(
         create: (_) => locator<SendCubit>(
           param1: wallet,
-          param2: args?.isSpMode == true ? context.loc.walletSpTitle : null,
+          param2: (
+            sweepOutpoints: args?.sweepOutpoints ?? <Outpoint>{},
+            spWalletLabel: args?.isSpMode == true
+                ? context.loc.walletSpTitle
+                : null,
+          ),
         )..loadWalletWithRatesAndFees(),
         child: const SendScreen(),
       );
