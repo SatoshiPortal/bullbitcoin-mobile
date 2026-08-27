@@ -942,7 +942,42 @@ void main() {
       expect(cubit.state.loadingBestWallet, isFalse);
     });
 
-    test('ignores a stale submit result after the input changes', () async {
+    test(
+      'keeps a newer valid submit result when an older one completes',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final oldResult = Completer<PaymentRequest>();
+        final newResult = Completer<PaymentRequest>();
+        when(
+          () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+        ).thenAnswer((invocation) {
+          final data = invocation.namedArguments[#data] as String;
+          return data == 'old-address' ? oldResult.future : newResult.future;
+        });
+
+        cubit.onChangedText('old-address');
+        final oldSubmit = cubit.continueOnAddressConfirmed();
+        cubit.onChangedText('new-address');
+        final newSubmit = cubit.continueOnAddressConfirmed();
+        newResult.complete(
+          const PaymentRequest.lnAddress(address: 'new@example.com'),
+        );
+        await newSubmit;
+        oldResult.complete(
+          const PaymentRequest.bitcoin(address: 'old', isTestnet: true),
+        );
+        await oldSubmit;
+
+        expect(cubit.state.copiedRawPaymentRequest, 'new-address');
+        expect(
+          cubit.state.paymentRequest,
+          const PaymentRequest.lnAddress(address: 'new@example.com'),
+        );
+      },
+    );
+
+    test('keeps a newer valid result when an older parse fails', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       final oldResult = Completer<PaymentRequest>();
@@ -958,16 +993,17 @@ void main() {
       final oldSubmit = cubit.continueOnAddressConfirmed();
       cubit.onChangedText('new-address');
       final newSubmit = cubit.continueOnAddressConfirmed();
-      newResult.completeError(StateError('new input is invalid'));
-      await newSubmit;
-      oldResult.complete(
-        const PaymentRequest.bitcoin(address: 'old', isTestnet: true),
+      newResult.complete(
+        const PaymentRequest.lnAddress(address: 'new@example.com'),
       );
+      await newSubmit;
+      oldResult.completeError(StateError('old input is invalid'));
       await oldSubmit;
 
-      expect(cubit.state.copiedRawPaymentRequest, 'new-address');
-      expect(cubit.state.paymentRequest, isNull);
-      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+      expect(
+        cubit.state.paymentRequest,
+        const PaymentRequest.lnAddress(address: 'new@example.com'),
+      );
     });
 
     test('uses a scanned payment request without reparsing it', () async {

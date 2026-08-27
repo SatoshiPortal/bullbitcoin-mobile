@@ -329,9 +329,6 @@ class SendCubit extends Cubit<SendState>
         } catch (_) {
           if (inputGeneration != _paymentRequestInputGeneration ||
               state.copiedRawPaymentRequest != rawPaymentRequest) {
-            emit(
-              state.copyWith(loadingBestWallet: false, paymentRequest: null),
-            );
             return;
           }
           emit(
@@ -345,7 +342,6 @@ class SendCubit extends Cubit<SendState>
       }
       if (inputGeneration != _paymentRequestInputGeneration ||
           state.copiedRawPaymentRequest != rawPaymentRequest) {
-        emit(state.copyWith(loadingBestWallet: false, paymentRequest: null));
         return;
       }
       emit(state.copyWith(paymentRequest: paymentRequest));
