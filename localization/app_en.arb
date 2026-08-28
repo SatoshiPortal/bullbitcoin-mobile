@@ -10154,45 +10154,33 @@
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "Select \"Manage Account\"",
+  "importQrDevicePassportStep3": "Select \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "Select \"Connect Wallet\"",
+  "importQrDevicePassportStep4": "Select \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "Select \"Sparrow\" option",
+  "importQrDevicePassportStep5": "Select \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "Select \"Single-sig\"",
+  "importQrDevicePassportStep6": "Scan the QR code displayed on your Passport",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "Select \"QR Code\"",
+  "importQrDevicePassportStep7": "In the BULL wallet app, select \"Segwit (BIP84)\" as the derivation option",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "On your mobile device, tap \"open camera\"",
+  "importQrDevicePassportStep8": "Enter a label for your Passport wallet and tap \"Import\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "Scan the QR code displayed on your Passport",
+  "importQrDevicePassportStep9": "Setup complete.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
-  },
-  "importQrDevicePassportStep10": "In the BULL wallet app, select \"Segwit (BIP84)\" as the derivation option",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
-  "importQrDevicePassportStep11": "Enter a label for your Passport wallet and tap \"Import\"",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
-  "importQrDevicePassportStep12": "Setup complete.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {

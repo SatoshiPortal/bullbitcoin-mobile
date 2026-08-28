@@ -2411,10 +2411,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "Zadejte štítek pro vaši pasovou peněženku a klepněte na \"Import\"",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -4119,7 +4115,7 @@
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
   },
-  "importQrDevicePassportStep2": "Zadejte PIN kód",
+  "importQrDevicePassportStep2": "Zadejte svůj PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
@@ -4939,7 +4935,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "Zvolte \"Připojit peněženku\"",
+  "importQrDevicePassportStep4": "Zvolte \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -5086,7 +5082,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "Zvolte \"QR Kód\"",
+  "importQrDevicePassportStep7": "V aplikaci BULL wallet vyberte \"Segwit (BIP84)\" jako možnost derivace",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -5934,10 +5930,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "V aplikaci BULL peněženky vyberte \"Segwit (BIP84)\" jako možnost derivace",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "Vysoký",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -6020,7 +6012,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "importQrDevicePassportStep1": "Síla na zařízení pasu",
+  "importQrDevicePassportStep1": "Zapněte zařízení Passport",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -6618,7 +6610,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "Skenujte QR kód zobrazený na vašem pasu",
+  "importQrDevicePassportStep9": "Nastavení je dokončeno.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6914,7 +6906,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "Zvolte \"Single-sig\"",
+  "importQrDevicePassportStep6": "Naskenujte QR kód zobrazený na zařízení Passport",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -8623,7 +8615,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "Zvolte možnost \"Sparrow\"",
+  "importQrDevicePassportStep5": "Zvolte \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -8734,7 +8726,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "Zvolte \"Manage účet\"",
+  "importQrDevicePassportStep3": "Zvolte \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -9000,7 +8992,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "Na mobilním zařízení klepněte na \"open camera\"",
+  "importQrDevicePassportStep8": "Zadejte název pro peněženku Passport a klepněte na \"Importovat\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -10023,10 +10015,6 @@
   "autoswapInfoDismissButton": "Já to, ne ukázat znovu",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "Nastavení kompletní.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "Číslo účtu IBAN (pouze USA dolarů)",
   "@fundExchangeLabelIbanUsdOnly": {
