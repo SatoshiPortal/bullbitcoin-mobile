@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
@@ -10,12 +11,11 @@ import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_useca
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok, Outpoint;
+import 'package:primitives/primitives.dart' show Ok, Outpoint, Sats;
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockBitcoinSendPort extends Mock implements BitcoinSendPort {}
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
@@ -31,21 +31,31 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
 
 void main() {
   late _MockPayjoinSessions payjoin;
-  late _MockBitcoinWalletRepository bitcoinWallet;
+  late _MockBitcoinSendPort bitcoinWallet;
   late _MockWalletUtxoRepository walletUtxo;
   late PrepareBitcoinSendUsecase usecase;
 
   const walletId = 'wallet-1';
   const address = 'bc1qexampleaddress';
   final networkFee = NetworkFee.relativeFromSatPerVbyte(1);
+  final fixedRecipients = [
+    BitcoinTransactionRecipient.fixed(
+      address: address,
+      amountSat: Sats.fromInt(50000),
+    ),
+  ];
+  final remainderRecipients = [
+    BitcoinTransactionRecipient.remainder(address: address),
+  ];
 
   setUpAll(() {
     registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
+    registerFallbackValue(<BitcoinTransactionRecipient>[]);
   });
 
   setUp(() {
     payjoin = _MockPayjoinSessions();
-    bitcoinWallet = _MockBitcoinWalletRepository();
+    bitcoinWallet = _MockBitcoinSendPort();
     walletUtxo = _MockWalletUtxoRepository();
     usecase = PrepareBitcoinSendUsecase(
       payjoinSessions: payjoin,
@@ -56,10 +66,8 @@ void main() {
     when(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
         selectedOnly: any(named: 'selectedOnly'),
@@ -70,7 +78,14 @@ void main() {
       () => bitcoinWallet.getTxSize(psbt: any(named: 'psbt')),
     ).thenAnswer((_) async => 110);
     when(
-      () => bitcoinWallet.isAddressOfWallet(
+      () => bitcoinWallet.getRecipientAmounts(
+        psbt: any(named: 'psbt'),
+        recipients: any(named: 'recipients'),
+        walletId: any(named: 'walletId'),
+      ),
+    ).thenAnswer((_) async => [Sats.fromInt(50000)]);
+    when(
+      () => bitcoinWallet.areAddressesOfWallet(
         any(),
         walletId: any(named: 'walletId'),
       ),
@@ -85,10 +100,8 @@ void main() {
     final captured = verify(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: captureAny(named: 'unspendable'),
         selected: any(named: 'selected'),
         selectedOnly: any(named: 'selectedOnly'),
@@ -110,9 +123,8 @@ void main() {
 
       await usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: fixedRecipients,
         networkFee: networkFee,
-        amountSat: 50000,
       );
 
       // Both unspendable sources are consulted on every build — no gate.
@@ -122,44 +134,37 @@ void main() {
     },
   );
 
-  test(
-    'drain: unspendable still carries both sources (exclusion on drain too)',
-    () async {
-      when(
-        () => walletUtxo.getAllFrozenOutpoints(),
-      ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1)]);
-      when(
-        () => payjoin.reservedOutpoints(),
-      ).thenAnswer((_) async => const Ok({(txId: 'tx-payjoin', vout: 2)}));
+  test('remainder send still carries both unspendable sources', () async {
+    when(
+      () => walletUtxo.getAllFrozenOutpoints(),
+    ).thenAnswer((_) async => [(txId: 'tx-user', vout: 1)]);
+    when(
+      () => payjoin.reservedOutpoints(),
+    ).thenAnswer((_) async => const Ok({(txId: 'tx-payjoin', vout: 2)}));
 
-      await usecase.execute(
-        walletId: walletId,
-        address: address,
-        networkFee: networkFee,
-        drain: true,
-      );
+    await usecase.execute(
+      walletId: walletId,
+      recipients: remainderRecipients,
+      networkFee: networkFee,
+    );
 
-      // Capture drain + unspendable together (a second verify on the same call
-      // would report "no matching calls").
-      final captured = verify(
-        () => bitcoinWallet.buildPsbt(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
-          networkFee: any(named: 'networkFee'),
-          drain: captureAny(named: 'drain'),
-          unspendable: captureAny(named: 'unspendable'),
-          selected: any(named: 'selected'),
-          selectedOnly: any(named: 'selectedOnly'),
-          replaceByFee: any(named: 'replaceByFee'),
-        ),
-      ).captured;
-      expect(captured[0] as bool?, isTrue);
-      final unspendable = captured[1] as List<Outpoint>?;
-      expect(unspendable, contains((txId: 'tx-user', vout: 1)));
-      expect(unspendable, contains((txId: 'tx-payjoin', vout: 2)));
-    },
-  );
+    final captured = verify(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        recipients: captureAny(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        unspendable: captureAny(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        selectedOnly: any(named: 'selectedOnly'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).captured;
+    final recipients = captured[0] as List<BitcoinTransactionRecipient>;
+    expect(recipients.single.receivesRemainder, isTrue);
+    final unspendable = captured[1] as List<Outpoint>?;
+    expect(unspendable, contains((txId: 'tx-user', vout: 1)));
+    expect(unspendable, contains((txId: 'tx-payjoin', vout: 2)));
+  });
 
   test(
     'NoSpendableUtxoException is rethrown unchanged (not wrapped)',
@@ -173,10 +178,8 @@ void main() {
       when(
         () => bitcoinWallet.buildPsbt(
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: any(named: 'drain'),
           unspendable: any(named: 'unspendable'),
           selected: any(named: 'selected'),
           selectedOnly: any(named: 'selectedOnly'),
@@ -187,9 +190,8 @@ void main() {
       await expectLater(
         usecase.execute(
           walletId: walletId,
-          address: address,
+          recipients: remainderRecipients,
           networkFee: networkFee,
-          drain: true,
         ),
         throwsA(isA<NoSpendableUtxoException>()),
       );
@@ -208,10 +210,8 @@ void main() {
       when(
         () => bitcoinWallet.buildPsbt(
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: any(named: 'drain'),
           unspendable: any(named: 'unspendable'),
           selected: any(named: 'selected'),
           selectedOnly: any(named: 'selectedOnly'),
@@ -222,9 +222,8 @@ void main() {
       await expectLater(
         usecase.execute(
           walletId: walletId,
-          address: address,
+          recipients: fixedRecipients,
           networkFee: networkFee,
-          amountSat: 50000,
         ),
         throwsA(isA<PrepareBitcoinSendException>()),
       );
@@ -244,9 +243,8 @@ void main() {
 
       await usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: fixedRecipients,
         networkFee: networkFee,
-        amountSat: 50000,
       );
 
       final unspendable = capturedUnspendable()!;
@@ -276,9 +274,8 @@ void main() {
     await expectLater(
       usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: fixedRecipients,
         networkFee: networkFee,
-        amountSat: 50000,
         selectedInputs: [frozenInput, spendableInput],
       ),
       throwsA(isA<NoSpendableUtxoException>()),
@@ -286,12 +283,11 @@ void main() {
     verifyNever(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
+        selectedOnly: any(named: 'selectedOnly'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
     );
@@ -310,9 +306,8 @@ void main() {
     await expectLater(
       usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: fixedRecipients,
         networkFee: networkFee,
-        amountSat: 50000,
         selectedInputs: [reservedInput],
       ),
       throwsA(isA<NoSpendableUtxoException>()),
@@ -320,12 +315,11 @@ void main() {
     verifyNever(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
+        selectedOnly: any(named: 'selectedOnly'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
     );
@@ -340,9 +334,8 @@ void main() {
     await expectLater(
       usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: remainderRecipients,
         networkFee: networkFee,
-        drain: true,
         selectedInputs: [_utxo(txId: 'tx-reserved', vout: 0)],
         selectedOnly: true,
       ),
@@ -351,10 +344,8 @@ void main() {
     verifyNever(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
         selectedOnly: any(named: 'selectedOnly'),
@@ -372,9 +363,8 @@ void main() {
     await expectLater(
       usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: remainderRecipients,
         networkFee: networkFee,
-        drain: true,
         selectedInputs: [
           _utxo(txId: 'tx-reserved', vout: 0),
           _utxo(txId: 'tx-spendable', vout: 1),
@@ -386,10 +376,8 @@ void main() {
     verifyNever(
       () => bitcoinWallet.buildPsbt(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
         unspendable: any(named: 'unspendable'),
         selected: any(named: 'selected'),
         selectedOnly: any(named: 'selectedOnly'),
@@ -415,25 +403,25 @@ void main() {
 
       final result = await usecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: fixedRecipients,
         networkFee: networkFee,
-        amountSat: 50000,
         selectedInputs: [input],
       );
 
       expect(result.unsignedPsbt, 'psbt');
       expect(result.txSize, 110);
       expect(result.isToSelf, false);
+      verify(
+        () => bitcoinWallet.areAddressesOfWallet([address], walletId: walletId),
+      ).called(1);
 
       // Capture both args in a single verify (a second verify on the same call
       // would report "no matching calls" since the first marks it verified).
       final captured = verify(
         () => bitcoinWallet.buildPsbt(
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: any(named: 'drain'),
           unspendable: captureAny(named: 'unspendable'),
           selected: captureAny(named: 'selected'),
           selectedOnly: any(named: 'selectedOnly'),
@@ -444,4 +432,31 @@ void main() {
       expect(captured[1] as List<WalletUtxo>?, hasLength(1));
     },
   );
+
+  test('lets invalid recipient lists fail before repository work', () async {
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        recipients: [
+          BitcoinTransactionRecipient.remainder(address: 'bc1qfirst'),
+          BitcoinTransactionRecipient.remainder(address: 'bc1qsecond'),
+        ],
+        networkFee: networkFee,
+      ),
+      throwsArgumentError,
+    );
+
+    verifyNever(() => walletUtxo.getAllFrozenOutpoints());
+    verifyNever(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        selectedOnly: any(named: 'selectedOnly'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    );
+  });
 }
