@@ -1851,10 +1851,6 @@
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "importQrDevicePassportStep11": "Εισάγετε μια ετικέτα για το πορτοφόλι διαβατηρίου σας και πατήστε \"Import\"",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "Καναδάς",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -4118,7 +4114,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "Επιλέξτε \"Connect Wallet\"",
+  "importQrDevicePassportStep4": "Επιλέξτε \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4258,7 +4254,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "Επιλέξτε \"QR Code\"",
+  "importQrDevicePassportStep7": "Στην εφαρμογή BULL wallet, επιλέξτε \"Segwit (BIP84)\" ως επιλογή παραγωγής",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -4993,10 +4989,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "Στην εφαρμογή BULL πορτοφόλι, επιλέξτε \"Segwit (BIP84)\" ως επιλογή εκκίνησης",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "Υψηλή",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -5071,7 +5063,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "importQrDevicePassportStep1": "Power on your Passport",
+  "importQrDevicePassportStep1": "Ενεργοποιήστε τη συσκευή Passport σας",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -5574,7 +5566,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "Βάλτε τον κωδικό QR που εμφανίζεται στο διαβατήριό σας",
+  "importQrDevicePassportStep9": "Η ρύθμιση ολοκληρώθηκε.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -5842,7 +5834,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "Επιλέξτε \"Single-sig\"",
+  "importQrDevicePassportStep6": "Σαρώστε τον κωδικό QR που εμφανίζεται στο Passport σας",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -7310,7 +7302,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "Επιλέξτε \"Sparrow\" επιλογή",
+  "importQrDevicePassportStep5": "Επιλέξτε \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -7402,7 +7394,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "Επιλέξτε \"Manage Account\"",
+  "importQrDevicePassportStep3": "Επιλέξτε \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -7614,7 +7606,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "Στην κινητή συσκευή σας, πατήστε \"ανοιχτή κάμερα\"",
+  "importQrDevicePassportStep8": "Εισάγετε μια ετικέτα για το πορτοφόλι Passport και πατήστε \"Εισαγωγή\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -8481,10 +8473,6 @@
   "autoswapInfoDismissButton": "Got it, μην το δείξετε ξανά",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "Setup πλήρης.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "Αριθμός λογαριασμού IBAN (μόνο για δολάρια ΗΠΑ)",
   "@fundExchangeLabelIbanUsdOnly": {

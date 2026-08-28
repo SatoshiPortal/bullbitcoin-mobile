@@ -10964,10 +10964,6 @@
   "@encryptedVaultRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "importQrDevicePassportStep11": "یک برچسب برای کیف پول پاسپورت خود وارد کنید و به “Import” ضربه بزنید",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "autoswapWarningDontShowAgain": "این هشدار را دوباره نشان ندهید.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -11048,7 +11044,7 @@
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
   },
-  "importQrDevicePassportStep2": "وارد کردن PIN",
+  "importQrDevicePassportStep2": "PIN خود را وارد کنید",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
@@ -11104,7 +11100,7 @@
   "@transactionSwapDoNotUninstall": {
     "description": "Warning message to not uninstall app during swap"
   },
-  "importQrDevicePassportStep4": "گزینه “Connect Wallet” را انتخاب کنید",
+  "importQrDevicePassportStep4": "گزینه “Connect App” را انتخاب کنید",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -11118,7 +11114,7 @@
       }
     }
   },
-  "importQrDevicePassportStep7": "گزینه “QR Code” را انتخاب کنید",
+  "importQrDevicePassportStep7": "در برنامه کیف پول BULL، \"Segwit (BIP84)\" را به عنوان گزینه استخراج انتخاب کنید",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -11175,7 +11171,7 @@
   "@fundExchangeETransferLabelBeneficiaryName": {
     "description": "Label for E-transfer beneficiary name"
   },
-  "importQrDevicePassportStep1": "قدرت در دستگاه پاسپورت شما",
+  "importQrDevicePassportStep1": "دستگاه Passport خود را روشن کنید",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -11223,10 +11219,6 @@
   "@takeYourTimeTag": {
     "description": "Tag for options requiring more time"
   },
-  "importQrDevicePassportStep10": "در برنامه کیف پول BULL، گزینه “Segwit (BIP84)” را به عنوان گزینه جذب انتخاب کنید",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "passwordTooCommonError": "این {pinOrPassword} بسیار رایج است. لطفا یکی دیگر را انتخاب کنید.",
   "@passwordTooCommonError": {
     "description": "Error message for common password",
@@ -11273,7 +11265,7 @@
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
   },
-  "importQrDevicePassportStep9": "کد QR نمایش داده شده در پاسپورت خود را اسکن کنید",
+  "importQrDevicePassportStep9": "راه‌اندازی کامل شد.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -11299,7 +11291,7 @@
   "@autoswapAlwaysBlockLabel": {
     "description": "Label for toggle to always block high fee transfers"
   },
-  "importQrDevicePassportStep6": "گزینه “Single-sig” را انتخاب کنید",
+  "importQrDevicePassportStep6": "کد QR نمایش‌داده‌شده روی Passport خود را اسکن کنید",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -11425,7 +11417,7 @@
   "@quickAndEasyTag": {
     "description": "Tag for quick and easy options"
   },
-  "importQrDevicePassportStep5": "گزینه “Sparrow” را انتخاب کنید",
+  "importQrDevicePassportStep5": "گزینه “Bull” را انتخاب کنید",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -11442,7 +11434,7 @@
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
-  "importQrDevicePassportStep3": "گزینه “Manage Account” را انتخاب کنید",
+  "importQrDevicePassportStep3": "گزینه “Wallet” را انتخاب کنید",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -11484,7 +11476,7 @@
       }
     }
   },
-  "importQrDevicePassportStep8": "در دستگاه تلفن همراه خود، روی “دوربین باز” ضربه بزنید",
+  "importQrDevicePassportStep8": "یک برچسب برای کیف پول Passport خود وارد کنید و روی \"واردات\" ضربه بزنید",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -11515,10 +11507,6 @@
   "autoswapMaxFeeLabel": "هزینه انتقال Max",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
-  },
-  "importQrDevicePassportStep12": "راه اندازی کامل.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeOnlineBillPaymentTitle": "پرداخت آنلاین",
   "@fundExchangeOnlineBillPaymentTitle": {

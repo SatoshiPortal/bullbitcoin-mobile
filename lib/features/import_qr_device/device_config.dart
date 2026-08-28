@@ -81,9 +81,6 @@ class DeviceConfig {
         context.loc.importQrDevicePassportStep7,
         context.loc.importQrDevicePassportStep8,
         context.loc.importQrDevicePassportStep9,
-        context.loc.importQrDevicePassportStep10,
-        context.loc.importQrDevicePassportStep11,
-        context.loc.importQrDevicePassportStep12,
       ],
     ),
     SignerDeviceEntity.seedsigner: DeviceConfig(
