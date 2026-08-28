@@ -257,6 +257,8 @@ WalletUtxo _utxo({
   required int amountSat,
   int vout = 0,
   bool isFrozen = false,
+  List<Label> labels = const [],
+  int confirmations = 0,
 }) => WalletUtxo.bitcoin(
   walletId: 'w-bitcoin',
   txId: 'a' * 64,
@@ -265,7 +267,14 @@ WalletUtxo _utxo({
   amountSat: BigInt.from(amountSat),
   address: 'bc1-utxo',
   isFrozen: isFrozen,
+  labels: labels,
+  confirmations: confirmations,
 );
+
+/// A fresh `Label` instance for the same stored row, as a second read of the
+/// same coin would produce.
+Label _payjoinLabel() =>
+    Label.addr(id: 1, address: 'bc1-utxo', label: 'Payjoin');
 
 FeeOptions _feeOptions() => const FeeOptions(
   fastest: RelativeFee(25),
@@ -1182,6 +1191,128 @@ void main() {
         cubit.state.failure,
         isNot(isA<SendInsufficientFundsForFeesFailure>()),
       );
+    });
+  });
+
+  // A manual coin selection is re-validated against a fresh read of the wallet
+  // on every createTransaction(). The coin is the same coin — its outpoint is
+  // immutable — but the entity around it is not: labels, confirmations and
+  // freeze state all change under it. Keying that re-validation on entity
+  // equality made a labelled coin impossible to select at all: the tap landed,
+  // the total ticked up for a single frame, then loadUtxos() dropped it.
+  group('manual coin selection survives a re-read of the wallet', () {
+    SendState stateWith(List<WalletUtxo> selectedUtxos) => SendState(
+      step: SendStep.amount,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinWallet(balanceSat: 20000),
+      selectedUtxos: selectedUtxos,
+      utxos: selectedUtxos,
+    );
+
+    test(
+      'keeps a selected coin whose labels are re-read as new instances',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final selected = _utxo(amountSat: 5000, labels: [_payjoinLabel()]);
+        // Same row, distinct object — exactly what getWalletUtxos() rebuilds.
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer(
+          (_) async => [
+            _utxo(amountSat: 5000, labels: [_payjoinLabel()]),
+          ],
+        );
+        cubit.setStateForTest(stateWith([selected]));
+
+        await cubit.loadUtxos();
+
+        expect(cubit.state.selectedUtxos, hasLength(1));
+        expect(cubit.state.selectedUtxos.single.outpoint, selected.outpoint);
+      },
+    );
+
+    test('keeps a selected coin across a confirmation bump', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final selected = _utxo(amountSat: 5000);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [_utxo(amountSat: 5000, confirmations: 1)]);
+      cubit.setStateForTest(stateWith([selected]));
+
+      await cubit.loadUtxos();
+
+      expect(cubit.state.selectedUtxos, hasLength(1));
+    });
+
+    // The sheet renders entities from state.utxos and asks whether each is in
+    // state.selectedUtxos. Holding the pre-refresh instances would keep the
+    // radio unfilled even though the selection technically survived.
+    test('re-projects the selection onto the freshly read entities', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final refreshed = _utxo(amountSat: 5000, confirmations: 3);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [refreshed]);
+      cubit.setStateForTest(stateWith([_utxo(amountSat: 5000)]));
+
+      await cubit.loadUtxos();
+
+      expect(cubit.state.selectedUtxos.single, refreshed);
+      expect(cubit.state.utxos, contains(cubit.state.selectedUtxos.single));
+    });
+
+    // D7: the sheet hides frozen coins, so one frozen after being picked could
+    // never be deselected — it would sit invisible in the selection, inflate
+    // the total, and be stripped again at build time as an unexplained
+    // shortfall.
+    test('drops a selected coin that was frozen since', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [_utxo(amountSat: 5000, isFrozen: true)]);
+      cubit.setStateForTest(stateWith([_utxo(amountSat: 5000)]));
+
+      await cubit.loadUtxos();
+
+      expect(cubit.state.selectedUtxos, isEmpty);
+      expect(cubit.state.utxos, hasLength(1));
+    });
+
+    test('still drops a selected coin that left the wallet', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [_utxo(amountSat: 5000, vout: 1)]);
+      cubit.setStateForTest(stateWith([_utxo(amountSat: 5000)]));
+
+      await cubit.loadUtxos();
+
+      expect(cubit.state.selectedUtxos, isEmpty);
+    });
+
+    // Tapping a selected coin must deselect it, even though the tapped
+    // instance comes from state.utxos and the held one from state.selectedUtxos.
+    test('a second tap deselects rather than duplicating', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      // Leave the fee lists null so createTransaction() bails out early and
+      // this exercises the toggle alone.
+      when(
+        () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
+      ).thenThrow(Exception('no network in test'));
+      final held = _utxo(amountSat: 5000, labels: [_payjoinLabel()]);
+      cubit.setStateForTest(stateWith([held]));
+
+      await cubit.utxoSelected(
+        _utxo(amountSat: 5000, labels: [_payjoinLabel()], confirmations: 2),
+      );
+
+      expect(cubit.state.selectedUtxos, isEmpty);
     });
   });
 }
