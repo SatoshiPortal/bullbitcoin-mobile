@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -32,6 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
+import 'package:primitives/primitives.dart' show Sats;
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -312,8 +314,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
         // the estimate for the tier the payin would be built at.
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: event.wallet.id,
-          address: dummyAddressForFeeCalculation.address,
-          amountSat: requiredAmountSat,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: dummyAddressForFeeCalculation.address,
+              amountSat: Sats.fromInt(requiredAmountSat),
+            ),
+          ],
           networkFee: bitcoinFees.fastest,
         );
         bitcoinTxSize = preparedSend.txSize;
@@ -575,8 +581,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
-          address: payPaymentState.payOrder.bitcoinAddress!,
-          amountSat: payinAmountSat,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: payPaymentState.payOrder.bitcoinAddress!,
+              amountSat: Sats.fromInt(payinAmountSat),
+            ),
+          ],
           networkFee: networkFee,
           selectedInputs: payPaymentState.selectedUtxos.isNotEmpty
               ? payPaymentState.selectedUtxos
@@ -1009,8 +1019,12 @@ class PayBloc extends Bloc<PayEvent, PayState>
         final address = await _payinBuildAddress(repriced, wallet);
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
-          address: address,
-          amountSat: payinAmountSat,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: address,
+              amountSat: Sats.fromInt(payinAmountSat),
+            ),
+          ],
           networkFee: networkFee,
           selectedInputs: repriced.selectedUtxos.isNotEmpty
               ? repriced.selectedUtxos
@@ -1261,12 +1275,17 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final address = await _payinBuildAddress(current, wallet);
     final slot = await _previewBitcoinFeeUsecase.execute(
       walletId: wallet.id,
-      address: address,
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.payOrder.payinAmount),
+          ),
+        ),
+      ],
       networkFee: event.fee,
-      amountSat: ConvertAmount.btcToSats(current.payOrder.payinAmount),
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     // The payin's shape changed while this build ran, so the slot describes a
     // transaction we are no longer offering.
@@ -1301,11 +1320,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
       presets: presets,
       walletId: wallet.id,
-      address: address,
-      amountSat: ConvertAmount.btcToSats(current.payOrder.payinAmount),
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.payOrder.payinAmount),
+          ),
+        ),
+      ],
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     if (epoch != _bitcoinPreviewEpoch) return;
     final live = _currentPaymentState;
