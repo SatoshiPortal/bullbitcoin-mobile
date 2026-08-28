@@ -15,6 +15,7 @@ class TransactionOutputMapper {
           value: transactionOutput.value,
           scriptPubkey: transactionOutput.scriptPubkey,
           address: transactionOutput.address,
+          isChange: transactionOutput.isChange,
         );
       case LiquidTransactionOutput _:
         return TransactionOutputModel.liquid(
@@ -24,6 +25,7 @@ class TransactionOutputMapper {
           value: transactionOutput.value,
           scriptPubkey: transactionOutput.scriptPubkey,
           address: transactionOutput.address,
+          isChange: transactionOutput.isChange,
         );
     }
   }
@@ -43,6 +45,7 @@ class TransactionOutputMapper {
           labels: labels,
           scriptPubkey: transactionOutputModel.scriptPubkey,
           address: transactionOutputModel.address,
+          isChange: transactionOutputModel.isChange,
           addressLabels: addressLabels,
         );
       case LiquidTransactionOutputModel _:
@@ -54,6 +57,7 @@ class TransactionOutputMapper {
           labels: labels,
           scriptPubkey: transactionOutputModel.scriptPubkey,
           address: transactionOutputModel.address,
+          isChange: transactionOutputModel.isChange,
           addressLabels: addressLabels,
         );
     }
