@@ -210,10 +210,8 @@ void main() {
       verifyNever(
         () => bdkDatasource.buildPsbt(
           wallet: any(named: 'wallet'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           networkFee: any(named: 'networkFee'),
-          drain: any(named: 'drain'),
           unspendable: any(named: 'unspendable'),
           selected: any(named: 'selected'),
           replaceByFee: any(named: 'replaceByFee'),
@@ -271,10 +269,8 @@ void main() {
         verifyNever(
           () => bdkDatasource.buildPsbt(
             wallet: any(named: 'wallet'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
+            recipients: any(named: 'recipients'),
             networkFee: any(named: 'networkFee'),
-            drain: any(named: 'drain'),
             unspendable: any(named: 'unspendable'),
             selected: any(named: 'selected'),
             replaceByFee: any(named: 'replaceByFee'),

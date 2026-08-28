@@ -13,6 +13,10 @@ void main() {
       'cHNidP8BAFICAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
       'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
       'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+  const multiOutputPsbt =
+      'cHNidP8BAHECAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
+      'AmDqAAAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiJYmAAAAAAAABYAFERERERERERERERE'
+      'REREREREREREAAAAAAABAR9ohwEAAAAAABYAFDMzMzMzMzMzMzMzMzMzMzMzMzMzAAAA';
 
   final usecase = VerifySignedTxUsecase();
 
@@ -40,6 +44,21 @@ void main() {
         signedTransaction: unsignedPsbt,
         isPsbt: true,
       );
+      expect(result, isA<Ok<void, SignedTransactionVerificationFailure>>());
+    });
+
+    test('accepts a matching transaction with multiple outputs', () async {
+      final psbt = bdk.Psbt(psbtBase64: multiOutputPsbt);
+      final tx = psbt.extractTx();
+      final signedTransaction = hex.encode(tx.serialize());
+      tx.dispose();
+      psbt.dispose();
+
+      final result = await usecase.execute(
+        unsignedPsbt: multiOutputPsbt,
+        signedTransaction: signedTransaction,
+      );
+
       expect(result, isA<Ok<void, SignedTransactionVerificationFailure>>());
     });
 
