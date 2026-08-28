@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bull_ui/bull_ui.dart' show BullCheckbox;
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
@@ -87,13 +88,9 @@ class CoinSelectTile extends StatelessWidget {
                         color: context.appColors.onSurfaceVariant,
                       ),
                     ),
-                    trailing: RadioGroup<bool>(
-                      groupValue: selected,
+                    trailing: BullCheckbox(
+                      checked: selected,
                       onChanged: (_) => onTap(),
-                      child: Radio<bool>(
-                        value: true,
-                        activeColor: context.appColors.secondary,
-                      ),
                     ),
                   ),
                   // const SizedBox(height: 4),
