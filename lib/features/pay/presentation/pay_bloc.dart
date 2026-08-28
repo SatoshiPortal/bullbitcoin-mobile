@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
@@ -1314,12 +1315,17 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
     final slot = await _previewBitcoinFeeUsecase.execute(
       walletId: wallet.id,
-      address: address,
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.payOrder.payinAmount),
+          ),
+        ),
+      ],
       networkFee: event.fee,
-      amountSat: ConvertAmount.btcToSats(current.payOrder.payinAmount),
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     // The payin's shape changed while this build ran, so the slot describes a
     // transaction we are no longer offering.
@@ -1370,11 +1376,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
       presets: presets,
       walletId: wallet.id,
-      address: address,
-      amountSat: ConvertAmount.btcToSats(current.payOrder.payinAmount),
+      recipients: [
+        BitcoinTransactionRecipient.fixed(
+          address: address,
+          amountSat: Sats.fromInt(
+            ConvertAmount.btcToSats(current.payOrder.payinAmount),
+          ),
+        ),
+      ],
       replaceByFee: current.replaceByFee,
       selectedInputs: current.selectedUtxos,
-      drain: false,
     );
     if (epoch != _bitcoinPreviewEpoch) return;
     final live = _currentPaymentState;

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 
@@ -22,11 +23,9 @@ class PreviewBitcoinFeePresetsUsecase {
   Future<Map<FeeSelection, BitcoinFeePreviewSlot>> execute({
     required FeeOptions presets,
     required String walletId,
-    required String address,
-    required int amountSat,
+    required List<BitcoinTransactionRecipient> recipients,
     required bool replaceByFee,
     required List<WalletUtxo> selectedInputs,
-    required bool drain,
     bool selectedOnly = false,
   }) async {
     String rateKey(NetworkFee fee) => switch (fee) {
@@ -38,12 +37,10 @@ class PreviewBitcoinFeePresetsUsecase {
       rateKey(fee),
       () => _previewOne.execute(
         walletId: walletId,
-        address: address,
-        amountSat: amountSat,
+        recipients: recipients,
         networkFee: fee,
         replaceByFee: replaceByFee,
         selectedInputs: selectedInputs,
-        drain: drain,
         selectedOnly: selectedOnly,
       ),
     );

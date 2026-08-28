@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -77,8 +78,9 @@ Future<void> main({bool isInitialized = false}) async {
     );
     final prepared = await prepareBitcoinSend.execute(
       walletId: walletId,
-      address: address.address,
-      drain: true,
+      recipients: [
+        BitcoinTransactionRecipient.remainder(address: address.address),
+      ],
       networkFee: NetworkFee.relativeFromSatPerVbyte(testnetFeeRate),
     );
     final signed = await signBitcoinTx.execute(
@@ -265,8 +267,12 @@ Future<void> main({bool isInitialized = false}) async {
         const feeRate = testnetFeeRate;
         final prepared = await prepareBitcoinSend.execute(
           walletId: senderWallet.id,
-          address: address.address,
-          amountSat: 10000,
+          recipients: [
+            BitcoinTransactionRecipient.fixed(
+              address: address.address,
+              amountSat: Sats.fromInt(10000),
+            ),
+          ],
           networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
         );
         final senderResult = await senderRole.start(

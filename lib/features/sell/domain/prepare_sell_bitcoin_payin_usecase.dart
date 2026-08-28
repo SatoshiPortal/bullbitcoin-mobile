@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -29,20 +30,16 @@ class PrepareSellBitcoinPayinUsecase {
   @useResult
   Future<Result<PreparedSellBitcoinPayin, SellFailure>> execute({
     required String walletId,
-    required String address,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    int? amountSat,
-    bool drain = false,
     List<WalletUtxo>? selectedInputs,
     bool replaceByFee = true,
   }) async {
     try {
       final prepared = await _prepareBitcoinSendUsecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: recipients,
         networkFee: networkFee,
-        amountSat: amountSat,
-        drain: drain,
         selectedInputs: selectedInputs,
         replaceByFee: replaceByFee,
       );

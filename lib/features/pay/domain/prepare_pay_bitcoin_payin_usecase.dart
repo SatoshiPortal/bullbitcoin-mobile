@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -36,10 +37,16 @@ class PreparePayBitcoinPayinUsecase {
     try {
       final prepared = await _prepareBitcoinSendUsecase.execute(
         walletId: walletId,
-        address: address,
+        recipients: [
+          if (drain)
+            BitcoinTransactionRecipient.remainder(address: address)
+          else
+            BitcoinTransactionRecipient.fixed(
+              address: address,
+              amountSat: Sats.fromInt(amountSat ?? 0),
+            ),
+        ],
         networkFee: networkFee,
-        amountSat: amountSat,
-        drain: drain,
         selectedInputs: selectedInputs,
         replaceByFee: replaceByFee,
       );

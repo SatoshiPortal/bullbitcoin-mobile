@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
@@ -202,6 +203,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
+    registerFallbackValue(<BitcoinTransactionRecipient>[]);
     // The fee estimate takes the wallet itself, so `any(named: 'wallet')`
     // needs something to stand in for it.
     registerFallbackValue(_MockWallet());
@@ -873,11 +875,9 @@ void main() {
         () => previewBitcoinFeePresets.execute(
           presets: any(named: 'presets'),
           walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          amountSat: any(named: 'amountSat'),
+          recipients: any(named: 'recipients'),
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
-          drain: any(named: 'drain'),
         ),
       ).thenAnswer(
         (_) async => const {
@@ -1025,11 +1025,9 @@ void main() {
           () => previewBitcoinFeePresets.execute(
             presets: any(named: 'presets'),
             walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
+            recipients: any(named: 'recipients'),
             replaceByFee: any(named: 'replaceByFee'),
             selectedInputs: any(named: 'selectedInputs'),
-            drain: any(named: 'drain'),
           ),
         );
       },
@@ -1049,11 +1047,17 @@ void main() {
         () => previewBitcoinFeePresets.execute(
           presets: feeOptions,
           walletId: 'wallet-1',
-          address: payinAddress,
-          amountSat: 100000,
+          recipients: any(
+            named: 'recipients',
+            that: predicate<List<BitcoinTransactionRecipient>>(
+              (recipients) =>
+                  recipients.length == 1 &&
+                  recipients.single.address == payinAddress &&
+                  recipients.single.amountSat == Sats.fromInt(100000),
+            ),
+          ),
           replaceByFee: any(named: 'replaceByFee'),
           selectedInputs: any(named: 'selectedInputs'),
-          drain: false,
         ),
       ).called(1);
     });

@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 /// Builds one unsigned Bitcoin PSBT and reports the real `psbt.fee()` +
 /// vsize. No signing, no state mutation — pure compute. The PSBT and
@@ -27,23 +28,19 @@ class PreviewBitcoinFeeUsecase {
 
   Future<BitcoinFeePreviewSlot> execute({
     required String walletId,
-    required String address,
-    required int amountSat,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
     required bool replaceByFee,
     required List<WalletUtxo> selectedInputs,
-    required bool drain,
     bool selectedOnly = false,
   }) async {
     try {
       final tx = await _prepare.execute(
         walletId: walletId,
-        address: address,
+        recipients: recipients,
         networkFee: networkFee,
-        amountSat: amountSat,
         replaceByFee: replaceByFee,
         selectedInputs: selectedInputs,
-        drain: drain,
         selectedOnly: selectedOnly,
       );
       final fee = await _calculateFees.execute(psbt: tx.unsignedPsbt);
@@ -51,6 +48,10 @@ class PreviewBitcoinFeeUsecase {
         feeSat: fee,
         unsignedPsbt: tx.unsignedPsbt,
         txSize: tx.txSize,
+        recipientAmountsSat: [
+          for (final amount in tx.recipientAmountsSat) amount.value.toInt(),
+        ],
+        isToSelf: tx.isToSelf,
       );
     } catch (e) {
       // Insufficient funds / build error at the typed rate. Log so the
@@ -60,7 +61,7 @@ class PreviewBitcoinFeeUsecase {
       log.info(
         '[fee-preview] build failed at rate '
         '${networkFee is RelativeFee ? networkFee.satPerVbyte : networkFee.value} '
-        'amount=$amountSat drain=$drain '
+        'recipients=${recipients.length} '
         'selectedInputs=${selectedInputs.length} rbf=$replaceByFee err=$e',
       );
       return const BitcoinFeePreviewSlot();
