@@ -267,6 +267,16 @@ class BdkWalletDatasource {
       // return value (as this call did before) silently drops the manual
       // UTXO selection and leaves BDK to pick inputs automatically.
       txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
+      // `addUtxos` makes these inputs MANDATORY, not EXCLUSIVE: BDK documents them as "the internal list of UTXOs that must be spent", and coin selection stays free to append more of the wallet's coins when the selection alone can't cover outputs + fee.
+      // In bdk_wallet 3.0.0's `create_tx` that is `required = params.utxos` plus `optional = filter_utxos(..)`, and `manually_selected_only` is what empties the optional pool (`filter_utxos` returns `vec![]`).
+      // Without it, hand-picking coins that fall short produces a perfectly valid PSBT containing a coin the user deliberately excluded — an irreversible on-chain privacy leak, since the common-input-ownership heuristic then links that coin's history to the rest of the selection. With it, the shortfall surfaces as InsufficientFundsException instead, which is the honest answer.
+      //
+      // Drain is deliberately left out. `drain_wallet` folds the optional pool into the required set, so the two combined would spend only the selection while the UI still derives the MAX amount from the whole spendable balance — signing a smaller payment than the confirm screen displays. MAX-with-coin-control needs its own fix (the amount must come from the selection first).
+      //
+      // Guarded by the enclosing isNotEmpty check for a second reason: `create_tx` rejects `manually_selected_only` with an empty selection (`CreateTxError::NoUtxosSelected`).
+      if (drain != true) {
+        txBuilder = txBuilder.manuallySelectedOnly();
+      }
     }
 
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,

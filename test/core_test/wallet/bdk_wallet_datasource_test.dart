@@ -399,9 +399,10 @@ void main() {
     },
   );
 
-  // The amount fits the picked coin but not the fee. The large coin must be
-  // unspendable too: `addUtxos` only makes a coin required, so BDK would
-  // otherwise top the transaction up from it and never fall short.
+  // The amount fits the picked coin but not the fee. Marking the large coin
+  // unspendable is belt-and-braces here: `manuallySelectedOnly` already keeps
+  // BDK from topping the transaction up, and the test below covers that on
+  // its own.
   test(
     'buildPsbt reports a fee-only shortfall as insufficient funds',
     () async {
@@ -427,6 +428,114 @@ void main() {
         ),
         throwsA(isA<InsufficientFundsException>()),
       );
+    },
+  );
+
+  // The reported bug, reproduced with nothing marked unspendable.
+  //
+  // `addUtxos` makes a coin REQUIRED, not EXCLUSIVE, so BDK's coin selection stayed free to append any other wallet coin to cover the shortfall. Picking coins that fell a few hundred sats short of amount + fee therefore produced a valid, broadcastable PSBT that spent a coin the user had deliberately left unselected — linking its history to the selection under the common-input-ownership heuristic, irreversibly and on-chain.
+  //
+  // `manuallySelectedOnly` empties BDK's optional pool, so the shortfall has to surface as an error instead.
+  test(
+    'buildPsbt does not top up a short manual selection with an unselected coin',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      await expectLater(
+        datasource.buildPsbt(
+          wallet: walletModel,
+          address: _externalTestnetAddress,
+          // Exactly the picked coin's value: covered before fees, short once
+          // the fee lands — the shape of the original report (2 020 sats
+          // selected for a 2 000 sat send at a ~500 sat fee).
+          amountSat: utxoSmallAmountSat,
+          networkFee: const NetworkFee.relativeSatPerKwu(1000),
+          selected: [
+            WalletUtxoModel.bitcoin(
+              txId: utxoLargeTxId,
+              vout: utxoSmallVout,
+              amountSat: BigInt.from(utxoSmallAmountSat),
+              scriptPubkey: Uint8List(0),
+              address: '',
+              isExternalKeyChain: true,
+            ),
+          ],
+          replaceByFee: true,
+        ),
+        throwsA(isA<InsufficientFundsException>()),
+      );
+    },
+  );
+
+  // The other half of the contract: restricting the pool must not make BDK
+  // pad a selection that is genuinely sufficient.
+  test(
+    'buildPsbt spends only the selected coin when it covers amount and fee',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      final psbt = await datasource.buildPsbt(
+        wallet: walletModel,
+        address: _externalTestnetAddress,
+        // Leaves ~10 000 sats of headroom over the 30 000 sat coin, far more
+        // than the fee at 4 sat/vB.
+        amountSat: 20000,
+        networkFee: const NetworkFee.relativeSatPerKwu(1000),
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoSmallVout,
+            amountSat: BigInt.from(utxoSmallAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+        replaceByFee: true,
+      );
+
+      final inputs = bdk.Psbt(psbtBase64: psbt).extractTx().input();
+
+      expect(
+        inputs.length,
+        1,
+        reason:
+            'a sufficient selection must be spent as-is, with no extra coin '
+            'pulled in from the wallet',
+      );
+      expect(inputs.single.previousOutput.txid.toString(), utxoLargeTxId);
+      expect(inputs.single.previousOutput.vout, utxoSmallVout);
+    },
+  );
+
+  // Drain is deliberately excluded from `manuallySelectedOnly`: MAX derives
+  // its displayed amount from the whole spendable balance, so restricting the
+  // inputs would sign a smaller payment than the confirm screen shows. Pins
+  // that carve-out so it can't be "tidied up" without also fixing MAX.
+  test(
+    'buildPsbt still drains every coin when draining with a selection',
+    () async {
+      final datasource = BdkWalletDatasource();
+
+      final psbt = await datasource.buildPsbt(
+        wallet: walletModel,
+        address: _externalTestnetAddress,
+        networkFee: const NetworkFee.relativeSatPerKwu(1000),
+        drain: true,
+        selected: [
+          WalletUtxoModel.bitcoin(
+            txId: utxoLargeTxId,
+            vout: utxoSmallVout,
+            amountSat: BigInt.from(utxoSmallAmountSat),
+            scriptPubkey: Uint8List(0),
+            address: '',
+            isExternalKeyChain: true,
+          ),
+        ],
+        replaceByFee: true,
+      );
+
+      expect(bdk.Psbt(psbtBase64: psbt).extractTx().input().length, 2);
     },
   );
 }
