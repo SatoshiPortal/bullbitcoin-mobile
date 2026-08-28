@@ -60,7 +60,11 @@ sealed class WalletTransaction with _$WalletTransaction {
       return null;
     }
     if (isToSelf) {
-      return outputs.first;
+      // We own every output here, so ownership cannot pick out the recipient.
+      // Take the one that isn't change; falls back to the first output on
+      // Liquid, where change cannot be identified.
+      final paidOut = outputs.where((output) => !output.isChange);
+      return paidOut.firstOrNull ?? outputs.first;
     }
     // The ownership flags can disagree with the direction heuristic (missed
     // self-transfers, unrecognized Liquid outputs, swap legs) — return null

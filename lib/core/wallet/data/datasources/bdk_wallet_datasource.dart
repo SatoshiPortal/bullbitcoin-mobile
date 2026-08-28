@@ -529,17 +529,14 @@ class BdkWalletDatasource {
         }
 
         final isIncoming = received > sent;
-        final netAmountSat = isToSelf
-            ? // When sending to self, the fee is paid by this wallet and is
-              // the only thing that changes from the balance
-              sent - fee
-            : isIncoming
-            ? // If incoming, fee is paid by sender, so not deducted from
-              // wallet's balance
-              received - sent
-            : // If outgoing, fee is paid by this wallet, so deducted here
-              // to know the net amount
-              sent - received - fee;
+        final netAmountSat = _netAmountSatOf(
+          isToSelf: isToSelf,
+          isIncoming: isIncoming,
+          outputs: outputModels,
+          sent: sent,
+          received: received,
+          fee: fee,
+        );
 
         return WalletTransactionModel(
           txId: tx.transaction.computeTxid().toString(),
@@ -697,11 +694,46 @@ class BdkWalletDatasource {
     return addressBalances;
   }
 
+  /// The amount to show for a transaction, from this wallet's point of view.
+  static int _netAmountSatOf({
+    required bool isToSelf,
+    required bool isIncoming,
+    required List<BitcoinTransactionOutputModel> outputs,
+    required int sent,
+    required int received,
+    required int fee,
+  }) {
+    if (isToSelf) {
+      // `sent` is the whole utxo we spent, not what we paid: coin selection
+      // spends whole utxos and hands the rest back as change.
+      final toDestination = outputs
+          .where((output) => !output.isChange)
+          .fold(0, (sum, output) => sum + (output.value?.toInt() ?? 0));
+      // Nothing paid out — a consolidation. The fee is the only balance change.
+      return toDestination > 0 ? toDestination : fee;
+    }
+
+    // The sender paid the fee, so it never left this balance.
+    if (isIncoming) return received - sent;
+
+    // We paid the fee, so take it off to leave what reached the recipient.
+    return sent - received - fee;
+  }
+
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
     List<bdk.CanonicalTx> transactions, {
     required WalletModel wallet,
     required bdk.Wallet bdkWallet,
   }) async {
+    // Our own change outputs, by outpoint. In a send-to-self every output is
+    // ours, so only the keychain separates the recipient from the change.
+    // `listOutput()` covers spent outputs too, and hits no network.
+    final changeOutpoints = <Outpoint>{
+      for (final output in bdkWallet.listOutput())
+        if (output.keychain == bdk.KeychainKind.internal)
+          (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
+    };
+
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
         final outputs = tx.transaction.output();
@@ -709,6 +741,7 @@ class BdkWalletDatasource {
           outputs.asMap().entries.map((outputEntry) async {
             final vout = outputEntry.key;
             final output = outputEntry.value;
+            final txId = tx.transaction.computeTxid().toString();
             final scriptPubkeyBytes = output.scriptPubkey.toBytes();
             final address =
                 await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
@@ -717,7 +750,7 @@ class BdkWalletDatasource {
                 );
 
             return TransactionOutputModel.bitcoin(
-              txId: tx.transaction.computeTxid().toString(),
+              txId: txId,
               vout: vout,
               isOwn: await isMine(
                 scriptPubkeyBytes,
@@ -727,6 +760,7 @@ class BdkWalletDatasource {
               value: BigInt.from(output.value.toSat()),
               scriptPubkey: scriptPubkeyBytes,
               address: address,
+              isChange: changeOutpoints.contains((txId: txId, vout: vout)),
             );
           }),
         );
