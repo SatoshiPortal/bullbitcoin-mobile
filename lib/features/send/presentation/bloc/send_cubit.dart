@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -973,7 +974,10 @@ class SendCubit extends Cubit<SendState>
       // a sync landing mid-flow could leave a stale PSBT staged for
       // broadcast. Guarded so a no-op refresh doesn't needlessly
       // re-shimmer an open modal.
-      final utxosChanged = !setEquals(state.utxos.toSet(), utxos.toSet());
+      final utxosChanged = !setEquals(
+        _coinSetFingerprint(state.utxos),
+        _coinSetFingerprint(utxos),
+      );
       // Proactively flag consolidation for Liquid wallets whose UTXO count is
       // over the threshold, so the card shows before a build is attempted. The
       // ConsolidationRequiredException remains the backstop on the build path.
@@ -987,10 +991,21 @@ class SendCubit extends Cubit<SendState>
           await _checkLiquidConsolidationUsecase.execute(
             walletId: state.selectedWallet!.id,
           );
+      // Re-projected onto the fresh entities, not just filtered, so the sheet's
+      // `selected` check still matches what it renders. Frozen coins drop out:
+      // the sheet hides them, so a coin frozen after being picked could not be
+      // deselected yet would still inflate the total (D7).
+      final selectedOutpoints = state.selectedUtxos
+          .map((u) => u.outpoint)
+          .toSet();
       emit(
         state.copyWith(
           utxos: utxos,
-          selectedUtxos: state.selectedUtxos.where(utxos.contains).toList(),
+          selectedUtxos: utxos
+              .where(
+                (u) => selectedOutpoints.contains(u.outpoint) && !u.isFrozen,
+              )
+              .toList(),
           consolidationRequired: consolidationRequired,
         ),
       );
@@ -1000,10 +1015,20 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
+  /// What can invalidate a cached preview PSBT: which coins exist and whether
+  /// each is spendable. Renaming a coin can't, and counting it re-shimmered
+  /// the open modal on every sync.
+  static Set<({Outpoint outpoint, bool isFrozen})> _coinSetFingerprint(
+    List<WalletUtxo> utxos,
+  ) => utxos.map((u) => (outpoint: u.outpoint, isFrozen: u.isFrozen)).toSet();
+
   Future<void> utxoSelected(WalletUtxo utxo) async {
     final selectedUtxos = List.of(state.selectedUtxos);
-    if (selectedUtxos.contains(utxo)) {
-      selectedUtxos.remove(utxo);
+    final selectedIndex = selectedUtxos.indexWhere(
+      (u) => u.outpoint == utxo.outpoint,
+    );
+    if (selectedIndex >= 0) {
+      selectedUtxos.removeAt(selectedIndex);
     } else {
       selectedUtxos.add(utxo);
     }

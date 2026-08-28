@@ -47,15 +47,21 @@ class _CommonCoinSelectionBottomSheetState
     // [utxos]). Callers hide frozen coins (D7), so a coin selected earlier and
     // frozen since must not linger in the selection — it can't be shown or
     // deselected here and would otherwise inflate the total / "sufficient" check.
-    _selectedUtxos = widget.initialSelectedUtxos
-        .where(widget.utxos.contains)
+    final selectedOutpoints = widget.initialSelectedUtxos
+        .map((u) => u.outpoint)
+        .toSet();
+    _selectedUtxos = widget.utxos
+        .where((u) => selectedOutpoints.contains(u.outpoint))
         .toList();
   }
 
   void _onUtxoTapped(WalletUtxo utxo) {
     setState(() {
-      if (_selectedUtxos.contains(utxo)) {
-        _selectedUtxos.remove(utxo);
+      final selectedIndex = _selectedUtxos.indexWhere(
+        (u) => u.outpoint == utxo.outpoint,
+      );
+      if (selectedIndex >= 0) {
+        _selectedUtxos.removeAt(selectedIndex);
       } else {
         _selectedUtxos.add(utxo);
       }
@@ -154,7 +160,9 @@ class _CommonCoinSelectionBottomSheetState
               final utxo = widget.utxos[index];
               return CommonCoinSelectTile(
                 utxo: utxo,
-                selected: _selectedUtxos.contains(utxo),
+                selected: _selectedUtxos.any(
+                  (u) => u.outpoint == utxo.outpoint,
+                ),
                 onTap: () => _onUtxoTapped(utxo),
                 exchangeRate: widget.exchangeRate,
                 bitcoinUnit: widget.bitcoinUnit,
