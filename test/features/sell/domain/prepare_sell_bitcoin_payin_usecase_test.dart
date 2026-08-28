@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
@@ -36,24 +37,31 @@ void main() {
   Future<Result<PreparedSellBitcoinPayin, SellFailure>> run() =>
       usecase.execute(
         walletId: 'wallet-1',
-        address: 'bc1qdestination',
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: 'bc1qdestination',
+            amountSat: Sats.fromInt(100000),
+          ),
+        ],
         networkFee: const NetworkFee.relativeSatPerKwu(2),
-        amountSat: 100000,
       );
 
   void stubPrepare() {
     when(
       () => prepare.execute(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: any(named: 'drain'),
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: 'psbt', txSize: 110, isToSelf: false),
+      (_) async => (
+        unsignedPsbt: 'psbt',
+        txSize: 110,
+        isToSelf: false,
+        recipientAmountsSat: [Sats.fromInt(100000)],
+      ),
     );
   }
 
@@ -76,10 +84,8 @@ void main() {
     when(
       () => prepare.execute(
         walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
+        recipients: any(named: 'recipients'),
         networkFee: any(named: 'networkFee'),
-        amountSat: any(named: 'amountSat'),
-        drain: any(named: 'drain'),
         selectedInputs: any(named: 'selectedInputs'),
         replaceByFee: any(named: 'replaceByFee'),
       ),

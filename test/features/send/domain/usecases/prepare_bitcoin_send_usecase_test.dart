@@ -433,6 +433,42 @@ void main() {
     },
   );
 
+  test(
+    'returns the final amount for every fixed and remainder output',
+    () async {
+      when(
+        () => walletUtxo.getAllFrozenOutpoints(),
+      ).thenAnswer((_) async => []);
+      when(
+        () => payjoin.reservedOutpoints(),
+      ).thenAnswer((_) async => const Ok(<Outpoint>{}));
+      when(
+        () => bitcoinWallet.getRecipientAmounts(
+          psbt: 'psbt',
+          recipients: any(named: 'recipients'),
+          walletId: walletId,
+        ),
+      ).thenAnswer((_) async => [Sats.fromInt(12000), Sats.fromInt(87000)]);
+
+      final result = await usecase.execute(
+        walletId: walletId,
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: 'bc1qfixed',
+            amountSat: Sats.fromInt(12000),
+          ),
+          BitcoinTransactionRecipient.remainder(address: 'bc1qremaining'),
+        ],
+        networkFee: networkFee,
+      );
+
+      expect(result.recipientAmountsSat, [
+        Sats.fromInt(12000),
+        Sats.fromInt(87000),
+      ]);
+    },
+  );
+
   test('lets invalid recipient lists fail before repository work', () async {
     await expectLater(
       usecase.execute(
