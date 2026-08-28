@@ -20,6 +20,8 @@ class BBInputText extends StatefulWidget {
     this.onlyPaste = false,
     this.onlyNumbers = false,
     this.obscure = false,
+    this.smartQuotesType,
+    this.smartDashesType,
     this.style,
     this.hideBorder = false,
     this.maxLines,
@@ -43,6 +45,8 @@ class BBInputText extends StatefulWidget {
   final bool onlyPaste;
   final bool onlyNumbers;
   final bool obscure;
+  final SmartQuotesType? smartQuotesType;
+  final SmartDashesType? smartDashesType;
   final int? maxLines;
   final int? minLines;
   final TextStyle? style;
@@ -117,6 +121,8 @@ class _BBInputTextState extends State<BBInputText> {
       obscureText: widget.obscure,
       obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
       enableIMEPersonalizedLearning: false,
+      smartQuotesType: widget.smartQuotesType,
+      smartDashesType: widget.smartDashesType,
       maxLength: widget.maxLength,
       minLines: widget.minLines ?? 1,
       maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),

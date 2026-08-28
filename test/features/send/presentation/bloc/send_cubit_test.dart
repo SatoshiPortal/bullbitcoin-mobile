@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -10,6 +11,8 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -205,6 +208,7 @@ class _TestableSendCubit extends SendCubit {
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
     required super.verifySignedTxUsecase,
+    super.parsePaymentRequest,
   });
 
   void setStateForTest(SendState state) => emit(state);
@@ -221,6 +225,53 @@ Wallet _bitcoinLocalWallet() => Wallet(
   signer: SignerEntity.local,
   signerDevice: null,
   balanceSat: BigInt.from(1000000),
+);
+
+Wallet _liquidWallet({required int balanceSat}) => Wallet(
+  origin: 'w-liquid',
+  network: Network.liquidMainnet,
+  xpubFingerprint: '00000000',
+  scriptType: ScriptType.bip84,
+  xpub: '',
+  externalPublicDescriptor: '',
+  internalPublicDescriptor: '',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.from(balanceSat),
+);
+
+Wallet _bitcoinWallet({required int balanceSat}) => Wallet(
+  origin: 'w-bitcoin',
+  network: Network.bitcoinMainnet,
+  xpubFingerprint: '00000000',
+  scriptType: ScriptType.bip84,
+  xpub: '',
+  externalPublicDescriptor: '',
+  internalPublicDescriptor: '',
+  signer: SignerEntity.local,
+  signerDevice: null,
+  balanceSat: BigInt.from(balanceSat),
+);
+
+WalletUtxo _utxo({
+  required int amountSat,
+  int vout = 0,
+  bool isFrozen = false,
+}) => WalletUtxo.bitcoin(
+  walletId: 'w-bitcoin',
+  txId: 'a' * 64,
+  vout: vout,
+  scriptPubkey: Uint8List(0),
+  amountSat: BigInt.from(amountSat),
+  address: 'bc1-utxo',
+  isFrozen: isFrozen,
+);
+
+FeeOptions _feeOptions() => const FeeOptions(
+  fastest: RelativeFee(25),
+  economic: RelativeFee(25),
+  slow: RelativeFee(25),
+  minRelay: RelativeFee(25),
 );
 
 Bip21PaymentRequest _payjoinBip21() =>
@@ -293,7 +344,9 @@ void main() {
 
   late StreamController<PayjoinSession> payjoinEvents;
 
-  _TestableSendCubit buildCubit() => _TestableSendCubit(
+  _TestableSendCubit buildCubit({
+    Future<PaymentRequest> Function(String)? parsePaymentRequest,
+  }) => _TestableSendCubit(
     labelsFacade: labelsFacade,
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
@@ -332,6 +385,7 @@ void main() {
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
     verifySignedTxUsecase: verifySignedTxUsecase,
+    parsePaymentRequest: parsePaymentRequest,
   );
 
   /// Precondition state that makes [SendState.willAttemptPayjoin] true and
@@ -357,6 +411,11 @@ void main() {
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(_bitcoinLocalWallet());
     registerFallbackValue(BigInt.zero);
+    registerFallbackValue(
+      const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
+    );
+    // For any(named: 'feeRate') on the prepare-send stubs.
+    registerFallbackValue(NetworkFee.relativeFromSatPerVbyte(1));
   });
 
   setUp(() {
@@ -499,6 +558,46 @@ void main() {
             isPsbt: any(named: 'isPsbt'),
           ),
         );
+      },
+    );
+
+    // The payjoin-only path skips createTransaction(), so nothing else clears
+    // a failure left by the previous attempt and every retry gets trapped.
+    test(
+      'a failed payjoin start can be retried from the confirm screen',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        var attempts = 0;
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer((_) async {
+          attempts++;
+          if (attempts == 1) throw Exception('payjoin directory unreachable');
+          return _sender(status: PayjoinStatus.requested);
+        });
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(attempts, 2);
+        expect(cubit.state.step, SendStep.sending);
+        expect(cubit.state.payjoinSender?.status, PayjoinStatus.requested);
       },
     );
 
@@ -808,6 +907,281 @@ void main() {
               as NewLabel;
       expect(stored.reference, 'broadcast-txid');
       expect(stored.label, 'coffee');
+    });
+  });
+
+  group('SendCubit.onChangedText stale detection results', () {
+    const oldText = 'old payment request';
+    const newText = 'new payment request';
+    const oldPaymentRequest = PaymentRequest.bitcoin(
+      address: 'old-address',
+      isTestnet: true,
+    );
+    const newPaymentRequest = PaymentRequest.bitcoin(
+      address: 'new-address',
+      isTestnet: true,
+    );
+
+    test('ignores an old success that resolves after a new success', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == oldText ? oldResult.future : newResult.future;
+      });
+
+      final oldInput = cubit.onChangedText(oldText);
+      final newInput = cubit.onChangedText(newText);
+      newResult.complete(newPaymentRequest);
+      await newInput;
+      oldResult.complete(oldPaymentRequest);
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, newText);
+      expect(cubit.state.paymentRequest, newPaymentRequest);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('ignores an old error that resolves after a new success', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      final newResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenAnswer((invocation) {
+        final data = invocation.namedArguments[#data] as String;
+        return data == oldText ? oldResult.future : newResult.future;
+      });
+
+      final oldInput = cubit.onChangedText(oldText);
+      final newInput = cubit.onChangedText(newText);
+      newResult.complete(newPaymentRequest);
+      await newInput;
+      oldResult.completeError(StateError('old parse failed'));
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, newText);
+      expect(cubit.state.paymentRequest, newPaymentRequest);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('ignores an old success that resolves after a scan', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final oldResult = Completer<PaymentRequest>();
+      when(
+        () => detectBitcoinStringUsecase.execute(data: oldText),
+      ).thenAnswer((_) => oldResult.future);
+
+      final oldInput = cubit.onChangedText(oldText);
+      await cubit.onScannedPaymentRequest('scanned payment request', null);
+      oldResult.complete(oldPaymentRequest);
+      await oldInput;
+
+      expect(cubit.state.copiedRawPaymentRequest, 'scanned payment request');
+      expect(cubit.state.paymentRequest, isNull);
+    });
+
+    test(
+      'ignores a stale scan after a newer paste during Lightning parsing',
+      () async {
+        final parsing = Completer<PaymentRequest>();
+        final cubit = buildCubit(parsePaymentRequest: (_) => parsing.future);
+        addTearDown(cubit.close);
+        when(
+          () => detectBitcoinStringUsecase.execute(data: 'new payment request'),
+        ).thenAnswer(
+          (_) async => const PaymentRequest.bitcoin(
+            address: 'new-address',
+            isTestnet: true,
+          ),
+        );
+        when(
+          () => bestWalletUsecase.execute(
+            wallets: any(named: 'wallets'),
+            request: any(named: 'request'),
+            amountSat: any(named: 'amountSat'),
+          ),
+        ).thenReturn(_bitcoinLocalWallet());
+        const bip21 = PaymentRequest.bip21(
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:old-address?lightning=old-invoice',
+          address: 'old-address',
+          lightning: 'old-invoice',
+        );
+
+        final oldScan = cubit.onScannedPaymentRequest('old scan', bip21);
+        await Future<void>.delayed(Duration.zero);
+        await cubit.onChangedText('new payment request');
+        parsing.complete(
+          PaymentRequest.bolt11(
+            invoice: 'stale-invoice',
+            amountSat: 1000,
+            paymentHash: 'stale-hash',
+            expiresAt: DateTime(2030).millisecondsSinceEpoch ~/ 1000,
+            isTestnet: true,
+          ),
+        );
+        await oldScan;
+
+        expect(cubit.state.copiedRawPaymentRequest, 'new payment request');
+        expect(
+          cubit.state.paymentRequest,
+          const PaymentRequest.bitcoin(address: 'new-address', isTestnet: true),
+        );
+        expect(cubit.state.selectedWallet, isNull);
+        expect(cubit.state.step, SendStep.address);
+        expect(cubit.state.loadingBestWallet, isFalse);
+      },
+    );
+  });
+
+  // A shortfall used to show "Build Failed", the same message as a dead
+  // Electrum server or a bad address.
+  group('SendCubit.createTransaction shortfalls', () {
+    test(
+      'a shortfall at build time is an insufficient-balance failure',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            feeRate: any(named: 'feeRate'),
+            amountSat: any(named: 'amountSat'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenThrow(
+          InsufficientFundsException(
+            'InsufficientFunds { missing_sats: 2, is_token: false }',
+          ),
+        );
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async => <WalletUtxo>[]);
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.amount,
+            sendType: SendType.liquid,
+            selectedWallet: _liquidWallet(balanceSat: 20000),
+            paymentRequest: const PaymentRequest.liquid(
+              address: 'lq1-address',
+              isTestnet: false,
+            ),
+            amount: '19998',
+            inputAmountCurrencyCode: 'sats',
+            liquidFeesList: _feeOptions(),
+            bitcoinFeesList: _feeOptions(),
+          ),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendInsufficientFundsForFeesFailure>());
+        expect(cubit.state.failure, isNot(isA<SendTransactionBuildFailure>()));
+        // and it must not move on to confirm with no transaction built
+        expect(cubit.state.step, SendStep.amount);
+      },
+    );
+
+    // With hand-picked coins the amount was only checked against the whole
+    // balance, so the shortfall may be the selection rather than the fee.
+    test('with hand-picked coins the message stays generic', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          networkFee: any(named: 'networkFee'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenThrow(InsufficientFundsException('needed 5000, available 1000'));
+      final selected = _utxo(amountSat: 1000);
+      // loadUtxos() filters the selection against the wallet's current UTXOs,
+      // so the picked coin has to be in the list or the selection is dropped.
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [selected]);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          sendType: SendType.bitcoin,
+          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1-address',
+            isTestnet: false,
+          ),
+          amount: '5000',
+          inputAmountCurrencyCode: 'sats',
+          liquidFeesList: _feeOptions(),
+          bitcoinFeesList: _feeOptions(),
+          selectedUtxos: [selected],
+        ),
+      );
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+      expect(
+        cubit.state.failure,
+        isNot(isA<SendInsufficientFundsForFeesFailure>()),
+      );
+    });
+
+    // #2337: frozen coins cause a shortfall too, and only the generic failure
+    // reaches the "manage coins" hint that tells the user what to do.
+    test('with frozen coins the message stays generic', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          networkFee: any(named: 'networkFee'),
+          amountSat: any(named: 'amountSat'),
+          drain: any(named: 'drain'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenThrow(InsufficientFundsException('needed 10000, available 5000'));
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => [_utxo(amountSat: 15000, isFrozen: true)]);
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.amount,
+          sendType: SendType.bitcoin,
+          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'bc1-address',
+            isTestnet: false,
+          ),
+          // Fits the 20000 balance, but 15000 of it is frozen.
+          amount: '10000',
+          inputAmountCurrencyCode: 'sats',
+          liquidFeesList: _feeOptions(),
+          bitcoinFeesList: _feeOptions(),
+        ),
+      );
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.frozenBalanceSat, 15000);
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+      expect(
+        cubit.state.failure,
+        isNot(isA<SendInsufficientFundsForFeesFailure>()),
+      );
     });
   });
 }

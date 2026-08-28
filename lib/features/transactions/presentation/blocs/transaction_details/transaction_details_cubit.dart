@@ -804,7 +804,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
       // Check if a transaction with the same transaction ID can be found
       // and initialize the transaction details with it.
-      final txId = order.transactionId;
+      // The payjoin txid is the fallback: the exchange can know the payjoin it
+      // broadcast before it reports its own payout txid, and without this the
+      // screen would sit on order-only details until that txid lands.
+      final txId = order.transactionId ?? order.payjoin?.txid;
       if (txId != null) {
         try {
           final txs = await _getTransactionsByTxIdUsecase.execute(txId);

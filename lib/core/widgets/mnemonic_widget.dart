@@ -183,6 +183,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
               value: passphrase,
               onChanged: updatePassphrase,
               maxLines: 1,
+              smartQuotesType: SmartQuotesType.disabled,
+              smartDashesType: SmartDashesType.disabled,
             ),
           ],
 

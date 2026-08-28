@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
@@ -261,12 +262,19 @@ class BdkWalletDatasource {
             ),
           )
           .toList();
-      txBuilder.addUtxos(outpoints: selectableOutPoints);
+      // bdk_dart's TxBuilder is immutable — every method returns a NEW
+      // builder instance rather than mutating in place. Discarding the
+      // return value (as this call did before) silently drops the manual
+      // UTXO selection and leaves BDK to pick inputs automatically.
+      txBuilder = txBuilder.addUtxos(outpoints: selectableOutPoints);
     }
 
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
     // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
-    if (!replaceByFee) txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    // Same immutable-builder pitfall as addUtxos above — must reassign.
+    if (!replaceByFee) {
+      txBuilder = txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
+    }
 
     switch (networkFee) {
       case AbsoluteFee(:final sats):
@@ -319,7 +327,18 @@ class BdkWalletDatasource {
     }
 
     // Finish the transaction building process
-    final psbt = txBuilder.finish(wallet: bdkWallet);
+    final bdk.Psbt psbt;
+    try {
+      psbt = txBuilder.finish(wallet: bdkWallet);
+    } on bdk.InsufficientFundsCreateTxException catch (e) {
+      // Mapped here so callers don't depend on a BDK type.
+      throw InsufficientFundsException(e.toString());
+    } on bdk.CoinSelectionCreateTxException catch (e) {
+      // The same situation reported through a different variant: BDK raises
+      // this one when the selection can't cover the outputs plus the fee,
+      // which is what hand-picked coins hit.
+      throw InsufficientFundsException(e.errorMessage);
+    }
 
     return psbt.serialize();
   }

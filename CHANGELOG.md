@@ -8,6 +8,22 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
+## 6.13.1 - 2026-08-27
+
+### Fixed
+
+- Fixed coin control selection, fee changes, and frozen-coin handling.
+- Fixed fee shortfalls in swaps and enabled Payjoin retries.
+- Fixed Passport UR fountain decoding.
+- Fixed Receive QR codes retaining Payjoin after the toggle is turned off.
+- Fixed RBF fee prefill.
+- Fixed Back navigation and transaction details for swaps.
+- Fixed Payjoin and order lookup/listing, including copying the order number.
+- Fixed stale Send payment-request parsing.
+- Kept mnemonics out of state and preserved exact passphrase punctuation.
+
+---
+
 ## [6.13.0] - 2026-08-13
 
 ### New Features

@@ -83,151 +83,195 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
   }
 }
 
-class _MnemonicDisplay extends StatelessWidget {
+/// Sealed secret display: the mnemonic and passphrase are read internally at
+/// the point of use and are never returned to callers nor stored in bloc
+/// state.
+class _MnemonicDisplay extends StatefulWidget {
   const _MnemonicDisplay();
 
   @override
-  Widget build(BuildContext context) {
-    final mnemonic = context.select(
-      (TestWalletBackupBloc bloc) => bloc.state.mnemonic,
-    );
+  State<_MnemonicDisplay> createState() => _MnemonicDisplayState();
+}
 
+class _MnemonicDisplayState extends State<_MnemonicDisplay> {
+  String? _fingerprint;
+  Future<(List<String>, String?)>? _secretFuture;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final fingerprint = context.select<TestWalletBackupBloc, String?>(
+      (bloc) => bloc.state.selectedWallet?.masterFingerprint,
+    );
+    if (fingerprint != _fingerprint) {
+      _fingerprint = fingerprint;
+      _secretFuture = fingerprint == null
+          ? null
+          : context.read<TestWalletBackupBloc>().loadSelectedWalletMnemonic();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final selectedWallet = context
         .watch<TestWalletBackupBloc>()
         .state
         .selectedWallet;
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          BBText(
-            context.loc.testBackupWriteDownPhrase,
-            textAlign: .center,
-            style: context.font.headlineLarge?.copyWith(
-              fontWeight: .w600,
-              color: context.appColors.text,
-            ),
-            maxLines: 2,
-          ),
-          const Gap(20),
-          BBText(
-            context.loc.testBackupStoreItSafe,
-            textAlign: .center,
-            style: context.font.labelMedium?.copyWith(
-              fontWeight: .w700,
-              color: context.appColors.textMuted,
-              letterSpacing: 0,
-              fontSize: 12,
-            ),
-          ),
-          if (lastPhysicalBackup != null) ...[
-            BBText(
-              context.loc.testBackupLastBackupTest(
-                lastPhysicalBackup.toString().substring(0, 19),
-              ),
-              textAlign: .center,
-              style: context.font.labelMedium?.copyWith(
-                fontWeight: .w700,
-                color: context.appColors.textMuted,
-                letterSpacing: 0,
-                fontSize: 12,
-              ),
-            ),
-          ],
-          const Gap(32),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                for (var i = 0; i < (mnemonic.length + 1) ~/ 2; i++)
-                  Row(
-                    children: [
-                      _RecoveryPhraseWord(index: i, number: i + 1),
-                      if (i + (mnemonic.length + 1) ~/ 2 < mnemonic.length)
-                        _RecoveryPhraseWord(
-                          index: i + (mnemonic.length + 1) ~/ 2,
-                          number: i + (mnemonic.length + 1) ~/ 2 + 1,
-                        )
-                      else
-                        const Expanded(child: SizedBox()),
-                    ],
-                  ),
+    return FutureBuilder<(List<String>, String?)>(
+      future: _secretFuture,
+      builder: (context, snapshot) {
+        final mnemonic = snapshot.data?.$1 ?? const <String>[];
+        final passphrase = snapshot.data?.$2 ?? '';
 
-                const _PassphraseWidget(),
-              ],
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: context.appColors.border),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
-                bottomLeft: Radius.circular(2),
-                bottomRight: Radius.circular(2),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            crossAxisAlignment: .stretch,
+            children: [
+              BBText(
+                context.loc.testBackupWriteDownPhrase,
+                textAlign: .center,
+                style: context.font.headlineLarge?.copyWith(
+                  fontWeight: .w600,
+                  color: context.appColors.text,
+                ),
+                maxLines: 2,
               ),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: context.appColors.secondaryFixedDim,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(11),
-                      topRight: Radius.circular(11),
-                      bottomLeft: Radius.circular(2),
-                      bottomRight: Radius.circular(2),
-                    ),
-                  ),
-                  child: BBText(
-                    context.loc.testBackupDoNotShare,
-                    textAlign: .center,
-                    style: context.font.headlineMedium?.copyWith(
-                      fontWeight: .w500,
-                      fontSize: 16,
-                      color: context.appColors.secondary,
-                    ),
-                  ),
+              const Gap(20),
+              BBText(
+                context.loc.testBackupStoreItSafe,
+                textAlign: .center,
+                style: context.font.labelMedium?.copyWith(
+                  fontWeight: .w700,
+                  color: context.appColors.textMuted,
+                  letterSpacing: 0,
+                  fontSize: 12,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
+              ),
+              if (lastPhysicalBackup != null) ...[
+                BBText(
+                  context.loc.testBackupLastBackupTest(
+                    lastPhysicalBackup.toString().substring(0, 19),
                   ),
-                  child: Row(
-                    mainAxisAlignment: .spaceEvenly,
-                    children: [
-                      _buildWarningItem(
-                        icon: CupertinoIcons.check_mark,
-                        text: context.loc.testBackupTranscribe,
-                        iconColor: context.appColors.success,
-                        context: context,
-                      ),
-                      _buildWarningItem(
-                        icon: CupertinoIcons.xmark,
-                        text: context.loc.testBackupDigitalCopy,
-                        iconColor: context.appColors.error,
-                        context: context,
-                      ),
-                      _buildWarningItem(
-                        icon: CupertinoIcons.xmark,
-                        text: context.loc.testBackupScreenshot,
-                        iconColor: context.appColors.error,
-                        context: context,
-                      ),
-                    ],
+                  textAlign: .center,
+                  style: context.font.labelMedium?.copyWith(
+                    fontWeight: .w700,
+                    color: context.appColors.textMuted,
+                    letterSpacing: 0,
+                    fontSize: 12,
                   ),
                 ),
               ],
-            ),
+              const Gap(32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    if (snapshot.hasError)
+                      BBText(
+                        context.loc.oopsSomethingWentWrong,
+                        textAlign: .center,
+                        style: context.font.bodyLarge?.copyWith(
+                          color: context.appColors.error,
+                        ),
+                      )
+                    else if (!snapshot.hasData)
+                      const Center(child: CircularProgressIndicator())
+                    else ...[
+                      for (var i = 0; i < (mnemonic.length + 1) ~/ 2; i++)
+                        Row(
+                          children: [
+                            _RecoveryPhraseWord(
+                              number: i + 1,
+                              word: mnemonic[i],
+                            ),
+                            if (i + (mnemonic.length + 1) ~/ 2 <
+                                mnemonic.length)
+                              _RecoveryPhraseWord(
+                                number: i + (mnemonic.length + 1) ~/ 2 + 1,
+                                word: mnemonic[i + (mnemonic.length + 1) ~/ 2],
+                              )
+                            else
+                              const Expanded(child: SizedBox()),
+                          ],
+                        ),
+                      _PassphraseWidget(passphrase: passphrase),
+                    ],
+                  ],
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: context.appColors.border),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(11),
+                    topRight: Radius.circular(11),
+                    bottomLeft: Radius.circular(2),
+                    bottomRight: Radius.circular(2),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: context.appColors.secondaryFixedDim,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(11),
+                          topRight: Radius.circular(11),
+                          bottomLeft: Radius.circular(2),
+                          bottomRight: Radius.circular(2),
+                        ),
+                      ),
+                      child: BBText(
+                        context.loc.testBackupDoNotShare,
+                        textAlign: .center,
+                        style: context.font.headlineMedium?.copyWith(
+                          fontWeight: .w500,
+                          fontSize: 16,
+                          color: context.appColors.secondary,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: .spaceEvenly,
+                        children: [
+                          _buildWarningItem(
+                            icon: CupertinoIcons.check_mark,
+                            text: context.loc.testBackupTranscribe,
+                            iconColor: context.appColors.success,
+                            context: context,
+                          ),
+                          _buildWarningItem(
+                            icon: CupertinoIcons.xmark,
+                            text: context.loc.testBackupDigitalCopy,
+                            iconColor: context.appColors.error,
+                            context: context,
+                          ),
+                          _buildWarningItem(
+                            icon: CupertinoIcons.xmark,
+                            text: context.loc.testBackupScreenshot,
+                            iconColor: context.appColors.error,
+                            context: context,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -255,19 +299,13 @@ class _MnemonicDisplay extends StatelessWidget {
 }
 
 class _RecoveryPhraseWord extends StatelessWidget {
-  const _RecoveryPhraseWord({required this.index, required this.number});
+  const _RecoveryPhraseWord({required this.number, required this.word});
 
-  final int index;
   final int number;
+  final String word;
 
   @override
   Widget build(BuildContext context) {
-    final mnemonic = context.select(
-      (TestWalletBackupBloc bloc) => bloc.state.mnemonic,
-    );
-
-    final word = index < mnemonic.length ? mnemonic[index] : '';
-
     return Expanded(
       child: Container(
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
@@ -335,14 +373,12 @@ class _RecoveryPhraseWord extends StatelessWidget {
 }
 
 class _PassphraseWidget extends StatelessWidget {
-  const _PassphraseWidget();
+  const _PassphraseWidget({required this.passphrase});
+
+  final String passphrase;
 
   @override
   Widget build(BuildContext context) {
-    final passphrase = context.select(
-      (TestWalletBackupBloc bloc) => bloc.state.passphrase,
-    );
-
     if (passphrase.isEmpty) return const SizedBox.shrink();
 
     return Container(

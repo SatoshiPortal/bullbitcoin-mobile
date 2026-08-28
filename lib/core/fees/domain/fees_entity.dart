@@ -109,6 +109,50 @@ extension NetworkFeeRelayPolicy on NetworkFee {
   static const double minRelaySatPerVbyte = 0.1;
   static const int minRelaySatPerKwu = 25;
 
+  /// BIP-125's incremental relay fee: 1 sat/vByte = 250 sat/kwu, exact. A
+  /// replacement must add at least this on top of the rate it replaces.
+  static const int incrementalRelaySatPerKwu = 250;
+
+  /// The lowest rate that can replace a [feeSat] / [vsize] transaction.
+  ///
+  /// BDK derives the rate to beat from the transaction **weight**, while a
+  /// [WalletTransaction] only carries `vsize` — which is `ceil(weight / 4)`.
+  /// `feeSat / vsize` therefore *under-states* the original rate, and a naive
+  /// `+ 1 sat/vByte` on top of it lands under BDK's threshold: the app
+  /// proposes a bump that BDK then rejects as too low, which reads as
+  /// nonsense to the user.
+  ///
+  /// Bound the original rate from above instead, using the lightest weight a
+  /// transaction of this vsize can have (`4 · vsize − 3`), in integer sat/kwu
+  /// so nothing rounds down, then add the incremental relay fee. Overshoots
+  /// the strict minimum by at most 3 sat/kwu (0.012 sat/vByte), when the real
+  /// weight happens to be an exact multiple of 4.
+  static int minimumReplacementSatPerKwu({
+    required int feeSat,
+    required int vsize,
+  }) {
+    assert(vsize > 0, 'vsize must be positive');
+    final lightestWeightWu = 4 * vsize - 3;
+    final originalSatPerKwu =
+        (feeSat * 1000 + lightestWeightWu - 1) ~/ lightestWeightWu;
+    return originalSatPerKwu + incrementalRelaySatPerKwu;
+  }
+
+  /// A safe replacement rate after the custom input displays and reparses it.
+  ///
+  /// The input is expressed to two decimal places in sat/vByte. One displayed
+  /// cent therefore represents 2.5 sat/kwu, so formatting the exact minimum
+  /// to the nearest cent can round back below BDK's threshold. Quantize upward
+  /// to the next displayable cent, then convert it exactly as the input does.
+  static int replacementPrefillSatPerKwu({
+    required int feeSat,
+    required int vsize,
+  }) {
+    final minimum = minimumReplacementSatPerKwu(feeSat: feeSat, vsize: vsize);
+    final centiSatPerVbyte = (minimum * 2 + 4) ~/ 5;
+    return (centiSatPerVbyte * 5 + 1) ~/ 2;
+  }
+
   /// True when this fee is at or above the relay floor. The floor defaults
   /// to the static [minRelaySatPerKwu] (0.1 sat/vByte) but callers SHOULD
   /// pass [floorSatPerKwu] from the live mempool `minimumFee`

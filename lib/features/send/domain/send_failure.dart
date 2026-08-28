@@ -30,6 +30,11 @@ final class SendInsufficientBalanceFailure extends SendFailure {
   const SendInsufficientBalanceFailure([super.logMessage]);
 }
 
+/// The amount fits the balance, but not once the network fee is added.
+final class SendInsufficientFundsForFeesFailure extends SendFailure {
+  const SendInsufficientFundsForFeesFailure([super.logMessage]);
+}
+
 final class SendAmountOutOfBoundsFailure extends SendFailure {
   final BigInt? minimumSat;
   final BigInt? maximumSat;

@@ -10,6 +10,8 @@ class LabeledTextInput extends StatelessWidget {
   final String hint;
   final Function(String)? onChanged;
   final int? maxLines;
+  final SmartQuotesType? smartQuotesType;
+  final SmartDashesType? smartDashesType;
 
   const LabeledTextInput({
     super.key,
@@ -18,6 +20,8 @@ class LabeledTextInput extends StatelessWidget {
     required this.onChanged,
     this.hint = '',
     this.maxLines,
+    this.smartQuotesType,
+    this.smartDashesType,
   });
 
   @override
@@ -64,6 +68,8 @@ class LabeledTextInput extends StatelessWidget {
             hint: hint,
             hideBorder: true,
             maxLines: maxLines,
+            smartQuotesType: smartQuotesType,
+            smartDashesType: smartDashesType,
           ),
         ),
       ],

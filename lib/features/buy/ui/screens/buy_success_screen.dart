@@ -130,18 +130,10 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
         BBButton.big(
           label: context.loc.buyViewDetails,
           onPressed: () {
-            final txId = buyOrder.payjoin?.txid;
-            if (txId != null) {
-              context.pushNamed(
-                TransactionsRoute.payjoinTransactionDetailsByTxId.name,
-                pathParameters: {'txId': txId},
-              );
-            } else {
-              context.pushNamed(
-                TransactionsRoute.orderTransactionDetails.name,
-                pathParameters: {'orderId': buyOrder.orderId},
-              );
-            }
+            context.pushNamed(
+              TransactionsRoute.orderTransactionDetails.name,
+              pathParameters: {'orderId': buyOrder.orderId},
+            );
           },
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

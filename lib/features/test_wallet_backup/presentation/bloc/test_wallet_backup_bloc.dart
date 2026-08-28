@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,96 +14,42 @@ part 'test_wallet_backup_state.dart';
 
 class TestWalletBackupBloc
     extends Bloc<TestWalletBackupEvent, TestWalletBackupState> {
-  TestWalletBackupBloc({
-    required this._completePhysicalBackupVerificationUsecase,
-    required this._loadWalletsForNetworkUsecase,
-    required this._getMnemonicFromFingerprintUsecase,
-  }) : super(const TestWalletBackupState()) {
-    on<OnWordsSelected>(_onWordsSelected);
-    on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
-    on<StartPhysicalBackupVerification>((event, emit) {});
-    on<LoadWallets>(_onLoadWallets);
-    on<LoadMnemonicForWallet>(_onLoadMnemonicForWallet);
-    on<ClearError>((event, emit) => emit(state.copyWith(statusError: '')));
-  }
-
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
   final LoadWalletsForNetworkUsecase _loadWalletsForNetworkUsecase;
   final GetMnemonicFromFingerprintUsecase _getMnemonicFromFingerprintUsecase;
+  final VerifyPhysicalBackupUsecase _verifyPhysicalBackupUsecase;
 
-  /// Handles word selection during backup verification
-  /// Validates word order and updates test state
-  Future<void> _onWordsSelected(
-    OnWordsSelected event,
-    Emitter<TestWalletBackupState> emit,
-  ) async {
-    final mnemonic = state.mnemonic;
-    final reorderedMnemonic = List<String>.from(
-      state.reorderedMnemonic + [event.word],
-    );
-
-    final isCorrect = mnemonic
-        .join(' ')
-        .startsWith(reorderedMnemonic.join(' '));
-
-    if (isCorrect) {
-      emit(
+  TestWalletBackupBloc({
+    required this._completePhysicalBackupVerificationUsecase,
+    required this._loadWalletsForNetworkUsecase,
+    required this._getMnemonicFromFingerprintUsecase,
+    required this._verifyPhysicalBackupUsecase,
+  }) : super(const TestWalletBackupState()) {
+    on<LoadWallets>(_onLoadWallets);
+    on<WalletSelected>(_onWalletSelected);
+    on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
+    on<ClearError>(
+      (event, emit) => emit(
         state.copyWith(
-          reorderedMnemonic: [...state.reorderedMnemonic, event.word],
           statusError: '',
-          selectedMnemonicWords: [...state.selectedMnemonicWords, event.index],
+          verificationStatus: BackupVerificationStatus.idle,
         ),
-      );
-    } else {
-      final shuffled = List<String>.from(mnemonic)..shuffle();
-      emit(
-        state.copyWith(
-          shuffledMnemonic: shuffled,
-          reorderedMnemonic: [],
-          selectedMnemonicWords: [],
-          statusError: 'Incorrect word order. Please try again.',
-        ),
-      );
-    }
+      ),
+    );
   }
 
-  Future<void> _verifyPhysicalBackup(
-    VerifyPhysicalBackup event,
-    Emitter<TestWalletBackupState> emit,
-  ) async {
-    try {
-      if (state.mnemonic.isEmpty) {
-        emit(state.copyWith(statusError: 'No mnemonic loaded'));
-        return;
-      }
-
-      if (state.reorderedMnemonic.length != state.mnemonic.length) {
-        emit(state.copyWith(statusError: 'Please select all words'));
-        return;
-      }
-
-      // Compare with original mnemonic
-      final isCorrect =
-          state.mnemonic.join(' ') == state.reorderedMnemonic.join(' ');
-
-      if (isCorrect) {
-        await _completePhysicalBackupVerificationUsecase.execute();
-      } else {
-        // Reset test state when wrong
-        final shuffled = state.mnemonic.toList()..shuffle();
-        emit(
-          state.copyWith(
-            statusError: 'Incorrect word order. Please try again.',
-            shuffledMnemonic: shuffled,
-            reorderedMnemonic: [],
-            selectedMnemonicWords: [],
-          ),
-        );
-      }
-    } catch (e) {
-      emit(state.copyWith(statusError: 'Verification failed: $e'));
+  /// Reads the selected wallet's secret at the point of use.
+  ///
+  /// The mnemonic and passphrase are returned directly to the caller and are
+  /// never held in bloc state: secrets must stay ephemeral and must never
+  /// appear in the freezed `toString()` of the state.
+  Future<(List<String>, String?)> loadSelectedWalletMnemonic() {
+    final wallet = state.selectedWallet;
+    if (wallet == null) {
+      throw Exception('No wallet selected');
     }
+    return _getMnemonicFromFingerprintUsecase.execute(wallet.masterFingerprint);
   }
 
   Future<void> _onLoadWallets(
@@ -110,49 +57,68 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(selectedWallet: null));
-
       final wallets = await _loadWalletsForNetworkUsecase.execute();
       if (wallets.isEmpty) throw Exception('No wallets found');
       final Wallet selected = wallets.firstWhere(
         (w) => w.isDefault,
         orElse: () => wallets.first,
       );
-      emit(state.copyWith(wallets: wallets, selectedWallet: selected));
-
-      add(LoadMnemonicForWallet(wallet: selected));
+      emit(
+        state.copyWith(
+          wallets: wallets,
+          selectedWallet: selected,
+          verificationStatus: BackupVerificationStatus.idle,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(statusError: 'Failed to load wallets: $e'));
     }
   }
 
-  Future<void> _onLoadMnemonicForWallet(
-    LoadMnemonicForWallet event,
+  Future<void> _onWalletSelected(
+    WalletSelected event,
+    Emitter<TestWalletBackupState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        selectedWallet: event.wallet,
+        statusError: '',
+        verificationStatus: BackupVerificationStatus.idle,
+      ),
+    );
+  }
+
+  Future<void> _verifyPhysicalBackup(
+    VerifyPhysicalBackup event,
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(selectedWallet: null));
+      final wallet = state.selectedWallet;
+      if (wallet == null) {
+        emit(state.copyWith(statusError: 'No wallet selected'));
+        return;
+      }
 
-      final wallet = event.wallet;
-      final (
-        mnemonicWords,
-        passphrase,
-      ) = await _getMnemonicFromFingerprintUsecase.execute(
-        wallet.masterFingerprint,
+      final isCorrect = await _verifyPhysicalBackupUsecase.execute(
+        fingerprint: wallet.masterFingerprint,
+        mnemonic: event.reorderedWords,
       );
 
-      emit(
-        state.copyWith(
-          selectedWallet: wallet,
-          mnemonic: mnemonicWords,
-          passphrase: passphrase ?? '',
-          shuffledMnemonic: mnemonicWords.toList()..shuffle(),
-          reorderedMnemonic: [],
-          selectedMnemonicWords: [],
-        ),
-      );
+      if (isCorrect) {
+        await _completePhysicalBackupVerificationUsecase.execute();
+        emit(
+          state.copyWith(
+            verificationStatus: BackupVerificationStatus.success,
+            statusError: '',
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(verificationStatus: BackupVerificationStatus.failure),
+        );
+      }
     } catch (e) {
-      emit(state.copyWith(statusError: 'Failed to load mnemonic: $e'));
+      emit(state.copyWith(statusError: 'Verification failed: $e'));
     }
   }
 }

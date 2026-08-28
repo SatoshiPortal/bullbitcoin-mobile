@@ -100,8 +100,13 @@ class _LateOrderSwapStream
 }
 
 class _NoopSubscription<T> implements StreamSubscription<T> {
+  _NoopSubscription({Future<void>? cancelFuture})
+    : _cancelFuture = cancelFuture ?? Future<void>.value();
+
+  final Future<void> _cancelFuture;
+
   @override
-  Future<void> cancel() async {}
+  Future<void> cancel() => _cancelFuture;
 
   @override
   void onData(void Function(T data)? handleData) {}
@@ -123,6 +128,20 @@ class _NoopSubscription<T> implements StreamSubscription<T> {
 
   @override
   Future<E> asFuture<E>([E? futureValue]) async => futureValue as E;
+}
+
+class _ControlledCancelPayjoinStream extends Stream<PayjoinSession> {
+  _ControlledCancelPayjoinStream(this.cancelFuture);
+
+  final Future<void> cancelFuture;
+
+  @override
+  StreamSubscription<PayjoinSession> listen(
+    void Function(PayjoinSession event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => _NoopSubscription(cancelFuture: cancelFuture);
 }
 
 // Defaults to a confirmed balance: most tests in this file are about the
@@ -549,6 +568,78 @@ void main() {
   });
 
   group('payjoin reacts live to the global setting changing', () {
+    test(
+      'does not create duplicate sessions when persistence and watcher both emit enable',
+      () async {
+        when(
+          () => getPayjoinPolicy.execute(),
+        ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
+        final creations = <Completer<PayjoinReceiverSession>>[];
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) {
+          final creation = Completer<PayjoinReceiverSession>();
+          creations.add(creation);
+          return creation.future;
+        });
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await pumpEventQueue();
+        expect(bloc.state.payjoin, isNull);
+
+        bloc.add(ReceivePayjoinToggled(true, () async => true));
+        await Future<void>.delayed(Duration.zero);
+        payjoinEnabledChangeController.add(true);
+        await pumpEventQueue();
+
+        expect(creations, hasLength(1));
+        creations.single.complete(_receiver());
+        await pumpEventQueue();
+
+        verify(() => watchPayjoin.execute(ids: any(named: 'ids'))).called(1);
+      },
+    );
+
+    test(
+      'does not create duplicate sessions when watcher emits before persistence',
+      () async {
+        when(
+          () => getPayjoinPolicy.execute(),
+        ).thenAnswer((_) async => (enabled: false, minimumAmountSat: 10000));
+        final creations = <Completer<PayjoinReceiverSession>>[];
+        when(
+          () => receiveWithPayjoin.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+          ),
+        ).thenAnswer((_) {
+          final creation = Completer<PayjoinReceiverSession>();
+          creations.add(creation);
+          return creation.future;
+        });
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await pumpEventQueue();
+        payjoinEnabledChangeController.add(true);
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(ReceivePayjoinToggled(true, () async => true));
+        await pumpEventQueue();
+
+        expect(creations, hasLength(1));
+        creations.single.complete(_receiver());
+        await pumpEventQueue();
+      },
+    );
+
     test('creates a payjoin receiver session as soon as the setting is '
         'flipped on, without needing to leave and re-enter the receive '
         'screen', () async {
@@ -854,6 +945,45 @@ void main() {
         ),
       ).called(1);
     });
+
+    test(
+      'updates the QR immediately when disabling payjoin without a watcher event',
+      () async {
+        when(
+          () => setPayjoinEnabled.execute(
+            false,
+            requestConsent: any(named: 'requestConsent'),
+          ),
+        ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+
+        final cancel = Completer<void>();
+        addTearDown(() {
+          if (!cancel.isCompleted) cancel.complete();
+        });
+        when(
+          () => watchPayjoin.execute(ids: any(named: 'ids')),
+        ).thenAnswer((_) => _ControlledCancelPayjoinStream(cancel.future));
+
+        final bloc = buildBloc();
+        addTearDown(bloc.close);
+
+        bloc.add(const ReceiveBitcoinStarted(null));
+        await pumpEventQueue();
+        expect(bloc.state.qrData, contains('pj='));
+
+        bloc.add(ReceivePayjoinToggled(false, () async => true));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.payjoinGloballyEnabled, isFalse);
+        expect(bloc.state.payjoin, isNull);
+        expect(
+          Uri.parse(bloc.state.qrData).queryParameters,
+          isNot(contains('pj')),
+        );
+
+        cancel.complete();
+      },
+    );
 
     test(
       'drops repeated toggles while consent and persistence are in flight',

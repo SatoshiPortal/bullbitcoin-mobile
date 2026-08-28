@@ -25,6 +25,8 @@ Future<void> pumpWidget(
   bip39.MnemonicLength length = bip39.MnemonicLength.words12,
   bool allowAutoFillWords = false,
   bool allowMultipleMnemonicLength = true,
+  bool allowPassphrase = false,
+  bool allowLabel = false,
   String? externalError,
   required void Function(Mnemonic) onSubmit,
 }) async {
@@ -39,8 +41,8 @@ Future<void> pumpWidget(
             onSubmit: onSubmit,
             allowAutoFillWords: allowAutoFillWords,
             allowMultipleMnemonicLength: allowMultipleMnemonicLength,
-            allowLabel: false,
-            allowPassphrase: false,
+            allowLabel: allowLabel,
+            allowPassphrase: allowPassphrase,
             externalError: externalError,
           ),
         ),
@@ -50,6 +52,13 @@ Future<void> pumpWidget(
 }
 
 Finder wordField(int index) => find.byType(TextField).at(index);
+
+TextField fieldByHint(WidgetTester tester, String hint) =>
+    tester.widget<TextField>(
+      find.byWidgetPredicate(
+        (widget) => widget is TextField && widget.decoration?.hintText == hint,
+      ),
+    );
 
 Future<void> fillAll(WidgetTester tester, List<String> words) async {
   for (var i = 0; i < words.length; i++) {
@@ -630,6 +639,22 @@ void main() {
         tester.widget<TextField>(wordField(11)).controller!.text,
         equals('senior'),
       );
+    });
+  });
+
+  group('MnemonicWidget labelled inputs', () {
+    testWidgets('disables smart punctuation for passphrases', (tester) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      final field = fieldByHint(tester, 'Optional Passphrase');
+      expect(field.smartQuotesType, SmartQuotesType.disabled);
+      expect(field.smartDashesType, SmartDashesType.disabled);
+    });
+
+    testWidgets('keeps smart punctuation enabled for labels', (tester) async {
+      await pumpWidget(tester, allowLabel: true, onSubmit: (_) {});
+      final field = fieldByHint(tester, 'Required');
+      expect(field.smartQuotesType, SmartQuotesType.enabled);
+      expect(field.smartDashesType, SmartDashesType.enabled);
     });
   });
 }

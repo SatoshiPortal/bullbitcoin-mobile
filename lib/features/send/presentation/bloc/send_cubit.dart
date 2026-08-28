@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
@@ -103,7 +104,9 @@ class SendCubit extends Cubit<SendState>
     required this._checkLiquidConsolidationUsecase,
     required this._getSendPayjoinEnabledUsecase,
     required this._verifySignedTxUsecase,
-  }) : super(const SendState());
+    Future<PaymentRequest> Function(String)? parsePaymentRequest,
+  }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
+       super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
   /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
@@ -155,6 +158,7 @@ class SendCubit extends Cubit<SendState>
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
   final VerifySignedTxUsecase _verifySignedTxUsecase;
+  final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
   StreamSubscription<Result<OrderSwapRecord, SendFailure>>?
   _orderSwapSubscription;
@@ -169,6 +173,7 @@ class SendCubit extends Cubit<SendState>
   /// re-populating an emptied cache (which could otherwise stage a PSBT
   /// built for the previous tx shape for broadcast).
   int _bitcoinPreviewEpoch = 0;
+  int _paymentRequestInputGeneration = 0;
 
   @override
   Future<void> close() async {
@@ -215,6 +220,14 @@ class SendCubit extends Cubit<SendState>
 
   void clearFailure() => emit(state.copyWith(failure: null));
 
+  int _startNewPaymentRequestInput() {
+    final generation = ++_paymentRequestInputGeneration;
+    if (state.loadingBestWallet) {
+      emit(state.copyWith(loadingBestWallet: false));
+    }
+    return generation;
+  }
+
   void backClicked() {
     _invalidateSignedTransaction();
     if (state.step == SendStep.address) {
@@ -246,6 +259,7 @@ class SendCubit extends Cubit<SendState>
     String scannedRawPaymentRequest,
     PaymentRequest? paymentRequest,
   ) async {
+    _startNewPaymentRequestInput();
     clearFailure();
     _invalidateSignedTransaction();
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
@@ -273,6 +287,7 @@ class SendCubit extends Cubit<SendState>
 
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
+    final inputGeneration = _startNewPaymentRequestInput();
     try {
       clearFailure();
       _invalidateSignedTransaction();
@@ -283,6 +298,7 @@ class SendCubit extends Cubit<SendState>
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: sanitizedText,
       );
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       final recipientChanged = state.paymentRequest != paymentRequest;
       emit(
         state.copyWith(
@@ -295,6 +311,7 @@ class SendCubit extends Cubit<SendState>
       // changed. Skip when paste/typing resolves to the same paymentRequest.
       if (recipientChanged) clearBitcoinFeePreviews();
     } catch (e) {
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       final recipientCleared = state.paymentRequest != null;
       emit(
         state.copyWith(
@@ -312,9 +329,11 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> continueOnAddressConfirmed() async {
+    final inputGeneration = _paymentRequestInputGeneration;
     try {
       emit(state.copyWith(loadingBestWallet: true));
-      await unifiedBip21Prioritization();
+      await unifiedBip21Prioritization(inputGeneration: inputGeneration);
+      if (inputGeneration != _paymentRequestInputGeneration) return;
 
       if (!state.hasValidPaymentRequest) {
         emit(
@@ -884,7 +903,9 @@ class SendCubit extends Cubit<SendState>
         state.sendType == SendType.bitcoin) {
       await createTransaction();
     }
-    if (!await hasBalance()) {
+    // Skipped when the build above already failed: it knows whether the fee or
+    // the coins fell short, and this check would flatten that away.
+    if (state.failure == null && !await hasBalance()) {
       emit(
         state.copyWith(
           failure: const SendInsufficientBalanceFailure(
@@ -895,7 +916,8 @@ class SendCubit extends Cubit<SendState>
       );
       return;
     }
-    if (state.failure is! SendTransactionBuildFailure) {
+    // Any failure keeps the user here.
+    if (state.failure == null) {
       emit(
         state.copyWith(
           step: SendStep.confirm,
@@ -1629,6 +1651,21 @@ class SendCubit extends Cubit<SendState>
         );
         return;
       }
+      if (e is InsufficientFundsException) {
+        // Frozen or hand-picked coins can be the real cause, not the fee. Both
+        // need the generic failure
+        final blamesFees =
+            state.selectedUtxos.isEmpty && state.frozenBalanceSat == 0;
+        emit(
+          state.copyWith(
+            failure: blamesFees
+                ? SendInsufficientFundsForFeesFailure(e.message)
+                : SendInsufficientBalanceFailure(e.message),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
@@ -1941,6 +1978,9 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> onConfirmTransactionClicked() async {
+    // Needed even though createTransaction() also clears: the payjoin-only
+    // path below skips it, and a leftover failure blocks every retry.
+    clearFailure();
     try {
       final orderNeedsPayin =
           state.lightningOrder != null &&
@@ -1963,8 +2003,9 @@ class SendCubit extends Cubit<SendState>
         if (orderNeedsPayin || sendNeedsSignature) {
           await createTransaction();
         }
-        if (state.failure is SendTransactionBuildFailure ||
-            state.unsignedPsbt == null) {
+        // Stop on any failure, not just a build one — otherwise an
+        // insufficient-balance failure would sign whatever PSBT is left over.
+        if (state.failure != null || state.unsignedPsbt == null) {
           emit(state.copyWith(step: SendStep.confirm));
           return;
         }
@@ -2196,14 +2237,17 @@ class SendCubit extends Cubit<SendState>
         });
   }
 
-  Future<void> unifiedBip21Prioritization() async {
+  Future<void> unifiedBip21Prioritization({
+    required int inputGeneration,
+  }) async {
     final request = state.paymentRequest;
     if (request == null) return;
     if (request is! Bip21PaymentRequest) return;
     if (request.lightning.isEmpty) return;
 
     try {
-      final lightning = await PaymentRequest.parse(request.lightning);
+      final lightning = await _parsePaymentRequest(request.lightning);
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       final wallet = _bestWalletUsecase.execute(
         wallets: state.wallets,
         request: lightning,
@@ -2211,6 +2255,7 @@ class SendCubit extends Cubit<SendState>
       );
       emit(state.copyWith(selectedWallet: wallet, paymentRequest: lightning));
     } catch (_) {
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       final wallet = _bestWalletUsecase.execute(
         wallets: state.wallets,
         request: request,
