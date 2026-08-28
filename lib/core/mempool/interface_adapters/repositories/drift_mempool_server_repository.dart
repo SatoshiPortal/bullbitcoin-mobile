@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_reposi
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/datasources/mempool_server_storage_datasource.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_server_model.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 
 class DriftMempoolServerRepository implements MempoolServerRepository {

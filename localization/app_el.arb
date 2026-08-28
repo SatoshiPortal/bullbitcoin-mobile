@@ -1312,10 +1312,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "Κόπηκε να πετάξε",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "Connected",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1327,10 +1323,6 @@
   "payLightningNetwork": "Δίκτυο Lightning Network",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "Share logs",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "Καθορίζοντας τη διεύθυνση στο Ledger...",
   "@ledgerSuccessVerifyTitle": {
@@ -6384,10 +6376,6 @@
   "walletDetailsWalletFingerprintLabel": "Wallet δακτυλικό αποτύπωμα",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "logsViewerTitle": "Logs",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
   },
   "transactionOrderLabelOrderStatus": "Θέση",
   "@transactionOrderLabelOrderStatus": {
@@ -12032,11 +12020,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Φιλτράρισμα κατά ημερομηνία",
-  "logsViewerShowingCount": "Εμφάνιση {shown} από {total} αρχεία καταγραφής",
-  "logsViewerClearFilter": "Εκκαθάριση φίλτρου",
-  "logsViewerShareButton": "Κοινοποίηση",
-  "logsShareOptionShare": "Κοινοποίηση",
   "logsShareOptionExport": "Εξαγωγή",
   "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
   "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
@@ -12220,10 +12203,6 @@
   "backupWarningBackupNow": "ΝΑΙ",
   "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
   "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
-  "logsViewerDeleteTitle": "Διαγραφή αρχείων καταγραφής",
-  "logsViewerDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα αρχεία καταγραφής; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
-  "logsViewerDeleteButton": "Διαγραφή",
-  "logsViewerCancelButton": "Ακύρωση",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

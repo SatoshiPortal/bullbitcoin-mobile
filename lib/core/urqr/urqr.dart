@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bs58check/bs58check.dart' as base58;
 import 'package:cbor/cbor.dart';
 import 'package:satoshifier/satoshifier.dart';

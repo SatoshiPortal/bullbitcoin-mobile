@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "حذف",
+  "logsViewerShareButton": "اشتراک‌گذاری",
+  "logsExportedMessage": "گزارش‌ها با موفقیت صادر شدند",
+  "logsExportFailedMessage": "صدور گزارش‌ها ناموفق بود",
+  "logsViewerShowingCount": "نمایش {shown} از {total} گزارش",
+  "logsViewerClearFilter": "پاک کردن فیلتر",
+  "logsViewerFilterByDate": "فیلتر بر اساس تاریخ",
+  "copiedToClipboardMessage": "نصب شده برای Clipboard",
+  "logsViewerDeleteTitle": "حذف گزارش‌ها",
+  "logsViewerDeleteConfirmation": "آیا مطمئن هستید که می‌خواهید همه‌ی گزارش‌ها را حذف کنید؟ این عمل قابل بازگشت نیست.",
+  "logsDeletedMessage": "گزارش‌ها حذف شدند",
+  "logsViewerCancelButton": "لغو",
+  "logsShareOptionShare": "اشتراک‌گذاری",
+  "logsShareOptionExport": "صدور",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Oops! چیزی اشتباه کرد",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "تلاش مجدد",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

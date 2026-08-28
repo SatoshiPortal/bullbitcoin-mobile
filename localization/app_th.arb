@@ -1519,10 +1519,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "ติดตามคลิปบอร์ด",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "เชื่อมต่อ",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1534,10 +1530,6 @@
   "payLightningNetwork": "เครือข่ายไร้สาย",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "บันทึก",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "ระบุที่อยู่บนไฟ LED ...",
   "@ledgerSuccessVerifyTitle": {
@@ -7536,10 +7528,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "เข้าสู่ระบบ",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor ไม่ได้เริ่มต้น",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -11920,11 +11908,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "กรองตามวันที่",
-  "logsViewerShowingCount": "กำลังแสดง {shown} จาก {total} รายการบันทึก",
-  "logsViewerClearFilter": "ล้างตัวกรอง",
-  "logsViewerShareButton": "แชร์",
-  "logsShareOptionShare": "แชร์",
   "logsShareOptionExport": "ส่งออก",
   "logsExportedMessage": "ส่งออกบันทึกสำเร็จแล้ว",
   "logsExportFailedMessage": "ส่งออกบันทึกไม่สำเร็จ",
@@ -12224,10 +12207,6 @@
   "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
-  "logsViewerDeleteTitle": "ลบบันทึก",
-  "logsViewerDeleteConfirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบบันทึกทั้งหมด การดำเนินการนี้ไม่สามารถย้อนกลับได้",
-  "logsViewerDeleteButton": "ลบ",
-  "logsViewerCancelButton": "ยกเลิก",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

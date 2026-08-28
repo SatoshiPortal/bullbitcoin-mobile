@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 

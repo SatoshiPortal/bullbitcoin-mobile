@@ -1505,10 +1505,6 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "copiedToClipboardMessage": "ক্লিপবোর্ডে কপি করা হয়েছে",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
   "torSettingsStatusConnected": "সংযোগ হয়েছে",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
@@ -1520,10 +1516,6 @@
   "payLightningNetwork": "লাইটনিং নেটওয়ার্ক",
   "@payLightningNetwork": {
     "description": "Option for Lightning Network payment"
-  },
-  "shareLogsLabel": "লগ শেয়ার করুন",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
   },
   "ledgerSuccessVerifyTitle": "Ledger-এ ঠিকানা যাচাই করা হচ্ছে..।",
   "@ledgerSuccessVerifyTitle": {
@@ -7319,10 +7311,6 @@
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
-  "logsViewerTitle": "লগসমূহ",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "recoverbullTorNotStarted": "Tor শুরু হয়নি",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -12203,11 +12191,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "তারিখ অনুযায়ী ফিল্টার করুন",
-  "logsViewerShowingCount": "{total} টি লগের মধ্যে {shown} টি দেখানো হচ্ছে",
-  "logsViewerClearFilter": "ফিল্টার সাফ করুন",
-  "logsViewerShareButton": "শেয়ার করুন",
-  "logsShareOptionShare": "শেয়ার করুন",
   "logsShareOptionExport": "এক্সপোর্ট করুন",
   "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
   "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে",
@@ -12432,10 +12415,6 @@
   "exchangeSupportChatPickFilesFailed": "ফাইল বাছাই করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSupportChatAttachLogsFailed": "লগ সংযুক্ত করতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইল ডেটা আনতে ব্যর্থ হয়েছে",
-  "logsViewerDeleteTitle": "লগ মুছুন",
-  "logsViewerDeleteConfirmation": "আপনি কি নিশ্চিত যে আপনি সব লগ মুছে ফেলতে চান? এই ক্রিয়া পুনরুদ্ধার করা যাবে না।",
-  "logsViewerDeleteButton": "মুছুন",
-  "logsViewerCancelButton": "বাতিল",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

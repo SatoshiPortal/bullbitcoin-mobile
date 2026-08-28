@@ -1,0 +1,34 @@
+{
+  "logSettingsLogsTitle": "লগসমূহ",
+  "logsViewerDeleteButton": "মুছুন",
+  "logsViewerShareButton": "শেয়ার করুন",
+  "logsExportedMessage": "লগ সফলভাবে এক্সপোর্ট হয়েছে",
+  "logsExportFailedMessage": "লগ এক্সপোর্ট করতে ব্যর্থ হয়েছে",
+  "logsViewerShowingCount": "{total} টি লগের মধ্যে {shown} টি দেখানো হচ্ছে",
+  "logsViewerClearFilter": "ফিল্টার সাফ করুন",
+  "logsViewerFilterByDate": "তারিখ অনুযায়ী ফিল্টার করুন",
+  "copiedToClipboardMessage": "ক্লিপবোর্ডে কপি করা হয়েছে",
+  "logsViewerDeleteTitle": "লগ মুছুন",
+  "logsViewerDeleteConfirmation": "আপনি কি নিশ্চিত যে আপনি সব লগ মুছে ফেলতে চান? এই ক্রিয়া পুনরুদ্ধার করা যাবে না।",
+  "logsDeletedMessage": "লগ মুছে ফেলা হয়েছে",
+  "logsViewerCancelButton": "বাতিল",
+  "logsShareOptionShare": "শেয়ার করুন",
+  "logsShareOptionExport": "এক্সপোর্ট করুন",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "oopsSomethingWentWrong": "ওহ! কিছু ভুল হয়েছে",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "পুনরায় চেষ্টা করুন",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

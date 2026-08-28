@@ -4714,10 +4714,6 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "shareLogsLabel": "Logs share karo",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
-  },
   "deleteLogsTitle": "Logs delete karo",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -4738,10 +4734,6 @@
         "type": "String"
       }
     }
-  },
-  "copiedToClipboardMessage": "Clipboard mein copy hua",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
   },
   "submitButton": "Submit Karo",
   "@submitButton": {
@@ -4838,10 +4830,6 @@
   "routeErrorMessage": "Page nahi mili",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
-  },
-  "logsViewerTitle": "Logs",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
   },
   "payInvoiceTitle": "Invoice Pay Karo",
   "@payInvoiceTitle": {
@@ -12363,11 +12351,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Taareekh ke anusaar filter karein",
-  "logsViewerShowingCount": "{total} mein se {shown} log dikhaaye ja rahe hain",
-  "logsViewerClearFilter": "Filter hatayein",
-  "logsViewerShareButton": "Share karein",
-  "logsShareOptionShare": "Share karein",
   "logsShareOptionExport": "Export karein",
   "logsExportedMessage": "Logs safaltaapoorvak export kiye gaye",
   "logsExportFailedMessage": "Logs export karne mein vifal",
@@ -12610,10 +12593,6 @@
   "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
   "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
   "importMnemonicDuplicateError": "Ye mnemonic pehle se maujood hai",
-  "logsViewerDeleteTitle": "Logs Delete Karo",
-  "logsViewerDeleteConfirmation": "Kya aap sach mein saare logs delete karna chahte hain? Ye action wapas nahi liya ja sakta.",
-  "logsViewerDeleteButton": "Delete",
-  "logsViewerCancelButton": "Cancel",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

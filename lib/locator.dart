@@ -52,6 +52,7 @@ import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bull_logs/bull_logs.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -129,6 +130,7 @@ class AppLocator {
     OnboardingLocator.setup(locator);
     AllSeedViewLocator.setup(locator);
     SettingsLocator.setup(locator);
+    const LogsFeature().setup(locator);
     BitcoinPriceLocator.setup(locator);
     WalletLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);

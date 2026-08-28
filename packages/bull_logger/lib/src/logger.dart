@@ -1,11 +1,27 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/report.dart';
-export 'package:bb_mobile/core/utils/report.dart' show ReportCategory;
+import 'diagnostic_context.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
-export 'package:logging_colorful/logging_colorful.dart';
+
+enum ReportCategory { migration, error }
+
+abstract interface class LoggerReporter {
+  void reportError({
+    String? message,
+    required Object exception,
+    required StackTrace stackTrace,
+    required ReportCategory category,
+  });
+
+  Future<void> reportShout({
+    required String message,
+    Object? exception,
+    StackTrace? stackTrace,
+    ReportCategory? category,
+  });
+}
 
 // The top-level holder is eagerly seeded with a placeholder anchored at
 // `Directory.current` so that any log line emitted before `Bull.initLogs`
@@ -21,6 +37,8 @@ class Logger {
   final Directory dir;
   final String filename;
   final dep.LoggerColorful logger;
+  final Future<DiagnosticContext> Function()? _diagnosticContextLoader;
+  final LoggerReporter? _reporter;
 
   /// Foreground (main isolate) log file.
   static const _foregroundLogFilename = 'bull_logs.tsv';
@@ -52,7 +70,13 @@ class Logger {
   File get _foregroundFile => File('${dir.path}/$_foregroundLogFilename');
   File get _backgroundFile => File('${dir.path}/$_backgroundLogFilename');
 
-  Logger._(this.dir, this.filename, this.logger) {
+  Logger._(
+    this.dir,
+    this.filename,
+    this.logger,
+    this._diagnosticContextLoader,
+    this._reporter,
+  ) {
     dep.Logger.root.level = dep.Level.ALL;
 
     _subscription = dep.Logger.root.onRecord.listen((record) {
@@ -87,6 +111,8 @@ class Logger {
     String name = 'Logger',
     required Directory directory,
     bool background = false,
+    Future<DiagnosticContext> Function()? diagnosticContextLoader,
+    LoggerReporter? reporter,
   }) {
     _current?._subscription?.cancel();
     _current?._subscription = null;
@@ -96,6 +122,8 @@ class Logger {
       // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
       // We don't want colors in release mode either
       dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
+      diagnosticContextLoader,
+      reporter,
     );
     _current = next;
     return next;
@@ -114,6 +142,7 @@ class Logger {
       await _enqueue(() async {
         _ensureSinkOpen();
       });
+      await _writeDiagnosticContext();
     } catch (e) {
       _reportLoggerFailure('Logs existence failed', e);
     }
@@ -215,6 +244,38 @@ class Logger {
       _ensureSinkOpen();
     });
     config('Logs deleted');
+    await _writeDiagnosticContext();
+  }
+
+  /// Re-reads the runtime context after feature setup (the logger is created
+  /// before the locator, so Tor is legitimately uninitialized at startup).
+  Future<void> refreshDiagnosticContext() => _writeDiagnosticContext();
+
+  /// Returns a fresh context row for explicit sharing without changing the
+  /// filtered log selection or requiring CONFIG rows to be visible.
+  Future<String?> currentDiagnosticLogLine() async {
+    final loader = _diagnosticContextLoader;
+    if (loader == null) return null;
+    try {
+      return [
+        DateTime.now().toIso8601String(),
+        'CONFIG',
+        (await loader()).toLogMessage(),
+        '',
+        '',
+      ].map(_sanitize).join('\t');
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Returns [lines] with the current diagnostic context prepended when it can
+  /// be collected. Context collection is best effort and never fails callers.
+  Future<List<String>> createLogBundleLines(List<String> lines) async {
+    final bundle = List<String>.of(lines);
+    final contextLine = await currentDiagnosticLogLine();
+    if (contextLine != null) bundle.insert(0, contextLine);
+    return bundle;
   }
 
   // ---------------------------------------------------------------------------
@@ -293,7 +354,7 @@ class Logger {
     }
 
     try {
-      Report.error(
+      _reporter?.reportError(
         message: message,
         exception: error,
         stackTrace: trace,
@@ -344,7 +405,7 @@ class Logger {
     }
 
     try {
-      await Report.shout(
+      await _reporter?.reportShout(
         message: message,
         exception: error,
         stackTrace: trace,
@@ -361,6 +422,17 @@ class Logger {
 
   void _ensureSinkOpen() {
     _sink ??= logsFile.openWrite(mode: FileMode.append);
+  }
+
+  Future<void> _writeDiagnosticContext() async {
+    final loader = _diagnosticContextLoader;
+    if (loader == null) return;
+    try {
+      config((await loader()).toLogMessage());
+    } catch (_) {
+      _emitDirect(level: 'WARNING', message: 'Diagnostic context unavailable');
+    }
+    await flush();
   }
 
   // Bypass the broadcast stream and write a TSV row directly. Used when the

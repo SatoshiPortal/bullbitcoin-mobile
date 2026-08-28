@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart' as recoverbull;

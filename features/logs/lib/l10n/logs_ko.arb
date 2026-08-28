@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "제품정보",
+  "logsViewerDeleteButton": "삭제",
+  "logsViewerShareButton": "공유",
+  "logsExportedMessage": "로그를 성공적으로 내보냈습니다",
+  "logsExportFailedMessage": "로그 내보내기에 실패했습니다",
+  "logsViewerShowingCount": "{total}개 중 {shown}개 로그 표시",
+  "logsViewerClearFilter": "필터 지우기",
+  "logsViewerFilterByDate": "날짜별 필터",
+  "copiedToClipboardMessage": "클립보드에 복사",
+  "logsViewerDeleteTitle": "로그 삭제",
+  "logsViewerDeleteConfirmation": "모든 로그를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+  "logsDeletedMessage": "로그가 삭제되었습니다",
+  "logsViewerCancelButton": "취소",
+  "logsShareOptionShare": "공유",
+  "logsShareOptionExport": "내보내기",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "인기 있는 뭔가 잘못되었습니다",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "다시 시도",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

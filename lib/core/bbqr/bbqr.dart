@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:bull_sdk/bbqr.dart' as bbqr;

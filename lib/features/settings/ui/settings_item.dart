@@ -354,7 +354,7 @@ List<SettingsItem> buildSettingsItems({
       title: localization.logSettingsLogsTitle,
       path: path(SettingsItemSection.root, localization.logSettingsLogsTitle),
       icon: Icons.article,
-      open: (context) => context.pushNamed(SettingsRoute.logs.name),
+      open: (context) => context.pushNamed('logs'),
       keywords: _keywords(
         localization.settingsSearchLogsKeywords,
         english.settingsSearchLogsKeywords,

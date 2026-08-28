@@ -16,6 +16,8 @@ workspace:
   - packages/primitives
   - packages/bull_tor
   - packages/screen_privacy
+  - packages/bull_logger
+  - features/logs
 
 dependencies:
   flutter:
@@ -25,6 +27,8 @@ dependencies:
   primitives:
   bull_tor:
   screen_privacy:
+  bull_logger:
+  bull_logs:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -116,7 +120,6 @@ dependencies:
     git:
       url: https://github.com/fusion44/dart_bolt11_decoder
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
-  logging_colorful: ^1.3.2
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk

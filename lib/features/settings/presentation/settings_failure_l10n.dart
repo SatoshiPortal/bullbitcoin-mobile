@@ -6,5 +6,6 @@ extension SettingsFailureL10n on SettingsFailure {
   String toTranslated(BuildContext context) => switch (this) {
     SettingsStorageFailure() => context.loc.oopsSomethingWentWrong,
     SettingsConsentFailure() => context.loc.oopsSomethingWentWrong,
+    SettingsLogsFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

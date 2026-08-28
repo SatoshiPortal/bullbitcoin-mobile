@@ -2628,10 +2628,6 @@
   "@scanNfcButton": {
     "description": "Button label to initiate NFC scanning"
   },
-  "shareLogsLabel": "লগ শ্বেয়াৰ কৰক",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
-  },
   "deleteLogsTitle": "লগ মচক",
   "@deleteLogsTitle": {
     "description": "Clickable text to delete application logs"
@@ -2652,10 +2648,6 @@
         "type": "String"
       }
     }
-  },
-  "copiedToClipboardMessage": "ক্লিপবোৰ্ডত কপি কৰা হৈছে",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
   },
   "submitButton": "দাখিল কৰক",
   "@submitButton": {
@@ -2752,10 +2744,6 @@
   "routeErrorMessage": "পৃষ্ঠা পোৱা নগ'ল",
   "@routeErrorMessage": {
     "description": "Error message displayed when user navigates to non-existent route"
-  },
-  "logsViewerTitle": "লগসমূহ",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
   },
   "payInvoiceTitle": "Invoice পৰিশোধ কৰক",
   "@payInvoiceTitle": {
@@ -9104,11 +9092,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "তাৰিখ অনুযায়ী ফিল্টাৰ কৰক",
-  "logsViewerShowingCount": "{total} টা লগৰ ভিতৰত {shown} টা দেখুওৱা হৈছে",
-  "logsViewerClearFilter": "ফিল্টাৰ মচক",
-  "logsViewerShareButton": "শ্বেয়াৰ কৰক",
-  "logsShareOptionShare": "শ্বেয়াৰ কৰক",
   "logsShareOptionExport": "ৰপ্তানি কৰক",
   "logsExportedMessage": "লগসমূহ সফলভাৱে ৰপ্তানি কৰা হৈছে",
   "logsExportFailedMessage": "লগ ৰপ্তানি কৰিবলৈ বিফল হৈছে",
@@ -9334,10 +9317,6 @@
   "exchangeSupportChatPickFilesFailed": "ফাইল বাছনি কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatAttachLogsFailed": "লগ সংলগ্ন কৰিবলৈ বিফল হ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "exchangeSupportChatFetchFileDataFailed": "ফাইলৰ ডাটা প্ৰাপ্ত কৰিবলৈ বিফল হ'ল",
-  "logsViewerDeleteTitle": "লগ মচক",
-  "logsViewerDeleteConfirmation": "আপুনি নিশ্চিতভাৱে সকলো লগ মচিব বিচাৰে নে? এই কাৰ্য পূৰ্বাৱস্থালৈ ঘূৰাই আনিব নোৱাৰিব।",
-  "logsViewerDeleteButton": "মচক",
-  "logsViewerCancelButton": "বাতিল কৰক",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",

@@ -7306,10 +7306,6 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
-  "logsViewerTitle": "Logs",
-  "@logsViewerTitle": {
-    "description": "AppBar title for logs viewer screen"
-  },
   "loadingBackupFile": "Carregando arquivo de backup...",
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
@@ -10586,14 +10582,6 @@
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
   },
-  "copiedToClipboardMessage": "Copiado para clipboard",
-  "@copiedToClipboardMessage": {
-    "description": "Snackbar confirmation message after copying to clipboard"
-  },
-  "shareLogsLabel": "Registos de compartilhamento",
-  "@shareLogsLabel": {
-    "description": "List tile label to share application logs"
-  },
   "recoverbullEnterToDecrypt": "Digite seu {inputType} para descriptografar seu cofre.",
   "@recoverbullEnterToDecrypt": {
     "description": "Instruction to enter PIN or password for vault decryption",
@@ -12032,11 +12020,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Filtrar por data",
-  "logsViewerShowingCount": "Mostrando {shown} de {total} registros",
-  "logsViewerClearFilter": "Limpar filtro",
-  "logsViewerShareButton": "Compartilhar",
-  "logsShareOptionShare": "Compartilhar",
   "logsShareOptionExport": "Exportar",
   "logsExportedMessage": "Registros exportados com sucesso",
   "logsExportFailedMessage": "Falha ao exportar os registros",
@@ -12113,10 +12096,6 @@
   "nfcError": "Erro de NFC: {error}",
   "deleteLogsTitle": "Excluir registros",
   "logsDeletedMessage": "Registros excluídos",
-  "logsViewerDeleteTitle": "Excluir registros",
-  "logsViewerDeleteConfirmation": "Tem certeza de que deseja excluir todos os registros? Esta ação não pode ser desfeita.",
-  "logsViewerDeleteButton": "Excluir",
-  "logsViewerCancelButton": "Cancelar",
   "sendSelfTransfer": "Transferência própria",
   "sendCoordinatingPayjoinTransaction": "Coordenando uma transação Payjoin.",
   "sendErrorInvoiceExpired": "Esta fatura expirou. Peça ao destinatário uma nova fatura.",

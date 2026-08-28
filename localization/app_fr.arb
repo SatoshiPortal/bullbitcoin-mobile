@@ -1607,7 +1607,6 @@
   "urDecodingFailedMessage": "Échec du décodage UR",
   "urProcessingFailedMessage": "Échec du traitement UR",
   "scanNfcButton": "Scanner NFC",
-  "shareLogsLabel": "Partager les journaux",
   "viewLogsLabel": "Voir les journaux",
   "errorSharingLogsMessage": "Erreur lors du partage des journaux : {error}",
   "@errorSharingLogsMessage": {
@@ -1617,7 +1616,6 @@
       }
     }
   },
-  "copiedToClipboardMessage": "Copié dans le presse-papiers",
   "submitButton": "Soumettre",
   "optionalPassphraseHint": "Phrase secrète facultative",
   "labelInputLabel": "Étiquette",
@@ -1642,7 +1640,6 @@
   "satsSuffix": " sats",
   "approximateFiatPrefix": "~",
   "routeErrorMessage": "Page introuvable",
-  "logsViewerTitle": "Journaux",
   "payInvoiceTitle": "Payer la Facture",
   "payEnterAmountTitle": "Entrer le Montant",
   "payInvalidInvoice": "Facture invalide",
@@ -4669,11 +4666,6 @@
       }
     }
   },
-  "logsViewerFilterByDate": "Filtrer par date",
-  "logsViewerShowingCount": "Affichage de {shown} sur {total} journaux",
-  "logsViewerClearFilter": "Effacer le filtre",
-  "logsViewerShareButton": "Partager",
-  "logsShareOptionShare": "Partager",
   "logsShareOptionExport": "Exporter",
   "logsExportedMessage": "Journaux exportés avec succès",
   "logsExportFailedMessage": "Échec de l'exportation des journaux",
@@ -4812,10 +4804,6 @@
   "viewerAddressTab": "Adresse",
   "viewerPaymentUriTab": "URI de paiement",
   "transactionSwapOpenWithin24h": "Ouvrez l'application dans les 24 heures pour finaliser votre swap.",
-  "logsViewerDeleteTitle": "Supprimer les journaux",
-  "logsViewerDeleteConfirmation": "Voulez-vous vraiment supprimer tous les journaux ? Cette action est irréversible.",
-  "logsViewerDeleteButton": "Supprimer",
-  "logsViewerCancelButton": "Annuler",
   "mempoolCustomServerSsl": "SSL",
   "recoverbullSettingsUrlHint": "http://exemple.onion",
   "importWatchOnlyXpubLabel": "XPUB",

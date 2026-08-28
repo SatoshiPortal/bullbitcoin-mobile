@@ -1,0 +1,31 @@
+{
+  "logSettingsLogsTitle": "Logs",
+  "logsViewerDeleteButton": "Διαγραφή",
+  "logsViewerShareButton": "Κοινοποίηση",
+  "logsExportedMessage": "Τα αρχεία καταγραφής εξήχθησαν επιτυχώς",
+  "logsExportFailedMessage": "Αποτυχία εξαγωγής αρχείων καταγραφής",
+  "logsViewerShowingCount": "Εμφάνιση {shown} από {total} αρχεία καταγραφής",
+  "logsViewerClearFilter": "Εκκαθάριση φίλτρου",
+  "logsViewerFilterByDate": "Φιλτράρισμα κατά ημερομηνία",
+  "copiedToClipboardMessage": "Κόπηκε να πετάξε",
+  "logsViewerDeleteTitle": "Διαγραφή αρχείων καταγραφής",
+  "logsViewerDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα αρχεία καταγραφής; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+  "logsDeletedMessage": "Τα αρχεία καταγραφής διαγράφηκαν",
+  "logsViewerCancelButton": "Ακύρωση",
+  "logsShareOptionShare": "Κοινοποίηση",
+  "logsShareOptionExport": "Εξαγωγή",
+  "@logSettingsLogsTitle": {
+    "description": "Title for the logs section in settings"
+  },
+  "@copiedToClipboardMessage": {
+    "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "oopsSomethingWentWrong": "Oops! Κάτι πήγε στραβά",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "retry": "Επανάληψη",
+  "@retry": {
+    "description": "Generic retry button label"
+  }
+}

@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/s
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_legacy_datasource_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as fss10;
 import 'package:flutter_secure_storage_legacy/flutter_secure_storage.dart'
     as fss9;

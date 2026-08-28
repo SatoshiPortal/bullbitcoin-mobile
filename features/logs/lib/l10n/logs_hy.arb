@@ -1,0 +1,19 @@
+{
+  "logSettingsLogsTitle": "Մատյաններ",
+  "logsViewerDeleteButton": "Ջնջել",
+  "logsViewerShareButton": "Կիսվել",
+  "logsExportedMessage": "Մատյանները հաջողությամբ արտահանվեցին",
+  "logsExportFailedMessage": "Մատյանների արտահանումը ձախողվեց",
+  "logsViewerShowingCount": "Ցուցադրվում է {shown} {total}-ից",
+  "logsViewerClearFilter": "Մաքրել զտիչը",
+  "logsViewerFilterByDate": "Զտել ըստ ամսաթվի",
+  "copiedToClipboardMessage": "Պատճենվեց սեղմատախտակին",
+  "logsViewerDeleteTitle": "Ջնջել մատյանները",
+  "logsViewerDeleteConfirmation": "Համոզվա՞ծ եք, որ ցանկանում եք ջնջել բոլոր մատյանները։ Այս գործողությունը հնարավոր չէ հետարկել։",
+  "logsDeletedMessage": "Մատյանները ջնջվեցին",
+  "logsViewerCancelButton": "Չեղարկել",
+  "logsShareOptionShare": "Կիսվել",
+  "logsShareOptionExport": "Արտահանել",
+  "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",
+  "retry": "Կրկին փորձել"
+}

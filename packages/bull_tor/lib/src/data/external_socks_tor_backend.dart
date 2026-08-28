@@ -35,7 +35,7 @@ final class ExternalSocksTorBackend implements ExternalTorPort {
           ),
         );
       }
-      _log.config('External Tor proxy available on $endpoint');
+      _log.config('External Tor proxy available');
     } on TorBackendException {
       rethrow;
     } on TimeoutException catch (error) {

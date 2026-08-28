@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usec
 import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
