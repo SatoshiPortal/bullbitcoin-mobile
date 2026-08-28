@@ -271,12 +271,10 @@ class BdkWalletDatasource {
       // In bdk_wallet 3.0.0's `create_tx` that is `required = params.utxos` plus `optional = filter_utxos(..)`, and `manually_selected_only` is what empties the optional pool (`filter_utxos` returns `vec![]`).
       // Without it, hand-picking coins that fall short produces a perfectly valid PSBT containing a coin the user deliberately excluded — an irreversible on-chain privacy leak, since the common-input-ownership heuristic then links that coin's history to the rest of the selection. With it, the shortfall surfaces as InsufficientFundsException instead, which is the honest answer.
       //
-      // Drain is deliberately left out. `drain_wallet` folds the optional pool into the required set, so the two combined would spend only the selection while the UI still derives the MAX amount from the whole spendable balance — signing a smaller payment than the confirm screen displays. MAX-with-coin-control needs its own fix (the amount must come from the selection first).
+      // Drain gets no carve-out: `manually_selected_only` empties the optional pool BEFORE `drain_wallet` folds it into the required set, so draining with a selection spends — and drains — exactly the picked coins. MAX with coin control therefore means "MAX of the selection", and callers must derive the displayed amount from the selection total, not the whole spendable balance (SendCubit.createTransaction does). Flows that lock an amount in before the build (chain swaps, exchange payins) are covered by their amount-verification usecases: a drain that pays less than the quoted amount fails explicitly there instead of silently spending coins the user excluded.
       //
       // Guarded by the enclosing isNotEmpty check for a second reason: `create_tx` rejects `manually_selected_only` with an empty selection (`CreateTxError::NoUtxosSelected`).
-      if (drain != true) {
-        txBuilder = txBuilder.manuallySelectedOnly();
-      }
+      txBuilder = txBuilder.manuallySelectedOnly();
     }
 
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,

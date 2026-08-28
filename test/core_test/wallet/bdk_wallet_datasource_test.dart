@@ -508,12 +508,13 @@ void main() {
     },
   );
 
-  // Drain is deliberately excluded from `manuallySelectedOnly`: MAX derives
-  // its displayed amount from the whole spendable balance, so restricting the
-  // inputs would sign a smaller payment than the confirm screen shows. Pins
-  // that carve-out so it can't be "tidied up" without also fixing MAX.
+  // Drain gets no carve-out from `manuallySelectedOnly`: BDK empties the
+  // optional pool before `drain_wallet` folds it into the required set, so
+  // draining with a selection spends — and drains — exactly the picked coins.
+  // MAX with coin control means "MAX of the selection"; SendCubit derives the
+  // displayed amount from the selection total to match.
   test(
-    'buildPsbt still drains every coin when draining with a selection',
+    'buildPsbt drains only the selected coin when draining with a selection',
     () async {
       final datasource = BdkWalletDatasource();
 
@@ -535,7 +536,32 @@ void main() {
         replaceByFee: true,
       );
 
-      expect(bdk.Psbt(psbtBase64: psbt).extractTx().input().length, 2);
+      final tx = bdk.Psbt(psbtBase64: psbt).extractTx();
+      final inputs = tx.input();
+      expect(
+        inputs.length,
+        1,
+        reason:
+            'a drain with a manual selection must spend only the picked '
+            'coin, never the rest of the wallet',
+      );
+      expect(inputs.single.previousOutput.txid.toString(), utxoLargeTxId);
+      expect(inputs.single.previousOutput.vout, utxoSmallVout);
+
+      // A drain of one coin has a single output paying the coin's value
+      // minus the fee — proving the drained amount comes from the
+      // selection, not the whole wallet balance.
+      final outputs = tx.output();
+      expect(outputs.length, 1);
+      final drainedSat = outputs.single.value.toSat();
+      expect(drainedSat, lessThan(utxoSmallAmountSat));
+      expect(
+        drainedSat,
+        greaterThan(utxoSmallAmountSat - 2000),
+        reason:
+            'the drain output must be the selected coin minus a plausible '
+            'fee (~440 sats at 4 sat/vB for a 1-in-1-out P2WPKH tx)',
+      );
     },
   );
 }

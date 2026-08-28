@@ -1648,9 +1648,18 @@ class SendCubit extends Cubit<SendState>
         }
         if (state.sendMax) {
           // See above: MAX must be capped by the spendable balance, which
-          // excludes user-frozen coins.
-          final maxAmountSat =
-              state.spendableBalanceSat - (state.absoluteFees ?? 0);
+          // excludes user-frozen coins. With a manual coin selection the
+          // build drains only the selected coins (`manuallySelectedOnly` in
+          // BdkWalletDatasource.buildPsbt), so MAX is the selection's total —
+          // deriving it from the whole spendable balance would confirm a
+          // larger amount than the PSBT actually pays.
+          final drainableSat = state.selectedUtxos.isEmpty
+              ? state.spendableBalanceSat
+              : state.selectedUtxos.fold(
+                  0,
+                  (sum, utxo) => sum + utxo.amountSat.toInt(),
+                );
+          final maxAmountSat = drainableSat - (state.absoluteFees ?? 0);
           final maxAmount =
               state.inputAmountCurrencyCode == BitcoinUnit.btc.code
               ? ConvertAmount.satsToBtc(maxAmountSat)
