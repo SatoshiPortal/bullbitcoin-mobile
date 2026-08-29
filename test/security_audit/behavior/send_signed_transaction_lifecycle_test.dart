@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -81,6 +82,9 @@ class _MockGetWalletUtxosUsecase extends Mock
 
 class _MockPrepareBitcoinSendUsecase extends Mock
     implements PrepareBitcoinSendUsecase {}
+
+class _MockValidateBitcoinSelectionUsecase extends Mock
+    implements ValidateBitcoinSelectionUsecase {}
 
 class _MockPrepareLiquidSendUsecase extends Mock
     implements PrepareLiquidSendUsecase {}
@@ -175,6 +179,7 @@ class _TestSendCubit extends SendCubit {
     required super.getAvailableCurrenciesUsecase,
     required super.getWalletUtxosUsecase,
     required super.prepareBitcoinSendUsecase,
+    required super.validateBitcoinSelectionUsecase,
     required super.prepareLiquidSendUsecase,
     required super.signBitcoinTxUsecase,
     required super.signLiquidTxUsecase,
@@ -232,6 +237,7 @@ void main() {
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockCheckLiquidConsolidationUsecase checkLiquidConsolidationUsecase;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
+  late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockCalculateLiquidAbsoluteFeesUsecase
   calculateLiquidAbsoluteFeesUsecase;
   late _TestSendCubit cubit;
@@ -250,8 +256,15 @@ void main() {
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     checkLiquidConsolidationUsecase = _MockCheckLiquidConsolidationUsecase();
     prepareLiquidSendUsecase = _MockPrepareLiquidSendUsecase();
+    validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
     calculateLiquidAbsoluteFeesUsecase =
         _MockCalculateLiquidAbsoluteFeesUsecase();
+    when(
+      () => validateBitcoinSelectionUsecase.execute(
+        walletId: any(named: 'walletId'),
+        selectedInputs: any(named: 'selectedInputs'),
+      ),
+    ).thenAnswer((_) async => []);
 
     cubit = _TestSendCubit(
       labelsFacade: labelsFacade,
@@ -264,6 +277,7 @@ void main() {
       getAvailableCurrenciesUsecase: _MockGetAvailableCurrenciesUsecase(),
       getWalletUtxosUsecase: getWalletUtxosUsecase,
       prepareBitcoinSendUsecase: _MockPrepareBitcoinSendUsecase(),
+      validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
       prepareLiquidSendUsecase: prepareLiquidSendUsecase,
       signBitcoinTxUsecase: _MockSignBitcoinTxUsecase(),
       signLiquidTxUsecase: _MockSignLiquidTxUsecase(),

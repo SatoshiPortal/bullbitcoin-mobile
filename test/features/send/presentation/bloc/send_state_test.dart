@@ -10,8 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../coins/wallet_utxo_fixture.dart';
 
-/// Stubs only [Wallet.balanceSat]/[Wallet.id] — all [SendState] spendable math
-/// reads from the utxo list plus the wallet balance, so nothing else is needed.
+/// Stubs the wallet properties read by [SendState] balance and fee math.
 class _FakeWallet extends Fake implements Wallet {
   _FakeWallet(this._balanceSat);
 
@@ -22,6 +21,9 @@ class _FakeWallet extends Fake implements Wallet {
 
   @override
   BigInt get balanceSat => BigInt.from(_balanceSat);
+
+  @override
+  bool get isLiquid => false;
 }
 
 /// Tests for [SendState.absoluteFees] — the getter that decides which number
@@ -193,6 +195,39 @@ void main() {
       );
       expect(state.absoluteFees, 100);
     });
+  });
+
+  test('MAX uses selected balance and the real built fee', () {
+    final state = SendState(
+      selectedWallet: _FakeWallet(130000),
+      utxos: [
+        walletUtxoFixture(sats: 100000),
+        walletUtxoFixture(sats: 30000, vout: 1),
+      ],
+      selectedUtxos: [walletUtxoFixture(sats: 30000, vout: 1)],
+      bitcoinAbsoluteFeesSat: 1200,
+    );
+
+    expect(state.maxSpendableBalanceSat, 28800);
+  });
+
+  test('MAX available balance uses the selected total before fees', () {
+    final state = SendState(
+      selectedWallet: _FakeWallet(130000),
+      selectedUtxos: [walletUtxoFixture(sats: 30000)],
+    );
+
+    expect(state.maxAvailableBalanceSat, 30000);
+  });
+
+  test('MAX clamps a selected balance that cannot cover its fee', () {
+    final state = SendState(
+      selectedWallet: _FakeWallet(10000),
+      selectedUtxos: [walletUtxoFixture(sats: 1000)],
+      bitcoinAbsoluteFeesSat: 1200,
+    );
+
+    expect(state.maxSpendableBalanceSat, 0);
   });
 
   group('SendState.absoluteFees — Bitcoin, no PSBT means no number', () {

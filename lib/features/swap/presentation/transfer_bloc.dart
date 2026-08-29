@@ -30,6 +30,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -45,6 +46,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swap_useca
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -62,6 +64,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._getWalletsUsecase,
     required this._getNetworkFeesUsecase,
     required this._prepareBitcoinSendUsecase,
+    required this._validateBitcoinSelectionUsecase,
     required this._prepareLiquidSendUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
@@ -113,6 +116,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final GetWalletsUsecase _getWalletsUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
+  final ValidateBitcoinSelectionUsecase _validateBitcoinSelectionUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
@@ -143,6 +147,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
+  int _transactionGeneration = 0;
 
   /// Bumped by [_clearBitcoinFeePreviews]; a preview build captures it
   /// before its `await` and re-checks before writing back, so an
@@ -394,6 +399,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       }
     }
     final wasFromWalletChanged = newFromWallet != state.fromWallet;
+    final wasToWalletChanged = newToWallet != state.toWallet;
     final hadExternalAddress = state.externalAddress.isNotEmpty;
     final externalAddressToRevalidate = state.externalAddress;
     final sendToExternal = state.sendToExternal;
@@ -410,7 +416,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     // Wallet swap invalidates every cached preview (different UTXOs +
     // descriptor + script type). Skip when the picker landed on the
     // same fromWallet.
-    if (wasFromWalletChanged) _clearBitcoinFeePreviews(emit);
+    if (wasFromWalletChanged || wasToWalletChanged) {
+      _invalidateTransactionContract(emit);
+    }
 
     // Proactively flag consolidation when the source is a Liquid wallet with
     // too many UTXOs, so the card shows before the swap build is attempted.
@@ -457,13 +465,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
     emit(updated);
     // Amount is part of the cache fingerprint (see _clearBitcoinFeePreviews).
-    _clearBitcoinFeePreviews(emit);
+    _invalidateTransactionContract(emit);
   }
 
   Future<void> _onSwapCreated(
     TransferSwapCreated event,
     Emitter<TransferState> emit,
   ) async {
+    final generation = ++_transactionGeneration;
     emit(
       state.copyWith(
         swap: null,
@@ -498,6 +507,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           emit,
           inputAmountSat: inputAmountSat,
           isMaxSend: isMaxSend,
+          generation: generation,
         );
         return;
       }
@@ -509,6 +519,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           final address = await _getReceiveAddressUsecase.execute(
             walletId: state.toWallet!.id,
           );
+          if (generation != _transactionGeneration) return;
           receiveAddress = address.address;
         } catch (e) {
           emit(
@@ -545,15 +556,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             : null,
         replaceByFee: state.replaceByFee,
       );
+      if (generation != _transactionGeneration) return;
 
       final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
         walletId: bitcoinWalletId,
         psbt: unsignedPsbtAndTxSize.unsignedPsbt,
       );
+      if (generation != _transactionGeneration) return;
 
       final signedPsbt = signedPsbtAndTxSize.signedPsbt;
       final bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
           .execute(psbt: signedPsbt);
+      if (generation != _transactionGeneration) return;
 
       emit(
         state.copyWith(
@@ -565,8 +579,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         ),
       );
     } on ConsolidationRequiredException {
+      if (generation != _transactionGeneration) return;
       emit(state.copyWith(consolidationRequired: true));
     } catch (e) {
+      if (generation != _transactionGeneration) return;
       log.severe(
         message: '[Transfer] swap creation failed (${e.runtimeType})',
         error: e.runtimeType,
@@ -577,7 +593,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           : SwapCreationException(e.toString());
       emit(state.copyWith(swapCreationException: swapCreationException));
     } finally {
-      emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
+      if (generation == _transactionGeneration) {
+        emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
+      }
     }
   }
 
@@ -585,6 +603,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     Emitter<TransferState> emit, {
     required int inputAmountSat,
     required bool isMaxSend,
+    required int generation,
   }) async {
     final fromWallet = state.fromWallet;
     if (fromWallet == null) {
@@ -612,12 +631,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         : (await _getReceiveAddressUsecase.execute(
             walletId: destinationWallet!.id,
           )).address;
+    if (generation != _transactionGeneration) return;
     if (destinationAddress.isEmpty) {
       throw SwapCreationException('destination_address_required');
     }
     final fallbackAddress = (await _getReceiveAddressUsecase.execute(
       walletId: fromWallet.id,
     )).address;
+    if (generation != _transactionGeneration) return;
     final isInAmountFixed = isMaxSend || !state.receiveExactAmount;
 
     final quoteResult = await _getOrderSwapQuoteUsecase.execute(
@@ -627,6 +648,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       inNetwork: inNetwork,
       outNetwork: outNetwork,
     );
+    if (generation != _transactionGeneration) return;
     if (quoteResult case Err(:final failure)) {
       log.warning('[Transfer] quote failed (${failure.runtimeType})');
       emit(state.copyWith(swapFailure: failure));
@@ -655,6 +677,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           ? quote.outAmountSat
           : quote.inAmountSat,
     );
+    if (generation != _transactionGeneration) return;
     if (createResult case Err(:final failure)) {
       log.warning('[Transfer] create failed (${failure.runtimeType})');
       emit(state.copyWith(swapFailure: failure));
@@ -703,18 +726,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         feeRate: selectedFee as RelativeFee,
         drain: isMaxSend,
       );
+      if (generation != _transactionGeneration) return;
       await _verifyChainSwapAmountSendUsecase.execute(
         psbtOrPset: unsignedPset,
         swap: displaySwap,
         walletId: fromWallet.id,
       );
+      if (generation != _transactionGeneration) return;
       signedPayin = await _signLiquidTxUsecase.execute(
         walletId: fromWallet.id,
         pset: unsignedPset,
       );
+      if (generation != _transactionGeneration) return;
       liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase.execute(
         pset: signedPayin,
       );
+      if (generation != _transactionGeneration) return;
       isPsbt = false;
     } else {
       final selectedFee =
@@ -730,19 +757,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             : state.selectedUtxos,
         replaceByFee: state.replaceByFee,
       );
+      if (generation != _transactionGeneration) return;
       await _verifyChainSwapAmountSendUsecase.execute(
         psbtOrPset: unsigned.unsignedPsbt,
         swap: displaySwap,
         walletId: fromWallet.id,
       );
+      if (generation != _transactionGeneration) return;
       final signed = await _signBitcoinTxUsecase.execute(
         walletId: fromWallet.id,
         psbt: unsigned.unsignedPsbt,
       );
+      if (generation != _transactionGeneration) return;
       signedPayin = signed.signedPsbt;
       bitcoinTxSize = signed.txSize;
       bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
           .execute(psbt: signedPayin);
+      if (generation != _transactionGeneration) return;
       if (!_builtFeeClearsRelay(
         stateToUse: state,
         builtFeeSat: bitcoinAbsoluteFeesSat,
@@ -758,6 +789,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       signedTransaction: signedPayin,
       isPsbt: isPsbt,
     );
+    if (generation != _transactionGeneration) return;
     if (prepareResult case Err(:final failure)) {
       log.warning(
         '[Transfer] payin persistence failed (${failure.runtimeType})',
@@ -788,6 +820,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferSendToExternalToggled event,
     Emitter<TransferState> emit,
   ) async {
+    final receiveExactAmountChanged = state.receiveExactAmount != event.enabled;
+    if (state.sendToExternal == event.enabled && !receiveExactAmountChanged) {
+      return;
+    }
     emit(
       state.copyWith(
         sendToExternal: event.enabled,
@@ -796,6 +832,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         receiveExactAmount: event.enabled,
       ),
     );
+    _invalidateTransactionContract(emit);
   }
 
   Future<void> _onExternalAddressChanged(
@@ -805,7 +842,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (state.externalAddress == event.address) return;
     // Recipient is part of the cache fingerprint — drop every cached
     // preview when the new value differs from what we had cached against.
-    _clearBitcoinFeePreviews(emit);
+    _invalidateTransactionContract(emit);
     if (event.address.isEmpty) {
       emit(state.copyWith(externalAddress: '', externalAddressError: null));
       return;
@@ -963,7 +1000,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       // Max send and exact receivable are mutually exclusive.
       return;
     }
+    if (state.receiveExactAmount == event.enabled) return;
     emit(state.copyWith(receiveExactAmount: event.enabled));
+    _invalidateTransactionContract(emit);
   }
 
   Future<void> _onReplaceByFeeChanged(
@@ -980,16 +1019,47 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferUtxosSelected event,
     Emitter<TransferState> emit,
   ) async {
+    final wasMaxSelected = state.isMaxSelected;
     // The UTXO set is an unordered selection — compare as sets so a
     // re-emit of the same set (different list order) doesn't invalidate.
-    final utxosChanged =
-        state.selectedUtxos
-            .toSet()
-            .difference(event.utxos.toSet())
-            .isNotEmpty ||
-        event.utxos.toSet().difference(state.selectedUtxos.toSet()).isNotEmpty;
-    emit(state.copyWith(selectedUtxos: event.utxos));
-    if (utxosChanged) _clearBitcoinFeePreviews(emit);
+    final previousOutpoints = state.selectedUtxos
+        .map((utxo) => utxo.outpoint)
+        .toSet();
+    final nextOutpoints = event.utxos.map((utxo) => utxo.outpoint).toSet();
+    final utxosChanged = !setEquals(previousOutpoints, nextOutpoints);
+    emit(
+      state.copyWith(
+        selectedUtxos: event.utxos,
+        signedPsbt: utxosChanged ? '' : state.signedPsbt,
+        buildTransactionException: utxosChanged
+            ? null
+            : state.buildTransactionException,
+      ),
+    );
+    if (!utxosChanged) return;
+
+    var generation = ++_transactionGeneration;
+    if (wasMaxSelected) {
+      _invalidateTransactionContract(emit);
+    } else {
+      _clearBitcoinFeePreviews(emit);
+    }
+    generation = _transactionGeneration;
+    final fromWallet = state.fromWallet;
+    if (fromWallet != null) {
+      final maxAmountSat = await getMaxAmountSat(fromWallet);
+      if (generation != _transactionGeneration) return;
+      emit(
+        state.copyWith(
+          maxAmountSat: maxAmountSat,
+          amount: wasMaxSelected && maxAmountSat != null
+              ? state.bitcoinUnit == BitcoinUnit.sats
+                    ? maxAmountSat.toString()
+                    : ConvertAmount.satsToBtc(maxAmountSat).toString()
+              : state.amount,
+        ),
+      );
+    }
     await _rebuildTransaction(emit);
   }
 
@@ -1010,7 +1080,25 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         (state.utxos ?? const <WalletUtxo>[]).toSet(),
         utxos.toSet(),
       );
-      emit(state.copyWith(utxos: utxos));
+      final spendableOutpoints = utxos
+          .where((utxo) => !utxo.isFrozen)
+          .map((utxo) => utxo.outpoint)
+          .toSet();
+      final selectionInvalid =
+          state.selectedUtxos.isNotEmpty &&
+          state.selectedUtxos.any(
+            (utxo) => !spendableOutpoints.contains(utxo.outpoint),
+          );
+      if (selectionInvalid) _transactionGeneration++;
+      emit(
+        state.copyWith(
+          utxos: utxos,
+          signedPsbt: selectionInvalid ? '' : state.signedPsbt,
+          buildTransactionException: selectionInvalid
+              ? BuildTransactionException(selectedCoinsUnavailableCode)
+              : state.buildTransactionException,
+        ),
+      );
       if (utxosChanged) _clearBitcoinFeePreviews(emit);
     } catch (e) {
       log.severe(
@@ -1240,7 +1328,22 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   /// those moving invalidates the cached PSBTs we'd otherwise broadcast.
   void _clearBitcoinFeePreviews(Emitter<TransferState> emit) {
     _bitcoinPreviewEpoch++;
-    emit(state.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty));
+    _transactionGeneration++;
+    emit(
+      state.copyWith(
+        feePreviewCache: BitcoinFeePreviewCache.empty,
+        signedPsbt: '',
+        isCreatingSwap: false,
+        continueClicked: false,
+      ),
+    );
+  }
+
+  /// A contract-shape change makes a prepared remote swap belong to an old
+  /// transfer, not merely an old fee/PSBT preview.
+  void _invalidateTransactionContract(Emitter<TransferState> emit) {
+    _clearBitcoinFeePreviews(emit);
+    emit(state.copyWith(swap: null, orderSwap: null));
   }
 
   /// Belt-and-suspenders relay-floor re-assert, mirroring
@@ -1274,6 +1377,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       return;
     }
 
+    final generation = ++_transactionGeneration;
+    emit(stateToUse.copyWith(signedPsbt: '', buildTransactionException: null));
+
     try {
       final fromWallet = stateToUse.fromWallet!;
       if (fromWallet.isLiquid) return;
@@ -1285,6 +1391,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         stateToUse.selectedFeeOption,
       );
       final canUseCache = cachedSlot.isCacheReady;
+      if (canUseCache && stateToUse.selectedUtxos.isNotEmpty) {
+        try {
+          await _validateBitcoinSelectionUsecase.execute(
+            walletId: fromWallet.id,
+            selectedInputs: stateToUse.selectedUtxos,
+          );
+        } on InsufficientFundsException {
+          throw BuildTransactionException(selectedCoinsUnavailableCode);
+        }
+        if (generation != _transactionGeneration) return;
+      }
       if (stateToUse.isSameChainTransfer) {
         final receiveAddress = stateToUse.receiveAddress;
         if (receiveAddress == null || receiveAddress.isEmpty) return;
@@ -1313,16 +1430,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
                     : null,
                 replaceByFee: stateToUse.replaceByFee,
               );
+        if (generation != _transactionGeneration) return;
 
         final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
           walletId: fromWallet.id,
           psbt: unsignedPsbtAndTxSize.unsignedPsbt,
         );
+        if (generation != _transactionGeneration) return;
 
         final bitcoinAbsoluteFeesSat =
             await _calculateBitcoinAbsoluteFeesUsecase.execute(
               psbt: signedPsbtAndTxSize.signedPsbt,
             );
+        if (generation != _transactionGeneration) return;
 
         if (!_builtFeeClearsRelay(
           stateToUse: stateToUse,
@@ -1379,22 +1499,26 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
                     : null,
                 replaceByFee: stateToUse.replaceByFee,
               );
+        if (generation != _transactionGeneration) return;
 
         await _verifyChainSwapAmountSendUsecase.execute(
           psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
           swap: swap,
           walletId: fromWallet.id,
         );
+        if (generation != _transactionGeneration) return;
 
         final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
           walletId: fromWallet.id,
           psbt: unsignedPsbtAndTxSize.unsignedPsbt,
         );
+        if (generation != _transactionGeneration) return;
 
         final bitcoinAbsoluteFeesSat =
             await _calculateBitcoinAbsoluteFeesUsecase.execute(
               psbt: signedPsbtAndTxSize.signedPsbt,
             );
+        if (generation != _transactionGeneration) return;
 
         if (!_builtFeeClearsRelay(
           stateToUse: stateToUse,
@@ -1422,6 +1546,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               signedTransaction: signedPsbtAndTxSize.signedPsbt,
               isPsbt: true,
             );
+        if (generation != _transactionGeneration) return;
         final prepared = switch (replaceResult) {
           Ok(:final value) => value,
           Err(:final failure) => throw BuildTransactionException(
@@ -1443,10 +1568,24 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         );
       }
     } catch (e) {
+      if (generation != _transactionGeneration) return;
       log.severe(
         message: 'Error rebuilding transaction',
         error: e.runtimeType,
         trace: StackTrace.current,
+      );
+      emit(
+        stateToUse.copyWith(
+          signedPsbt: '',
+          buildTransactionException: BuildTransactionException(
+            e is BuildTransactionException
+                ? e.message
+                : e is InsufficientFundsException &&
+                      stateToUse.selectedUtxos.isNotEmpty
+                ? selectedCoinsInsufficientCode
+                : transactionRebuildFailedCode,
+          ),
+        ),
       );
     }
   }
@@ -1470,6 +1609,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     try {
       final signedPsbt = state.signedPsbt;
       if (signedPsbt.isEmpty) return;
+
+      final fromWallet = state.fromWallet;
+      if (fromWallet != null &&
+          !fromWallet.isLiquid &&
+          state.selectedUtxos.isNotEmpty) {
+        await _validateBitcoinSelectionUsecase.execute(
+          walletId: fromWallet.id,
+          selectedInputs: state.selectedUtxos,
+        );
+      }
 
       String txId;
       final orderSwap = state.orderSwap;
@@ -1541,6 +1690,24 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         return;
       }
       emit(state.copyWith(txId: txId));
+    } on InsufficientFundsException {
+      _clearBitcoinFeePreviews(emit);
+      emit(
+        state.copyWith(
+          buildTransactionException: BuildTransactionException(
+            selectedCoinsUnavailableCode,
+          ),
+        ),
+      );
+    } on ValidateBitcoinSelectionException {
+      _clearBitcoinFeePreviews(emit);
+      emit(
+        state.copyWith(
+          buildTransactionException: BuildTransactionException(
+            selectedCoinsUnavailableCode,
+          ),
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -1597,6 +1764,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           address: receiveAddress.address,
           networkFee: networkFee,
           drain: true,
+          selectedInputs: state.selectedUtxos,
         );
 
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
@@ -1619,9 +1787,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         log.info("Absolute fees: $absoluteFees");
       }
 
-      final balanceSat = fromWallet.balanceSat.toInt();
+      final selectedBalanceSat = state.selectedUtxos.fold(
+        0,
+        (sum, utxo) => sum + utxo.amountSat.toInt(),
+      );
+      final balanceSat = state.selectedUtxos.isEmpty
+          ? fromWallet.balanceSat.toInt()
+          : selectedBalanceSat;
       final maxAmountSat = balanceSat - absoluteFees;
-      return maxAmountSat;
+      return maxAmountSat < 0 ? 0 : maxAmountSat;
     } catch (e) {
       log.severe(
         message: 'Error getting max amount sat in transfer bloc',

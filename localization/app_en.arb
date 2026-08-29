@@ -14570,5 +14570,17 @@
   "swapErrorRouteUnavailableGeneric": "This swap is not available.",
   "@swapErrorRouteUnavailableGeneric": {
     "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
+  },
+  "sendErrorSelectedCoinsUnavailable": "One or more selected coins are no longer available. Review your coin selection and try again.",
+  "@sendErrorSelectedCoinsUnavailable": {
+    "description": "Message shown when a manually selected coin is no longer spendable."
+  },
+  "sendErrorSelectedCoinsInsufficient": "The selected coins do not cover the amount and fees. Select more coins or reduce the amount.",
+  "@sendErrorSelectedCoinsInsufficient": {
+    "description": "Message shown when manually selected coins do not cover the payment amount and fees."
+  },
+  "sendErrorTransactionChanged": "The transaction details changed. Review the amount, destination, and fees, then confirm again.",
+  "@sendErrorTransactionChanged": {
+    "description": "Message shown when a transaction must be rebuilt because its details changed."
   }
 }
