@@ -7,7 +7,7 @@ import 'support/fakes.dart';
 /// Byte-level contract: any change to the canonical encoding is a breaking
 /// change of the receipt/reconstruction contract and must be intentional.
 const goldenFingerprint =
-    '31b906b86f31dedf89186000b6bb26cd8edc6d91a698104e30d039873e4e6da4';
+    '6297aea455c4e909dd5ed38c2fcba50234febcc5e832b73a97bbdbca6e8007e5';
 
 WalletTransaction goldenTransaction() => WalletTransaction(
   txid: 'aa11',

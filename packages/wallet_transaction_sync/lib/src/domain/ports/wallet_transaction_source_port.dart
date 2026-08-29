@@ -40,9 +40,15 @@ abstract interface class WalletTransactionSourcePort {
     WalletSourceSession session, {
     required bool discover,
   });
+
+  /// Deletes the persisted source state for [key]. [registration] is provided
+  /// when the deletion runs inside a registration-carrying operation (resume
+  /// of a pending deletion); without it the adapter may rely on
+  /// process-local knowledge of the key and fail typed when it has none.
   @useResult
   Future<Result<void, WalletTransactionSyncFailure>> delete(
     WalletNetworkKey key,
-    WalletSourceSession session,
-  );
+    WalletSourceSession session, {
+    WalletSourceRegistration? registration,
+  });
 }

@@ -120,7 +120,7 @@ final class WalletTransactionRepositoryImpl
     final key = registration.key;
     var existing = await metadata.read(key);
     if (existing?.deletionPending == true) {
-      final resumed = await delete(key);
+      final resumed = await _delete(key, registration: registration);
       if (resumed case Err(:final failure)) return Err(failure);
       // The resumed deletion cleared the stored registration; re-read so a
       // revival with a replacement registration is not judged against it.
@@ -297,7 +297,12 @@ final class WalletTransactionRepositoryImpl
   @override
   Future<Result<void, WalletTransactionSyncFailure>> delete(
     WalletNetworkKey key,
-  ) async {
+  ) => _delete(key);
+
+  Future<Result<void, WalletTransactionSyncFailure>> _delete(
+    WalletNetworkKey key, {
+    WalletSourceRegistration? registration,
+  }) async {
     try {
       final metadataValue = await metadata.read(key);
       if (_state(key) is WalletStateDeleted &&
@@ -320,7 +325,11 @@ final class WalletTransactionRepositoryImpl
                 key,
                 WalletDeletionPhase.snapshotEvicted,
               );
-              final sourceResult = await source.delete(key, session);
+              final sourceResult = await source.delete(
+                key,
+                session,
+                registration: registration,
+              );
               if (sourceResult case Err(:final failure)) {
                 final deletionFailure = failure is DeletionFailure
                     ? failure
@@ -352,12 +361,14 @@ final class WalletTransactionRepositoryImpl
   String _fingerprint(WalletSourceObservation observation) {
     final transactions = observation.transactions.map(_transactionData).toList()
       ..sort((a, b) => (a['txid'] as String).compareTo(b['txid'] as String));
+    // Observation-method metadata (capabilities, evidence level) is
+    // deliberately excluded: a local reconstruction of identical content must
+    // reproduce the fingerprint of the network observation, otherwise the
+    // durable receipt can never be re-attached after a restart.
     final data = <String, Object?>{
       'transactions': transactions,
-      'capabilities': observation.capabilities.toList()..sort(),
       'tip': observation.sourceTip,
       'complete': observation.complete,
-      'evidence': observation.evidenceLevel.name,
     };
     return sha256.convert(utf8.encode(jsonEncode(_canonical(data)))).toString();
   }

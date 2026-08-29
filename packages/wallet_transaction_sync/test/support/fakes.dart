@@ -27,6 +27,10 @@ WalletTransactionSyncFailure errFailure<T>(
   Result<T, WalletTransactionSyncFailure> result,
 ) => (result as Err<T, WalletTransactionSyncFailure>).failure;
 
+WalletTransactionSyncFailure? errFailureOrNull<T>(
+  Result<T, WalletTransactionSyncFailure> result,
+) => result is Err<T, WalletTransactionSyncFailure> ? result.failure : null;
+
 class RecordingSource implements WalletTransactionSourcePort {
   WalletSourceObservation Function(WalletSourceRegistration registration)?
   observationBuilder;
@@ -94,8 +98,9 @@ class RecordingSource implements WalletTransactionSourcePort {
   @override
   Future<Result<void, WalletTransactionSyncFailure>> delete(
     WalletNetworkKey key,
-    WalletSourceSession session,
-  ) async {
+    WalletSourceSession session, {
+    WalletSourceRegistration? registration,
+  }) async {
     session.ensureOpen();
     deleteCalls++;
     if (deleteFailuresRemaining > 0) {

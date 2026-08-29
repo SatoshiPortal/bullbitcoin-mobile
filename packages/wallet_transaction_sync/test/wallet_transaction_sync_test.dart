@@ -54,8 +54,9 @@ class FakeSource implements WalletTransactionSourcePort {
   @override
   Future<Result<void, WalletTransactionSyncFailure>> delete(
     WalletNetworkKey key,
-    WalletSourceSession session,
-  ) async => const Ok(null);
+    WalletSourceSession session, {
+    WalletSourceRegistration? registration,
+  }) async => const Ok(null);
 }
 
 class FakeMetadata implements WalletSyncMetadataPort {
