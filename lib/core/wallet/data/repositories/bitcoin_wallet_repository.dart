@@ -95,8 +95,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
           (utxo) => !unspendableKeys.contains('${utxo.txId}:${utxo.vout}'),
         )
         .toList();
-    if (selected != null && selected.isNotEmpty && spendableSelected!.isEmpty) {
-      throw NoSpendableUtxoException('All selected UTXOs are unspendable');
+    if (selected != null &&
+        selected.isNotEmpty &&
+        spendableSelected!.length != selected.length) {
+      throw NoSpendableUtxoException(
+        'At least one selected UTXO is unspendable',
+      );
     }
 
     final psbt = await _bdkWallet.buildPsbt(

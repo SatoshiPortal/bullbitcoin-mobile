@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -73,6 +74,9 @@ void main() {
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((_) async => false);
+    when(
+      () => walletUtxo.getWalletUtxos(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => []);
   });
 
   // Capture the `unspendable` arg passed to buildPsbt.
@@ -90,22 +94,6 @@ void main() {
       ),
     ).captured;
     return captured.single as List<Outpoint>?;
-  }
-
-  List<WalletUtxo>? capturedSelected() {
-    final captured = verify(
-      () => bitcoinWallet.buildPsbt(
-        walletId: any(named: 'walletId'),
-        address: any(named: 'address'),
-        amountSat: any(named: 'amountSat'),
-        networkFee: any(named: 'networkFee'),
-        drain: any(named: 'drain'),
-        unspendable: any(named: 'unspendable'),
-        selected: captureAny(named: 'selected'),
-        replaceByFee: any(named: 'replaceByFee'),
-      ),
-    ).captured;
-    return captured.single as List<WalletUtxo>?;
   }
 
   test(
@@ -266,7 +254,7 @@ void main() {
     },
   );
 
-  test('a selectedInput that is frozen is stripped before buildPsbt', () async {
+  test('a partly filtered selection fails before buildPsbt', () async {
     when(
       () => walletUtxo.getAllFrozenOutpoints(),
     ).thenAnswer((_) async => [(txId: 'tx-frozen', vout: 0)]);
@@ -276,19 +264,66 @@ void main() {
 
     final frozenInput = _utxo(txId: 'tx-frozen', vout: 0);
     final spendableInput = _utxo(txId: 'tx-ok', vout: 1);
+    when(
+      () => walletUtxo.getWalletUtxos(walletId: walletId),
+    ).thenAnswer((_) async => [frozenInput, spendableInput]);
 
-    await usecase.execute(
-      walletId: walletId,
-      address: address,
-      networkFee: networkFee,
-      amountSat: 50000,
-      selectedInputs: [frozenInput, spendableInput],
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        address: address,
+        networkFee: networkFee,
+        amountSat: 50000,
+        selectedInputs: [frozenInput, spendableInput],
+      ),
+      throwsA(isA<InsufficientFundsException>()),
     );
+    verifyNever(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    );
+  });
 
-    final selected = capturedSelected()!;
-    expect(selected, hasLength(1));
-    expect(selected.single.txId, 'tx-ok');
-    expect(selected.any((u) => u.txId == 'tx-frozen'), isFalse);
+  test('a Payjoin-reserved selected coin fails before buildPsbt', () async {
+    final reservedInput = _utxo(txId: 'tx-reserved', vout: 0);
+    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(() => payjoin.reservedOutpoints()).thenAnswer(
+      (_) async => const Ok(<Outpoint>{(txId: 'tx-reserved', vout: 0)}),
+    );
+    when(
+      () => walletUtxo.getWalletUtxos(walletId: walletId),
+    ).thenAnswer((_) async => [reservedInput]);
+
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        address: address,
+        networkFee: networkFee,
+        amountSat: 50000,
+        selectedInputs: [reservedInput],
+      ),
+      throwsA(isA<InsufficientFundsException>()),
+    );
+    verifyNever(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        networkFee: any(named: 'networkFee'),
+        drain: any(named: 'drain'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    );
   });
 
   test(
@@ -302,6 +337,9 @@ void main() {
       ).thenAnswer((_) async => const Ok(<Outpoint>{}));
 
       final input = _utxo(txId: 'tx-ok', vout: 0);
+      when(
+        () => walletUtxo.getWalletUtxos(walletId: walletId),
+      ).thenAnswer((_) async => [input]);
 
       final result = await usecase.execute(
         walletId: walletId,

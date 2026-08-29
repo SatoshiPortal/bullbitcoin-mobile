@@ -184,23 +184,36 @@ void main() {
   );
 
   group('D7 — frozen store is read live at build time', () {
-    test('a coin frozen in the store is stripped from the selection even when '
-        'the caller passes NO unspendable list', () async {
-      when(() => frozenDatasource.getAllFrozen()).thenAnswer(
-        (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
-      );
+    test(
+      'fails closed when one selected coin was frozen since selection',
+      () async {
+        when(() => frozenDatasource.getAllFrozen()).thenAnswer(
+          (_) async => [(walletId: _walletId, txId: 'tx-frozen', vout: 0)],
+        );
 
-      await buildPsbt(
-        selected: [
-          _utxo(txId: 'tx-frozen', vout: 0), // frozen in DB -> stripped
-          _utxo(txId: 'tx-free', vout: 1), // passes through
-        ],
-      );
-
-      final selected = capturedSelected();
-      expect(selected, hasLength(1));
-      expect(selected!.single.txId, 'tx-free');
-    });
+        await expectLater(
+          buildPsbt(
+            selected: [
+              _utxo(txId: 'tx-frozen', vout: 0),
+              _utxo(txId: 'tx-free', vout: 1),
+            ],
+          ),
+          throwsA(isA<NoSpendableUtxoException>()),
+        );
+        verifyNever(
+          () => bdkDatasource.buildPsbt(
+            wallet: any(named: 'wallet'),
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            networkFee: any(named: 'networkFee'),
+            drain: any(named: 'drain'),
+            unspendable: any(named: 'unspendable'),
+            selected: any(named: 'selected'),
+            replaceByFee: any(named: 'replaceByFee'),
+          ),
+        );
+      },
+    );
 
     test('frozen outpoints are merged into the unspendable list passed down, '
         'so automatic selection cannot pick them either', () async {
@@ -262,23 +275,30 @@ void main() {
       },
     );
 
-    test(
-      'a selected coin that is also unspendable never reaches the datasource',
-      () async {
-        await buildPsbt(
+    test('fails closed when the caller excludes one selected coin', () async {
+      await expectLater(
+        buildPsbt(
           unspendable: const [(txId: 'tx-frozen', vout: 0)],
           selected: [
-            _utxo(txId: 'tx-frozen', vout: 0), // must be stripped
-            _utxo(txId: 'tx-free', vout: 1), // must pass through
+            _utxo(txId: 'tx-frozen', vout: 0),
+            _utxo(txId: 'tx-free', vout: 1),
           ],
-        );
-
-        final selected = capturedSelected();
-        expect(selected, hasLength(1));
-        expect(selected!.single.txId, 'tx-free');
-        expect(selected.single.vout, 1);
-      },
-    );
+        ),
+        throwsA(isA<NoSpendableUtxoException>()),
+      );
+      verifyNever(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          drain: any(named: 'drain'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
+    });
 
     test('same txId but different vout is NOT stripped', () async {
       await buildPsbt(
