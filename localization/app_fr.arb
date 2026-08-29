@@ -5023,5 +5023,8 @@
   "announcementAppUpdateRequiredDescription": "Pour utiliser le service de paiement Lightning et de swap, veuillez mettre à jour l’application mobile BULL vers la nouvelle version.",
   "mempoolErrorNetworkMismatch": "Ce serveur est sur un autre réseau Bitcoin.",
   "swapErrorRouteUnavailable": "{fromNetwork} vers {toNetwork} n'est pas disponible.",
-  "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible."
+  "swapErrorRouteUnavailableGeneric": "Ce swap n'est pas disponible.",
+  "sendErrorSelectedCoinsUnavailable": "Un ou plusieurs coins sélectionnés ne sont plus disponibles. Vérifiez votre sélection et réessayez.",
+  "sendErrorSelectedCoinsInsufficient": "Les coins sélectionnés ne couvrent pas le montant et les frais. Sélectionnez plus de coins ou réduisez le montant.",
+  "sendErrorTransactionChanged": "Les détails de la transaction ont changé. Vérifiez le montant, la destination et les frais, puis confirmez à nouveau."
 }

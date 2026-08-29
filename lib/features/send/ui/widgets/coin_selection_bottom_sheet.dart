@@ -13,6 +13,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
+bool selectionFailureShowsWarning(SendFailure? failure) {
+  return failure is SendInsufficientBalanceFailure ||
+      failure is SendInsufficientFundsForFeesFailure ||
+      failure is SendSelectedCoinsInsufficientFailure ||
+      failure is SendSelectedCoinsUnavailableFailure;
+}
+
 class CoinSelectionBottomSheet extends StatelessWidget {
   const CoinSelectionBottomSheet({super.key});
 
@@ -66,9 +73,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     // Tied to the failure rather than to `!isAmountSufficient` so the warning
     // doesn't flash during the in-flight rebuild after every tap.
     final selectionIsShort = context.select(
-      (SendCubit send) =>
-          send.state.failure is SendInsufficientBalanceFailure ||
-          send.state.failure is SendInsufficientFundsForFeesFailure,
+      (SendCubit send) => selectionFailureShowsWarning(send.state.failure),
     );
 
     return SingleChildScrollView(
@@ -136,7 +141,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             onPressed: context.pop,
             bgColor: context.appColors.secondary,
             textColor: context.appColors.onSecondary,
-            disabled: !isAmountSufficient,
+            disabled: !isAmountSufficient || selectionIsShort,
           ),
           const Gap(24),
         ],

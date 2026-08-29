@@ -430,6 +430,19 @@ abstract class SendState with _$SendState {
   int get spendableBalanceSat =>
       (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
 
+  int get maxAvailableBalanceSat {
+    final selectedBalance = selectedUtxos.fold(
+      0,
+      (sum, utxo) => sum + utxo.amountSat.toInt(),
+    );
+    return selectedUtxos.isEmpty ? spendableBalanceSat : selectedBalance;
+  }
+
+  int get maxSpendableBalanceSat {
+    final maxAmount = maxAvailableBalanceSat - (absoluteFees ?? 0);
+    return maxAmount < 0 ? 0 : maxAmount;
+  }
+
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
