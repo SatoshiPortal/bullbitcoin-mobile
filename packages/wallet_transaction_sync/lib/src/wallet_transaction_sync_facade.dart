@@ -4,6 +4,7 @@ import 'domain/entities/wallet_transaction_sync_outcome.dart';
 import 'domain/requests/requests.dart';
 import 'domain/wallet_network_key.dart';
 import 'domain/wallet_transaction_sync_failure.dart';
+import 'data/bdk/bdk_wallet_transaction_source.dart';
 import 'data/wallet_transaction_repository_impl.dart';
 import 'domain/wallet_transaction_sync_state.dart';
 import 'domain/ports/wallet_transaction_source_port.dart';
@@ -49,6 +50,19 @@ class WalletTransactionSyncFacade {
     _watch = WatchWalletSyncStateUsecase(_repository);
     _delete = DeleteWalletUsecase(_repository);
   }
+
+  /// Composition entry for the packaged BDK Electrum adapter: the adapter
+  /// type stays internal to `src/data/`, only this factory is public.
+  factory WalletTransactionSyncFacade.bdkElectrum({
+    required WalletSyncMetadataPort metadata,
+    required WalletSourceOperationCoordinator coordinator,
+    DateTime Function()? now,
+  }) => WalletTransactionSyncFacade(
+    source: BdkWalletTransactionSource(),
+    metadata: metadata,
+    coordinator: coordinator,
+    now: now,
+  );
 
   /// Closes every state stream. For application shutdown; watchers complete
   /// and the facade must not be used for watching afterwards.

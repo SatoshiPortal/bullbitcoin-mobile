@@ -19,6 +19,7 @@ export 'src/domain/wallet_transaction_sync_failure.dart';
 export 'src/domain/ports/wallet_transaction_source_port.dart';
 export 'src/domain/wallet_network_key.dart';
 export 'src/domain/wallet_source_registration.dart';
+export 'src/domain/wallet_source_configuration.dart';
 export 'src/domain/ports/wallet_sync_metadata_port.dart';
 export 'src/wallet_source_operation_coordinator.dart';
 export 'src/wallet_source_session.dart';
