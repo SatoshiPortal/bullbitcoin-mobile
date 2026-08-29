@@ -14,6 +14,7 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/wallet_transaction_sync
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_logger
