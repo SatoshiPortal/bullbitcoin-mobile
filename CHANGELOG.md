@@ -12,7 +12,7 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ### Fixed
 
-- Fixed coin control selection, fee changes, and frozen-coin handling.
+- Fixed coin control so regular sends, MAX/drain, and transfers spend only the selected coins, reject stale or unavailable selections before broadcast, and show actionable frozen-balance and insufficient-selection errors. ([#2766](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/2766))
 - Fixed fee shortfalls in swaps and enabled Payjoin retries.
 - Fixed Passport UR fountain decoding.
 - Fixed Receive QR codes retaining Payjoin after the toggle is turned off.
