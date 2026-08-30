@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -44,29 +45,76 @@ void main() {
     final dbFile = File('${tempDirectory.path}/${model.hexId}_bdk_dart');
     expect(await dbFile.exists(), isFalse);
 
-    final created = await BdkFacade.createPublicWallet(model);
-    expect(await dbFile.exists(), isTrue);
-    created.dispose();
+    await BdkFacade.withWallet(model, (created) async {
+      expect(await dbFile.exists(), isTrue);
+    });
 
-    final loaded = await BdkFacade.createPublicWallet(model);
-    expect(loaded.network(), bdk.Network.testnet);
-    loaded.dispose();
+    await BdkFacade.withWallet(model, (loaded) {
+      expect(loaded.network(), bdk.Network.testnet);
+    });
   });
 
   test('deletion invalidates an already opened wallet persister', () async {
     final model = _publicWallet('bdk-facade-deleted-public', bip84: true);
     final dbFile = File('${tempDirectory.path}/${model.hexId}_bdk_dart');
-    final wallet = await BdkFacade.createPublicWallet(model);
-
-    await BdkFacade.delete(model);
-
-    await expectLater(
-      BdkFacade.saveWallet(wallet, model.hexId),
-      throwsStateError,
-    );
+    await BdkFacade.withWallet(model, (wallet) async {
+      await BdkFacade.delete(model);
+      await expectLater(
+        BdkFacade.saveWallet(wallet, model.hexId),
+        throwsStateError,
+      );
+    });
     expect(await dbFile.exists(), isFalse);
-    wallet.dispose();
   });
+
+  test(
+    'a retained private signer is rejected after its scope closes',
+    () async {
+      final wallet =
+          WalletModel.privateBdk(
+                id: 'bdk-facade-private-signer',
+                scriptType: ScriptType.bip84,
+                mnemonic: _mnemonic,
+                passphrase: null,
+                isTestnet: true,
+              )
+              as PrivateBdkWalletModel;
+      String Function(String)? retained;
+
+      await BdkWalletDatasource().withPsbtSigner(
+        wallet: wallet,
+        operation: (signer) async {
+          retained = signer;
+        },
+      );
+
+      expect(() => retained!('not-a-psbt'), throwsStateError);
+    },
+  );
+
+  test(
+    'a malformed internal descriptor does not leave a database handle',
+    () async {
+      final valid = _publicWallet('bdk-facade-partial-public', bip84: true);
+      final malformed =
+          WalletModel.publicBdk(
+                id: valid.id,
+                externalDescriptor: valid.externalDescriptor,
+                internalDescriptor: 'not-a-descriptor',
+                isTestnet: true,
+              )
+              as PublicBdkWalletModel;
+      final dbFile = File('${tempDirectory.path}/${malformed.hexId}_bdk_dart');
+
+      for (var attempt = 0; attempt < 20; attempt++) {
+        await expectLater(
+          BdkFacade.withWallet(malformed, (_) async {}),
+          throwsA(anything),
+        );
+        expect(await dbFile.exists(), isFalse);
+      }
+    },
+  );
 
   test('public wallet load failure preserves the existing BDK file', () async {
     final first = _publicWallet('bdk-facade-public', bip84: true);
@@ -77,7 +125,7 @@ void main() {
     final before = await dbFile.readAsBytes();
 
     await expectLater(
-      BdkFacade.createPublicWallet(incompatible),
+      BdkFacade.withWallet(incompatible, (_) async {}),
       throwsA(anything),
     );
     expect(await dbFile.exists(), isTrue);
@@ -103,7 +151,7 @@ void main() {
     final before = await dbFile.readAsBytes();
 
     await expectLater(
-      BdkFacade.createPrivateWallet(incompatible),
+      BdkFacade.withWallet(incompatible, (_) async {}),
       throwsA(anything),
     );
     expect(await dbFile.exists(), isTrue);

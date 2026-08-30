@@ -34,7 +34,7 @@ void main() {
         '_wallet.getUtxos(',
         '_wallet.createIsMineChecker(',
         '_wallet.createOutpointIsMineChecker(',
-        '_wallet.createPsbtSigner(',
+        '_wallet.withPsbtSigner(',
         '_wallet.signPsbt(',
       ],
       'lib/core/wallet/data/repositories/bitcoin_wallet_repository.dart': [
