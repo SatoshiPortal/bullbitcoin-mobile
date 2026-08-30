@@ -147,71 +147,71 @@ void main() {
             )
             as PublicBdkWalletModel;
 
-    final wallet = await BdkFacade.createWallet(walletModel);
+    await BdkFacade.withWallet(walletModel, (wallet) async {
+      receive0 = wallet
+          .revealNextAddress(keychain: bdk.KeychainKind.external_)
+          .address
+          .scriptPubkey();
+      final receive1 = wallet
+          .revealNextAddress(keychain: bdk.KeychainKind.external_)
+          .address
+          .scriptPubkey();
+      // The self-send destination: our own address, external keychain, as
+      // pasting a receive address of the same wallet would give.
+      receive2 = wallet
+          .revealNextAddress(keychain: bdk.KeychainKind.external_)
+          .address
+          .scriptPubkey();
+      change0 = wallet
+          .revealNextAddress(keychain: bdk.KeychainKind.internal)
+          .address
+          .scriptPubkey();
 
-    receive0 = wallet
-        .revealNextAddress(keychain: bdk.KeychainKind.external_)
-        .address
-        .scriptPubkey();
-    final receive1 = wallet
-        .revealNextAddress(keychain: bdk.KeychainKind.external_)
-        .address
-        .scriptPubkey();
-    // The self-send destination: our own address, external keychain, as
-    // pasting a receive address of the same wallet would give.
-    receive2 = wallet
-        .revealNextAddress(keychain: bdk.KeychainKind.external_)
-        .address
-        .scriptPubkey();
-    change0 = wallet
-        .revealNextAddress(keychain: bdk.KeychainKind.internal)
-        .address
-        .scriptPubkey();
-
-    // `getTransactions` calculates a fee for every transaction, so bdk needs
-    // the value of each input's previous output. Our funding comes from a
-    // throwaway outpoint no transaction backs, so register it as a floating
-    // txout.
-    wallet.insertTxout(
-      outpoint: bdk.OutPoint(
-        txid: bdk.Txid.fromString(hex: '00' * 32),
-        vout: 0,
-      ),
-      txout: bdk.TxOut(
-        value: bdk.Amount.fromSat(satoshi: _sourceAmountSat),
-        scriptPubkey: bdk.Address(
-          address: _externalTestnetAddress,
-          network: bdk.Network.testnet,
-        ).scriptPubkey(),
-      ),
-    );
-
-    final fundingTx = _rawTx(
-      inputs: [(txId: null, vout: 0)],
-      outputs: [
-        (script: receive0, amountSat: _fundedLargeAmountSat),
-        (script: receive1, amountSat: _fundedSmallAmountSat),
-      ],
-    );
-    fundingTxId = fundingTx.computeTxid().toString();
-
-    wallet.applyUnconfirmedTxs(
-      unconfirmedTxs: [
-        bdk.UnconfirmedTx(
-          tx: fundingTx,
-          lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      // `getTransactions` calculates a fee for every transaction, so bdk needs
+      // the value of each input's previous output. Our funding comes from a
+      // throwaway outpoint no transaction backs, so register it as a floating
+      // txout.
+      wallet.insertTxout(
+        outpoint: bdk.OutPoint(
+          txid: bdk.Txid.fromString(hex: '00' * 32),
+          vout: 0,
         ),
-      ],
-    );
+        txout: bdk.TxOut(
+          value: bdk.Amount.fromSat(satoshi: _sourceAmountSat),
+          scriptPubkey: bdk.Address(
+            address: _externalTestnetAddress,
+            network: bdk.Network.testnet,
+          ).scriptPubkey(),
+        ),
+      );
 
-    // Sanity-check the funding landed, so a failure here points at the setup.
-    expect(
-      wallet.listUnspent().length,
-      2,
-      reason: 'test setup: expected exactly 2 synthetic utxos after funding',
-    );
+      final fundingTx = _rawTx(
+        inputs: [(txId: null, vout: 0)],
+        outputs: [
+          (script: receive0, amountSat: _fundedLargeAmountSat),
+          (script: receive1, amountSat: _fundedSmallAmountSat),
+        ],
+      );
+      fundingTxId = fundingTx.computeTxid().toString();
 
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      wallet.applyUnconfirmedTxs(
+        unconfirmedTxs: [
+          bdk.UnconfirmedTx(
+            tx: fundingTx,
+            lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          ),
+        ],
+      );
+
+      // Sanity-check the funding landed, so a failure here points at the setup.
+      expect(
+        wallet.listUnspent().length,
+        2,
+        reason: 'test setup: expected exactly 2 synthetic utxos after funding',
+      );
+
+      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    });
   });
 
   tearDown(() async {
@@ -226,22 +226,24 @@ void main() {
     required List<({bdk.Script script, int amountSat})> outputs,
     List<int> spendingVouts = const [0],
   }) async {
-    final wallet = await BdkFacade.createWallet(walletModel);
-    final tx = _rawTx(
-      inputs: [
-        for (final vout in spendingVouts) (txId: fundingTxId, vout: vout),
-      ],
-      outputs: outputs,
-    );
-    wallet.applyUnconfirmedTxs(
-      unconfirmedTxs: [
-        bdk.UnconfirmedTx(
-          tx: tx,
-          lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ),
-      ],
-    );
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    final tx = await BdkFacade.withWallet(walletModel, (wallet) async {
+      final tx = _rawTx(
+        inputs: [
+          for (final vout in spendingVouts) (txId: fundingTxId, vout: vout),
+        ],
+        outputs: outputs,
+      );
+      wallet.applyUnconfirmedTxs(
+        unconfirmedTxs: [
+          bdk.UnconfirmedTx(
+            tx: tx,
+            lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          ),
+        ],
+      );
+      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      return tx;
+    });
 
     final transactions = await BdkWalletDatasource().getTransactions(
       wallet: walletModel,

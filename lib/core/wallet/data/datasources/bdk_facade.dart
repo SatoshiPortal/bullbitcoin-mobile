@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class BdkFacade {
@@ -14,17 +16,55 @@ class BdkFacade {
   );
   static final Map<String, int> _databaseGenerations = {};
 
-  static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
+  static Future<bdk.Wallet> _createWallet(WalletModel walletModel) {
     if (walletModel is PublicBdkWalletModel) {
-      return createPublicWallet(walletModel);
+      return _createPublicWallet(walletModel);
     } else if (walletModel is PrivateBdkWalletModel) {
-      return createPrivateWallet(walletModel);
+      return _createPrivateWallet(walletModel);
     } else {
       throw ArgumentError('Unsupported wallet model type');
     }
   }
 
-  static Future<bdk.Wallet> createPublicWallet(WalletModel walletModel) async {
+  /// Reconstructs a wallet for one operation and owns its persistence pair.
+  ///
+  /// The persister must outlive the wallet operation, so disposal is deliberately
+  /// ordered wallet first and persister second.
+  static Future<T> withWallet<T>(
+    WalletModel walletModel,
+    FutureOr<T> Function(bdk.Wallet wallet) operation,
+  ) async {
+    final wallet = await _createWallet(walletModel);
+    final persistence = _persisters[wallet];
+    if (persistence == null) {
+      wallet.dispose();
+      throw StateError('BDK wallet persistence owner is missing');
+    }
+    return runWithDisposal(
+      action: () => operation(wallet),
+      disposeWallet: wallet.dispose,
+      disposePersister: persistence.persister.dispose,
+    );
+  }
+
+  @visibleForTesting
+  static Future<T> runWithDisposal<T>({
+    required FutureOr<T> Function() action,
+    required void Function() disposeWallet,
+    required void Function() disposePersister,
+  }) async {
+    try {
+      return await action();
+    } finally {
+      try {
+        disposeWallet();
+      } finally {
+        disposePersister();
+      }
+    }
+  }
+
+  static Future<bdk.Wallet> _createPublicWallet(WalletModel walletModel) async {
     if (walletModel is! PublicBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
@@ -36,54 +76,57 @@ class BdkFacade {
         ? bdk.NetworkKind.test
         : bdk.NetworkKind.main;
 
-    final external = bdk.Descriptor(
-      descriptor: walletModel.externalDescriptor,
-      networkKind: networkKind,
-    );
-    final internal = bdk.Descriptor(
-      descriptor: walletModel.internalDescriptor,
-      networkKind: networkKind,
-    );
-
-    // Get the database path based on the wallet's id for uniqueness and in hex
-    // to ensure it's a valid filename
-    final dbPath = await _getDbPath(walletModel.hexId);
-    final dbFile = File(dbPath);
-    final existed = await dbFile.exists();
-
-    final dbPersister = bdk.Persister.newSqlite(path: dbPath);
+    bdk.Descriptor? external;
+    bdk.Descriptor? internal;
     try {
-      // Use load if database (wallet) exists, otherwise create new
-      final wallet = existed
-          ? bdk.Wallet.load(
-              descriptor: external,
-              changeDescriptor: internal,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            )
-          : bdk.Wallet(
-              descriptor: external,
-              changeDescriptor: internal,
-              network: network,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            );
-
-      // The Rust wallet keeps using the persister after construction. Retain
-      // the Dart owner for exactly as long as the returned wallet stays alive.
-      _persisters[wallet] = _WalletPersistence(
-        persister: dbPersister,
-        databasePath: dbPath,
-        generation: _databaseGenerations[dbPath] ?? 0,
+      external = bdk.Descriptor(
+        descriptor: walletModel.externalDescriptor,
+        networkKind: networkKind,
       );
-      return wallet;
-    } catch (_) {
-      dbPersister.dispose();
-      rethrow;
+      internal = bdk.Descriptor(
+        descriptor: walletModel.internalDescriptor,
+        networkKind: networkKind,
+      );
+      bdk.Persister? dbPersister;
+      try {
+        final dbPath = await _getDbPath(walletModel.hexId);
+        final dbFile = File(dbPath);
+        final existed = await dbFile.exists();
+        dbPersister = bdk.Persister.newSqlite(path: dbPath);
+        final wallet = existed
+            ? bdk.Wallet.load(
+                descriptor: external,
+                changeDescriptor: internal,
+                persister: dbPersister,
+                lookahead: _lookahead,
+              )
+            : bdk.Wallet(
+                descriptor: external,
+                changeDescriptor: internal,
+                network: network,
+                persister: dbPersister,
+                lookahead: _lookahead,
+              );
+
+        _persisters[wallet] = _WalletPersistence(
+          persister: dbPersister,
+          databasePath: dbPath,
+          generation: _databaseGenerations[dbPath] ?? 0,
+        );
+        return wallet;
+      } catch (_) {
+        dbPersister?.dispose();
+        rethrow;
+      }
+    } finally {
+      _disposeDescriptor(internal);
+      _disposeDescriptor(external);
     }
   }
 
-  static Future<bdk.Wallet> createPrivateWallet(WalletModel walletModel) async {
+  static Future<bdk.Wallet> _createPrivateWallet(
+    WalletModel walletModel,
+  ) async {
     if (walletModel is! PrivateBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
     }
@@ -96,83 +139,92 @@ class BdkFacade {
         : bdk.NetworkKind.main;
 
     final bdkMnemonic = bdk.Mnemonic.fromString(mnemonic: walletModel.mnemonic);
-    final secretKey = bdk.DescriptorSecretKey(
-      networkKind: networkKind,
-      mnemonic: bdkMnemonic,
-      password: walletModel.passphrase,
-    );
-
-    bdk.Descriptor? external;
-    bdk.Descriptor? internal;
-
-    switch (walletModel.scriptType) {
-      case ScriptType.bip84:
-        external = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip49:
-        external = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip44:
-        external = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.external_,
-          networkKind: networkKind,
-        );
-        internal = bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          keychainKind: bdk.KeychainKind.internal,
-          networkKind: networkKind,
-        );
-    }
-
-    // Get the database path
-    final dbPath = await _getDbPath(walletModel.hexId);
-    final dbFile = File(dbPath);
-    final existed = await dbFile.exists();
-
-    final dbPersister = bdk.Persister.newSqlite(path: dbPath);
     try {
-      // Use load if database exists, otherwise create new
-      final wallet = existed
-          ? bdk.Wallet.load(
-              descriptor: external,
-              changeDescriptor: internal,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            )
-          : bdk.Wallet(
-              descriptor: external,
-              changeDescriptor: internal,
-              network: network,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            );
-
-      _persisters[wallet] = _WalletPersistence(
-        persister: dbPersister,
-        databasePath: dbPath,
-        generation: _databaseGenerations[dbPath] ?? 0,
+      final secretKey = bdk.DescriptorSecretKey(
+        networkKind: networkKind,
+        mnemonic: bdkMnemonic,
+        password: walletModel.passphrase,
       );
-      return wallet;
-    } catch (_) {
-      dbPersister.dispose();
-      rethrow;
+      try {
+        bdk.Descriptor? external;
+        bdk.Descriptor? internal;
+
+        switch (walletModel.scriptType) {
+          case ScriptType.bip84:
+            external = bdk.Descriptor.newBip84(
+              secretKey: secretKey,
+              keychainKind: bdk.KeychainKind.external_,
+              networkKind: networkKind,
+            );
+            internal = bdk.Descriptor.newBip84(
+              secretKey: secretKey,
+              keychainKind: bdk.KeychainKind.internal,
+              networkKind: networkKind,
+            );
+          case ScriptType.bip49:
+            external = bdk.Descriptor.newBip49(
+              secretKey: secretKey,
+              keychainKind: bdk.KeychainKind.external_,
+              networkKind: networkKind,
+            );
+            internal = bdk.Descriptor.newBip49(
+              secretKey: secretKey,
+              keychainKind: bdk.KeychainKind.internal,
+              networkKind: networkKind,
+            );
+          case ScriptType.bip44:
+            external = bdk.Descriptor.newBip44(
+              secretKey: secretKey,
+              keychainKind: bdk.KeychainKind.external_,
+              networkKind: networkKind,
+            );
+            internal = bdk.Descriptor.newBip44(
+              secretKey: secretKey,
+              keychainKind: bdk.KeychainKind.internal,
+              networkKind: networkKind,
+            );
+        }
+
+        bdk.Persister? dbPersister;
+        try {
+          final dbPath = await _getDbPath(walletModel.hexId);
+          final dbFile = File(dbPath);
+          final existed = await dbFile.exists();
+          dbPersister = bdk.Persister.newSqlite(path: dbPath);
+          // Use load if database exists, otherwise create new
+          final wallet = existed
+              ? bdk.Wallet.load(
+                  descriptor: external,
+                  changeDescriptor: internal,
+                  persister: dbPersister,
+                  lookahead: _lookahead,
+                )
+              : bdk.Wallet(
+                  descriptor: external,
+                  changeDescriptor: internal,
+                  network: network,
+                  persister: dbPersister,
+                  lookahead: _lookahead,
+                );
+
+          _persisters[wallet] = _WalletPersistence(
+            persister: dbPersister,
+            databasePath: dbPath,
+            generation: _databaseGenerations[dbPath] ?? 0,
+          );
+          return wallet;
+        } catch (_) {
+          dbPersister?.dispose();
+          rethrow;
+        } finally {
+          _disposeDescriptor(internal);
+          _disposeDescriptor(external);
+        }
+      } finally {
+        secretKey.dispose();
+      }
+    } finally {
+      bdkMnemonic.dispose();
     }
   }
 
@@ -220,6 +272,8 @@ class BdkFacade {
     );
   }
 }
+
+void _disposeDescriptor(bdk.Descriptor? descriptor) => descriptor?.dispose();
 
 final class _WalletPersistence {
   final bdk.Persister persister;
