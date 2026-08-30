@@ -23,7 +23,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     session.ensureOpen();
     final configuration = _configuration(registration);
     _configurations[registration.key] = configuration;
-    final file = await _databaseFile(registration, configuration);
+    final file = File(configuration.databaseFilePath);
     if (!await file.exists()) {
       return const Err(WalletSourceStateMissingFailure());
     }
@@ -61,7 +61,8 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     session.ensureOpen();
     final configuration = _configuration(registration);
     _configurations[registration.key] = configuration;
-    final file = await _databaseFile(registration, configuration);
+    final file = File(configuration.databaseFilePath);
+    await file.parent.create(recursive: true);
     try {
       final open = await _open(registration, configuration, file, create: true);
       final wallet = open.wallet;
@@ -150,7 +151,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     if (configuration == null) {
       return const Err(WalletSourceStateMissingFailure());
     }
-    final file = await _databaseFileFromConfiguration(key, configuration);
+    final file = File(configuration.databaseFilePath);
     if (!await file.exists()) return const Ok(null);
     try {
       await file.delete();
@@ -169,23 +170,6 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     }
     return configuration;
   }
-
-  Future<File> _databaseFile(
-    WalletSourceRegistration registration,
-    BdkElectrumConfiguration configuration,
-  ) => _databaseFileFromConfiguration(registration.key, configuration);
-
-  Future<File> _databaseFileFromConfiguration(
-    WalletNetworkKey key,
-    BdkElectrumConfiguration configuration,
-  ) async {
-    final directory = Directory(configuration.databaseRootPath);
-    await directory.create(recursive: true);
-    return File('${directory.path}/${_fileName(key)}');
-  }
-
-  String _fileName(WalletNetworkKey key) =>
-      '${key.walletId}_${key.chain}_${key.network}_bdk_dart';
 
   Future<_OpenWallet> _open(
     WalletSourceRegistration registration,

@@ -65,8 +65,7 @@ void main() {
   late String fundingTxid;
 
   const key = WalletNetworkKey('bdk-adapter-test', 'bitcoin', 'testnet');
-  // Must match the adapter's persister naming contract.
-  const persisterFileName = 'bdk-adapter-test_bitcoin_testnet_bdk_dart';
+  late String databaseFilePath;
 
   (String, String) deriveDescriptors() {
     final mnemonic = bdk.Mnemonic.fromString(mnemonic: _testMnemonic);
@@ -92,9 +91,8 @@ void main() {
   /// open it, through an independent BDK instance (cross-instance
   /// persistence is part of what this proves).
   Future<String> seedFundedWallet() async {
-    final persister = bdk.Persister.newSqlite(
-      path: '${tempDir.path}/$persisterFileName',
-    );
+    await File(databaseFilePath).parent.create(recursive: true);
+    final persister = bdk.Persister.newSqlite(path: databaseFilePath);
     final external = bdk.Descriptor(
       descriptor: configuration.externalPublicDescriptor,
       networkKind: bdk.NetworkKind.test,
@@ -132,11 +130,7 @@ void main() {
       ],
     );
     expect(wallet.listUnspent(), hasLength(2), reason: 'seeding failed');
-    wallet.persist(
-      persister: bdk.Persister.newSqlite(
-        path: '${tempDir.path}/$persisterFileName',
-      ),
-    );
+    wallet.persist(persister: bdk.Persister.newSqlite(path: databaseFilePath));
     wallet.dispose();
     return txid;
   }
@@ -149,6 +143,7 @@ void main() {
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('wts_bdk_adapter_');
+    databaseFilePath = '${tempDir.path}/nested/bdk-wallet.sqlite';
     final (external, internal) = deriveDescriptors();
     configuration = BdkElectrumConfiguration(
       externalPublicDescriptor: external,
@@ -157,7 +152,7 @@ void main() {
       electrumUrls: const [],
       stopGap: 20,
       validateDomain: true,
-      databaseRootPath: tempDir.path,
+      databaseFilePath: databaseFilePath,
     );
     registration = WalletSourceRegistration.withFingerprint(
       key: key,
@@ -234,8 +229,15 @@ void main() {
         RefreshLocalSnapshotRequest(registration),
       ),
     );
-    final file = File('${tempDir.path}/$persisterFileName');
+    final file = File(databaseFilePath);
     expect(await file.exists(), isTrue);
+    expect(
+      await File(
+        '${tempDir.path}/bdk-adapter-test_bitcoin_testnet_bdk_dart',
+      ).exists(),
+      isFalse,
+      reason: 'the adapter must not derive a package-specific database path',
+    );
 
     okValue(await facade.deleteWallet(key));
     expect(await file.exists(), isFalse);
@@ -243,7 +245,7 @@ void main() {
   });
 
   test('a missing persisted wallet is a typed missing-state failure', () async {
-    await File('${tempDir.path}/$persisterFileName').delete();
+    await File(databaseFilePath).delete();
     final facade = buildBdkFacade(RecordingMetadata());
     expect(
       errFailure(
@@ -269,7 +271,7 @@ void main() {
         electrumUrls: const [],
         stopGap: 20,
         validateDomain: true,
-        databaseRootPath: tempDir.path,
+        databaseFilePath: databaseFilePath,
       );
       final replacement = WalletSourceRegistration.withFingerprint(
         key: key,
@@ -301,9 +303,17 @@ void main() {
         electrumUrls: const ['ssl://other.example:50002'],
         stopGap: 50,
         validateDomain: false,
-        databaseRootPath: '/somewhere/else',
+        databaseFilePath: '/somewhere/else/bdk-wallet.sqlite',
       );
       expect(movedConfiguration.fingerprint, configuration.fingerprint);
+      expect(
+        movedConfiguration.toMap()['databaseFilePath'],
+        '/somewhere/else/bdk-wallet.sqlite',
+      );
+      expect(
+        movedConfiguration.toMap().containsKey('databaseRootPath'),
+        isFalse,
+      );
     },
   );
 

@@ -59,7 +59,7 @@ void main() {
         electrumUrls: _electrumUrls,
         stopGap: 20,
         validateDomain: true,
-        databaseRootPath: tempDir.path,
+        databaseFilePath: '${tempDir.path}/bdk-wallet.sqlite',
       );
       const key = WalletNetworkKey('canonical-testnet', 'bitcoin', 'testnet');
       final registration = WalletSourceRegistration.withFingerprint(
