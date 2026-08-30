@@ -9,6 +9,10 @@ import 'package:path_provider/path_provider.dart';
 class BdkFacade {
   // Standard lookahead value for address discovery
   static const int _lookahead = 25;
+  static final Expando<_WalletPersistence> _persisters = Expando(
+    'bdk wallet persister',
+  );
+  static final Map<String, int> _databaseGenerations = {};
 
   static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
     if (walletModel is PublicBdkWalletModel) {
@@ -45,12 +49,12 @@ class BdkFacade {
     // to ensure it's a valid filename
     final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
+    final existed = await dbFile.exists();
 
+    final dbPersister = bdk.Persister.newSqlite(path: dbPath);
     try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
       // Use load if database (wallet) exists, otherwise create new
-      final wallet = await dbFile.exists()
+      final wallet = existed
           ? bdk.Wallet.load(
               descriptor: external,
               changeDescriptor: internal,
@@ -65,20 +69,17 @@ class BdkFacade {
               lookahead: _lookahead,
             );
 
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-      }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
+      // The Rust wallet keeps using the persister after construction. Retain
+      // the Dart owner for exactly as long as the returned wallet stays alive.
+      _persisters[wallet] = _WalletPersistence(
         persister: dbPersister,
-        lookahead: _lookahead,
+        databasePath: dbPath,
+        generation: _databaseGenerations[dbPath] ?? 0,
       );
+      return wallet;
+    } catch (_) {
+      dbPersister.dispose();
+      rethrow;
     }
   }
 
@@ -143,12 +144,12 @@ class BdkFacade {
     // Get the database path
     final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
+    final existed = await dbFile.exists();
 
+    final dbPersister = bdk.Persister.newSqlite(path: dbPath);
     try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
       // Use load if database exists, otherwise create new
-      final wallet = await dbFile.exists()
+      final wallet = existed
           ? bdk.Wallet.load(
               descriptor: external,
               changeDescriptor: internal,
@@ -163,20 +164,15 @@ class BdkFacade {
               lookahead: _lookahead,
             );
 
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-      }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
+      _persisters[wallet] = _WalletPersistence(
         persister: dbPersister,
-        lookahead: _lookahead,
+        databasePath: dbPath,
+        generation: _databaseGenerations[dbPath] ?? 0,
       );
+      return wallet;
+    } catch (_) {
+      dbPersister.dispose();
+      rethrow;
     }
   }
 
@@ -185,9 +181,23 @@ class BdkFacade {
     bdk.Wallet bdkWallet,
     String walletIdHex,
   ) async {
+    final ownedPersister = _persisters[bdkWallet];
+    if (ownedPersister != null) {
+      if ((_databaseGenerations[ownedPersister.databasePath] ?? 0) !=
+          ownedPersister.generation) {
+        throw StateError('BDK wallet persistence is no longer active');
+      }
+      bdkWallet.persist(persister: ownedPersister.persister);
+      return;
+    }
+
     final dbPath = await _getDbPath(walletIdHex);
     final persister = bdk.Persister.newSqlite(path: dbPath);
-    bdkWallet.persist(persister: persister);
+    try {
+      bdkWallet.persist(persister: persister);
+    } finally {
+      persister.dispose();
+    }
   }
 
   static Future<String> _getDbPath(String walletIdHex) async {
@@ -203,5 +213,22 @@ class BdkFacade {
     if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
 
     await dbFile.delete();
+    _databaseGenerations.update(
+      dbPath,
+      (value) => value + 1,
+      ifAbsent: () => 1,
+    );
   }
+}
+
+final class _WalletPersistence {
+  final bdk.Persister persister;
+  final String databasePath;
+  final int generation;
+
+  const _WalletPersistence({
+    required this.persister,
+    required this.databasePath,
+    required this.generation,
+  });
 }
