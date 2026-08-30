@@ -583,6 +583,51 @@ void main() {
 
     expect(events, ['sync-1', 'read-1', 'sync-2', 'read-2']);
   });
+
+  test(
+    'pushes down exact LWK lookup without requesting full history',
+    () async {
+      final metadataDatasource = _MockWalletMetadataDatasource();
+      final lwkDatasource = _MockLwkWalletDatasource();
+      final labelsFacade = _MockLabelsFacade();
+      final repository = _repository(
+        metadataDatasource: metadataDatasource,
+        bdkDatasource: _MockBdkWalletDatasource(),
+        lwkDatasource: lwkDatasource,
+        labelsFacade: labelsFacade,
+      );
+      final liquidMetadata = metadata.copyWith(id: _liquidWalletId);
+
+      when(
+        () => metadataDatasource.fetch(_liquidWalletId),
+      ).thenAnswer((_) async => liquidMetadata);
+      when(() => labelsFacade.fetchAll()).thenAnswer((_) async => []);
+      when(
+        () => lwkDatasource.getTransactions(
+          wallet: any(named: 'wallet'),
+          txId: 'tx-id',
+          toAddress: any(named: 'toAddress'),
+        ),
+      ).thenAnswer((_) async => []);
+
+      await repository.getWalletTransaction('tx-id', walletId: _liquidWalletId);
+
+      verify(
+        () => lwkDatasource.getTransactions(
+          wallet: any(named: 'wallet'),
+          txId: 'tx-id',
+          toAddress: any(named: 'toAddress'),
+        ),
+      ).called(1);
+      verifyNever(
+        () => lwkDatasource.getTransactions(
+          wallet: any(named: 'wallet'),
+          txId: null,
+          toAddress: any(named: 'toAddress'),
+        ),
+      );
+    },
+  );
 }
 
 WalletTransactionRepositoryImpl _repository({

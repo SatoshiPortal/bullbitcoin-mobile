@@ -245,7 +245,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         );
       }
       final transactions = await _lwkWalletTransactionDatasource
-          .getTransactions(wallet: wallet, toAddress: toAddress);
+          .getTransactions(wallet: wallet, txId: txId, toAddress: toAddress);
       if (txId == null) return transactions;
       return transactions
           .where((transaction) => transaction.txId == txId)
