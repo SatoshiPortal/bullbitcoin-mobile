@@ -28,7 +28,7 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
   final List<String> electrumUrls;
   final int stopGap;
   final bool validateDomain;
-  final String databaseRootPath;
+  final String databaseFilePath;
 
   const BdkElectrumConfiguration({
     required this.externalPublicDescriptor,
@@ -37,7 +37,7 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
     required this.electrumUrls,
     required this.stopGap,
     required this.validateDomain,
-    required this.databaseRootPath,
+    required this.databaseFilePath,
   });
 
   @override
@@ -54,7 +54,7 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
     'electrumUrls': electrumUrls,
     'stopGap': stopGap,
     'validateDomain': validateDomain,
-    'databaseRootPath': databaseRootPath,
+    'databaseFilePath': databaseFilePath,
   };
 
   @override
