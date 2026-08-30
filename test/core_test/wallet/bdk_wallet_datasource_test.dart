@@ -187,6 +187,7 @@ void main() {
     utxoLargeVout = 0;
 
     await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    wallet.dispose();
   });
 
   tearDown(() async {
@@ -385,4 +386,40 @@ void main() {
       );
     },
   );
+
+  test('selectTransactionAndPrevouts performs only targeted lookups', () {
+    final transactionsById = {
+      'unrelated': (txId: 'unrelated', previousTxIds: <String>[]),
+      'prevout': (txId: 'prevout', previousTxIds: <String>[]),
+      'requested': (
+        txId: 'requested',
+        previousTxIds: ['prevout', 'prevout', 'missing'],
+      ),
+    };
+    final lookups = <String>[];
+
+    final requestedTransactions = selectTransactionAndPrevouts(
+      'requested',
+      transactionById: (txId) {
+        lookups.add(txId);
+        return transactionsById[txId];
+      },
+      previousTxIdsOf: (transaction) => transaction.previousTxIds,
+    );
+    final missingTransactions = selectTransactionAndPrevouts(
+      'unknown',
+      transactionById: (txId) {
+        lookups.add(txId);
+        return transactionsById[txId];
+      },
+      previousTxIdsOf: (transaction) => transaction.previousTxIds,
+    );
+
+    expect(requestedTransactions.map((transaction) => transaction.txId), [
+      'requested',
+      'prevout',
+    ]);
+    expect(lookups, ['requested', 'prevout', 'missing', 'unknown']);
+    expect(missingTransactions, isEmpty);
+  });
 }

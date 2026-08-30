@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
-import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
@@ -447,21 +446,59 @@ class BdkWalletDatasource {
 
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
+    String? txId,
     String? toAddress,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
 
-    final transactions = bdkWallet.transactions();
-
+    final allTransactions = txId == null
+        ? bdkWallet.transactions().map((tx) {
+            final transactionId = tx.transaction.computeTxid().toString();
+            return (tx: tx, txId: transactionId);
+          }).toList()
+        : null;
+    final selectedTransactions = txId == null
+        ? null
+        : selectTransactionAndPrevouts(
+            txId,
+            transactionById: (id) {
+              try {
+                final transaction = bdkWallet.getTx(
+                  txid: bdk.Txid.fromString(hex: id),
+                );
+                return transaction == null ? null : (tx: transaction, txId: id);
+              } catch (_) {
+                return null;
+              }
+            },
+            previousTxIdsOf: (transaction) => transaction.tx.transaction
+                .input()
+                .map((input) => input.previousOutput.txid.toString()),
+          );
+    final requestedTransactions = txId == null
+        ? allTransactions!
+        : selectedTransactions!.take(1);
+    final transactionsForOutputs = txId == null
+        ? allTransactions!
+        : selectedTransactions!;
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
-      transactions,
+      transactionsForOutputs,
       wallet: wallet,
       bdkWallet: bdkWallet,
     );
-
+    final outputsByOutpoint = <String, BitcoinTransactionOutputModel>{
+      for (final output in allTransactionOutputs)
+        '${output.txId}:${output.vout}': output,
+    };
+    final outputsByTxId = <String, List<BitcoinTransactionOutputModel>>{};
+    for (final output in allTransactionOutputs) {
+      outputsByTxId.putIfAbsent(output.txId, () => []).add(output);
+    }
     // Map the transactions to WalletTransactionModel
     final List<WalletTransactionModel?> walletTxs = await Future.wait(
-      transactions.map((tx) async {
+      requestedTransactions.map((transaction) async {
+        final tx = transaction.tx;
+        final transactionId = transaction.txId;
         final (inputs, outputs) = (
           tx.transaction.input(),
           tx.transaction.output(),
@@ -490,14 +527,11 @@ class BdkWalletDatasource {
           final input = entry.value;
           final vin = entry.key;
           final previousOutput = input.previousOutput;
-          final output = allTransactionOutputs.firstWhereOrNull(
-            (output) =>
-                output.txId == previousOutput.txid.toString() &&
-                output.vout == previousOutput.vout,
-          );
+          final output =
+              outputsByOutpoint['${previousOutput.txid}:${previousOutput.vout}'];
 
           return TransactionInputModel.bitcoin(
-            txId: tx.transaction.computeTxid().toString(),
+            txId: transactionId,
             vin: vin,
             isOwn: output?.isOwn ?? false,
             scriptSig: input.scriptSig.toBytes(),
@@ -505,12 +539,7 @@ class BdkWalletDatasource {
             previousTxVout: previousOutput.vout,
           );
         }).toList();
-        final outputModels = allTransactionOutputs
-            .where(
-              (output) =>
-                  output.txId == tx.transaction.computeTxid().toString(),
-            )
-            .toList();
+        final outputModels = outputsByTxId[transactionId] ?? const [];
 
         // Check if all inputs and outputs are owned by the wallet itself
         final isToSelf =
@@ -540,7 +569,7 @@ class BdkWalletDatasource {
         );
 
         return WalletTransactionModel(
-          txId: tx.transaction.computeTxid().toString(),
+          txId: transactionId,
           isIncoming: isIncoming,
           amountSat: netAmountSat.toInt(),
           feeSat: fee.toInt(),
@@ -722,7 +751,7 @@ class BdkWalletDatasource {
   }
 
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
-    List<bdk.CanonicalTx> transactions, {
+    List<({bdk.CanonicalTx tx, String txId})> transactions, {
     required WalletModel wallet,
     required bdk.Wallet bdkWallet,
   }) async {
@@ -737,12 +766,12 @@ class BdkWalletDatasource {
 
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
-        final outputs = tx.transaction.output();
+        final outputs = tx.tx.transaction.output();
         final models = await Future.wait(
           outputs.asMap().entries.map((outputEntry) async {
             final vout = outputEntry.key;
             final output = outputEntry.value;
-            final txId = tx.transaction.computeTxid().toString();
+            final txId = tx.tx.transaction.computeTxid().toString();
             final scriptPubkeyBytes = output.scriptPubkey.toBytes();
             final address =
                 await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
@@ -751,7 +780,7 @@ class BdkWalletDatasource {
                 );
 
             return TransactionOutputModel.bitcoin(
-              txId: txId,
+              txId: tx.txId,
               vout: vout,
               isOwn: await isMine(
                 scriptPubkeyBytes,
@@ -819,6 +848,26 @@ class BdkWalletDatasource {
       ),
     );
   }
+}
+
+/// Looks up one requested transaction and only the known transactions that
+/// provide its prevouts. The requested transaction is always first.
+List<T> selectTransactionAndPrevouts<T>(
+  String txId, {
+  required T? Function(String txId) transactionById,
+  required Iterable<String> Function(T) previousTxIdsOf,
+}) {
+  final requested = transactionById(txId);
+  if (requested == null) return [];
+
+  final transactions = <T>[requested];
+  final seenTxIds = <String>{txId};
+  for (final previousTxId in previousTxIdsOf(requested)) {
+    if (!seenTxIds.add(previousTxId)) continue;
+    final previousTransaction = transactionById(previousTxId);
+    if (previousTransaction != null) transactions.add(previousTransaction);
+  }
+  return transactions;
 }
 
 // Top-level function for isolate execution
