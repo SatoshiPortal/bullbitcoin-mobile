@@ -22,6 +22,12 @@ import '../domain/wallet_transaction_sync_state.dart';
 import '../wallet_source_operation_coordinator.dart';
 import 'memory/in_memory_wallet_transaction_snapshot_store.dart';
 
+typedef _LocalRefreshFlightKey = ({
+  WalletNetworkKey key,
+  String sourceKind,
+  String configurationFingerprint,
+});
+
 final class WalletTransactionRepositoryImpl
     implements WalletTransactionRepository {
   final WalletTransactionSourcePort source;
@@ -32,6 +38,11 @@ final class WalletTransactionRepositoryImpl
   final Map<WalletNetworkKey, WalletTransactionSyncState> _states = {};
   final Map<WalletNetworkKey, StreamController<WalletTransactionSyncState>>
   _controllers = {};
+  final Map<
+    _LocalRefreshFlightKey,
+    Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
+  >
+  _localRefreshFlights = {};
 
   WalletTransactionRepositoryImpl({
     required this.source,
@@ -98,8 +109,32 @@ final class WalletTransactionRepositoryImpl
 
   @override
   Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
-  refresh(RefreshLocalSnapshotRequest request) =>
-      _run(request.registration, local: true, discover: false);
+  refresh(RefreshLocalSnapshotRequest request) {
+    final registration = request.registration;
+    final flightKey = (
+      key: registration.key,
+      sourceKind: registration.sourceKind,
+      configurationFingerprint: registration.configurationFingerprint,
+    );
+    final inFlight = _localRefreshFlights[flightKey];
+    if (inFlight != null) return inFlight;
+
+    final refresh = _run(registration, local: true, discover: false);
+    _localRefreshFlights[flightKey] = refresh;
+    void clearFlight() {
+      if (identical(_localRefreshFlights[flightKey], refresh)) {
+        _localRefreshFlights.remove(flightKey);
+      }
+    }
+
+    unawaited(
+      refresh.then<void>(
+        (_) => clearFlight(),
+        onError: (Object _, StackTrace _) => clearFlight(),
+      ),
+    );
+    return refresh;
+  }
 
   @override
   Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
