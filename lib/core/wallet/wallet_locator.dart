@@ -39,6 +39,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+    show
+        InMemoryWalletSourceOperationCoordinator,
+        WalletSourceOperationCoordinator;
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -59,12 +63,17 @@ class WalletLocator {
   }
 
   static void registerRepositories(GetIt locator) {
+    locator.registerLazySingleton<WalletSourceOperationCoordinator>(
+      InMemoryWalletSourceOperationCoordinator.new,
+    );
+
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -73,6 +82,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -82,6 +92,7 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -92,6 +103,7 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -101,6 +113,7 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
 
@@ -111,6 +124,7 @@ class WalletLocator {
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
+        coordinator: locator<WalletSourceOperationCoordinator>(),
       ),
     );
   }
