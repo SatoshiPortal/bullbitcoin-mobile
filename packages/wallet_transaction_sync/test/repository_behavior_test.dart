@@ -7,6 +7,101 @@ import 'support/fakes.dart';
 
 void main() {
   test(
+    'concurrent local initialization shares one source reconstruction',
+    () async {
+      final source = RecordingSource();
+      final facade = buildFacade(source, RecordingMetadata());
+      final release = Completer<void>();
+      final entered = Completer<void>();
+      source
+        ..pauseRefresh = release
+        ..refreshEntered = entered;
+      final states = <WalletTransactionSyncState>[];
+      final subscription = facade.watchWalletState(testKey).listen(states.add);
+
+      final refreshes = List.generate(
+        10,
+        (_) => facade.refreshLocalSnapshot(
+          const RefreshLocalSnapshotRequest(testRegistration),
+        ),
+      );
+      await entered.future;
+      expect(source.refreshCalls, 1);
+      release.complete();
+
+      final outcomes = (await Future.wait(refreshes)).map(okValue).toList();
+      expect(source.refreshCalls, 1);
+      expect(
+        outcomes.skip(1).map((outcome) => outcome.snapshot),
+        everyElement(same(outcomes.first.snapshot)),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(states.whereType<WalletStateLoadingLocal>(), hasLength(1));
+      expect(states.whereType<WalletStateReady>(), hasLength(1));
+      await subscription.cancel();
+    },
+  );
+
+  test('a failed shared local initialization can be retried', () async {
+    final source = RecordingSource()
+      ..failure = const SourceFailure(SourceFailureReason.unavailable);
+    final facade = buildFacade(source, RecordingMetadata());
+    final release = Completer<void>();
+    final entered = Completer<void>();
+    source
+      ..pauseRefresh = release
+      ..refreshEntered = entered;
+
+    final refreshes = List.generate(
+      5,
+      (_) => facade.refreshLocalSnapshot(
+        const RefreshLocalSnapshotRequest(testRegistration),
+      ),
+    );
+    await entered.future;
+    release.complete();
+    final failures = (await Future.wait(refreshes)).map(errFailure).toList();
+
+    expect(source.refreshCalls, 1);
+    expect(failures, everyElement(isA<SourceFailure>()));
+    source.failure = null;
+    okValue(
+      await facade.refreshLocalSnapshot(
+        const RefreshLocalSnapshotRequest(testRegistration),
+      ),
+    );
+    expect(source.refreshCalls, 2);
+  });
+
+  test('different registrations do not share a local initialization', () async {
+    final source = RecordingSource();
+    final facade = buildFacade(source, RecordingMetadata());
+    final release = Completer<void>();
+    final entered = Completer<void>();
+    source
+      ..pauseRefresh = release
+      ..refreshEntered = entered;
+    const otherRegistration = WalletSourceRegistration(
+      key: testKey,
+      sourceKind: 'fake',
+      configurationFingerprint: 'other',
+    );
+
+    final first = facade.refreshLocalSnapshot(
+      const RefreshLocalSnapshotRequest(testRegistration),
+    );
+    await entered.future;
+    final second = facade.refreshLocalSnapshot(
+      const RefreshLocalSnapshotRequest(otherRegistration),
+    );
+    release.complete();
+    okValue(await first);
+    okValue(await second);
+
+    expect(source.refreshCalls, 2);
+  });
+
+  test(
     'the previous revision stays readable during an in-flight sync',
     () async {
       final source = RecordingSource();

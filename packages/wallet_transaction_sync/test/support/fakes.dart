@@ -39,6 +39,8 @@ class RecordingSource implements WalletTransactionSourcePort {
   int syncCalls = 0;
   int deleteCalls = 0;
   int deleteFailuresRemaining = 0;
+  Completer<void>? pauseRefresh;
+  Completer<void>? refreshEntered;
   Completer<void>? pauseSync;
   Completer<void>? syncEntered;
 
@@ -67,6 +69,13 @@ class RecordingSource implements WalletTransactionSourcePort {
   ) async {
     session.ensureOpen();
     refreshCalls++;
+    refreshEntered?.complete();
+    refreshEntered = null;
+    final pause = pauseRefresh;
+    if (pause != null) {
+      pauseRefresh = null;
+      await pause.future;
+    }
     final currentFailure = failure;
     return currentFailure == null
         ? Ok(_observation(registration))
