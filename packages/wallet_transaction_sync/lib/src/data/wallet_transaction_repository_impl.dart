@@ -428,11 +428,44 @@ final class WalletTransactionRepositoryImpl
     'txid': transaction.txid,
     'amount': transaction.amountSats,
     'fee': transaction.feeSats,
+    'inputCount': transaction.inputCount,
+    'outputCount': transaction.outputCount,
+    'direction': transaction.direction?.name,
+    'selfTransfer': transaction.selfTransfer,
+    'vsize': transaction.vsize,
     'inputs': transaction.inputs
-        .map((input) => {'txid': input.txid, 'vout': input.vout})
+        .map(
+          (input) => {
+            'txid': input.txid,
+            'vout': input.vout,
+            'originalIndex': input.originalIndex,
+            'value': input.value,
+            'assetId': input.assetId,
+            'script': input.script,
+            'standardAddress': input.standardAddress,
+            'confidentialAddress': input.confidentialAddress,
+            'height': input.height,
+            'isSpent': input.isSpent,
+            'chain': input.chain?.name,
+          },
+        )
         .toList(),
     'outputs': transaction.outputs
-        .map((output) => {'value': output.valueSats, 'script': output.script})
+        .map(
+          (output) => {
+            'value': output.valueSats,
+            'txid': output.txid,
+            'vout': output.vout,
+            'script': output.script,
+            'originalIndex': output.originalIndex,
+            'assetId': output.assetId,
+            'standardAddress': output.standardAddress,
+            'confidentialAddress': output.confidentialAddress,
+            'height': output.height,
+            'isSpent': output.isSpent,
+            'chain': output.chain?.name,
+          },
+        )
         .toList(),
     'position': _positionData(transaction.position),
     'evidence': transaction.evidence,

@@ -7,7 +7,7 @@ import 'support/fakes.dart';
 /// Byte-level contract: any change to the canonical encoding is a breaking
 /// change of the receipt/reconstruction contract and must be intentional.
 const goldenFingerprint =
-    '6297aea455c4e909dd5ed38c2fcba50234febcc5e832b73a97bbdbca6e8007e5';
+    '55bc5dd6808a596d4e71df7d16411919a3ee4ee0231ca6434969c019f48c3327';
 
 WalletTransaction goldenTransaction() => WalletTransaction(
   txid: 'aa11',
@@ -179,5 +179,107 @@ void main() {
       withDetails(const {'b': 2, 'a': 1}),
     ]);
     expect(reversed, ordered);
+  });
+
+  test('every Liquid projection field changes the fingerprint', () async {
+    TransactionInput input({
+      int originalIndex = 1,
+      int value = 100,
+      String assetId = 'asset',
+      String script = '0014input',
+      String standardAddress = 'standard-input',
+      String confidentialAddress = 'confidential-input',
+      int height = 10,
+      bool isSpent = false,
+      TransactionChain chain = TransactionChain.external,
+    }) => TransactionInput(
+      txid: 'previous',
+      vout: 2,
+      originalIndex: originalIndex,
+      value: value,
+      assetId: assetId,
+      script: script,
+      standardAddress: standardAddress,
+      confidentialAddress: confidentialAddress,
+      height: height,
+      isSpent: isSpent,
+      chain: chain,
+    );
+    TransactionOutput output({
+      String txid = 'liquid',
+      int vout = 2,
+      int originalIndex = 2,
+      String assetId = 'asset',
+      String standardAddress = 'standard-output',
+      String confidentialAddress = 'confidential-output',
+      int height = 11,
+      bool isSpent = false,
+      TransactionChain chain = TransactionChain.external,
+    }) => TransactionOutput(
+      valueSats: 90,
+      txid: txid,
+      vout: vout,
+      script: '0014output',
+      originalIndex: originalIndex,
+      assetId: assetId,
+      standardAddress: standardAddress,
+      confidentialAddress: confidentialAddress,
+      height: height,
+      isSpent: isSpent,
+      chain: chain,
+    );
+    WalletTransaction transaction({
+      TransactionInput? mappedInput,
+      TransactionOutput? mappedOutput,
+      int inputCount = 3,
+      int outputCount = 4,
+      TransactionDirection direction = TransactionDirection.outgoing,
+      bool selfTransfer = false,
+      int vsize = 123,
+    }) => WalletTransaction(
+      txid: 'liquid',
+      amountSats: 10,
+      feeSats: 1,
+      inputs: [mappedInput ?? input()],
+      outputs: [mappedOutput ?? output()],
+      inputCount: inputCount,
+      outputCount: outputCount,
+      direction: direction,
+      selfTransfer: selfTransfer,
+      vsize: vsize,
+      position: const UnknownPosition(),
+    );
+
+    final variants = [
+      transaction(),
+      transaction(inputCount: 4),
+      transaction(outputCount: 5),
+      transaction(direction: TransactionDirection.incoming),
+      transaction(selfTransfer: true),
+      transaction(vsize: 124),
+      transaction(mappedInput: input(originalIndex: 2)),
+      transaction(mappedInput: input(value: 101)),
+      transaction(mappedInput: input(assetId: 'other')),
+      transaction(mappedInput: input(script: 'other')),
+      transaction(mappedInput: input(standardAddress: 'other')),
+      transaction(mappedInput: input(confidentialAddress: 'other')),
+      transaction(mappedInput: input(height: 12)),
+      transaction(mappedInput: input(isSpent: true)),
+      transaction(mappedInput: input(chain: TransactionChain.internal)),
+      transaction(mappedOutput: output(originalIndex: 3)),
+      transaction(mappedOutput: output(txid: 'other')),
+      transaction(mappedOutput: output(vout: 3)),
+      transaction(mappedOutput: output(assetId: 'other')),
+      transaction(mappedOutput: output(standardAddress: 'other')),
+      transaction(mappedOutput: output(confidentialAddress: 'other')),
+      transaction(mappedOutput: output(height: 12)),
+      transaction(mappedOutput: output(isSpent: true)),
+      transaction(mappedOutput: output(chain: TransactionChain.internal)),
+    ];
+    final fingerprints = <String>{
+      for (final variant in variants) await publishedFingerprint([variant]),
+    };
+
+    expect(fingerprints, hasLength(variants.length));
   });
 }
