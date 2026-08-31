@@ -63,6 +63,10 @@ final class WalletUnexpectedFailure extends WalletFailure {
   const WalletUnexpectedFailure([super.logMessage]);
 }
 
+final class Bip48AccountAllocationFailure extends WalletFailure {
+  const Bip48AccountAllocationFailure([super.logMessage]);
+}
+
 enum BitcoinSigningFailureKind {
   invalidPsbt,
   walletMismatch,

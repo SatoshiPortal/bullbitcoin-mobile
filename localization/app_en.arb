@@ -15970,7 +15970,7 @@
   },
   "walletDetailsRelativeDaysCondition": "This condition becomes available for each coin {count, plural, =1{1 day} other{{count} days}} after it is confirmed",
   "walletDetailsLegacyP2sh": "Legacy (P2SH)",
-  "signingKeyExportAccountHelp": "Use a different account number when you need a separate key for another wallet.",
+  "signingKeyExportAccountHelp": "Use a different account for each separate wallet. After adding this key to a wallet, mark the account as used.",
   "signingKeyExportAccount": "Account",
   "@walletDetailsKeyLabel": {
     "description": "Heading for one of multiple keys belonging to a signer",
@@ -16633,5 +16633,29 @@
     "description": "Shown when a PSBT combines Taproot input spend modes that Bull cannot safely sign in one operation."
   },
   "sendErrorUnsupportedPolicyPath": "This Taproot spending option isn’t supported yet. Choose another option.",
-  "psbtSigningUnsupportedSpendMode": "This PSBT mixes Taproot key-path and script-path inputs, which Bull cannot sign together yet."
+  "psbtSigningUnsupportedSpendMode": "This PSBT mixes Taproot key-path and script-path inputs, which Bull cannot sign together yet.",
+  "signingKeyExportAccountMarked": "Account {account} is marked as used. Account {nextAccount} is ready for another wallet.",
+  "signingKeyExportAccountUsed": "This account is already marked as used. Reuse it only if you intend to use the same key again.",
+  "@signingKeyExportAccountMarked": {
+    "description": "Confirmation after reserving a manually exported signing-key account",
+    "placeholders": {
+      "account": {
+        "type": "int"
+      },
+      "nextAccount": {
+        "type": "int"
+      }
+    }
+  },
+  "@signingKeyExportMarkUsed": {
+    "description": "Action confirming that the displayed Bull signing key was added to a wallet"
+  },
+  "signingKeyExportMarkUsed": "I used this key",
+  "@signingKeyExportAccountUsed": {
+    "description": "Warning shown when the selected BIP48 signing-key account is already reserved"
+  },
+  "@signingKeyExportShowDetails": {
+    "description": "Action to deliberately reveal a signing key for an account already marked as used"
+  },
+  "signingKeyExportShowDetails": "Show key details"
 }
