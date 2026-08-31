@@ -5,6 +5,8 @@ import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaim
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_registration_options_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/signing_key_account_session.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_account_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_wallet_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -28,11 +30,13 @@ import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton(SettingsEntryRegistry.new);
     // Usecases
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
@@ -128,12 +132,6 @@ class SettingsLocator {
     locator.registerFactory<WatchPayjoinPolicyUsecase>(
       () => WatchPayjoinPolicyUsecase(locator<PayjoinPolicyAccess>()),
     );
-    locator.registerFactory<ExportSigningKeyUsecase>(
-      () => ExportSigningKeyUsecase(
-        getDefaultSeedUsecase: locator(),
-        getSettingsUsecase: locator(),
-      ),
-    );
     locator.registerFactory<GetWalletPolicyUsecase>(
       () => GetWalletPolicyUsecase(bitcoinSigningPort: locator()),
     );
@@ -148,6 +146,7 @@ class SettingsLocator {
       () => SettingsFacade(
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
         watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
+        entryRegistry: locator<SettingsEntryRegistry>(),
       ),
     );
 
@@ -175,9 +174,19 @@ class SettingsLocator {
             locator<SetPayjoinExpireAfterSecUsecase>(),
       ),
     );
-    locator.registerFactory<SigningKeyExportCubit>(
-      () => SigningKeyExportCubit(exportSigningKeyUsecase: locator()),
-    );
+    locator.registerFactory<SigningKeyExportCubit>(() {
+      final accountSession = SigningKeyAccountSession(locator());
+      return SigningKeyExportCubit(
+        exportSigningKeyUsecase: ExportSigningKeyUsecase(
+          accountSession,
+          getDefaultSeedUsecase: locator(),
+          getSettingsUsecase: locator(),
+        ),
+        releaseSigningKeyAccountUsecase: ReleaseSigningKeyAccountUsecase(
+          accountSession,
+        ),
+      );
+    });
     locator.registerFactory<WalletDetailsCubit>(
       () => WalletDetailsCubit(
         getWalletPolicyUsecase: locator(),
