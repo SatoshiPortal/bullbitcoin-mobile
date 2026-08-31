@@ -164,6 +164,12 @@ class SwapConfirmPage extends StatelessWidget {
                     buildTransactionException: buildTransactionException,
                     swapFailureMessage: swapFailure?.toTranslated(context),
                     buildFailureMessage: context.loc.sendErrorBuildFailed,
+                    selectedCoinsUnavailableMessage:
+                        context.loc.sendErrorSelectedCoinsUnavailable,
+                    selectedCoinsInsufficientMessage:
+                        context.loc.sendErrorSelectedCoinsInsufficient,
+                    transactionChangedMessage:
+                        context.loc.sendErrorTransactionChanged,
                   ),
                 ),
               ],

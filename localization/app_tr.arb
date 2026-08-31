@@ -2095,10 +2095,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "Pasaport cüzdanınız için bir etiket girin ve \"İmport\"a tıklayın",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -4702,7 +4698,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "\"Connect Wallet\" seçin",
+  "importQrDevicePassportStep4": "\"Connect App\" seçin",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4865,7 +4861,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "\"QR Code\" seçin",
+  "importQrDevicePassportStep7": "BULL cüzdan uygulamasında türetme seçeneği olarak \"Segwit (BIP84)\" seçin",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -5713,10 +5709,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "BULL cüzdan uygulamasında, \"Segwit (BIP84)\" nüans seçeneği olarak seçin",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "Yüksek",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -5795,7 +5787,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "importQrDevicePassportStep1": "Pasaport cihazınızda güç",
+  "importQrDevicePassportStep1": "Passport cihazınızı açın",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -6406,7 +6398,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "Pasaport kodunuzu pasaportunuzda görüntüleyin",
+  "importQrDevicePassportStep9": "Kurulum tamamlandı.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6689,7 +6681,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "\"Single-sig\" seçin",
+  "importQrDevicePassportStep6": "Passport cihazınızda görüntülenen QR kodunu tarayın",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -8375,7 +8367,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "\"Sparrow\" seçeneği seçin",
+  "importQrDevicePassportStep5": "\"Bull\" seçin",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -8490,7 +8482,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "\"Manage Hesabı\" seçin",
+  "importQrDevicePassportStep3": "\"Wallet\" seçin",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -8752,7 +8744,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "Mobil cihazınızda, \"open kamera\" tıklayın",
+  "importQrDevicePassportStep8": "Passport cüzdanınız için bir etiket girin ve \"İthalat\"a dokunun",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9818,10 +9810,6 @@
   "autoswapInfoDismissButton": "Got it, don't show again",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "Tamamlayın.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "IBAN hesabı numarası (yalnızca ABD doları için)",
   "@fundExchangeLabelIbanUsdOnly": {

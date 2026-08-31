@@ -44,4 +44,18 @@ class Label {
       origin: origin,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Label &&
+          other.runtimeType == runtimeType &&
+          other.id == id &&
+          other.type == type &&
+          other.label == label &&
+          other.reference == reference &&
+          other.origin == origin;
+
+  @override
+  int get hashCode => Object.hash(id, type, label, reference, origin);
 }

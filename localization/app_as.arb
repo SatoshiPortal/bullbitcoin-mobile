@@ -6396,45 +6396,33 @@
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "\"Manage Account\" বাছনি কৰক",
+  "importQrDevicePassportStep3": "\"Wallet\" বাছনি কৰক",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "\"Connect Wallet\" বাছনি কৰক",
+  "importQrDevicePassportStep4": "\"Connect App\" বাছনি কৰক",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "\"Sparrow\" বিকল্প বাছনি কৰক",
+  "importQrDevicePassportStep5": "\"Bull\" বাছনি কৰক",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "\"Single-sig\" বাছনি কৰক",
+  "importQrDevicePassportStep6": "আপোনাৰ Passport ত প্ৰদৰ্শিত QR code স্কেন কৰক",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "\"QR Code\" বাছনি কৰক",
+  "importQrDevicePassportStep7": "BULL wallet এপত, derivation বিকল্প হিচাপে \"Segwit (BIP84)\" বাছনি কৰক",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "আপোনাৰ মোবাইল ডিভাইচত, \"open camera\" টেপ কৰক",
+  "importQrDevicePassportStep8": "আপোনাৰ Passport wallet ৰ বাবে এটা label দিয়ক আৰু \"আমদানি কৰক\" টেপ কৰক",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "আপোনাৰ Passport ত প্ৰদৰ্শিত QR code স্কেন কৰক",
+  "importQrDevicePassportStep9": "ছেটআপ সম্পন্ন।",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
-  },
-  "importQrDevicePassportStep10": "BULL wallet এপত, derivation বিকল্প হিচাপে \"Segwit (BIP84)\" বাছনি কৰক",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
-  "importQrDevicePassportStep11": "আপোনাৰ Passport wallet ৰ বাবে এটা label দিয়ক আৰু \"Import\" টেপ কৰক",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
-  "importQrDevicePassportStep12": "ছেটআপ সম্পন্ন।",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {

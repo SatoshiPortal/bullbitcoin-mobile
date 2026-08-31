@@ -108,6 +108,7 @@ class TransactionDetailsTable extends StatelessWidget {
                     txId,
                     style: TextStyle(color: context.appColors.primary),
                     isTestnet: isTestnet,
+                    explorerUrlFragment: transaction?.payjoinOwnershipFragment,
                   ),
           ),
 

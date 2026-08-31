@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -94,6 +95,13 @@ class BitcoinWalletRepository implements BitcoinSendPort {
           (utxo) => !unspendableKeys.contains('${utxo.txId}:${utxo.vout}'),
         )
         .toList();
+    if (selected != null &&
+        selected.isNotEmpty &&
+        spendableSelected!.length != selected.length) {
+      throw NoSpendableUtxoException(
+        'At least one selected UTXO is unspendable',
+      );
+    }
 
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -42,6 +43,10 @@ sealed class WalletUtxo with _$WalletUtxo {
   }) = LiquidWalletUtxo;
 
   const WalletUtxo._();
+
+  /// Use this to ask "same coin?". `==` also compares labels and
+  /// confirmations, which change between reads.
+  Outpoint get outpoint => (txId: txId, vout: vout);
 
   String get address => switch (this) {
     BitcoinWalletUtxo(:final address) => address,

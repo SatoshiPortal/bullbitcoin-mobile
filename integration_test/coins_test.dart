@@ -10,10 +10,12 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -126,7 +128,10 @@ Future<void> main({bool isInitialized = false}) async {
   // is provided. Without it the structure compiles and is skipped — never
   // silently omitted.
   // -------------------------------------------------------------------------
-  final mnemonic = Platform.environment['TEST_ALICE_MNEMONIC'];
+  const mnemonicDefine = String.fromEnvironment('TEST_ALICE_MNEMONIC');
+  final mnemonic = mnemonicDefine.isNotEmpty
+      ? mnemonicDefine
+      : Platform.environment['TEST_ALICE_MNEMONIC'];
   final hasFunds = mnemonic != null && mnemonic.isNotEmpty;
 
   group(
@@ -187,6 +192,75 @@ Future<void> main({bool isInitialized = false}) async {
           // always present (possibly empty) — assert the contract, not content.
           expect(utxo.labels, isNotNull);
         }
+      });
+
+      test('a manual drain spends exactly the selected outpoint', () async {
+        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
+        final spendable = utxos.where((utxo) => !utxo.isFrozen).toList();
+        if (spendable.length < 2) {
+          markTestSkipped('requires at least two testnet UTXOs');
+          return;
+        }
+        final selected = spendable.reduce(
+          (largest, candidate) =>
+              candidate.amountSat > largest.amountSat ? candidate : largest,
+        );
+        final receive = await addressRepository.generateNewReceiveAddress(
+          walletId: wallet.id,
+        );
+
+        final prepared = await prepareBitcoinSendUsecase.execute(
+          walletId: wallet.id,
+          address: receive.address,
+          drain: true,
+          selectedInputs: [selected],
+          networkFee: NetworkFee.relativeFromSatPerVbyte(2),
+        );
+
+        final inputs = bdk.Psbt(
+          psbtBase64: prepared.unsignedPsbt,
+        ).extractTx().input();
+        expect(inputs, hasLength(1));
+        expect(inputs.single.previousOutput.txid.toString(), selected.txId);
+        expect(inputs.single.previousOutput.vout, selected.vout);
+      });
+
+      test('a partly frozen manual selection fails closed', () async {
+        final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
+        final spendable = utxos.where((utxo) => !utxo.isFrozen).toList();
+        if (spendable.length < 2) {
+          markTestSkipped('requires at least two testnet UTXOs');
+          return;
+        }
+        final selection = spendable.take(2).toList();
+        final frozenOutpoint = (
+          txId: selection.first.txId,
+          vout: selection.first.vout,
+        );
+        await utxoRepository.freezeUtxos(
+          walletId: wallet.id,
+          outpoints: [frozenOutpoint],
+        );
+        addTearDown(
+          () => utxoRepository.unfreezeUtxos(
+            walletId: wallet.id,
+            outpoints: [frozenOutpoint],
+          ),
+        );
+        final receive = await addressRepository.generateNewReceiveAddress(
+          walletId: wallet.id,
+        );
+
+        await expectLater(
+          prepareBitcoinSendUsecase.execute(
+            walletId: wallet.id,
+            address: receive.address,
+            drain: true,
+            selectedInputs: selection,
+            networkFee: NetworkFee.relativeFromSatPerVbyte(2),
+          ),
+          throwsA(isA<InsufficientFundsException>()),
+        );
       });
 
       test('frozen coins are excluded from every PSBT build (D7)', () async {

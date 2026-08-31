@@ -4954,6 +4954,8 @@
   "statusCheckNoDefaultWalletError": "Aucun portefeuille Bitcoin par défaut trouvé. Veuillez définir un portefeuille par défaut et réessayer.",
   "statusCheckResultsMayBeOutdated": "Les résultats peuvent être obsolètes",
   "onboardingBackupVerificationError": "Votre portefeuille a été récupéré, mais la vérification de la sauvegarde n'a pas pu être complétée. Veuillez réessayer.",
+  "sendErrorSelectedCoinsUnavailable": "Un ou plusieurs coins sélectionnés ne sont plus disponibles. Vérifiez votre sélection et réessayez.",
+  "sendErrorSelectedCoinsInsufficient": "Les coins sélectionnés ne couvrent pas le montant et les frais. Sélectionnez plus de coins ou réduisez le montant.",
   "psbtFlowInvalidPsbtError": "Cette transaction n'a pas pu être lue. Retournez en arrière et créez-la à nouveau.",
   "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR."
 }
