@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
+import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_usage.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'dart:convert';
@@ -163,6 +166,31 @@ class WalletRepository
     if (network == Network.bitcoinRegtest && scriptType != ScriptType.bip84) {
       throw const UnsupportedWalletScriptException();
     }
+  }
+
+  @override
+  Future<List<Bip48AccountUsage>> getBip48AccountUsages() async {
+    final wallets = await _walletMetadataDatasource.fetchAll();
+    return [
+      for (final wallet in wallets)
+        if (wallet.network.isBitcoin)
+          for (final signer in wallet.signers)
+            for (final key in signer.descriptorKeys)
+              if (key.derivationPath case final path?)
+              if (Bip48Derivation.account(
+                    path,
+                    coinType: wallet.network.coinType,
+                  )
+                  case final account?)
+                Bip48AccountUsage(
+                  seedFingerprint: key.masterFingerprint.toLowerCase(),
+                  localSeedFingerprint: signer.localSeedFingerprint,
+                  coinType: wallet.network.coinType,
+                  account: account,
+                  derivationPath: path,
+                  xpub: key.xpub,
+                ),
+    ];
   }
 
   Future<Wallet> createWallet({

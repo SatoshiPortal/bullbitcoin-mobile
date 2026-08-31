@@ -96,3 +96,7 @@ final class BitcoinSigningFailure extends WalletFailure {
 
   const BitcoinSigningFailure(this.kind, [super.logMessage]);
 }
+
+final class Bip48AccountAllocationFailure extends WalletFailure {
+  const Bip48AccountAllocationFailure([super.logMessage]);
+}
