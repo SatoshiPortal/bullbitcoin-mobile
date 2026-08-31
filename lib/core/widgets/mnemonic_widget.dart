@@ -764,27 +764,29 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       builder: (context, _) {
         if (_activeField.value == null) return const SizedBox.shrink();
         final paranoid = _paranoid.value;
-        return ExcludeFocus(
-          child: Material(
-            color: context.appColors.surfaceContainer,
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    // Suggestions stay visible in paranoid mode; they are only
-                    // shuffled (see _buildHintsList), so an onlooker cannot map
-                    // a chip position to a word either. ExcludeSemantics: the
-                    // chips are plain-text word candidates — an accessibility
-                    // service must not read them any more than the keys.
-                    child: ExcludeSemantics(
-                      child: _buildHintsList(paranoid: paranoid),
+        return TextFieldTapRegion(
+          child: ExcludeFocus(
+            child: Material(
+              color: context.appColors.surfaceContainer,
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      // Suggestions stay visible in paranoid mode; they are only
+                      // shuffled (see _buildHintsList), so an onlooker cannot map
+                      // a chip position to a word either. ExcludeSemantics: the
+                      // chips are plain-text word candidates — an accessibility
+                      // service must not read them any more than the keys.
+                      child: ExcludeSemantics(
+                        child: _buildHintsList(paranoid: paranoid),
+                      ),
                     ),
-                  ),
-                  _buildKeyboard(),
-                ],
+                    _buildKeyboard(),
+                  ],
+                ),
               ),
             ),
           ),
