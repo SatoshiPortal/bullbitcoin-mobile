@@ -10,7 +10,7 @@ enum ImportWalletRoute {
 }
 
 class ImportWalletRouter {
-  static final route = GoRoute(
+  static GoRoute get route => GoRoute(
     name: ImportWalletRoute.importWalletHome.name,
     path: ImportWalletRoute.importWalletHome.path,
     builder: (context, state) => const ImportWalletPage(),

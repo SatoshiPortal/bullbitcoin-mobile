@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_account_key_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/sign_psbt_bitbox_usecase.dart';
@@ -397,6 +398,32 @@ void main() {
         expect((result as Err).failure, isA<BitBoxUnexpectedFailure>());
       },
     );
+  });
+
+  test('reads the requested account key with its verified origin', () async {
+    const path = "m/48'/1'/0'/2'";
+    final repository = _MockRepository();
+    final usecase = GetBitBoxAccountKeyUsecase(repository);
+    when(
+      () => repository.getMasterFingerprint(_device),
+    ).thenAnswer((_) async => const Ok('AABBCCDD'));
+    when(
+      () => repository.getXpub(
+        _device,
+        derivationPath: path,
+        scriptType: ScriptType.bip44,
+        isTestnet: true,
+      ),
+    ).thenAnswer((_) async => const Ok(_otherXpub));
+
+    final result = await usecase.execute(
+      device: _device,
+      derivationPath: path,
+      isTestnet: true,
+    );
+
+    expect(result, isA<Ok>());
+    expect((result as Ok).value, '[aabbccdd/48\'/1\'/0\'/2\']$_otherXpub');
   });
 
   group('ScanBitBoxDevicesUsecase', () {

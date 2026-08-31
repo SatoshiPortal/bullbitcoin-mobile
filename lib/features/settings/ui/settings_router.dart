@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -277,12 +278,14 @@ class SettingsRouter {
         name: SettingsRoute.walletRegistration.name,
         builder: (context, state) {
           final walletId = state.pathParameters['walletId']!;
-          final wallet = context
-              .read<WalletBloc>()
-              .state
-              .wallets
-              .where((wallet) => wallet.id == walletId)
-              .firstOrNull;
+          final wallet = state.extra is Wallet
+              ? state.extra! as Wallet
+              : context
+                    .read<WalletBloc>()
+                    .state
+                    .wallets
+                    .where((wallet) => wallet.id == walletId)
+                    .firstOrNull;
           if (wallet == null) {
             return const WalletRegistrationWalletNotFoundScreen();
           }

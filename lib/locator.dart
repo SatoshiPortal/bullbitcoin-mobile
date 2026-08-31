@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/bitbox/bitbox_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/locator.dart';
 import 'package:bb_mobile/features/buy/buy_locator.dart';
+import 'package:bb_mobile/features/bullvault/bullvault_locator.dart';
 import 'package:bb_mobile/features/coins/coins_locator.dart';
 import 'package:bb_mobile/features/consolidation/consolidation_locator.dart';
 import 'package:bb_mobile/features/dca/dca_locator.dart';
@@ -180,6 +181,7 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
+    BullVaultLocator.setup(locator);
   }
 }
 

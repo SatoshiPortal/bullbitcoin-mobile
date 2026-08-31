@@ -27,9 +27,10 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
@@ -38,6 +39,7 @@ class WalletRepository
     implements
         BitcoinDescriptorPort,
         WalletBackupMetadataPort,
+        WalletVisibilityPort,
         WalletSignerDevicePort,
         Bip48AccountUsagePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -228,6 +230,7 @@ class WalletRepository
     required Network network,
     required String label,
     List<WalletSigner> signers = const [],
+    bool isHidden = false,
     bool sync = false,
   }) async {
     _requireBitcoinNetwork(network);
@@ -247,6 +250,7 @@ class WalletRepository
       ).map((signer) => signer.toModel()).toList(),
       publicDescriptor: parsed.descriptor,
       isDefault: false,
+      isHidden: isHidden,
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: label,
@@ -405,6 +409,18 @@ class WalletRepository
         latestEncryptedBackup: latestEncryptedBackup?.millisecondsSinceEpoch,
         latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
       ),
+    );
+  }
+
+  @override
+  Future<void> setHidden({
+    required String walletId,
+    required bool isHidden,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw WalletError.notFound(walletId);
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(isHidden: isHidden),
     );
   }
 
@@ -581,6 +597,7 @@ class WalletRepository
     label: metadata.label,
     network: metadata.network,
     isDefault: metadata.isDefault,
+    isHidden: metadata.isHidden,
     signers: metadata.signers.map((signer) => signer.toEntity()).toList(),
     scriptType: metadata.inferredScriptType,
     publicDescriptor: metadata.publicDescriptor,

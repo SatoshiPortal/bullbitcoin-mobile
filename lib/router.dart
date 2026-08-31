@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
@@ -181,6 +182,7 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
+      BullVaultRouter.route,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,

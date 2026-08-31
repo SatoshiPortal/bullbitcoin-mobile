@@ -19,10 +19,12 @@ class ImportColdcardPage extends StatelessWidget {
   };
 
   final SignerDeviceEntity signerDevice;
+  final String? accountKeyDerivationPath;
 
   factory ImportColdcardPage({
     Key? key,
     required SignerDeviceEntity signerDevice,
+    String? accountKeyDerivationPath,
   }) {
     if (!_supportedDevices.contains(signerDevice)) {
       throw ArgumentError.value(
@@ -32,13 +34,25 @@ class ImportColdcardPage extends StatelessWidget {
       );
     }
 
-    return ImportColdcardPage._(key: key, signerDevice: signerDevice);
+    return ImportColdcardPage._(
+      key: key,
+      signerDevice: signerDevice,
+      accountKeyDerivationPath: accountKeyDerivationPath,
+    );
   }
 
-  const ImportColdcardPage._({super.key, required this.signerDevice});
+  const ImportColdcardPage._({
+    super.key,
+    required this.signerDevice,
+    this.accountKeyDerivationPath,
+  });
 
   void _handleNfcData(BuildContext context, String payload) {
     if (!context.mounted) return;
+    if (accountKeyDerivationPath != null) {
+      context.pop(payload);
+      return;
+    }
     context.replaceNamed(
       ImportWatchOnlyWalletRoutes.import.name,
       extra: (input: payload, signerDevice: signerDevice),
@@ -60,10 +74,15 @@ class ImportColdcardPage extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             BBText(
-              context.loc.importColdcardConnectDescription(deviceName),
+              accountKeyDerivationPath == null
+                  ? context.loc.importColdcardConnectDescription(deviceName)
+                  : context.loc.bullVaultDeviceKeyPath(
+                      deviceName,
+                      accountKeyDerivationPath!,
+                    ),
               style: context.font.bodyLarge,
               textAlign: .center,
-              maxLines: 2,
+              maxLines: 4,
             ),
 
             Gap(Device.screen.height * 0.05),
@@ -127,6 +146,10 @@ class ImportColdcardPage extends StatelessWidget {
       extra: signerDevice,
     );
     if (input == null || !context.mounted) return;
+    if (accountKeyDerivationPath != null) {
+      context.pop(input);
+      return;
+    }
     await context.pushNamed(
       ImportWatchOnlyWalletRoutes.import.name,
       extra: (input: input, signerDevice: signerDevice),
