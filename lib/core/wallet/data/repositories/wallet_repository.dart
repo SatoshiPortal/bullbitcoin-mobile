@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -20,6 +21,8 @@ import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
+import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_usage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -31,7 +34,10 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
 
 class WalletRepository
-    implements BitcoinDescriptorPort, WalletSignerDevicePort {
+    implements
+        BitcoinDescriptorPort,
+        WalletSignerDevicePort,
+        Bip48AccountUsagePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -68,6 +74,30 @@ class WalletRepository
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
       _lwkWallet.isWalletSyncing(walletId: walletId);
+
+  @override
+  Future<List<Bip48AccountUsage>> getBip48AccountUsages() async {
+    final wallets = await _walletMetadataDatasource.fetchAll();
+    return [
+      for (final wallet in wallets)
+        if (wallet.network.isBitcoin)
+          for (final signer in wallet.signers)
+            for (final key in signer.descriptorKeys)
+              if (Bip48Derivation.account(
+                    key.derivationPath,
+                    coinType: wallet.network.coinType,
+                  )
+                  case final account?)
+                Bip48AccountUsage(
+                  seedFingerprint: key.masterFingerprint.toLowerCase(),
+                  localSeedFingerprint: signer.localSeedFingerprint,
+                  coinType: wallet.network.coinType,
+                  account: account,
+                  derivationPath: key.derivationPath!,
+                  xpub: key.xpub,
+                ),
+    ];
+  }
 
   Future<Wallet> createWallet({
     required Seed seed,
