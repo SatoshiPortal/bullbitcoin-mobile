@@ -481,15 +481,15 @@ void main() {
         unsignedPsbt: any(named: 'unsignedPsbt'),
         signedTxHex: any(named: 'signedTxHex'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok<void, SendFailure>(null));
 
     payjoinEvents = StreamController<PayjoinSession>.broadcast();
 
     // Benign default stubs for everything the payjoin branch (or its
     // aftermath) touches.
-    when(
-      () => watchPayjoinUsecase.execute(ids: any(named: 'ids')),
-    ).thenAnswer((_) => payjoinEvents.stream);
+    when(() => watchPayjoinUsecase.execute(ids: any(named: 'ids'))).thenAnswer(
+      (_) => payjoinEvents.stream.map(Ok<PayjoinSession, SendFailure>.new),
+    );
     when(
       () => getWalletUsecase.execute(any(), sync: any(named: 'sync')),
     ).thenAnswer((_) async => _bitcoinLocalWallet());
@@ -524,7 +524,11 @@ void main() {
         amountSat: any(named: 'amountSat'),
         networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
       ),
-    ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+    ).thenAnswer(
+      (_) async => Ok<PayjoinSenderSession, SendFailure>(
+        _sender(status: PayjoinStatus.requested),
+      ),
+    );
 
     cubit.setStateForTest(payjoinReadyState(label: label));
     await cubit.signTransaction();
@@ -546,7 +550,11 @@ void main() {
             amountSat: any(named: 'amountSat'),
             networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           ),
-        ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+        ).thenAnswer(
+          (_) async => Ok<PayjoinSenderSession, SendFailure>(
+            _sender(status: PayjoinStatus.requested),
+          ),
+        );
         cubit.setStateForTest(
           payjoinReadyState().copyWith(
             signedBitcoinPsbt: 'signed-regular-psbt',
@@ -595,8 +603,16 @@ void main() {
           ),
         ).thenAnswer((_) async {
           attempts++;
-          if (attempts == 1) throw Exception('payjoin directory unreachable');
-          return _sender(status: PayjoinStatus.requested);
+          if (attempts == 1) {
+            return const Err<PayjoinSenderSession, SendFailure>(
+              SendTransactionConfirmationFailure(
+                logMessage: 'payjoin directory unreachable',
+              ),
+            );
+          }
+          return Ok<PayjoinSenderSession, SendFailure>(
+            _sender(status: PayjoinStatus.requested),
+          );
         });
         cubit.setStateForTest(
           payjoinReadyState().copyWith(
@@ -725,8 +741,12 @@ void main() {
           unsignedPsbt: any(named: 'unsignedPsbt'),
           signedTxHex: any(named: 'signedTxHex'),
         ),
-      ).thenThrow(
-        VerifySignedTxException('The signed transaction does not match'),
+      ).thenAnswer(
+        (_) async => const Err<void, SendFailure>(
+          SendTransactionConfirmationFailure(
+            logMessage: 'The signed transaction does not match',
+          ),
+        ),
       );
 
       await cubit.updateSignedBitcoinTx('deadbeef');
@@ -769,10 +789,13 @@ void main() {
       ).thenAnswer((_) async {
         attempts++;
         if (attempts == 1) {
-          throw VerifySignedTxException(
-            'The signed transaction does not match',
+          return const Err<void, SendFailure>(
+            SendTransactionConfirmationFailure(
+              logMessage: 'The signed transaction does not match',
+            ),
           );
         }
+        return const Ok<void, SendFailure>(null);
       });
 
       expect(await cubit.updateSignedBitcoinTx('tampered'), isFalse);
@@ -1136,7 +1159,7 @@ void main() {
             request: any(named: 'request'),
             amountSat: any(named: 'amountSat'),
           ),
-        ).thenReturn(wallet);
+        ).thenReturn(Ok<Wallet, SendFailure>(wallet));
         when(
           () => getWalletUtxosUsecase.execute(walletId: wallet.id),
         ).thenAnswer((_) => oldUtxosLoaded.future);
@@ -1200,7 +1223,7 @@ void main() {
           request: any(named: 'request'),
           amountSat: any(named: 'amountSat'),
         ),
-      ).thenReturn(wallet);
+      ).thenReturn(Ok<Wallet, SendFailure>(wallet));
       when(
         () => getWalletUtxosUsecase.execute(walletId: wallet.id),
       ).thenAnswer((_) async => const <WalletUtxo>[]);

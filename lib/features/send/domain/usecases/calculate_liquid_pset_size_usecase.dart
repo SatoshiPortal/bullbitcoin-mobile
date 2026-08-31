@@ -1,5 +1,8 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/send/domain/domain_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 /// Returns the discounted vsize of a Liquid PSET in vbytes.
 ///
@@ -12,13 +15,19 @@ class CalculateLiquidPsetSizeUsecase {
 
   CalculateLiquidPsetSizeUsecase({required this._liquidWalletRepository});
 
-  Future<int> execute({required String pset}) async {
+  @useResult
+  Future<Result<int, SendFailure>> execute({required String pset}) async {
     try {
       final (discountedVsize, _) = await _liquidWalletRepository
           .getPsetSizeAndAbsoluteFees(pset: pset);
-      return discountedVsize;
-    } catch (e) {
-      throw CalculateLiquidPsetSizeException(e.toString());
+      return Ok(discountedVsize);
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to read the discounted vsize of a Liquid PSET',
+        error: e,
+        trace: st,
+      );
+      return Err(SendTransactionBuildFailure(e.toString()));
     }
   }
 }

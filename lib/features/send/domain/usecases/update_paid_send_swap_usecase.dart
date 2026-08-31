@@ -10,14 +10,10 @@ class UpdatePaidSendSwapUsecase {
     required String swapId,
     int? absoluteFees,
   }) async {
-    try {
-      return await _swapRepository.updatePaidSendSwap(
-        swapId: swapId,
-        txid: txid,
-        absoluteFees: absoluteFees,
-      );
-    } catch (e) {
-      rethrow;
-    }
+    return _swapRepository.updatePaidSendSwap(
+      swapId: swapId,
+      txid: txid,
+      absoluteFees: absoluteFees,
+    );
   }
 }

@@ -1,92 +1,82 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class SelectBestWalletUsecase {
   SelectBestWalletUsecase();
 
-  Wallet execute({
+  @useResult
+  Result<Wallet, SendFailure> execute({
     required List<Wallet> wallets,
     required PaymentRequest request,
     int? amountSat,
   }) {
-    try {
-      // Bitcoin
-      if (request is BitcoinPaymentRequest) {
+    switch (request) {
+      case BitcoinPaymentRequest():
         return _selectBestWallet(
           amountSat ?? 0,
           request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
           wallets,
         );
-      }
-
-      // Liquid
-      if (request is LiquidPaymentRequest) {
+      case LiquidPaymentRequest():
         return _selectBestWallet(
           amountSat ?? 0,
           request.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
           wallets,
         );
-      }
-
-      //Bip21
-      if (request is Bip21PaymentRequest) {
-        final amount = amountSat ?? request.amountSat ?? 0;
-
-        return _selectBestWallet(amount, request.network, wallets);
-      }
-
-      // Bolt11
-      if (request is Bolt11PaymentRequest) {
-        try {
-          // Use liquid
-          return _selectBestWallet(
-            request.amountSat,
-            request.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-            wallets,
-          );
-        } catch (_) {
-          // unless liquid doesn't have balance, use bitcoin
-          return _selectBestWallet(
-            request.amountSat,
-            request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
-            wallets,
-          );
-        }
-      }
-      // Bolt11
-      if (request is LnAddressPaymentRequest) {
-        try {
-          // Use liquid
-          return _selectBestWallet(
-            amountSat ?? 0,
-            Network.liquidMainnet,
-            wallets,
-          );
-        } catch (_) {
-          // unless liquid doesn't have balance, use bitcoin
-          return _selectBestWallet(
-            amountSat ?? 0,
-            Network.bitcoinMainnet,
-            wallets,
-          );
-        }
-      }
-
-      throw NotEnoughFundsException();
-    } catch (e) {
-      if (e is NotEnoughFundsException) {
-        log.warning('Not enough funds available', error: e);
-      } else {
-        log.severe(error: e, trace: StackTrace.current);
-      }
-      rethrow;
+      case Bip21PaymentRequest():
+        return _selectBestWallet(
+          amountSat ?? request.amountSat ?? 0,
+          request.network,
+          wallets,
+        );
+      case Bolt11PaymentRequest():
+        // Liquid first for the cheaper swap; fall back to Bitcoin when Liquid
+        // cannot cover it.
+        return _selectLiquidThenBitcoin(
+          request.amountSat,
+          isTestnet: request.isTestnet,
+          wallets: wallets,
+        );
+      case LnAddressPaymentRequest():
+        return _selectLiquidThenBitcoin(
+          amountSat ?? 0,
+          isTestnet: false,
+          wallets: wallets,
+        );
+      case PsbtPaymentRequest():
+        log.warning('No wallet selection rule for ${request.runtimeType}');
+        return const Err(
+          SendInvalidPaymentRequestFailure(
+            logMessage: 'unsupported payment request',
+          ),
+        );
     }
   }
 
-  Wallet _selectBestWallet(
+  Result<Wallet, SendFailure> _selectLiquidThenBitcoin(
+    int amountSat, {
+    required bool isTestnet,
+    required List<Wallet> wallets,
+  }) {
+    final liquid = _selectBestWallet(
+      amountSat,
+      isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+      wallets,
+    );
+    if (liquid case Ok()) return liquid;
+    return _selectBestWallet(
+      amountSat,
+      isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+      wallets,
+    );
+  }
+
+  Result<Wallet, SendFailure> _selectBestWallet(
     int satoshis,
     Network network,
     List<Wallet> wallets,
@@ -98,7 +88,7 @@ class SelectBestWalletUsecase {
           w.signer == SignerEntity.local &&
           w.balanceSat.toInt() > satoshis &&
           w.balanceSat.toInt() != 0) {
-        return w;
+        return Ok(w);
       }
     }
 
@@ -107,22 +97,18 @@ class SelectBestWalletUsecase {
       if (w.network == network &&
           w.balanceSat.toInt() > satoshis &&
           w.signer == SignerEntity.local) {
-        return w;
+        return Ok(w);
       }
     }
 
     // Any wallet with enough funds
     for (final w in wallets) {
       if (w.balanceSat.toInt() >= satoshis && w.signer == SignerEntity.local) {
-        return w;
+        return Ok(w);
       }
     }
-    throw NotEnoughFundsException();
-  }
-}
 
-class NotEnoughFundsException extends BullException {
-  NotEnoughFundsException([
-    super.message = 'Not enough funds available to make this payment.',
-  ]);
+    log.warning('Not enough funds available to make this payment');
+    return const Err(SendInsufficientBalanceFailure('no wallet covers it'));
+  }
 }
