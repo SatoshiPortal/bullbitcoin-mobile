@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/colors.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -12,8 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+typedef WalletHomeFeatureWarningsBuilder =
+    Widget Function(BuildContext context, List<Wallet> wallets);
+
 class WalletHomeScreen extends StatefulWidget {
-  const WalletHomeScreen({super.key});
+  final WalletHomeFeatureWarningsBuilder? featureWarningsBuilder;
+
+  const WalletHomeScreen({super.key, this.featureWarningsBuilder});
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -84,6 +90,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
     return MultiBlocListener(
       listeners: [
         BlocListener<WalletBloc, WalletState>(
@@ -130,6 +137,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const PinnedHeaderSliver(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
+                if (widget.featureWarningsBuilder case final builder?)
+                  SliverToBoxAdapter(child: builder(context, wallets)),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),
                 SliverToBoxAdapter(
                   child: WalletCards(

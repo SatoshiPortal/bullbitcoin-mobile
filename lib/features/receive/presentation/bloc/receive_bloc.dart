@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/check_receive_bullvault_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
@@ -61,6 +62,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required this._watchReceivePayjoinMinAmountUsecase,
     required this._getReceivePayjoinPolicyUsecase,
     required this._setReceivePayjoinEnabledUsecase,
+    required this._checkReceiveBullVaultUsecase,
     this._wallet,
   }) : super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
@@ -141,6 +143,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   _watchReceivePayjoinMinAmountUsecase;
   final GetReceivePayjoinPolicyUsecase _getReceivePayjoinPolicyUsecase;
   final SetReceivePayjoinEnabledUsecase _setReceivePayjoinEnabledUsecase;
+  final CheckReceiveBullVaultUsecase _checkReceiveBullVaultUsecase;
   final Wallet? _wallet;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
@@ -206,9 +209,21 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           ? event.wallet
           : null;
       if (state.wallet != null && !state.wallet!.isBitcoin) {
-        emit(state.copyWith(wallet: null, bitcoinAddress: null));
+        emit(
+          state.copyWith(
+            wallet: null,
+            bitcoinAddress: null,
+            isBullVault: false,
+          ),
+        );
       } else {
-        emit(state.copyWith(wallet: eventWallet, bitcoinAddress: null));
+        emit(
+          state.copyWith(
+            wallet: eventWallet,
+            bitcoinAddress: null,
+            isBullVault: false,
+          ),
+        );
       }
 
       // Emit a state with the Bitcoin type so the UI can update allready before
@@ -245,7 +260,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           orElse: () => wallets.first,
         );
       }
-      emit(state.copyWith(wallet: wallet));
+      final isBullVault = await _checkReceiveBullVaultUsecase.execute(
+        wallet.id,
+      );
+      emit(state.copyWith(wallet: wallet, isBullVault: isBullVault));
 
       if (state.bitcoinUnit == null) {
         // If the bitcoin unit is not set yet, we need to get it from the settings

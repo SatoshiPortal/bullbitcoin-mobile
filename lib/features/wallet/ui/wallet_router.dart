@@ -15,7 +15,9 @@ enum WalletRoute {
 }
 
 class WalletRouter {
-  static final walletHomeRoute = GoRoute(
+  static GoRoute walletHomeRoute({
+    WalletHomeFeatureWarningsBuilder? featureWarningsBuilder,
+  }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
     pageBuilder: (context, state) {
@@ -29,7 +31,9 @@ class WalletRouter {
             //  to allow the user to create or restore a wallet.
             context.goNamed(OnboardingRoute.onboarding.name);
           },
-          child: const WalletHomeScreen(),
+          child: WalletHomeScreen(
+            featureWarningsBuilder: featureWarningsBuilder,
+          ),
         ),
       );
     },

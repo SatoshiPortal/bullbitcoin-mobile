@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -10,7 +11,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
@@ -157,13 +158,30 @@ class AppRouter {
             ),
           );
         },
-        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
+        routes: [
+          WalletRouter.walletHomeRoute(
+            featureWarningsBuilder: (context, wallets) =>
+                BullVaultHomeContribution(wallets: wallets),
+          ),
+          ...ExchangeRouter.routes,
+        ],
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,
       ConsolidationRouter.route,
-      SettingsRouter.route,
+      SettingsRouter.route(
+        walletDetailsActionsBuilder: (context, wallet) => [
+          BullVaultWalletSettingsContribution(wallet: wallet),
+        ],
+        walletDeletionGuard: (walletId) async =>
+            switch (await locator<BullVaultFacade>().canDeleteWallet(
+              walletId,
+            )) {
+              Ok(:final value) => value,
+              Err() => false,
+            },
+      ),
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
@@ -182,7 +200,7 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
-      BullVaultRouter.route,
+      ...BullVaultRouter.routes,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
