@@ -170,6 +170,7 @@ class SendCubit extends Cubit<SendState>
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
   StreamSubscription<WalletTransaction>? _txSubscription;
   StreamSubscription<PayjoinSession>? _payjoinSubscription;
+  ({int generation, Future<void> future})? _pendingPaymentRequestInput;
 
   /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
   /// captures it before its `await` and re-checks before writing results
@@ -294,12 +295,17 @@ class SendCubit extends Cubit<SendState>
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
     final inputGeneration = _startNewPaymentRequestInput();
+    final parsingCompleted = Completer<void>();
+    _pendingPaymentRequestInput = (
+      generation: inputGeneration,
+      future: parsingCompleted.future,
+    );
+    final sanitizedText = text.trim().replaceAll(
+      RegExp(r'^["\"]+|["\"]+$'),
+      '',
+    );
     try {
       clearFailure();
-      final sanitizedText = text.trim().replaceAll(
-        RegExp(r'^["\"]+|["\"]+$'),
-        '',
-      );
       final recipientCleared = state.paymentRequest != null;
       emit(
         state.copyWith(
@@ -325,16 +331,21 @@ class SendCubit extends Cubit<SendState>
       final recipientCleared = state.paymentRequest != null;
       emit(
         state.copyWith(
-          copiedRawPaymentRequest: text,
+          copiedRawPaymentRequest: sanitizedText,
           paymentRequest: null,
           sendMax: false,
           // Don't show exception if text field is clear
-          failure: text.isNotEmpty
+          failure: sanitizedText.isNotEmpty
               ? const SendInvalidPaymentRequestFailure()
               : null,
         ),
       );
       if (recipientCleared) clearBitcoinFeePreviews();
+    } finally {
+      parsingCompleted.complete();
+      if (_pendingPaymentRequestInput?.generation == inputGeneration) {
+        _pendingPaymentRequestInput = null;
+      }
     }
   }
 
@@ -342,6 +353,11 @@ class SendCubit extends Cubit<SendState>
     final inputGeneration = _paymentRequestInputGeneration;
     try {
       emit(state.copyWith(loadingBestWallet: true));
+      final pendingInput = _pendingPaymentRequestInput;
+      if (pendingInput?.generation == inputGeneration) {
+        await pendingInput!.future;
+      }
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       await unifiedBip21Prioritization(inputGeneration: inputGeneration);
       if (inputGeneration != _paymentRequestInputGeneration) return;
 
@@ -403,8 +419,10 @@ class SendCubit extends Cubit<SendState>
       }
 
       await _setSelectedWallet(wallet, manual: false);
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       emit(state.copyWith(sendType: sendType));
       await loadFees();
+      if (inputGeneration != _paymentRequestInputGeneration) return;
       if (state.blocksSwapDueToHardwareWallet) {
         emit(
           state.copyWith(

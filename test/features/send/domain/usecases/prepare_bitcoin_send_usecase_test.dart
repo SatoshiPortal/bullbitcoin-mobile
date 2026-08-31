@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -276,7 +275,7 @@ void main() {
         amountSat: 50000,
         selectedInputs: [frozenInput, spendableInput],
       ),
-      throwsA(isA<InsufficientFundsException>()),
+      throwsA(isA<NoSpendableUtxoException>()),
     );
     verifyNever(
       () => bitcoinWallet.buildPsbt(
@@ -310,7 +309,7 @@ void main() {
         amountSat: 50000,
         selectedInputs: [reservedInput],
       ),
-      throwsA(isA<InsufficientFundsException>()),
+      throwsA(isA<NoSpendableUtxoException>()),
     );
     verifyNever(
       () => bitcoinWallet.buildPsbt(
