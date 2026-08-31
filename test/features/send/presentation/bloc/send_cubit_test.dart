@@ -1859,6 +1859,30 @@ void main() {
   });
 
   group('SendCubit payment request input', () {
+    test('keeps a restricted wallet and recipient immutable', () async {
+      final wallet = _bitcoinLocalWallet();
+      final cubit = buildCubit(wallet: wallet);
+      addTearDown(cubit.close);
+      when(
+        () => detectBitcoinStringUsecase.execute(data: 'bc1qmigration'),
+      ).thenThrow(StateError('stop after the input boundary'));
+
+      await cubit.configureRestrictedSend(recipient: 'bc1qmigration');
+      cubit.onChangedText('bc1qredirect');
+      await cubit.onScannedPaymentRequest(
+        'bc1qscannerredirect',
+        const PaymentRequest.bitcoin(
+          address: 'bc1qscannerredirect',
+          isTestnet: false,
+        ),
+      );
+      await cubit.updateSelectedWallet(_descriptorWallet());
+
+      expect(cubit.isRestrictedSend, isTrue);
+      expect(cubit.state.copiedRawPaymentRequest, 'bc1qmigration');
+      expect(cubit.state.selectedWallet, wallet);
+    });
+
     test('stores sanitized input immediately without parsing', () {
       final cubit = buildCubit();
       addTearDown(cubit.close);
