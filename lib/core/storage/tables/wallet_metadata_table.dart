@@ -11,6 +11,7 @@ class WalletMetadatas extends Table {
   IntColumn get latestPhysicalBackup => integer().nullable()();
   TextColumn get publicDescriptor => text()();
   BoolColumn get isDefault => boolean()();
+  BoolColumn get isHidden => boolean().withDefault(const Constant(false))();
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   DateTimeColumn get birthday => dateTime().nullable()();

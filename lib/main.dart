@@ -261,7 +261,9 @@ class Bull {
   }
 }
 
-Future main() async {
+Future<void> main() => runBullBitcoinWalletApp();
+
+Future<void> runBullBitcoinWalletApp() async {
   await runZonedGuarded(
     () async {
       try {

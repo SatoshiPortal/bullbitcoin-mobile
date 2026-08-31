@@ -53,6 +53,7 @@ abstract class BitBoxDeviceRepository {
   Future<Result<void, BitBoxFailure>> registerWalletPolicy(
     BitBoxDeviceEntity device, {
     required Wallet wallet,
+    String? signerId,
   });
 
   @useResult
@@ -70,6 +71,7 @@ abstract class BitBoxDeviceRepository {
     required String address,
     required BitcoinPolicyKeychain keychain,
     required int index,
+    String? signerId,
   });
 
   Future<Result<void, BitBoxFailure>> disconnectConnection(

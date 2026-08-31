@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_physical_backup_verified_usecase.dart';
@@ -14,7 +15,7 @@ import 'package:get_it/get_it.dart';
 class TestWalletBackupLocator {
   static void setup(GetIt locator) {
     locator.registerLazySingleton<CheckPhysicalBackupVerifiedUsecase>(
-      () => CheckPhysicalBackupVerifiedUsecase(locator<WalletRepository>()),
+      () => CheckPhysicalBackupVerifiedUsecase(locator<GetWalletsUsecase>()),
     );
     locator.registerLazySingleton<TestWalletBackupFacade>(
       () =>

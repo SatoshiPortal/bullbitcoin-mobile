@@ -1,0 +1,14 @@
+{
+  "birthHeight": 3000000,
+  "createdAt": "2027-01-15T12:00:00.000Z",
+  "descriptor": "tr([00000000]tpubD6NzVbkrYhZ4WLd82sJzTQAcHXancR9nXqyNo8pXVNNEQ7qTDXiwX6dSW97sUvxdVBV2tAgod7gfG8dhJsVqDspXrsaLSifGx8suAPrpyUn/<0;1>/*,{multi_a(2,[73c5da0a/48'/1'/0'/2']tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ/<0;1>/*,[b8688df1/48'/1'/0'/2']tpubDEfobrrtptRTbKf4gysDhoabneABDTAcdj3Vbn4XwPsLE2pmqpizSPRG6zHsbAMuiSgWmWPsYCLHTKTPpyrGJ5rAoTpKoQNZcxodiPf2tSJ/<0;1>/*),{and_v(v:after(1863172800),multi_a(2,[73c5da0a/48'/1'/0'/2']tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ/<2;3>/*,[b8688df1/48'/1'/0'/2']tpubDEfobrrtptRTbKf4gysDhoabneABDTAcdj3Vbn4XwPsLE2pmqpizSPRG6zHsbAMuiSgWmWPsYCLHTKTPpyrGJ5rAoTpKoQNZcxodiPf2tSJ/<2;3>/*,[3f635a63/48'/1'/0'/2']tpubDFPtPArj4GzBEFHohegg1Xatrc1Fi9oSox5LzuSRX91miwQxuUrEpBxpvDRsmZYJKYFhgdK3UStsjC8JKXfUbMinjFqiEM4uNwzVaCaHpys/<0;1>/*)),{and_v(v:after(1894708800),pk([b8688df1/48'/1'/0'/2']tpubDEfobrrtptRTbKf4gysDhoabneABDTAcdj3Vbn4XwPsLE2pmqpizSPRG6zHsbAMuiSgWmWPsYCLHTKTPpyrGJ5rAoTpKoQNZcxodiPf2tSJ/<4;5>/*)),and_v(v:after(1957780800),pk([3f635a63/48'/1'/0'/2']tpubDFPtPArj4GzBEFHohegg1Xatrc1Fi9oSox5LzuSRX91miwQxuUrEpBxpvDRsmZYJKYFhgdK3UStsjC8JKXfUbMinjFqiEM4uNwzVaCaHpys/<2;3>/*))}}})#rnaetm54",
+  "lineageId": "95d4c18378c97c3c5f7802ebee8f4f27afa7cee0ba9a9f5f016ea5032302d0a6",
+  "network": "bitcoinTestnet",
+  "policyVersion": 1,
+  "scheduleYears": {
+    "cold": 3,
+    "recovery": 2,
+    "inheritance": 5
+  },
+  "schemaVersion": 1
+}
