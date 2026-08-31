@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/primitives/swap_network_payment_network_x.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -145,12 +146,17 @@ class CreateReceiveOrderSwapUsecase {
       ),
     SwapNoPaymentOptionFailure(:final inNetwork, :final outNetwork) =>
       ReceiveSwapRouteUnavailableFailure(
-        inNetwork: inNetwork,
-        outNetwork: outNetwork,
+        inNetwork: inNetwork?.toPaymentNetwork,
+        outNetwork: outNetwork?.toPaymentNetwork,
         logMessage: failure.logMessage,
       ),
     SwapValidationFailure() ||
-    SwapProviderFailure() => ReceiveSwapUnavailableFailure(failure.logMessage),
+    SwapProviderFailure() ||
+    SwapProviderUnavailableFailure() ||
+    SwapProviderMisconfiguredFailure() ||
+    SwapSwitchBlockedFailure() => ReceiveSwapUnavailableFailure(
+      failure.logMessage,
+    ),
     SwapRateLimitedFailure(:final retryAfter) => ReceiveRateLimitedFailure(
       retryAfter: retryAfter,
       logMessage: failure.logMessage,

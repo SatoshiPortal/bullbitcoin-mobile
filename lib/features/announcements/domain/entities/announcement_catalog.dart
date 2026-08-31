@@ -5,9 +5,9 @@ import 'package:bb_mobile/features/announcements/domain/entities/announcement.da
 /// Extend this (and the gathering in `GetVisibleAnnouncementsUsecase`) as new
 /// announcements need new signals.
 class AnnouncementSignals {
-  final bool isAppUpdateRequired;
+  final bool isSwapProviderUnavailable;
 
-  const AnnouncementSignals({required this.isAppUpdateRequired});
+  const AnnouncementSignals({required this.isSwapProviderUnavailable});
 }
 
 /// A catalog entry: an [Announcement] definition paired with the predicate that
@@ -36,12 +36,12 @@ class AnnouncementCatalogEntry {
 final List<AnnouncementCatalogEntry> announcementCatalog = [
   AnnouncementCatalogEntry(
     announcement: Announcement(
-      id: AnnouncementId.appUpdateRequired,
+      id: AnnouncementId.swapProviderUnavailable,
       priority: 0,
       tone: AnnouncementTone.warning,
-      action: const NoAction(),
+      action: const NavigateAction(),
       dismissPolicy: SnoozeDismiss(const Duration(days: 1)),
     ),
-    trigger: (signals) => signals.isAppUpdateRequired,
+    trigger: (signals) => signals.isSwapProviderUnavailable,
   ),
 ];

@@ -34,6 +34,8 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/swap/swap_provider_settings_screen.dart';
+import 'package:bb_mobile/features/swap/public/swap_provider_settings.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
@@ -161,6 +163,14 @@ class SettingsRouter {
         name: SettingsRoute.autoswapSettings.name,
         path: SettingsRoute.autoswapSettings.path,
         builder: (context, state) => const AutoSwapSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.swapProviderSettings.name,
+        path: SettingsRoute.swapProviderSettings.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<SwapProviderSettingsCubit>(),
+          child: const SwapProviderSettingsScreen(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,

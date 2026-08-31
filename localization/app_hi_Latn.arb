@@ -12714,5 +12714,20 @@
   "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
   "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
   "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain",
-  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein."
+  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
+  "swapProviderSettingsTitle": "Swap pradata",
+  "swapProviderSettingsDescription": "Chunein ki kaun si seva aapke swap karti hai.",
+  "swapProviderTrustedTag": "Vishwasniya",
+  "swapProviderTrustlessTag": "Bina bharose",
+  "swapProviderAddCustomBoltz": "Custom Boltz server jodein",
+  "swapProviderCustomNameLabel": "Naam (vaikalpik)",
+  "swapProviderCustomUrlLabel": "Server URL",
+  "swapProviderCustomUrlWarning": "Aap apne swap chalane ke liye is server par bharosa kar rahe hain. Keval unhi servers ko jodein jinpar aap bharosa karte hain.",
+  "swapProviderInvalidUrl": "Ek manya server URL darj karein.",
+  "swapProviderSwitchBlocked": "Pradata badalne se pehle apna chal raha swap poora karein.",
+  "swapProviderAdd": "Jodein",
+  "swapProviderRemove": "Hataayein",
+  "settingsSearchSwapProviderKeywords": "swap pradata Boltz Bull vishwasniya bina bharose server custom",
+  "announcementSwapProviderUnavailableTitle": "Swap pradata anuplabdh",
+  "announcementSwapProviderUnavailableDescription": "Aapka swap pradata ab uplabdh nahi hai. Settings mein koi anya swap pradata chunne ke liye tap karein."
 }

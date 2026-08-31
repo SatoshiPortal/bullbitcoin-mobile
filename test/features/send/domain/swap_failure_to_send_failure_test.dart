@@ -20,8 +20,8 @@ void main() {
   test('maps a missing payment route to a dedicated failure', () {
     final failure = mapSwapFailureToSendFailure(
       const SwapNoPaymentOptionFailure(
-        inNetwork: PaymentNetwork.bitcoin,
-        outNetwork: PaymentNetwork.lightning,
+        inNetwork: SwapNetwork.bitcoin,
+        outNetwork: SwapNetwork.lightning,
         logMessage: 'no route',
       ),
     );

@@ -12516,5 +12516,20 @@
   "exchangeSupportChatLoadAttachmentError": "अटैचमेंट नहीं खुल सका। कृपया पुनः प्रयास करें।",
   "statusCheckNoDefaultWalletError": "कोई डिफ़ॉल्ट Bitcoin वॉलेट नहीं मिला। कृपया एक डिफ़ॉल्ट वॉलेट सेट करें और पुनः प्रयास करें।",
   "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं",
-  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।"
+  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "swapProviderSettingsTitle": "स्वैप प्रदाता",
+  "swapProviderSettingsDescription": "चुनें कि कौन सी सेवा आपके स्वैप करती है।",
+  "swapProviderTrustedTag": "विश्वसनीय",
+  "swapProviderTrustlessTag": "बिना भरोसे के",
+  "swapProviderAddCustomBoltz": "कस्टम Boltz सर्वर जोड़ें",
+  "swapProviderCustomNameLabel": "नाम (वैकल्पिक)",
+  "swapProviderCustomUrlLabel": "सर्वर URL",
+  "swapProviderCustomUrlWarning": "आप अपने स्वैप चलाने के लिए इस सर्वर पर भरोसा कर रहे हैं। केवल उन्हीं सर्वरों को जोड़ें जिन पर आप भरोसा करते हैं।",
+  "swapProviderInvalidUrl": "एक मान्य सर्वर URL दर्ज करें।",
+  "swapProviderSwitchBlocked": "प्रदाता बदलने से पहले अपना चल रहा स्वैप पूरा करें।",
+  "swapProviderAdd": "जोड़ें",
+  "swapProviderRemove": "हटाएं",
+  "settingsSearchSwapProviderKeywords": "स्वैप प्रदाता Boltz Bull विश्वसनीय बिना भरोसे सर्वर कस्टम",
+  "announcementSwapProviderUnavailableTitle": "स्वैप प्रदाता अनुपलब्ध",
+  "announcementSwapProviderUnavailableDescription": "आपका स्वैप प्रदाता अब उपलब्ध नहीं है। सेटिंग्स में कोई अन्य स्वैप प्रदाता चुनने के लिए टैप करें।"
 }

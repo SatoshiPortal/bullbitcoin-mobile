@@ -39,6 +39,7 @@ enum SettingsItemId {
   broadcastTransaction,
   payjoin,
   autoswap,
+  swapProvider,
   electrum,
   mempool,
   testnetMode,
@@ -65,6 +66,7 @@ const backupSettingsDataItemOrder = [
 const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
   SettingsItemId.autoswap,
+  SettingsItemId.swapProvider,
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
   SettingsItemId.mempool,
@@ -354,7 +356,7 @@ List<SettingsItem> buildSettingsItems({
       title: localization.logSettingsLogsTitle,
       path: path(SettingsItemSection.root, localization.logSettingsLogsTitle),
       icon: Icons.article,
-      open: (context) => context.pushNamed('logs'),
+      open: (context) => context.pushNamed(SettingsRoute.logs.name),
       keywords: _keywords(
         localization.settingsSearchLogsKeywords,
         english.settingsSearchLogsKeywords,
@@ -428,6 +430,23 @@ List<SettingsItem> buildSettingsItems({
           english.bitcoinSettingsAutoTransferTitle,
           english.autoswapSettingsTitle,
         ],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.swapProvider,
+      section: SettingsItemSection.wallet,
+      title: localization.swapProviderSettingsTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.swapProviderSettingsTitle,
+      ),
+      icon: Icons.swap_horiz,
+      open: (context) =>
+          context.pushNamed(SettingsRoute.swapProviderSettings.name),
+      keywords: _keywords(
+        localization.settingsSearchSwapProviderKeywords,
+        english.settingsSearchSwapProviderKeywords,
+        [english.swapProviderSettingsTitle],
       ),
     ),
     SettingsItem(

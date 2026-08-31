@@ -9438,5 +9438,20 @@
   "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে",
-  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "swapProviderSettingsTitle": "সোৱাপ প্ৰদানকাৰী",
+  "swapProviderSettingsDescription": "কোনটো সেৱাই আপোনাৰ সোৱাপ কৰে সেয়া বাছনি কৰক।",
+  "swapProviderTrustedTag": "বিশ্বাসযোগ্য",
+  "swapProviderTrustlessTag": "বিশ্বাসৰ প্ৰয়োজন নাই",
+  "swapProviderAddCustomBoltz": "নিজা Boltz চাৰ্ভাৰ যোগ কৰক",
+  "swapProviderCustomNameLabel": "নাম (বৈকল্পিক)",
+  "swapProviderCustomUrlLabel": "চাৰ্ভাৰ URL",
+  "swapProviderCustomUrlWarning": "আপুনি আপোনাৰ সোৱাপ চলাবলৈ এই চাৰ্ভাৰক বিশ্বাস কৰি আছে। কেৱল বিশ্বাস কৰা চাৰ্ভাৰহে যোগ কৰক।",
+  "swapProviderInvalidUrl": "এটা বৈধ চাৰ্ভাৰ URL দিয়ক।",
+  "swapProviderSwitchBlocked": "প্ৰদানকাৰী সলনি কৰাৰ আগতে আপোনাৰ চলি থকা সোৱাপ সম্পূৰ্ণ কৰক।",
+  "swapProviderAdd": "যোগ কৰক",
+  "swapProviderRemove": "আঁতৰাওক",
+  "settingsSearchSwapProviderKeywords": "সোৱাপ প্ৰদানকাৰী Boltz Bull বিশ্বাসযোগ্য চাৰ্ভাৰ নিজা",
+  "announcementSwapProviderUnavailableTitle": "সোৱাপ প্ৰদানকাৰী উপলব্ধ নহয়",
+  "announcementSwapProviderUnavailableDescription": "আপোনাৰ সোৱাপ প্ৰদানকাৰী আৰু উপলব্ধ নহয়। ছেটিংছত বেলেগ সোৱাপ প্ৰদানকাৰী বাছনি কৰিবলৈ টিপক।"
 }

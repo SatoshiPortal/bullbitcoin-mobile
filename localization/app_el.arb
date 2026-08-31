@@ -12326,5 +12326,20 @@
   "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά.",
   "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
   "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα",
-  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά."
+  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
+  "swapProviderSettingsTitle": "Πάροχος swap",
+  "swapProviderSettingsDescription": "Επιλέξτε ποια υπηρεσία εκτελεί τα swap σας.",
+  "swapProviderTrustedTag": "Αξιόπιστο",
+  "swapProviderTrustlessTag": "Χωρίς εμπιστοσύνη",
+  "swapProviderAddCustomBoltz": "Προσθήκη προσαρμοσμένου διακομιστή Boltz",
+  "swapProviderCustomNameLabel": "Όνομα (προαιρετικό)",
+  "swapProviderCustomUrlLabel": "URL διακομιστή",
+  "swapProviderCustomUrlWarning": "Εμπιστεύεστε σε αυτόν τον διακομιστή την εκτέλεση των swap σας. Προσθέστε μόνο διακομιστές που εμπιστεύεστε.",
+  "swapProviderInvalidUrl": "Εισαγάγετε έγκυρο URL διακομιστή.",
+  "swapProviderSwitchBlocked": "Ολοκληρώστε το swap που βρίσκεται σε εξέλιξη πριν αλλάξετε πάροχο.",
+  "swapProviderAdd": "Προσθήκη",
+  "swapProviderRemove": "Αφαίρεση",
+  "settingsSearchSwapProviderKeywords": "swap πάροχος Boltz Bull αξιόπιστο χωρίς εμπιστοσύνη διακομιστής προσαρμοσμένο",
+  "announcementSwapProviderUnavailableTitle": "Ο πάροχος swap δεν είναι διαθέσιμος",
+  "announcementSwapProviderUnavailableDescription": "Ο πάροχος swap σας δεν είναι πλέον διαθέσιμος. Πατήστε για να επιλέξετε διαφορετικό πάροχο swap στις ρυθμίσεις."
 }

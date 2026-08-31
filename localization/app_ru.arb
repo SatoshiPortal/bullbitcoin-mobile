@@ -4946,5 +4946,20 @@
   "exchangeSupportChatLoadAttachmentError": "Не удалось открыть вложение. Попробуйте ещё раз.",
   "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
   "statusCheckResultsMayBeOutdated": "Результаты могут быть устаревшими",
-  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова."
+  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова.",
+  "swapProviderSettingsTitle": "Провайдер свопов",
+  "swapProviderSettingsDescription": "Выберите сервис, который выполняет ваши свопы.",
+  "swapProviderTrustedTag": "Доверенный",
+  "swapProviderTrustlessTag": "Без доверия",
+  "swapProviderAddCustomBoltz": "Добавить свой сервер Boltz",
+  "swapProviderCustomNameLabel": "Имя (необязательно)",
+  "swapProviderCustomUrlLabel": "URL сервера",
+  "swapProviderCustomUrlWarning": "Вы доверяете этому серверу выполнение своих свопов. Добавляйте только серверы, которым доверяете.",
+  "swapProviderInvalidUrl": "Введите действительный URL сервера.",
+  "swapProviderSwitchBlocked": "Завершите текущий своп перед сменой провайдера.",
+  "swapProviderAdd": "Добавить",
+  "swapProviderRemove": "Удалить",
+  "settingsSearchSwapProviderKeywords": "своп провайдер Boltz Bull доверенный без доверия сервер пользовательский",
+  "announcementSwapProviderUnavailableTitle": "Провайдер свопов недоступен",
+  "announcementSwapProviderUnavailableDescription": "Ваш провайдер свопов больше недоступен. Нажмите, чтобы выбрать другого провайдера свопов в настройках."
 }

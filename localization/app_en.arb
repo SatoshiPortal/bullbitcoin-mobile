@@ -5224,6 +5224,58 @@
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
+  "swapProviderSettingsTitle": "Swap provider",
+  "@swapProviderSettingsTitle": {
+    "description": "Title of the swap provider selection settings screen"
+  },
+  "swapProviderSettingsDescription": "Choose which service performs your swaps.",
+  "@swapProviderSettingsDescription": {
+    "description": "Subtitle explaining the swap provider setting"
+  },
+  "swapProviderTrustedTag": "Trusted",
+  "@swapProviderTrustedTag": {
+    "description": "Tag shown on the Bull trusted swap provider"
+  },
+  "swapProviderTrustlessTag": "Trustless",
+  "@swapProviderTrustlessTag": {
+    "description": "Tag shown on Boltz trustless swap providers"
+  },
+  "swapProviderAddCustomBoltz": "Add custom Boltz server",
+  "@swapProviderAddCustomBoltz": {
+    "description": "Button to add a custom Boltz server"
+  },
+  "swapProviderCustomNameLabel": "Name (optional)",
+  "@swapProviderCustomNameLabel": {
+    "description": "Label for the custom Boltz server name input"
+  },
+  "swapProviderCustomUrlLabel": "Server URL",
+  "@swapProviderCustomUrlLabel": {
+    "description": "Label for the custom Boltz server URL input"
+  },
+  "swapProviderCustomUrlWarning": "You are trusting this server to run your swaps. Only add servers you trust.",
+  "@swapProviderCustomUrlWarning": {
+    "description": "Warning shown when adding a custom Boltz server"
+  },
+  "swapProviderInvalidUrl": "Enter a valid server URL.",
+  "@swapProviderInvalidUrl": {
+    "description": "Error shown when the custom server URL is invalid"
+  },
+  "swapProviderSwitchBlocked": "Finish your in-progress swap before changing provider.",
+  "@swapProviderSwitchBlocked": {
+    "description": "Message shown when the user tries to switch provider mid-swap"
+  },
+  "swapProviderAdd": "Add",
+  "@swapProviderAdd": {
+    "description": "Confirm button for adding a custom Boltz server"
+  },
+  "swapProviderRemove": "Remove",
+  "@swapProviderRemove": {
+    "description": "Button to remove a custom Boltz server"
+  },
+  "settingsSearchSwapProviderKeywords": "swap provider boltz bull trusted trustless server custom",
+  "@settingsSearchSwapProviderKeywords": {
+    "description": "Search keywords for the swap provider settings item"
+  },
   "autoswapEnableToggleLabel": "Enable Auto Transfer",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
@@ -14269,13 +14321,485 @@
   "@sendSwapExpiredMessage": {
     "description": "Message on the send result screen when a swap order expired before any funds were sent, so there is nothing to refund."
   },
-  "announcementAppUpdateRequiredTitle": "Update BULL",
-  "@announcementAppUpdateRequiredTitle": {
-    "description": "Title for the wallet home announcement shown when swap services require an app update"
+  "announcementSwapProviderUnavailableTitle": "Swap provider unavailable",
+  "@announcementSwapProviderUnavailableTitle": {
+    "description": "Title for the wallet home announcement shown when the active swap provider is unavailable"
   },
-  "announcementAppUpdateRequiredDescription": "To use the Lightning payment and swap service, please update the BULL mobile app with the new version.",
-  "@announcementAppUpdateRequiredDescription": {
-    "description": "Description shown after the swap API reports that this app version is no longer supported"
+  "announcementSwapProviderUnavailableDescription": "Your swap provider is no longer available. Tap to choose a different swap provider in settings.",
+  "@announcementSwapProviderUnavailableDescription": {
+    "description": "Description shown when the active swap provider reports it can no longer serve this app; directs the user to switch providers"
+  },
+  "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
+  "@mempoolErrorNetworkMismatch": {
+    "description": "Error shown when a custom mempool server validates but belongs to a different Bitcoin network than the app environment."
+  },
+  "transactionPayjoinFallbackProcessing": "Processing as a regular transaction…",
+  "@transactionPayjoinFallbackProcessing": {
+    "description": "Status shown while broadcasting a payjoin fallback transaction"
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsBootstrapProgress": "Connecting… {percent}%",
+  "@torSettingsBootstrapProgress": {
+    "description": "Bootstrap progress percentage while Tor is connecting.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsEmbeddedTitle": "Embedded Tor",
+  "@torSettingsEmbeddedTitle": {
+    "description": "Heading for embedded Tor settings"
+  },
+  "torSettingsEmbeddedDescription": "Bull’s built-in Tor routing protects RecoverBull and Bitcoin Electrum .onion servers. Other app traffic is not routed through Tor.",
+  "@torSettingsEmbeddedDescription": {
+    "description": "Explains which traffic uses embedded Tor"
+  },
+  "torSettingsTransportMode": "Connection method",
+  "@torSettingsTransportMode": {
+    "description": "Label for the embedded Tor transport selector"
+  },
+  "torSettingsModeAutomatic": "Automatic",
+  "@torSettingsModeAutomatic": {
+    "description": "Automatic Tor transport mode label"
+  },
+  "torSettingsModeDirect": "Direct",
+  "@torSettingsModeDirect": {
+    "description": "Direct Tor transport mode label"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsExternalProxyTitle": "External Tor proxy (advanced)",
+  "@torSettingsExternalProxyTitle": {
+    "description": "Heading for the optional Orbot override"
+  },
+  "torSettingsExternalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "@torSettingsExternalProxyDescription": {
+    "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
+  },
+  "recoverbullPhaseNetworkInfo": "Retrieving network information",
+  "@recoverbullPhaseNetworkInfo": {
+    "description": "Caption shown while Tor downloads directory information. Covers the whole directory phase, which is 85% of bootstrap."
+  },
+  "recoverbullLongestStep": "This is the longest step. A first start can take over a minute.",
+  "@recoverbullLongestStep": {
+    "description": "Reassurance shown once bootstrap has been running a while without visible progress."
+  },
+  "recoverbullTorOffline": "There seems to be no internet connection.",
+  "@recoverbullTorOffline": {
+    "description": "Shown when Tor reports the device has no TCP connectivity. Hedged wording: the upstream diagnostic is best-effort."
+  },
+  "recoverbullTorClockSkewed": "Your device clock is off, so Tor cannot verify relay certificates. Check your date and time settings.",
+  "@recoverbullTorClockSkewed": {
+    "description": "Shown when Tor reports clock skew, which breaks certificate validation. Actionable: the user can fix the clock."
+  },
+  "recoverbullTorCantStart": "Tor could not connect right now. Please try again.",
+  "@recoverbullTorCantStart": {
+    "description": "Generic Tor bootstrap failure, for blockages with no actionable cause."
+  },
+  "recoverbullServerUnreachableTorOk": "Tor is working, but the backup server did not answer. This can take a moment right after a first start.",
+  "@recoverbullServerUnreachableTorOk": {
+    "description": "Shown when Tor is up but the RecoverBull onion service did not answer, so the failure is localised to the server."
+  },
+  "swapErrorRouteUnavailable": "{fromNetwork} to {toNetwork} is not available.",
+  "@swapErrorRouteUnavailable": {
+    "description": "Shown when the exchange rejects a swap because no payment option/route exists for it (API ERR_ORD_PO404), naming the source and destination networks.",
+    "placeholders": {
+      "fromNetwork": {
+        "type": "String"
+      },
+      "toNetwork": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorRouteUnavailableGeneric": "This swap is not available.",
+  "@swapErrorRouteUnavailableGeneric": {
+    "description": "Fallback for ERR_ORD_PO404 when the source or destination network is unknown."
+  },
+  "mnemonicShuffleKeyboardHint": "Scramble the keys and suggestions on every tap",
+  "@mnemonicShuffleKeyboardHint": {
+    "description": "Tooltip on the in-app keyboard toggle that turns on the privacy mode: the letter keys and word suggestions are randomised after each key press so their positions cannot be read by an onlooker"
+  },
+  "settingsScreenPrivacyTitle": "Screen Privacy",
+  "@settingsScreenPrivacyTitle": {
+    "description": "Settings entry title for the screen-capture/screenshot protection toggle on sensitive screens"
+  },
+  "settingsScreenPrivacyDisabledMessage": "Screenshots are now allowed on sensitive screens",
+  "@settingsScreenPrivacyDisabledMessage": {
+    "description": "Snackbar shown when the user turns off Screen Privacy, warning that screenshots/recording are now allowed on sensitive screens such as the recovery phrase"
+  },
+  "settingsSearchHint": "Search settings",
+  "@settingsSearchHint": {
+    "description": "Placeholder for the settings search field"
+  },
+  "settingsSearchNoResults": "No settings found.",
+  "@settingsSearchNoResults": {
+    "description": "Empty state shown when settings search has no matches"
+  },
+  "settingsSearchMempoolKeywords": "block explorer|fee estimation|transaction fees|mempool API",
+  "@settingsSearchMempoolKeywords": {
+    "description": "Pipe-separated search aliases for Mempool settings. These are search metadata and are not displayed."
+  },
+  "settingsSearchExchangeKeywords": "account|exchange account|trading|buy and sell",
+  "@settingsSearchExchangeKeywords": {
+    "description": "Pipe-separated search aliases for Exchange. Search metadata; not displayed."
+  },
+  "settingsSearchStartBackupKeywords": "create backup|save backup|back up wallet",
+  "@settingsSearchStartBackupKeywords": {
+    "description": "Pipe-separated search aliases for Start Backup. Search metadata; not displayed."
+  },
+  "settingsSearchRecoverbullKeywords": "encrypted backup|cloud backup|encrypted vault|vault recovery",
+  "@settingsSearchRecoverbullKeywords": {
+    "description": "Pipe-separated search aliases for Recoverbull. Search metadata; not displayed."
+  },
+  "settingsSearchLabelsKeywords": "wallet labels|transaction labels|BIP329|import labels|export labels",
+  "@settingsSearchLabelsKeywords": {
+    "description": "Pipe-separated search aliases for Labels. Search metadata; not displayed."
+  },
+  "settingsSearchTransactionHistoryKeywords": "export transactions|transaction export|CSV|wallet history",
+  "@settingsSearchTransactionHistoryKeywords": {
+    "description": "Pipe-separated search aliases for Transaction History. Search metadata; not displayed."
+  },
+  "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
+  "@settingsSearchAppSettingsKeywords": {
+    "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
+  },
+  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin map|merchant map|places to spend bitcoin",
+  "@settingsSearchBtcMapKeywords": {
+    "description": "Pipe-separated search aliases for Map. Search metadata; not displayed."
+  },
+  "settingsSearchTermsOfServiceKeywords": "terms and conditions|legal|user agreement|TOS",
+  "@settingsSearchTermsOfServiceKeywords": {
+    "description": "Pipe-separated search aliases for Terms of Service. Search metadata; not displayed."
+  },
+  "settingsSearchServicesStatusKeywords": "service health|system status|online|outage",
+  "@settingsSearchServicesStatusKeywords": {
+    "description": "Pipe-separated search aliases for Services Status. Search metadata; not displayed."
+  },
+  "settingsSearchImportWalletKeywords": "add wallet|recover wallet|import mnemonic|watch-only wallet|hardware wallet",
+  "@settingsSearchImportWalletKeywords": {
+    "description": "Pipe-separated search aliases for Import Wallet. Search metadata; not displayed."
+  },
+  "settingsSearchBroadcastTransactionKeywords": "broadcast signed transaction|push transaction|raw transaction|transaction hex|PSBT",
+  "@settingsSearchBroadcastTransactionKeywords": {
+    "description": "Pipe-separated search aliases for Broadcast Transaction. Search metadata; not displayed."
+  },
+  "settingsSearchPayjoinKeywords": "payjoin privacy|collaborative transaction|P2EP",
+  "@settingsSearchPayjoinKeywords": {
+    "description": "Pipe-separated search aliases for Payjoin. Search metadata; not displayed."
+  },
+  "settingsSearchAutoswapKeywords": "autoswap|automatic swap|auto transfer|instant wallet balance",
+  "@settingsSearchAutoswapKeywords": {
+    "description": "Pipe-separated search aliases for Auto Transfer. Search metadata; not displayed."
+  },
+  "settingsSearchElectrumKeywords": "bitcoin node|electrum node|custom server|personal node",
+  "@settingsSearchElectrumKeywords": {
+    "description": "Pipe-separated search aliases for Electrum. Search metadata; not displayed."
+  },
+  "settingsSearchTestnetModeKeywords": "test network|bitcoin testnet|liquid testnet|testing mode",
+  "@settingsSearchTestnetModeKeywords": {
+    "description": "Pipe-separated search aliases for Testnet Mode. Search metadata; not displayed."
+  },
+  "settingsSearchSeedViewerKeywords": "seed phrase|recovery phrase|mnemonic|backup words|show seeds",
+  "@settingsSearchSeedViewerKeywords": {
+    "description": "Pipe-separated search aliases for Seed Viewer. Search metadata; not displayed."
+  },
+  "settingsSearchBip85Keywords": "deterministic entropy|child seeds|derived entropy|BIP85",
+  "@settingsSearchBip85Keywords": {
+    "description": "Pipe-separated search aliases for BIP85. Search metadata; not displayed."
+  },
+  "settingsSearchLanguageKeywords": "locale|translation|display language|preferred language",
+  "@settingsSearchLanguageKeywords": {
+    "description": "Pipe-separated search aliases for Language. Search metadata; not displayed."
+  },
+  "settingsSearchThemeKeywords": "appearance|dark mode|light mode|system theme",
+  "@settingsSearchThemeKeywords": {
+    "description": "Pipe-separated search aliases for Theme. Search metadata; not displayed."
+  },
+  "settingsSearchCurrencyKeywords": "fiat currency|local currency|default currency|exchange currency",
+  "@settingsSearchCurrencyKeywords": {
+    "description": "Pipe-separated search aliases for Currency. Search metadata; not displayed."
+  },
+  "settingsSearchSecurityPinKeywords": "PIN code|passcode|app lock|authentication|change PIN",
+  "@settingsSearchSecurityPinKeywords": {
+    "description": "Pipe-separated search aliases for Security PIN. Search metadata; not displayed."
+  },
+  "settingsSearchLogsKeywords": "debug logs|diagnostic logs|app logs|export logs",
+  "@settingsSearchLogsKeywords": {
+    "description": "Pipe-separated search aliases for Logs. Search metadata; not displayed."
+  },
+  "settingsSearchDevModeKeywords": "developer mode|development settings|debug mode|advanced testing",
+  "@settingsSearchDevModeKeywords": {
+    "description": "Pipe-separated search aliases for Dev Mode. Search metadata; not displayed."
+  },
+  "settingsSearchTestnetCredentialsKeywords": "testnet user credentials|testnet login|testnet username|testnet password|basic auth",
+  "@settingsSearchTestnetCredentialsKeywords": {
+    "description": "Pipe-separated search aliases for Testnet Credentials. Search metadata; not displayed."
+  },
+  "settingsSearchErrorReportingKeywords": "crash reports|bug reports|diagnostics|telemetry|error logs",
+  "@settingsSearchErrorReportingKeywords": {
+    "description": "Pipe-separated search aliases for Error Reporting. Search metadata; not displayed."
+  },
+  "settingsSearchScreenPrivacyKeywords": "screenshots|screen recording|capture protection|privacy",
+  "@settingsSearchScreenPrivacyKeywords": {
+    "description": "Pipe-separated search aliases for Screen Privacy. Search metadata; not displayed."
+  },
+  "settingsSearchStartTyping": "Start typing to see results.",
+  "@settingsSearchStartTyping": {
+    "description": "Prompt shown before the user enters a settings search query."
+  },
+  "torSettingsExternalProxyReachable": "Proxy reachable",
+  "@torSettingsExternalProxyReachable": {
+    "description": "Status shown after the configured external SOCKS5 proxy accepts a connection."
+  },
+  "torSettingsExternalProxyReachableDescription": "The configured SOCKS5 proxy accepted a connection.",
+  "@torSettingsExternalProxyReachableDescription": {
+    "description": "Clarifies what Bull verified for an external proxy without claiming that Tor is fully bootstrapped."
+  },
+  "torStatusReady": "Tor ready",
+  "@torStatusReady": {
+    "description": "Compact global status shown when embedded Tor is ready."
+  },
+  "torStatusConnecting": "Connecting to Tor: {progress}%",
+  "@torStatusConnecting": {
+    "description": "Compact global status shown while embedded Tor bootstraps.",
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      }
+    }
+  },
+  "torStatusNotStarted": "Tor not started",
+  "@torStatusNotStarted": {
+    "description": "Compact global status shown before embedded Tor is needed."
+  },
+  "torStatusStopped": "Tor stopped",
+  "@torStatusStopped": {
+    "description": "Compact global status shown when embedded Tor has stopped."
+  },
+  "torStatusUnavailable": "Tor unavailable",
+  "@torStatusUnavailable": {
+    "description": "Compact global status shown when embedded Tor cannot become ready."
+  },
+  "torStatusDetailsTitle": "Embedded Tor status",
+  "@torStatusDetailsTitle": {
+    "description": "Title of the global embedded Tor status details."
+  },
+  "torStatusStateLabel": "Status",
+  "@torStatusStateLabel": {
+    "description": "Label for the current embedded Tor lifecycle state."
+  },
+  "torStatusTransportLabel": "Transport",
+  "@torStatusTransportLabel": {
+    "description": "Label for the effective embedded Tor transport."
+  },
+  "torStatusProtectedTrafficLabel": "Traffic routed through Tor",
+  "@torStatusProtectedTrafficLabel": {
+    "description": "Label explaining which application traffic uses embedded Tor."
+  },
+  "torStatusNotStartedDescription": "Embedded Tor starts automatically when RecoverBull or a Bitcoin .onion server needs it.",
+  "@torStatusNotStartedDescription": {
+    "description": "Explains why embedded Tor can be not started."
+  },
+  "torStatusTelemetryUnavailable": "Circuit paths and throughput are not exposed by the embedded Tor engine.",
+  "@torStatusTelemetryUnavailable": {
+    "description": "Explains why circuit and throughput telemetry is absent from Tor details."
+  },
+  "torStatusProxyEndpointLabel": "SOCKS5 endpoint",
+  "@torStatusProxyEndpointLabel": {
+    "description": "Label for the verified local SOCKS5 endpoint exposed by embedded Tor."
+  },
+  "torSettingsExternalProxyChecking": "Checking proxy",
+  "@torSettingsExternalProxyChecking": {
+    "description": "Status title while checking the external SOCKS5 proxy"
+  },
+  "torSettingsExternalProxyCheckingDescription": "Bull is checking the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyCheckingDescription": {
+    "description": "Status description while checking the external SOCKS5 proxy"
+  },
+  "torSettingsExternalProxyUnavailable": "SOCKS5 proxy unavailable",
+  "@torSettingsExternalProxyUnavailable": {
+    "description": "Status title when the external SOCKS5 proxy is unavailable"
+  },
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyUnavailableDescription": {
+    "description": "Status description when the external SOCKS5 proxy is unavailable"
+  },
+  "torSettingsExternalProxyNotChecked": "Proxy not checked",
+  "@torSettingsExternalProxyNotChecked": {
+    "description": "Status title before the external SOCKS5 proxy is checked"
+  },
+  "torSettingsExternalProxyNotCheckedDescription": "Bull has not checked the configured SOCKS5 proxy yet.",
+  "@torSettingsExternalProxyNotCheckedDescription": {
+    "description": "Status description before the external SOCKS5 proxy is checked"
+  },
+  "torSettingsRetry": "Retry",
+  "@torSettingsRetry": {
+    "description": "Action to retry an external SOCKS5 proxy check"
+  },
+  "torSettingsLearnAboutOrbot": "Learn about Orbot",
+  "@torSettingsLearnAboutOrbot": {
+    "description": "User action linking to the Orbot website"
+  },
+  "torSettingsOrbotLinkFailed": "Unable to open the Orbot website.",
+  "@torSettingsOrbotLinkFailed": {
+    "description": "Snackbar shown when the Orbot website cannot be opened"
+  },
+  "torSettingsLocalProxyTitle": "Local SOCKS5 proxy (advanced)",
+  "@torSettingsLocalProxyTitle": {
+    "description": "Heading for the optional user-managed local SOCKS5 proxy."
+  },
+  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "@torSettingsLocalProxyDescription": {
+    "description": "Explains how Orbot VPN mode and the configured SOCKS port route traffic through Tor."
+  },
+  "torSettingsLocalProxyPortHelper": "Common local SOCKS5 port: 9050",
+  "@torSettingsLocalProxyPortHelper": {
+    "description": "Helper text showing a common local SOCKS5 port."
+  },
+  "torSettingsEmbeddedStatusUnknownDescription": "Embedded Tor has not reported a connection status yet.",
+  "@torSettingsEmbeddedStatusUnknownDescription": {
+    "description": "Description shown before embedded Tor reports a connection status."
+  },
+  "torSettingsLocalProxyStatus": "Local SOCKS5 proxy status",
+  "@torSettingsLocalProxyStatus": {
+    "description": "Heading for the local SOCKS5 proxy status card."
+  },
+  "mempoolErrorOnionRouteUnavailable": "The onion server is unreachable. Check that your Tor route is available and try again.",
+  "@mempoolErrorOnionRouteUnavailable": {
+    "description": "Error shown when an onion mempool server cannot be reached through the selected Tor route."
+  },
+  "electrumConfiguredExternalTorUnavailable": "Your configured Tor proxy is unavailable. Open Tor settings to reconnect it.",
+  "@electrumConfiguredExternalTorUnavailable": {
+    "description": "Message shown when a configured external Tor proxy prevents adding a custom Electrum server."
+  },
+  "electrumOpenTorSettings": "Open Tor settings",
+  "@electrumOpenTorSettings": {
+    "description": "Action to open Tor settings from an Electrum error."
+  },
+  "torSettingsProxyAttemptPort": "Attempted port: {port}",
+  "@torSettingsProxyAttemptPort": {
+    "description": "Identifies the local SOCKS5 port being checked or that failed verification.",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsProxyAttemptWithActivePort": "Attempted port: {attemptedPort} · Active port: {activePort}",
+  "@torSettingsProxyAttemptWithActivePort": {
+    "description": "Distinguishes a replacement SOCKS5 port attempt from the persisted active port.",
+    "placeholders": {
+      "attemptedPort": {
+        "type": "int"
+      },
+      "activePort": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeSupportChatLoadMessagesError": "Couldn't load messages. Please try again.",
+  "@exchangeSupportChatLoadMessagesError": {
+    "description": "Shown when loading the support chat message history fails."
+  },
+  "exchangeSupportChatSendMessageError": "Couldn't send your message. Please try again.",
+  "@exchangeSupportChatSendMessageError": {
+    "description": "Shown when sending a support chat message fails."
+  },
+  "exchangeSupportChatLoadAttachmentError": "Couldn't open the attachment. Please try again.",
+  "@exchangeSupportChatLoadAttachmentError": {
+    "description": "Shown when downloading or opening a support chat attachment fails."
+  },
+  "settingsBackupTitle": "Backup",
+  "@settingsBackupTitle": {
+    "description": "Title for the wallet settings section"
+  },
+  "settingsSearchBackupKeywords": "backup|recovery|recover wallet|seed backup",
+  "@settingsSearchBackupKeywords": {
+    "description": "Pipe-separated search aliases for wallet settings"
+  },
+  "settingsAppTitle": "App",
+  "@settingsAppTitle": {
+    "description": "Root settings entry for app preferences"
+  },
+  "settingsWalletTitle": "Wallet",
+  "@settingsWalletTitle": {
+    "description": "Root settings entry for Bitcoin preferences"
+  },
+  "settingsExchangeTitle": "Exchange",
+  "@settingsExchangeTitle": {
+    "description": "Root settings entry for exchange preferences"
+  },
+  "torTitle": "Tor",
+  "@torTitle": {
+    "description": "Short title for Tor configuration entry points"
+  },
+  "bitcoinSettingsAutoTransferTitle": "Auto Transfer",
+  "@bitcoinSettingsAutoTransferTitle": {
+    "description": "Bitcoin settings list entry for automatic transfers"
+  },
+  "bitcoinSettingsElectrumServerTitle": "Electrum Server",
+  "@bitcoinSettingsElectrumServerTitle": {
+    "description": "Bitcoin settings list entry for Electrum server configuration"
+  },
+  "bitcoinSettingsMempoolServerTitle": "Mempool Server",
+  "@bitcoinSettingsMempoolServerTitle": {
+    "description": "Bitcoin settings list entry for Mempool server configuration"
+  },
+  "settingsWalletSettingsTitle": "Wallet Settings",
+  "@settingsWalletSettingsTitle": {
+    "description": "Title of the wallet settings screen"
+  },
+  "settingsSearchWalletSettingsKeywords": "wallet|bitcoin|network settings|on-chain settings|bitcoin settings",
+  "@settingsSearchWalletSettingsKeywords": {
+    "description": "Pipe-separated search aliases for wallet settings"
+  },
+  "electrumOnionUsesTorDescription": "This .onion server is routed through Tor.",
+  "@electrumOnionUsesTorDescription": {
+    "description": "Explains Tor routing when adding a custom onion Electrum server"
+  },
+  "statusCheckNoDefaultWalletError": "No default Bitcoin wallet found. Please set a default wallet and try again.",
+  "@statusCheckNoDefaultWalletError": {
+    "description": "Error shown when service status cannot be checked because no default wallet is configured"
+  },
+  "statusCheckResultsMayBeOutdated": "Results may be outdated",
+  "@statusCheckResultsMayBeOutdated": {
+    "description": "Short warning shown next to the last-checked time when the most recent service status refresh failed"
+  },
+  "onboardingBackupVerificationError": "Your wallet was recovered, but the backup verification could not be completed. Please try again.",
+  "@onboardingBackupVerificationError": {
+    "description": "Shown when the wallet was recovered successfully but marking the physical backup as verified failed."
   },
   "mempoolErrorNetworkMismatch": "This server is on a different Bitcoin network.",
   "@mempoolErrorNetworkMismatch": {

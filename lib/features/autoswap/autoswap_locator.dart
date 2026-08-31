@@ -4,8 +4,12 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
+import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
+import 'package:bb_mobile/features/autoswap/data/selecting_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -28,14 +32,29 @@ class AutoSwapLocator {
 
   static void registerProviders(GetIt locator) {
     locator.registerLazySingleton<AutoswapProviderPort>(
-      () => ExchangeAutoswapProvider(
-        locator<WalletRepository>(),
-        locator<SettingsRepository>(),
-        locator<LiquidWalletRepository>(),
-        locator<GetReceiveAddressUsecase>(),
-        locator<BroadcastLiquidTransactionUsecase>(),
-        locator<SwapFacade>(),
-        locator<LabelsFacade>(),
+      () => SelectingAutoswapProvider(
+        locator<SwapProviderStore>(),
+        ExchangeAutoswapProvider(
+          locator<WalletRepository>(),
+          locator<SettingsRepository>(),
+          locator<LiquidWalletRepository>(),
+          locator<GetReceiveAddressUsecase>(),
+          locator<BroadcastLiquidTransactionUsecase>(),
+          locator<SwapFacade>(),
+          locator<LabelsFacade>(),
+        ),
+        BoltzAutoswapProvider(
+          locator<BoltzSwapRepository>(
+            instanceName:
+                LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+          ),
+          locator<WalletRepository>(),
+          locator<SettingsRepository>(),
+          locator<LiquidWalletRepository>(),
+          locator<GetReceiveAddressUsecase>(),
+          locator<BroadcastLiquidTransactionUsecase>(),
+          locator<LabelsFacade>(),
+        ),
       ),
     );
   }

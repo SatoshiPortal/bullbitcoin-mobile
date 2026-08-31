@@ -18,6 +18,7 @@ workspace:
   - packages/screen_privacy
   - packages/bull_logger
   - features/logs
+  - packages/bull_swap
 
 dependencies:
   flutter:
@@ -29,6 +30,7 @@ dependencies:
   screen_privacy:
   bull_logger:
   bull_logs:
+  bull_swap:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1

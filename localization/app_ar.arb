@@ -12329,5 +12329,20 @@
   "exchangeSupportChatLoadAttachmentError": "تعذّر فتح المرفق. يُرجى المحاولة مرة أخرى.",
   "statusCheckNoDefaultWalletError": "لم يتم العثور على محفظة Bitcoin افتراضية. يرجى تعيين محفظة افتراضية والمحاولة مرة أخرى.",
   "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة",
-  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى."
+  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
+  "swapProviderSettingsTitle": "مزوّد المبادلة",
+  "swapProviderSettingsDescription": "اختر الخدمة التي تنفّذ عمليات المبادلة الخاصة بك.",
+  "swapProviderTrustedTag": "موثوق",
+  "swapProviderTrustlessTag": "بدون ثقة",
+  "swapProviderAddCustomBoltz": "إضافة خادم Boltz مخصّص",
+  "swapProviderCustomNameLabel": "الاسم (اختياري)",
+  "swapProviderCustomUrlLabel": "عنوان URL للخادم",
+  "swapProviderCustomUrlWarning": "أنت تثق بهذا الخادم لتنفيذ عمليات المبادلة الخاصة بك. أضف فقط الخوادم التي تثق بها.",
+  "swapProviderInvalidUrl": "أدخل عنوان URL صالحًا للخادم.",
+  "swapProviderSwitchBlocked": "أكمل المبادلة الجارية قبل تغيير المزوّد.",
+  "swapProviderAdd": "إضافة",
+  "swapProviderRemove": "إزالة",
+  "settingsSearchSwapProviderKeywords": "مبادلة مزوّد Boltz Bull موثوق بدون ثقة خادم مخصّص",
+  "announcementSwapProviderUnavailableTitle": "مزوّد المبادلة غير متوفر",
+  "announcementSwapProviderUnavailableDescription": "لم يعد مزوّد المبادلة الخاص بك متوفرًا. اضغط لاختيار مزوّد مبادلة مختلف في الإعدادات."
 }

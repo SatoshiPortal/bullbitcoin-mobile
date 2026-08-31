@@ -241,8 +241,8 @@ void main() {
     ).thenAnswer(
       (_) async => const Err(
         SwapNoPaymentOptionFailure(
-          inNetwork: PaymentNetwork.lightning,
-          outNetwork: PaymentNetwork.liquid,
+          inNetwork: SwapNetwork.lightning,
+          outNetwork: SwapNetwork.liquid,
           logMessage: 'no route',
         ),
       ),

@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/announcements/domain/announcements_failure.da
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
-import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/watch_swap_provider_unavailable_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,8 +16,8 @@ class _MockGetVisibleAnnouncementsUsecase extends Mock
 class _MockDismissAnnouncementUsecase extends Mock
     implements DismissAnnouncementUsecase {}
 
-class _MockWatchAppUpdateAnnouncementUsecase extends Mock
-    implements WatchAppUpdateAnnouncementUsecase {}
+class _MockWatchSwapProviderUnavailableAnnouncementUsecase extends Mock
+    implements WatchSwapProviderUnavailableAnnouncementUsecase {}
 
 Announcement _announcement() => Announcement(
   id: AnnouncementId.payjoinPrivacy,
@@ -30,7 +30,7 @@ Announcement _announcement() => Announcement(
 void main() {
   late _MockGetVisibleAnnouncementsUsecase getVisible;
   late _MockDismissAnnouncementUsecase dismiss;
-  late _MockWatchAppUpdateAnnouncementUsecase watchAppUpdate;
+  late _MockWatchSwapProviderUnavailableAnnouncementUsecase watchAppUpdate;
   late StreamController<bool> appUpdateController;
 
   setUpAll(() {
@@ -40,7 +40,7 @@ void main() {
   setUp(() {
     getVisible = _MockGetVisibleAnnouncementsUsecase();
     dismiss = _MockDismissAnnouncementUsecase();
-    watchAppUpdate = _MockWatchAppUpdateAnnouncementUsecase();
+    watchAppUpdate = _MockWatchSwapProviderUnavailableAnnouncementUsecase();
     appUpdateController = StreamController<bool>.broadcast();
     when(
       () => watchAppUpdate.execute(),
@@ -51,7 +51,7 @@ void main() {
   AnnouncementsCubit build() => AnnouncementsCubit(
     getVisibleAnnouncementsUsecase: getVisible,
     dismissAnnouncementUsecase: dismiss,
-    watchAppUpdateAnnouncementUsecase: watchAppUpdate,
+    watchSwapProviderUnavailableAnnouncementUsecase: watchAppUpdate,
   );
 
   test(

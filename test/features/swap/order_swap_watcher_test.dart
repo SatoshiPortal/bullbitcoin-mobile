@@ -95,7 +95,7 @@ void main() {
     ).thenReturn(const SyncOutcome.active());
     final watcher = OrderSwapWatcher(
       coordinator,
-      isAppUpdateRequired: () => updateRequired,
+      isSwapProviderUnavailable: () => updateRequired,
     );
 
     fakeAsync((async) {

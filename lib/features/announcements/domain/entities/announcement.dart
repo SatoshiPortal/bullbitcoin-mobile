@@ -14,7 +14,7 @@ enum AnnouncementId {
   /// Shown once the wallet has transaction history and payjoin is disabled,
   /// inviting the user to enable payjoin for better on-chain privacy.
   payjoinPrivacy,
-  appUpdateRequired,
+  swapProviderUnavailable,
 }
 
 /// Visual/semantic tone of an announcement, mapped to theme colors in the UI.

@@ -4931,5 +4931,20 @@
   "exchangeSupportChatLoadAttachmentError": "Liitteen avaaminen epäonnistui. Yritä uudelleen.",
   "statusCheckNoDefaultWalletError": "Oletusta Bitcoin-lompakkoa ei löydy. Aseta oletusarvoinen lompakko ja yritä uudelleen.",
   "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita",
-  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen."
+  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen.",
+  "swapProviderSettingsTitle": "Swap-palveluntarjoaja",
+  "swapProviderSettingsDescription": "Valitse, mikä palvelu suorittaa swapisi.",
+  "swapProviderTrustedTag": "Luotettu",
+  "swapProviderTrustlessTag": "Luottamukseton",
+  "swapProviderAddCustomBoltz": "Lisää mukautettu Boltz-palvelin",
+  "swapProviderCustomNameLabel": "Nimi (valinnainen)",
+  "swapProviderCustomUrlLabel": "Palvelimen URL",
+  "swapProviderCustomUrlWarning": "Luotat tähän palvelimeen swapiesi suorittamisessa. Lisää vain palvelimia, joihin luotat.",
+  "swapProviderInvalidUrl": "Anna kelvollinen palvelimen URL-osoite.",
+  "swapProviderSwitchBlocked": "Viimeistele käynnissä oleva swap ennen palveluntarjoajan vaihtamista.",
+  "swapProviderAdd": "Lisää",
+  "swapProviderRemove": "Poista",
+  "settingsSearchSwapProviderKeywords": "swap palveluntarjoaja Boltz Bull luotettu luottamukseton palvelin mukautettu",
+  "announcementSwapProviderUnavailableTitle": "Swap-palveluntarjoaja ei ole käytettävissä",
+  "announcementSwapProviderUnavailableDescription": "Swap-palveluntarjoajasi ei ole enää käytettävissä. Napauta valitaksesi toisen swap-palveluntarjoajan asetuksista."
 }
