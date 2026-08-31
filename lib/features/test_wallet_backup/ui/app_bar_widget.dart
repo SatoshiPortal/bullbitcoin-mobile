@@ -10,17 +10,18 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget {
-  const AppBarWidget({super.key, required this.title});
+  const AppBarWidget({super.key, required this.title, this.showWalletPicker = true});
 
   final String title;
+  final bool showWalletPicker;
 
   @override
   PreferredSizeWidget build(BuildContext context) {
-    final wallets = context.watch<TestWalletBackupBloc>().state.wallets;
-    final selectedWallet = context
-        .watch<TestWalletBackupBloc>()
-        .state
-        .selectedWallet;
+    final state = showWalletPicker
+        ? context.watch<TestWalletBackupBloc>().state
+        : null;
+    final wallets = state?.wallets ?? const <Wallet>[];
+    final selectedWallet = state?.selectedWallet;
 
     return AppBar(
       leading: IconButton(
@@ -45,8 +46,8 @@ class AppBarWidget extends StatelessWidget {
                 initialIndex: selectedIndex,
               );
 
-              if (selectedWalletId != null) {
-                bloc.add(WalletSelected(wallet: selectedWallet!));
+              if (selectedWalletId != null && selectedWallet != null) {
+                bloc.add(WalletSelected(wallet: selectedWallet));
               }
             },
           ),

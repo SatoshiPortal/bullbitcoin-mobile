@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
+
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
@@ -10,20 +12,37 @@ import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wal
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullScreenPrivacyGate, BullShapesX, BullText, Gap;
-import 'package:secrets/secrets.dart' show Secret, SecretExtension;
+import 'package:secrets/secrets.dart'
+    show Secret, SecretExtension, SecretWidgets;
 
 class ShowMnemonicScreen extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
+  final SecretWidgets? _mnemonicWidgets;
+  final String? _title;
+  final String? _notice;
+  final VoidCallback? _onContinue;
+
   const ShowMnemonicScreen({
     super.key,
     this.appUnlockFacade = const AppUnlockFacade(),
-  });
+  }) : _mnemonicWidgets = null,
+       _title = null,
+       _notice = null,
+       _onContinue = null;
+
+  const ShowMnemonicScreen.forMnemonicWidgets({
+    super.key,
+    this.appUnlockFacade = const AppUnlockFacade(),
+    required SecretWidgets mnemonic,
+    required String this._title,
+    this._notice,
+    required VoidCallback this._onContinue,
+  }) : _mnemonicWidgets = mnemonic;
 
   @override
   State<ShowMnemonicScreen> createState() => _ShowMnemonicScreenState();
@@ -51,6 +70,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
         _privacyFuture = enableScreenPrivacy();
       }),
       builder: (context) {
+        if (widget._title case final title?) return _screen(context, title);
         return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
           builder: (context, state) {
             final walletName = state.selectedWallet?.isDefault ?? false
@@ -58,48 +78,58 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                 : state.selectedWallet?.displayLabel(context) ?? '';
             final title = context.loc.testBackupWalletTitle(walletName);
 
-            return Scaffold(
-              backgroundColor: context.appColors.background,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
-              ),
-              body: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: _MnemonicDisplay(
-                        appUnlockFacade: widget.appUnlockFacade,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      children: [
-                        BullButton.big(
-                          label: context.loc.testBackupNext,
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const VerifyMnemonicScreen(),
-                              ),
-                            );
-                          },
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
-                        ),
-                        Gap(Device.screen.height * 0.05),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return _screen(context, title);
           },
         );
       },
+    );
+  }
+
+  Widget _screen(BuildContext context, String title) {
+    return Scaffold(
+      backgroundColor: context.appColors.background,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBarWidget(
+          title: title,
+          showWalletPicker: widget._mnemonicWidgets == null,
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: _MnemonicDisplay(
+                mnemonicWidgets: widget._mnemonicWidgets,
+                appUnlockFacade: widget.appUnlockFacade,
+                notice: widget._notice,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Column(
+              children: [
+                BullButton.big(
+                  label: context.loc.testBackupNext,
+                  onPressed:
+                      widget._onContinue ??
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const VerifyMnemonicScreen(),
+                          ),
+                        );
+                      },
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
+                ),
+                Gap(Device.screen.height * 0.05),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -109,7 +139,14 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 /// the bloc — ever holds the phrase.
 class _MnemonicDisplay extends StatefulWidget {
   final AppUnlockFacade appUnlockFacade;
-  const _MnemonicDisplay({required this.appUnlockFacade});
+  final SecretWidgets? mnemonicWidgets;
+  final String? notice;
+
+  const _MnemonicDisplay({
+    required this.appUnlockFacade,
+    this.mnemonicWidgets,
+    this.notice,
+  });
 
   @override
   State<_MnemonicDisplay> createState() => _MnemonicDisplayState();
@@ -145,11 +182,12 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (widget.mnemonicWidgets != null) return;
     final fingerprint = context
         .read<TestWalletBackupBloc>()
         .state
         .selectedWallet
-        ?.masterFingerprint;
+        ?.singleLocalSeedFingerprint;
     if (fingerprint != _fingerprint) {
       _revealGeneration++;
       _fingerprint = fingerprint;
@@ -185,7 +223,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                 .read<TestWalletBackupBloc>()
                 .state
                 .selectedWallet
-                ?.masterFingerprint) {
+                ?.singleLocalSeedFingerprint) {
       return;
     }
     setState(() => _showPassphrase = true);
@@ -193,10 +231,9 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
 
   @override
   Widget build(BuildContext context) {
-    final selectedWallet = context
-        .watch<TestWalletBackupBloc>()
-        .state
-        .selectedWallet;
+    final selectedWallet = widget.mnemonicWidgets == null
+        ? context.watch<TestWalletBackupBloc>().state.selectedWallet
+        : null;
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
     return Padding(
@@ -237,99 +274,72 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                 fontSize: 12,
               ),
             ),
+          if (widget.notice case final notice?) ...[
+            const Gap(16),
+            BullText(
+              notice,
+              textAlign: .center,
+              style: context.font.bodyMedium,
+            ),
+          ],
           const Gap(32),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             // Keyed by wallet: a FutureBuilder handed a new future keeps the
             // previous snapshot's data until it resolves, which would draw the
             // previous wallet's words under the newly selected one.
-            child: FutureBuilder<Result<Secret, TestWalletBackupFailure>>(
-              key: ValueKey<String?>(_fingerprint),
-              future: _secret,
-              builder: (context, snapshot) {
-                // The future no longer throws — a failure comes back as an
-                // Err — but snapshot.hasError is still honoured so an
-                // unexpected throw degrades to the generic message.
-                switch (snapshot.data) {
-                  case Err(:final failure):
-                    return _DisplayError(failure: failure);
-                  case _ when snapshot.hasError:
-                    return const _DisplayError();
-                  default:
-                    break;
-                }
-                final secret = switch (snapshot.data) {
-                  Ok(:final value) => value,
-                  _ => null,
-                };
-                if (secret == null) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return Column(
-                  children: [
-                    secret.widgets.mnemonicView(
-                      showPassphrase: _showPassphrase,
-                      placeholder: const Center(
-                        child: CircularProgressIndicator(),
+            child: switch (widget.mnemonicWidgets) {
+              final widgets? => _words(context, widgets),
+              null => FutureBuilder<Result<Secret, TestWalletBackupFailure>>(
+                key: ValueKey<String?>(_fingerprint),
+                future: _secret,
+                builder: (context, snapshot) {
+                  // The future no longer throws — a failure comes back as an
+                  // Err — but snapshot.hasError is still honoured so an
+                  // unexpected throw degrades to the generic message.
+                  switch (snapshot.data) {
+                    case Err(:final failure):
+                      return _DisplayError(failure: failure);
+                    case _ when snapshot.hasError:
+                      return const _DisplayError();
+                    default:
+                      break;
+                  }
+                  final secret = switch (snapshot.data) {
+                    Ok(:final value) => value,
+                    _ => null,
+                  };
+                  if (secret == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return Column(
+                    children: [
+                      _words(
+                        context,
+                        secret.widgets,
+                        showPassphrase: _showPassphrase,
                       ),
-                      failureBuilder: (context, failure, retry) =>
-                          _DisplayError(onRetry: retry),
-                      passphraseLabel: context.loc.testBackupPassphrase,
-                      passphraseLabelStyle: context.font.labelMedium?.copyWith(
-                        fontWeight: .w700,
-                        color: context.appColors.onSurface,
-                        letterSpacing: 0,
-                        fontSize: 14,
-                      ),
-                      style: context.font.bodyLarge?.copyWith(
-                        fontWeight: .w700,
-                        fontSize: 14,
-                        color: context.appColors.secondary,
-                      ),
-                      wordBuilder: (context, number, word) =>
-                          _RecoveryPhraseWord(number: number, word: word),
-                      // Two columns, numbered down each: the widgets come back
-                      // in order and carry no word this layer can read.
-                      layoutBuilder: (context, words) => Column(
-                        children: [
-                          for (var i = 0; i < (words.length + 1) ~/ 2; i++)
-                            Row(
-                              children: [
-                                words[i],
-                                if (i + (words.length + 1) ~/ 2 < words.length)
-                                  words[i + (words.length + 1) ~/ 2]
-                                else
-                                  const Expanded(child: SizedBox()),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                    if (secret.info.hasPassphrase) ...[
-                      Text(context.loc.passphraseWordsIncompleteWarning),
-                      TextButton(
-                        onPressed: _togglePassphrase,
-                        child: Text(
-                          _showPassphrase
-                              ? context.loc.passphraseHide
-                              : context.loc.passphraseShow,
+                      if (secret.info.hasPassphrase) ...[
+                        Text(context.loc.passphraseWordsIncompleteWarning),
+                        TextButton(
+                          onPressed: _togglePassphrase,
+                          child: Text(
+                            _showPassphrase
+                                ? context.loc.passphraseHide
+                                : context.loc.passphraseShow,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
-                );
-              },
-            ),
+                  );
+                },
+              ),
+            },
           ),
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: context.appColors.border),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(context.bullShapes.card),
-                topRight: Radius.circular(context.bullShapes.card),
-                bottomLeft: Radius.circular(context.bullShapes.card),
-                bottomRight: Radius.circular(context.bullShapes.card),
-              ),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Column(
               children: [
@@ -384,6 +394,49 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _words(
+    BuildContext context,
+    SecretWidgets widgets, {
+    bool showPassphrase = false,
+  }) {
+    return widgets.mnemonicView(
+      showPassphrase: showPassphrase,
+      placeholder: const Center(child: CircularProgressIndicator()),
+      failureBuilder: (context, failure, retry) =>
+          _DisplayError(onRetry: retry),
+      passphraseLabel: context.loc.testBackupPassphrase,
+      passphraseLabelStyle: context.font.labelMedium?.copyWith(
+        fontWeight: .w700,
+        color: context.appColors.onSurface,
+        letterSpacing: 0,
+        fontSize: 14,
+      ),
+      style: context.font.bodyLarge?.copyWith(
+        fontWeight: .w700,
+        fontSize: 14,
+        color: context.appColors.secondary,
+      ),
+      wordBuilder: (context, number, word) =>
+          _RecoveryPhraseWord(number: number, word: word),
+      // Two columns, numbered down each: the widgets come back
+      // in order and carry no word this layer can read.
+      layoutBuilder: (context, words) => Column(
+        children: [
+          for (var i = 0; i < (words.length + 1) ~/ 2; i++)
+            Row(
+              children: [
+                words[i],
+                if (i + (words.length + 1) ~/ 2 < words.length)
+                  words[i + (words.length + 1) ~/ 2]
+                else
+                  const Expanded(child: SizedBox()),
+              ],
+            ),
         ],
       ),
     );
