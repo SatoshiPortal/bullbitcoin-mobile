@@ -286,7 +286,6 @@
   },
   "sendTransferFeeDescription": "Это общая плата, вычтенная из суммы, отправленной",
   "seedsignerStep12": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на SeedSigner. Сканируйте.",
-  "psbtFlowKeystoneTitle": "Инструкции по кистоне",
   "transactionLabelTransferStatus": "Статус передачи",
   "buyAboveMaxAmountError": "Вы пытаетесь купить выше максимальной суммы.",
   "electrumTimeoutWarning": "Ваш таймаут ({timeoutValue} секунд) ниже рекомендуемого значения ({recommended} секунд) для этого стоп-гапа.",
@@ -543,7 +542,6 @@
   "transactionSwapLiquidToBitcoin": "L-BTC → BTC",
   "testBackupDecryptVault": "Зашифрованное хранилище",
   "transactionDetailBumpFees": "Плата за бамбы",
-  "psbtFlowNoPartsToDisplay": "Нет частей для отображения",
   "addressCardCopiedMessage": "Адрес, скопированный в буфер обмена",
   "totalFeeLabel": "Итого",
   "mempoolCustomServerBottomSheetDescription": "Введите URL-адрес вашего пользовательского сервера mempool. Сервер будет проверен до сохранения.",
@@ -589,14 +587,6 @@
   "payLastName": "Имя",
   "transactionPayjoinStatusExpired": "Заключено",
   "fundExchangeMethodBankTransferWire": "Банковский перевод (Wire or EFT)",
-  "psbtFlowLoginToDevice": "Войти в устройство {device}",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Коста-Рика 1998 год",
   "payCalculating": "Расчет...",
   "transactionDetailLabelTransferId": "ID передачи",
@@ -644,7 +634,6 @@
   "psbtFlowIncreaseBrightness": "Увеличить яркость экрана на вашем устройстве",
   "payCoinjoinCompleted": "CoinJoin завершен",
   "electrumAddCustomServer": "Добавить пользовательский сервер",
-  "psbtFlowClickSign": "Нажмите кнопку",
   "rbfSatsPerVbyte": "sats/vB",
   "broadcastSignedTxDoneButton": "Дон",
   "sendRecommendedFee": "Рекомендуемые: {rate}",
@@ -1260,7 +1249,6 @@
   },
   "transactionSwapDescLnReceiveDefault": "Ваш обмен идет. Этот процесс автоматизирован и может занять некоторое время для завершения.",
   "selectCoinsManuallyLabel": "Выбрать монеты вручную",
-  "psbtFlowSeedSignerTitle": "Инструкции для SeedSigner",
   "appUnlockAttemptSingular": "неудачная попытка",
   "importQrDevicePassportStep2": "Введите PIN",
   "transactionOrderLabelPayoutMethod": "Метод выплаты",
@@ -1421,7 +1409,6 @@
   "recoverbullSelectNoBackupsFound": "Никаких резервных копий не найдено",
   "importMnemonicNestedSegwit": "Nested Segwit",
   "sendReplaceByFeeActivated": "Замена по фе активирована",
-  "psbtFlowScanQrOption": "Выберите опцию \"Scan QR\"",
   "coreSwapsLnReceiveFailed": "Неудачно.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Перевод средств в долларах США (USD)",
   "transactionDetailLabelPayinStatus": "Статус оплаты",
@@ -1593,7 +1580,6 @@
   "sellInsufficientBalanceError": "Недостаток баланса в выбранном кошельке для завершения этого ордера на продажу.",
   "transactionSwapDescLnReceivePending": "Ваш обмен был инициирован. Мы ожидаем, что платеж будет получен в Lightning Network.",
   "tryAgainButton": "Попробуйте снова",
-  "psbtFlowHoldSteady": "Держите QR-код устойчивым и сосредоточенным",
   "swapConfirmTitle": "Подтверждение передачи",
   "testBackupGoogleDrivePrivacyPart1": "Эта информация ",
   "connectHardwareWalletKeystone": "Keystone",
@@ -1723,7 +1709,6 @@
   "electrumBitcoinServerInfo": "Введите адрес сервера в формате: host:port (например, example.com:50001)",
   "recoverbullErrorServiceUnavailable": "Сервис недоступен. Пожалуйста, проверьте ваше соединение.",
   "sendErrorInsufficientBalanceForSwap": "Недостаточно баланса, чтобы оплатить этот своп через Жидкий и не в пределах свопов, чтобы заплатить через Bitcoin.",
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Инструкции",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "В кошельке BULL выберите предпочитаемый тип деривации. Если вы не уверены, выберите \"Segwit (BIP84)\"",
   "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
@@ -1876,7 +1861,6 @@
   "sendBroadcastTransaction": "Трансляция",
   "receiveBitcoinConfirmationMessage": "Биткоин-транзакция займет некоторое время, чтобы подтвердить.",
   "walletTypeWatchOnly": "Смотреть онлайн",
-  "psbtFlowKruxTitle": "Инструкции Krux",
   "recoverbullDecryptVault": "Зашифрованное хранилище",
   "connectHardwareWalletJade": "Жадный блок",
   "coreSwapsChainRefundable": "Перевод готов к возврату.",
@@ -2146,7 +2130,6 @@
   "testBackupBackupId": "ИД:",
   "walletDeletionErrorOngoingSwaps": "Вы не можете удалить кошелек с текущими свопами.",
   "bitboxScreenConnecting": "Подключение к BitBox",
-  "psbtFlowScanAnyQr": "Выберите опцию \"Сканировать любой QR-код\"",
   "transactionLabelServerNetworkFees": "Фейсы сети сервера",
   "importQrDeviceSeedsignerStep10": "Завершение установки",
   "sendReceive": "Получить",
@@ -2570,14 +2553,6 @@
   "exchangeLegacyTransactionsComingSoon": "Наследственные транзакции - Скоро",
   "buyProofOfAddress": "Доказательство адреса",
   "backupWalletInstructionNoDigitalCopies": "Не делайте цифровые копии вашей резервной копии. Запишите его на бумаге или выгравированы в металле.",
-  "psbtFlowError": "Ошибка: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Предполагаемая доставка ~ 10 минут",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "importQrDeviceSeedsignerStep2": "Откройте меню \"Семена\"",
@@ -2770,7 +2745,6 @@
   "jadeStep2": "Добавить пароль, если у вас есть один (факультативно)",
   "coldcardStep4": "Сканировать код QR, показанный в кошельке Bull",
   "importQrDevicePassportStep5": "Выберите опцию \"Sparrow\"",
-  "psbtFlowClickPsbt": "Нажмите на PSBT",
   "sendInvoicePaid": "Оплата счетов-фактур",
   "buyKycPendingDescription": "Вы должны сначала завершить проверку личности",
   "payBelowMinAmountError": "Вы пытаетесь заплатить ниже минимальной суммы, которую можно заплатить этим кошельком.",
@@ -2991,7 +2965,6 @@
   "importWalletLedger": "Ledger",
   "recoverbullCheckingConnection": "Проверка подключения для RecoverBull",
   "exchangeLandingTitle": "BULL BITCOIN",
-  "psbtFlowSignWithQr": "Подписаться с QR-кодом",
   "doneButton": "Дон",
   "withdrawSuccessTitle": "Вывод",
   "paySendAll": "Отправить все",
@@ -3111,7 +3084,6 @@
   "coreSwapsLnReceiveExpired": "Свап закончился.",
   "fundExchangeOnlineBillPaymentLabelBillerName": "Поиск списка билеров вашего банка на это имя",
   "recoverbullSelectFetchDriveFilesError": "Не удалось получить все накопители",
-  "psbtFlowLoadFromCamera": "Нажмите кнопку Загрузка с камеры",
   "exchangeAccountInfoVerificationLimitedVerification": "Ограниченная проверка",
   "sendBuildingTransaction": "Строительная сделка...",
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
@@ -3251,7 +3223,6 @@
     }
   },
   "bitboxErrorInvalidResponse": "Неверный ответ от устройства BitBox. Попробуй еще раз.",
-  "psbtFlowAddPassphrase": "Добавить пароль, если у вас есть один (факультативно)",
   "payAdvancedOptions": "Дополнительные варианты",
   "sendSigningTransaction": "Подписание сделки...",
   "sellErrorFeesNotCalculated": "Плата за операции не рассчитана. Попробуй еще раз.",
@@ -3261,7 +3232,6 @@
   "buyPaymentMethod": "Метод оплаты",
   "coreSwapsStatusCompleted": "Завершено",
   "fundExchangeCrIbanUsdDescriptionEnd": "... Средства будут добавлены в ваш баланс.",
-  "psbtFlowMoveCloserFurther": "Попробуйте переместить устройство ближе или дальше",
   "swapProgressTitle": "Внутренний перевод",
   "pinButtonConfirm": "Подтверждение",
   "coldcardStep2": "Добавить пароль, если у вас есть один (факультативно)",
@@ -3398,7 +3368,6 @@
       }
     }
   },
-  "psbtFlowPassportTitle": "Паспортные инструкции Фонда",
   "exchangeLandingFeature3": "Продавайте биткойн, оплачивайте биткойн",
   "notLoggedInMessage": "Пожалуйста, войдите в свою учетную запись Bull Bitcoin, чтобы получить доступ к настройкам обмена.",
   "swapTotalFees": "Итого ",
@@ -4946,5 +4915,7 @@
   "exchangeSupportChatLoadAttachmentError": "Не удалось открыть вложение. Попробуйте ещё раз.",
   "statusCheckNoDefaultWalletError": "Кошелёк Bitcoin по умолчанию не найден. Пожалуйста, установите кошелёк по умолчанию и попробуйте снова.",
   "statusCheckResultsMayBeOutdated": "Результаты могут быть устаревшими",
-  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова."
+  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова.",
+  "psbtFlowInvalidPsbtError": "Не удалось прочитать эту транзакцию. Вернитесь и создайте её заново.",
+  "psbtFlowQrEncodingError": "Не удалось преобразовать эту транзакцию в QR-код."
 }

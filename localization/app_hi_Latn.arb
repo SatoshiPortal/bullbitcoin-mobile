@@ -7316,19 +7316,6 @@
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
   },
-  "psbtFlowError": "Error: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowNoPartsToDisplay": "Dikhane ke liye koi parts nahi hain",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "psbtFlowPartProgress": "Part {current} of {total}",
   "@psbtFlowPartProgress": {
     "description": "Progress indicator for animated QR code parts",
@@ -7341,22 +7328,6 @@
       }
     }
   },
-  "psbtFlowKruxTitle": "Krux Instructions",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
-  },
-  "psbtFlowKeystoneTitle": "Keystone Instructions",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
-  "psbtFlowPassportTitle": "Foundation Passport Instructions",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
-  },
-  "psbtFlowSeedSignerTitle": "SeedSigner Instructions",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "psbtFlowSpecterTitle": "Specter Instructions",
   "@psbtFlowSpecterTitle": {
     "description": "Title for Specter device signing instructions"
@@ -7364,19 +7335,6 @@
   "psbtFlowColdcardTitle": "Coldcard Q Instructions",
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Instructions",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
-  "psbtFlowLoginToDevice": "Apne {device} device mein login karo",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "psbtFlowTurnOnDevice": "Apna {device} device on karo",
   "@psbtFlowTurnOnDevice": {
@@ -7387,37 +7345,9 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "Agar passphrase hai toh add karo (optional)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "psbtFlowClickScan": "Scan click karo",
   "@psbtFlowClickScan": {
     "description": "Instruction to click scan button on device"
-  },
-  "psbtFlowClickSign": "Sign click karo",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
-  "psbtFlowClickPsbt": "PSBT click karo",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
-  },
-  "psbtFlowLoadFromCamera": "Load from camera click karo",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
-  },
-  "psbtFlowScanQrOption": "\"Scan QR\" option select karo",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
-  "psbtFlowScanAnyQr": "\"Scan any QR code\" option select karo",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
-  },
-  "psbtFlowSignWithQr": "Sign with QR Code click karo",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
   },
   "psbtFlowScanQrShown": "Bull wallet mein dikha QR code scan karo",
   "@psbtFlowScanQrShown": {
@@ -7438,14 +7368,6 @@
   "psbtFlowMoveBack": "Device ko thoda peeche le jaane ki koshish karo",
   "@psbtFlowMoveBack": {
     "description": "Troubleshooting tip to adjust scanning distance"
-  },
-  "psbtFlowHoldSteady": "QR code ko beech mein sthir rakho",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
-  "psbtFlowMoveCloserFurther": "Device ko paas ya door le jaane ki koshish karo",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "psbtFlowReviewTransaction": "Jab transaction aapke {device} mein import ho jaye, destination address aur amount review karo.",
   "@psbtFlowReviewTransaction": {
@@ -12702,5 +12624,7 @@
   "exchangeSupportChatLoadAttachmentError": "Attachment nahi khul saka. Kripya punah prayas karein.",
   "statusCheckNoDefaultWalletError": "Koi default Bitcoin wallet nahi mila. Kripaya ek default wallet set karein aur dobara koshish karein.",
   "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain",
-  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein."
+  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
+  "psbtFlowInvalidPsbtError": "Yah transaction padha nahi ja saka. Wapas jaakar ise phir se banaayein.",
+  "psbtFlowQrEncodingError": "Is transaction ko QR code mein convert nahi kiya ja saka."
 }

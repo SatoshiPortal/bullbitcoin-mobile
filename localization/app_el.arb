@@ -685,10 +685,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "Keystone Οδηγίες",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "Κατάσταση μεταφοράς",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1416,10 +1412,6 @@
   "@transactionDetailBumpFees": {
     "description": "Button label to increase transaction fees via RBF"
   },
-  "psbtFlowNoPartsToDisplay": "Κανένα μέρος δεν εμφανίζει",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "addressCardCopiedMessage": "Διεύθυνση που αντιγράφεται στο clipboard",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1536,15 +1528,6 @@
   "fundExchangeMethodBankTransferWire": "Τράπεζα Μεταφοράς (Wire ή EFT)",
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
-  },
-  "psbtFlowLoginToDevice": "Συνδεθείτε στη συσκευή σας {device}",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Costa Costa Λιβερία",
   "@fundExchangeJurisdictionCostaRica": {
@@ -3293,10 +3276,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "Δείτε τις οδηγίες SeedSigner",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "αποτυχημένη απόπειρα",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4515,10 +4494,6 @@
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
   },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT Οδηγίες Οδηγίες Οδηγίες",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
   "transactionFilterPayjoin": "Payjoinin",
   "@transactionFilterPayjoin": {
     "description": "Filter option to show only payjoin transactions"
@@ -4934,10 +4909,6 @@
   "walletTypeWatchOnly": "Παρακολουθήστε μόνο",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "Οδηγίες Krux",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "connectHardwareWalletJade": "Blockstream Jade",
   "@connectHardwareWalletJade": {
@@ -6645,15 +6616,6 @@
   "@buyProofOfAddress": {
     "description": "Type of document required"
   },
-  "psbtFlowError": "Error: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "Εκτιμώμενη παράδοση - 10 λεπτά",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -8254,10 +8216,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "Προσθέστε ένα παθητικό εάν έχετε ένα (προαιρετικό)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "Προχωρημένες επιλογές",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -8616,10 +8574,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "Ίδρυμα Passport Οδηγίες",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "Sell Bitcoin, πληρώνεται με Bitcoin",
   "@exchangeLandingFeature3": {
@@ -9811,10 +9765,6 @@
   "@psbtFlowIncreaseBrightness": {
     "description": "Troubleshooting tip to increase brightness"
   },
-  "psbtFlowClickSign": "Click Sign",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
   "transactionLabelReceiveAmount": "Αποδεχόμενο ποσό",
   "@transactionLabelReceiveAmount": {
     "description": "Label for receive amount in swap details"
@@ -10179,10 +10129,6 @@
   "@recoverbullSelectNoBackupsFound": {
     "description": "Empty state message when no backup files found in Google Drive"
   },
-  "psbtFlowScanQrOption": "Επιλέξτε \"Scan QR\" επιλογή",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "exchangeLandingDisclaimerLegal": "Η πρόσβαση σε υπηρεσίες ανταλλαγής θα περιορίζεται σε χώρες όπου το Bull Bitcoin μπορεί να λειτουργήσει νόμιμα και μπορεί να απαιτήσει KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -10272,10 +10218,6 @@
   "connectingToKeyServer": "Συνδέοντας με τον Key Server πάνω από το Tor.\nΑυτό μπορεί να διαρκέσει μέχρι ένα λεπτό.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
-  },
-  "psbtFlowHoldSteady": "Κρατήστε τον κωδικό QR σταθερό και επικεντρωμένο",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
   },
   "testBackupGoogleDrivePrivacyPart1": "Αυτές οι πληροφορίες ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -10541,10 +10483,6 @@
   "testBackupBackupId": "Backup ID:",
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
-  },
-  "psbtFlowScanAnyQr": "Επιλέξτε \"Scan οποιοδήποτε QR code\" επιλογή",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "Δίκτυο server Fees",
   "@transactionLabelServerNetworkFees": {
@@ -10863,10 +10801,6 @@
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
   },
-  "psbtFlowClickPsbt": "Κάντε κλικ στο PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
-  },
   "testBackupWalletTitle": "Test {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
@@ -11001,10 +10935,6 @@
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
   },
-  "psbtFlowSignWithQr": "Κάντε κλικ στην εγγραφή QR Code",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "backupWalletBestPracticesTitle": "Backup βέλτιστες πρακτικές",
   "@backupWalletBestPracticesTitle": {
     "description": "AppBar title for physical backup checklist screen"
@@ -11085,10 +11015,6 @@
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
   },
-  "psbtFlowLoadFromCamera": "Κάντε κλικ Φόρτρα από κάμερα",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
-  },
   "transactionDetailLabelOrderNumber": "Αριθμός αριθμών",
   "transactionDetailLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@transactionDetailLabelOrderNumber": {
@@ -11157,10 +11083,6 @@
   "transactionSwapDescChainPaid": "Η συναλλαγή σας έχει μεταδοθεί. Τώρα περιμένουμε να επιβεβαιωθεί η συναλλαγή κλειδώματος.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "psbtFlowMoveCloserFurther": "Προσπαθήστε να μετακινήσετε τη συσκευή σας πιο κοντά ή πιο μακριά",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "recoverbullSelectGoogleDrive": "Google Drive",
   "@recoverbullSelectGoogleDrive": {
@@ -12314,5 +12236,7 @@
   "exchangeSupportChatLoadAttachmentError": "Δεν ήταν δυνατό το άνοιγμα του συνημμένου. Δοκιμάστε ξανά.",
   "statusCheckNoDefaultWalletError": "Δεν βρέθηκε προεπιλεγμένο πορτοφόλι Bitcoin. Ορίστε ένα προεπιλεγμένο πορτοφόλι και δοκιμάστε ξανά.",
   "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα",
-  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά."
+  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
+  "psbtFlowInvalidPsbtError": "Αυτή η συναλλαγή δεν μπόρεσε να διαβαστεί. Επιστρέψτε και δημιουργήστε την ξανά.",
+  "psbtFlowQrEncodingError": "Αυτή η συναλλαγή δεν μπόρεσε να μετατραπεί σε κωδικό QR."
 }
