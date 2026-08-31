@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_la
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/pick_vault_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/record_encrypted_backup_created_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/save_file_to_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
@@ -31,6 +32,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_tor/tor.dart';
@@ -89,6 +91,11 @@ class RecoverbullLocator {
         seedRepository: locator<SeedRepository>(),
         walletRepository: locator<WalletRepository>(),
         recoverBullRepository: locator<RecoverBullRepository>(),
+      ),
+    );
+    locator.registerFactory<RecordEncryptedBackupCreatedUsecase>(
+      () => RecordEncryptedBackupCreatedUsecase(
+        locator<WalletBackupMetadataPort>(),
       ),
     );
     locator.registerFactory<ConnectToGoogleDriveUsecase>(

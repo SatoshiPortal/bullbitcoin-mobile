@@ -61,10 +61,20 @@ class TestWalletBackupBloc
     try {
       final wallets = await _loadWalletsForNetworkUsecase.execute();
       if (wallets.isEmpty) throw Exception('No wallets found');
-      final Wallet selected = wallets.firstWhere(
-        (w) => w.isDefault,
-        orElse: () => wallets.first,
-      );
+      final Wallet selected;
+      if (event.fingerprint case final fingerprint?) {
+        final normalizedFingerprint = fingerprint.toLowerCase();
+        selected = wallets.firstWhere(
+          (wallet) => wallet.localMasterFingerprints.any(
+            (value) => value.toLowerCase() == normalizedFingerprint,
+          ),
+        );
+      } else {
+        selected = wallets.firstWhere(
+          (wallet) => wallet.isDefault,
+          orElse: () => wallets.first,
+        );
+      }
       emit(
         state.copyWith(
           wallets: wallets,
@@ -107,7 +117,9 @@ class TestWalletBackupBloc
       );
 
       if (isCorrect) {
-        await _completePhysicalBackupVerificationUsecase.execute();
+        await _completePhysicalBackupVerificationUsecase.execute(
+          fingerprint: wallet.localMasterFingerprints.single,
+        );
         emit(
           state.copyWith(
             verificationStatus: BackupVerificationStatus.success,

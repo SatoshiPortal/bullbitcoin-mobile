@@ -5,7 +5,9 @@ sealed class TestWalletBackupEvent {
 }
 
 class LoadWallets extends TestWalletBackupEvent {
-  const LoadWallets();
+  final String? fingerprint;
+
+  const LoadWallets({this.fingerprint});
 }
 
 class WalletSelected extends TestWalletBackupEvent {

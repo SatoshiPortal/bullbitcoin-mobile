@@ -224,7 +224,7 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsRecoverBullSettings,
       ),
       icon: Icons.cloud_circle,
-      open: (context) => const RecoverBullFacade().openSettings(context),
+      open: (context) => RecoverBullFacade.openSettings(context),
       keywords: _keywords(
         localization.settingsSearchRecoverbullKeywords,
         english.settingsSearchRecoverbullKeywords,
