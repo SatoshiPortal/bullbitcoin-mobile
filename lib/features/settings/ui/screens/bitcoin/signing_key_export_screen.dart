@@ -20,11 +20,13 @@ class SigningKeyExportScreen extends StatefulWidget {
 }
 
 class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
-  bool _isAccountDirty = false;
+  int? _revealedReservedAccount;
 
-  void _setAccountDirty(bool isDirty) {
-    if (_isAccountDirty == isDirty) return;
-    setState(() => _isAccountDirty = isDirty);
+  void _selectAccount(BuildContext context, int account) {
+    if (_revealedReservedAccount != null) {
+      setState(() => _revealedReservedAccount = null);
+    }
+    context.read<SigningKeyExportCubit>().selectAccount(account);
   }
 
   @override
@@ -51,10 +53,7 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                   const Gap(24),
                   _SigningKeyAccountInput(
                     account: state.account,
-                    onChanged: context
-                        .read<SigningKeyExportCubit>()
-                        .selectAccount,
-                    onDirtyChanged: _setAccountDirty,
+                    onChanged: (account) => _selectAccount(context, account),
                   ),
                   const Gap(8),
                   Text(
@@ -64,6 +63,10 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                     ),
                   ),
                   const Gap(24),
+                  if (state.isLoading) ...[
+                    const LinearProgressIndicator(),
+                    const Gap(16),
+                  ],
                   if (state.failure case final failure?) ...[
                     InfoCard(
                       description: failure.toTranslated(context),
@@ -77,25 +80,69 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
                     ),
-                  ] else if (!_isAccountDirty) ...[
-                    Center(
-                      child: QrDisplayWidget(
-                        data: state.descriptorKey,
-                        size: 240,
+                  ] else if (state.descriptorKey.isNotEmpty) ...[
+                    if (state.markedAccount case final markedAccount?) ...[
+                      InfoCard(
+                        description: context.loc.signingKeyExportAccountMarked(
+                          markedAccount,
+                          state.account,
+                        ),
+                        tagColor: context.appColors.secondary,
+                        bgColor: context.appColors.onSecondary,
                       ),
-                    ),
-                    const Gap(24),
-                    CopyInput(
-                      text: state.descriptorKey,
-                      canShowValueModal: true,
-                      modalTitle: context.loc.signingKeyExportTitle,
-                    ),
-                    const Gap(24),
-                    InfoCard(
-                      description: context.loc.signingKeyExportPrivacyNotice,
-                      tagColor: context.appColors.secondary,
-                      bgColor: context.appColors.onSecondary,
-                    ),
+                      const Gap(24),
+                    ],
+                    if (state.isReserved) ...[
+                      InfoCard(
+                        description: context.loc.signingKeyExportAccountUsed,
+                        tagColor: context.appColors.warning,
+                        bgColor: context.appColors.warningContainer,
+                      ),
+                      const Gap(16),
+                    ],
+                    if (!state.isReserved ||
+                        _revealedReservedAccount == state.account) ...[
+                      Center(
+                        child: QrDisplayWidget(
+                          data: state.descriptorKey,
+                          size: 240,
+                        ),
+                      ),
+                      const Gap(24),
+                      CopyInput(
+                        text: state.descriptorKey,
+                        canShowValueModal: true,
+                        modalTitle: context.loc.signingKeyExportTitle,
+                      ),
+                      const Gap(24),
+                      InfoCard(
+                        description: context.loc.signingKeyExportPrivacyNotice,
+                        tagColor: context.appColors.secondary,
+                        bgColor: context.appColors.onSecondary,
+                      ),
+                    ] else ...[
+                      BBButton.big(
+                        label: context.loc.signingKeyExportShowDetails,
+                        onPressed: () => setState(
+                          () => _revealedReservedAccount = state.account,
+                        ),
+                        bgColor: context.appColors.secondary,
+                        textColor: context.appColors.onSecondary,
+                        outlined: true,
+                        borderColor: context.appColors.secondary,
+                      ),
+                    ],
+                    if (!state.isReserved) ...[
+                      const Gap(24),
+                      BBButton.big(
+                        label: context.loc.signingKeyExportMarkUsed,
+                        onPressed: context
+                            .read<SigningKeyExportCubit>()
+                            .markAccountUsed,
+                        bgColor: context.appColors.primary,
+                        textColor: context.appColors.onPrimary,
+                      ),
+                    ],
                   ],
                 ],
               );
@@ -110,12 +157,10 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
 class _SigningKeyAccountInput extends StatefulWidget {
   final int account;
   final ValueChanged<int> onChanged;
-  final ValueChanged<bool> onDirtyChanged;
 
   const _SigningKeyAccountInput({
     required this.account,
     required this.onChanged,
-    required this.onDirtyChanged,
   });
 
   @override
@@ -137,7 +182,7 @@ class _SigningKeyAccountInputState extends State<_SigningKeyAccountInput> {
   @override
   void didUpdateWidget(_SigningKeyAccountInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.account != oldWidget.account) {
+    if (widget.account != oldWidget.account && !_focusNode.hasFocus) {
       _controller.text = widget.account.toString();
     }
   }
@@ -161,10 +206,18 @@ class _SigningKeyAccountInputState extends State<_SigningKeyAccountInput> {
         account < 0 ||
         account > SigningKeyDerivation.maxAccount) {
       _controller.text = widget.account.toString();
-      widget.onDirtyChanged(false);
       return;
     }
-    widget.onDirtyChanged(false);
+    if (account != widget.account) widget.onChanged(account);
+  }
+
+  void _onChanged(String value) {
+    final account = int.tryParse(value);
+    if (account == null ||
+        account < 0 ||
+        account > SigningKeyDerivation.maxAccount) {
+      return;
+    }
     widget.onChanged(account);
   }
 
@@ -183,8 +236,7 @@ class _SigningKeyAccountInputState extends State<_SigningKeyAccountInput> {
           controller: _controller,
           focusNode: _focusNode,
           onlyNumbers: true,
-          onChanged: (value) =>
-              widget.onDirtyChanged(int.tryParse(value) != widget.account),
+          onChanged: _onChanged,
           onDone: _submit,
         ),
       ],

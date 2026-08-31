@@ -14989,7 +14989,7 @@
   "@signingKeyExportAccount": {
     "description": "Label for the BIP48 account number used when exporting a signing key"
   },
-  "signingKeyExportAccountHelp": "Use a different account number when you need a separate key for another wallet.",
+  "signingKeyExportAccountHelp": "Use a different account for each separate wallet. After adding this key to a wallet, mark the account as used.",
   "@signingKeyExportAccountHelp": {
     "description": "Explains how to avoid reusing an exported signing key across wallets"
   },
@@ -15759,5 +15759,29 @@
   "copiedToClipboardMessage": "Copied to clipboard",
   "@copiedToClipboardMessage": {
     "description": "Snackbar confirmation message after copying to clipboard"
+  },
+  "signingKeyExportMarkUsed": "I used this key",
+  "@signingKeyExportMarkUsed": {
+    "description": "Action confirming that the displayed Bull signing key was added to a wallet"
+  },
+  "signingKeyExportAccountUsed": "This account is already marked as used. Reuse it only if you intend to use the same key again.",
+  "@signingKeyExportAccountUsed": {
+    "description": "Warning shown when the selected BIP48 signing-key account is already reserved"
+  },
+  "signingKeyExportAccountMarked": "Account {account} is marked as used. Account {nextAccount} is ready for another wallet.",
+  "@signingKeyExportAccountMarked": {
+    "description": "Confirmation after reserving a manually exported signing-key account",
+    "placeholders": {
+      "account": {
+        "type": "int"
+      },
+      "nextAccount": {
+        "type": "int"
+      }
+    }
+  },
+  "signingKeyExportShowDetails": "Show key details",
+  "@signingKeyExportShowDetails": {
+    "description": "Action to deliberately reveal a signing key for an account already marked as used"
   }
 }

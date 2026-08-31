@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bull_owned_bip48_accounts_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -23,11 +24,19 @@ class ImportWatchOnlyLocator {
     );
 
     locator.registerFactory<ImportWatchOnlyDescriptorUsecase>(
-      () => ImportWatchOnlyDescriptorUsecase(locator<BitcoinDescriptorPort>()),
+      () => ImportWatchOnlyDescriptorUsecase(
+        locator<BitcoinDescriptorPort>(),
+        locator<ReserveBullOwnedBip48AccountsUsecase>(),
+        locator(),
+      ),
     );
 
     locator.registerFactory<ImportWatchOnlyXpubUsecase>(
-      () => ImportWatchOnlyXpubUsecase(locator<BitcoinDescriptorPort>()),
+      () => ImportWatchOnlyXpubUsecase(
+        locator<BitcoinDescriptorPort>(),
+        locator<ReserveBullOwnedBip48AccountsUsecase>(),
+        locator(),
+      ),
     );
   }
 }

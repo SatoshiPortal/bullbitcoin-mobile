@@ -178,6 +178,50 @@ void main() {
     ).thenAnswer((_) async => true);
   });
 
+  test(
+    'reports persisted BIP48 accounts for ownership reconciliation',
+    () async {
+      final local = _signer(
+        masterFingerprint: _fingerprint,
+        signer: SignerEntity.local,
+      );
+      final remote = _signer(
+        id: 'signer-1',
+        descriptorKeyId: 'key-1',
+        masterFingerprint: _secondFingerprint,
+        signer: SignerEntity.remote,
+      );
+      when(metadataDatasource.fetchAll).thenAnswer(
+        (_) async => [
+          WalletMetadataModel(
+            id: 'wallet-id',
+            network: Network.bitcoinMainnet,
+            signers: [local.toModel(), remote.toModel()],
+            isEncryptedVaultTested: false,
+            isPhysicalBackupTested: false,
+            publicDescriptor: _multisigDescriptor,
+            isDefault: false,
+          ),
+        ],
+      );
+
+      final usages = await repository.getBip48AccountUsages();
+
+      expect(usages, hasLength(2));
+      expect(
+        usages.map((usage) => usage.seedFingerprint),
+        containsAll([_fingerprint, _secondFingerprint]),
+      );
+      final localUsage = usages.firstWhere(
+        (usage) => usage.seedFingerprint == _fingerprint,
+      );
+      expect(localUsage.coinType, 0);
+      expect(localUsage.account, 0);
+      expect(localUsage.derivationPath, "m/48h/0h/0h/2h");
+      expect(localUsage.xpub, _xpub);
+    },
+  );
+
   test('imports descriptors with structured signer metadata', () async {
     final wallet = await repository.importDescriptor(
       descriptor: _multipathDescriptor,
