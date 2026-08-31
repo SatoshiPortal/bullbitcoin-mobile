@@ -13,7 +13,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class VerifyMnemonicScreen extends StatefulWidget {
-  const VerifyMnemonicScreen({super.key});
+  final VoidCallback? onVerified;
+
+  const VerifyMnemonicScreen({super.key, this.onVerified});
 
   @override
   State<VerifyMnemonicScreen> createState() => _VerifyMnemonicScreenState();
@@ -122,11 +124,16 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             switch (state.verificationStatus) {
               case BackupVerificationStatus.success:
                 context.read<TestWalletBackupBloc>().add(const ClearError());
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const BackupTestSuccessScreen(),
-                  ),
-                );
+                final onVerified = widget.onVerified;
+                if (onVerified != null) {
+                  onVerified();
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const BackupTestSuccessScreen(),
+                    ),
+                  );
+                }
               case BackupVerificationStatus.failure:
                 _resetGame();
                 SnackBarUtils.showSnackBar(

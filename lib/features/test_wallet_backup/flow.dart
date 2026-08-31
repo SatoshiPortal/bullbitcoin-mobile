@@ -1,11 +1,17 @@
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/show_mnemonic_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:flutter/material.dart';
 
 class TestPhysicalBackupFlowNavigator extends StatelessWidget {
   final TestPhysicalBackupFlow flow;
-  const TestPhysicalBackupFlowNavigator({super.key, required this.flow});
+  final VoidCallback? onVerified;
+
+  const TestPhysicalBackupFlowNavigator({
+    super.key,
+    required this.flow,
+    this.onVerified,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +30,9 @@ class TestPhysicalBackupFlowNavigator extends StatelessWidget {
           return MaterialPageRoute(
             builder: (context) => switch (flow) {
               TestPhysicalBackupFlow.backup => const ShowMnemonicScreen(),
-              TestPhysicalBackupFlow.verify => const VerifyMnemonicScreen(),
+              TestPhysicalBackupFlow.verify => VerifyMnemonicScreen(
+                onVerified: onVerified,
+              ),
             },
           );
         },

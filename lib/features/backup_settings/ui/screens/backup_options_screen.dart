@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -85,7 +85,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 tag: context.loc.backupWalletPhysicalBackupTag,
                 onTap: () {
                   context.pushNamed(
-                    TestWalletBackupRoute.testPhysicalBackupFlow.name,
+                    TestWalletBackupFacade.routeName,
                     extra: switch (widget.flow) {
                       BackupSettingsFlow.backup =>
                         TestPhysicalBackupFlow.backup,

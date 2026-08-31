@@ -36,6 +36,7 @@ import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/psbt_signing/psbt_signing_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
+import 'package:bb_mobile/features/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
 import 'package:bb_mobile/features/sell/sell_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
@@ -144,6 +145,7 @@ class AppLocator {
     ConsolidationLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
+    RecoverBullLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);

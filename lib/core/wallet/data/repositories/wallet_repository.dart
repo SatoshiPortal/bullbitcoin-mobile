@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
@@ -36,6 +37,7 @@ import 'package:crypto/crypto.dart';
 class WalletRepository
     implements
         BitcoinDescriptorPort,
+        WalletBackupMetadataPort,
         WalletSignerDevicePort,
         Bip48AccountUsagePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -364,6 +366,22 @@ class WalletRepository
         latestEncryptedBackup: time?.millisecondsSinceEpoch,
         isEncryptedVaultTested: time != null,
       ),
+    );
+  }
+
+  @override
+  Future<void> recordEncryptedBackupCreated({
+    required DateTime time,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw WalletError.notFound(walletId);
+    }
+
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(latestEncryptedBackup: time.millisecondsSinceEpoch),
     );
   }
 
