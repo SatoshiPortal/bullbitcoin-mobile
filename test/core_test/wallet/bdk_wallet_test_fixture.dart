@@ -22,20 +22,21 @@ const testMnemonics = [
   'letter advice cage absurd amount doctor acoustic avoid letter advice cage above',
 ];
 
-SignerDescriptorKeys deriveSignerKeys(String words) =>
-    deriveSignerKeysAtAccount(words, account: 0);
+SignerDescriptorKeys deriveSignerKeys(String words, {bool isTestnet = true}) =>
+    deriveSignerKeysAtAccount(words, account: 0, isTestnet: isTestnet);
 
 SignerDescriptorKeys deriveSignerKeysAtAccount(
   String words, {
   required int account,
+  bool isTestnet = true,
 }) {
   final root = bdk.DescriptorSecretKey(
-    networkKind: bdk.NetworkKind.test,
+    networkKind: isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main,
     mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
     password: null,
   );
   final accountKey = root.derive(
-    path: bdk.DerivationPath(path: "m/48'/1'/$account'/2'"),
+    path: bdk.DerivationPath(path: "m/48'/${isTestnet ? 1 : 0}'/$account'/2'"),
   );
   return (
     externalPrivate: '$accountKey/0/*',

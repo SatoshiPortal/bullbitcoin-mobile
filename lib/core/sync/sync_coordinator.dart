@@ -224,12 +224,18 @@ class SyncCoordinator {
   Future<void> _runTask(SyncKind kind) async {
     switch (kind) {
       case SyncKind.bitcoin:
-        final wallets = await _getWallets.execute(onlyBitcoin: true);
+        final wallets = await _getWallets.execute(
+          onlyBitcoin: true,
+          includeHidden: true,
+        );
         for (final wallet in wallets) {
           await _syncWallet.execute(wallet);
         }
       case SyncKind.liquid:
-        final wallets = await _getWallets.execute(onlyLiquid: true);
+        final wallets = await _getWallets.execute(
+          onlyLiquid: true,
+          includeHidden: true,
+        );
         for (final wallet in wallets) {
           await _syncWallet.execute(wallet);
         }

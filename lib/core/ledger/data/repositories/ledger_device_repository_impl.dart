@@ -126,6 +126,7 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
   Future<Result<void, LedgerFailure>> registerWalletPolicy(
     LedgerDeviceEntity device, {
     required Wallet wallet,
+    String? signerId,
   }) => _guard(() async {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
@@ -137,7 +138,11 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       wallet: wallet,
       hasUnspendablePolicyKey: descriptor.hasUnspendablePolicyKey,
     );
-    final signer = await _matchWalletSigner(model, wallet: wallet);
+    final signer = await _matchWalletSigner(
+      model,
+      wallet: wallet,
+      signerId: signerId,
+    );
     final hmac = await _datasource.registerWalletPolicy(
       model,
       walletPolicy: walletPolicy,
@@ -188,6 +193,7 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     required String address,
     required BitcoinPolicyKeychain keychain,
     required int index,
+    String? signerId,
   }) => _guard(() async {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
@@ -199,7 +205,11 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       wallet: wallet,
       hasUnspendablePolicyKey: descriptor.hasUnspendablePolicyKey,
     );
-    final signer = await _matchWalletSigner(model, wallet: wallet);
+    final signer = await _matchWalletSigner(
+      model,
+      wallet: wallet,
+      signerId: signerId,
+    );
     final hmac = await _registeredHmac(wallet.id, signer.id, policyId);
     final verifiedAddress = await _datasource.verifyWalletAddress(
       model,

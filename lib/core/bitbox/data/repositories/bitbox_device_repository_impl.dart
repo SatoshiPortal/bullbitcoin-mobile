@@ -115,11 +115,13 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
   Future<Result<void, BitBoxFailure>> registerWalletPolicy(
     BitBoxDeviceEntity device, {
     required Wallet wallet,
+    String? signerId,
   }) => _guard(() async {
     final model = device.toModel();
     final signer = await _matchWalletSigner(
       model,
       wallet: wallet,
+      signerId: signerId,
       isTestnet: wallet.isTestnet,
     );
     _ensureSupportedPolicy(wallet, signer);
@@ -175,11 +177,13 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
     required String address,
     required BitcoinPolicyKeychain keychain,
     required int index,
+    String? signerId,
   }) => _guard(() async {
     final model = device.toModel();
     final signer = await _matchWalletSigner(
       model,
       wallet: wallet,
+      signerId: signerId,
       isTestnet: wallet.isTestnet,
     );
     _ensureSupportedPolicy(wallet, signer);
