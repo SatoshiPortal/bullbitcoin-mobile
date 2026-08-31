@@ -67,10 +67,14 @@ class TestWalletBackupBloc
     switch (await _loadWalletsForNetworkUsecase.execute()) {
       case Ok(:final value):
         // The use-case rejects an empty list, so first/firstWhere are safe.
-        final Wallet selected = value.firstWhere(
-          (w) => w.isDefault,
-          orElse: () => value.first,
-        );
+        final fingerprint = event.fingerprint?.toLowerCase();
+        final Wallet? selected = fingerprint == null
+            ? value.firstWhere((w) => w.isDefault, orElse: () => value.first)
+            : value.where((w) => w.localMasterFingerprints.any((f) => f.toLowerCase() == fingerprint)).firstOrNull;
+        if (selected == null) {
+          emit(state.copyWith(failure: const TestWalletBackupNoWalletSelectedFailure()));
+          return;
+        }
         emit(
           state.copyWith(
             wallets: value,
@@ -132,7 +136,7 @@ class TestWalletBackupBloc
       return;
     }
 
-    if (await _completeBackupVerificationUsecase.execute() case Err(
+    if (await _completeBackupVerificationUsecase.execute(fingerprint: wallet.localMasterFingerprints.single) case Err(
       :final failure,
     )) {
       // The words were right but recording it failed. Reported rather than

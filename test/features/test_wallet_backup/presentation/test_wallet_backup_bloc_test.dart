@@ -112,6 +112,44 @@ void main() {
       await bloc.close();
     });
 
+    test('selects the wallet that owns a requested seed fingerprint', () async {
+      final defaultWallet = _wallet(isDefault: true, origin: 'a');
+      final requestedWallet = Wallet(
+        origin: 'b',
+        label: 'Requested',
+        network: Network.bitcoinMainnet,
+        publicDescriptor: 'wpkh([beef1234/84h/0h/0h]xpub/<0;1>/*)',
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: 'beef1234',
+            xpubFingerprint: 'beef1234',
+            xpub: 'xpub',
+            derivationPath: "m/84'/0'/0'",
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ),
+        ],
+        scriptType: ScriptType.bip84,
+        balanceSat: BigInt.zero,
+      );
+      when(
+        () => loadWalletsUsecase.execute(),
+      ).thenAnswer((_) async => [defaultWallet, requestedWallet]);
+      final bloc = buildBloc();
+
+      final expectation = expectLater(
+        bloc.stream,
+        emits(
+          predicate<TestWalletBackupState>(
+            (state) => state.selectedWallet == requestedWallet,
+          ),
+        ),
+      );
+      bloc.add(const LoadWallets(fingerprint: 'BEEF1234'));
+      await expectation;
+      await bloc.close();
+    });
+
     test(
       'emits success and completes the backup when words are correct',
       () async {
@@ -122,7 +160,7 @@ void main() {
           ),
         ).thenAnswer((_) async => const Ok(true));
         when(
-          () => completeUsecase.execute(),
+          () => completeUsecase.execute(fingerprint: _fingerprint),
         ).thenAnswer((_) async => const Ok(null));
         final bloc = buildBloc();
         bloc.seed(
@@ -148,7 +186,9 @@ void main() {
             mnemonic: _mnemonicWords,
           ),
         ).called(1);
-        verify(() => completeUsecase.execute()).called(1);
+        verify(
+          () => completeUsecase.execute(fingerprint: _fingerprint),
+        ).called(1);
         await bloc.close();
       },
     );
@@ -180,7 +220,9 @@ void main() {
         bloc.add(const VerifyPhysicalBackup(reorderedWords: _mnemonicWords));
         await expectation;
 
-        verifyNever(() => completeUsecase.execute());
+        verifyNever(
+          () => completeUsecase.execute(fingerprint: any(named: 'fingerprint')),
+        );
         await bloc.close();
       },
     );
@@ -270,7 +312,7 @@ void main() {
         );
         bloc.add(const VerifyPhysicalBackup(reorderedWords: _mnemonicWords));
         await expectation;
-        verifyNever(() => completeUsecase.execute());
+        verifyNever(() => completeUsecase.execute(fingerprint: _fingerprint));
         await bloc.close();
       },
     );
@@ -282,7 +324,7 @@ void main() {
           mnemonic: _mnemonicWords,
         ),
       ).thenAnswer((_) async => const Ok(true));
-      when(() => completeUsecase.execute()).thenAnswer(
+      when(() => completeUsecase.execute(fingerprint: _fingerprint)).thenAnswer(
         (_) async =>
             const Err(TestWalletBackupCompletionFailure('drift: locked')),
       );

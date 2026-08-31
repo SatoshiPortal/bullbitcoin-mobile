@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 class CompletePhysicalBackupVerificationUsecase {
   final WalletRepository _walletRepository;
@@ -13,31 +15,31 @@ class CompletePhysicalBackupVerificationUsecase {
     required this._settingsRepository,
   });
 
-  Future<void> execute() async {
+  Future<void> execute({String? fingerprint}) async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final defaultWallets = switch (await _walletRepository.getWallets(
-        onlyDefaults: true,
-        environment: settings.environment,
-      )) {
-        Ok(:final value) => value,
-        // Wrapped into this use-case's own exception by the catch below.
-        Err(:final failure) =>
-          throw CompletePhysicalBackupVerificationException(
-            'default wallets read failed: ${failure.runtimeType}',
-          ),
-      };
-      if (defaultWallets.isEmpty) {
-        throw Exception('No default wallet found');
+      final wallets = fingerprint == null
+          ? await _defaultWallets()
+          : await _allWallets();
+      final normalizedFingerprint = fingerprint?.toLowerCase();
+      final matchingWallets = normalizedFingerprint == null
+          ? wallets
+          : wallets
+                .where(
+                  (wallet) => wallet.localMasterFingerprints.any(
+                    (value) => value.toLowerCase() == normalizedFingerprint,
+                  ),
+                )
+                .toList();
+      if (matchingWallets.isEmpty) {
+        throw Exception('No wallet found for physical backup verification');
       }
-      // There should only be one default Bitcoin wallet
 
-      for (final defaultWallet in defaultWallets) {
+      for (final wallet in matchingWallets) {
         await _walletRepository.updateBackupInfo(
-          walletId: defaultWallet.id,
-          isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
+          walletId: wallet.id,
+          isEncryptedVaultTested: wallet.isEncryptedVaultTested,
           isPhysicalBackupTested: true,
-          latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
+          latestEncryptedBackup: wallet.latestEncryptedBackup,
           latestPhysicalBackup: DateTime.now(),
         );
       }
@@ -46,6 +48,21 @@ class CompletePhysicalBackupVerificationUsecase {
     } catch (e) {
       throw CompletePhysicalBackupVerificationException(e.toString());
     }
+  }
+
+Future<List<Wallet>> _allWallets() async => _unwrap(await _walletRepository.getWallets());
+
+  List<Wallet> _unwrap(Result<List<Wallet>, WalletFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw CompletePhysicalBackupVerificationException('wallet read: ${failure.runtimeType}'),
+  };
+
+  Future<List<Wallet>> _defaultWallets() async {
+    final settings = await _settingsRepository.fetch();
+    return _unwrap(await _walletRepository.getWallets(
+      onlyDefaults: true,
+      environment: settings.environment,
+    ));
   }
 }
 

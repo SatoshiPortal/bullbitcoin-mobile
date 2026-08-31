@@ -14,6 +14,8 @@ enum KeyServerStatus { unknown, connecting, online, offline }
 sealed class RecoverBullState with _$RecoverBullState {
   const factory RecoverBullState({
     required RecoverBullFlow flow,
+    @Default(false) bool returnToCaller,
+    @Default(null) String? seedFingerprint,
     @Default(null) VaultProvider? vaultProvider,
     @Default(null) EncryptedVault? vault,
     @Default(null) String? vaultKey,
