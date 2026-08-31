@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for AI coding agents working in this repo. Cross-tool standard ([agents.md](https://agents.md/)) — read by most coding agents (Cursor, Codex, Copilot, Claude Code, …). Tools that only read `CLAUDE.md`: create a local, gitignored `CLAUDE.md` containing `See @AGENTS.md`.
+Instructions for AI coding agents working in this repo. Cross-tool standard ([agents.md](https://agents.md/)) — read by most coding agents (Cursor, Codex, Copilot, Claude Code, …). Tools that only read `CLAUDE.md`: create a local, gitignored `CLAUDE.md` containing `See @AGENTS.md`. Also read `AGENTS.local.md` if present — it holds instructions specific to the current host or developer.
 
 ## Project
 

@@ -109,6 +109,7 @@ app.*.map.json
 today.md
 
 CLAUDE.md
+AGENTS.local.md
 .zed/
 .claude/
 
