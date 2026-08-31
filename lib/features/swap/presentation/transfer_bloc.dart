@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -1397,6 +1398,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             walletId: fromWallet.id,
             selectedInputs: stateToUse.selectedUtxos,
           );
+        } on NoSpendableUtxoException {
+          throw BuildTransactionException(selectedCoinsUnavailableCode);
         } on InsufficientFundsException {
           throw BuildTransactionException(selectedCoinsUnavailableCode);
         }
@@ -1690,6 +1693,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         return;
       }
       emit(state.copyWith(txId: txId));
+    } on NoSpendableUtxoException {
+      _clearBitcoinFeePreviews(emit);
+      emit(
+        state.copyWith(
+          buildTransactionException: BuildTransactionException(
+            selectedCoinsUnavailableCode,
+          ),
+        ),
+      );
     } on InsufficientFundsException {
       _clearBitcoinFeePreviews(emit);
       emit(

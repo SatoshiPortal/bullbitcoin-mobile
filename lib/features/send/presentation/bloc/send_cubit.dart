@@ -2104,6 +2104,8 @@ class SendCubit extends Cubit<SendState>
         selectedInputs: state.selectedUtxos,
       );
       return true;
+    } on NoSpendableUtxoException {
+      _invalidateSignedTransaction();
     } on InsufficientFundsException {
       _invalidateSignedTransaction();
     } on ValidateBitcoinSelectionException {
