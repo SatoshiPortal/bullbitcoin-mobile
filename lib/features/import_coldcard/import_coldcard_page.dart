@@ -63,7 +63,7 @@ class ImportColdcardPage extends StatelessWidget {
               context.loc.importColdcardConnectDescription(deviceName),
               style: context.font.bodyLarge,
               textAlign: .center,
-              maxLines: 2,
+              maxLines: 4,
             ),
 
             Gap(Device.screen.height * 0.05),

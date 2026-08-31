@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -63,6 +64,7 @@ class _SignerDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fingerprint = signer.displayFingerprint;
+    final accountKeys = _distinctAccountKeys(signer.descriptorKeys);
     final label = fingerprint.isEmpty
         ? context.loc.walletSignerLabel(index + 1)
         : context.loc.walletSignerLabelWithFingerprint(index + 1, fingerprint);
@@ -94,8 +96,8 @@ class _SignerDetails extends StatelessWidget {
                 : (device) => onSignerDeviceChanged!(signer, device),
           ),
         ],
-        for (final (keyIndex, key) in signer.descriptorKeys.indexed) ...[
-          if (signer.descriptorKeys.length > 1) ...[
+        for (final (keyIndex, key) in accountKeys.indexed) ...[
+          if (accountKeys.length > 1) ...[
             const Gap(18),
             BBText(
               context.loc.walletDetailsKeyLabel(keyIndex + 1),
@@ -121,6 +123,16 @@ class _SignerDetails extends StatelessWidget {
       ],
     );
   }
+}
+
+List<WalletDescriptorKey> _distinctAccountKeys(
+  List<WalletDescriptorKey> descriptorKeys,
+) {
+  final xpubs = <String>{};
+  return [
+    for (final key in descriptorKeys)
+      if (key.xpub.isEmpty || xpubs.add(key.xpub)) key,
+  ];
 }
 
 String _signerDescription(BuildContext context, WalletSigner signer) {

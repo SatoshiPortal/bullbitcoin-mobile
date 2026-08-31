@@ -118,6 +118,7 @@ abstract class Wallet with _$Wallet {
     String? label,
     required Network network,
     @Default(false) bool isDefault,
+    @Default(false) bool isHidden,
     required List<WalletSigner> signers,
     required ScriptType? scriptType,
     required String publicDescriptor,

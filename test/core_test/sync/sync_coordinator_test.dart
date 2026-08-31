@@ -48,11 +48,15 @@ void main() {
   ({Completer<void> bitcoin, Completer<void> liquid}) wireGates() {
     final bitcoin = Completer<void>();
     final liquid = Completer<void>();
-    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer((_) async {
       await bitcoin.future;
       return <Wallet>[];
     });
-    when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).thenAnswer((_) async {
       await liquid.future;
       return <Wallet>[];
     });
@@ -113,33 +117,45 @@ void main() {
       'a user sync bypasses it', () async {
     // No gating: each kind completes immediately so _lastSuccessAt is set.
     when(
-      () => getWallets.execute(onlyBitcoin: true),
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
     ).thenAnswer((_) async => <Wallet>[]);
     when(
-      () => getWallets.execute(onlyLiquid: true),
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
     ).thenAnswer((_) async => <Wallet>[]);
     await coordinator.sync(trigger: SyncTrigger.automatic);
     // Immediately again (well within the 2s window) — every kind is throttled.
     await coordinator.sync(trigger: SyncTrigger.automatic);
 
-    verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
-    verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+    verify(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).called(1);
+    verify(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).called(1);
     verifyNever(syncSwaps.call);
     // A user gesture bypasses the throttle and re-runs every kind.
     await coordinator.sync(trigger: SyncTrigger.user);
 
-    verify(() => getWallets.execute(onlyBitcoin: true)).called(1);
-    verify(() => getWallets.execute(onlyLiquid: true)).called(1);
+    verify(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).called(1);
+    verify(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).called(1);
     verifyNever(syncSwaps.call);
   });
 
   test('a general sync does not wait for swap polling', () async {
     final order = <String>[];
-    when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer((_) async {
       order.add('bitcoin');
       return <Wallet>[];
     });
-    when(() => getWallets.execute(onlyLiquid: true)).thenAnswer((_) async {
+    when(
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
+    ).thenAnswer((_) async {
       order.add('liquid');
       return <Wallet>[];
     });
@@ -172,10 +188,10 @@ void main() {
 
   test('does not sync swaps while the app is paused', () async {
     when(
-      () => getWallets.execute(onlyBitcoin: true),
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
     ).thenAnswer((_) async => <Wallet>[]);
     when(
-      () => getWallets.execute(onlyLiquid: true),
+      () => getWallets.execute(onlyLiquid: true, includeHidden: true),
     ).thenAnswer((_) async => <Wallet>[]);
     TestWidgetsFlutterBinding.instance.handleAppLifecycleStateChanged(
       AppLifecycleState.paused,

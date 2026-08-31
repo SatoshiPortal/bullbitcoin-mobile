@@ -238,6 +238,7 @@ void main() {
         index.isOdd ? 1681000000 + index : null,
       );
       expect(metadata.isDefault, index == 0 ? 1 : 0);
+      expect(metadata.isHidden, 0);
       expect(metadata.label, index.isEven ? 'wallet-$index' : null);
       expect(
         metadata.syncedAt,
