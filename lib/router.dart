@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
@@ -15,7 +16,7 @@ import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/coins/public/coins_facade.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/limit_orders/public/limit_orders_facade.dart';
@@ -178,6 +179,8 @@ class AppRouter {
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
+            featureWarningsBuilder: (context, wallets) =>
+                BullVaultHomeContribution(wallets: wallets),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
@@ -206,6 +209,16 @@ class AppRouter {
       SettingsRouter.route(
         buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
             .buildHistory(onBack: () => context.pop()),
+        walletDetailsActionsBuilder: (context, wallet) => [
+          BullVaultWalletSettingsContribution(wallet: wallet),
+        ],
+        walletDeletionGuard: (walletId) async =>
+            switch (await locator<BullVaultFacade>().canDeleteWallet(
+              walletId,
+            )) {
+              Ok(:final value) => value,
+              Err() => false,
+            },
       ),
       TransactionsRouter.transactionsRoute(
         scope: (child) => ActiveNetworkScope(child: child),
@@ -237,7 +250,7 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
-      BullVaultRouter.route,
+      ...BullVaultRouter.routes,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,

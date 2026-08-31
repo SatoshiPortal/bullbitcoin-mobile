@@ -299,6 +299,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> _signingSaveQueue = Future.value();
   int? _pendingTransactionRevision;
   bool _loadingPendingTransaction = false;
+  bool _restrictedSend = false;
   int _draftRevision = 0;
 
   /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
@@ -559,6 +560,9 @@ class SendCubit extends Cubit<SendState>
                     '${utxo.txId}:${utxo.vout}',
                 })
               : const <String>{};
+          if (!state.wallets.any((wallet) => wallet.id == value.wallet.id)) {
+            emit(state.copyWith(wallets: [...state.wallets, value.wallet]));
+          }
           await _setSelectedWallet(
             value.wallet,
             manual: true,
@@ -1015,9 +1019,14 @@ class SendCubit extends Cubit<SendState>
           return;
       }
       final explicitWalletIds = {_wallet?.id, state.selectedWallet?.id};
+      final suppliedWallet = _wallet;
+      final availableWallets = [
+        ...wallets,
+        if (suppliedWallet != null && suppliedWallet.supportsSend && !wallets.any((candidate) => candidate.id == suppliedWallet.id)) suppliedWallet,
+      ];
       emit(
         state.copyWith(
-          wallets: wallets
+          wallets: availableWallets
               .where(
                 (wallet) =>
                     wallet.supportsSend ||
@@ -1104,7 +1113,7 @@ class SendCubit extends Cubit<SendState>
     String scannedRawPaymentRequest,
     PaymentRequest? paymentRequest,
   ) async {
-    if (state.selectedInputsUnavailable) return;
+    if (_restrictedSend || state.selectedInputsUnavailable) return;
     final inputGeneration = _startNewPaymentRequestInput();
     if (state.isDraftSaved && !await flushDraft()) return;
     if (inputGeneration != _paymentRequestInputGeneration || isClosed) return;
@@ -1172,7 +1181,7 @@ class SendCubit extends Cubit<SendState>
 
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
-    if (state.selectedInputsUnavailable) return;
+    if (_restrictedSend || state.selectedInputsUnavailable) return;
     final inputGeneration = _startNewPaymentRequestInput();
     final parsingCompleted = Completer<void>();
     _pendingPaymentRequestInput = (
@@ -1266,6 +1275,43 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
+  bool get isRestrictedSend => _restrictedSend;
+
+  Future<bool> configureRestrictedSend({
+    required String recipient,
+    bool sendMax = false,
+  }) async {
+    final wallet = _wallet;
+    if (wallet == null || !wallet.isBitcoin || recipient.trim().isEmpty) {
+      emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
+      return false;
+    }
+    _restrictedSend = true;
+    _startNewPaymentRequestInput();
+    clearFailure();
+    _invalidateSignedTransaction();
+    emit(state.copyWith(
+      copiedRawPaymentRequest: _sanitizeRawPaymentRequest(recipient),
+      paymentRequest: null,
+      sendMax: false,
+    ));
+    await continueOnAddressConfirmed();
+    if (sendMax && state.step == SendStep.amount && state.failure == null) {
+      await amountChanged(isMax: true);
+    }
+    return state.step == SendStep.amount && state.failure == null;
+  }
+
+  bool restrictRestoredSend(String recipient) {
+    _restrictedSend = true;
+    final expected = _sanitizeRawPaymentRequest(recipient);
+    if (state.copiedRawPaymentRequest != expected) {
+      emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
+      return false;
+    }
+    return true;
+  }
+
   List<SendRecipientDraft> _primaryRecipientDrafts({
     required PaymentRequest? paymentRequest,
     required String address,
@@ -1313,6 +1359,11 @@ class SendCubit extends Cubit<SendState>
   Future<PaymentRequest?> _resolvePrimaryPaymentRequest(
     int inputGeneration,
   ) async {
+    final pendingInput = _pendingPaymentRequestInput;
+    if (pendingInput != null && pendingInput.generation == inputGeneration) {
+      await pendingInput.future;
+    }
+    if (isClosed || inputGeneration != _paymentRequestInputGeneration) return null;
     final rawPaymentRequest = state.copiedRawPaymentRequest;
     final cachedPaymentRequest = state.paymentRequest;
     if (rawPaymentRequest.isEmpty && cachedPaymentRequest == null) {
@@ -1331,16 +1382,7 @@ class SendCubit extends Cubit<SendState>
       paymentRequest = cachedPaymentRequest;
     } else {
       try {
-        final pendingInput = _pendingPaymentRequestInput;
-        paymentRequest =
-            await (pendingInput != null &&
-                    pendingInput.generation == inputGeneration
-                ? pendingInput.future
-                : Future<PaymentRequest>.sync(
-                    () => _detectBitcoinStringUsecase.execute(
-                      data: rawPaymentRequest,
-                    ),
-                  ));
+        paymentRequest = await _detectBitcoinStringUsecase.execute(data: rawPaymentRequest);
       } on Exception {
         if (inputGeneration != _paymentRequestInputGeneration ||
             state.copiedRawPaymentRequest != rawPaymentRequest) {
@@ -5427,6 +5469,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> updateSelectedWallet(Wallet newWallet) async {
     if (state.usesSelectedInputsOnly) return;
     if (state.hasMultipleRecipients && newWallet.isLiquid) return;
+    if (_restrictedSend) return;
     if (state.isDraftSaved && !newWallet.isBitcoin) {
       if (!await flushDraft() || isClosed) return;
       _detachSavedDraft();

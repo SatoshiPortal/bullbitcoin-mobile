@@ -87,6 +87,20 @@ void main() {
       final record = (loaded as Ok<BullVaultRecord?, BullVaultFailure>).value!;
       expect(record.hardwareSetupDeferred, isTrue);
       expect(record.mobileBackupDeferred, isTrue);
+
+      stored['recoveryPackage'] = '{}';
+      await storage.saveValue(
+        key: 'bullvault_record_wallet-id',
+        value: jsonEncode(stored),
+      );
+      expect(
+        await repository.getByWalletId(record.walletId),
+        isA<Err<BullVaultRecord?, BullVaultFailure>>(),
+      );
+      expect(
+        await repository.getLineage(record.lineageId),
+        isA<Err<List<BullVaultRecord>, BullVaultFailure>>(),
+      );
     },
   );
 
@@ -603,57 +617,72 @@ void main() {
     },
   );
 
-  test('repairs an interrupted restored renewal link', () async {
-    final storage = _MemoryStorage();
-    final repository = _repository(storage);
-    final codec = testBullVaultRecoveryPackageCodec();
-    final mapper = BullVaultRecordMapper(codec);
-    final datasource = BullVaultMetadataDatasource(storage);
-    final previous = testBullVaultCreateResult(
-      walletId: 'wallet-0',
-      lineageId: 'lineage-id',
-      status: BullVaultLifecycleStatus.active,
-    ).record;
-    final package = testBullVaultRecoveryPackage(
-      previousVaultId: previous.walletId,
-      lineageId: previous.lineageId,
-      generation: 1,
-    );
-    final descriptorOnly = _descriptorOnlyRecord(package);
-    final restored = BullVaultRecord(
-      walletId: descriptorOnly.walletId,
-      lineageId: package.policy.lineageId,
-      vaultGeneration: package.policy.vaultGeneration,
-      mobileAccount: descriptorOnly.mobileAccount,
-      birthHeight: package.policy.birthHeight,
-      recoveryPackage: package,
-      previousVaultId: previous.walletId,
-      status: BullVaultLifecycleStatus.active,
-      recoveryPackageConfirmed: true,
-      createdAt: DateTime.utc(2028),
-    );
-    await repository.save(previous);
-    await repository.save(descriptorOnly);
-    await datasource.save(mapper.toModel(restored));
+  for (final readLineage in [false, true]) {
+    test('repairs an interrupted restored renewal link from '
+        '${readLineage ? 'the lineage' : 'a wallet'}', () async {
+      final storage = _MemoryStorage();
+      final codec = testBullVaultRecoveryPackageCodec();
+      final repository = _repository(storage);
+      final mapper = BullVaultRecordMapper(codec);
+      final datasource = BullVaultMetadataDatasource(storage);
+      final previous = testBullVaultCreateResult(
+        walletId: 'wallet-0',
+        lineageId: 'lineage-id',
+        status: BullVaultLifecycleStatus.active,
+      ).record;
+      final package = testBullVaultRecoveryPackage(
+        previousVaultId: previous.walletId,
+        lineageId: previous.lineageId,
+        generation: 1,
+      );
+      final descriptorOnly = _descriptorOnlyRecord(package);
+      final restored = BullVaultRecord(
+        walletId: descriptorOnly.walletId,
+        lineageId: package.policy.lineageId,
+        vaultGeneration: package.policy.vaultGeneration,
+        mobileAccount: descriptorOnly.mobileAccount,
+        birthHeight: package.policy.birthHeight,
+        recoveryPackage: package,
+        previousVaultId: previous.walletId,
+        status: BullVaultLifecycleStatus.active,
+        recoveryPackageConfirmed: true,
+        createdAt: DateTime.utc(2028),
+      );
+      await repository.save(previous);
+      await repository.save(descriptorOnly);
+      await datasource.save(mapper.toModel(restored));
 
-    final repairedPrevious = await repository.getByWalletId(previous.walletId);
-    final repairedSuccessor = await repository.getByWalletId(restored.walletId);
+      final Result<BullVaultRecord?, BullVaultFailure> repairedPrevious;
+      if (readLineage) {
+        final lineage = await repository.getLineage(previous.lineageId);
+        repairedPrevious = lineage.map(
+          (records) => records.singleWhere(
+            (record) => record.walletId == previous.walletId,
+          ),
+        );
+      } else {
+        repairedPrevious = await repository.getByWalletId(previous.walletId);
+      }
+      final repairedSuccessor = await repository.getByWalletId(
+        restored.walletId,
+      );
 
-    expect(
-      (repairedPrevious as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value!
-          .status,
-      BullVaultLifecycleStatus.migrating,
-    );
-    expect(repairedPrevious.value!.successorWalletId, restored.walletId);
-    expect(
-      (repairedSuccessor as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value!
-          .recoveryPackageConfirmed,
-      isTrue,
-    );
-    expect(repairedSuccessor.value!.lineageId, previous.lineageId);
-  });
+      expect(
+        (repairedPrevious as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!
+            .status,
+        BullVaultLifecycleStatus.migrating,
+      );
+      expect(repairedPrevious.value!.successorWalletId, restored.walletId);
+      expect(
+        (repairedSuccessor as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!
+            .recoveryPackageConfirmed,
+        isTrue,
+      );
+      expect(repairedSuccessor.value!.lineageId, previous.lineageId);
+    });
+  }
 
   test(
     'rejects a restored link that duplicates a lineage generation',

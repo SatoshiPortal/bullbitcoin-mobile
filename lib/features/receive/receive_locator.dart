@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/check_receive_bullvault_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
@@ -26,6 +27,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin
 import 'package:bb_mobile/features/receive/domain/usecases/watch_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -69,6 +71,9 @@ class ReceiveLocator {
     );
     locator.registerFactory<WatchReceiveOrderSwapUsecase>(
       () => WatchReceiveOrderSwapUsecase(locator<SwapFacade>()),
+    );
+    locator.registerFactory<CheckReceiveBullVaultUsecase>(
+      () => CheckReceiveBullVaultUsecase(locator<BullVaultFacade>()),
     );
 
     // Receive-owned boundaries for collaborators that still throw: the shared
@@ -135,6 +140,7 @@ class ReceiveLocator {
             locator<GetReceivePayjoinPolicyUsecase>(),
         setReceivePayjoinEnabledUsecase:
             locator<SetReceivePayjoinEnabledUsecase>(),
+        checkReceiveBullVaultUsecase: locator<CheckReceiveBullVaultUsecase>(),
         wallet: wallet,
       ),
     );

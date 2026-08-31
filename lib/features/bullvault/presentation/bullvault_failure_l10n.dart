@@ -16,6 +16,8 @@ extension BullVaultFailureL10n on BullVaultFailure {
     BullVaultCreationFailure() => context.loc.oopsSomethingWentWrong,
     BullVaultBackupStatusFailure() => context.loc.oopsSomethingWentWrong,
     BullVaultRenewalFailure() => context.loc.oopsSomethingWentWrong,
+    BullVaultRenewalHasFundsFailure() =>
+      context.loc.bullVaultCancelRenewalHasFunds,
     BullVaultInvalidRecoveryFailure() =>
       context.loc.bullVaultFailureInvalidRecovery,
   };

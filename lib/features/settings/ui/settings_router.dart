@@ -58,6 +58,8 @@ export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 class SettingsRouter {
   static GoRoute route({
     required Widget Function(BuildContext) buildPriceHistory,
+    WalletDetailsActionsBuilder? walletDetailsActionsBuilder,
+    WalletDeletionGuard? walletDeletionGuard,
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
@@ -259,7 +261,11 @@ class SettingsRouter {
               ],
               child: BlocProvider(
                 create: (_) => locator<WalletDiscoveryCubit>(),
-                child: WalletDetailsScreen(walletId: walletId),
+                child: WalletDetailsScreen(
+                  walletId: walletId,
+                  featureActionsBuilder: walletDetailsActionsBuilder,
+                  deletionGuard: walletDeletionGuard,
+                ),
               ),
             ),
           );

@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_u
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/check_receive_bullvault_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -93,6 +94,9 @@ class _MockGetReceivePayjoinPolicyUsecase extends Mock
 
 class _MockSetReceivePayjoinEnabledUsecase extends Mock
     implements SetReceivePayjoinEnabledUsecase {}
+
+class _MockCheckReceiveBullVaultUsecase extends Mock
+    implements CheckReceiveBullVaultUsecase {}
 
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
@@ -244,6 +248,7 @@ void main() {
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
   late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
   late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
+  late _MockCheckReceiveBullVaultUsecase checkBullVault;
   late StreamController<bool> payjoinEnabledChangeController;
   late StreamController<int> payjoinMinAmountChangeController;
 
@@ -259,6 +264,7 @@ void main() {
     GetReceiveSettingsUsecase? settings,
   }) => ReceiveBloc(
     getReceiveWalletsUsecase: getWallets,
+    checkReceiveBullVaultUsecase: checkBullVault,
     getReceiveSettingsUsecase: settings ?? getSettings,
     convertReceiveAmountUsecase: convertSatsToCurrency,
     prepareReceiveAddressUsecase: getReceiveAddress,
@@ -296,6 +302,8 @@ void main() {
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
     createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
     watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
+    checkBullVault = _MockCheckReceiveBullVaultUsecase();
+    when(() => checkBullVault.execute(any())).thenAnswer((_) async => false);
     loadAddressLabel = _MockLoadReceiveAddressLabelUsecase();
     saveAddressLabel = _MockSaveReceiveAddressLabelUsecase();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
@@ -476,6 +484,25 @@ void main() {
     expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
     verify(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
         .called(1);
+  });
+
+  test('identifies a BullVault receive wallet', () async {
+    when(() => checkBullVault.execute('w1')).thenAnswer((_) async => true);
+    final bloc = buildBloc();
+
+    bloc.add(ReceiveEvent.receiveBitcoinStarted(_testWallet()));
+    await expectLater(
+      bloc.stream,
+      emitsThrough(
+        isA<ReceiveState>().having(
+          (state) => state.isBullVault,
+          'isBullVault',
+          isTrue,
+        ),
+      ),
+    );
+
+    await bloc.close();
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {

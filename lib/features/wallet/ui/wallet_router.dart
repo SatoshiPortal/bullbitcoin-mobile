@@ -22,6 +22,7 @@ class WalletRouter {
     required void Function(BuildContext, QuickAction) onQuickAction,
     required void Function(BuildContext) onCustomizeQuickActions,
     required NetworkWalletSetupCubit Function() createSetupCubit,
+    WalletHomeFeatureWarningsBuilder? featureWarningsBuilder,
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
@@ -37,6 +38,7 @@ class WalletRouter {
           quickActions: quickActions,
           onQuickAction: onQuickAction,
           onCustomizeQuickActions: onCustomizeQuickActions,
+          featureWarningsBuilder: featureWarningsBuilder,
         ),
       );
     },
