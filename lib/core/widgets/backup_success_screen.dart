@@ -16,11 +16,13 @@ class BackupSuccessScreen extends StatelessWidget {
     required this.title,
     required this.message,
     required this.buttonLabel,
+    this.onDone,
   });
 
   final String title;
   final String message;
   final String buttonLabel;
+  final VoidCallback? onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +66,11 @@ class BackupSuccessScreen extends StatelessWidget {
                 textColor: context.appColors.onSecondary,
                 onPressed: () {
                   context.read<WalletBloc>().add(const VerifyBackupStatus());
-                  context.goNamed(WalletRoute.walletHome.name);
+                  if (onDone case final callback?) {
+                    callback();
+                  } else {
+                    context.goNamed(WalletRoute.walletHome.name);
+                  }
                 },
               ),
             ),
