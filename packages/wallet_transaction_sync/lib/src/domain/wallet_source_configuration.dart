@@ -62,6 +62,48 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
       'BdkElectrumConfiguration(testnet: $isTestnet, urls: ${electrumUrls.length})';
 }
 
+final class LwkElectrumConfiguration extends WalletSourceConfiguration {
+  final String confidentialPublicDescriptor;
+  final bool isTestnet;
+  final List<String> electrumUrls;
+  final bool validateDomain;
+  final String databaseRootPath;
+  final int? timeout;
+  final int? stopAtIndex;
+
+  const LwkElectrumConfiguration({
+    required this.confidentialPublicDescriptor,
+    required this.isTestnet,
+    required this.electrumUrls,
+    required this.validateDomain,
+    required this.databaseRootPath,
+    this.timeout,
+    this.stopAtIndex,
+  });
+
+  @override
+  Map<String, Object?> identityMap() => {
+    'kind': 'lwk_electrum',
+    'confidentialPublicDescriptor': confidentialPublicDescriptor,
+    'isTestnet': isTestnet,
+  };
+
+  @override
+  Map<String, Object?> toMap() => {
+    'kind': 'lwk_electrum',
+    'isTestnet': isTestnet,
+    'electrumUrls': electrumUrls,
+    'validateDomain': validateDomain,
+    'databaseRootPath': databaseRootPath,
+    if (timeout != null) 'timeout': timeout,
+    if (stopAtIndex != null) 'stopAtIndex': stopAtIndex,
+  };
+
+  @override
+  String toString() =>
+      'LwkElectrumConfiguration(testnet: $isTestnet, urls: ${electrumUrls.length})';
+}
+
 final class OpaqueSourceConfiguration extends WalletSourceConfiguration {
   final String token;
 

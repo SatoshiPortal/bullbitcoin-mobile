@@ -42,15 +42,14 @@ WalletTransaction mapBdkTransaction(
     evidence['feeUnavailable'] = true;
   }
 
-  final inputs = transaction
-      .input()
-      .map(
-        (input) => TransactionInput(
-          txid: input.previousOutput.txid.toString(),
-          vout: input.previousOutput.vout,
-        ),
-      )
-      .toList();
+  final inputs = transaction.input().asMap().entries.map((entry) {
+    final input = entry.value;
+    return TransactionInput(
+      txid: input.previousOutput.txid.toString(),
+      vout: input.previousOutput.vout,
+      originalIndex: entry.key,
+    );
+  }).toList();
   final outputs = transaction
       .output()
       .asMap()
@@ -58,7 +57,10 @@ WalletTransaction mapBdkTransaction(
       .map(
         (entry) => TransactionOutput(
           valueSats: entry.value.value.toSat(),
+          txid: txid,
+          vout: entry.key,
           script: _hex(entry.value.scriptPubkey.toBytes()),
+          originalIndex: entry.key,
         ),
       )
       .toList();

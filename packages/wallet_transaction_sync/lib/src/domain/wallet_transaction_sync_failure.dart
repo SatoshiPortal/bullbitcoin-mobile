@@ -18,6 +18,11 @@ final class WalletSourceStateMissingFailure
   const WalletSourceStateMissingFailure();
 }
 
+final class WalletSourceStateIncompatibleFailure
+    extends WalletTransactionSyncFailure {
+  const WalletSourceStateIncompatibleFailure();
+}
+
 final class DeletedWalletFailure extends WalletTransactionSyncFailure {
   const DeletedWalletFailure();
 }

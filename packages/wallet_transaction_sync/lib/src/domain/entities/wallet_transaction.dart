@@ -8,6 +8,11 @@ class WalletTransaction {
   final int feeSats;
   final List<TransactionInput> inputs;
   final List<TransactionOutput> outputs;
+  final int? inputCount;
+  final int? outputCount;
+  final TransactionDirection? direction;
+  final bool? selfTransfer;
+  final int? vsize;
   final TransactionPosition position;
   final Map<String, Object?> evidence;
   final Map<String, Object?> details;
@@ -19,6 +24,11 @@ class WalletTransaction {
     List<TransactionInput> inputs = const [],
     List<TransactionOutput> outputs = const [],
     required this.position,
+    this.inputCount,
+    this.outputCount,
+    this.direction,
+    this.selfTransfer,
+    this.vsize,
     Map<String, Object?> evidence = const {},
     Map<String, Object?> details = const {},
   }) : inputs = List.unmodifiable(inputs),
@@ -26,6 +36,8 @@ class WalletTransaction {
        evidence = _deepUnmodifiableMap(evidence),
        details = _deepUnmodifiableMap(details);
 }
+
+enum TransactionDirection { incoming, outgoing }
 
 Map<String, Object?> _deepUnmodifiableMap(Map<String, Object?> value) =>
     Map.unmodifiable(

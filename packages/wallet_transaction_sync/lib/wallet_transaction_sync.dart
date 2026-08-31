@@ -1,6 +1,7 @@
 library;
 
 export 'src/domain/entities/wallet_transaction.dart';
+export 'src/domain/entities/transaction_chain.dart';
 export 'src/domain/entities/transaction_input.dart';
 export 'src/domain/entities/transaction_output.dart';
 export 'src/domain/entities/wallet_sync_receipt.dart';

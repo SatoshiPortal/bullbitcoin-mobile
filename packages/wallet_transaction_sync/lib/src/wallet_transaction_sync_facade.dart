@@ -5,6 +5,7 @@ import 'domain/requests/requests.dart';
 import 'domain/wallet_network_key.dart';
 import 'domain/wallet_transaction_sync_failure.dart';
 import 'data/bdk/bdk_wallet_transaction_source.dart';
+import 'data/lwk/lwk_wallet_transaction_source.dart';
 import 'data/wallet_transaction_repository_impl.dart';
 import 'domain/wallet_transaction_sync_state.dart';
 import 'domain/ports/wallet_transaction_source_port.dart';
@@ -59,6 +60,17 @@ class WalletTransactionSyncFacade {
     DateTime Function()? now,
   }) => WalletTransactionSyncFacade(
     source: BdkWalletTransactionSource(),
+    metadata: metadata,
+    coordinator: coordinator,
+    now: now,
+  );
+
+  factory WalletTransactionSyncFacade.lwkElectrum({
+    required WalletSyncMetadataPort metadata,
+    required WalletSourceOperationCoordinator coordinator,
+    DateTime Function()? now,
+  }) => WalletTransactionSyncFacade(
+    source: LwkWalletTransactionSource(),
     metadata: metadata,
     coordinator: coordinator,
     now: now,
