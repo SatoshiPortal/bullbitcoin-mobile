@@ -12,5 +12,10 @@ class RegisterWalletPolicyLedgerUsecase {
   Future<Result<void, LedgerFailure>> execute({
     required LedgerDeviceEntity device,
     required Wallet wallet,
-  }) => _repository.registerWalletPolicy(device, wallet: wallet);
+    String? signerId,
+  }) => _repository.registerWalletPolicy(
+    device,
+    wallet: wallet,
+    signerId: signerId,
+  );
 }

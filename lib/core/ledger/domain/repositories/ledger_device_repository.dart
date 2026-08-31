@@ -47,6 +47,7 @@ abstract interface class LedgerDeviceRepository {
   Future<Result<void, LedgerFailure>> registerWalletPolicy(
     LedgerDeviceEntity device, {
     required Wallet wallet,
+    String? signerId,
   });
 
   @useResult
@@ -64,6 +65,7 @@ abstract interface class LedgerDeviceRepository {
     required String address,
     required BitcoinPolicyKeychain keychain,
     required int index,
+    String? signerId,
   });
 
   @useResult
