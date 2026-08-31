@@ -1896,7 +1896,7 @@
   "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
   "sendErrorUnsupportedQrCodeFormat": "Ei-tuettu QR-koodimuoto",
-  "sendErrorBuildFailed": "Rakentaminen epäonnistui",
+  "sendErrorBuildFailed": "Tätä maksua ei voitu valmistella. Yritä uudelleen.",
   "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
   "sendErrorInsufficientBalanceForSwap": "Saldo ei riitä maksamaan tätä vaihtoa Liquidin kautta eikä se ole swap-rajoissa maksamiseen Bitcoinin kautta.",
   "sendErrorAmountBelowSwapLimits": "Määrä on swap-rajojen alapuolella",
@@ -4899,5 +4899,8 @@
   "statusCheckResultsMayBeOutdated": "Tulokset saattavat olla vanhentuneita",
   "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen.",
   "psbtFlowInvalidPsbtError": "Tätä tapahtumaa ei voitu lukea. Palaa takaisin ja luo se uudelleen.",
-  "psbtFlowQrEncodingError": "Tätä tapahtumaa ei voitu muuntaa QR-koodiksi."
+  "psbtFlowQrEncodingError": "Tätä tapahtumaa ei voitu muuntaa QR-koodiksi.",
+  "sendErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
+  "sendErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen."
 }

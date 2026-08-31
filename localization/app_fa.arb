@@ -9372,7 +9372,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "ساخت شکست خورده",
+  "sendErrorBuildFailed": "این پرداخت آماده نشد. لطفاً دوباره تلاش کنید.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12238,5 +12238,8 @@
   "statusCheckResultsMayBeOutdated": "نتایج ممکن است قدیمی باشند",
   "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
   "psbtFlowInvalidPsbtError": "این تراکنش خوانده نشد. بازگردید و آن را دوباره ایجاد کنید.",
-  "psbtFlowQrEncodingError": "تبدیل این تراکنش به کد QR امکان‌پذیر نبود."
+  "psbtFlowQrEncodingError": "تبدیل این تراکنش به کد QR امکان‌پذیر نبود.",
+  "sendErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
+  "sendErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید."
 }

@@ -9763,7 +9763,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "বিল্ড ব্যর্থ হয়েছে",
+  "sendErrorBuildFailed": "এই পেমেন্ট প্রস্তুত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12448,5 +12448,8 @@
   "statusCheckResultsMayBeOutdated": "ফলাফল পুরনো হতে পারে",
   "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "psbtFlowInvalidPsbtError": "এই লেনদেনটি পড়া যায়নি। ফিরে গিয়ে এটি আবার তৈরি করুন।",
-  "psbtFlowQrEncodingError": "এই লেনদেনটি QR কোডে রূপান্তর করা যায়নি।"
+  "psbtFlowQrEncodingError": "এই লেনদেনটি QR কোডে রূপান্তর করা যায়নি।",
+  "sendErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
+  "sendErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।"
 }

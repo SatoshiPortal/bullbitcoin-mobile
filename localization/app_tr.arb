@@ -9947,7 +9947,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Tahmin edilemez",
+  "sendErrorBuildFailed": "Bu ödeme hazırlanamadı. Lütfen tekrar deneyin.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12238,5 +12238,8 @@
   "statusCheckResultsMayBeOutdated": "Sonuçlar güncel olmayabilir",
   "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
   "psbtFlowInvalidPsbtError": "Bu işlem okunamadı. Geri dönüp yeniden oluşturun.",
-  "psbtFlowQrEncodingError": "Bu işlem QR koduna dönüştürülemedi."
+  "psbtFlowQrEncodingError": "Bu işlem QR koduna dönüştürülemedi.",
+  "sendErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
+  "sendErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın."
 }

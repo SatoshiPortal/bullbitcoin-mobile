@@ -9820,7 +9820,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Sestava Failed",
+  "sendErrorBuildFailed": "Tuto platbu nebylo možné připravit. Zkuste to prosím znovu.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12238,5 +12238,8 @@
   "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé",
   "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
   "psbtFlowInvalidPsbtError": "Tuto transakci nelze přečíst. Vraťte se a vytvořte ji znovu.",
-  "psbtFlowQrEncodingError": "Tuto transakci nelze převést na QR kód."
+  "psbtFlowQrEncodingError": "Tuto transakci nelze převést na QR kód.",
+  "sendErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
+  "sendErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu."
 }

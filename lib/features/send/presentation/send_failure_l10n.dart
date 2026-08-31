@@ -4,7 +4,10 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:flutter/widgets.dart';
 
 extension SendFailureL10n on SendFailure {
-  String toTranslated(BuildContext context) => switch (this) {
+  String toTranslated(
+    BuildContext context, {
+    String? formattedFrozenBalance,
+  }) => switch (this) {
     SendInvalidPaymentRequestFailure(:final isUnsupportedQr) =>
       isUnsupportedQr
           ? context.loc.sendErrorUnsupportedQrCodeFormat
@@ -15,7 +18,11 @@ extension SendFailureL10n on SendFailure {
     SendHardwareWalletFailure() =>
       context.loc.sendErrorHardwareWalletCannotSwap,
     SendInsufficientBalanceFailure() =>
-      context.loc.sendErrorInsufficientBalanceForPayment,
+      formattedFrozenBalance == null
+          ? context.loc.sendErrorInsufficientBalanceForPayment
+          : context.loc.sendErrorInsufficientBalanceFrozenHint(
+              formattedFrozenBalance,
+            ),
     SendInsufficientFundsForFeesFailure() =>
       context.loc.sendErrorInsufficientFundsForFees,
     SendSelectedCoinsUnavailableFailure() =>
@@ -39,6 +46,10 @@ extension SendFailureL10n on SendFailure {
     SendRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     SendTransactionBuildFailure() => context.loc.sendErrorBuildFailed,
+    SendFeeBelowRelayFloorFailure() => context.loc.sendErrorFeeBelowRelayFloor,
+    SendFeesUnavailableFailure() => context.loc.sendErrorFeesUnavailable,
+    SendExchangeOrderMismatchFailure() =>
+      context.loc.sendErrorExchangeOrderMismatch,
     SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
       isBroadcastFailure
           ? context.loc.sendErrorBroadcastFailed

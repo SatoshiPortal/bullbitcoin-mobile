@@ -1947,7 +1947,7 @@
   "sendErrorInsufficientBalanceForPayment": "Saldo insuficiente para cubrir este pago",
   "sendErrorInvalidAddressOrInvoice": "Dirección de pago Bitcoin o factura inválida",
   "sendErrorUnsupportedQrCodeFormat": "Formato de código QR no compatible",
-  "sendErrorBuildFailed": "Error de construcción",
+  "sendErrorBuildFailed": "No se pudo preparar este pago. Inténtelo de nuevo.",
   "sendErrorConfirmationFailed": "Error de confirmación",
   "sendErrorInsufficientBalanceForSwap": "Saldo insuficiente para pagar este intercambio a través de Liquid y fuera de los límites de intercambio para pagar a través de Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "La cantidad está por debajo de los límites de intercambio",
@@ -4908,5 +4908,8 @@
   "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados",
   "onboardingBackupVerificationError": "Tu billetera fue recuperada, pero la verificación de la copia de seguridad no pudo completarse. Inténtalo de nuevo.",
   "psbtFlowInvalidPsbtError": "No se pudo leer esta transacción. Vuelve atrás y créala de nuevo.",
-  "psbtFlowQrEncodingError": "No se pudo convertir esta transacción en un código QR."
+  "psbtFlowQrEncodingError": "No se pudo convertir esta transacción en un código QR.",
+  "sendErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
+  "sendErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago."
 }
