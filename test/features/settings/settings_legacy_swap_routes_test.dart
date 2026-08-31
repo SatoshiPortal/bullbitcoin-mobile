@@ -15,7 +15,7 @@ void main() {
   });
 
   test('does not publish unavailable legacy swap recovery routes', () {
-    final routeNames = SettingsRouter.route.routes.whereType<GoRoute>().map(
+    final routeNames = SettingsRouter.route().routes.whereType<GoRoute>().map(
       (route) => route.name,
     );
 

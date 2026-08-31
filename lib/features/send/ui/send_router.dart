@@ -20,8 +20,15 @@ enum SendRoute {
 final class SendRouteArgs {
   final Wallet? wallet;
   final String? pendingTransactionId;
+  final String? fixedRecipient;
+  final bool sendMax;
 
-  const SendRouteArgs({this.wallet, this.pendingTransactionId});
+  const SendRouteArgs({
+    this.wallet,
+    this.pendingTransactionId,
+    this.fixedRecipient,
+    this.sendMax = false,
+  });
 }
 
 class SendRouter {
@@ -41,6 +48,8 @@ class SendRouter {
         key: state.pageKey,
         wallet: wallet,
         pendingTransactionId: args?.pendingTransactionId,
+        fixedRecipient: args?.fixedRecipient,
+        sendMax: args?.sendMax ?? false,
       );
     },
     routes: [
@@ -59,8 +68,16 @@ class SendRouter {
 class _SendRouteView extends StatefulWidget {
   final Wallet? wallet;
   final String? pendingTransactionId;
+  final String? fixedRecipient;
+  final bool sendMax;
 
-  const _SendRouteView({super.key, this.wallet, this.pendingTransactionId});
+  const _SendRouteView({
+    super.key,
+    this.wallet,
+    this.pendingTransactionId,
+    this.fixedRecipient,
+    this.sendMax = false,
+  });
 
   @override
   State<_SendRouteView> createState() => _SendRouteViewState();
@@ -68,7 +85,7 @@ class _SendRouteView extends StatefulWidget {
 
 class _SendRouteViewState extends State<_SendRouteView> {
   late final SendCubit _cubit;
-  late final Future<void> _initialization;
+  late final Future<bool> _initialization;
 
   @override
   void initState() {
@@ -77,22 +94,40 @@ class _SendRouteViewState extends State<_SendRouteView> {
     _initialization = _initialize();
   }
 
-  Future<void> _initialize() async {
+  Future<bool> _initialize() async {
     await _cubit.loadWalletWithRatesAndFees();
     if (widget.pendingTransactionId case final id?) {
-      await _cubit.loadPendingTransaction(id);
+      final restored = await _cubit.loadPendingTransaction(id);
+      if (!restored) return false;
+      if (widget.fixedRecipient case final recipient?) {
+        return _cubit.restrictRestoredSend(recipient);
+      }
+      return true;
+    } else if (widget.fixedRecipient case final recipient?) {
+      return _cubit.configureRestrictedSend(
+        recipient: recipient,
+        sendMax: widget.sendMax,
+      );
     }
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    final child = widget.pendingTransactionId == null
+    final requiresInitialization =
+        widget.pendingTransactionId != null || widget.fixedRecipient != null;
+    final child = !requiresInitialization
         ? const SendScreen()
-        : FutureBuilder<void>(
+        : FutureBuilder<bool>(
             future: _initialization,
-            builder: (_, snapshot) => snapshot.connectionState == .done
-                ? const SendScreen()
-                : const SendLoadingScreen(),
+            builder: (_, snapshot) {
+              if (snapshot.connectionState != .done) {
+                return const SendLoadingScreen();
+              }
+              return snapshot.data == true
+                  ? const SendScreen()
+                  : const SendLoadingScreen(hasError: true);
+            },
           );
     return BlocProvider(lazy: false, create: (_) => _cubit, child: child);
   }
