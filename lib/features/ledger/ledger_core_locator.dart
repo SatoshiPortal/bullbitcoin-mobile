@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_u
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_account_key_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/register_wallet_policy_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
@@ -69,6 +71,9 @@ class LedgerLocator {
         repository: locator<LedgerDeviceRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+    locator.registerFactory<GetLedgerAccountKeyUsecase>(
+      () => GetLedgerAccountKeyUsecase(locator<LedgerDeviceRepository>()),
     );
     locator.registerFactory<SignPsbtLedgerUsecase>(
       () =>

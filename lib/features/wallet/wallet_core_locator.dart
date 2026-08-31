@@ -52,6 +52,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bull_owned_bip48_accounts_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -123,6 +126,9 @@ class WalletLocator {
     locator.registerLazySingleton<WalletSignerDevicePort>(
       () => locator<WalletRepository>(),
     );
+    locator.registerLazySingleton<WalletVisibilityPort>(
+      () => locator<WalletRepository>(),
+    );
     locator.registerLazySingleton<Bip48AccountUsagePort>(
       () => locator<WalletRepository>(),
     );
@@ -162,6 +168,9 @@ class WalletLocator {
         settingsRepository: locator<SettingsRepository>(),
         walletRepository: locator<WalletRepository>(),
       ),
+    );
+    locator.registerFactory<SetWalletHiddenUsecase>(
+      () => SetWalletHiddenUsecase(locator<WalletVisibilityPort>()),
     );
     locator.registerFactory<WatchStartedWalletSyncsUsecase>(
       () => WatchStartedWalletSyncsUsecase(

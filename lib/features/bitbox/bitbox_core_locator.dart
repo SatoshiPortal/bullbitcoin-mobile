@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/bitbox/data/repositories/bitbox_device_repository
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_account_key_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/register_wallet_policy_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
@@ -69,6 +71,10 @@ class BitBoxCoreLocator {
         repository: locator<BitBoxDeviceRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+
+    locator.registerFactory<GetBitBoxAccountKeyUsecase>(
+      () => GetBitBoxAccountKeyUsecase(locator<BitBoxDeviceRepository>()),
     );
 
     locator.registerLazySingleton<SignPsbtBitBoxUsecase>(

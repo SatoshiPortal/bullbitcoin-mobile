@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_usage.dart';
@@ -328,6 +329,7 @@ class WalletRepository
     required Network network,
     required String label,
     List<WalletSigner> signers = const [],
+    bool isHidden = false,
     bool sync = false,
   }) async {
     _requireBitcoinNetwork(network);
@@ -347,6 +349,7 @@ class WalletRepository
       ).map((signer) => signer.toModel()).toList(),
       publicDescriptor: parsed.descriptor,
       isDefault: false,
+      isHidden: isHidden,
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: label,
@@ -472,6 +475,7 @@ class WalletRepository
       label: metadata.label,
       network: metadata.network,
       isDefault: metadata.isDefault,
+      isHidden: metadata.isHidden,
       signers: metadata.signers.map((signer) => signer.toEntity()).toList(),
       scriptType: metadata.inferredScriptType,
       publicDescriptor: metadata.publicDescriptor,
@@ -667,6 +671,13 @@ class WalletRepository
         latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
       ),
     );
+  }
+
+  @override
+  Future<void> setHidden({required String walletId, required bool isHidden}) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw WalletError.notFound(walletId);
+    await _walletMetadataDatasource.store(metadata.copyWith(isHidden: isHidden));
   }
 
   @override

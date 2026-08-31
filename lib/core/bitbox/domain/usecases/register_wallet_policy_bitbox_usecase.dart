@@ -14,5 +14,10 @@ class RegisterWalletPolicyBitBoxUsecase {
   Future<Result<void, BitBoxFailure>> execute({
     required BitBoxDeviceEntity device,
     required Wallet wallet,
-  }) => _repository.registerWalletPolicy(device, wallet: wallet);
+    String? signerId,
+  }) => _repository.registerWalletPolicy(
+    device,
+    wallet: wallet,
+    signerId: signerId,
+  );
 }

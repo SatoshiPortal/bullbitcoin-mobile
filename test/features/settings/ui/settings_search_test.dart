@@ -334,12 +334,12 @@ void main() {
         isDevModeEnabled: true,
         accountReady: true,
       );
+      final builtInIds = SettingsItemId.values
+          .where((id) => id != SettingsItemId.extension)
+          .toSet();
 
-      expect(
-        items.map((item) => item.id).toSet(),
-        SettingsItemId.values.toSet(),
-      );
-      expect(items, hasLength(SettingsItemId.values.length));
+      expect(items.map((item) => item.id).toSet(), builtInIds);
+      expect(items, hasLength(builtInIds.length));
     });
   });
 }

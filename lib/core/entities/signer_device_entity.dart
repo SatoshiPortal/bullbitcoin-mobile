@@ -31,6 +31,22 @@ enum SignerDeviceEntity {
   bool get supportsBluetooth =>
       isLedger && this != SignerDeviceEntity.ledgerNanoSPlus;
 
+  bool get supportsComplexTaprootRegistration => switch (this) {
+    SignerDeviceEntity.bitbox02 ||
+    SignerDeviceEntity.krux ||
+    SignerDeviceEntity.ledgerNanoSPlus ||
+    SignerDeviceEntity.ledgerNanoX ||
+    SignerDeviceEntity.ledgerFlex ||
+    SignerDeviceEntity.ledgerStax ||
+    SignerDeviceEntity.specter => true,
+    SignerDeviceEntity.coldcardQ ||
+    SignerDeviceEntity.coldcardMk4 ||
+    SignerDeviceEntity.jade ||
+    SignerDeviceEntity.keystone ||
+    SignerDeviceEntity.passport ||
+    SignerDeviceEntity.seedsigner => false,
+  };
+
   QrType get supportedQrType {
     switch (this) {
       case SignerDeviceEntity.coldcardQ:

@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -23,6 +24,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
@@ -62,6 +64,7 @@ enum SettingsItemId {
   devMode,
   testnetCredentials,
   errorReporting,
+  extension,
 }
 
 enum SettingsItemSection { root, backup, wallet, app }
@@ -183,6 +186,9 @@ List<SettingsItem> settingsItemsOf(
       (SettingsCubit cubit) =>
           cubit.state.storedSettings?.activeNetwork ?? NetworkEnv.mainnet,
     ),
+    contributions: GetIt.I.isRegistered<SettingsEntryRegistry>()
+        ? GetIt.I<SettingsEntryRegistry>().entries
+        : const [],
   );
 }
 
@@ -193,6 +199,7 @@ List<SettingsItem> buildSettingsItems({
   bool isSpWalletSetup = false,
   bool accountReady = false,
   NetworkEnv environment = NetworkEnv.mainnet,
+  List<SettingsEntryContribution> contributions = const [],
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
@@ -208,7 +215,7 @@ List<SettingsItem> buildSettingsItems({
         SettingsItemSection.app => [rootSection, appSection, title],
       };
 
-  return [
+  final items = [
     SettingsItem(
       id: SettingsItemId.appSettings,
       section: SettingsItemSection.root,
@@ -788,6 +795,26 @@ List<SettingsItem> buildSettingsItems({
     };
     return NetworkCapabilities.supports(network, capability);
   }).toList();
+
+  for (final contribution in contributions) {
+    final section = switch (contribution.section) {
+      SettingsEntrySection.wallet => SettingsItemSection.wallet,
+    };
+    final title = contribution.title(localization);
+    items.add(
+      SettingsItem(
+        id: SettingsItemId.extension,
+        section: section,
+        title: title,
+        path: path(section, title),
+        icon: contribution.icon,
+        open: contribution.open,
+        keywords: [contribution.title(english)],
+      ),
+    );
+  }
+
+  return items;
 }
 
 List<String> _keywords(

@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/settings/presentation/exchange_access_setting
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -269,12 +270,14 @@ class SettingsRouter {
         name: SettingsRoute.walletRegistration.name,
         builder: (context, state) {
           final walletId = state.pathParameters['walletId']!;
-          final wallet = context
-              .read<WalletBloc>()
-              .state
-              .wallets
-              .where((wallet) => wallet.id == walletId)
-              .firstOrNull;
+          final wallet = state.extra is Wallet
+              ? state.extra! as Wallet
+              : context
+                    .read<WalletBloc>()
+                    .state
+                    .wallets
+                    .where((wallet) => wallet.id == walletId)
+                    .firstOrNull;
           if (wallet == null) {
             return const WalletRegistrationWalletNotFoundScreen();
           }

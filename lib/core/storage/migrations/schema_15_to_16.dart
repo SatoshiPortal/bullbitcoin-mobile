@@ -144,6 +144,7 @@ class Schema15To16 {
         TableMigration(
           newWallets,
           columnTransformer: {
+            newWallets.isHidden: const Constant(false),
             newWallets.publicDescriptor: descriptorByWalletId.isEmpty
                 ? const Constant('')
                 : CaseWhenExpression(

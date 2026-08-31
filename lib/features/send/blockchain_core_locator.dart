@@ -11,6 +11,8 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:sync/sync.dart' show WalletConnectionPort;
+import 'package:bb_mobile/core/blockchain/domain/bitcoin_chain_tip_port.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -27,6 +29,9 @@ class BlockchainLocator {
       () => BitcoinBlockchainRepository(
         connections: locator<WalletConnectionPort>(),
       ),
+    );
+    locator.registerLazySingleton<BitcoinChainTipPort>(
+      () => locator<BitcoinBlockchainRepository>(),
     );
 
     locator.registerLazySingleton<LiquidBlockchainRepository>(
@@ -60,6 +65,10 @@ class BlockchainLocator {
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+
+    locator.registerFactory<GetBitcoinChainTipUsecase>(
+      () => GetBitcoinChainTipUsecase(locator<BitcoinChainTipPort>()),
     );
   }
 }

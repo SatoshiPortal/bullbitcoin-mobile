@@ -60,6 +60,9 @@ abstract final class WalletRegistrationExportBuilder {
     BitcoinWalletPolicy policy,
     SignerDeviceEntity device,
   ) {
+    if (_isTaproot(wallet) && !device.supportsComplexTaprootRegistration) {
+      return _unsupportedPolicy(device);
+    }
     final regularMultisig = _regularMultisig(policy);
     final fileName = '${_fileStem(wallet)}-${device.name}.txt';
 

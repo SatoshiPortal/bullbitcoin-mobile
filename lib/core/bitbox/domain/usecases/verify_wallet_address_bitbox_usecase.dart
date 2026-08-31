@@ -18,11 +18,13 @@ class VerifyWalletAddressBitBoxUsecase {
     required String address,
     required BitcoinPolicyKeychain keychain,
     required int index,
+    String? signerId,
   }) => _repository.verifyWalletAddress(
     device,
     wallet: wallet,
     address: address,
     keychain: keychain,
     index: index,
+    signerId: signerId,
   );
 }

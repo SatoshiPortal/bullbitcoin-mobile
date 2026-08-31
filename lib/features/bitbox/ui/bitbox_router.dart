@@ -20,10 +20,12 @@ class BitBoxRouter {
       name: BitBoxRoute.importBitBox.name,
       path: BitBoxRoute.importBitBox.path,
       builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
+        final extra = state.extra;
         return BitBoxActionScreen(
           action: const BitBoxAction.importWallet(),
-          parameters: extra,
+          parameters: extra is ReadBitBoxAccountKeyRequest
+              ? BitBoxRouteParams(accountKey: extra)
+              : extra as BitBoxRouteParams?,
         );
       },
     ),

@@ -25,6 +25,7 @@ abstract interface class BitcoinDescriptorPort {
     required Network network,
     required String label,
     List<WalletSigner> signers = const [],
+    bool isHidden = false,
     bool sync = false,
   });
 }

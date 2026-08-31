@@ -667,6 +667,15 @@ class WalletMetadatas extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (is_default IN (0, 1))',
   );
+  late final GeneratedColumn<int> isHidden = GeneratedColumn<int>(
+    'is_hidden',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_hidden IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
     'label',
     aliasedName,
@@ -701,6 +710,7 @@ class WalletMetadatas extends Table
     latestPhysicalBackup,
     publicDescriptor,
     isDefault,
+    isHidden,
     label,
     syncedAt,
     birthday,
@@ -748,6 +758,10 @@ class WalletMetadatas extends Table
         DriftSqlType.int,
         data['${effectivePrefix}is_default'],
       )!,
+      isHidden: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_hidden'],
+      )!,
       label: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}label'],
@@ -784,6 +798,7 @@ class WalletMetadatasData extends DataClass
   final int? latestPhysicalBackup;
   final String publicDescriptor;
   final int isDefault;
+  final int isHidden;
   final String? label;
   final String? syncedAt;
   final String? birthday;
@@ -796,6 +811,7 @@ class WalletMetadatasData extends DataClass
     this.latestPhysicalBackup,
     required this.publicDescriptor,
     required this.isDefault,
+    required this.isHidden,
     this.label,
     this.syncedAt,
     this.birthday,
@@ -815,6 +831,7 @@ class WalletMetadatasData extends DataClass
     }
     map['public_descriptor'] = Variable<String>(publicDescriptor);
     map['is_default'] = Variable<int>(isDefault);
+    map['is_hidden'] = Variable<int>(isHidden);
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
     }
@@ -841,6 +858,7 @@ class WalletMetadatasData extends DataClass
           : Value(latestPhysicalBackup),
       publicDescriptor: Value(publicDescriptor),
       isDefault: Value(isDefault),
+      isHidden: Value(isHidden),
       label: label == null && nullToAbsent
           ? const Value.absent()
           : Value(label),
@@ -875,6 +893,7 @@ class WalletMetadatasData extends DataClass
       ),
       publicDescriptor: serializer.fromJson<String>(json['publicDescriptor']),
       isDefault: serializer.fromJson<int>(json['isDefault']),
+      isHidden: serializer.fromJson<int>(json['isHidden']),
       label: serializer.fromJson<String?>(json['label']),
       syncedAt: serializer.fromJson<String?>(json['syncedAt']),
       birthday: serializer.fromJson<String?>(json['birthday']),
@@ -892,6 +911,7 @@ class WalletMetadatasData extends DataClass
       'latestPhysicalBackup': serializer.toJson<int?>(latestPhysicalBackup),
       'publicDescriptor': serializer.toJson<String>(publicDescriptor),
       'isDefault': serializer.toJson<int>(isDefault),
+      'isHidden': serializer.toJson<int>(isHidden),
       'label': serializer.toJson<String?>(label),
       'syncedAt': serializer.toJson<String?>(syncedAt),
       'birthday': serializer.toJson<String?>(birthday),
@@ -907,6 +927,7 @@ class WalletMetadatasData extends DataClass
     Value<int?> latestPhysicalBackup = const Value.absent(),
     String? publicDescriptor,
     int? isDefault,
+    int? isHidden,
     Value<String?> label = const Value.absent(),
     Value<String?> syncedAt = const Value.absent(),
     Value<String?> birthday = const Value.absent(),
@@ -925,6 +946,7 @@ class WalletMetadatasData extends DataClass
         : this.latestPhysicalBackup,
     publicDescriptor: publicDescriptor ?? this.publicDescriptor,
     isDefault: isDefault ?? this.isDefault,
+    isHidden: isHidden ?? this.isHidden,
     label: label.present ? label.value : this.label,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
     birthday: birthday.present ? birthday.value : this.birthday,
@@ -949,6 +971,7 @@ class WalletMetadatasData extends DataClass
           ? data.publicDescriptor.value
           : this.publicDescriptor,
       isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+      isHidden: data.isHidden.present ? data.isHidden.value : this.isHidden,
       label: data.label.present ? data.label.value : this.label,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
       birthday: data.birthday.present ? data.birthday.value : this.birthday,
@@ -966,6 +989,7 @@ class WalletMetadatasData extends DataClass
           ..write('latestPhysicalBackup: $latestPhysicalBackup, ')
           ..write('publicDescriptor: $publicDescriptor, ')
           ..write('isDefault: $isDefault, ')
+          ..write('isHidden: $isHidden, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('birthday: $birthday')
@@ -983,6 +1007,7 @@ class WalletMetadatasData extends DataClass
     latestPhysicalBackup,
     publicDescriptor,
     isDefault,
+    isHidden,
     label,
     syncedAt,
     birthday,
@@ -999,6 +1024,7 @@ class WalletMetadatasData extends DataClass
           other.latestPhysicalBackup == this.latestPhysicalBackup &&
           other.publicDescriptor == this.publicDescriptor &&
           other.isDefault == this.isDefault &&
+          other.isHidden == this.isHidden &&
           other.label == this.label &&
           other.syncedAt == this.syncedAt &&
           other.birthday == this.birthday);
@@ -1013,6 +1039,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<int?> latestPhysicalBackup;
   final Value<String> publicDescriptor;
   final Value<int> isDefault;
+  final Value<int> isHidden;
   final Value<String?> label;
   final Value<String?> syncedAt;
   final Value<String?> birthday;
@@ -1026,6 +1053,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     this.latestPhysicalBackup = const Value.absent(),
     this.publicDescriptor = const Value.absent(),
     this.isDefault = const Value.absent(),
+    this.isHidden = const Value.absent(),
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
@@ -1040,6 +1068,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     this.latestPhysicalBackup = const Value.absent(),
     required String publicDescriptor,
     required int isDefault,
+    this.isHidden = const Value.absent(),
     this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.birthday = const Value.absent(),
@@ -1058,6 +1087,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Expression<int>? latestPhysicalBackup,
     Expression<String>? publicDescriptor,
     Expression<int>? isDefault,
+    Expression<int>? isHidden,
     Expression<String>? label,
     Expression<String>? syncedAt,
     Expression<String>? birthday,
@@ -1076,6 +1106,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
         'latest_physical_backup': latestPhysicalBackup,
       if (publicDescriptor != null) 'public_descriptor': publicDescriptor,
       if (isDefault != null) 'is_default': isDefault,
+      if (isHidden != null) 'is_hidden': isHidden,
       if (label != null) 'label': label,
       if (syncedAt != null) 'synced_at': syncedAt,
       if (birthday != null) 'birthday': birthday,
@@ -1092,6 +1123,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Value<int?>? latestPhysicalBackup,
     Value<String>? publicDescriptor,
     Value<int>? isDefault,
+    Value<int>? isHidden,
     Value<String?>? label,
     Value<String?>? syncedAt,
     Value<String?>? birthday,
@@ -1109,6 +1141,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
       latestPhysicalBackup: latestPhysicalBackup ?? this.latestPhysicalBackup,
       publicDescriptor: publicDescriptor ?? this.publicDescriptor,
       isDefault: isDefault ?? this.isDefault,
+      isHidden: isHidden ?? this.isHidden,
       label: label ?? this.label,
       syncedAt: syncedAt ?? this.syncedAt,
       birthday: birthday ?? this.birthday,
@@ -1149,6 +1182,9 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     if (isDefault.present) {
       map['is_default'] = Variable<int>(isDefault.value);
     }
+    if (isHidden.present) {
+      map['is_hidden'] = Variable<int>(isHidden.value);
+    }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
     }
@@ -1175,6 +1211,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
           ..write('latestPhysicalBackup: $latestPhysicalBackup, ')
           ..write('publicDescriptor: $publicDescriptor, ')
           ..write('isDefault: $isDefault, ')
+          ..write('isHidden: $isHidden, ')
           ..write('label: $label, ')
           ..write('syncedAt: $syncedAt, ')
           ..write('birthday: $birthday, ')

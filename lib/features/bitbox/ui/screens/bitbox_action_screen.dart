@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_account_key_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/register_wallet_policy_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
@@ -56,6 +58,7 @@ class BitBoxRouteParams {
   final SignerDeviceEntity? requestedDeviceType;
   final ScriptType? scriptType;
   final BitBoxWalletPolicyRequest? walletPolicy;
+  final ReadBitBoxAccountKeyRequest? accountKey;
 
   const BitBoxRouteParams({
     this.psbt,
@@ -64,6 +67,7 @@ class BitBoxRouteParams {
     this.requestedDeviceType,
     this.scriptType,
     this.walletPolicy,
+    this.accountKey,
   });
 }
 
@@ -119,7 +123,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               message: widget.action.toSuccessText(context),
             );
             if (widget.action == const BitBoxAction.importWallet()) {
-              if (state.result is WatchOnlyWalletEntity &&
+              if (widget.parameters?.accountKey != null) {
+                Navigator.of(context).pop(state.result);
+              } else if (state.result is WatchOnlyWalletEntity &&
                   state.connectedDevice != null) {
                 _navigateToImportPage(
                   context,
@@ -127,12 +133,12 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                 );
               }
             } else if (widget.action == const BitBoxAction.verifyAddress()) {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
             } else if (widget.action == const BitBoxAction.signTransaction()) {
               Navigator.of(context).pop(state.result);
             } else if (widget.action ==
                 const BitBoxAction.registerWalletPolicy()) {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
             }
           }
         },
@@ -179,6 +185,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           style: context.font.bodyMedium,
         ),
         if (widget.action == const BitBoxAction.importWallet() &&
+            widget.parameters?.accountKey == null &&
             state.isInitial) ...[
           const Gap(24),
           _buildScriptTypeButton(context),
@@ -381,6 +388,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           address: walletPolicy.address,
           keychain: walletPolicy.keychain,
           index: walletPolicy.index,
+          signerId: walletPolicy.signerId,
         );
       }
       final address = widget.parameters?.address;
@@ -462,6 +470,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       return locator<RegisterWalletPolicyBitBoxUsecase>().execute(
         device: cubit.state.connectedDevice!,
         wallet: request.wallet,
+        signerId: request.signerId,
       );
     });
   }
@@ -507,6 +516,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       }
 
       final device = cubit.state.connectedDevice!;
+
+      if (widget.parameters?.accountKey case final request?) {
+        return locator<GetBitBoxAccountKeyUsecase>().execute(
+          device: device,
+          derivationPath: request.derivationPath,
+          isTestnet: request.isTestnet,
+        );
+      }
 
       return locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
         device: device,
