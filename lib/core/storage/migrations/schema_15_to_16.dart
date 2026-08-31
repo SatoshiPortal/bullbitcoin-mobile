@@ -69,6 +69,7 @@ class Schema15To16 {
         TableMigration(
           newWallets,
           columnTransformer: {
+            newWallets.isHidden: const Constant(false),
             newWallets.network: networkByWalletId.isEmpty
                 ? const Constant('bitcoinMainnet')
                 : CaseWhenExpression(

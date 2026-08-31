@@ -17,6 +17,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     int? latestPhysicalBackup,
     required String publicDescriptor,
     required bool isDefault,
+    @Default(false) bool isHidden,
     @Default(0) int lastReceiveAddressIndex,
     String? label,
     DateTime? syncedAt,

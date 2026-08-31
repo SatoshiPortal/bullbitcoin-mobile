@@ -363,6 +363,7 @@ class WalletAddressRepository {
       walletId: walletId,
       index: index,
       address: address,
+      isChange: isChange,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );

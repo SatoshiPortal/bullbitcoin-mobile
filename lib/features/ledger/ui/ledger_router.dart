@@ -19,8 +19,15 @@ class LedgerRouter {
     GoRoute(
       name: LedgerRoute.importLedger.name,
       path: LedgerRoute.importLedger.path,
-      builder: (context, state) =>
-          const LedgerActionScreen(action: LedgerAction.importWallet()),
+      builder: (context, state) {
+        final request = state.extra as ReadLedgerAccountKeyRequest?;
+        return LedgerActionScreen(
+          action: const LedgerAction.importWallet(),
+          parameters: request == null
+              ? null
+              : LedgerRouteParams(accountKey: request),
+        );
+      },
     ),
     GoRoute(
       name: LedgerRoute.ledgerRegisterWalletPolicy.name,

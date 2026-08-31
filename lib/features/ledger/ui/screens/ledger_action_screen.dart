@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usec
 import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_account_key_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/register_wallet_policy_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
@@ -19,7 +20,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Err, Result;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cubit.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
@@ -51,6 +51,7 @@ class LedgerRouteParams {
   final SignerDeviceEntity? requestedDeviceType;
   final ScriptType? scriptType;
   final LedgerWalletPolicyRequest? walletPolicy;
+  final ReadLedgerAccountKeyRequest? accountKey;
 
   const LedgerRouteParams({
     this.psbt,
@@ -59,10 +60,13 @@ class LedgerRouteParams {
     this.requestedDeviceType,
     this.scriptType,
     this.walletPolicy,
+    this.accountKey,
   });
 
   SignerDeviceEntity? get effectiveRequestedDeviceType =>
-      walletPolicy?.requestedDeviceType ?? requestedDeviceType;
+      accountKey?.deviceType ??
+      walletPolicy?.requestedDeviceType ??
+      requestedDeviceType;
 }
 
 class LedgerActionScreen extends StatelessWidget {
@@ -178,7 +182,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             padding: const EdgeInsets.only(top: 24),
             child: _buildAddressDisplay(context),
           ),
-        if (widget.action is ImportWalletLedgerAction && state.isInitial)
+        if (widget.action is ImportWalletLedgerAction &&
+            widget.parameters?.accountKey == null &&
+            state.isInitial)
           Padding(
             padding: const EdgeInsets.only(top: 24),
             child: _buildScriptTypeButton(context),
@@ -192,16 +198,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     LedgerOperationState state,
   ) {
     if (state.status == LedgerOperationStatus.initial) {
-      return Row(
-        mainAxisSize: .min,
-        children: [
-          if (widget.parameters?.effectiveRequestedDeviceType == null ||
-              widget
-                  .parameters!
-                  .effectiveRequestedDeviceType!
-                  .supportsBluetooth)
-            Icon(Icons.bluetooth, size: 60, color: context.appColors.primary),
-        ],
+      final requestedDevice = widget.parameters?.effectiveRequestedDeviceType;
+      return Icon(
+        requestedDevice == null || requestedDevice.supportsBluetooth
+            ? Icons.bluetooth
+            : Icons.usb,
+        size: 60,
+        color: context.appColors.primary,
       );
     }
 
@@ -521,9 +524,15 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     }
   }
 
-  Future<Result<WatchOnlyWalletEntity, LedgerFailure>> _executeImportWallet(
+  Future<Result<Object, LedgerFailure>> _executeImportWallet(
     LedgerDeviceEntity device,
   ) {
+    if (widget.parameters?.accountKey case final request?) {
+      return locator<GetLedgerAccountKeyUsecase>().execute(
+        device: device,
+        derivationPath: request.derivationPath,
+      );
+    }
     return locator<GetLedgerWatchOnlyWalletUsecase>().execute(
       label: context.loc.ledgerDefaultWalletLabel,
       device: device,
@@ -578,6 +587,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         address: walletPolicy.address,
         keychain: walletPolicy.keychain,
         index: walletPolicy.index,
+        signerId: walletPolicy.signerId,
       );
     }
     final address = widget.parameters?.address;
@@ -614,16 +624,21 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     return locator<RegisterWalletPolicyLedgerUsecase>().execute(
       device: device,
       wallet: request.wallet,
+      signerId: request.signerId,
     );
   }
 
   void _handleSuccess(BuildContext context, Object? result) {
     switch (widget.action) {
       case ImportWalletLedgerAction():
-        context.pushNamed(
-          ImportWatchOnlyWalletRoutes.import.name,
-          extra: result,
-        );
+        if (widget.parameters?.accountKey != null) {
+          context.pop(result);
+        } else {
+          context.pushNamed(
+            ImportWatchOnlyWalletRoutes.import.name,
+            extra: result,
+          );
+        }
       case SignTransactionLedgerAction():
         context.pop(result);
       case RegisterWalletPolicyLedgerAction():
@@ -631,13 +646,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           context,
           widget.action.getSuccessText(context),
         );
-        context.pop();
+        context.pop(true);
       case VerifyAddressLedgerAction():
         BullSnackBar.show(
           context,
           message: context.loc.ledgerSuccessAddressVerified,
         );
-        context.pop();
+        context.pop(true);
     }
   }
 

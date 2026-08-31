@@ -15,6 +15,7 @@ class ImportQrDevicePage extends StatelessWidget {
   final String deviceName;
   final String instructionsTitle;
   final List<String> instructions;
+  final String? accountKeyDerivationPath;
 
   const ImportQrDevicePage({
     super.key,
@@ -22,6 +23,7 @@ class ImportQrDevicePage extends StatelessWidget {
     required this.deviceName,
     required this.instructionsTitle,
     required this.instructions,
+    this.accountKeyDerivationPath,
   });
 
   @override
@@ -33,11 +35,16 @@ class ImportQrDevicePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            BullText(
-              context.loc.importQrDeviceScanPrompt(deviceName),
+            BBText(
+              accountKeyDerivationPath == null
+                  ? context.loc.importQrDeviceScanPrompt(deviceName)
+                  : context.loc.bullVaultDeviceKeyPath(
+                      deviceName,
+                      accountKeyDerivationPath!,
+                    ),
               style: context.font.bodyLarge,
               textAlign: .center,
-              maxLines: 2,
+              maxLines: 4,
             ),
 
             if (device == SignerDeviceEntity.jade) ...[
@@ -92,6 +99,10 @@ class ImportQrDevicePage extends StatelessWidget {
       extra: device,
     );
     if (input == null || !context.mounted) return;
+    if (accountKeyDerivationPath != null) {
+      context.pop(input);
+      return;
+    }
     await context.pushNamed(
       ImportWatchOnlyWalletRoutes.import.name,
       extra: (input: input, signerDevice: device),
