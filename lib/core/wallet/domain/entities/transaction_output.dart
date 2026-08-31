@@ -7,6 +7,8 @@ part 'transaction_output.freezed.dart';
 
 @freezed
 sealed class TransactionOutput with _$TransactionOutput {
+  /// [isChange] tells our own change apart from what we paid out — the only
+  /// way to find the recipient in a send-to-self, where we own every output.
   const factory TransactionOutput.bitcoin({
     required String txId,
     required int vout,
@@ -14,6 +16,7 @@ sealed class TransactionOutput with _$TransactionOutput {
     BigInt? value,
     required Uint8List scriptPubkey,
     String? address,
+    @Default(false) bool isChange,
     @Default([]) List<Label> labels,
     @Default([]) List<Label> addressLabels,
   }) = BitcoinTransactionOutput;
@@ -25,6 +28,7 @@ sealed class TransactionOutput with _$TransactionOutput {
     required BigInt value,
     required String scriptPubkey,
     required String address,
+    @Default(false) bool isChange,
     @Default([]) List<Label> labels,
     @Default([]) List<Label> addressLabels,
   }) = LiquidTransactionOutput;

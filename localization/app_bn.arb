@@ -2089,10 +2089,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "Passport ওয়ালেট-এর জন্য একটি লেবেল লিখুন এবং \"ইমপোর্ট\" চাপুন",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "🇨🇦 কানাডা",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -3801,7 +3797,7 @@
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
   },
-  "importQrDevicePassportStep2": "আপনার পিন প্রবেশ করান",
+  "importQrDevicePassportStep2": "আপনার PIN লিখুন",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
@@ -4613,7 +4609,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "নির্বাচন করুন \"ওয়ালেট সংযোগ\"",
+  "importQrDevicePassportStep4": "নির্বাচন করুন \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4776,7 +4772,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "নির্বাচন করুন \"QR কোড\"",
+  "importQrDevicePassportStep7": "BULL Wallet অ্যাপে, ডিরিভেশন অপশন হিসেবে \"Segwit (BIP84)\" নির্বাচন করুন",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -5611,10 +5607,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "BULL Wallet অ্যাপে, ডিরিভেশন অপশন হিসেবে \"Segwit (BIP84)\" নির্বাচন করুন",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "উচ্চ",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -6296,7 +6288,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "আপনার Passport-এ প্রদর্শিত QR কোড স্ক্যান করুন",
+  "importQrDevicePassportStep9": "সেটআপ সম্পন্ন।",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6591,7 +6583,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "নির্বাচন করুন \"Single-sig\"",
+  "importQrDevicePassportStep6": "আপনার Passport-এ প্রদর্শিত QR কোড স্ক্যান করুন",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -8273,7 +8265,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "বিকল্প হিসেবে \"Sparrow\" নির্বাচন করুন",
+  "importQrDevicePassportStep5": "নির্বাচন করুন \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -8392,7 +8384,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "নির্বাচন করুন \"অ্যাকাউন্ট পরিচালনা\"",
+  "importQrDevicePassportStep3": "নির্বাচন করুন \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -8642,7 +8634,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "আপনার মোবাইলে \"ক্যামেরা চালু করুন\" ট্যাপ করুন",
+  "importQrDevicePassportStep8": "আপনার Passport ওয়ালেটের জন্য একটি লেবেল লিখুন এবং \"আমদানি করুন\" চাপুন",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9716,10 +9708,6 @@
   "autoswapInfoDismissButton": "বুঝেছি, আর দেখাবো না",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "সেটআপ সম্পন্ন।",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "IBAN অ্যাকাউন্ট নম্বর (শুধু US ডলার জন্য)",
   "@fundExchangeLabelIbanUsdOnly": {

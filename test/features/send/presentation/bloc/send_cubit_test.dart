@@ -13,12 +13,14 @@ import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_se
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -78,6 +80,9 @@ class _MockGetAvailableCurrenciesUsecase extends Mock
 
 class _MockPrepareBitcoinSendUsecase extends Mock
     implements PrepareBitcoinSendUsecase {}
+
+class _MockValidateBitcoinSelectionUsecase extends Mock
+    implements ValidateBitcoinSelectionUsecase {}
 
 class _MockPrepareLiquidSendUsecase extends Mock
     implements PrepareLiquidSendUsecase {}
@@ -179,6 +184,7 @@ class _TestableSendCubit extends SendCubit {
     required super.getWalletUtxosUsecase,
     required super.getAvailableCurrenciesUsecase,
     required super.prepareBitcoinSendUsecase,
+    required super.validateBitcoinSelectionUsecase,
     required super.prepareLiquidSendUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
@@ -310,6 +316,7 @@ void main() {
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockGetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
+  late _MockValidateBitcoinSelectionUsecase validateBitcoinSelectionUsecase;
   late _MockPrepareLiquidSendUsecase prepareLiquidSendUsecase;
   late _MockSendWithPayjoinUsecase sendWithPayjoinUsecase;
   late _MockWatchPayjoinUsecase watchPayjoinUsecase;
@@ -356,6 +363,7 @@ void main() {
     getWalletUtxosUsecase: getWalletUtxosUsecase,
     getAvailableCurrenciesUsecase: getAvailableCurrenciesUsecase,
     prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
+    validateBitcoinSelectionUsecase: validateBitcoinSelectionUsecase,
     prepareLiquidSendUsecase: prepareLiquidSendUsecase,
     sendWithPayjoinUsecase: sendWithPayjoinUsecase,
     watchPayjoinUsecase: watchPayjoinUsecase,
@@ -428,6 +436,13 @@ void main() {
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     getAvailableCurrenciesUsecase = _MockGetAvailableCurrenciesUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
+    validateBitcoinSelectionUsecase = _MockValidateBitcoinSelectionUsecase();
+    when(
+      () => validateBitcoinSelectionUsecase.execute(
+        walletId: any(named: 'walletId'),
+        selectedInputs: any(named: 'selectedInputs'),
+      ),
+    ).thenAnswer((_) async => []);
     prepareLiquidSendUsecase = _MockPrepareLiquidSendUsecase();
     sendWithPayjoinUsecase = _MockSendWithPayjoinUsecase();
     watchPayjoinUsecase = _MockWatchPayjoinUsecase();
@@ -977,6 +992,42 @@ void main() {
       },
     );
 
+    test(
+      'clears the previous recipient before continuing while new input parses',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final parsing = Completer<PaymentRequest>();
+        when(
+          () => detectBitcoinStringUsecase.execute(data: 'new-address'),
+        ).thenAnswer((_) => parsing.future);
+        cubit.setStateForTest(
+          const SendState(
+            copiedRawPaymentRequest: 'old-address',
+            paymentRequest: PaymentRequest.bitcoin(
+              address: 'old-address',
+              isTestnet: true,
+            ),
+          ),
+        );
+
+        final parsingFuture = cubit.onChangedText('new-address');
+        expect(cubit.state.copiedRawPaymentRequest, 'new-address');
+        expect(cubit.state.paymentRequest, isNull);
+
+        final continueFuture = cubit.continueOnAddressConfirmed();
+        expect(cubit.state.paymentRequest, isNull);
+        parsing.completeError(StateError('still parsing'));
+        await parsingFuture;
+        await continueFuture;
+
+        expect(cubit.state.paymentRequest, isNull);
+        verify(
+          () => detectBitcoinStringUsecase.execute(data: 'new-address'),
+        ).called(2);
+      },
+    );
+
     test('keeps a newer valid result when an older parse fails', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -1026,6 +1077,52 @@ void main() {
   // A shortfall used to show "Build Failed", the same message as a dead
   // Electrum server or a bad address.
   group('SendCubit.createTransaction shortfalls', () {
+    test(
+      'a selected coin that disappears is unavailable, not insufficient',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final selected = _utxo(amountSat: 10000);
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            networkFee: any(named: 'networkFee'),
+            amountSat: any(named: 'amountSat'),
+            drain: any(named: 'drain'),
+            selectedInputs: any(named: 'selectedInputs'),
+            replaceByFee: any(named: 'replaceByFee'),
+          ),
+        ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async => [selected]);
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.amount,
+            sendType: SendType.bitcoin,
+            selectedWallet: _bitcoinWallet(balanceSat: 20000),
+            paymentRequest: const PaymentRequest.bitcoin(
+              address: 'bc1-address',
+              isTestnet: false,
+            ),
+            amount: '5000',
+            inputAmountCurrencyCode: 'sats',
+            bitcoinFeesList: _feeOptions(),
+            selectedUtxos: [selected],
+          ),
+        );
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+        expect(
+          cubit.state.failure,
+          isNot(isA<SendSelectedCoinsInsufficientFailure>()),
+        );
+      },
+    );
+
     test(
       'a shortfall at build time is an insufficient-balance failure',
       () async {

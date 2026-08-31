@@ -1994,10 +1994,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "أدخلي بطاقة لمحفظة جواز سفرك واستخدمي \"إمبورت\"",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "كندا",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -9293,10 +9289,6 @@
       }
     }
   },
-  "importQrDevicePassportStep12": "تم تجهيزها.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
-  },
   "fundExchangeLabelIbanUsdOnly": "IBAN account number (for US dollars only)",
   "@fundExchangeLabelIbanUsdOnly": {
     "description": "Label for IBAN field - US Dollars only"
@@ -10876,7 +10868,7 @@
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
-  "importQrDevicePassportStep2": "أدخل بنك",
+  "importQrDevicePassportStep2": "أدخل رمز PIN الخاص بك",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
@@ -10920,7 +10912,7 @@
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
-  "importQrDevicePassportStep4": "\"إختاروا \"إستمروا بالواليت",
+  "importQrDevicePassportStep4": "اختيار \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -10934,7 +10926,7 @@
       }
     }
   },
-  "importQrDevicePassportStep7": "\"اختاروا \"رمز إعادة التشغيل",
+  "importQrDevicePassportStep7": "في تطبيق محفظة BULL، اختر \"Segwit (BIP84)\" كخيار الاشتقاق",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -11006,11 +10998,7 @@
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "importQrDevicePassportStep10": "في تطبيق محفظة BUL، اختيار \"Segwit (BIP84)\" كخيار استخلاص",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
-  "importQrDevicePassportStep1": "الطاقة على جهاز جواز سفرك",
+  "importQrDevicePassportStep1": "شغّل جهاز Passport الخاص بك",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -11060,7 +11048,7 @@
   "@fundExchangeOnlineBillPaymentDescription": {
     "description": "Description of how online bill payment works and timeframe"
   },
-  "importQrDevicePassportStep9": "امسح رمز \"كيو آر\" على جواز سفرك",
+  "importQrDevicePassportStep9": "اكتمل الإعداد.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -11076,7 +11064,7 @@
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
   },
-  "importQrDevicePassportStep6": "\"اختار \"سنغل سيج",
+  "importQrDevicePassportStep6": "امسح رمز QR المعروض على جهاز Passport",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -11192,11 +11180,11 @@
       }
     }
   },
-  "importQrDevicePassportStep5": "اختيار \"سبارو\"",
+  "importQrDevicePassportStep5": "اختيار \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep3": "اختيار \"حساب إدارة\"",
+  "importQrDevicePassportStep3": "اختيار \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -11234,7 +11222,7 @@
   "@savingToDevice": {
     "description": "Message shown when saving to device"
   },
-  "importQrDevicePassportStep8": "على جهازك المحمول، اضغطي \"كاميرا مفتوحة\"",
+  "importQrDevicePassportStep8": "أدخل تسمية لمحفظة Passport واضغط على \"الواردات\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },

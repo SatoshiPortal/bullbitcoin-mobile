@@ -2124,10 +2124,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "ใส่ฉลากสําหรับหนังสือเดินทางและแตะ \"Import\"",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "🇨🇦",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -4751,7 +4747,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "เลือก \"เชื่อมต่อกระเป๋าสตางค์\"",
+  "importQrDevicePassportStep4": "เลือก \"Connect App\"",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4918,7 +4914,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "เลือก \"QR รหัส\"",
+  "importQrDevicePassportStep7": "ในแอป BULL wallet ให้เลือก \"Segwit (BIP84)\" เป็นตัวเลือกการสร้างคีย์",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -5778,10 +5774,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "ในแอปโปแลนด์, เลือก \"Segwit) (BIP84)\" เป็นตัวเลือก",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "ประสิทธิภาพสูง",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -5864,7 +5856,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "importQrDevicePassportStep1": "อุปกรณ์ในหนังสือเดินทางของคุณ",
+  "importQrDevicePassportStep1": "เปิดเครื่อง Passport ของคุณ",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -6479,7 +6471,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "สแกนรหัส QR จะแสดงในหนังสือเดินทางของคุณ",
+  "importQrDevicePassportStep9": "ตั้งค่าเสร็จสมบูรณ์",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6775,7 +6767,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "เลือก \"เดี่ยว\"",
+  "importQrDevicePassportStep6": "สแกนคิวอาร์โค้ดที่แสดงบน Passport ของคุณ",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -8504,7 +8496,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "เลือก \"ตัวเลือก\"",
+  "importQrDevicePassportStep5": "เลือก \"Bull\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -8623,7 +8615,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "เลือก \"จัดการบัญชี\"",
+  "importQrDevicePassportStep3": "เลือก \"Wallet\"",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -8885,7 +8877,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "บนโทรศัพท์มือถือของคุณแตะ \"เปิดกล้อง\"",
+  "importQrDevicePassportStep8": "ใส่ชื่อสำหรับกระเป๋า Passport ของคุณ แล้วแตะ \"การนำเข้า\"",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9971,10 +9963,6 @@
   "autoswapInfoDismissButton": "มันไม่ได้แสดงอีกครั้ง",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "การตั้งค่าที่สมบูรณ์.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "จํานวนบัญชี (สําหรับสหรัฐเท่านั้น)",
   "@fundExchangeLabelIbanUsdOnly": {

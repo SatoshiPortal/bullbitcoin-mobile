@@ -12052,6 +12052,9 @@
     "description": "Description when Tor is disconnected"
   },
   "torSettingsDescUnknown": "Unable to determine Tor status. Ensure Orbot is installed and running.",
+  "sendErrorSelectedCoinsUnavailable": "One or more selected coins are no longer available. Review your coin selection and try again.",
+  "sendErrorSelectedCoinsInsufficient": "The selected coins do not cover the amount and fees. Select more coins or reduce the amount.",
+  "sendErrorTransactionChanged": "The transaction details changed. Review the amount, destination, and fees, then confirm again.",
   "@torSettingsDescUnknown": {
     "description": "Description when Tor status is unknown"
   },

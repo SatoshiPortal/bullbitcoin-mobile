@@ -8568,45 +8568,33 @@
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
-  "importQrDevicePassportStep3": "\"Manage Account\" select karo",
+  "importQrDevicePassportStep3": "\"Wallet\" select karo",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
-  "importQrDevicePassportStep4": "\"Connect Wallet\" select karo",
+  "importQrDevicePassportStep4": "\"Connect App\" select karo",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "importQrDevicePassportStep5": "\"Sparrow\" option select karo",
+  "importQrDevicePassportStep5": "\"Bull\" select karo",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
-  "importQrDevicePassportStep6": "\"Single-sig\" select karo",
+  "importQrDevicePassportStep6": "Passport pe dikha QR code scan karo",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
-  "importQrDevicePassportStep7": "\"QR Code\" select karo",
+  "importQrDevicePassportStep7": "BULL wallet app mein derivation option ke roop mein \"Segwit (BIP84)\" select karo",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
-  "importQrDevicePassportStep8": "Mobile device pe \"Camera kholiye\" tap karo",
+  "importQrDevicePassportStep8": "Passport wallet ka label daalo aur \"Import Karo\" tap karo",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
-  "importQrDevicePassportStep9": "Passport pe dikha QR code scan karo",
+  "importQrDevicePassportStep9": "Setup poora hua.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
-  },
-  "importQrDevicePassportStep10": "BULL wallet app mein derivation option ke roop mein \"Segwit (BIP84)\" select karo",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
-  "importQrDevicePassportStep11": "Passport wallet ka label daalo aur \"Import Karo\" tap karo",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
-  "importQrDevicePassportStep12": "Setup poora hua.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "importQrDeviceSeedsignerName": "SeedSigner",
   "@importQrDeviceSeedsignerName": {

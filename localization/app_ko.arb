@@ -2124,10 +2124,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "여권 지갑에 라벨을 입력하고 \"Import\"를 탭하십시오",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "🇰🇷 한국어",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -3891,7 +3887,7 @@
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
   },
-  "importQrDevicePassportStep2": "PIN 입력",
+  "importQrDevicePassportStep2": "PIN을 입력하세요",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
@@ -4751,7 +4747,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "\"Connect Wallet\" 선택",
+  "importQrDevicePassportStep4": "\"Connect App\" 선택",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4918,7 +4914,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "선택 \"QR 코드\"",
+  "importQrDevicePassportStep7": "BULL 지갑 앱에서 파생 옵션으로 \"Segwit (BIP84)\"을 선택하세요",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -5778,10 +5774,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "BULL 지갑 앱에서 파생 옵션으로 \"Segwit (BIP84)\"을 선택하십시오",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "주요 특징",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -5864,7 +5856,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "importQrDevicePassportStep1": "여권 기기에 전원",
+  "importQrDevicePassportStep1": "Passport 기기의 전원을 켜세요",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -6475,7 +6467,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "여권에 표시된 QR 코드를 스캔",
+  "importQrDevicePassportStep9": "설정이 완료되었습니다.",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6771,7 +6763,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "\"Single-sig\" 선택",
+  "importQrDevicePassportStep6": "Passport에 표시된 QR 코드를 스캔하세요",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -8504,7 +8496,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "\"Sparrow\"옵션 선택",
+  "importQrDevicePassportStep5": "\"Bull\" 선택",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -8623,7 +8615,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "선택 \"관리 계정\"",
+  "importQrDevicePassportStep3": "\"Wallet\" 선택",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -8885,7 +8877,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "모바일 장치에서 \"오픈 카메라\"를 탭",
+  "importQrDevicePassportStep8": "Passport 지갑의 라벨을 입력하고 \"가져오기\"를 탭하세요",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9971,10 +9963,6 @@
   "autoswapInfoDismissButton": "그것을, 다시 표시하지 마십시오",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "설치 완료.",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "IBAN 계정 번호 (미국 달러 전용)",
   "@fundExchangeLabelIbanUsdOnly": {

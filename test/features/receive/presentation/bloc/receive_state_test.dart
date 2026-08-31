@@ -107,12 +107,13 @@ void main() {
     required PayjoinStatus status,
     int? amountSat,
     bool hasRequest = false,
+    String? payjoinUri,
   }) => PayjoinReceiverSession(
     status: status,
     id: 'pj1',
     network: BitcoinNetwork.testnet,
     walletId: 'w1',
-    payjoinUri: 'bitcoin:tb1qtest?pj=https://payjo.in',
+    payjoinUri: payjoinUri ?? 'bitcoin:tb1qtest?pj=https://payjo.in',
     createdAt: DateTime(2026),
     expiresAt: DateTime(2026).add(const Duration(minutes: 1)),
     amount: amountSat == null ? null : Sats.fromInt(amountSat),
@@ -167,6 +168,29 @@ void main() {
       expect(uri.queryParameters['amount'], '0.0005');
       expect(uri.queryParameters['message'], 'pj note');
       expect(uri.queryParameters['pj'], 'https://payjo.in');
+    });
+
+    test('bitcoin: preserves the encoded BIP77 endpoint fragment', () {
+      const payjoinUri =
+          'bitcoin:tb1qtest?pj=HTTPS://PAYJO.IN/TXJCGKTKXLUUZ%23EX1WKV8CEC-OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ-RK1Q0DJS3VVDXWQQTLQ8022QGXSX7ML9PHZ6EDSF6AKEWQG758JPS2EV';
+      final state = buildState(
+        payjoinGloballyEnabled: true,
+        payjoin: payjoinWith(
+          status: PayjoinStatus.started,
+          payjoinUri: payjoinUri,
+        ),
+      ).copyWith(confirmedAmountSat: 50000, note: 'pj note');
+
+      final output = state.paymentRequest;
+      final outputUri = Uri.parse(output);
+
+      expect(
+        outputUri.queryParameters['pj'],
+        Uri.parse(payjoinUri).queryParameters['pj'],
+      );
+      expect(output, contains('%23EX1'));
+      expect(outputUri.queryParameters['amount'], '0.0005');
+      expect(outputUri.queryParameters['message'], 'pj note');
     });
 
     test('liquid: amount is in BTC (L-BTC) units and the note becomes '

@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -205,6 +206,12 @@ class SwapLocator {
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
       ),
     );
+    locator.registerFactory<ValidateBitcoinSelectionUsecase>(
+      () => ValidateBitcoinSelectionUsecase(
+        payjoinSessions: locator<PayjoinSessions>(),
+        walletUtxoRepository: locator<WalletUtxoRepository>(),
+      ),
+    );
     locator.registerFactory<PrepareLiquidSendUsecase>(
       () => PrepareLiquidSendUsecase(
         liquidWalletRepository: locator<LiquidWalletRepository>(),
@@ -260,6 +267,8 @@ class SwapLocator {
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        validateBitcoinSelectionUsecase:
+            locator<ValidateBitcoinSelectionUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         calculateBitcoinAbsoluteFeesUsecase:
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),

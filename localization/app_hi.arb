@@ -2124,10 +2124,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "importQrDevicePassportStep11": "अपने पासपोर्ट वॉलेट के लिए एक लेबल दर्ज करें और \"आयात\" टैप करें।",
-  "@importQrDevicePassportStep11": {
-    "description": "Passport instruction step 11"
-  },
   "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
@@ -3891,7 +3887,7 @@
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
   },
-  "importQrDevicePassportStep2": "अपना पिन दर्ज करें",
+  "importQrDevicePassportStep2": "अपना PIN दर्ज करें",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
   },
@@ -4751,7 +4747,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "importQrDevicePassportStep4": "\"कनेक्ट वॉलेट\" चुनें",
+  "importQrDevicePassportStep4": "\"Connect App\" चुनें",
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
@@ -4918,7 +4914,7 @@
   "@connectHardwareWalletSeedSigner": {
     "description": "SeedSigner hardware wallet option"
   },
-  "importQrDevicePassportStep7": "\"QR कोड\" चुनें",
+  "importQrDevicePassportStep7": "BULL वॉलेट ऐप में, डेरिवेशन विकल्प के रूप में \"Segwit (BIP84)\" चुनें",
   "@importQrDevicePassportStep7": {
     "description": "Passport instruction step 7"
   },
@@ -5778,10 +5774,6 @@
   "@payInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "importQrDevicePassportStep10": "BULL वॉलेट ऐप में, खुदाई विकल्प के रूप में \"Segwit (BIP84)\" का चयन करें",
-  "@importQrDevicePassportStep10": {
-    "description": "Passport instruction step 10"
-  },
   "payHighPriority": "उच्च",
   "@payHighPriority": {
     "description": "High fee priority option"
@@ -5864,7 +5856,7 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "importQrDevicePassportStep1": "अपने पासपोर्ट डिवाइस पर पावर",
+  "importQrDevicePassportStep1": "अपने Passport डिवाइस को चालू करें",
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
@@ -6475,7 +6467,7 @@
   "@autoswapMaxFeeInfo": {
     "description": "Info tooltip for max fee field"
   },
-  "importQrDevicePassportStep9": "अपने पासपोर्ट पर प्रदर्शित QR कोड को स्कैन करें",
+  "importQrDevicePassportStep9": "सेटअप पूर्ण।",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
   },
@@ -6771,7 +6763,7 @@
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "importQrDevicePassportStep6": "\"सिंगल-सिग\" चुनें",
+  "importQrDevicePassportStep6": "अपने Passport पर प्रदर्शित QR कोड को स्कैन करें",
   "@importQrDevicePassportStep6": {
     "description": "Passport instruction step 6"
   },
@@ -8504,7 +8496,7 @@
   "@coldcardStep4": {
     "description": "Coldcard instruction step 4"
   },
-  "importQrDevicePassportStep5": "\"Sparrow\" विकल्प चुनें",
+  "importQrDevicePassportStep5": "\"Bull\" चुनें",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
   },
@@ -8623,7 +8615,7 @@
   "@backupKeyWarningMessage": {
     "description": "Warning message about backup key storage"
   },
-  "importQrDevicePassportStep3": "\"Manage account\" चुनें",
+  "importQrDevicePassportStep3": "\"Wallet\" चुनें",
   "@importQrDevicePassportStep3": {
     "description": "Passport instruction step 3"
   },
@@ -8885,7 +8877,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "importQrDevicePassportStep8": "अपने मोबाइल डिवाइस पर \"ओपन कैमरा\" टैप करें",
+  "importQrDevicePassportStep8": "अपने Passport वॉलेट के लिए एक लेबल दर्ज करें और \"आयात\" टैप करें",
   "@importQrDevicePassportStep8": {
     "description": "Passport instruction step 8"
   },
@@ -9971,10 +9963,6 @@
   "autoswapInfoDismissButton": "इसे फिर से न दिखाएं",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
-  },
-  "importQrDevicePassportStep12": "पूरा सेटअप करें।।",
-  "@importQrDevicePassportStep12": {
-    "description": "Passport instruction step 12"
   },
   "fundExchangeLabelIbanUsdOnly": "IBAN खाता संख्या (केवल US डॉलर के लिए)",
   "@fundExchangeLabelIbanUsdOnly": {

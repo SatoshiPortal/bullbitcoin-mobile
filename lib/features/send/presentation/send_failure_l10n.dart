@@ -18,6 +18,10 @@ extension SendFailureL10n on SendFailure {
       context.loc.sendErrorInsufficientBalanceForPayment,
     SendInsufficientFundsForFeesFailure() =>
       context.loc.sendErrorInsufficientFundsForFees,
+    SendSelectedCoinsUnavailableFailure() =>
+      context.loc.sendErrorSelectedCoinsUnavailable,
+    SendSelectedCoinsInsufficientFailure() =>
+      context.loc.sendErrorSelectedCoinsInsufficient,
     SendAmountOutOfBoundsFailure(:final minimumSat?) =>
       context.loc.sendErrorAmountBelowMinimum(minimumSat.toString()),
     SendAmountOutOfBoundsFailure(:final maximumSat?) =>

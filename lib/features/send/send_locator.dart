@@ -32,6 +32,7 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_us
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -70,6 +71,12 @@ class SendLocator {
         payjoinSessions: locator<PayjoinSessions>(),
         walletUtxoRepository: locator<WalletUtxoRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+      ),
+    );
+    locator.registerFactory<ValidateBitcoinSelectionUsecase>(
+      () => ValidateBitcoinSelectionUsecase(
+        payjoinSessions: locator<PayjoinSessions>(),
+        walletUtxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
     locator.registerFactory<PrepareLiquidSendUsecase>(
@@ -184,6 +191,8 @@ class SendLocator {
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        validateBitcoinSelectionUsecase:
+            locator<ValidateBitcoinSelectionUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
         signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
