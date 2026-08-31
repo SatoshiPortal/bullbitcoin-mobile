@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_u
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:file_picker/file_picker.dart';
@@ -75,7 +75,12 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
                 );
               }
               if (state.result case final result?) {
-                context.pop(result);
+                context.pushReplacementNamed(
+                  BullVaultFacade.settingsRouteName,
+                  pathParameters: {'walletId': result.wallet.id},
+                  extra:
+                      result.wallet.label ?? context.loc.bullVaultWalletLabel,
+                );
               }
             },
             builder: (context, state) => ListView(

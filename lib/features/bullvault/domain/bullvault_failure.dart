@@ -36,6 +36,10 @@ final class BullVaultRenewalFailure extends BullVaultFailure {
   const BullVaultRenewalFailure([super.logMessage]);
 }
 
+final class BullVaultRenewalHasFundsFailure extends BullVaultFailure {
+  const BullVaultRenewalHasFundsFailure([super.logMessage]);
+}
+
 final class BullVaultInvalidRecoveryFailure extends BullVaultFailure {
   const BullVaultInvalidRecoveryFailure([super.logMessage]);
 }

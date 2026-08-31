@@ -40,6 +40,7 @@ abstract class ReceiveState with _$ReceiveState {
     ReceiveFailure? failure,
     AmountException? amountException,
     @Default(false) bool creatingSwap,
+    @Default(false) bool isBullVault,
   }) = _ReceiveState;
   const ReceiveState._();
 

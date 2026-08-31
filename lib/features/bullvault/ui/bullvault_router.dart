@@ -1,9 +1,12 @@
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_onboarding_screen.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_renewal_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +14,7 @@ import 'package:go_router/go_router.dart';
 abstract final class BullVaultRouter {
   static const scannerRouteName = 'bullVaultScanner';
 
-  static final routes = [route, scannerRoute, restoreRoute];
+  static final routes = [route, scannerRoute, restoreRoute, settingsRoute];
 
   static final route = GoRoute(
     name: BullVaultFacade.createRouteName,
@@ -42,5 +45,20 @@ abstract final class BullVaultRouter {
       create: (_) => locator<BullVaultRestoreCubit>(),
       child: const BullVaultRestoreScreen(),
     ),
+  );
+
+  static final settingsRoute = GoRoute(
+    name: BullVaultFacade.settingsRouteName,
+    path: '/bullvault/:walletId/settings',
+    builder: (context, state) {
+      final walletId = state.pathParameters['walletId']!;
+      return BlocProvider(
+        create: (_) => locator<BullVaultRenewalCubit>(param1: walletId)..load(),
+        child: BullVaultRenewalScreen(
+          walletLabel:
+              state.extra as String? ?? context.loc.bullVaultWalletLabel,
+        ),
+      );
+    },
   );
 }

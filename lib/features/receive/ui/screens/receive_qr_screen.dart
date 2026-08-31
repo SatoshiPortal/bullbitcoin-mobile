@@ -53,6 +53,9 @@ class ReceiveQrPage extends StatelessWidget {
           _supportsVerification(bloc.state.wallet, (device) => device.isBitBox),
     );
     final showAddressVerification = !isLightning && (isLedger || isBitBox);
+    final isBullVault = context.select(
+      (ReceiveBloc bloc) => bloc.state.isBullVault,
+    );
     final orderSwap = context.select(
       (ReceiveBloc bloc) => bloc.state.orderSwap,
     );
@@ -78,6 +81,17 @@ class ReceiveQrPage extends StatelessWidget {
           Gap(gap / 2),
           const ReceiveInfoDetails(),
           Gap(gap / 2),
+          if (!isLightning && isBullVault) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: InfoCard(
+                description: context.loc.bullVaultReceiveVerifyReminder,
+                tagColor: context.appColors.secondary,
+                bgColor: context.appColors.surfaceContainer,
+              ),
+            ),
+            const Gap(12),
+          ],
           if (showAddressVerification) ...[
             if (isLedger) const VerifyAddressOnLedgerButton(),
             if (isLedger && isBitBox) const Gap(12),

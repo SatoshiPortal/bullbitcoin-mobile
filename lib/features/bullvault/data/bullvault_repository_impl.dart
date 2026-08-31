@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
+import 'package:bb_mobile/features/bullvault/data/bullvault_record_model.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_recovery_package_codec.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
@@ -108,12 +109,11 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     String walletId,
   ) => _withMetadataLock(() async {
     try {
-      var model = await _datasource.load(walletId);
-      if (model != null) {
-        await _repairInterruptedRestoredLink(model.lineageId);
-        model = await _datasource.load(walletId);
-      }
-      return Ok(model == null ? null : _recordMapper.toEntity(model));
+      final model = await _datasource.load(walletId);
+      if (model == null) return const Ok(null);
+      final lineage = await _datasource.loadLineage(model.lineageId);
+      final repaired = await _repairInterruptedRestoredLink(lineage);
+      return Ok(repaired[walletId] ?? _recordMapper.toEntity(model));
     } on Exception catch (error, stackTrace) {
       log.warning(
         'Failed to load BullVault metadata',
@@ -129,9 +129,12 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     String lineageId,
   ) => _withMetadataLock(() async {
     try {
-      await _repairInterruptedRestoredLink(lineageId);
       final records = await _datasource.loadLineage(lineageId);
-      return Ok([for (final record in records) _recordMapper.toEntity(record)]);
+      final repaired = await _repairInterruptedRestoredLink(records);
+      return Ok([
+        for (final record in records)
+          repaired[record.walletId] ?? _recordMapper.toEntity(record),
+      ]);
     } on Exception catch (error, stackTrace) {
       log.warning(
         'Failed to load BullVault lineage',
@@ -404,18 +407,19 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     }
   });
 
-  Future<void> _repairInterruptedRestoredLink(String lineageId) async {
-    final lineage = [
-      for (final model in await _datasource.loadLineage(lineageId))
-        _recordMapper.toEntity(model),
-    ];
-    final active = lineage
-        .where((record) => record.status == BullVaultLifecycleStatus.active)
+  Future<Map<String, BullVaultRecord>> _repairInterruptedRestoredLink(
+    List<BullVaultRecordModel> lineage,
+  ) async {
+    final activeModels = lineage
+        .where(
+          (record) => record.status == BullVaultLifecycleStatus.active.name,
+        )
         .toList();
-    if (active.length <= 1) return;
-    if (active.length != 2) {
+    if (activeModels.length <= 1) return const {};
+    if (activeModels.length != 2) {
       throw StateError('Multiple active BullVault generations');
     }
+    final active = activeModels.map(_recordMapper.toEntity).toList();
     final stagedSuccessors = active.where((successor) {
       final predecessors = active.where(
         (candidate) => candidate.walletId == successor.previousVaultId,
@@ -437,14 +441,12 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     final previous = active.singleWhere(
       (candidate) => candidate.walletId == successor.previousVaultId,
     );
-    await _datasource.save(
-      _recordMapper.toModel(
-        previous.copyWith(
-          successorWalletId: successor.walletId,
-          status: BullVaultLifecycleStatus.migrating,
-        ),
-      ),
+    final repaired = previous.copyWith(
+      successorWalletId: successor.walletId,
+      status: BullVaultLifecycleStatus.migrating,
     );
+    await _datasource.save(_recordMapper.toModel(repaired));
+    return {repaired.walletId: repaired, successor.walletId: successor};
   }
 
   Future<T> _withMetadataLock<T>(Future<T> Function() action) {

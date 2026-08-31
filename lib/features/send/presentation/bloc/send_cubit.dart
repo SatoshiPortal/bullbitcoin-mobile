@@ -223,6 +223,7 @@ class SendCubit extends Cubit<SendState>
   Future<void> _signingSaveQueue = Future.value();
   int? _pendingTransactionRevision;
   bool _loadingPendingTransaction = false;
+  bool _restrictedSend = false;
   int _draftRevision = 0;
 
   /// Monotonic token bumped by [clearBitcoinFeePreviews]. A preview build
@@ -447,6 +448,9 @@ class SendCubit extends Cubit<SendState>
                     '${utxo.txId}:${utxo.vout}',
                 })
               : const <String>{};
+          if (!state.wallets.any((wallet) => wallet.id == value.wallet.id)) {
+            emit(state.copyWith(wallets: [...state.wallets, value.wallet]));
+          }
           await _setSelectedWallet(
             value.wallet,
             manual: true,
@@ -842,11 +846,15 @@ class SendCubit extends Cubit<SendState>
   Future<void> loadWalletWithRatesAndFees() async {
     try {
       final wallets = await _getWalletsUsecase.execute();
-      emit(
-        state.copyWith(
-          wallets: wallets.where((wallet) => wallet.supportsSend).toList(),
-        ),
-      );
+      final sendWallets = wallets
+          .where((wallet) => wallet.supportsSend)
+          .toList();
+      if (_wallet case final wallet?
+          when wallet.supportsSend &&
+              !sendWallets.any((candidate) => candidate.id == wallet.id)) {
+        sendWallets.add(wallet);
+      }
+      emit(state.copyWith(wallets: sendWallets));
       if (_wallet case final wallet?) {
         await _setSelectedWallet(wallet, manual: true);
         await loadUtxos();
@@ -865,6 +873,7 @@ class SendCubit extends Cubit<SendState>
     String scannedRawPaymentRequest,
     PaymentRequest? paymentRequest,
   ) async {
+    if (_restrictedSend) return;
     final inputGeneration = _startNewPaymentRequestInput();
     if (state.isDraftSaved && !await flushDraft()) return;
     if (inputGeneration != _paymentRequestInputGeneration || isClosed) return;
@@ -895,6 +904,7 @@ class SendCubit extends Cubit<SendState>
 
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
+    if (_restrictedSend) return;
     final inputGeneration = _startNewPaymentRequestInput();
     final parsingCompleted = Completer<void>();
     _pendingPaymentRequestInput = (
@@ -958,6 +968,44 @@ class SendCubit extends Cubit<SendState>
         _pendingPaymentRequestInput = null;
       }
     }
+  }
+
+  bool get isRestrictedSend => _restrictedSend;
+
+  Future<bool> configureRestrictedSend({
+    required String recipient,
+    bool sendMax = false,
+  }) async {
+    if (_wallet == null || !_wallet.isBitcoin || recipient.trim().isEmpty) {
+      emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
+      return false;
+    }
+    _restrictedSend = true;
+    _startNewPaymentRequestInput();
+    clearFailure();
+    _invalidateSignedTransaction();
+    emit(
+      state.copyWith(
+        copiedRawPaymentRequest: _sanitizeRawPaymentRequest(recipient),
+        paymentRequest: null,
+        sendMax: false,
+      ),
+    );
+    await continueOnAddressConfirmed();
+    if (sendMax && state.step == SendStep.amount && state.failure == null) {
+      await amountChanged(isMax: true);
+    }
+    return state.step == SendStep.amount && state.failure == null;
+  }
+
+  bool restrictRestoredSend(String recipient) {
+    _restrictedSend = true;
+    final expected = _sanitizeRawPaymentRequest(recipient);
+    if (state.copiedRawPaymentRequest != expected) {
+      emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
+      return false;
+    }
+    return true;
   }
 
   Future<void> continueOnAddressConfirmed() async {
@@ -3845,6 +3893,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> updateSelectedWallet(Wallet newWallet) async {
+    if (_restrictedSend) return;
     if (state.isDraftSaved && !newWallet.isBitcoin) {
       if (!await flushDraft() || isClosed) return;
       _detachSavedDraft();
