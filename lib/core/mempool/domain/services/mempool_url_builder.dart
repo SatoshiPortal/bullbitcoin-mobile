@@ -7,13 +7,9 @@ class MempoolUrlBuilder {
 
   const MempoolUrlBuilder({required this._getActiveMempoolServerUsecase});
 
-  Future<String> bitcoinTxid(
-    String txid, {
-    required bool isTestnet,
-    String? fragment,
-  }) async {
+  Future<String> bitcoinTxid(String txid, {required bool isTestnet}) async {
     final server = await _activeServer(isTestnet: isTestnet, isLiquid: false);
-    return '${server.fullUrl}/tx/$txid${fragment == null ? '' : '?showDetails=true#$fragment'}';
+    return '${server.fullUrl}/tx/$txid';
   }
 
   Future<String> liquidTxid(
