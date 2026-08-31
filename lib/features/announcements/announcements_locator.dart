@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/announcements/data/announcement_dismissal_rep
 import 'package:bb_mobile/features/announcements/data/datasources/announcement_dismissal_datasource.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
-import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/watch_swap_provider_unavailable_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/repositories/announcement_dismissal_repository.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:get_it/get_it.dart';
@@ -28,8 +28,10 @@ class AnnouncementsLocator {
         locator<SwapFacade>(),
       ),
     );
-    locator.registerFactory<WatchAppUpdateAnnouncementUsecase>(
-      () => WatchAppUpdateAnnouncementUsecase(locator<SwapFacade>()),
+    locator.registerFactory<WatchSwapProviderUnavailableAnnouncementUsecase>(
+      () => WatchSwapProviderUnavailableAnnouncementUsecase(
+        locator<SwapFacade>(),
+      ),
     );
     locator.registerFactory<DismissAnnouncementUsecase>(
       () => DismissAnnouncementUsecase(
@@ -43,8 +45,8 @@ class AnnouncementsLocator {
         getVisibleAnnouncementsUsecase:
             locator<GetVisibleAnnouncementsUsecase>(),
         dismissAnnouncementUsecase: locator<DismissAnnouncementUsecase>(),
-        watchAppUpdateAnnouncementUsecase:
-            locator<WatchAppUpdateAnnouncementUsecase>(),
+        watchSwapProviderUnavailableAnnouncementUsecase:
+            locator<WatchSwapProviderUnavailableAnnouncementUsecase>(),
       ),
     );
   }

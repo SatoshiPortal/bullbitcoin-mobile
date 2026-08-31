@@ -12326,5 +12326,20 @@
   "exchangeSupportChatLoadAttachmentError": "Nepodařilo se otevřít přílohu. Zkuste to prosím znovu.",
   "statusCheckNoDefaultWalletError": "Nebyla nalezena výchozí peněženka Bitcoin. Nastavte prosím výchozí peněženku a zkuste to znovu.",
   "statusCheckResultsMayBeOutdated": "Výsledky mohou být zastaralé",
-  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu."
+  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
+  "swapProviderSettingsTitle": "Poskytovatel swapů",
+  "swapProviderSettingsDescription": "Vyberte, která služba provádí vaše swapy.",
+  "swapProviderTrustedTag": "Důvěryhodný",
+  "swapProviderTrustlessTag": "Bez důvěry",
+  "swapProviderAddCustomBoltz": "Přidat vlastní server Boltz",
+  "swapProviderCustomNameLabel": "Název (volitelné)",
+  "swapProviderCustomUrlLabel": "URL serveru",
+  "swapProviderCustomUrlWarning": "Svěřujete tomuto serveru provádění svých swapů. Přidávejte pouze servery, kterým důvěřujete.",
+  "swapProviderInvalidUrl": "Zadejte platnou URL serveru.",
+  "swapProviderSwitchBlocked": "Před změnou poskytovatele dokončete probíhající swap.",
+  "swapProviderAdd": "Přidat",
+  "swapProviderRemove": "Odebrat",
+  "settingsSearchSwapProviderKeywords": "swap poskytovatel Boltz Bull důvěryhodný bez důvěry server vlastní",
+  "announcementSwapProviderUnavailableTitle": "Poskytovatel swapů není dostupný",
+  "announcementSwapProviderUnavailableDescription": "Váš poskytovatel swapů již není dostupný. Klepnutím vyberte v nastavení jiného poskytovatele swapů."
 }

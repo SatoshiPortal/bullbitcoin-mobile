@@ -3,10 +3,11 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/swap/providers/boltz_order_swap_bridge.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -29,17 +30,13 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.d
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/features/swap/data/datasources/exchange_public_api_datasource.dart';
-import 'package:bb_mobile/features/swap/data/datasources/order_swap_local_datasource.dart';
-import 'package:bb_mobile/features/swap/data/order_swap_repository_impl.dart';
-import 'package:bb_mobile/features/swap/domain/repositories/order_swap_repository.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/create_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/apply_completed_order_swap_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_pending_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/get_swap_app_update_required_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_provider_unavailable_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/get_order_swaps_awaiting_labels_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_broadcast_unknown_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/mark_order_swap_payin_broadcast_usecase.dart';
@@ -50,7 +47,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/refresh_pending_order_sw
 import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
-import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_provider_unavailable_usecase.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:dio/dio.dart';
@@ -93,17 +90,27 @@ class SwapLocator {
       ),
       instanceName: _mainnetExchangeDatasource,
     );
-    locator.registerLazySingleton<OrderSwapRepository>(
-      () => OrderSwapRepositoryImpl(
+    locator.registerLazySingleton<OrderSwapRepository>(() {
+      final bridge = BoltzOrderSwapBridge(
+        locator<SwapProviderResolver>(),
+        locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      );
+      return OrderSwapRepositoryImpl(
         locator<ExchangePublicApiDatasource>(
           instanceName: _testnetExchangeDatasource,
         ),
         locator<ExchangePublicApiDatasource>(
           instanceName: _mainnetExchangeDatasource,
         ),
-        OrderSwapLocalDatasource(locator<SqliteDatabase>()),
-      ),
-    );
+        OrderSwapLocalDatasource(locator<SwapDatabase>()),
+        createViaProvider: bridge.createIfActive,
+        refreshViaProvider: bridge.refreshIfBoltz,
+        quoteViaProvider: bridge.quoteIfActive,
+      );
+    });
     locator.registerFactory<GetOrderSwapQuoteUsecase>(
       () => GetOrderSwapQuoteUsecase(locator<OrderSwapRepository>()),
     );
@@ -162,11 +169,11 @@ class SwapLocator {
     locator.registerFactory<WatchOrderSwapUsecase>(
       () => WatchOrderSwapUsecase(locator<OrderSwapRepository>()),
     );
-    locator.registerFactory<GetSwapAppUpdateRequiredUsecase>(
-      () => GetSwapAppUpdateRequiredUsecase(locator<OrderSwapRepository>()),
+    locator.registerFactory<GetSwapProviderUnavailableUsecase>(
+      () => GetSwapProviderUnavailableUsecase(locator<OrderSwapRepository>()),
     );
-    locator.registerFactory<WatchSwapAppUpdateRequiredUsecase>(
-      () => WatchSwapAppUpdateRequiredUsecase(locator<OrderSwapRepository>()),
+    locator.registerFactory<WatchSwapProviderUnavailableUsecase>(
+      () => WatchSwapProviderUnavailableUsecase(locator<OrderSwapRepository>()),
     );
     locator.registerFactory<SwapFacade>(
       () => SwapFacade(
@@ -184,14 +191,15 @@ class SwapLocator {
         locator<MarkOrderSwapLabelsAppliedUsecase>(),
         locator<WatchOrderSwapUsecase>(),
         locator<RefreshOrderSwapsUsecase>(),
-        locator<GetSwapAppUpdateRequiredUsecase>(),
-        locator<WatchSwapAppUpdateRequiredUsecase>(),
+        locator<GetSwapProviderUnavailableUsecase>(),
+        locator<WatchSwapProviderUnavailableUsecase>(),
       ),
     );
     locator.registerLazySingleton<OrderSwapWatcher>(
       () => OrderSwapWatcher(
         locator<SyncCoordinator>(),
-        isAppUpdateRequired: () => locator<SwapFacade>().isAppUpdateRequired,
+        isSwapProviderUnavailable: () =>
+            locator<SwapFacade>().isSwapProviderUnavailable,
       ),
       dispose: (watcher) => watcher.dispose(),
     );

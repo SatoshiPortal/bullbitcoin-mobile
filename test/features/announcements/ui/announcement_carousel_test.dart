@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/announcements/domain/announcements_failure.da
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
-import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/watch_swap_provider_unavailable_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
@@ -23,8 +23,8 @@ class _MockGetVisibleAnnouncementsUsecase extends Mock
 class _MockDismissAnnouncementUsecase extends Mock
     implements DismissAnnouncementUsecase {}
 
-class _MockWatchAppUpdateAnnouncementUsecase extends Mock
-    implements WatchAppUpdateAnnouncementUsecase {}
+class _MockWatchSwapProviderUnavailableAnnouncementUsecase extends Mock
+    implements WatchSwapProviderUnavailableAnnouncementUsecase {}
 
 Announcement _announcement(AnnouncementId id, {int priority = 0}) =>
     Announcement(
@@ -48,7 +48,7 @@ Future<void> _pumpCarousel(
 
   final getVisible = _MockGetVisibleAnnouncementsUsecase();
   final dismiss = _MockDismissAnnouncementUsecase();
-  final watchUpdate = _MockWatchAppUpdateAnnouncementUsecase();
+  final watchUpdate = _MockWatchSwapProviderUnavailableAnnouncementUsecase();
   final updateSignals = StreamController<bool>.broadcast();
   addTearDown(updateSignals.close);
   when(() => watchUpdate.execute()).thenAnswer((_) => updateSignals.stream);
@@ -58,7 +58,7 @@ Future<void> _pumpCarousel(
   final cubit = AnnouncementsCubit(
     getVisibleAnnouncementsUsecase: getVisible,
     dismissAnnouncementUsecase: dismiss,
-    watchAppUpdateAnnouncementUsecase: watchUpdate,
+    watchSwapProviderUnavailableAnnouncementUsecase: watchUpdate,
   );
   addTearDown(cubit.close);
 
@@ -95,19 +95,19 @@ ScrollPosition _carouselScroll(WidgetTester tester) =>
     tester.state<ScrollableState>(find.byType(Scrollable).last).position;
 
 void main() {
-  testWidgets('shows the update warning on wallet home after HTTP 418', (
+  testWidgets('shows the swap provider warning on wallet home after HTTP 418', (
     tester,
   ) async {
     await _pumpCarousel(
       tester,
-      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      announcements: [_announcement(AnnouncementId.swapProviderUnavailable)],
     );
 
-    expect(find.text('Update BULL'), findsOneWidget);
+    expect(find.text('Swap provider unavailable'), findsOneWidget);
     expect(
       find.text(
-        'To use the Lightning payment and swap service, please update the '
-        'BULL mobile app with the new version.',
+        'Your swap provider is no longer available. Tap to choose a different '
+        'swap provider in settings.',
       ),
       findsOneWidget,
     );
@@ -122,7 +122,7 @@ void main() {
   ) async {
     await _pumpCarousel(
       tester,
-      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      announcements: [_announcement(AnnouncementId.swapProviderUnavailable)],
     );
 
     // No dots strip for a single card, so the viewport is the card and
@@ -139,14 +139,14 @@ void main() {
   ) async {
     await _pumpCarousel(
       tester,
-      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      announcements: [_announcement(AnnouncementId.swapProviderUnavailable)],
       size: const Size(390, 844),
     );
     final wide = _carouselHeight(tester);
 
     await _pumpCarousel(
       tester,
-      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      announcements: [_announcement(AnnouncementId.swapProviderUnavailable)],
       // Roughly the smallest phone the app still supports.
       size: const Size(320, 568),
     );
@@ -160,13 +160,13 @@ void main() {
   ) async {
     await _pumpCarousel(
       tester,
-      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      announcements: [_announcement(AnnouncementId.swapProviderUnavailable)],
     );
     final normal = _carouselHeight(tester);
 
     await _pumpCarousel(
       tester,
-      announcements: [_announcement(AnnouncementId.appUpdateRequired)],
+      announcements: [_announcement(AnnouncementId.swapProviderUnavailable)],
       textScale: 2,
     );
 
@@ -183,7 +183,7 @@ void main() {
       await _pumpCarousel(
         tester,
         announcements: [
-          _announcement(AnnouncementId.appUpdateRequired),
+          _announcement(AnnouncementId.swapProviderUnavailable),
           _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
         ],
         size: size,
@@ -205,7 +205,7 @@ void main() {
     await _pumpCarousel(
       tester,
       announcements: [
-        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.swapProviderUnavailable),
         _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
       ],
     );
@@ -229,7 +229,7 @@ void main() {
     await _pumpCarousel(
       tester,
       announcements: [
-        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.swapProviderUnavailable),
         _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
       ],
       size: const Size(360, 780),
@@ -249,9 +249,9 @@ void main() {
     await _pumpCarousel(
       tester,
       announcements: [
-        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.swapProviderUnavailable),
         _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
-        _announcement(AnnouncementId.appUpdateRequired, priority: 2),
+        _announcement(AnnouncementId.swapProviderUnavailable, priority: 2),
       ],
     );
 
@@ -275,7 +275,7 @@ void main() {
     await _pumpCarousel(
       tester,
       announcements: [
-        _announcement(AnnouncementId.appUpdateRequired),
+        _announcement(AnnouncementId.swapProviderUnavailable),
         _announcement(AnnouncementId.payjoinPrivacy, priority: 1),
       ],
     );

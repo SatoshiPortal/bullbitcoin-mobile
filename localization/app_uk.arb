@@ -4937,5 +4937,20 @@
   "exchangeSupportChatLoadAttachmentError": "Не вдалося відкрити вкладення. Спробуйте ще раз.",
   "statusCheckNoDefaultWalletError": "Гаманець Bitcoin за замовчуванням не знайдено. Будь ласка, встановіть гаманець за замовчуванням і спробуйте знову.",
   "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими",
-  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз."
+  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз.",
+  "swapProviderSettingsTitle": "Постачальник свопів",
+  "swapProviderSettingsDescription": "Виберіть сервіс, який виконує ваші свопи.",
+  "swapProviderTrustedTag": "Довірений",
+  "swapProviderTrustlessTag": "Без довіри",
+  "swapProviderAddCustomBoltz": "Додати власний сервер Boltz",
+  "swapProviderCustomNameLabel": "Ім'я (необов'язково)",
+  "swapProviderCustomUrlLabel": "URL сервера",
+  "swapProviderCustomUrlWarning": "Ви довіряєте цьому серверу виконання ваших свопів. Додавайте лише сервери, яким довіряєте.",
+  "swapProviderInvalidUrl": "Введіть дійсний URL сервера.",
+  "swapProviderSwitchBlocked": "Завершіть поточний своп перед зміною постачальника.",
+  "swapProviderAdd": "Додати",
+  "swapProviderRemove": "Видалити",
+  "settingsSearchSwapProviderKeywords": "своп постачальник Boltz Bull довірений без довіри сервер власний",
+  "announcementSwapProviderUnavailableTitle": "Постачальник свопів недоступний",
+  "announcementSwapProviderUnavailableDescription": "Ваш постачальник свопів більше недоступний. Торкніться, щоб вибрати іншого постачальника свопів у налаштуваннях."
 }

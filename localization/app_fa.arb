@@ -12326,5 +12326,20 @@
   "exchangeSupportChatLoadAttachmentError": "باز کردن پیوست ممکن نشد. لطفاً دوباره تلاش کنید.",
   "statusCheckNoDefaultWalletError": "کیف پول پیش‌فرض Bitcoin یافت نشد. لطفاً یک کیف پول پیش‌فرض تنظیم کنید و دوباره امتحان کنید.",
   "statusCheckResultsMayBeOutdated": "نتایج ممکن است قدیمی باشند",
-  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید."
+  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
+  "swapProviderSettingsTitle": "ارائه‌دهنده سواپ",
+  "swapProviderSettingsDescription": "انتخاب کنید کدام سرویس سواپ‌های شما را انجام دهد.",
+  "swapProviderTrustedTag": "مورد اعتماد",
+  "swapProviderTrustlessTag": "بدون نیاز به اعتماد",
+  "swapProviderAddCustomBoltz": "افزودن سرور سفارشی Boltz",
+  "swapProviderCustomNameLabel": "نام (اختیاری)",
+  "swapProviderCustomUrlLabel": "آدرس سرور",
+  "swapProviderCustomUrlWarning": "شما به این سرور برای اجرای سواپ‌هایتان اعتماد می‌کنید. فقط سرورهایی را اضافه کنید که به آن‌ها اعتماد دارید.",
+  "swapProviderInvalidUrl": "یک آدرس سرور معتبر وارد کنید.",
+  "swapProviderSwitchBlocked": "پیش از تغییر ارائه‌دهنده، سواپ در حال انجام خود را کامل کنید.",
+  "swapProviderAdd": "افزودن",
+  "swapProviderRemove": "حذف",
+  "settingsSearchSwapProviderKeywords": "سواپ ارائه‌دهنده Boltz Bull مورد اعتماد بدون اعتماد سرور سفارشی",
+  "announcementSwapProviderUnavailableTitle": "ارائه‌دهنده سواپ در دسترس نیست",
+  "announcementSwapProviderUnavailableDescription": "ارائه‌دهنده سواپ شما دیگر در دسترس نیست. برای انتخاب ارائه‌دهنده سواپ دیگری در تنظیمات، ضربه بزنید."
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/primitives/swap_network_payment_network_x.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
@@ -14,8 +15,8 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
       ),
       SwapNoPaymentOptionFailure(:final inNetwork, :final outNetwork) =>
         SendSwapRouteUnavailableFailure(
-          inNetwork: inNetwork,
-          outNetwork: outNetwork,
+          inNetwork: inNetwork?.toPaymentNetwork,
+          outNetwork: outNetwork?.toPaymentNetwork,
           logMessage: failure.logMessage,
         ),
       SwapOrderExpiredFailure() ||
@@ -23,6 +24,9 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
       SwapOrderMismatchFailure() ||
       SwapInvalidStateFailure() ||
       SwapProviderFailure() ||
+      SwapProviderUnavailableFailure() ||
+      SwapProviderMisconfiguredFailure() ||
+      SwapSwitchBlockedFailure() ||
       SwapNetworkFailure() ||
       SwapTimeoutFailure() ||
       SwapStorageFailure() ||

@@ -97,6 +97,7 @@ void main() {
       expect(walletSettingsItemOrder, [
         SettingsItemId.payjoin,
         SettingsItemId.autoswap,
+        SettingsItemId.swapProvider,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,

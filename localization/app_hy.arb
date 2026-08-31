@@ -3611,5 +3611,20 @@
   "exchangeSupportChatLoadAttachmentError": "Չհաջողվեց բացել կցորդը։ Խնդրում ենք կրկին փորձել։",
   "statusCheckNoDefaultWalletError": "Լռելյայն Bitcoin դրամապանակ չի գտնվել։ Խնդրում ենք սահմանել լռելյայն դրամապանակ և կրկին փորձել։",
   "statusCheckResultsMayBeOutdated": "Արդյունքները կարող են հնացած լինել",
-  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։"
+  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։",
+  "swapProviderSettingsTitle": "Փոխանակման մատակարար",
+  "swapProviderSettingsDescription": "Ընտրեք, թե որ ծառայությունն է կատարում ձեր փոխանակումները։",
+  "swapProviderTrustedTag": "Վստահելի",
+  "swapProviderTrustlessTag": "Առանց վստահության",
+  "swapProviderAddCustomBoltz": "Ավելացնել հատուկ Boltz սերվեր",
+  "swapProviderCustomNameLabel": "Անուն (ըստ ցանկության)",
+  "swapProviderCustomUrlLabel": "Սերվերի URL",
+  "swapProviderCustomUrlWarning": "Դուք վստահում եք այս սերվերին ձեր փոխանակումների կատարումը։ Ավելացրեք միայն այն սերվերները, որոնց վստահում եք։",
+  "swapProviderInvalidUrl": "Մուտքագրեք վավեր սերվերի URL։",
+  "swapProviderSwitchBlocked": "Ավարտեք ընթացիկ փոխանակումը նախքան մատակարարը փոխելը։",
+  "swapProviderAdd": "Ավելացնել",
+  "swapProviderRemove": "Հեռացնել",
+  "settingsSearchSwapProviderKeywords": "փոխանակում մատակարար Boltz Bull վստահելի առանց վստահության սերվեր հատուկ",
+  "announcementSwapProviderUnavailableTitle": "Փոխանակման մատակարարն անհասանելի է",
+  "announcementSwapProviderUnavailableDescription": "Ձեր փոխանակման մատակարարն այլևս հասանելի չէ։ Հպեք՝ կարգավորումներում այլ փոխանակման մատակարար ընտրելու համար։"
 }

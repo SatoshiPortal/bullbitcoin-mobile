@@ -12326,5 +12326,20 @@
   "exchangeSupportChatLoadAttachmentError": "첨부 파일을 열지 못했습니다. 다시 시도해 주세요.",
   "statusCheckNoDefaultWalletError": "기본 Bitcoin 지갑을 찾을 수 없습니다. 기본 지갑을 설정하고 다시 시도해 주세요.",
   "statusCheckResultsMayBeOutdated": "결과가 오래되었을 수 있습니다",
-  "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요."
+  "onboardingBackupVerificationError": "지갑이 복구되었지만 백업 확인을 완료할 수 없었습니다. 다시 시도해 주세요.",
+  "swapProviderSettingsTitle": "스왑 제공자",
+  "swapProviderSettingsDescription": "스왑을 수행할 서비스를 선택하세요.",
+  "swapProviderTrustedTag": "신뢰됨",
+  "swapProviderTrustlessTag": "무신뢰",
+  "swapProviderAddCustomBoltz": "사용자 지정 Boltz 서버 추가",
+  "swapProviderCustomNameLabel": "이름 (선택 사항)",
+  "swapProviderCustomUrlLabel": "서버 URL",
+  "swapProviderCustomUrlWarning": "이 서버가 스왑을 실행하도록 신뢰하고 있습니다. 신뢰하는 서버만 추가하세요.",
+  "swapProviderInvalidUrl": "유효한 서버 URL을 입력하세요.",
+  "swapProviderSwitchBlocked": "제공자를 변경하기 전에 진행 중인 스왑을 완료하세요.",
+  "swapProviderAdd": "추가",
+  "swapProviderRemove": "제거",
+  "settingsSearchSwapProviderKeywords": "스왑 제공자 Boltz Bull 신뢰 무신뢰 서버 사용자 지정",
+  "announcementSwapProviderUnavailableTitle": "스왑 제공자를 사용할 수 없음",
+  "announcementSwapProviderUnavailableDescription": "스왑 제공자를 더 이상 사용할 수 없습니다. 설정에서 다른 스왑 제공자를 선택하려면 탭하세요."
 }

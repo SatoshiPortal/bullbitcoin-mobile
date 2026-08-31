@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/announcements/domain/announcements_failure.da
 import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announcement_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
-import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/watch_swap_provider_unavailable_announcement_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,7 +20,7 @@ part 'announcements_state.dart';
 class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   final GetVisibleAnnouncementsUsecase _getVisibleAnnouncementsUsecase;
   final DismissAnnouncementUsecase _dismissAnnouncementUsecase;
-  late final StreamSubscription<bool> _appUpdateRequiredSubscription;
+  late final StreamSubscription<bool> _swapProviderUnavailableSubscription;
 
   bool _refreshing = false;
   bool _refreshQueued = false;
@@ -28,13 +28,14 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   AnnouncementsCubit({
     required this._getVisibleAnnouncementsUsecase,
     required this._dismissAnnouncementUsecase,
-    required WatchAppUpdateAnnouncementUsecase
-    watchAppUpdateAnnouncementUsecase,
+    required WatchSwapProviderUnavailableAnnouncementUsecase
+    watchSwapProviderUnavailableAnnouncementUsecase,
   }) : super(const AnnouncementsState()) {
-    _appUpdateRequiredSubscription = watchAppUpdateAnnouncementUsecase
-        .execute()
-        .where((isRequired) => isRequired)
-        .listen((_) => unawaited(refresh()));
+    _swapProviderUnavailableSubscription =
+        watchSwapProviderUnavailableAnnouncementUsecase
+            .execute()
+            .where((isUnavailable) => isUnavailable)
+            .listen((_) => unawaited(refresh()));
   }
 
   /// (Re)loads the visible announcements. Called on mount and whenever a
@@ -78,7 +79,7 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
 
   @override
   Future<void> close() async {
-    await _appUpdateRequiredSubscription.cancel();
+    await _swapProviderUnavailableSubscription.cancel();
     return super.close();
   }
 }

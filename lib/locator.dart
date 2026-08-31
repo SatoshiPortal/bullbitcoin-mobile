@@ -41,10 +41,18 @@ import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/swap/providers/boltz_engine_adapter.dart';
+import 'package:bb_mobile/features/swap/providers/root_swap_legacy_source.dart';
+import 'package:bb_mobile/features/swap/providers/swap_providers_locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -146,6 +154,7 @@ class AppLocator {
     BroadcastSignedTxLocator.setup(locator);
     SwapLocator.setup(locator);
     AutoSwapLocator.setup(locator);
+    await _setupSwapProviders(locator, database);
     AnnouncementsLocator.setup(locator);
     // Lifecycle side effect lives in the composition root, not in DI
     // registration: the background handler opts out via
@@ -176,6 +185,49 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
+  }
+
+  static Future<void> _setupSwapProviders(
+    GetIt locator,
+    SqliteDatabase rootDatabase,
+  ) async {
+    final path = p.join(
+      (await getApplicationDocumentsDirectory()).path,
+      'bull_swap.sqlite',
+    );
+    final database = SwapDatabase.open(path);
+    await SwapProvidersLocator.register(
+      locator,
+      database: database,
+      buildBoltzEngine: (config) => BoltzEngineAdapter(
+        locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        (network, environment) async {
+          final testnet = environment == SwapEnvironment.testnet;
+          return switch (network) {
+            SwapNetwork.liquid =>
+              testnet
+                  ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+                  : ApiServiceConstants.bbLiquidElectrumUrlPath,
+            _ =>
+              testnet
+                  ? ApiServiceConstants.publicElectrumTestUrl
+                  : ApiServiceConstants.bbElectrumUrl,
+          };
+        },
+        (network, environment) async {
+          final fees = await locator<GetNetworkFeesUsecase>().execute(
+            isLiquid: network == SwapNetwork.liquid,
+          );
+          return fees.fastest.value.toDouble();
+        },
+        locator<GetReceiveAddressUsecase>(),
+      ),
+    );
+
+    await importLegacySwapData(database, RootSwapLegacySource(rootDatabase));
   }
 }
 

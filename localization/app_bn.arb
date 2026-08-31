@@ -12536,5 +12536,20 @@
   "exchangeSupportChatLoadAttachmentError": "সংযুক্তিটি খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "statusCheckNoDefaultWalletError": "কোনো ডিফল্ট Bitcoin ওয়ালেট পাওয়া যায়নি। অনুগ্রহ করে একটি ডিফল্ট ওয়ালেট সেট করুন এবং আবার চেষ্টা করুন।",
   "statusCheckResultsMayBeOutdated": "ফলাফল পুরনো হতে পারে",
-  "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
+  "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "swapProviderSettingsTitle": "সোয়াপ প্রদানকারী",
+  "swapProviderSettingsDescription": "কোন পরিষেবা আপনার সোয়াপ সম্পাদন করবে তা বেছে নিন।",
+  "swapProviderTrustedTag": "বিশ্বস্ত",
+  "swapProviderTrustlessTag": "বিশ্বাসের প্রয়োজন নেই",
+  "swapProviderAddCustomBoltz": "কাস্টম Boltz সার্ভার যোগ করুন",
+  "swapProviderCustomNameLabel": "নাম (ঐচ্ছিক)",
+  "swapProviderCustomUrlLabel": "সার্ভার URL",
+  "swapProviderCustomUrlWarning": "আপনি আপনার সোয়াপ চালানোর জন্য এই সার্ভারটিকে বিশ্বাস করছেন। শুধুমাত্র সেই সার্ভারগুলি যোগ করুন যেগুলিকে আপনি বিশ্বাস করেন।",
+  "swapProviderInvalidUrl": "একটি বৈধ সার্ভার URL লিখুন।",
+  "swapProviderSwitchBlocked": "প্রদানকারী পরিবর্তন করার আগে আপনার চলমান সোয়াপ সম্পূর্ণ করুন।",
+  "swapProviderAdd": "যোগ করুন",
+  "swapProviderRemove": "সরান",
+  "settingsSearchSwapProviderKeywords": "সোয়াপ প্রদানকারী Boltz Bull বিশ্বস্ত সার্ভার কাস্টম",
+  "announcementSwapProviderUnavailableTitle": "সোয়াপ প্রদানকারী অনুপলব্ধ",
+  "announcementSwapProviderUnavailableDescription": "আপনার সোয়াপ প্রদানকারী আর উপলব্ধ নেই। সেটিংসে অন্য একটি সোয়াপ প্রদানকারী বেছে নিতে ট্যাপ করুন।"
 }

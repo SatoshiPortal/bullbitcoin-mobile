@@ -23,14 +23,14 @@ void main() {
     when(
       () => dismissalRepository.getDismissals(),
     ).thenAnswer((_) async => const []);
-    when(() => swapFacade.isAppUpdateRequired).thenReturn(false);
+    when(() => swapFacade.isSwapProviderUnavailable).thenReturn(false);
     usecase = GetVisibleAnnouncementsUsecase(dismissalRepository, swapFacade);
   });
 
   test('the catalog contains the app update warning', () {
     expect(
       announcementCatalog.map((entry) => entry.announcement.id),
-      contains(AnnouncementId.appUpdateRequired),
+      contains(AnnouncementId.swapProviderUnavailable),
     );
   });
 
@@ -42,12 +42,12 @@ void main() {
   });
 
   test('returns the app update announcement after HTTP 418', () async {
-    when(() => swapFacade.isAppUpdateRequired).thenReturn(true);
+    when(() => swapFacade.isSwapProviderUnavailable).thenReturn(true);
 
     final result = await usecase.execute();
 
     final list = (result as Ok<List<Announcement>, dynamic>).value;
-    expect(list.single.id, AnnouncementId.appUpdateRequired);
+    expect(list.single.id, AnnouncementId.swapProviderUnavailable);
     expect(list.single.tone, AnnouncementTone.warning);
   });
 

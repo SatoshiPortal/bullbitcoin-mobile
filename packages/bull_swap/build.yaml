@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            swap_database: lib/src/data/db/swap_database.dart
+          schema_dir: lib/src/data/db/schemas/
+          test_dir: test/migrations_test/

@@ -4940,5 +4940,20 @@
   "exchangeSupportChatLoadAttachmentError": "无法打开附件。请重试。",
   "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
   "statusCheckResultsMayBeOutdated": "结果可能已过时",
-  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。"
+  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。",
+  "swapProviderSettingsTitle": "兑换服务提供商",
+  "swapProviderSettingsDescription": "选择由哪个服务执行您的兑换。",
+  "swapProviderTrustedTag": "受信任",
+  "swapProviderTrustlessTag": "无需信任",
+  "swapProviderAddCustomBoltz": "添加自定义 Boltz 服务器",
+  "swapProviderCustomNameLabel": "名称（可选）",
+  "swapProviderCustomUrlLabel": "服务器 URL",
+  "swapProviderCustomUrlWarning": "您正信任此服务器来执行您的兑换。请仅添加您信任的服务器。",
+  "swapProviderInvalidUrl": "请输入有效的服务器 URL。",
+  "swapProviderSwitchBlocked": "更换提供商前，请先完成正在进行的兑换。",
+  "swapProviderAdd": "添加",
+  "swapProviderRemove": "移除",
+  "settingsSearchSwapProviderKeywords": "兑换 提供商 Boltz Bull 受信任 无需信任 服务器 自定义",
+  "announcementSwapProviderUnavailableTitle": "兑换服务提供商不可用",
+  "announcementSwapProviderUnavailableDescription": "您的兑换服务提供商已不再可用。点按以在设置中选择其他兑换服务提供商。"
 }

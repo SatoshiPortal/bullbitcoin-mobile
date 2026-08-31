@@ -3611,5 +3611,20 @@
   "exchangeSupportChatLoadAttachmentError": "Không thể mở tệp đính kèm. Vui lòng thử lại.",
   "statusCheckNoDefaultWalletError": "Không tìm thấy ví Bitcoin mặc định. Vui lòng đặt ví mặc định và thử lại.",
   "statusCheckResultsMayBeOutdated": "Kết quả có thể đã lỗi thời",
-  "onboardingBackupVerificationError": "Ví của bạn đã được khôi phục, nhưng không thể hoàn tất việc xác minh bản sao lưu. Vui lòng thử lại."
+  "onboardingBackupVerificationError": "Ví của bạn đã được khôi phục, nhưng không thể hoàn tất việc xác minh bản sao lưu. Vui lòng thử lại.",
+  "swapProviderSettingsTitle": "Nhà cung cấp swap",
+  "swapProviderSettingsDescription": "Chọn dịch vụ thực hiện các giao dịch swap của bạn.",
+  "swapProviderTrustedTag": "Đáng tin cậy",
+  "swapProviderTrustlessTag": "Không cần tin cậy",
+  "swapProviderAddCustomBoltz": "Thêm máy chủ Boltz tùy chỉnh",
+  "swapProviderCustomNameLabel": "Tên (tùy chọn)",
+  "swapProviderCustomUrlLabel": "URL máy chủ",
+  "swapProviderCustomUrlWarning": "Bạn đang tin tưởng máy chủ này để thực hiện các giao dịch swap của mình. Chỉ thêm những máy chủ bạn tin tưởng.",
+  "swapProviderInvalidUrl": "Nhập URL máy chủ hợp lệ.",
+  "swapProviderSwitchBlocked": "Hoàn tất giao dịch swap đang diễn ra trước khi đổi nhà cung cấp.",
+  "swapProviderAdd": "Thêm",
+  "swapProviderRemove": "Xóa",
+  "settingsSearchSwapProviderKeywords": "swap nhà cung cấp Boltz Bull đáng tin cậy không cần tin cậy máy chủ tùy chỉnh",
+  "announcementSwapProviderUnavailableTitle": "Nhà cung cấp swap không khả dụng",
+  "announcementSwapProviderUnavailableDescription": "Nhà cung cấp swap của bạn không còn khả dụng. Nhấn để chọn nhà cung cấp swap khác trong cài đặt."
 }

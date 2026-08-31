@@ -23,7 +23,7 @@ class GetVisibleAnnouncementsUsecase {
       final dismissals = await _dismissalRepository.getDismissals();
 
       final signals = AnnouncementSignals(
-        isAppUpdateRequired: _swapFacade.isAppUpdateRequired,
+        isSwapProviderUnavailable: _swapFacade.isSwapProviderUnavailable,
       );
       final dismissedAtById = {for (final d in dismissals) d.id: d.dismissedAt};
       final now = DateTime.now().toUtc();

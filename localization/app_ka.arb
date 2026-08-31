@@ -3758,5 +3758,20 @@
   "exchangeSupportChatLoadAttachmentError": "დანართის გახსნა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
   "statusCheckNoDefaultWalletError": "ნაგულისხმევი Bitcoin საფულე ვერ მოიძებნა. გთხოვთ, დაადგინოთ ნაგულისხმევი საფულე და სცადოთ ისევ.",
   "statusCheckResultsMayBeOutdated": "შედეგები შეიძლება მოძველებული იყოს",
-  "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა."
+  "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა.",
+  "swapProviderSettingsTitle": "სვაპის მომწოდებელი",
+  "swapProviderSettingsDescription": "აირჩიეთ, რომელი სერვისი შეასრულებს თქვენს სვაპებს.",
+  "swapProviderTrustedTag": "სანდო",
+  "swapProviderTrustlessTag": "ნდობის გარეშე",
+  "swapProviderAddCustomBoltz": "მორგებული Boltz სერვერის დამატება",
+  "swapProviderCustomNameLabel": "სახელი (არასავალდებულო)",
+  "swapProviderCustomUrlLabel": "სერვერის URL",
+  "swapProviderCustomUrlWarning": "თქვენ ენდობით ამ სერვერს თქვენი სვაპების შესასრულებლად. დაამატეთ მხოლოდ ის სერვერები, რომლებსაც ენდობით.",
+  "swapProviderInvalidUrl": "შეიყვანეთ სწორი სერვერის URL.",
+  "swapProviderSwitchBlocked": "დაასრულეთ მიმდინარე სვაპი მომწოდებლის შეცვლამდე.",
+  "swapProviderAdd": "დამატება",
+  "swapProviderRemove": "წაშლა",
+  "settingsSearchSwapProviderKeywords": "სვაპი მომწოდებელი Boltz Bull სანდო ნდობის გარეშე სერვერი მორგებული",
+  "announcementSwapProviderUnavailableTitle": "სვაპის მომწოდებელი მიუწვდომელია",
+  "announcementSwapProviderUnavailableDescription": "თქვენი სვაპის მომწოდებელი აღარ არის ხელმისაწვდომი. შეეხეთ პარამეტრებში სხვა სვაპის მომწოდებლის ასარჩევად."
 }

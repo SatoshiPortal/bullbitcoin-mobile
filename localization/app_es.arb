@@ -4940,5 +4940,20 @@
   "exchangeSupportChatLoadAttachmentError": "No se pudo abrir el archivo adjunto. Inténtalo de nuevo.",
   "statusCheckNoDefaultWalletError": "No se encontró ninguna cartera Bitcoin predeterminada. Por favor, establezca una cartera predeterminada e intente de nuevo.",
   "statusCheckResultsMayBeOutdated": "Los resultados pueden estar desactualizados",
-  "onboardingBackupVerificationError": "Tu billetera fue recuperada, pero la verificación de la copia de seguridad no pudo completarse. Inténtalo de nuevo."
+  "onboardingBackupVerificationError": "Tu billetera fue recuperada, pero la verificación de la copia de seguridad no pudo completarse. Inténtalo de nuevo.",
+  "swapProviderSettingsTitle": "Proveedor de swap",
+  "swapProviderSettingsDescription": "Elige qué servicio realiza tus swaps.",
+  "swapProviderTrustedTag": "De confianza",
+  "swapProviderTrustlessTag": "Sin necesidad de confianza",
+  "swapProviderAddCustomBoltz": "Añadir servidor Boltz personalizado",
+  "swapProviderCustomNameLabel": "Nombre (opcional)",
+  "swapProviderCustomUrlLabel": "URL del servidor",
+  "swapProviderCustomUrlWarning": "Estás confiando en este servidor para ejecutar tus swaps. Añade solo servidores en los que confíes.",
+  "swapProviderInvalidUrl": "Introduce una URL de servidor válida.",
+  "swapProviderSwitchBlocked": "Finaliza el swap en curso antes de cambiar de proveedor.",
+  "swapProviderAdd": "Añadir",
+  "swapProviderRemove": "Eliminar",
+  "settingsSearchSwapProviderKeywords": "swap proveedor Boltz Bull confianza sin confianza servidor personalizado",
+  "announcementSwapProviderUnavailableTitle": "Proveedor de swap no disponible",
+  "announcementSwapProviderUnavailableDescription": "Tu proveedor de swap ya no está disponible. Toca para elegir otro proveedor de swap en los ajustes."
 }

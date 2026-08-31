@@ -3623,5 +3623,20 @@
   "exchangeSupportChatLoadAttachmentError": "Imeshindwa kufungua kiambatisho. Tafadhali jaribu tena.",
   "statusCheckNoDefaultWalletError": "Hakuna mkoba wa Bitcoin wa msingi uliopatikana. Tafadhali weka mkoba wa msingi na ujaribu tena.",
   "statusCheckResultsMayBeOutdated": "Matokeo yanaweza kuwa ya zamani",
-  "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena."
+  "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena.",
+  "swapProviderSettingsTitle": "Mtoa huduma wa swap",
+  "swapProviderSettingsDescription": "Chagua huduma gani inayofanya swap zako.",
+  "swapProviderTrustedTag": "Inayoaminika",
+  "swapProviderTrustlessTag": "Bila kuhitaji imani",
+  "swapProviderAddCustomBoltz": "Ongeza seva maalum ya Boltz",
+  "swapProviderCustomNameLabel": "Jina (si lazima)",
+  "swapProviderCustomUrlLabel": "URL ya seva",
+  "swapProviderCustomUrlWarning": "Unaiamini seva hii kuendesha swap zako. Ongeza seva unazoziamini tu.",
+  "swapProviderInvalidUrl": "Weka URL ya seva sahihi.",
+  "swapProviderSwitchBlocked": "Kamilisha swap yako inayoendelea kabla ya kubadilisha mtoa huduma.",
+  "swapProviderAdd": "Ongeza",
+  "swapProviderRemove": "Ondoa",
+  "settingsSearchSwapProviderKeywords": "swap mtoa huduma Boltz Bull inayoaminika bila imani seva maalum",
+  "announcementSwapProviderUnavailableTitle": "Mtoa huduma wa swap hapatikani",
+  "announcementSwapProviderUnavailableDescription": "Mtoa huduma wako wa swap hapatikani tena. Gusa ili kuchagua mtoa huduma mwingine wa swap katika mipangilio."
 }
