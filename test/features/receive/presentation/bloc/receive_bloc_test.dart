@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_u
 import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/check_receive_bullvault_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -89,6 +90,9 @@ class _MockGetReceivePayjoinPolicyUsecase extends Mock
 
 class _MockSetReceivePayjoinEnabledUsecase extends Mock
     implements SetReceivePayjoinEnabledUsecase {}
+
+class _MockCheckReceiveBullVaultUsecase extends Mock
+    implements CheckReceiveBullVaultUsecase {}
 
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
@@ -237,6 +241,7 @@ void main() {
   late _MockWatchReceivePayjoinMinAmountUsecase watchPayjoinMinAmount;
   late _MockCreateReceiveOrderSwapUsecase createOrderSwap;
   late _MockWatchReceiveOrderSwapUsecase watchOrderSwap;
+  late _MockCheckReceiveBullVaultUsecase checkBullVault;
   late StreamController<bool> payjoinEnabledChangeController;
   late StreamController<int> payjoinMinAmountChangeController;
 
@@ -267,6 +272,7 @@ void main() {
         watchReceivePayjoinMinAmountUsecase: watchPayjoinMinAmount,
         getReceivePayjoinPolicyUsecase: getPayjoinPolicy,
         setReceivePayjoinEnabledUsecase: setPayjoinEnabled,
+        checkReceiveBullVaultUsecase: checkBullVault,
         // A preset bitcoin wallet makes _onBitcoinStarted skip the wallet
         // fetch entirely, so any getWallets stub is dead. Tests that need that
         // path pass withPresetWallet: false.
@@ -288,6 +294,8 @@ void main() {
     watchWalletTransaction = _MockWatchWalletTransactionByAddressUsecase();
     createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
     watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
+    checkBullVault = _MockCheckReceiveBullVaultUsecase();
+    when(() => checkBullVault.execute(any())).thenAnswer((_) async => false);
     loadAddressLabel = _MockLoadReceiveAddressLabelUsecase();
     saveAddressLabel = _MockSaveReceiveAddressLabelUsecase();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
@@ -369,6 +377,25 @@ void main() {
   tearDown(() async {
     await payjoinEnabledChangeController.close();
     await payjoinMinAmountChangeController.close();
+  });
+
+  test('identifies a BullVault receive wallet', () async {
+    when(() => checkBullVault.execute('w1')).thenAnswer((_) async => true);
+    final bloc = buildBloc();
+
+    bloc.add(ReceiveEvent.receiveBitcoinStarted(_testWallet()));
+    await expectLater(
+      bloc.stream,
+      emitsThrough(
+        isA<ReceiveState>().having(
+          (state) => state.isBullVault,
+          'isBullVault',
+          isTrue,
+        ),
+      ),
+    );
+
+    await bloc.close();
   });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {

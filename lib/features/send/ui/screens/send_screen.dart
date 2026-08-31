@@ -62,7 +62,9 @@ class SendScreen extends StatefulWidget {
 }
 
 class SendLoadingScreen extends StatelessWidget {
-  const SendLoadingScreen({super.key});
+  final bool hasError;
+
+  const SendLoadingScreen({super.key, this.hasError = false});
 
   @override
   Widget build(BuildContext context) {
@@ -79,8 +81,10 @@ class SendLoadingScreen extends StatelessWidget {
       ),
       body: Center(
         child: ProgressScreen(
-          isLoading: true,
-          title: context.loc.sendLoadingTransaction,
+          isLoading: !hasError,
+          title: hasError
+              ? context.loc.oopsSomethingWentWrong
+              : context.loc.sendLoadingTransaction,
         ),
       ),
     );
@@ -270,29 +274,35 @@ class AddressField extends StatelessWidget {
     final address = context.select<SendCubit, String>(
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
+    final restricted = context.read<SendCubit>().isRestrictedSend;
 
     return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
+      disabled: restricted,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
         color: context.appColors.textMuted,
       ),
       maxLines: 1,
-      rightIcon: Icon(
-        Icons.paste_sharp,
-        color: context.appColors.secondary,
-        size: 20,
-      ),
-      onRightTap: () {
-        Clipboard.getData(Clipboard.kTextPlain).then((value) {
-          if (value != null) {
-            if (context.mounted) {
-              context.read<SendCubit>().onChangedText(value.text ?? '');
-            }
-          }
-        });
-      },
+      rightIcon: restricted
+          ? null
+          : Icon(
+              Icons.paste_sharp,
+              color: context.appColors.secondary,
+              size: 20,
+            ),
+      onRightTap: restricted
+          ? null
+          : () {
+              Clipboard.getData(Clipboard.kTextPlain).then((value) {
+                if (value != null) {
+                  if (context.mounted) {
+                    context.read<SendCubit>().onChangedText(value.text ?? '');
+                  }
+                }
+              });
+            },
     );
   }
 }
@@ -341,6 +351,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   void initState() {
     super.initState();
     final amount = context.read<SendCubit>().state.amount;
+    _isMax = context.read<SendCubit>().state.sendMax;
     _amountController = TextEditingController.fromValue(
       TextEditingValue(
         text: amount,
@@ -512,7 +523,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   ),
                                                 );
                                               }).toList(),
-                                              onChanged: (value) {
+                                              onChanged: context.read<SendCubit>().isRestrictedSend ? null : (value) {
                                                 if (value != null) {
                                                   context
                                                       .read<SendCubit>()

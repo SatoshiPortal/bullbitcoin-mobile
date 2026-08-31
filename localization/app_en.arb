@@ -16708,7 +16708,7 @@
   "@bullVaultDeferHardwareSetupTitle": {
     "description": "Warning title before deferring BullVault hardware setup."
   },
-  "bullVaultPreviousVaultsDescription": "Earlier vaults remain monitored. Move any remaining or late-arriving funds into the current BullVault.",
+  "bullVaultPreviousVaultsDescription": "Retired or cancelled vaults remain monitored. Move any remaining or late-arriving funds into the current BullVault.",
   "@bullVaultSecondColdKeyIntro": {
     "description": "Short explanation of the second cold key."
   },
@@ -16717,7 +16717,7 @@
     "description": "Error shown when a wallet is protected from deletion by its owning feature"
   },
   "@bullVaultPreviousVaultsDescription": {
-    "description": "Explains why retired BullVault generations remain visible here."
+    "description": "Explains why inactive BullVault generations remain visible"
   },
   "bullVaultRegisterNow": "Register wallet",
   "bullVaultProtectionExtra": "Extra protection",
@@ -16768,7 +16768,6 @@
   "@bullVaultRegisterNow": {
     "description": "Action for a connected BullVault hardware signer that can confirm registration."
   },
-  "bullVaultActivationRequirements": "Save the new recovery package, then register the replacement policy on every hardware device before activation.",
   "bullVaultDeviceKeyPath": "Export the public account key from {device} at {path}, then scan it here.",
   "bullVaultYears": "{years, plural, =1 {1 year} other {{years} years}}",
   "bullVaultPreviousVaultGeneration": "Vault version {generation}",
@@ -16790,9 +16789,6 @@
   "bullVaultRecoveryOptions": "Recovery options",
   "bullVaultTestDeposit": "Start with a small deposit and test your recovery options.",
   "@bullVaultPublicKeyLabel": {},
-  "@bullVaultActivationRequirements": {
-    "description": "Requirements before activating a renewed BullVault"
-  },
   "bullVaultRenewDescription": "Create a replacement vault with new recovery dates while keeping the same independent keys.",
   "bullVaultGetKeyFromDevice": "Continue with {device}",
   "@bullVaultProtectionChoiceTitle": {
@@ -16926,7 +16922,7 @@
     "description": "Separator between BullVault restore methods"
   },
   "@bullVaultPreviousVaultsTitle": {
-    "description": "Title for the list of earlier BullVault generations."
+    "description": "Title for retired or cancelled BullVault generations"
   },
   "@bullVaultColdRecoveryPathYears": {
     "placeholders": {
@@ -17182,7 +17178,7 @@
     "description": "Title of the wallet-specific BullVault settings screen"
   },
   "bullVaultUseOtherSigner": "Other signer",
-  "bullVaultPreviousVaultsTitle": "Previous vaults",
+  "bullVaultPreviousVaultsTitle": "Inactive vaults",
   "bullVaultWalletLabel": "BullVault",
   "@bullVaultFailureInvalidSigner": {},
   "@bullVaultCreatedTitle": {},
@@ -17315,5 +17311,37 @@
   "@bullVaultExtraInheritanceChoiceDescription": {
     "description": "Inheritance choice explanation for the two-cold-key setup."
   },
-  "bullVaultAdvancedSetup": "Customize recovery"
+  "bullVaultAdvancedSetup": "Customize recovery",
+  "@bullVaultCancelRenewalTitle": {
+    "description": "Title of the BullVault renewal cancellation confirmation"
+  },
+  "@bullVaultRenewalReadyDescription": {
+    "description": "Description shown when a replacement BullVault is ready to activate"
+  },
+  "bullVaultRenewalReadyDescription": "Your recovery data is saved and the replacement wallet is registered. Activate it when you are ready.",
+  "bullVaultCancelRenewalTitle": "Cancel this renewal?",
+  "@bullVaultCancelRenewalHasFunds": {
+    "description": "Shown when a funded BullVault replacement cannot be cancelled"
+  },
+  "bullVaultCancelRenewalHasFunds": "This replacement BullVault already contains funds. Complete and activate it before continuing.",
+  "bullVaultRenewConfirmationTitle": "Renew this BullVault?",
+  "@bullVaultCancelRenewal": {
+    "description": "Action that abandons a prepared BullVault replacement before activation"
+  },
+  "@bullVaultCancelRenewalDescription": {
+    "description": "Explains the effect of cancelling a prepared BullVault renewal"
+  },
+  "bullVaultReviewRenewal": "Review renewal",
+  "bullVaultCancelRenewal": "Cancel renewal",
+  "@bullVaultRenewConfirmationDescription": {
+    "description": "Explains the required setup before starting a BullVault renewal"
+  },
+  "@bullVaultRenewConfirmationTitle": {
+    "description": "Title shown before a BullVault renewal is prepared"
+  },
+  "@bullVaultReviewRenewal": {
+    "description": "Open the preview of a new BullVault recovery schedule"
+  },
+  "bullVaultCancelRenewalDescription": "Your current BullVault will stay active. Bull will keep watching the cancelled vault in case it receives funds. Do not use its recovery data.",
+  "bullVaultRenewConfirmationDescription": "This creates a renewed vault with new recovery dates. You will need to save new recovery data and register it again on each cold device."
 }
