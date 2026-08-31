@@ -785,10 +785,6 @@
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
   },
-  "psbtFlowKeystoneTitle": "คําแนะนํา",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
   "transactionLabelTransferStatus": "การโอนเงิน",
   "@transactionLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -1643,10 +1639,6 @@
   "@transactionDetailBumpFees": {
     "description": "Button label to increase transaction fees via RBF"
   },
-  "psbtFlowNoPartsToDisplay": "ไม่มีชิ้นส่วน",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "addressCardCopiedMessage": "ที่อยู่ไปยังคลิปบอร์ด",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1790,15 +1782,6 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "เข้าสู่ระบบอุปกรณ์ {device} ของคุณ",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 โซเชียลมีเดีย Rica",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
@@ -1936,10 +1919,6 @@
   "electrumAddCustomServer": "เพิ่มเซิร์ฟเวอร์ที่กําหนดเอง",
   "@electrumAddCustomServer": {
     "description": "Add custom server bottom sheet title"
-  },
-  "psbtFlowClickSign": "คลิก",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
   },
   "rbfSatsPerVbyte": "เบาะ / VB",
   "@rbfSatsPerVbyte": {
@@ -3883,10 +3862,6 @@
   "@selectCoinsManuallyLabel": {
     "description": "List tile option to manually select UTXOs"
   },
-  "psbtFlowSeedSignerTitle": "คําแนะนําเมล็ดพันธุ์",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "appUnlockAttemptSingular": "พยายามที่จะล้มเหลว",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
@@ -4423,10 +4398,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "psbtFlowScanQrOption": "เลือก \"ตัวเลือก QR\"",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
   "coreSwapsLnReceiveFailed": "ปฏิทิน.",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
@@ -4954,10 +4925,6 @@
   "@tryAgainButton": {
     "description": "Default button text for error state"
   },
-  "psbtFlowHoldSteady": "มีรหัส QR",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
   "swapConfirmTitle": "ยืนยันการโอนเงิน",
   "@swapConfirmTitle": {
     "description": "AppBar title for swap confirmation screen"
@@ -5335,10 +5302,6 @@
   "sendErrorInsufficientBalanceForSwap": "จํานวนเงินเพียงพอที่จะจ่ายสัญญาณนี้ผ่านของเหลวและไม่สามารถชําระเงินผ่านทาง Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
-  },
-  "psbtFlowJadeTitle": "บล็อก PSBT คําแนะนํา",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
   },
   "transactionFilterPayjoin": "ชําระเงิน",
   "@transactionFilterPayjoin": {
@@ -5819,10 +5782,6 @@
   "walletTypeWatchOnly": "ดูวิดีโอ",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "psbtFlowKruxTitle": "คําแนะนํา",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
   },
   "recoverbullDecryptVault": "ถอดรหัส",
   "@recoverbullDecryptVault": {
@@ -6669,10 +6628,6 @@
   "bitboxScreenConnecting": "เชื่อมต่อ BitBox",
   "@bitboxScreenConnecting": {
     "description": "Main text when connecting to device"
-  },
-  "psbtFlowScanAnyQr": "เลือก \"รหัส QR)",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
   },
   "transactionLabelServerNetworkFees": "ค่าธรรมเนียมเครือข่าย",
   "@transactionLabelServerNetworkFees": {
@@ -7892,15 +7847,6 @@
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
   },
-  "psbtFlowError": "ข้อผิดพลาด: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "ราคาโดยประมาณ ~ 10 นาที",
   "@replaceByFeeFastestDescription": {
     "description": "Description for fastest fee option"
@@ -8507,10 +8453,6 @@
   "importQrDevicePassportStep5": "เลือก \"ตัวเลือก\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "psbtFlowClickPsbt": "คลิก PSBT",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
   },
   "sendInvoicePaid": "พิธีการศุลกากร",
   "@sendInvoicePaid": {
@@ -9167,10 +9109,6 @@
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
   },
-  "psbtFlowSignWithQr": "คลิกที่รหัส QR",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
-  },
   "doneButton": "อย่าลืม",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
@@ -9494,10 +9432,6 @@
   "recoverbullSelectFetchDriveFilesError": "ค้นหาการสํารองข้อมูลทั้งหมด",
   "@recoverbullSelectFetchDriveFilesError": {
     "description": "Error when unable to retrieve backup list from Google Drive"
-  },
-  "psbtFlowLoadFromCamera": "คลิกโหลดจากกล้อง",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "ตรวจสอบ",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -9891,10 +9825,6 @@
   "@bitboxErrorInvalidResponse": {
     "description": "Error when BitBox returns an invalid response"
   },
-  "psbtFlowAddPassphrase": "เพิ่มข้อความ",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "payAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@payAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
@@ -9930,10 +9860,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": ". เงินทุนจะเพิ่มยอดเงินในบัญชีของคุณ.",
   "@fundExchangeCrIbanUsdDescriptionEnd": {
     "description": "End of description for CR IBAN USD transfer"
-  },
-  "psbtFlowMoveCloserFurther": "ลองย้ายอุปกรณ์ของคุณใกล้ชิดหรือออกไป",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "swapProgressTitle": "โอนภายใน",
   "@swapProgressTitle": {
@@ -10314,10 +10240,6 @@
         "type": "String"
       }
     }
-  },
-  "psbtFlowPassportTitle": "หนังสือเดินทาง",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
   },
   "exchangeLandingFeature3": "ขาย Bitcoin, ได้รับการชําระเงินกับ Bitcoin",
   "@exchangeLandingFeature3": {
@@ -12330,5 +12252,7 @@
   "exchangeSupportChatLoadAttachmentError": "ไม่สามารถเปิดไฟล์แนบได้ โปรดลองอีกครั้ง",
   "statusCheckNoDefaultWalletError": "ไม่พบกระเป๋าสตางค์ Bitcoin เริ่มต้น โปรดตั้งค่ากระเป๋าสตางค์เริ่มต้นแล้วลองอีกครั้ง",
   "statusCheckResultsMayBeOutdated": "ผลลัพธ์อาจล้าสมัย",
-  "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง"
+  "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
+  "psbtFlowInvalidPsbtError": "ไม่สามารถอ่านธุรกรรมนี้ได้ กลับไปและสร้างใหม่อีกครั้ง",
+  "psbtFlowQrEncodingError": "ไม่สามารถแปลงธุรกรรมนี้เป็นรหัส QR ได้"
 }

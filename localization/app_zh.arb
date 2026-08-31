@@ -288,7 +288,6 @@
   },
   "sendTransferFeeDescription": "这是从发出的款项中扣除的总费用",
   "seedsignerStep12": "土木板将请你扫描西德西尼的QR代码。 缩略语.",
-  "psbtFlowKeystoneTitle": "主要指示",
   "transactionLabelTransferStatus": "转让状况",
   "buyAboveMaxAmountError": "你试图购买最高数额.",
   "electrumTimeoutWarning": "你的排位({timeoutValue}秒)低于建议值({recommended}秒).",
@@ -546,7 +545,6 @@
   "transactionSwapLiquidToBitcoin": "L-BTC - BTC",
   "testBackupDecryptVault": "加密",
   "transactionDetailBumpFees": "消费税",
-  "psbtFlowNoPartsToDisplay": "无部件显示",
   "addressCardCopiedMessage": "地址抄录在纸板上",
   "totalFeeLabel": "共计",
   "mempoolCustomServerBottomSheetDescription": "进入您的海关特网服务器。 服务器在储蓄之前将予以验证.",
@@ -592,14 +590,6 @@
   "payLastName": "姓 名",
   "transactionPayjoinStatusExpired": "过期",
   "fundExchangeMethodBankTransferWire": "银行转账 (Wire or EFT)",
-  "psbtFlowLoginToDevice": "your{device} 装置",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa 哥斯达黎加",
   "payCalculating": "计算......",
   "transactionDetailLabelTransferId": "转账证明",
@@ -647,7 +637,6 @@
   "psbtFlowIncreaseBrightness": "3. 提高你的器具的亮度",
   "payCoinjoinCompleted": "联 合 国",
   "electrumAddCustomServer": "添加习俗服务器",
-  "psbtFlowClickSign": "浮标",
   "rbfSatsPerVbyte": "注",
   "broadcastSignedTxDoneButton": "Done",
   "sendRecommendedFee": "建议:{rate} sat/vB",
@@ -1263,7 +1252,6 @@
   },
   "transactionSwapDescLnReceiveDefault": "你们的雕刻正在进行之中。 这一过程是自动化的,可能需要一些时间才能完成.",
   "selectCoinsManuallyLabel": "手工选编",
-  "psbtFlowSeedSignerTitle": "见dSigner 指示",
   "appUnlockAttemptSingular": "失败",
   "importQrDevicePassportStep2": "进入日本",
   "transactionOrderLabelPayoutMethod": "薪酬办法",
@@ -1424,7 +1412,6 @@
   "recoverbullSelectNoBackupsFound": "没有发现的支持",
   "importMnemonicNestedSegwit": "Nest",
   "sendReplaceByFeeActivated": "替换",
-  "psbtFlowScanQrOption": "选择“Scan QR”办法",
   "coreSwapsLnReceiveFailed": "Swap Failed.",
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "美元转账资金",
   "transactionDetailLabelPayinStatus": "Payin Status",
@@ -1596,7 +1583,6 @@
   "sellInsufficientBalanceError": "当前钱包的余额不足以支付这笔卖出",
   "transactionSwapDescLnReceivePending": "您的宣誓就职。 我们正在等待电灯网付款.",
   "tryAgainButton": "再次",
-  "psbtFlowHoldSteady": "D. 稳定集中管理法典",
   "swapConfirmTitle": "1. 集体转让",
   "testBackupGoogleDrivePrivacyPart1": "这些资料 ",
   "connectHardwareWalletKeystone": "Keystone",
@@ -1726,7 +1712,6 @@
   "electrumBitcoinServerInfo": "正式服务器地址: 东道:port(例如:com:50001)",
   "recoverbullErrorServiceUnavailable": "无法提供的服务。 请检查您的联系.",
   "sendErrorInsufficientBalanceForSwap": "没有足够的余额通过流动资金支付这笔冲销,而不是通过蒸汽支付.",
-  "psbtFlowJadeTitle": "段 次 页 次 指示",
   "transactionFilterPayjoin": "Payjoin",
   "importQrDeviceKeystoneStep8": "在 BULL 钱包中，选择您偏好的派生类型。如果不确定，请选择「Segwit (BIP84)」",
   "fundExchangeCrIbanUsdTitle": "银行转账(美元)",
@@ -1879,7 +1864,6 @@
   "sendBroadcastTransaction": "广播交易",
   "receiveBitcoinConfirmationMessage": "交易将同时确认.",
   "walletTypeWatchOnly": "Watch-Only",
-  "psbtFlowKruxTitle": "Krux号指令",
   "recoverbullDecryptVault": "加密",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "转账随时可以退款.",
@@ -2149,7 +2133,6 @@
   "testBackupBackupId": "Backup ID:",
   "walletDeletionErrorOngoingSwaps": "当前钱包有进行中的交易，您无法删除",
   "bitboxScreenConnecting": "连接BitBox",
-  "psbtFlowScanAnyQr": "选择“扫描任何QR代码”",
   "transactionLabelServerNetworkFees": "服务器网",
   "importQrDeviceSeedsignerStep10": "完成",
   "sendReceive": "收 款",
@@ -2572,14 +2555,6 @@
   "exchangeLegacyTransactionsComingSoon": "遗产交易 -  So",
   "buyProofOfAddress": "地址证明",
   "backupWalletInstructionNoDigitalCopies": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
-  "psbtFlowError": "Rror: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "大约10分钟",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "importQrDeviceSeedsignerStep2": "开放“种子”菜单",
@@ -2773,7 +2748,6 @@
   "jadeStep2": "添加一个字句,如果你有的话(选择)",
   "coldcardStep4": "扫描 Bull 钱包中显示的二维码",
   "importQrDevicePassportStep5": "选择“箭”办法",
-  "psbtFlowClickPsbt": "Click PSBT",
   "sendInvoicePaid": "Invoice Paid",
   "buyKycPendingDescription": "您必须首先完成身份证明核查",
   "payBelowMinAmountError": "您支付的金额低于此钱包可支付的最小金额",
@@ -2994,7 +2968,6 @@
   "importWalletLedger": "Ledger",
   "recoverbullCheckingConnection": "RecoverBull检查连接",
   "exchangeLandingTitle": "BUL BITCOIN",
-  "psbtFlowSignWithQr": "Click sign with QR Code",
   "doneButton": "Done",
   "withdrawSuccessTitle": "撤回",
   "paySendAll": "附录",
@@ -3112,7 +3085,6 @@
   "coreSwapsLnReceiveExpired": "页: 1.",
   "fundExchangeOnlineBillPaymentLabelBillerName": "• 寻找贵国银行的账单人名单以证明这一名称",
   "recoverbullSelectFetchDriveFilesError": "未能抓住所有的动力",
-  "psbtFlowLoadFromCamera": "Click Load",
   "exchangeAccountInfoVerificationLimitedVerification": "有限的核查",
   "sendBuildingTransaction": "房舍管理.",
   "fundExchangeMethodEmailETransfer": "Email E-transfer",
@@ -3252,7 +3224,6 @@
     }
   },
   "bitboxErrorInvalidResponse": "BiBox装置的无效反应。 请再次审判.",
-  "psbtFlowAddPassphrase": "添加一个字句,如果你有的话(选择)",
   "payAdvancedOptions": "A. 先进选择",
   "sendSigningTransaction": "签署交易......",
   "sellErrorFeesNotCalculated": "未计算的交易费。 请再次审判.",
@@ -3262,7 +3233,6 @@
   "buyPaymentMethod": "支付方法",
   "coreSwapsStatusCompleted": "完成",
   "fundExchangeCrIbanUsdDescriptionEnd": "。 资金将计入你的账户结余.",
-  "psbtFlowMoveCloserFurther": "Ry  device  device",
   "swapProgressTitle": "内部转让",
   "pinButtonConfirm": "执 行",
   "coldcardStep2": "添加一个字句,如果你有的话(选择)",
@@ -3399,7 +3369,6 @@
       }
     }
   },
-  "psbtFlowPassportTitle": "基金会 护照指示",
   "exchangeLandingFeature3": "Sell, 获得薪水",
   "notLoggedInMessage": "请登录在您的“Bu”账户中,以便进入交换环境.",
   "swapTotalFees": "总费用 ",
@@ -4940,5 +4909,7 @@
   "exchangeSupportChatLoadAttachmentError": "无法打开附件。请重试。",
   "statusCheckNoDefaultWalletError": "未找到默认的比特币钱包。请设置默认钱包后重试。",
   "statusCheckResultsMayBeOutdated": "结果可能已过时",
-  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。"
+  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。",
+  "psbtFlowInvalidPsbtError": "无法读取此交易。请返回并重新创建。",
+  "psbtFlowQrEncodingError": "无法将此交易转换为二维码。"
 }

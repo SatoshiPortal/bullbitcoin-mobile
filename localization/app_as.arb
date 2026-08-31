@@ -5226,19 +5226,6 @@
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
   },
-  "psbtFlowError": "ত্ৰুটি: {error}",
-  "@psbtFlowError": {
-    "description": "Error message in psbt flow",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "psbtFlowNoPartsToDisplay": "প্ৰদৰ্শন কৰিবলৈ কোনো অংশ নাই",
-  "@psbtFlowNoPartsToDisplay": {
-    "description": "Message when there are no QR code parts to show"
-  },
   "psbtFlowPartProgress": "অংশ {current} / {total}",
   "@psbtFlowPartProgress": {
     "description": "Progress indicator for animated QR code parts",
@@ -5251,22 +5238,6 @@
       }
     }
   },
-  "psbtFlowKruxTitle": "Krux নিৰ্দেশনা",
-  "@psbtFlowKruxTitle": {
-    "description": "Title for Krux device signing instructions"
-  },
-  "psbtFlowKeystoneTitle": "Keystone নিৰ্দেশনা",
-  "@psbtFlowKeystoneTitle": {
-    "description": "Title for Keystone device signing instructions"
-  },
-  "psbtFlowPassportTitle": "Foundation Passport নিৰ্দেশনা",
-  "@psbtFlowPassportTitle": {
-    "description": "Title for Foundation Passport device signing instructions"
-  },
-  "psbtFlowSeedSignerTitle": "SeedSigner নিৰ্দেশনা",
-  "@psbtFlowSeedSignerTitle": {
-    "description": "Title for SeedSigner device signing instructions"
-  },
   "psbtFlowSpecterTitle": "Specter নিৰ্দেশনা",
   "@psbtFlowSpecterTitle": {
     "description": "Title for Specter device signing instructions"
@@ -5274,19 +5245,6 @@
   "psbtFlowColdcardTitle": "Coldcard Q নিৰ্দেশনা",
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
-  },
-  "psbtFlowJadeTitle": "Blockstream Jade PSBT নিৰ্দেশনা",
-  "@psbtFlowJadeTitle": {
-    "description": "Title for Blockstream Jade PSBT signing instructions"
-  },
-  "psbtFlowLoginToDevice": "আপোনাৰ {device} ডিভাইচত লগিন কৰক",
-  "@psbtFlowLoginToDevice": {
-    "description": "Instruction to login to hardware device",
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
   },
   "psbtFlowTurnOnDevice": "আপোনাৰ {device} ডিভাইচ চালু কৰক",
   "@psbtFlowTurnOnDevice": {
@@ -5297,37 +5255,9 @@
       }
     }
   },
-  "psbtFlowAddPassphrase": "যদি আপোনাৰ কাছফ্ৰেজ আছে তেন্তে যোগ কৰক (ঐচ্ছিক)",
-  "@psbtFlowAddPassphrase": {
-    "description": "Optional instruction to add BIP39 passphrase"
-  },
   "psbtFlowClickScan": "Scan ক্লিক কৰক",
   "@psbtFlowClickScan": {
     "description": "Instruction to click scan button on device"
-  },
-  "psbtFlowClickSign": "Sign ক্লিক কৰক",
-  "@psbtFlowClickSign": {
-    "description": "Instruction to click sign button on device"
-  },
-  "psbtFlowClickPsbt": "PSBT ক্লিক কৰক",
-  "@psbtFlowClickPsbt": {
-    "description": "Instruction to click PSBT option on device"
-  },
-  "psbtFlowLoadFromCamera": "Load from camera ক্লিক কৰক",
-  "@psbtFlowLoadFromCamera": {
-    "description": "Instruction to select camera load option on device"
-  },
-  "psbtFlowScanQrOption": "\"Scan QR\" বিকল্পটো বাছনি কৰক",
-  "@psbtFlowScanQrOption": {
-    "description": "Instruction to select scan QR menu option"
-  },
-  "psbtFlowScanAnyQr": "\"Scan any QR code\" বিকল্পটো বাছনি কৰক",
-  "@psbtFlowScanAnyQr": {
-    "description": "Instruction to select scan any QR code option"
-  },
-  "psbtFlowSignWithQr": "Sign with QR Code ক্লিক কৰক",
-  "@psbtFlowSignWithQr": {
-    "description": "Instruction to select QR code signing method"
   },
   "psbtFlowScanQrShown": "Bull wallet ত দেখুওৱা QR code স্কেন কৰক",
   "@psbtFlowScanQrShown": {
@@ -5348,14 +5278,6 @@
   "psbtFlowMoveBack": "আপোনাৰ ডিভাইচটো অলপ আঁতৰাই চেষ্টা কৰক",
   "@psbtFlowMoveBack": {
     "description": "Troubleshooting tip to adjust scanning distance"
-  },
-  "psbtFlowHoldSteady": "QR code টো স্থিৰ আৰু মাজত ধৰক",
-  "@psbtFlowHoldSteady": {
-    "description": "Troubleshooting tip to hold QR code still"
-  },
-  "psbtFlowMoveCloserFurther": "আপোনাৰ ডিভাইচটো ওচৰলৈ বা আঁতৰলৈ লৰাই চেষ্টা কৰক",
-  "@psbtFlowMoveCloserFurther": {
-    "description": "Troubleshooting tip to adjust distance"
   },
   "psbtFlowReviewTransaction": "আপোনাৰ {device} ত লেনদেনটো আমদানি হোৱাৰ পিছত, গন্তব্য ঠিকনা আৰু পৰিমাণ পৰীক্ষা কৰক।",
   "@psbtFlowReviewTransaction": {
@@ -9438,5 +9360,7 @@
   "exchangeSupportChatLoadAttachmentError": "সংলগ্নকটো খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "statusCheckNoDefaultWalletError": "কোনো ডিফ'ল্ট Bitcoin ৱালেট পোৱা নগ'ল। অনুগ্ৰহ কৰি এটা ডিফ'ল্ট ৱালেট ছেট কৰক আৰু পুনৰ চেষ্টা কৰক।",
   "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে",
-  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "psbtFlowInvalidPsbtError": "এই লেনদেন পঢ়িব পৰা নগ'ল। উভতি গৈ ইয়াক পুনৰ সৃষ্টি কৰক।",
+  "psbtFlowQrEncodingError": "এই লেনদেনক QR ক'ডলৈ ৰূপান্তৰ কৰিব পৰা নগ'ল।"
 }
