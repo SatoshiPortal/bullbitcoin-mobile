@@ -49,6 +49,7 @@ abstract class ReceiveState with _$ReceiveState {
     WalletTransaction? tx,
     ReceiveFailure? failure,
     @Default(false) bool creatingSwap,
+    @Default(false) bool isBullVault,
   }) = _ReceiveState;
   const ReceiveState._();
 

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
@@ -16,32 +17,40 @@ class _MockWalletBloc extends Mock implements WalletBloc {}
 
 class _MockWalletDetailsCubit extends Mock implements WalletDetailsCubit {}
 
-Wallet _wallet({required bool isDefault}) => Wallet(
-  origin: 'wallet-id',
-  label: 'Savings',
-  network: Network.bitcoinMainnet,
-  isDefault: isDefault,
-  signers: [
-    WalletSigner.single(
-      masterFingerprint: 'abcd1234',
-      xpubFingerprint: 'abcd1234',
-      xpub: 'xpub-test',
-      derivationPath: "m/84'/0'/0'",
-      descriptorPath: '/<0;1>/*',
-      signer: SignerEntity.local,
-      signerDevice: null,
-    ),
-  ],
-  scriptType: ScriptType.bip84,
-  publicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub-test/<0;1>/*)',
-  balanceSat: BigInt.zero,
-);
+Wallet _wallet({required bool isDefault, List<WalletSigner>? signers}) =>
+    Wallet(
+      origin: 'wallet-id',
+      label: 'Savings',
+      network: Network.bitcoinMainnet,
+      isDefault: isDefault,
+      signers:
+          signers ??
+          [
+            WalletSigner.single(
+              masterFingerprint: 'abcd1234',
+              xpubFingerprint: 'abcd1234',
+              xpub: 'xpub-test',
+              derivationPath: "m/84'/0'/0'",
+              descriptorPath: '/<0;1>/*',
+              signer: SignerEntity.local,
+              signerDevice: null,
+            ),
+          ],
+      scriptType: ScriptType.bip84,
+      publicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub-test/<0;1>/*)',
+      balanceSat: BigInt.zero,
+    );
 
-Future<void> _pumpScreen(WidgetTester tester, {required bool isDefault}) async {
+Future<void> _pumpScreen(
+  WidgetTester tester, {
+  required bool isDefault,
+  Wallet? wallet,
+  WalletDeletionGuard? deletionGuard,
+}) async {
   final walletBloc = _MockWalletBloc();
   final state = WalletState(
     status: WalletStatus.success,
-    wallets: [_wallet(isDefault: isDefault)],
+    wallets: [wallet ?? _wallet(isDefault: isDefault)],
   );
   when(() => walletBloc.state).thenReturn(state);
   when(() => walletBloc.stream).thenAnswer((_) => const Stream.empty());
@@ -59,7 +68,10 @@ Future<void> _pumpScreen(WidgetTester tester, {required bool isDefault}) async {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const WalletDetailsScreen(walletId: 'wallet-id'),
+        home: WalletDetailsScreen(
+          walletId: 'wallet-id',
+          deletionGuard: deletionGuard,
+        ),
       ),
     ),
   );
@@ -77,6 +89,45 @@ void main() {
     expect(find.text('Addresses'), findsOneWidget);
   });
 
+  testWidgets('shows a repeated account xpub once', (tester) async {
+    final signer = WalletSigner(
+      id: 'signer-0',
+      signer: SignerEntity.local,
+      signerDevice: null,
+      descriptorKeys: [
+        WalletDescriptorKey(
+          id: 'key-0',
+          signerId: 'signer-0',
+          masterFingerprint: 'abcd1234',
+          xpubFingerprint: 'abcd1234',
+          xpub: 'xpub-test',
+          derivationPath: "m/48'/0'/0'/2'",
+          descriptorPath: '/<0;1>/*',
+        ),
+        WalletDescriptorKey(
+          id: 'key-1',
+          signerId: 'signer-0',
+          masterFingerprint: 'abcd1234',
+          xpubFingerprint: 'abcd1234',
+          xpub: 'xpub-test',
+          derivationPath: "m/48'/0'/0'/2'",
+          descriptorPath: '/<2;3>/*',
+        ),
+      ],
+    );
+
+    await _pumpScreen(
+      tester,
+      isDefault: false,
+      wallet: _wallet(
+        isDefault: false,
+        signers: [signer],
+      ).copyWith(scriptType: null),
+    );
+
+    expect(find.text('xpub-test'), findsOneWidget);
+  });
+
   testWidgets('only offers wallet deletion for a non-default wallet', (
     tester,
   ) async {
@@ -85,5 +136,22 @@ void main() {
 
     await _pumpScreen(tester, isDefault: false);
     expect(find.byType(BullIcon), findsOneWidget);
+  });
+
+  testWidgets('blocks deletion when a feature owns the wallet lifecycle', (
+    tester,
+  ) async {
+    await _pumpScreen(
+      tester,
+      isDefault: false,
+      deletionGuard: (_) async => false,
+    );
+
+    await tester.tap(find.byType(BullIcon));
+    await tester.pumpAndSettle();
+
+    expect(find.text('This wallet cannot be deleted here.'), findsOneWidget);
+    expect(find.text('Delete wallet?'), findsNothing);
+    await tester.pump(const Duration(seconds: 4));
   });
 }

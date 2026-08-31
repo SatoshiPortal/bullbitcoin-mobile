@@ -16541,7 +16541,7 @@
   "@bullVaultColdTitle": {},
   "bullVaultRecoveryDateUtc": "Available {date} UTC",
   "bullVaultRegistrationRequired": "{hardwareSignerCount, plural, =1 {Register this BullVault on your hardware device.} other {Register this BullVault on each hardware device.}}",
-  "bullVaultPreviousVaultsTitle": "Previous vaults",
+  "bullVaultPreviousVaultsTitle": "Inactive vaults",
   "bullVaultEverydayRecovery": "Everyday key recovery",
   "@bullVaultSkipMobileBackup": {
     "description": "Action requesting to continue BullVault setup without either mobile-key backup"
@@ -16692,7 +16692,6 @@
   "bullVaultAddInheritance": "Add inheritance protection",
   "bullVaultEarlyRenewalWarning": "This vault still has most of its original protection period remaining. You can renew it now, but renewal may not be necessary yet.",
   "bullVaultScheduleSummary": "Cold key after {coldYears} years · everyday key after {recoveryYears} years",
-  "bullVaultActivationRequirements": "Save the new recovery package, then register the replacement policy on every hardware device before activation.",
   "@bullVaultFailureClockMismatch": {
     "description": "BullVault setup error when phone UTC and Bitcoin median time differ by more than the allowed tolerance."
   },
@@ -16822,7 +16821,7 @@
   "bullVaultReplaceDeviceKey": "Use a different key",
   "@bullVaultCreateEntry": {},
   "bullVaultPreviousVaultGeneration": "Vault version {generation}",
-  "bullVaultPreviousVaultsDescription": "Earlier vaults remain monitored. Move any remaining or late-arriving funds into the current BullVault.",
+  "bullVaultPreviousVaultsDescription": "Retired or cancelled vaults remain monitored. Move any remaining or late-arriving funds into the current BullVault.",
   "bullVaultMoveFunds": "Move all funds to current BullVault",
   "@bullVaultThisPhoneRecommended": {},
   "bullVaultRestoreDescriptorAction": "Restore from descriptor",
@@ -16845,7 +16844,7 @@
   "bullVaultProtectionExtraDescription": "Use this phone and two cold keys. Any two owner keys approve transactions.",
   "bullVaultChooseRecoveryPackage": "Choose recovery package",
   "@bullVaultPreviousVaultsDescription": {
-    "description": "Explains why retired BullVault generations remain visible here."
+    "description": "Explains why inactive BullVault generations remain visible"
   },
   "bullVaultColdKeyOne": "Cold key 1",
   "@bullVaultPreviousVaultMigrating": {
@@ -16978,7 +16977,7 @@
   },
   "bullVaultCreating": "Creating your BullVault…",
   "@bullVaultPreviousVaultsTitle": {
-    "description": "Title for the list of earlier BullVault generations."
+    "description": "Title for retired or cancelled BullVault generations"
   },
   "@bullVaultSkipMobileBackupTitle": {
     "description": "Title of the strong BullVault mobile-key backup warning"
@@ -17047,10 +17046,39 @@
     }
   },
   "@bullVaultFailureInvalidSchedule": {},
-  "@bullVaultActivationRequirements": {
-    "description": "Requirements before activating a renewed BullVault"
-  },
   "bullVaultSkipMobileBackup": "Continue without a mobile-key backup",
   "bullVaultFinishSetupDescription": "Complete any remaining device checks and mobile-key backup.",
-  "bullVaultRecoveryPackageConfirmation": "I saved the recovery package"
+  "bullVaultRecoveryPackageConfirmation": "I saved the recovery package",
+  "bullVaultCancelRenewalTitle": "Cancel this renewal?",
+  "bullVaultCancelRenewalDescription": "Your current BullVault will stay active. Bull will keep watching the cancelled vault in case it receives funds. Do not use its recovery data.",
+  "@bullVaultRenewConfirmationTitle": {
+    "description": "Title shown before a BullVault renewal is prepared"
+  },
+  "@bullVaultCancelRenewalHasFunds": {
+    "description": "Shown when a funded BullVault replacement cannot be cancelled"
+  },
+  "@bullVaultCancelRenewal": {
+    "description": "Action that abandons a prepared BullVault replacement before activation"
+  },
+  "@bullVaultRenewConfirmationDescription": {
+    "description": "Explains the required setup before starting a BullVault renewal"
+  },
+  "@bullVaultRenewalReadyDescription": {
+    "description": "Description shown when a replacement BullVault is ready to activate"
+  },
+  "bullVaultRenewalReadyDescription": "Your recovery data is saved and the replacement wallet is registered. Activate it when you are ready.",
+  "bullVaultRenewConfirmationDescription": "This creates a renewed vault with new recovery dates. You will need to save new recovery data and register it again on each cold device.",
+  "@bullVaultCancelRenewalDescription": {
+    "description": "Explains the effect of cancelling a prepared BullVault renewal"
+  },
+  "bullVaultCancelRenewal": "Cancel renewal",
+  "bullVaultRenewConfirmationTitle": "Renew this BullVault?",
+  "@bullVaultReviewRenewal": {
+    "description": "Open the preview of a new BullVault recovery schedule"
+  },
+  "@bullVaultCancelRenewalTitle": {
+    "description": "Title of the BullVault renewal cancellation confirmation"
+  },
+  "bullVaultCancelRenewalHasFunds": "This replacement BullVault already contains funds. Complete and activate it before continuing.",
+  "bullVaultReviewRenewal": "Review renewal"
 }

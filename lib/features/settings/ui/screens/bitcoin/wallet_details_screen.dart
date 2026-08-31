@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
@@ -20,10 +21,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
 import 'package:go_router/go_router.dart';
 
+typedef WalletDetailsActionsBuilder =
+    List<Widget> Function(BuildContext context, Wallet wallet);
+typedef WalletDeletionGuard = Future<bool> Function(String walletId);
+
 class WalletDetailsScreen extends StatelessWidget {
-  const WalletDetailsScreen({super.key, required this.walletId});
+  const WalletDetailsScreen({
+    super.key,
+    required this.walletId,
+    this.featureActionsBuilder,
+    this.deletionGuard,
+  });
 
   final String walletId;
+  final WalletDetailsActionsBuilder? featureActionsBuilder;
+  final WalletDeletionGuard? deletionGuard;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +57,24 @@ class WalletDetailsScreen extends StatelessWidget {
             IconButton(
               onPressed: isDeletingWallet
                   ? null
-                  : () => WalletDeletionConfirmationSheet.show(
-                      context,
-                      onConfirm: () => context.read<WalletBloc>().add(
-                        WalletDeleted(wallet.id),
-                      ),
-                    ),
+                  : () async {
+                      final mayDelete =
+                          await deletionGuard?.call(wallet.id) ?? true;
+                      if (!context.mounted) return;
+                      if (!mayDelete) {
+                        SnackBarUtils.showSnackBar(
+                          context,
+                          context.loc.walletDeletionErrorProtectedWallet,
+                        );
+                        return;
+                      }
+                      await WalletDeletionConfirmationSheet.show(
+                        context,
+                        onConfirm: () => context.read<WalletBloc>().add(
+                          WalletDeleted(wallet.id),
+                        ),
+                      );
+                    },
               icon: const BullIcon(BullIcons.deleteOutline),
             ),
         ],
@@ -99,7 +123,7 @@ class WalletDetailsScreen extends StatelessWidget {
                       ),
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
-                      iconData: Icons.devices_other,
+                      iconData: Icons.chevron_right,
                     ),
                     const Gap(16),
                   ],
@@ -124,8 +148,11 @@ class WalletDetailsScreen extends StatelessWidget {
                       ),
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
-                      iconData: Icons.draw_outlined,
+                      iconData: Icons.chevron_right,
                     ),
+                  ],
+                  if (featureActionsBuilder case final builder?) ...[
+                    ...builder(context, wallet),
                   ],
                 ],
               ),

@@ -51,7 +51,10 @@ import 'package:bull_logs/bull_logs.dart';
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
-  static final route = GoRoute(
+  static GoRoute route({
+    WalletDetailsActionsBuilder? walletDetailsActionsBuilder,
+    WalletDeletionGuard? walletDeletionGuard,
+  }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
@@ -227,7 +230,11 @@ class SettingsRouter {
                   },
                 ),
               ],
-              child: WalletDetailsScreen(walletId: walletId),
+              child: WalletDetailsScreen(
+                walletId: walletId,
+                featureActionsBuilder: walletDetailsActionsBuilder,
+                deletionGuard: walletDeletionGuard,
+              ),
             ),
           );
         },

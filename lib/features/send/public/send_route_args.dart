@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 final class SendRouteArgs {
   final Wallet? wallet;
   final String? pendingTransactionId;
+  final String? fixedRecipient;
+  final bool sendMax;
   final bool isSpMode;
   final Set<Outpoint> selectedOutpoints;
   final bool isSweep;
@@ -11,6 +13,8 @@ final class SendRouteArgs {
   const SendRouteArgs({
     this.wallet,
     this.pendingTransactionId,
+    this.fixedRecipient,
+    this.sendMax = false,
     this.isSpMode = false,
   }) : selectedOutpoints = const {},
        isSweep = false;
@@ -18,6 +22,8 @@ final class SendRouteArgs {
   const SendRouteArgs.sp()
     : wallet = null,
       pendingTransactionId = null,
+      fixedRecipient = null,
+      sendMax = false,
       isSpMode = true,
       selectedOutpoints = const {},
       isSweep = false;
@@ -26,6 +32,8 @@ final class SendRouteArgs {
     required Wallet this.wallet,
     required Set<Outpoint> outpoints,
   }) : pendingTransactionId = null,
+       fixedRecipient = null,
+       sendMax = false,
        isSpMode = false,
        selectedOutpoints = Set.unmodifiable(outpoints),
        isSweep = false {
@@ -36,6 +44,8 @@ final class SendRouteArgs {
     required Wallet this.wallet,
     required Set<Outpoint> outpoints,
   }) : pendingTransactionId = null,
+       fixedRecipient = null,
+       sendMax = true,
        isSpMode = false,
        selectedOutpoints = Set.unmodifiable(outpoints),
        isSweep = true {
