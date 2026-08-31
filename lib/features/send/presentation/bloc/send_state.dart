@@ -449,6 +449,42 @@ abstract class SendState with _$SendState {
       ? false
       : (inputAmountSat > 0 && inputAmountSat <= spendableBalanceSat);
 
+  /// Specifically "the wallet could not construct the transaction".
+  ///
+  /// Narrow on purpose: it decides whether the amount screen mounts its error
+  /// block at all, and the other build-stage failures already surface there in
+  /// the amount field's own error line. Do not widen it to mean "any build
+  /// failure" — the confirm screen renders whatever is left over.
+  bool get hasBuildFailure => failure is SendTransactionBuildFailure;
+
+  /// Signing, confirming or broadcasting failed. Confirm screen only.
+  bool get hasConfirmFailure => failure is SendTransactionConfirmationFailure;
+
+  /// The broadcast itself failed, as opposed to an earlier confirm step. Drives
+  /// the "the payment may still have gone out" guidance.
+  bool get hasBroadcastFailure => switch (failure) {
+    SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
+      isBroadcastFailure,
+    _ => false,
+  };
+
+  /// The amount is short of the spendable balance. Rendered inline under the
+  /// amount field, and in the address step's error line.
+  bool get hasBalanceFailure => failure is SendInsufficientBalanceFailure;
+
+  /// The shortfall is explained by frozen coins, so the message can point at
+  /// Manage coins.
+  String? get frozenBalanceHint =>
+      hasBalanceFailure && frozenBalanceSat > 0 ? formattedFrozenBalance : null;
+
+  /// The amount is below the swap minimum and an on-chain send would work
+  /// instead, so the UI offers that alternative.
+  bool get suggestsInstantPayments => switch (failure) {
+    SendAmountOutOfBoundsFailure(:final suggestInstantPayments) =>
+      suggestInstantPayments,
+    _ => false,
+  };
+
   String sendTypeName() {
     switch (sendType) {
       case SendType.bitcoin:
