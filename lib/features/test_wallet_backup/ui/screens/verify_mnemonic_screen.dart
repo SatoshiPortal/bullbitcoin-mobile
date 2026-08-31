@@ -13,7 +13,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class VerifyMnemonicScreen extends StatefulWidget {
-  const VerifyMnemonicScreen({super.key});
+  final VoidCallback? onVerified;
+
+  final List<String>? _providedMnemonic;
+  final String? _title;
+
+  const VerifyMnemonicScreen({super.key, this.onVerified})
+    : _providedMnemonic = null,
+      _title = null;
+
+  const VerifyMnemonicScreen.forMnemonic({
+    super.key,
+    required List<String> mnemonic,
+    required String this._title,
+    required VoidCallback this.onVerified,
+  }) : _providedMnemonic = mnemonic;
 
   @override
   State<VerifyMnemonicScreen> createState() => _VerifyMnemonicScreenState();
@@ -34,15 +48,31 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final fingerprint = context
-        .read<TestWalletBackupBloc>()
-        .state
-        .selectedWallet
-        ?.masterFingerprint;
-    if (fingerprint != _fingerprint) {
-      _fingerprint = fingerprint;
-      unawaited(_loadSecret());
+    if (widget._providedMnemonic != null) {
+      if (_isLoading) {
+        _mnemonic = widget._providedMnemonic!;
+        _shuffled = [..._mnemonic]..shuffle();
+        _isLoading = false;
+      }
+      return;
     }
+    _loadSecretFor(
+      context
+          .read<TestWalletBackupBloc>()
+          .state
+          .selectedWallet
+          ?.masterFingerprint,
+    );
+  }
+
+  void _loadSecretFor(String? fingerprint) {
+    if (fingerprint == null ||
+        fingerprint.isEmpty ||
+        fingerprint == _fingerprint) {
+      return;
+    }
+    _fingerprint = fingerprint;
+    unawaited(_loadSecret());
   }
 
   Future<void> _loadSecret() async {
@@ -92,9 +122,13 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
     setState(() => _selectedIndices.add(index));
 
     if (candidate.length == _mnemonic.length) {
-      context.read<TestWalletBackupBloc>().add(
-        VerifyPhysicalBackup(reorderedWords: candidate),
-      );
+      if (widget._providedMnemonic != null) {
+        widget.onVerified!();
+      } else {
+        context.read<TestWalletBackupBloc>().add(
+          VerifyPhysicalBackup(reorderedWords: candidate),
+        );
+      }
     }
   }
 
@@ -109,11 +143,27 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
     return FutureBuilder(
       future: _privacyFuture,
       builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done ||
+            snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: Center(
+              child: snapshot.hasError
+                  ? Text(context.loc.oopsSomethingWentWrong)
+                  : const CircularProgressIndicator(),
+            ),
+          );
+        }
+        if (widget._providedMnemonic != null) {
+          return _buildScreen(AppBar(title: Text(widget._title!)));
+        }
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
+              previous.selectedWallet?.id != current.selectedWallet?.id ||
               previous.verificationStatus != current.verificationStatus ||
               (previous.statusError.isEmpty && current.statusError.isNotEmpty),
           listener: (context, state) {
+            _loadSecretFor(state.selectedWallet?.masterFingerprint);
             if (state.statusError.isNotEmpty) {
               SnackBarUtils.showSnackBar(context, state.statusError);
               context.read<TestWalletBackupBloc>().add(const ClearError());
@@ -122,11 +172,16 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             switch (state.verificationStatus) {
               case BackupVerificationStatus.success:
                 context.read<TestWalletBackupBloc>().add(const ClearError());
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const BackupTestSuccessScreen(),
-                  ),
-                );
+                final onVerified = widget.onVerified;
+                if (onVerified != null) {
+                  onVerified();
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const BackupTestSuccessScreen(),
+                    ),
+                  );
+                }
               case BackupVerificationStatus.failure:
                 _resetGame();
                 SnackBarUtils.showSnackBar(
@@ -144,77 +199,83 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                 : state.selectedWallet?.displayLabel(context) ?? '';
             final title = context.loc.testBackupWalletTitle(walletName);
 
-            final nextWordNumber = _selectedIndices.length + 1;
-            final showPrompt = _selectedIndices.length < _mnemonic.length;
-
-            return Scaffold(
-              backgroundColor: context.appColors.onSecondary,
-              appBar: PreferredSize(
+            return _buildScreen(
+              PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
                 child: AppBarWidget(title: title),
-              ),
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      BBText(
-                        context.loc.testBackupTapWordsInOrder,
-                        textAlign: .center,
-                        maxLines: 2,
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: .w600,
-                          fontSize: 16,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      const Gap(20),
-                      if (showPrompt)
-                        Column(
-                          children: [
-                            BBText(
-                              context.loc.testBackupWhatIsWordNumber(
-                                nextWordNumber,
-                              ),
-                              textAlign: .center,
-                              style: context.font.labelMedium?.copyWith(
-                                fontWeight: .w700,
-                                color: context.appColors.outline,
-                                letterSpacing: 0,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        BBText(
-                          context.loc.testBackupAllWordsSelected,
-                          textAlign: .center,
-                          style: context.font.labelMedium?.copyWith(
-                            fontWeight: .w700,
-                            color: context.appColors.surface,
-                            letterSpacing: 0,
-                            fontSize: 14,
-                          ),
-                        ),
-                      const Gap(16),
-                      if (_isLoading)
-                        const Center(child: CircularProgressIndicator())
-                      else
-                        _ShuffledMnemonicGrid(
-                          shuffled: _shuffled,
-                          selectedIndices: _selectedIndices,
-                          onWordTap: _onWordTap,
-                        ),
-                    ],
-                  ),
-                ),
               ),
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildScreen(PreferredSizeWidget appBar) {
+    final nextWordNumber = _selectedIndices.length + 1;
+    final showPrompt = _selectedIndices.length < _mnemonic.length;
+
+    return Scaffold(
+      backgroundColor: context.appColors.onSecondary,
+      appBar: appBar,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: .stretch,
+            children: [
+              BBText(
+                context.loc.testBackupTapWordsInOrder,
+                textAlign: .center,
+                maxLines: 2,
+                style: context.font.headlineLarge?.copyWith(
+                  fontWeight: .w600,
+                  fontSize: 16,
+                  letterSpacing: 0,
+                ),
+              ),
+              const Gap(20),
+              if (showPrompt)
+                Column(
+                  children: [
+                    BBText(
+                      context.loc.testBackupWhatIsWordNumber(nextWordNumber),
+                      textAlign: .center,
+                      style: context.font.labelMedium?.copyWith(
+                        fontWeight: .w700,
+                        color: context.appColors.outline,
+                        letterSpacing: 0,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                BBText(
+                  context.loc.testBackupAllWordsSelected,
+                  textAlign: .center,
+                  style: context.font.labelMedium?.copyWith(
+                    fontWeight: .w700,
+                    color: context.appColors.surface,
+                    letterSpacing: 0,
+                    fontSize: 14,
+                  ),
+                ),
+              const Gap(16),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                ExcludeSemantics(
+                  child: _ShuffledMnemonicGrid(
+                    shuffled: _shuffled,
+                    selectedIndices: _selectedIndices,
+                    onWordTap: _onWordTap,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
