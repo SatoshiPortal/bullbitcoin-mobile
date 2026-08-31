@@ -105,6 +105,44 @@ void main() {
       await bloc.close();
     });
 
+    test('selects the wallet that owns a requested seed fingerprint', () async {
+      final defaultWallet = _wallet(isDefault: true, origin: 'a');
+      final requestedWallet = Wallet(
+        origin: 'b',
+        label: 'Requested',
+        network: Network.bitcoinMainnet,
+        publicDescriptor: 'wpkh([beef1234/84h/0h/0h]xpub/<0;1>/*)',
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: 'beef1234',
+            xpubFingerprint: 'beef1234',
+            xpub: 'xpub',
+            derivationPath: "m/84'/0'/0'",
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ),
+        ],
+        scriptType: ScriptType.bip84,
+        balanceSat: BigInt.zero,
+      );
+      when(
+        () => loadWalletsUsecase.execute(),
+      ).thenAnswer((_) async => [defaultWallet, requestedWallet]);
+      final bloc = buildBloc();
+
+      final expectation = expectLater(
+        bloc.stream,
+        emits(
+          predicate<TestWalletBackupState>(
+            (state) => state.selectedWallet == requestedWallet,
+          ),
+        ),
+      );
+      bloc.add(const LoadWallets(fingerprint: 'BEEF1234'));
+      await expectation;
+      await bloc.close();
+    });
+
     test(
       'records the backup once the sealed challenge has judged it',
       () async {
@@ -113,7 +151,7 @@ void main() {
         // that reaches this bloc carries no words at all. What is left to test
         // is the bookkeeping.
         when(
-          () => completeUsecase.execute(),
+          () => completeUsecase.execute(fingerprint: _fingerprint),
         ).thenAnswer((_) async => const Ok(null));
         final bloc = buildBloc();
         bloc.seed(
@@ -133,7 +171,15 @@ void main() {
         bloc.add(const VerifyPhysicalBackup());
         await expectation;
 
-        verify(() => completeUsecase.execute()).called(1);
+        verify(
+          () => verifyUsecase.execute(
+            fingerprint: _fingerprint,
+            mnemonic: _mnemonicWords,
+          ),
+        ).called(1);
+        verify(
+          () => completeUsecase.execute(fingerprint: _fingerprint),
+        ).called(1);
         await bloc.close();
       },
     );
@@ -147,7 +193,20 @@ void main() {
           predicate<TestWalletBackupState>(
             (s) => s.failure is TestWalletBackupNoWalletSelectedFailure,
           ),
-        ),
+        );
+        bloc.add(const VerifyPhysicalBackup(reorderedWords: _mnemonicWords));
+        await expectation;
+
+        verifyNever(
+          () => completeUsecase.execute(fingerprint: any(named: 'fingerprint')),
+        );
+        await bloc.close();
+      },
+    );
+
+    test('never exposes the secret through state or toString', () async {
+      when(() => getMnemonicUsecase.execute(_fingerprint)).thenAnswer(
+        (_) async => const Ok((_mnemonicWords, 'secret-passphrase')),
       );
       bloc.add(const VerifyPhysicalBackup());
       await expectation;
@@ -200,8 +259,47 @@ void main() {
       await bloc.close();
     });
 
+    test(
+      'reports a wrong mnemonic as a verification result, not a failure',
+      () async {
+        when(
+          () => verifyUsecase.execute(
+            fingerprint: _fingerprint,
+            mnemonic: _mnemonicWords,
+          ),
+        ).thenAnswer((_) async => const Ok(false));
+        final bloc = buildBloc();
+        bloc.seed(
+          TestWalletBackupState(
+            selectedWallet: _wallet(isDefault: true, origin: 'a'),
+          ),
+        );
+
+        final expectation = expectLater(
+          bloc.stream,
+          emits(
+            predicate<TestWalletBackupState>(
+              (s) =>
+                  s.verificationStatus == BackupVerificationStatus.failure &&
+                  s.failure == null,
+            ),
+          ),
+        );
+        bloc.add(const VerifyPhysicalBackup(reorderedWords: _mnemonicWords));
+        await expectation;
+        verifyNever(() => completeUsecase.execute(fingerprint: _fingerprint));
+        await bloc.close();
+      },
+    );
+
     test('reports a failed completion instead of claiming success', () async {
-      when(() => completeUsecase.execute()).thenAnswer(
+      when(
+        () => verifyUsecase.execute(
+          fingerprint: _fingerprint,
+          mnemonic: _mnemonicWords,
+        ),
+      ).thenAnswer((_) async => const Ok(true));
+      when(() => completeUsecase.execute(fingerprint: _fingerprint)).thenAnswer(
         (_) async =>
             const Err(TestWalletBackupCompletionFailure('drift: locked')),
       );

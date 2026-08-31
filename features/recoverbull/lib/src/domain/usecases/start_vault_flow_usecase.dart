@@ -17,7 +17,15 @@ final class StartVaultFlowUsecase {
   final RecoverBullEnvironmentPort _environment;
   const StartVaultFlowUsecase(this._wallets, this._environment);
 
-  Future<VaultFlowContext> execute(RecoverBullFlow flow) async {
+  Future<VaultFlowContext> execute(
+    RecoverBullFlow flow, {
+    VaultContext? backupContext,
+  }) async {
+    if (backupContext != null &&
+        (flow == RecoverBullFlow.secureVault ||
+            flow == RecoverBullFlow.testVault)) {
+      return VaultFlowContext(Ok(backupContext), Ok(backupContext.network));
+    }
     final network = await _environment.currentNetwork();
     final wallet = switch (flow) {
       RecoverBullFlow.secureVault ||

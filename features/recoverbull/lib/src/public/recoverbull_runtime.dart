@@ -1,3 +1,4 @@
+import '../domain/entities/vault_context.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart';
@@ -198,8 +199,12 @@ final class RecoverBullRuntime {
   Future<VaultFlowPresentation> flow(
     RecoverBullFlow kind, {
     EncryptedVault? vault,
+    VaultContext? backupContext,
   }) async {
-    final captured = await _startFlow.execute(kind);
+    final captured = await _startFlow.execute(
+      kind,
+      backupContext: backupContext,
+    );
     final operations = _operations(captured);
     final metadata = _metadata;
     final monitoring = _monitoring;

@@ -1,3 +1,5 @@
+import '../domain/entities/vault_context.dart';
+import '../domain/entities/vault_completion.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter/widgets.dart';
@@ -83,7 +85,12 @@ final class RecoverBullFeature {
         presentation: () => runtime.flow(
           flow,
           vault: request is RecoverBullFlowRequest ? request.vault : null,
+          backupContext: request is RecoverBullFlowRequest
+              ? request.backupContext
+              : null,
         ),
+        returnCompletion:
+            request is RecoverBullFlowRequest && request.returnCompletion,
         copiedMessage: copiedMessage(context),
         onRecovered: () => onRecovered(context),
       );
@@ -98,6 +105,34 @@ final class RecoverBullFeature {
     'recoverbullFlows',
     extra: RecoverBullFlowRequest(flow, vault),
   );
+
+  /// Creates and tests a backup for the selected seed before returning.
+  Future<bool> openSetup(
+    BuildContext context, {
+    required VaultContext backupContext,
+  }) async {
+    final created = await context.pushNamed<VaultCompletion>(
+      'recoverbullFlows',
+      extra: RecoverBullFlowRequest(
+        RecoverBullFlow.secureVault,
+        null,
+        backupContext: backupContext,
+        returnCompletion: true,
+      ),
+    );
+    if (created == null || !context.mounted) return false;
+    final tested = await context.pushNamed<VaultCompletion>(
+      'recoverbullFlows',
+      extra: RecoverBullFlowRequest(
+        RecoverBullFlow.testVault,
+        created.vault,
+        backupContext: backupContext,
+        returnCompletion: true,
+      ),
+    );
+    return tested?.verifiedContext?.matches(backupContext) == true &&
+        tested?.warning == null;
+  }
 
   Future<void> dispose() async => _runtime?.dispose();
 
@@ -126,5 +161,12 @@ final class RecoverBullFeature {
 final class RecoverBullFlowRequest {
   final RecoverBullFlow flow;
   final domain.EncryptedVault? vault;
-  const RecoverBullFlowRequest(this.flow, [this.vault]);
+  final VaultContext? backupContext;
+  final bool returnCompletion;
+  const RecoverBullFlowRequest(
+    this.flow,
+    this.vault, {
+    this.backupContext,
+    this.returnCompletion = false,
+  });
 }
