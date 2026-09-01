@@ -3,25 +3,27 @@ import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'record_local_attempt_usecase.dart';
 import '../entities/key_server_attempts.dart';
 import '../recoverbull_attempt_alert_port.dart';
 
 class FetchVaultKeyFromServerUsecase {
+  final LogSink log;
   final RecoverBullRepository _recoverBullRepository;
   final EnsureRecoverBullTorSessionUsecase _ensureTorSessionUsecase;
   final RecordLocalAttemptUsecase? _recordAttempt;
   final RecoverBullAttemptAlertPort? _alertPort;
 
-  FetchVaultKeyFromServerUsecase(
-    this._recoverBullRepository,
-    this._ensureTorSessionUsecase, [
-    RecordLocalAttemptUsecase? recordAttempt,
-    RecoverBullAttemptAlertPort? alertPort,
-  ]) : _recordAttempt = recordAttempt,
-       _alertPort = alertPort;
+  FetchVaultKeyFromServerUsecase({
+    required RecoverBullRepository repository,
+    required EnsureRecoverBullTorSessionUsecase ensureTor,
+    this._recordAttempt,
+    this._alertPort,
+    required this.log,
+  }) : _recoverBullRepository = repository,
+       _ensureTorSessionUsecase = ensureTor;
 
   Future<Result<String, RecoverBullFailure>> execute({
     required EncryptedVault vault,

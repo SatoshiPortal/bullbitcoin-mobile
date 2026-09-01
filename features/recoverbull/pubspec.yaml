@@ -16,6 +16,7 @@ flutter:
     - assets/misc/
 
 dependencies:
+  bull_logger:
   bull_tor:
   bip32_keys: ^3.1.1
   bip39_mnemonic: ^4.1.0

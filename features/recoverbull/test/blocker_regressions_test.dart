@@ -13,6 +13,7 @@ import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
+import 'support/log_sink.dart';
 import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_with_status_from_server_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/record_local_attempt_usecase.dart';
@@ -181,10 +182,11 @@ void main() {
     );
 
     await FetchVaultKeyFromServerUsecase(
-      repository,
-      ensure,
-      RecordLocalAttemptUsecase(store),
-      monitoring,
+      repository: repository,
+      ensureTor: ensure,
+      recordAttempt: RecordLocalAttemptUsecase(store),
+      alertPort: monitoring,
+      log: const TestLogSink(),
     ).execute(vault: vault, password: 'password', route: route);
     var alerts = await monitoring.alerts.firstWhere(
       (alerts) => alerts.isNotEmpty,
@@ -193,10 +195,11 @@ void main() {
     await monitoring.acknowledge(alerts.single);
 
     await FetchVaultKeyWithStatusFromServerUsecase(
-      repository,
-      ensure,
-      RecordLocalAttemptUsecase(store),
-      monitoring,
+      repository: repository,
+      ensureSession: ensure,
+      recordAttempt: RecordLocalAttemptUsecase(store),
+      alertPort: monitoring,
+      log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
 
     alerts = await monitoring.alerts.firstWhere((alerts) => alerts.isNotEmpty);
@@ -204,10 +207,11 @@ void main() {
     await monitoring.acknowledge(alerts.single);
 
     await TrashVaultKeyUsecase(
-      repository,
-      ensure,
-      RecordLocalAttemptUsecase(store),
-      monitoring,
+      repository: repository,
+      ensureSession: ensure,
+      recordAttempt: RecordLocalAttemptUsecase(store),
+      alertPort: monitoring,
+      log: const TestLogSink(),
     ).execute(vault: vault, password: 'password', route: route);
     alerts = await monitoring.alerts.firstWhere((alerts) => alerts.isNotEmpty);
     expect(alerts.single, isA<RecoverBullAttemptAlert>());
@@ -277,8 +281,9 @@ void main() {
     );
 
     final result = await TrashVaultKeyUsecase(
-      repository,
-      ensure,
+      repository: repository,
+      ensureSession: ensure,
+      log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
 
     expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
@@ -302,8 +307,9 @@ void main() {
 
     await expectLater(
       () => TrashVaultKeyUsecase(
-        repository,
-        ensure,
+        repository: repository,
+        ensureSession: ensure,
+        log: const TestLogSink(),
       ).execute(vault: vault, password: 'password'),
       throwsStateError,
     );

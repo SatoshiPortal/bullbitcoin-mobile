@@ -4,23 +4,26 @@ import 'package:bull_recoverbull/src/data/datasources/google_drive_datasource.da
 import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Data boundary for Google Drive vault storage. Catches Drive/auth/IO
 /// exceptions, logs the raw reason, and returns a [RecoverBullFailure].
 class GoogleDriveRepository {
+  final LogSink log;
   final GoogleDriveAppDatasource _dataSource;
 
-  GoogleDriveRepository({required GoogleDriveAppDatasource datasource})
-    : _dataSource = datasource;
+  GoogleDriveRepository({
+    required this.log,
+    required GoogleDriveAppDatasource datasource,
+  }) : _dataSource = datasource;
 
   Future<Result<Null, RecoverBullFailure>> connect() async {
     try {
       await _dataSource.connect();
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'drive connect failed', error: e, trace: st);
+      log.error('drive connect failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -32,7 +35,7 @@ class GoogleDriveRepository {
     try {
       return Ok(await _fetchAllMetadata());
     } catch (e, st) {
-      log.severe(message: 'drive fetchAllMetadata failed', error: e, trace: st);
+      log.error('drive fetchAllMetadata failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -43,7 +46,7 @@ class GoogleDriveRepository {
     try {
       return Ok(EncryptedVault(file: await _fetchContent(fileId)));
     } catch (e, st) {
-      log.severe(message: 'drive fetchVault failed', error: e, trace: st);
+      log.error('drive fetchVault failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -54,7 +57,7 @@ class GoogleDriveRepository {
     try {
       return Ok(await _fetchContent(fileId));
     } catch (e, st) {
-      log.severe(message: 'drive fetchRawFile failed', error: e, trace: st);
+      log.error('drive fetchRawFile failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -73,7 +76,7 @@ class GoogleDriveRepository {
       );
       return Ok(EncryptedVault(file: await _fetchContent(latest.id)));
     } catch (e, st) {
-      log.severe(message: 'drive fetchLatestVault failed', error: e, trace: st);
+      log.error('drive fetchLatestVault failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -83,7 +86,7 @@ class GoogleDriveRepository {
       await _dataSource.store(content);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'drive store failed', error: e, trace: st);
+      log.error('drive store failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
@@ -93,7 +96,7 @@ class GoogleDriveRepository {
       await _dataSource.trash(fileId);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'drive trash failed', error: e, trace: st);
+      log.error('drive trash failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }

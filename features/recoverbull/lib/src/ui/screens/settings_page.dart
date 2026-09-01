@@ -1,6 +1,6 @@
 import 'package:bull_recoverbull/src/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/store_recoverbull_url_usecase.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
 import 'package:bull_recoverbull/src/ui/support.dart';
@@ -9,10 +9,12 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
+  final LogSink log;
   final FetchRecoverbullUrlUsecase fetchUrlUsecase;
   final StoreRecoverbullUrlUsecase storeUrlUsecase;
   const SettingsPage({
     super.key,
+    required this.log,
     required this.fetchUrlUsecase,
     required this.storeUrlUsecase,
   });
@@ -47,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
       final url = await widget.fetchUrlUsecase.execute();
       _originalUrl = url.toString();
     } catch (e) {
-      log.warning('recoverbull.settings.load_failed');
+      widget.log.warning('recoverbull.settings.load_failed');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -65,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() => _isEditing = false);
       }
     } catch (e) {
-      log.warning('recoverbull.settings.save_failed');
+      widget.log.warning('recoverbull.settings.save_failed');
       if (mounted) {
         SnackBarUtils.showSnackBar(
           context,

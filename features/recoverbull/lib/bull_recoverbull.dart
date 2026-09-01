@@ -4,7 +4,6 @@ export 'src/public/recoverbull.dart'
     show
         RecoverBullConfig,
         RecoverBullDependencies,
-        RecoverBullLogger,
         RecoverBullTiming,
         RecoverBullStatus,
         RecoverBullLifecycle,

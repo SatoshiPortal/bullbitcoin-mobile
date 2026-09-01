@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 
-final class _Logger implements RecoverBullLogger {
+final class _Logger implements LogSink {
   @override
   void fine(String message, {Object? error, StackTrace? trace}) {}
 
@@ -15,10 +16,13 @@ final class _Logger implements RecoverBullLogger {
   void info(String message, {Object? error, StackTrace? trace}) {}
 
   @override
-  void error(String code, {Object? error, StackTrace? trace}) {}
+  void error(String message, {Object? error, StackTrace? trace}) {}
 
   @override
   void warning(String message, {Object? error, StackTrace? trace}) {}
+
+  @override
+  LogSink scoped(String scope) => this;
 }
 
 final class _Settings extends Mock implements RecoverBullSettingsPort {}
@@ -110,7 +114,7 @@ void main() {
       defaultWallets: _Defaults(),
       settings: _Settings(),
       tor: tor,
-      logger: _Logger(),
+      log: _Logger(),
     );
     await recoverBull.lifecycle.dispose();
   });
@@ -159,7 +163,7 @@ void main() {
       defaultWallets: _Defaults(),
       settings: settings,
       tor: tor,
-      logger: _Logger(),
+      log: _Logger(),
       timing: (phase, durationMilliseconds, outcome) => timings.add((
         phase: phase,
         durationMilliseconds: durationMilliseconds,

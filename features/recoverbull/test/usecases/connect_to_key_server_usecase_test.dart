@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
+import '../support/log_sink.dart';
 
 class _MockCheckServerConnection extends Mock
     implements CheckServerConnectionUsecase {}
@@ -43,8 +44,9 @@ void main() {
     waited = [];
     attempts = [];
     usecase = ConnectToKeyServerUsecase(
-      checkConnection,
-      ensureSession,
+      check: checkConnection,
+      ensureTor: ensureSession,
+      log: const TestLogSink(),
       wait: (duration) async => waited.add(duration),
     );
   });

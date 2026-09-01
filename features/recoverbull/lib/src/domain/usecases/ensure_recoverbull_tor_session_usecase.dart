@@ -6,8 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_tor/tor.dart';
 
 import '../recoverbull_settings_port.dart';
-import '../../public/recoverbull.dart'
-    show RecoverBullLogger, RecoverBullTiming;
+import '../../public/recoverbull.dart' show RecoverBullTiming;
 
 /// Opens the route RecoverBull reaches the key server through, behind its own
 /// failure boundary.
@@ -24,14 +23,12 @@ class EnsureRecoverBullTorSessionUsecase {
   final RecoverBullSettingsPort _settingsRepository;
   final Tor _tor;
   final TorHttpClientFactory _torHttpClientFactory;
-  final RecoverBullLogger? logger;
   final RecoverBullTiming? timing;
 
   const EnsureRecoverBullTorSessionUsecase(
     this._embeddedTor,
     this._settingsRepository,
     this._tor, {
-    this.logger,
     this.timing,
     TorHttpClientFactory? torHttpClientFactory,
   }) : _torHttpClientFactory =

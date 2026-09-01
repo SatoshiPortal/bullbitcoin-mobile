@@ -1,16 +1,19 @@
 import 'package:bull_recoverbull/src/data/datasources/file_storage_datasource.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Data boundary for local file pick/save. Catches picker/IO exceptions and
 /// validates the picked file, returning a [RecoverBullFailure].
 class FileSystemRepository {
+  final LogSink log;
   final FileStorageDatasource _fileStorageDataSource;
 
-  FileSystemRepository({required FileStorageDatasource datasource})
-    : _fileStorageDataSource = datasource;
+  FileSystemRepository({
+    required this.log,
+    required FileStorageDatasource datasource,
+  }) : _fileStorageDataSource = datasource;
 
   /// Picks a file and validates it is an encrypted vault. (Validation lives
   /// here, not in the use-case.)
@@ -23,7 +26,7 @@ class FileSystemRepository {
       }
       return Ok(EncryptedVault(file: fileContent));
     } catch (e, st) {
-      log.severe(message: 'pickVault failed', error: e, trace: st);
+      log.error('pickVault failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('File operation failed'));
     }
   }
@@ -36,7 +39,7 @@ class FileSystemRepository {
       await _fileStorageDataSource.saveFile(content, filename);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'saveFile failed', error: e, trace: st);
+      log.error('saveFile failed', error: e, trace: st);
       return const Err(RecoverBullUnexpectedFailure('File operation failed'));
     }
   }

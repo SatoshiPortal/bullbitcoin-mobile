@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
-final class _Logger implements RecoverBullLogger {
+final class _Logger implements LogSink {
   @override
   void fine(String message, {Object? error, StackTrace? trace}) {}
 
@@ -16,10 +17,13 @@ final class _Logger implements RecoverBullLogger {
   void info(String message, {Object? error, StackTrace? trace}) {}
 
   @override
-  void error(String code, {Object? error, StackTrace? trace}) {}
+  void error(String message, {Object? error, StackTrace? trace}) {}
 
   @override
   void warning(String message, {Object? error, StackTrace? trace}) {}
+
+  @override
+  LogSink scoped(String scope) => this;
 }
 
 final class _Settings extends Mock implements RecoverBullSettingsPort {}
@@ -55,7 +59,7 @@ void main() {
       defaultWallets: _Defaults(),
       settings: _Settings(),
       tor: tor,
-      logger: _Logger(),
+      log: _Logger(),
     );
     locator.registerSingleton<RecoverBullFeature>(feature);
 

@@ -11,6 +11,7 @@ import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'support/log_sink.dart';
 
 final class _Repository extends Mock implements RecoverBullRepository {}
 
@@ -60,8 +61,9 @@ void main() {
     );
 
     final result = await FetchVaultKeyWithStatusFromServerUsecase(
-      repository,
-      ensure,
+      repository: repository,
+      ensureSession: ensure,
+      log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
 
     expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
@@ -74,8 +76,9 @@ void main() {
     ).thenAnswer((_) async => const Err(KeyServerUnavailableFailure()));
 
     final result = await FetchVaultKeyWithStatusFromServerUsecase(
-      repository,
-      ensure,
+      repository: repository,
+      ensureSession: ensure,
+      log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
 
     expect(result, isA<Err<VaultKeyFetchResult, RecoverBullFailure>>());

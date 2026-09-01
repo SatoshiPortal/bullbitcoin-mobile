@@ -5,6 +5,7 @@ import 'package:bull_recoverbull/src/domain/usecases/check_server_connection_use
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../support/log_sink.dart';
 import 'package:mocktail/mocktail.dart';
 import 'dart:io';
 
@@ -55,7 +56,11 @@ void main() {
   setUp(() {
     repository = _MockRepository();
     ensureSession = _MockEnsureSession();
-    usecase = CheckServerConnectionUsecase(repository, ensureSession);
+    usecase = CheckServerConnectionUsecase(
+      repository: repository,
+      ensureTor: ensureSession,
+      log: const TestLogSink(),
+    );
   });
 
   test('reachable server over the embedded route -> true', () async {

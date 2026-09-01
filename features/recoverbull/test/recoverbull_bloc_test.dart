@@ -29,6 +29,7 @@ import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'support/log_sink.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:drift/native.dart';
@@ -149,6 +150,7 @@ void main() {
     Future<void> Function()? onWalletUpdated,
     VerifyDecryptedVaultUsecase? verifyDecryptedVaultUsecase,
   }) => RecoverBullBloc(
+    log: const TestLogSink(),
     flow: flow,
     preSelectedVault: preSelectedVault,
     pickVaultUsecase: pickVault,
@@ -160,8 +162,9 @@ void main() {
     ),
     checkKeyServerConnectionUsecase: checkConnection,
     connectToKeyServerUsecase: ConnectToKeyServerUsecase(
-      checkConnection,
-      ensureRecoverBullTorSession,
+      check: checkConnection,
+      ensureTor: ensureRecoverBullTorSession,
+      log: const TestLogSink(),
       wait: (_) async {},
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,

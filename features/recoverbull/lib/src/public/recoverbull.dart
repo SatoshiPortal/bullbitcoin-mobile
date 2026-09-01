@@ -17,13 +17,6 @@ import '../domain/recoverbull_server_url.dart';
 const recoverBullDefaultServerUrl =
     'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 
-abstract interface class RecoverBullLogger {
-  void fine(String message, {Object? error, StackTrace? trace});
-  void info(String message, {Object? error, StackTrace? trace});
-  void warning(String message, {Object? error, StackTrace? trace});
-  void error(String code, {Object? error, StackTrace? trace});
-}
-
 typedef RecoverBullTiming =
     void Function(String phase, int durationMilliseconds, String outcome);
 
@@ -45,10 +38,9 @@ final class RecoverBullConfig {
 
 @immutable
 final class RecoverBullDependencies {
-  final RecoverBullLogger logger;
   final RecoverBullTiming? timing;
 
-  const RecoverBullDependencies({required this.logger, this.timing});
+  const RecoverBullDependencies({this.timing});
 }
 
 @immutable

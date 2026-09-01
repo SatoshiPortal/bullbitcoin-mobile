@@ -1,15 +1,17 @@
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import '../recoverbull_default_wallets_port.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 /// If the key server is down
 class RestoreVaultUsecase {
+  final LogSink log;
   final RecoverBullDefaultWalletsPort _createDefaultWallets;
 
   RestoreVaultUsecase({
+    required this.log,
     required RecoverBullDefaultWalletsPort createDefaultWalletsUsecase,
   }) : _createDefaultWallets = createDefaultWalletsUsecase;
 
@@ -30,8 +32,8 @@ class RestoreVaultUsecase {
       log.fine('Vault restored');
       return const Ok(null);
     } catch (e, st) {
-      log.severe(
-        message: 'restoreVault failed',
+      log.error(
+        'restoreVault failed',
         error: 'Vault restoration failed',
         trace: st,
       );

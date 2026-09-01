@@ -13,6 +13,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'support/log_sink.dart';
 
 final class _Repository extends Mock implements RecoverBullRepository {}
 
@@ -51,7 +52,11 @@ void main() {
   tearDown(() => database.close());
 
   StoreVaultKeyIntoServerUsecase buildUsecase() =>
-      StoreVaultKeyIntoServerUsecase(repository, _EnsureTor());
+      StoreVaultKeyIntoServerUsecase(
+        repository: repository,
+        ensureTor: _EnsureTor(),
+        log: const TestLogSink(),
+      );
 
   test(
     'successful store returns success without local attempt monitoring',

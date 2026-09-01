@@ -20,7 +20,7 @@ import 'package:bull_recoverbull/src/domain/usecases/store_vault_key_into_server
 import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/verify_decrypted_vault_usecase.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_recoverbull/src/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
@@ -35,6 +35,7 @@ part 'event.dart';
 part 'state.dart';
 
 class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
+  final LogSink log;
   final PickVaultUsecase _pickVaultUsecase;
   final SaveFileToSystemUsecase _saveFileToSystemUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
@@ -69,6 +70,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   EncryptedVault? _pendingProviderVault;
 
   RecoverBullBloc({
+    required this.log,
     required RecoverBullFlow flow,
     EncryptedVault? preSelectedVault,
     required this._pickVaultUsecase,
@@ -313,7 +315,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             ),
           );
         case Ok(value: false):
-          log.severe(
+          log.error(
+            'recoverbull.unexpected',
             error: 'Recoverbull server is not ready after $retries retries',
             trace: StackTrace.current,
           );
@@ -340,7 +343,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         }
         return;
       }
-      log.severe(error: e, trace: StackTrace.current);
+      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
       emit(
         state.copyWith(
           failure: const RecoverBullUnexpectedFailure(),
@@ -413,7 +416,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
       if (!isClosed && !_closingBloc && !emit.isDone) {
         emit(state.copyWith(failure: const RecoverBullUnexpectedFailure()));
       }
@@ -708,7 +711,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vaultKey: vaultKey));
       log.fine('Vault decrypted');
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
       if (!isClosed && !_closingBloc && !emit.isDone) {
         emit(state.copyWith(failure: const VaultDecryptionFailure()));
       }

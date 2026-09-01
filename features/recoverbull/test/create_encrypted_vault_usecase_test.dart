@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'support/log_sink.dart';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
@@ -70,6 +71,7 @@ void main() {
     ).thenAnswer((_) async => Ok((vault: vault, vaultKey: '00')));
 
     final usecase = CreateEncryptedVaultUsecase(
+      log: const TestLogSink(),
       recoverBullRepository: recoverBullRepository,
       seedRepository: seedPort,
       walletRepository: walletRepository,
@@ -100,6 +102,7 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok((vault: vault, vaultKey: '00')));
     final usecase = CreateEncryptedVaultUsecase(
+      log: const TestLogSink(),
       recoverBullRepository: recoverBullRepository,
       seedRepository: seedPort,
       walletRepository: walletRepository,
@@ -127,6 +130,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Err(failure));
     final usecase = CreateEncryptedVaultUsecase(
+      log: const TestLogSink(),
       recoverBullRepository: recoverBullRepository,
       seedRepository: seedPort,
       walletRepository: walletRepository,
@@ -163,6 +167,7 @@ void main() {
           ),
         );
         final usecase = CreateEncryptedVaultUsecase(
+          log: const TestLogSink(),
           recoverBullRepository: recoverBullRepository,
           seedRepository: seedPort,
           walletRepository: walletRepository,

@@ -2,7 +2,7 @@ import 'package:bull_recoverbull/src/domain/usecases/allow_permission_usecase.da
 import 'package:bull_recoverbull/src/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart'
     show recoverBullDefaultServerUrl;
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/router/recoverbull_router.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +14,12 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RequestPermissionPage extends StatefulWidget {
+  final LogSink log;
   final FetchRecoverbullUrlUsecase fetchUrlUsecase;
   final AllowPermissionUsecase allowPermissionUsecase;
   const RequestPermissionPage({
     super.key,
+    required this.log,
     required this.fetchUrlUsecase,
     required this.allowPermissionUsecase,
   });
@@ -46,7 +48,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
         });
       }
     } catch (e) {
-      log.warning('Error loading recoverbull url: $e');
+      widget.log.warning('Error loading recoverbull url: $e');
       if (mounted) {
         setState(() {
           _serverUrl = recoverBullDefaultServerUrl;

@@ -7,20 +7,22 @@ import '../repositories/recoverbull_repository.dart';
 import 'ensure_recoverbull_tor_session_usecase.dart';
 import 'record_local_attempt_usecase.dart';
 import '../recoverbull_attempt_alert_port.dart';
-import '../../support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 final class TrashVaultKeyUsecase {
+  final LogSink log;
   final RecoverBullRepository repository;
   final EnsureRecoverBullTorSessionUsecase ensureSession;
   final RecordLocalAttemptUsecase? recordAttempt;
   final RecoverBullAttemptAlertPort? alertPort;
 
-  const TrashVaultKeyUsecase(
-    this.repository,
-    this.ensureSession, [
+  const TrashVaultKeyUsecase({
+    required this.repository,
+    required this.ensureSession,
     this.recordAttempt,
     this.alertPort,
-  ]);
+    required this.log,
+  });
 
   Future<Result<VaultKeyFetchResult, RecoverBullFailure>> execute({
     required EncryptedVault vault,

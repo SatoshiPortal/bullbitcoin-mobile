@@ -2,17 +2,20 @@ import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 class CheckServerConnectionUsecase {
+  final LogSink log;
   final RecoverBullRepository _recoverBullRepository;
   final EnsureRecoverBullTorSessionUsecase _ensureTorSessionUsecase;
 
-  CheckServerConnectionUsecase(
-    this._recoverBullRepository,
-    this._ensureTorSessionUsecase,
-  );
+  CheckServerConnectionUsecase({
+    required RecoverBullRepository repository,
+    required EnsureRecoverBullTorSessionUsecase ensureTor,
+    required this.log,
+  }) : _recoverBullRepository = repository,
+       _ensureTorSessionUsecase = ensureTor;
 
   /// Checks the server through [route].
   ///

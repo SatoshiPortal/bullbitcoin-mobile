@@ -7,7 +7,7 @@ import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datas
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:bull_recoverbull/src/utils/recoverbull_bip85.dart';
@@ -38,18 +38,22 @@ import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 /// foreign exceptions the datasources/SDK throw, logs the raw reason, and
 /// returns a [RecoverBullFailure] — no exception crosses this boundary.
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
+  final LogSink log;
   final RecoverBullRemoteDatasource _remoteDatasource;
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
 
   factory RecoverBullRepositoryImpl({
+    required LogSink log,
     required RecoverBullRemoteDatasource remoteDatasource,
     required RecoverbullSettingsDatasource recoverbullSettingsDatasource,
   }) => RecoverBullRepositoryImpl._(
+    log,
     remoteDatasource,
     recoverbullSettingsDatasource,
   );
 
   RecoverBullRepositoryImpl._(
+    this.log,
     this._remoteDatasource,
     this._recoverbullSettingsDatasource,
   );
@@ -73,8 +77,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         vaultKey: created.vaultKey,
       ));
     } catch (e, st) {
-      log.severe(
-        message: 'createVault failed',
+      log.error(
+        'createVault failed',
         error: 'Vault processing failed',
         trace: st,
       );
@@ -98,8 +102,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       final decoded = json.decode(plaintext) as Map<String, dynamic>;
       return Ok(DecryptedVault.fromJson(decoded));
     } catch (e, st) {
-      log.severe(
-        message: 'restoreVault failed',
+      log.error(
+        'restoreVault failed',
         error: 'Vault processing failed',
         trace: st,
       );
@@ -125,15 +129,15 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       return const Ok(null);
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(
-        message: 'storeVaultKey failed',
+      log.error(
+        'storeVaultKey failed',
         error: 'Vault key processing failed',
         trace: st,
       );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(
-        message: 'storeVaultKey failed',
+      log.error(
+        'storeVaultKey failed',
         error: 'Vault key processing failed',
         trace: st,
       );
@@ -159,15 +163,15 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       return Ok(convert.hex.encode(vaultKey));
     } on recoverbull.KeyServerException catch (e, st) {
-      log.severe(
-        message: 'fetchVaultKey failed',
+      log.error(
+        'fetchVaultKey failed',
         error: 'Vault key processing failed',
         trace: st,
       );
       return Err(_mapKeyServer(e));
     } catch (e, st) {
-      log.severe(
-        message: 'fetchVaultKey failed',
+      log.error(
+        'fetchVaultKey failed',
         error: 'Vault key processing failed',
         trace: st,
       );
@@ -194,8 +198,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      log.severe(
-        message: 'fetchVaultKey failed',
+      log.error(
+        'fetchVaultKey failed',
         error: 'Vault key processing failed',
         trace: st,
       );
@@ -239,8 +243,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      log.severe(
-        message: 'trashVaultKey failed',
+      log.error(
+        'trashVaultKey failed',
         error: 'Vault key processing failed',
         trace: st,
       );

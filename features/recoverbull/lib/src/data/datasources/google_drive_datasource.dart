@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/src/data/models/drive_file_metadata_model.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 class GoogleDriveAppDatasource {
+  final LogSink log;
   static final _google = GoogleSignIn(
     scopes: ['https://www.googleapis.com/auth/drive.appdata'],
   );
 
   drive.DriveApi? _driveApi;
+
+  GoogleDriveAppDatasource({required this.log});
 
   void _checkConnection() {
     if (_driveApi == null) throw 'unauthenticated';
@@ -28,11 +31,7 @@ class GoogleDriveAppDatasource {
 
       _driveApi = drive.DriveApi(client);
     } catch (e) {
-      log.severe(
-        message: 'Google Sign-in error',
-        error: e,
-        trace: StackTrace.current,
-      );
+      log.error('Google Sign-in error', error: e, trace: StackTrace.current);
       await disconnect();
       rethrow;
     }

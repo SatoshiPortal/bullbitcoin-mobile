@@ -6,10 +6,12 @@ import 'package:bull_recoverbull/src/domain/usecases/store_recoverbull_url_useca
 import 'package:bull_recoverbull/src/router/recoverbull_flow.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:bull_recoverbull/src/ui/screens/settings_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/server_confirmation_page.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'support/log_sink.dart';
 
 class _Repository extends Mock implements RecoverBullRepository {}
 
@@ -85,14 +87,23 @@ RecoverBullFlowNavigator _navigator(_Repository repository, {Key? key}) =>
       fetchPermissionUsecase: FetchPermissionUsecase(
         recoverBullRepository: repository,
       ),
-      allowPermissionUsecase: AllowPermissionUsecase(
-        recoverBullRepository: repository,
+      settingsPageBuilder: (context) => SettingsPage(
+        log: const TestLogSink(),
+        fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+          recoverBullRepository: repository,
+        ),
+        storeUrlUsecase: StoreRecoverbullUrlUsecase(
+          recoverBullRepository: repository,
+        ),
       ),
-      fetchUrlUsecase: FetchRecoverbullUrlUsecase(
-        recoverBullRepository: repository,
-      ),
-      storeUrlUsecase: StoreRecoverbullUrlUsecase(
-        recoverBullRepository: repository,
+      requestPermissionPageBuilder: (context) => RequestPermissionPage(
+        log: const TestLogSink(),
+        fetchUrlUsecase: FetchRecoverbullUrlUsecase(
+          recoverBullRepository: repository,
+        ),
+        allowPermissionUsecase: AllowPermissionUsecase(
+          recoverBullRepository: repository,
+        ),
       ),
     );
 

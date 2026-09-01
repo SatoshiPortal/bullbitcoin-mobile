@@ -26,6 +26,7 @@ final class RecoverBullSetup {
     final initialPermissionGranted = await _readLegacyPermission(database);
     final settingsRepository = locator<SettingsRepository>();
     final walletRepository = locator<WalletRepository>();
+    final recoverBullLog = log.scoped('recoverbull');
     final composed = await RecoverBullFeature.create(
       config: RecoverBullConfig(
         databasePath: '${documents.path}/recoverbull.sqlite',
@@ -38,8 +39,9 @@ final class RecoverBullSetup {
       ),
       settings: _SettingsAdapter(settingsRepository),
       tor: locator<Tor>(),
-      logger: const _RecoverBullLogger(),
-      timing: _recordRecoverBullTiming,
+      log: recoverBullLog,
+      timing: (phase, duration, outcome) =>
+          _recordRecoverBullTiming(recoverBullLog, phase, duration, outcome),
     );
     locator.registerSingleton<RecoverBullFeature>(composed);
     // The feature facade is the only package service registered in the shell.
@@ -70,6 +72,7 @@ Future<bool> _readLegacyPermission(SqliteDatabase database) async {
 }
 
 void _recordRecoverBullTiming(
+  LogSink log,
   String phase,
   int durationMilliseconds,
   String outcome,
@@ -164,34 +167,6 @@ final class _SettingsAdapter implements RecoverBullSettingsPort {
     return RecoverBullTorSettings(
       useTorProxy: settings.useTorProxy,
       torProxyPort: settings.torProxyPort,
-    );
-  }
-}
-
-final class _RecoverBullLogger implements RecoverBullLogger {
-  const _RecoverBullLogger();
-
-  @override
-  void fine(String message, {Object? error, StackTrace? trace}) {
-    log.fine(message, error: error, trace: trace);
-  }
-
-  @override
-  void info(String message, {Object? error, StackTrace? trace}) {
-    log.info(message, error: error, trace: trace);
-  }
-
-  @override
-  void warning(String message, {Object? error, StackTrace? trace}) {
-    log.warning(message, error: error, trace: trace);
-  }
-
-  @override
-  void error(String code, {Object? error, StackTrace? trace}) {
-    log.severe(
-      message: code,
-      error: error ?? code,
-      trace: trace ?? StackTrace.current,
     );
   }
 }

@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 import 'package:convert/convert.dart' as convert;
 import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import '../../domain/recoverbull_server_url.dart';
 import '../../domain/recoverbull_tor_route.dart';
-import '../../public/recoverbull.dart'
-    show RecoverBullLogger, RecoverBullTiming;
+import '../../public/recoverbull.dart' show RecoverBullTiming;
 
 class RecoverBullRemoteDatasource {
+  final LogSink log;
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
   final Future<void> Function(Uri, HttpClient)? infoRequest;
   final Future<FetchBackupKeyResult> Function(
@@ -22,13 +22,12 @@ class RecoverBullRemoteDatasource {
     List<int>,
   )?
   fetchRequest;
-  final RecoverBullLogger? logger;
   final RecoverBullTiming? timing;
   final Duration operationTimeout;
 
   RecoverBullRemoteDatasource({
     required this._recoverbullSettingsDatasource,
-    this.logger,
+    required this.log,
     this.timing,
     this.infoRequest,
     this.fetchRequest,
@@ -65,7 +64,7 @@ class RecoverBullRemoteDatasource {
         log.info('KeyServer canary: ${info.canary}');
       }
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
       rethrow;
     }
   }
@@ -91,11 +90,7 @@ class RecoverBullRemoteDatasource {
         ),
       );
     } catch (e) {
-      log.severe(
-        message: 'storeBackupKey error',
-        error: e,
-        trace: StackTrace.current,
-      );
+      log.error('storeBackupKey error', error: e, trace: StackTrace.current);
       rethrow;
     }
   }
@@ -115,11 +110,7 @@ class RecoverBullRemoteDatasource {
       );
       return result.backupKey;
     } catch (e) {
-      log.severe(
-        message: 'fetchBackupKey error',
-        error: e,
-        trace: StackTrace.current,
-      );
+      log.error('fetchBackupKey error', error: e, trace: StackTrace.current);
       rethrow;
     }
   }
@@ -158,11 +149,7 @@ class RecoverBullRemoteDatasource {
     try {
       await trashWithStatus(backupId, password, salt, route: route);
     } catch (e) {
-      log.severe(
-        message: 'trashBackupKey error',
-        error: e,
-        trace: StackTrace.current,
-      );
+      log.error('trashBackupKey error', error: e, trace: StackTrace.current);
       rethrow;
     }
   }
@@ -187,11 +174,7 @@ class RecoverBullRemoteDatasource {
             ),
       );
     } catch (e) {
-      log.severe(
-        message: 'trashBackupKey error',
-        error: e,
-        trace: StackTrace.current,
-      );
+      log.error('trashBackupKey error', error: e, trace: StackTrace.current);
       rethrow;
     }
   }
@@ -209,11 +192,7 @@ class RecoverBullRemoteDatasource {
             : KeyServer(address: url, client: route.client).infos(),
       );
     } catch (e) {
-      log.severe(
-        message: 'checkConnection error',
-        error: e,
-        trace: StackTrace.current,
-      );
+      log.error('checkConnection error', error: e, trace: StackTrace.current);
       rethrow;
     }
   }

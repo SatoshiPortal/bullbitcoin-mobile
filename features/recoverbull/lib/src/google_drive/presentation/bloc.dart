@@ -2,7 +2,7 @@ import 'package:bull_recoverbull/src/domain/usecases/google_drive/delete_drive_f
 import 'package:bull_recoverbull/src/domain/usecases/google_drive/export_drive_file_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/google_drive/presentation/event.dart';
@@ -13,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullGoogleDriveBloc
     extends Bloc<RecoverBullGoogleDriveEvent, RecoverBullGoogleDriveState> {
+  final LogSink log;
   final RecoverBullFlow flow;
   final FetchAllDriveFileMetadataUsecase _fetchAllDriveFileMetadataUsecase;
   final FetchVaultFromDriveUsecase _fetchDriveVaultUsecase;
@@ -20,6 +21,7 @@ class RecoverBullGoogleDriveBloc
   final ExportDriveFileUsecase _exportDriveFileUsecase;
 
   RecoverBullGoogleDriveBloc({
+    required this.log,
     required this.flow,
     required this._fetchAllDriveFileMetadataUsecase,
     required FetchVaultFromDriveUsecase fetchDriveBackupUsecase,

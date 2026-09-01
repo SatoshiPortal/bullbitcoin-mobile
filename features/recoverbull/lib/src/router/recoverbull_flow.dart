@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../domain/usecases/allow_permission_usecase.dart';
 import '../domain/usecases/fetch_permission_usecase.dart';
-import '../domain/usecases/fetch_recoverbull_url_usecase.dart';
-import '../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../presentation/bloc.dart';
 import '../ui/screens/connecting_page.dart';
-import '../ui/screens/server_confirmation_page.dart';
-import '../ui/screens/settings_page.dart';
 import 'flow_type.dart';
 
 /// Owns the permission gate and nested navigation used by every flow.
 class RecoverBullFlowNavigator extends StatefulWidget {
   final RecoverBullFlow flow;
   final FetchPermissionUsecase fetchPermissionUsecase;
-  final AllowPermissionUsecase allowPermissionUsecase;
-  final FetchRecoverbullUrlUsecase fetchUrlUsecase;
-  final StoreRecoverbullUrlUsecase storeUrlUsecase;
+  final WidgetBuilder settingsPageBuilder;
+  final WidgetBuilder requestPermissionPageBuilder;
 
   const RecoverBullFlowNavigator({
     super.key,
     required this.flow,
     required this.fetchPermissionUsecase,
-    required this.allowPermissionUsecase,
-    required this.fetchUrlUsecase,
-    required this.storeUrlUsecase,
+    required this.settingsPageBuilder,
+    required this.requestPermissionPageBuilder,
   });
 
   @override
@@ -64,13 +57,9 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
         }
 
         final page = switch (widget.flow) {
-          RecoverBullFlow.settings => SettingsPage(
-            fetchUrlUsecase: widget.fetchUrlUsecase,
-            storeUrlUsecase: widget.storeUrlUsecase,
-          ),
-          _ when snapshot.data != true => RequestPermissionPage(
-            fetchUrlUsecase: widget.fetchUrlUsecase,
-            allowPermissionUsecase: widget.allowPermissionUsecase,
+          RecoverBullFlow.settings => widget.settingsPageBuilder(context),
+          _ when snapshot.data != true => widget.requestPermissionPageBuilder(
+            context,
           ),
           _ => const ConnectingPage(),
         };

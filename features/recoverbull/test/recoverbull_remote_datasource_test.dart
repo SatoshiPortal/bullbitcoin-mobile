@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'support/log_sink.dart';
 
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
@@ -22,7 +23,11 @@ final class _Client implements HttpClient {
 }
 
 final class _AttemptsDatasource extends RecoverBullRemoteDatasource {
-  _AttemptsDatasource() : super(recoverbullSettingsDatasource: _Settings());
+  _AttemptsDatasource()
+    : super(
+        recoverbullSettingsDatasource: _Settings(),
+        log: const TestLogSink(),
+      );
 
   @override
   Future<AttemptsResult> attempts({
@@ -47,6 +52,7 @@ void main() {
     );
     final clients = <HttpClient>[];
     final datasource = RecoverBullRemoteDatasource(
+      log: const TestLogSink(),
       recoverbullSettingsDatasource: settings,
       infoRequest: (_, client) async => clients.add(client),
       fetchRequest: (_, client, _, _, _) async {
@@ -75,6 +81,7 @@ void main() {
     final settings = _Settings();
     var requested = false;
     final datasource = RecoverBullRemoteDatasource(
+      log: const TestLogSink(),
       recoverbullSettingsDatasource: settings,
       infoRequest: (_, _) async => requested = true,
     );
@@ -104,6 +111,7 @@ void main() {
       final settings = _Settings();
       final stalled = Completer<FetchBackupKeyResult>();
       final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
         recoverbullSettingsDatasource: settings,
         fetchRequest: (_, _, _, _, _) => stalled.future,
         operationTimeout: Duration.zero,

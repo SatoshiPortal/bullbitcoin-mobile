@@ -2,7 +2,7 @@ import 'package:bull_recoverbull/src/domain/usecases/check_server_connection_use
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bull_recoverbull/src/support/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Reaches the key server, retrying on a backoff.
@@ -12,6 +12,8 @@ import 'package:primitives/primitives.dart';
 /// bootstrap. The schedule and the attempt accounting live here so the screen
 /// only renders what an attempt reports.
 class ConnectToKeyServerUsecase {
+  final LogSink log;
+
   /// How many times the server is contacted before giving up. Published
   /// because the screen shows the attempt out of this total.
   static const int maxAttempts = 3;
@@ -22,11 +24,14 @@ class ConnectToKeyServerUsecase {
   /// Injected so a test does not have to spend the backoff in real time.
   final Future<void> Function(Duration) _wait;
 
-  ConnectToKeyServerUsecase(
-    this._checkServerConnectionUsecase,
-    this._ensureTorSessionUsecase, {
+  ConnectToKeyServerUsecase({
+    required CheckServerConnectionUsecase check,
+    required EnsureRecoverBullTorSessionUsecase ensureTor,
+    required this.log,
     Future<void> Function(Duration)? wait,
-  }) : _wait = wait ?? Future<void>.delayed;
+  }) : _checkServerConnectionUsecase = check,
+       _ensureTorSessionUsecase = ensureTor,
+       _wait = wait ?? Future<void>.delayed;
 
   /// [onAttempt] fires before each call with a 1-based attempt number, so the
   /// caller can show which attempt is in flight rather than which one failed.
