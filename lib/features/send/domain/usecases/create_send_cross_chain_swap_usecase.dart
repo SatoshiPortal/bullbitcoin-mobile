@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class CreateSendCrossChainSwapUsecase {
   final SwapFacade _swapFacade;
@@ -17,6 +19,7 @@ class CreateSendCrossChainSwapUsecase {
   }) : _getWallet = getWalletUsecase,
        _getReceiveAddress = getReceiveAddressUsecase;
 
+  @useResult
   Future<Result<OrderSwapRecord, SendFailure>> execute({
     required String walletId,
     required String destinationAddress,
@@ -72,7 +75,12 @@ class CreateSendCrossChainSwapUsecase {
         note: note,
       );
       return result.mapErr(mapSwapFailureToSendFailure);
-    } catch (error) {
+    } catch (error, st) {
+      log.severe(
+        message: 'Failed to create the send cross-chain swap',
+        error: error,
+        trace: st,
+      );
       return Err(SendSwapCreationFailure(error.toString()));
     }
   }

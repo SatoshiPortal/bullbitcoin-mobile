@@ -1,5 +1,6 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/features/send/domain/domain_errors.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -21,23 +22,27 @@ void main() {
       () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
     ).thenAnswer((_) async => (1234, 250));
 
-    final vsize = await usecase.execute(pset: 'dummy-pset');
+    final result = await usecase.execute(pset: 'dummy-pset');
 
-    expect(vsize, 1234);
+    expect(result, isA<Ok<int, SendFailure>>());
+    expect((result as Ok<int, SendFailure>).value, 1234);
     verify(() => repo.getPsetSizeAndAbsoluteFees(pset: 'dummy-pset')).called(1);
   });
 
-  test(
-    'maps any underlying error to CalculateLiquidPsetSizeException',
-    () async {
-      when(
-        () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-      ).thenThrow(Exception('boom'));
+  test('sanitizes any underlying error into a build failure', () async {
+    when(
+      () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
+    ).thenThrow(Exception('boom: bc1qsecretaddress'));
 
-      expect(
-        () => usecase.execute(pset: 'dummy-pset'),
-        throwsA(isA<CalculateLiquidPsetSizeException>()),
-      );
-    },
-  );
+    final result = await usecase.execute(pset: 'dummy-pset');
+
+    switch (result) {
+      case Ok():
+        fail('an LWK error must not be reported as a size');
+      case Err(:final failure):
+        expect(failure, isA<SendTransactionBuildFailure>());
+        // The raw reason stays in the log-only slot, never in a user message.
+        expect(failure.logMessage, contains('boom'));
+    }
+  });
 }

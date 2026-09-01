@@ -3295,7 +3295,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "1. 建设失败者",
+  "sendErrorBuildFailed": "无法准备此支付。请重试。",
   "transactionDetailSwapProgress": "差距",
   "backupWalletInstructionLoseBackup": "如果您丢失了12个单词备份，您将会无法恢复对该比特币钱包的访问权限",
   "payIsCorporateAccount": "这是公司账户吗?",
@@ -4911,5 +4911,8 @@
   "statusCheckResultsMayBeOutdated": "结果可能已过时",
   "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。",
   "psbtFlowInvalidPsbtError": "无法读取此交易。请返回并重新创建。",
-  "psbtFlowQrEncodingError": "无法将此交易转换为二维码。"
+  "psbtFlowQrEncodingError": "无法将此交易转换为二维码。",
+  "sendErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
+  "sendErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。"
 }

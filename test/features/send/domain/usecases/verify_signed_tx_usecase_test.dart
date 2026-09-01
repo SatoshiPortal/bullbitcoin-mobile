@@ -1,7 +1,35 @@
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// Asserts the use-case refused [signedTxHex] — the transaction must not reach
+/// the broadcast path, and the reason the user is shown must be the generic
+/// "could not confirm", never the raw decoding detail.
+Future<void> _expectRefused(
+  VerifySignedTxUsecase usecase, {
+  required String unsignedPsbt,
+  required String signedTxHex,
+  String? reason,
+}) async {
+  final result = await usecase.execute(
+    unsignedPsbt: unsignedPsbt,
+    signedTxHex: signedTxHex,
+  );
+
+  switch (result) {
+    case Ok():
+      fail(reason ?? 'the tampered transaction was accepted');
+    case Err(:final failure):
+      expect(
+        failure,
+        isA<SendTransactionConfirmationFailure>(),
+        reason: reason,
+      );
+  }
+}
 
 /// Security audit — hardware-signer transaction verification.
 ///
@@ -35,10 +63,12 @@ void main() {
 
   group('VerifySignedTxUsecase', () {
     test('accepts a signed transaction matching the PSBT', () async {
-      await usecase.execute(
+      final result = await usecase.execute(
         unsignedPsbt: unsignedPsbt,
         signedTxHex: hex.encode(honestTxBytes),
       );
+
+      expect(result, isA<Ok<void, SendFailure>>());
     });
 
     test(
@@ -51,12 +81,10 @@ void main() {
         final valueOffset = tampered.length - 4 - 22 - 1 - 8;
         tampered[valueOffset] ^= 0x01; // 100,000 -> 100,001 sats
 
-        expect(
-          () => usecase.execute(
-            unsignedPsbt: unsignedPsbt,
-            signedTxHex: hex.encode(tampered),
-          ),
-          throwsA(isA<VerifySignedTxException>()),
+        await _expectRefused(
+          usecase,
+          unsignedPsbt: unsignedPsbt,
+          signedTxHex: hex.encode(tampered),
           reason: 'a device that inflates the payment amount must be refused',
         );
       },
@@ -71,24 +99,20 @@ void main() {
         final scriptOffset = tampered.length - 4 - 22;
         tampered[scriptOffset + 5] ^= 0xff;
 
-        expect(
-          () => usecase.execute(
-            unsignedPsbt: unsignedPsbt,
-            signedTxHex: hex.encode(tampered),
-          ),
-          throwsA(isA<VerifySignedTxException>()),
+        await _expectRefused(
+          usecase,
+          unsignedPsbt: unsignedPsbt,
+          signedTxHex: hex.encode(tampered),
           reason: 'a device that redirects the payment must be refused',
         );
       },
     );
 
     test('rejects an undecodable signed transaction', () async {
-      expect(
-        () => usecase.execute(
-          unsignedPsbt: unsignedPsbt,
-          signedTxHex: '00ff00ff',
-        ),
-        throwsA(isA<VerifySignedTxException>()),
+      await _expectRefused(
+        usecase,
+        unsignedPsbt: unsignedPsbt,
+        signedTxHex: '00ff00ff',
       );
     });
 
@@ -97,12 +121,10 @@ void main() {
       // version(4) + input count(1), then the 32-byte previous txid.
       tampered[5] ^= 0x01;
 
-      expect(
-        () => usecase.execute(
-          unsignedPsbt: unsignedPsbt,
-          signedTxHex: hex.encode(tampered),
-        ),
-        throwsA(isA<VerifySignedTxException>()),
+      await _expectRefused(
+        usecase,
+        unsignedPsbt: unsignedPsbt,
+        signedTxHex: hex.encode(tampered),
         reason: 'substituting wallet inputs can turn their value into fees',
       );
     });
@@ -111,12 +133,10 @@ void main() {
       final tampered = List<int>.from(honestTxBytes);
       tampered[tampered.length - 1] ^= 0x01;
 
-      expect(
-        () => usecase.execute(
-          unsignedPsbt: unsignedPsbt,
-          signedTxHex: hex.encode(tampered),
-        ),
-        throwsA(isA<VerifySignedTxException>()),
+      await _expectRefused(
+        usecase,
+        unsignedPsbt: unsignedPsbt,
+        signedTxHex: hex.encode(tampered),
       );
     });
   });
