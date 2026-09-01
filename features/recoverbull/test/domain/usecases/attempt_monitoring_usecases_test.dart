@@ -193,7 +193,7 @@ void main() {
       window: attemptWindowIdentity(window),
     );
     final digest = (await store.monitoredBackups()).single.digest;
-    var now = window;
+    var now = DateTime.now().toUtc();
     final check = CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: _Remote()
@@ -210,7 +210,7 @@ void main() {
       totalAttempts: {digest: 4},
       windowStartedAt: {digest: window},
     );
-    now = now.add(const Duration(minutes: 2));
+    now = now.add(const Duration(hours: 2));
     expect((await check.execute()).single, isA<SuspiciousActivityAlert>());
     await db.close();
   });
@@ -964,7 +964,7 @@ void main() {
     },
   );
 
-  test('the same window does not re-raise on a second recovery', () async {
+  test('the same window re-raises after a later check', () async {
     final (db, store) = await build();
     await store.registerBackup(id);
     final digest = (await store.monitoredBackups()).single.digest;
@@ -974,15 +974,21 @@ void main() {
         totalAttempts: {digest: 2},
         windowStartedAt: {digest: window},
       );
+    var now = DateTime.now().toUtc();
     final check = CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: remote,
+      clock: () => now,
     );
     expect(
       (await check.execute()).whereType<SuspiciousActivityAlert>(),
       hasLength(1),
     );
-    expect(await check.execute(), isEmpty);
+    now = now.add(const Duration(hours: 2));
+    expect(
+      (await check.execute()).whereType<SuspiciousActivityAlert>(),
+      hasLength(1),
+    );
     await db.close();
   });
 
