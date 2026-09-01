@@ -279,6 +279,18 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
           serviceBusy: true,
         );
       }
+      if (error.code == 429) {
+        return RecoverBullAttemptsSnapshot(
+          collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
+            0,
+            isUtc: true,
+          ),
+          totalAttempts: const {},
+          targetedLockouts: [
+            for (final digest in backupDigests) _decodeDigest(digest),
+          ],
+        );
+      }
       rethrow;
     } finally {
       await route.closeQuietly();

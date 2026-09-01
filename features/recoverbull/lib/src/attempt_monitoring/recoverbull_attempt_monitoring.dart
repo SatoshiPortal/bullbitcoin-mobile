@@ -24,6 +24,7 @@ final class RecoverBullAttemptsSnapshot {
   final bool notModified;
   final int? totalEntries;
   final int? maxAttemptIdentifiers;
+  final List<List<int>> targetedLockouts;
 
   const RecoverBullAttemptsSnapshot({
     required this.collectionStartedAt,
@@ -34,6 +35,7 @@ final class RecoverBullAttemptsSnapshot {
     this.notModified = false,
     this.totalEntries,
     this.maxAttemptIdentifiers,
+    this.targetedLockouts = const [],
   });
 }
 

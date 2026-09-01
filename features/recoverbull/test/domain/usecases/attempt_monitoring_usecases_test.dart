@@ -430,6 +430,26 @@ void main() {
     await db.close();
   });
 
+  test(
+    'a rate-limited monitored backup emits a targeted lockout alert',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final digest = (await store.monitoredBackups()).single.digest;
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: _Remote()
+          ..response = RecoverBullAttemptsSnapshot(
+            collectionStartedAt: window,
+            totalAttempts: const {},
+            targetedLockouts: [digest],
+          ),
+      ).execute();
+      expect(alerts.single, isA<TargetedLockoutAlert>());
+      await db.close();
+    },
+  );
+
   test('disable wipes monitored identifiers and resets generation', () async {
     final (db, store) = await build();
     await store.registerBackup(id);

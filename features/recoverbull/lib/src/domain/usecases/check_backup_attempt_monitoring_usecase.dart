@@ -62,6 +62,12 @@ final class CheckBackupAttemptMonitoringUsecase {
         if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
       ];
     }
+    if (snapshot.targetedLockouts.isNotEmpty) {
+      return [
+        for (final digest in snapshot.targetedLockouts)
+          TargetedLockoutAlert(backupIdHash: _hex(digest)),
+      ];
+    }
     final alerts = <AttemptAlert>[];
     final collection = await store.state();
     var wiped = false;
