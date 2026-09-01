@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bull_recoverbull/src/presentation/bloc.dart';
-import 'package:bull_recoverbull/src/presentation/recoverbull_failure_l10n.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/ui/screens/password_input_page.dart';
-import 'package:bull_recoverbull/src/ui/screens/vault_provider_selection_page.dart';
-import 'package:bull_recoverbull/src/ui/widgets/tor_bull_mascot.dart';
-import 'package:bull_recoverbull/src/router/flow_type.dart';
+import '../../presentation/bloc.dart';
+import '../../presentation/recoverbull_failure_l10n.dart';
+import '../../domain/recoverbull_failure.dart';
+import './password_input_page.dart';
+import './vault_provider_selection_page.dart';
+import '../widgets/tor_bull_mascot.dart';
+import '../../router/flow_type.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../../l10n/context_localizations.dart';
+import '../support.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';

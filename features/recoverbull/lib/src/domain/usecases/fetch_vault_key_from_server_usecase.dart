@@ -1,8 +1,8 @@
-import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
-import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
+import '../repositories/recoverbull_repository.dart';
+import '../entities/encrypted_vault.dart';
+import '../recoverbull_failure.dart';
+import '../recoverbull_tor_route.dart';
+import './ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'record_local_attempt_usecase.dart';

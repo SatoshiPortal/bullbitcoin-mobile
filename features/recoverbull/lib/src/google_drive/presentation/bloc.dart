@@ -1,13 +1,13 @@
-import 'package:bull_recoverbull/src/domain/usecases/google_drive/delete_drive_file_usecase.dart';
-import 'package:bull_recoverbull/src/domain/usecases/google_drive/export_drive_file_usecase.dart';
-import 'package:bull_recoverbull/src/domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
-import 'package:bull_recoverbull/src/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
+import '../../domain/usecases/google_drive/delete_drive_file_usecase.dart';
+import '../../domain/usecases/google_drive/export_drive_file_usecase.dart';
+import '../../domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
+import '../../domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/google_drive/presentation/event.dart';
-import 'package:bull_recoverbull/src/google_drive/presentation/state.dart';
-import 'package:bull_recoverbull/src/router/flow_type.dart';
+import '../../domain/recoverbull_failure.dart';
+import './event.dart';
+import './state.dart';
+import '../../router/flow_type.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

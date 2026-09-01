@@ -1,7 +1,7 @@
-import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
+import '../../domain/entities/vault_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import './provider_cart.dart';
+import '../support.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class RecoverbullVaultProviderSelector extends StatelessWidget {

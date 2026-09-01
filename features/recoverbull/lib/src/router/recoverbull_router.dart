@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import '../domain/entities/encrypted_vault.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
+import './recoverbull_settings_datasource.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 import 'package:convert/convert.dart' as convert;

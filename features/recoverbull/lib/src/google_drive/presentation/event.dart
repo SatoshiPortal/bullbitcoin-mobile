@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
+import '../../domain/entities/drive_file_metadata.dart';
 
 sealed class RecoverBullGoogleDriveEvent {
   const RecoverBullGoogleDriveEvent();

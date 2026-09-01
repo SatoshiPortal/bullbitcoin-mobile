@@ -1,9 +1,9 @@
-import 'package:bull_recoverbull/src/domain/usecases/fetch_recoverbull_url_usecase.dart';
-import 'package:bull_recoverbull/src/domain/usecases/store_recoverbull_url_usecase.dart';
+import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
+import '../../domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../../l10n/context_localizations.dart';
+import '../support.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';

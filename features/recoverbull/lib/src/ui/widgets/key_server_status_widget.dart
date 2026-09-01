@@ -1,8 +1,8 @@
-import 'package:bull_recoverbull/src/presentation/bloc.dart';
+import '../../presentation/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show BullAssets;
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../../l10n/context_localizations.dart';
+import '../support.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gif/gif.dart';
 

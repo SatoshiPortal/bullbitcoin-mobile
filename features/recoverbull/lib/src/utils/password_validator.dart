@@ -1,5 +1,5 @@
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
-import 'package:bull_recoverbull/src/utils/most_common_passwords.dart';
+import '../l10n/context_localizations.dart';
+import './most_common_passwords.dart';
 import 'package:flutter/material.dart';
 
 class PasswordValidator {

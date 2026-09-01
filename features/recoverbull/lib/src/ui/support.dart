@@ -1,12 +1,12 @@
 import 'dart:ui' show ImageFilter;
 
-import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
-import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
+import '../domain/entities/vault_provider.dart';
+import './widgets/provider_cart.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gif/gif.dart';
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
+import '../l10n/context_localizations.dart';
 import 'package:shimmer/shimmer.dart';
 
 extension RecoverBullThemeContext on BuildContext {

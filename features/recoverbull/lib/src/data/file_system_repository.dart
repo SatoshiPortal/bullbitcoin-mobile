@@ -1,6 +1,6 @@
-import 'package:bull_recoverbull/src/data/datasources/file_storage_datasource.dart';
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import './datasources/file_storage_datasource.dart';
+import '../domain/entities/encrypted_vault.dart';
+import '../domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 

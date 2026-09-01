@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../support.dart';
 
 enum TorBullState { idle, direct, filtered, snowflake, ready, failed }
 

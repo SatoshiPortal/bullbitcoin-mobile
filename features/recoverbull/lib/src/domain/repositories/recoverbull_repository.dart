@@ -1,6 +1,6 @@
-import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import '../entities/decrypted_vault.dart';
+import '../entities/encrypted_vault.dart';
+import '../recoverbull_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import '../entities/key_server_attempts.dart';

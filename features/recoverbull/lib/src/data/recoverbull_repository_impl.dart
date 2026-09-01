@@ -1,20 +1,20 @@
 import 'dart:convert';
 import 'dart:isolate';
 
-import 'package:bull_recoverbull/src/data/datasources/recoverbull_local_datasource.dart';
-import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasource.dart';
-import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
-import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import './datasources/recoverbull_local_datasource.dart';
+import './datasources/recoverbull_remote_datasource.dart';
+import './datasources/recoverbull_settings_datasource.dart';
+import '../domain/entities/decrypted_vault.dart';
+import '../domain/entities/encrypted_vault.dart';
+import '../domain/recoverbull_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:convert/convert.dart' as convert;
-import 'package:bull_recoverbull/src/utils/recoverbull_bip85.dart';
+import '../utils/recoverbull_bip85.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
-import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
-import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
+import '../domain/repositories/recoverbull_repository.dart';
+import '../domain/entities/key_server_attempts.dart';
+import '../domain/recoverbull_tor_route.dart';
 
 ({String file, String vaultKey}) _createVaultInWorker(
   String rootXprv,

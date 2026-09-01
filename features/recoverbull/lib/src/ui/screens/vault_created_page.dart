@@ -1,8 +1,8 @@
-import 'package:bull_recoverbull/src/router/recoverbull_router.dart';
-import 'package:bull_recoverbull/src/router/flow_type.dart';
+import '../../router/recoverbull_router.dart';
+import '../../router/flow_type.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../../l10n/context_localizations.dart';
+import '../support.dart';
 import 'package:go_router/go_router.dart';
 
 class VaultCreatedPage extends StatelessWidget {

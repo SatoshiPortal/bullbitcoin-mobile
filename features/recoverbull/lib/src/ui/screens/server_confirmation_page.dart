@@ -1,13 +1,12 @@
-import 'package:bull_recoverbull/src/domain/usecases/allow_permission_usecase.dart';
-import 'package:bull_recoverbull/src/domain/usecases/fetch_recoverbull_url_usecase.dart';
-import 'package:bull_recoverbull/bull_recoverbull.dart'
-    show recoverBullDefaultServerUrl;
+import '../../domain/usecases/allow_permission_usecase.dart';
+import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
+import '../../public/recoverbull.dart' show recoverBullDefaultServerUrl;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_recoverbull/src/presentation/bloc.dart';
-import 'package:bull_recoverbull/src/router/recoverbull_router.dart';
+import '../../presentation/bloc.dart';
+import '../../router/recoverbull_router.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../../l10n/context_localizations.dart';
+import '../support.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';

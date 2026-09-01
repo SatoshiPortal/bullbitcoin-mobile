@@ -1,6 +1,6 @@
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import '../domain/recoverbull_failure.dart';
 import 'package:flutter/widgets.dart';
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
+import '../l10n/context_localizations.dart';
 
 /// User-facing, localized message for each [RecoverBullFailure]. The `sealed`
 /// switch makes a missing message a compile error. Never returns the raw

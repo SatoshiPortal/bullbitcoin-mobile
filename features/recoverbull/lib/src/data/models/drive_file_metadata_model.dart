@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
+import '../../domain/entities/drive_file_metadata.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 import '../../support/errors.dart';

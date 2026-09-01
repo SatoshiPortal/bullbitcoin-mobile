@@ -1,9 +1,9 @@
-import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
+import '../../domain/entities/vault_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/ui/support.dart';
+import '../support.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
+import '../../l10n/context_localizations.dart';
 
 class ProviderCard extends StatefulWidget {
   final VaultProvider provider;

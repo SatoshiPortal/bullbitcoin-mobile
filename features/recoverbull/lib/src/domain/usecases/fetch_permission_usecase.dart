@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
+import '../repositories/recoverbull_repository.dart';
 
 class FetchPermissionUsecase {
   final RecoverBullRepository _recoverBullRepository;

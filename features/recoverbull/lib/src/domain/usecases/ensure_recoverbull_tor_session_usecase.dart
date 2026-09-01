@@ -1,5 +1,5 @@
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
+import '../recoverbull_failure.dart';
+import '../recoverbull_tor_route.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';

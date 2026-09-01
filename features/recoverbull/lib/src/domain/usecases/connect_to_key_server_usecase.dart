@@ -1,7 +1,7 @@
-import 'package:bull_recoverbull/src/domain/usecases/check_server_connection_usecase.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
+import './check_server_connection_usecase.dart';
+import '../recoverbull_tor_route.dart';
+import '../recoverbull_failure.dart';
+import './ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
