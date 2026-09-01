@@ -30,6 +30,11 @@ class Bip32Derivation {
     return root.toBase58();
   }
 
+  /// BIP85 is seed-bound rather than Bitcoin-network-bound. Always serialize
+  /// its root with canonical xprv bytes, including for testnet wallets.
+  static String getCanonicalRootXprvFromSeed(Uint8List seedBytes) =>
+      bip32.Bip32Keys.fromSeed(seedBytes).toBase58();
+
   static bip32.Bip32Keys getBip32Xpub(String xpub) {
     final decoded = base58.decode(xpub);
     final keyBytes = decoded.sublist(4); // Remove xpub version bytes
