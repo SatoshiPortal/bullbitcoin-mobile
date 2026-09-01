@@ -4,8 +4,8 @@ import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasou
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bull_recoverbull/src/data/recoverbull_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/domain/entity/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';

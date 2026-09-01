@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
-import 'package:bull_recoverbull/src/domain/entity/decrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/ports.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:convert/convert.dart' as convert;

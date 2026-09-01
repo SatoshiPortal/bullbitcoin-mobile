@@ -6,9 +6,9 @@ import '../domain/usecases/fetch_permission_usecase.dart';
 import '../domain/usecases/fetch_recoverbull_url_usecase.dart';
 import '../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../presentation/bloc.dart';
-import '../ui/pages/connecting_page.dart';
-import '../ui/pages/server_confirmation_page.dart';
-import '../ui/pages/settings_page.dart';
+import '../ui/screens/connecting_page.dart';
+import '../ui/screens/server_confirmation_page.dart';
+import '../ui/screens/settings_page.dart';
 import 'flow_type.dart';
 
 /// Owns the permission gate and nested navigation used by every flow.

@@ -1,9 +1,9 @@
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/domain/presentation_failure.dart';
 import 'package:bull_recoverbull/src/presentation/recoverbull_failure_l10n.dart';
-import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
-import 'package:bull_recoverbull/src/ui/pages/test_completed_page.dart';
-import 'package:bull_recoverbull/src/ui/pages/view_vault_key_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/test_completed_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/view_vault_key_page.dart';
 import 'package:bull_recoverbull/src/ui/widgets/key_server_status_widget.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:flutter/material.dart';

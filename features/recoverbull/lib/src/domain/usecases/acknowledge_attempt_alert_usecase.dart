@@ -1,4 +1,4 @@
-import '../entity/recoverbull_attempt_alert.dart';
+import '../entities/recoverbull_attempt_alert.dart';
 
 /// Alert handles are deliberately ephemeral; acknowledgement has no durable
 /// timestamp and therefore cannot expose a digest or server URL.

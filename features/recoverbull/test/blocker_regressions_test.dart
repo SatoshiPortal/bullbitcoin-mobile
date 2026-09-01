@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
-import 'package:bull_recoverbull/src/domain/entity/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/key_server_attempts.dart';
-import 'package:bull_recoverbull/src/domain/entity/recoverbull_attempt_alert.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_attempt_alert.dart';
 import 'package:bull_recoverbull/src/domain/ports.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';

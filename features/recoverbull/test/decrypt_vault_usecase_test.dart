@@ -1,5 +1,5 @@
-import 'package:bull_recoverbull/src/domain/entity/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';

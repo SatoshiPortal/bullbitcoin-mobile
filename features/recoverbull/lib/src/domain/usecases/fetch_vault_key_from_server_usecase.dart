@@ -1,12 +1,12 @@
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
 import 'record_local_attempt_usecase.dart';
-import '../entity/key_server_attempts.dart';
+import '../entities/key_server_attempts.dart';
 import '../ports.dart';
 
 class FetchVaultKeyFromServerUsecase {

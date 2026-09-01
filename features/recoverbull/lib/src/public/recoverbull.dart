@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 import '../database/recoverbull_database.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import '../domain/usecases/check_backup_attempt_monitoring_usecase.dart';
-import '../domain/entity/recoverbull_attempt_alert.dart' as domain_alert;
+import '../domain/entities/recoverbull_attempt_alert.dart' as domain_alert;
 import '../domain/ports.dart';
 import '../domain/recoverbull_server_url.dart';
 

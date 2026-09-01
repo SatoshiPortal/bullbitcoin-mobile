@@ -1,5 +1,5 @@
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/vault_provider.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/router/recoverbull_router.dart';
 import 'package:bull_recoverbull/src/ui/widgets/key_server_status_widget.dart';
 import 'package:bull_recoverbull/src/google_drive/recoverbull_google_drive_router.dart';

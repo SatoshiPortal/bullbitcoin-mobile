@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/domain/entity/decrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';

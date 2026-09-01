@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/key_server_attempts.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';

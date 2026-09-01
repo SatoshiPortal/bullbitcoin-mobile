@@ -1,6 +1,6 @@
-import 'package:bull_recoverbull/src/domain/entity/vault_provider.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_recoverbull/src/widgets/provider_cart.dart';
+import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
 import 'package:bull_recoverbull/src/ui/support.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 

@@ -1,6 +1,6 @@
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
-import 'package:bull_recoverbull/src/ui/pages/fetch_vault_key_page.dart';
-import 'package:bull_recoverbull/src/ui/pages/vault_provider_selection_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/fetch_vault_key_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_provider_selection_page.dart';
 import 'package:bull_recoverbull/src/ui/widgets/key_server_status_widget.dart';
 import 'package:bull_recoverbull/src/utils/password_validator.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';

@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
-import '../entity/encrypted_vault.dart';
-import '../entity/key_server_attempts.dart';
+import '../entities/encrypted_vault.dart';
+import '../entities/key_server_attempts.dart';
 import '../recoverbull_failure.dart';
 import '../recoverbull_tor_route.dart';
 import '../repositories/recoverbull_repository.dart';

@@ -1,5 +1,5 @@
-import '../entity/encrypted_vault.dart';
-import '../entity/key_server_attempts.dart';
+import '../entities/encrypted_vault.dart';
+import '../entities/key_server_attempts.dart';
 import '../ports.dart';
 import '../repositories/recoverbull_repository.dart';
 import '../recoverbull_failure.dart';

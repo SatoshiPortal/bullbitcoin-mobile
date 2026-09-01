@@ -4,7 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 
 import '../database/recoverbull_database.dart';
-import '../domain/entity/key_server_attempts.dart';
+import '../domain/entities/key_server_attempts.dart';
 
 enum RecoverBullAttemptAlertKind {
   suspiciousActivity,

@@ -1,7 +1,7 @@
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/presentation/recoverbull_failure_l10n.dart';
-import 'package:bull_recoverbull/src/ui/pages/vault_created_page.dart';
-import 'package:bull_recoverbull/src/ui/pages/vault_selected_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_created_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_selected_page.dart';
 import 'package:bull_recoverbull/src/ui/widgets/key_server_status_widget.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
-import 'package:bull_recoverbull/src/domain/entity/drive_file_metadata.dart';
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_google_drive_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

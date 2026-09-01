@@ -2,9 +2,9 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_recoverbull/src/domain/entity/vault_provider.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
-import 'package:bull_recoverbull/src/ui/pages/vault_selected_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_selected_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 

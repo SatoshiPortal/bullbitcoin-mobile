@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/domain/presentation_failure.dart';
-import 'package:bull_recoverbull/src/ui/pages/connecting_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/connecting_page.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:flutter/material.dart';

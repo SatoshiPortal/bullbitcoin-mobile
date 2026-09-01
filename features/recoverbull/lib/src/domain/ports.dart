@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'entity/recoverbull_attempt_alert.dart';
+import 'entities/recoverbull_attempt_alert.dart';
 
 enum RecoverBullNetwork { mainnet, testnet }
 

@@ -5,7 +5,7 @@ import 'package:bull_recoverbull/src/domain/usecases/fetch_recoverbull_url_useca
 import 'package:bull_recoverbull/src/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bull_recoverbull/src/router/recoverbull_flow.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
-import 'package:bull_recoverbull/src/ui/pages/settings_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/settings_page.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

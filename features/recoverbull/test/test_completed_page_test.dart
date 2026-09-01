@@ -1,5 +1,5 @@
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
-import 'package:bull_recoverbull/src/ui/pages/test_completed_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/test_completed_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';

@@ -1,11 +1,11 @@
-import 'package:bull_recoverbull/src/domain/entity/vault_provider.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/ui/support.dart';
-import 'package:bull_recoverbull/src/widgets/provider_cart.dart';
+import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bull_recoverbull/src/ui/pages/vault_created_page.dart';
+import 'package:bull_recoverbull/src/ui/screens/vault_created_page.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:gif/gif.dart';
 

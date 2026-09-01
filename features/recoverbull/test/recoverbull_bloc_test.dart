@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bull_recoverbull/src/domain/entity/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/decrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/entity/vault_provider.dart';
+import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/domain/ports.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart' as core;
 import 'package:bull_recoverbull/src/domain/usecases/check_server_connection_usecase.dart';

@@ -25,7 +25,7 @@ export 'src/domain/ports.dart'
         RecoverBullSeedPort,
         RecoverBullDefaultWalletsPort,
         RecoverBullLifecyclePort;
-export 'src/domain/entity/encrypted_vault.dart';
+export 'src/domain/entities/encrypted_vault.dart';
 export 'generated/l10n/recoverbull_localizations.dart';
 export 'src/router/flow_type.dart';
 export 'src/router/recoverbull_router.dart'
