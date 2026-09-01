@@ -138,6 +138,10 @@ final class RecoverBullAttemptMonitoringStore {
     MonitoredBackupOrigin origin = MonitoredBackupOrigin.created,
     int observedTotal = 0,
     int window = 0,
+    String? driveAccount,
+    String? driveFileId,
+    DateTime? driveFileCreatedAt,
+    DateTime? driveFileModifiedAt,
   }) async {
     if (observedTotal < 0) throw ArgumentError.value(observedTotal);
     if (window < 0) throw ArgumentError.value(window);
@@ -154,9 +158,148 @@ final class RecoverBullAttemptMonitoringStore {
               ),
               currentWindow: Value(adopted ? window : 0),
               lastWarningWindow: adopted ? Value(window) : const Value(null),
+              origin: Value(
+                adopted
+                    ? (driveAccount != null ? 'drive' : 'adopted')
+                    : 'created',
+              ),
+              driveAccount: Value(driveAccount),
+              driveFileId: Value(driveFileId),
+              driveFileCreatedAt: Value(driveFileCreatedAt),
+              driveFileModifiedAt: Value(driveFileModifiedAt),
             ),
             mode: InsertMode.insertOrIgnore,
           );
+    });
+  }
+
+  Future<void> purgeDriveAccount(String account) async {
+    await (database.delete(
+      database.recoverbullMonitoredBackup,
+    )..where((row) => row.driveAccount.equals(account))).go();
+    await (database.delete(
+      database.recoverbullDriveBackupCache,
+    )..where((row) => row.account.equals(account))).go();
+  }
+
+  Future<List<RecoverbullMonitoredBackupData>> driveBackups(String account) =>
+      (database.select(
+        database.recoverbullMonitoredBackup,
+      )..where((row) => row.driveAccount.equals(account))).get();
+
+  Future<List<RecoverbullDriveBackupCacheData>> driveCache(String account) =>
+      (database.select(
+        database.recoverbullDriveBackupCache,
+      )..where((row) => row.account.equals(account))).get();
+
+  Future<void> saveDriveCache({
+    required String account,
+    required String driveFileId,
+    required List<int> backupDigest,
+    required DateTime createdAt,
+    DateTime? modifiedAt,
+  }) async {
+    await database
+        .into(database.recoverbullDriveBackupCache)
+        .insertOnConflictUpdate(
+          RecoverbullDriveBackupCacheCompanion.insert(
+            account: account,
+            driveFileId: driveFileId,
+            backupDigest: Uint8List.fromList(backupDigest),
+            driveFileCreatedAt: createdAt,
+            driveFileModifiedAt: Value(modifiedAt),
+          ),
+        );
+  }
+
+  /// Reconciles the complete Drive view in one transaction. A local row is
+  /// never converted into a Drive row, but a Drive row can be re-adopted after
+  /// monitoring was disabled because its cache entry is not authoritative.
+  Future<bool> reconcileDriveBackups(
+    String account,
+    List<DriveBackupObservation> observations,
+  ) async {
+    return database.transaction<bool>(() async {
+      final enabled =
+          await (database.select(database.recoverbullState)
+                ..where((row) => row.id.equals(1)))
+              .getSingle()
+              .then((row) => row.attemptMonitoringEnabled);
+      if (!enabled) return false;
+      await (database.delete(database.recoverbullMonitoredBackup)..where(
+            (row) =>
+                row.driveAccount.isNotNull() &
+                row.driveAccount.isNotValue(account),
+          ))
+          .go();
+      await (database.delete(
+        database.recoverbullDriveBackupCache,
+      )..where((row) => row.account.isNotValue(account))).go();
+      final desired = {for (final item in observations) item.digestKey};
+      final rows = await driveBackups(account);
+      for (final row in rows) {
+        if (!desired.contains(_hex(row.digest))) {
+          await (database.delete(
+            database.recoverbullMonitoredBackup,
+          )..where((t) => t.digest.equals(row.digest))).go();
+        }
+      }
+      final caches = await driveCache(account);
+      final currentFiles = {for (final item in observations) item.fileId};
+      for (final cache in caches) {
+        if (!currentFiles.contains(cache.driveFileId)) {
+          await (database.delete(database.recoverbullDriveBackupCache)..where(
+                (t) =>
+                    t.account.equals(account) &
+                    t.driveFileId.equals(cache.driveFileId),
+              ))
+              .go();
+        }
+      }
+      for (final item in observations) {
+        final digest = Uint8List.fromList(item.digest);
+        final existing = await (database.select(
+          database.recoverbullMonitoredBackup,
+        )..where((t) => t.digest.equals(digest))).getSingleOrNull();
+        if (existing == null) {
+          await database
+              .into(database.recoverbullMonitoredBackup)
+              .insert(
+                RecoverbullMonitoredBackupCompanion.insert(
+                  digest: digest,
+                  lastWarningWindow: const Value(0),
+                  origin: const Value('drive'),
+                  driveAccount: Value(account),
+                  driveFileId: Value(item.fileId),
+                  driveFileCreatedAt: Value(item.createdAt),
+                  driveFileModifiedAt: Value(item.modifiedAt),
+                ),
+              );
+        } else if (existing.origin == 'drive') {
+          await (database.update(
+            database.recoverbullMonitoredBackup,
+          )..where((t) => t.digest.equals(digest))).write(
+            RecoverbullMonitoredBackupCompanion(
+              driveAccount: Value(account),
+              driveFileId: Value(item.fileId),
+              driveFileCreatedAt: Value(item.createdAt),
+              driveFileModifiedAt: Value(item.modifiedAt),
+            ),
+          );
+        }
+        await database
+            .into(database.recoverbullDriveBackupCache)
+            .insertOnConflictUpdate(
+              RecoverbullDriveBackupCacheCompanion.insert(
+                account: account,
+                driveFileId: item.fileId,
+                backupDigest: digest,
+                driveFileCreatedAt: item.createdAt,
+                driveFileModifiedAt: Value(item.modifiedAt),
+              ),
+            );
+      }
+      return true;
     });
   }
 
@@ -547,10 +690,30 @@ final class RecoverBullAttemptMonitoringStore {
         1000;
   }
 
+  static String _hex(List<int> bytes) =>
+      bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+
   static int collectionSecond(DateTime value) =>
       value.toUtc().millisecondsSinceEpoch ~/ 1000;
 
   static bool _same(List<int> a, List<int> b) =>
       a.length == b.length &&
       Iterable<int>.generate(a.length).every((i) => a[i] == b[i]);
+}
+
+final class DriveBackupObservation {
+  final String fileId;
+  final List<int> digest;
+  final DateTime createdAt;
+  final DateTime? modifiedAt;
+
+  const DriveBackupObservation({
+    required this.fileId,
+    required this.digest,
+    required this.createdAt,
+    required this.modifiedAt,
+  });
+
+  String get digestKey =>
+      digest.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }

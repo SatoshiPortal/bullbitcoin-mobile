@@ -263,7 +263,6 @@ void main() {
       await directory.delete(recursive: true);
     },
   );
-
   test('schema has the monitoring tables and bundled sqlite is usable', () async {
     final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
     final tables = await database

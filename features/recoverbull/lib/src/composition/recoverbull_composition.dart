@@ -5,6 +5,7 @@ import '../data/datasources/recoverbull_settings_datasource.dart';
 import '../data/recoverbull_repository_impl.dart';
 import '../data/file_system_repository.dart';
 import '../data/google_drive_repository.dart';
+import '../data/debug_google_drive_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/usecases/check_server_connection_usecase.dart';
 import '../domain/usecases/allow_permission_usecase.dart';
@@ -30,6 +31,8 @@ import '../domain/usecases/save_file_to_system_usecase.dart';
 import '../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../domain/usecases/store_vault_key_into_server_usecase.dart';
 import '../domain/usecases/verify_decrypted_vault_usecase.dart';
+import '../domain/usecases/discover_drive_backups_usecase.dart';
+import '../data/google_drive_backup_discovery_adapter.dart';
 import '../google_drive/presentation/bloc.dart';
 import '../google_drive/recoverbull_google_drive_router.dart';
 import '../presentation/bloc.dart';
@@ -127,9 +130,17 @@ final class RecoverBullFeature {
       log: log,
       datasource: FileStorageDatasource(),
     );
-    final drive = GoogleDriveRepository(
+    final productionDrive = GoogleDriveRepositoryImpl(
       log: log,
       datasource: GoogleDriveAppDatasource(log: log),
+    );
+    final drive = selectGoogleDriveRepository(production: productionDrive);
+    unawaited(
+      DiscoverDriveBackupsUsecase(
+        drive: GoogleDriveBackupDiscoveryAdapter(drive),
+        store: attemptMonitoringStore,
+        log: log,
+      ).execute(),
     );
     final ensureTor = EnsureRecoverBullTorSessionUsecase(
       tor.embedded,

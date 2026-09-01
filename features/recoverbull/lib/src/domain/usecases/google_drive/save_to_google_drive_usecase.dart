@@ -1,4 +1,4 @@
-import '../../../data/google_drive_repository.dart';
+import '../../repositories/google_drive_repository.dart';
 import '../../entities/encrypted_vault.dart';
 import '../../recoverbull_failure.dart';
 import 'package:primitives/primitives.dart';

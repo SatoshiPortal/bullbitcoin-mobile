@@ -7,11 +7,13 @@ class DriveFileMetadataModel {
   final String id;
   final String name;
   final DateTime createdTime;
+  final DateTime? modifiedTime;
 
   DriveFileMetadataModel({
     required this.id,
     required this.name,
     required this.createdTime,
+    this.modifiedTime,
   });
 
   factory DriveFileMetadataModel.fromDriveFile(drive.File file) {
@@ -23,11 +25,17 @@ class DriveFileMetadataModel {
       id: file.id!,
       name: file.name!,
       createdTime: file.createdTime!,
+      modifiedTime: file.modifiedTime,
     );
   }
 
   DriveFileMetadata toEntity() {
-    return DriveFileMetadata(id: id, name: name, createdTime: createdTime);
+    return DriveFileMetadata(
+      id: id,
+      name: name,
+      createdTime: createdTime,
+      modifiedTime: modifiedTime,
+    );
   }
 }
 
