@@ -6,7 +6,7 @@ import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
-import 'support/log_sink.dart';
+import '../support/log_sink.dart';
 
 class _Settings extends Mock implements RecoverBullSettingsPort {}
 

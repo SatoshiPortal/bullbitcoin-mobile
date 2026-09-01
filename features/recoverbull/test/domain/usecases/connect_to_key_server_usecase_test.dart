@@ -9,7 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
-import '../support/log_sink.dart';
+import '../../support/log_sink.dart';
 
 class _MockCheckServerConnection extends Mock
     implements CheckServerConnectionUsecase {}

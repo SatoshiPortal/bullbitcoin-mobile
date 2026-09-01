@@ -17,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:recoverbull/recoverbull.dart' as sdk;
-import 'support/log_sink.dart';
+import '../../support/log_sink.dart';
 
 class _Repository extends Mock implements RecoverBullRepository {}
 

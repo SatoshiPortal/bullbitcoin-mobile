@@ -13,7 +13,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'support/log_sink.dart';
+import '../../support/log_sink.dart';
 
 final class _Repository extends Mock implements RecoverBullRepository {}
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'support/log_sink.dart';
+import '../support/log_sink.dart';
 
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';

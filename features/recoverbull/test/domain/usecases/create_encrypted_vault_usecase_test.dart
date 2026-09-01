@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'support/log_sink.dart';
+import '../../support/log_sink.dart';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';

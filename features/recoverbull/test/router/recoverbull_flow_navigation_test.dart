@@ -11,7 +11,7 @@ import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'support/log_sink.dart';
+import '../support/log_sink.dart';
 
 class _Repository extends Mock implements RecoverBullRepository {}
 

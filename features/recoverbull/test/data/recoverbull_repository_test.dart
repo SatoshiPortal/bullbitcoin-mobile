@@ -16,7 +16,7 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
-import '../../support/log_sink.dart';
+import '../support/log_sink.dart';
 
 class _MockRemote extends Mock implements RecoverBullRemoteDatasource {}
 
