@@ -2,7 +2,11 @@ import 'dart:typed_data';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
-import 'package:bull_recoverbull/src/domain/ports.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_network.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_seed_material.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_wallet.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_seed_port.dart';
+import 'package:bull_recoverbull/src/domain/repositories/recoverbull_wallet_repository.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -16,7 +20,7 @@ class _MockRecoverBullRepository extends Mock
 class _MockSeedPort extends Mock implements RecoverBullSeedPort {}
 
 class _MockWalletRepository extends Mock
-    implements RecoverBullWalletRepositoryPort {}
+    implements RecoverBullWalletRepository {}
 
 class _MockEncryptedVault extends Mock implements EncryptedVault {}
 
@@ -25,13 +29,13 @@ void main() {
     words: List.generate(11, (index) => 'zoo') + ['wrong'],
   );
   final seed = Uint8List.fromList(mnemonic.seed);
-  final wallet = RecoverBullWalletValue(
+  final wallet = RecoverBullWallet(
     id: 'testnet-wallet',
     masterFingerprint: 'deadbeef',
     network: RecoverBullNetwork.testnet,
     isPhysicalBackupTested: false,
   );
-  final mainnetWallet = RecoverBullWalletValue(
+  final mainnetWallet = RecoverBullWallet(
     id: 'mainnet-wallet',
     masterFingerprint: 'deadbeef',
     network: RecoverBullNetwork.mainnet,
@@ -49,9 +53,10 @@ void main() {
     when(
       () => walletRepository.getWallets(onlyBitcoin: true, onlyDefaults: true),
     ).thenAnswer((_) async => [wallet]);
-    when(
-      () => seedPort.getSeed(wallet.masterFingerprint),
-    ).thenAnswer((_) async => (bytes: seed, mnemonicWords: mnemonic.words));
+    when(() => seedPort.getSeed(wallet.masterFingerprint)).thenAnswer(
+      (_) async =>
+          RecoverBullSeedMaterial(bytes: seed, mnemonicWords: mnemonic.words),
+    );
   });
 
   test('testnet seed creates an encrypted vault', () async {
@@ -154,7 +159,10 @@ void main() {
       '${invalidMnemonic.isEmpty ? 'empty' : 'non-mnemonic'} seed returns an error before encryption',
       () async {
         when(() => seedPort.getSeed(wallet.masterFingerprint)).thenAnswer(
-          (_) async => (bytes: seed, mnemonicWords: invalidMnemonic),
+          (_) async => RecoverBullSeedMaterial(
+            bytes: seed,
+            mnemonicWords: invalidMnemonic,
+          ),
         );
         final usecase = CreateEncryptedVaultUsecase(
           recoverBullRepository: recoverBullRepository,

@@ -5,7 +5,7 @@ import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart' as core;
-import 'package:bull_recoverbull/src/domain/ports.dart';
+import '../domain/recoverbull_lifecycle_port.dart';
 import 'package:bull_recoverbull/src/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/decrypt_vault_usecase.dart';

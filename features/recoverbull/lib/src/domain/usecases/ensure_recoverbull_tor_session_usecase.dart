@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:primitives/primitives.dart';
 import 'package:bull_tor/tor.dart';
 
-import '../ports.dart';
+import '../recoverbull_settings_port.dart';
 import '../../public/recoverbull.dart'
     show RecoverBullLogger, RecoverBullTiming;
 

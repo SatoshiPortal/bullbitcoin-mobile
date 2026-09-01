@@ -6,7 +6,9 @@ import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:bull_recoverbull/src/domain/entities/recoverbull_attempt_alert.dart';
-import 'package:bull_recoverbull/src/domain/ports.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_network.dart';
+import 'package:bull_recoverbull/src/domain/entities/recoverbull_wallet.dart';
+import 'package:bull_recoverbull/src/domain/repositories/recoverbull_wallet_repository.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
@@ -25,7 +27,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:recoverbull/recoverbull.dart' as sdk;
 
-class _Wallets extends Mock implements RecoverBullWalletRepositoryPort {}
+class _Wallets extends Mock implements RecoverBullWalletRepository {}
 
 class _Repository extends Mock implements RecoverBullRepository {}
 
@@ -55,7 +57,7 @@ void main() {
         () => wallets.getWallets(onlyBitcoin: true, onlyDefaults: true),
       ).thenAnswer(
         (_) async => [
-          const RecoverBullWalletValue(
+          const RecoverBullWallet(
             id: 'wallet',
             masterFingerprint: '73c5da0a',
             network: RecoverBullNetwork.mainnet,

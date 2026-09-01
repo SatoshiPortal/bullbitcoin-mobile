@@ -2,7 +2,7 @@ import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bull_recoverbull/src/domain/ports.dart';
+import '../recoverbull_default_wallets_port.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 /// If the key server is down

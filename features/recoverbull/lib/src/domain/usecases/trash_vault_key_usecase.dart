@@ -6,7 +6,7 @@ import '../recoverbull_tor_route.dart';
 import '../repositories/recoverbull_repository.dart';
 import 'ensure_recoverbull_tor_session_usecase.dart';
 import 'record_local_attempt_usecase.dart';
-import '../ports.dart';
+import '../recoverbull_attempt_alert_port.dart';
 import '../../support/logger.dart';
 
 final class TrashVaultKeyUsecase {

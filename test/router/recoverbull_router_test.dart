@@ -24,7 +24,7 @@ final class _Logger implements RecoverBullLogger {
 
 final class _Settings extends Mock implements RecoverBullSettingsPort {}
 
-final class _Wallets extends Mock implements RecoverBullWalletRepositoryPort {}
+final class _Wallets extends Mock implements RecoverBullWalletRepository {}
 
 final class _Seeds extends Mock implements RecoverBullSeedPort {}
 

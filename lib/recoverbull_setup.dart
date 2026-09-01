@@ -80,19 +80,19 @@ void _recordRecoverBullTiming(
   );
 }
 
-final class _WalletAdapter implements RecoverBullWalletRepositoryPort {
+final class _WalletAdapter implements RecoverBullWalletRepository {
   final WalletRepository _wallets;
 
   const _WalletAdapter(this._wallets);
 
   @override
-  Future<List<RecoverBullWalletValue>> getWallets({
+  Future<List<RecoverBullWallet>> getWallets({
     bool onlyBitcoin = false,
     bool onlyDefaults = false,
-    Object? environment,
+    RecoverBullNetwork? network,
   }) async {
     final wallets = await _wallets.getWallets(
-      environment: switch (environment) {
+      environment: switch (network) {
         RecoverBullNetwork.mainnet => Environment.mainnet,
         RecoverBullNetwork.testnet => Environment.testnet,
         _ => null,
@@ -102,7 +102,7 @@ final class _WalletAdapter implements RecoverBullWalletRepositoryPort {
     );
     return wallets
         .map(
-          (wallet) => RecoverBullWalletValue(
+          (wallet) => RecoverBullWallet(
             id: wallet.id,
             masterFingerprint: wallet.masterFingerprint,
             network: wallet.network.isTestnet
@@ -120,13 +120,13 @@ final class _SeedAdapter implements RecoverBullSeedPort {
   final SeedRepository source;
   const _SeedAdapter(this.source);
   @override
-  Future<({List<int> bytes, List<String> mnemonicWords})> getSeed(
-    String fingerprint,
-  ) async {
+  Future<RecoverBullSeedMaterial> getSeed(String fingerprint) async {
     final seed = await source.get(fingerprint);
-    return (
+    return RecoverBullSeedMaterial(
       bytes: seed.bytes.toList(),
-      mnemonicWords: seed is MnemonicSeed ? seed.mnemonicWords : <String>[],
+      mnemonicWords: seed is MnemonicSeed
+          ? seed.mnemonicWords.toList()
+          : <String>[],
     );
   }
 }
@@ -135,13 +135,13 @@ final class _DefaultWalletsAdapter implements RecoverBullDefaultWalletsPort {
   final CreateDefaultWalletsUsecase source;
   const _DefaultWalletsAdapter(this.source);
   @override
-  Future<List<RecoverBullWalletValue>> execute({
+  Future<List<RecoverBullWallet>> execute({
     required List<String> mnemonicWords,
   }) async {
     final wallets = await source.execute(mnemonicWords: mnemonicWords);
     return wallets
         .map(
-          (wallet) => RecoverBullWalletValue(
+          (wallet) => RecoverBullWallet(
             id: wallet.id,
             masterFingerprint: wallet.masterFingerprint,
             network: wallet.network.isTestnet

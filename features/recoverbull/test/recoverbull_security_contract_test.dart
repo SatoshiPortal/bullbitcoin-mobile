@@ -59,7 +59,7 @@ final class _CapturingLogger implements RecoverBullLogger {
 
 class _Settings extends Mock implements RecoverBullSettingsPort {}
 
-class _Wallets extends Mock implements RecoverBullWalletRepositoryPort {}
+class _Wallets extends Mock implements RecoverBullWalletRepository {}
 
 class _Seeds extends Mock implements RecoverBullSeedPort {}
 

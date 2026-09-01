@@ -7,7 +7,7 @@ import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
 import 'record_local_attempt_usecase.dart';
 import '../entities/key_server_attempts.dart';
-import '../ports.dart';
+import '../recoverbull_attempt_alert_port.dart';
 
 class FetchVaultKeyFromServerUsecase {
   final RecoverBullRepository _recoverBullRepository;

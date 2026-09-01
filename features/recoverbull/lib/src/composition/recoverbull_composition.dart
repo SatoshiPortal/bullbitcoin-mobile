@@ -46,7 +46,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 
-import '../domain/ports.dart';
+import '../domain/recoverbull_default_wallets_port.dart';
+import '../domain/recoverbull_seed_port.dart';
+import '../domain/recoverbull_settings_port.dart';
+import '../domain/repositories/recoverbull_wallet_repository.dart';
 import '../domain/repositories/recoverbull_repository.dart';
 import '../public/recoverbull.dart';
 
@@ -84,7 +87,7 @@ final class RecoverBullFeature {
 
   static Future<RecoverBullFeature> create({
     required RecoverBullConfig config,
-    required RecoverBullWalletRepositoryPort wallets,
+    required RecoverBullWalletRepository wallets,
     required RecoverBullSeedPort seeds,
     required RecoverBullDefaultWalletsPort defaultWallets,
     required RecoverBullSettingsPort settings,

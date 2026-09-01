@@ -1,7 +1,7 @@
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bull_recoverbull/src/domain/ports.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';

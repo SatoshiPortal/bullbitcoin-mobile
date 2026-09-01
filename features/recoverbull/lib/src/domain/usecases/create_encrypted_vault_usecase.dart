@@ -5,7 +5,8 @@ import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
-import 'package:bull_recoverbull/src/domain/ports.dart';
+import '../recoverbull_seed_port.dart';
+import '../repositories/recoverbull_wallet_repository.dart';
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:bull_recoverbull/src/utils/recoverbull_bip85.dart';
@@ -15,7 +16,7 @@ import 'package:primitives/primitives.dart';
 class CreateEncryptedVaultUsecase {
   final RecoverBullRepository _recoverBullRepository;
   final RecoverBullSeedPort _seedRepository;
-  final RecoverBullWalletRepositoryPort _walletRepository;
+  final RecoverBullWalletRepository _walletRepository;
 
   CreateEncryptedVaultUsecase({
     required this._recoverBullRepository,

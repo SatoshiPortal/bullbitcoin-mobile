@@ -1,6 +1,6 @@
 import '../entities/encrypted_vault.dart';
 import '../entities/key_server_attempts.dart';
-import '../ports.dart';
+import '../recoverbull_attempt_alert_port.dart';
 import '../repositories/recoverbull_repository.dart';
 import '../recoverbull_failure.dart';
 import 'ensure_recoverbull_tor_session_usecase.dart';
