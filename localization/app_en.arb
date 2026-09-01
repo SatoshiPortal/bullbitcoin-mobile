@@ -14693,5 +14693,17 @@
   "sendErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sendErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched. Blocking: the send cannot be built without them, so the message tells the user what to do rather than showing a generic error."
+  },
+  "sellUnexpectedError": "Your sell order could not be completed right now. Please try again or contact support.",
+  "@sellUnexpectedError": {
+    "description": "Generic catch-all shown for any unexpected sell failure. Deliberately does not include the raw reason: this arm previously returned the exception text verbatim to the user (#1895)."
+  },
+  "sellErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@sellErrorFeeBelowRelayFloor": {
+    "description": "Shown when the built sell payin fee falls under the network relay floor. Actionable: the user must raise the fee. Wording matches the send equivalent."
+  },
+  "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@sellErrorFeesUnavailable": {
+    "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
   }
 }

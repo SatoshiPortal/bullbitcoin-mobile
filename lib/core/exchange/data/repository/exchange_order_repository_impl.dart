@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_dat
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
@@ -231,7 +230,10 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const SellError.unauthenticated();
+        throw ApiKeyException(
+          'API key not found or inactive. '
+          'Please login to your Bull Bitcoin account.',
+        );
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createSellOrder(
@@ -245,16 +247,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet) as SellOrder;
 
       return order;
-    } on BullBitcoinApiMinAmountException catch (e) {
-      throw SellError.belowMinAmount(
-        minAmount: e.minAmount,
-        currency: e.currency,
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      throw SellError.aboveMaxAmount(
-        maxAmount: e.maxAmount,
-        currency: e.currency,
-      );
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to place sell order: $e');
     }
@@ -447,14 +445,16 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! SellOrder) {
-        throw const SellError.unexpected(
-          message: 'Expected SellOrder but received a different order type',
+        throw Exception(
+          'Expected SellOrder but received a different order type',
         );
       }
 
       return order;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
-      throw SellError.unexpected(message: 'Failed to refresh sell order: $e');
+      throw Exception('Failed to refresh sell order: $e');
     }
   }
 
