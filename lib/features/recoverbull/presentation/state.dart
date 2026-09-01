@@ -23,6 +23,7 @@ sealed class RecoverBullState with _$RecoverBullState {
     @Default(null) RecoverBullFailure? failure,
     @Default(KeyServerStatus.unknown) KeyServerStatus keyServerStatus,
     @Default(false) bool isFlowFinished,
+    @Default(false) bool dataBackupRecoveryIncomplete,
     @Default(TorStatus.unknown) TorStatus torStatus,
   }) = _RecoverBullState;
 

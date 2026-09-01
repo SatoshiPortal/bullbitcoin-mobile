@@ -24,6 +24,12 @@ class ShowMnemonicScreen extends StatefulWidget {
 class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
     with PrivacyScreen {
   @override
+  void initState() {
+    super.initState();
+    unawaited(enableScreenPrivacy());
+  }
+
+  @override
   void dispose() {
     unawaited(disableScreenPrivacy());
     super.dispose();
@@ -31,54 +37,41 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: enableScreenPrivacy(),
-      builder: (context, snapshot) {
-        return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
-          builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
-
-            return Scaffold(
-              backgroundColor: context.appColors.background,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
-              ),
-              body: Column(
+    return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
+      builder: (context, state) => Scaffold(
+        backgroundColor: context.appColors.background,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: AppBarWidget(title: context.loc.backupWalletTitle),
+        ),
+        body: Column(
+          children: [
+            const Expanded(
+              child: SingleChildScrollView(child: _MnemonicDisplay()),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
                 children: [
-                  const Expanded(
-                    child: SingleChildScrollView(child: _MnemonicDisplay()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      children: [
-                        BBButton.big(
-                          label: context.loc.testBackupNext,
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const VerifyMnemonicScreen(),
-                              ),
-                            );
-                          },
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
+                  BBButton.big(
+                    label: context.loc.testBackupNext,
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const VerifyMnemonicScreen(),
                         ),
-                        Gap(Device.screen.height * 0.05),
-                      ],
-                    ),
+                      );
+                    },
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
+                  Gap(Device.screen.height * 0.05),
                 ],
               ),
-            );
-          },
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -98,25 +91,18 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
   Future<(List<String>, String?)>? _secretFuture;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final fingerprint = context.select<TestWalletBackupBloc, String?>(
-      (bloc) => bloc.state.selectedWallet?.masterFingerprint,
-    );
+  Widget build(BuildContext context) {
+    final selectedWallet = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .selectedWallet;
+    final fingerprint = selectedWallet?.masterFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
       _secretFuture = fingerprint == null
           ? null
           : context.read<TestWalletBackupBloc>().loadSelectedWalletMnemonic();
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedWallet = context
-        .watch<TestWalletBackupBloc>()
-        .state
-        .selectedWallet;
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
     return FutureBuilder<(List<String>, String?)>(

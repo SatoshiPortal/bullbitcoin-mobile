@@ -21,19 +21,9 @@ class CheckBackupUsecase {
         return false; // No default wallets found, so also no backup possible
       }
 
-      bool hasBackup = false;
-      for (final defaultWallet in defaultWallets) {
-        hasBackup =
-            defaultWallet.isPhysicalBackupTested ||
-            defaultWallet.isEncryptedVaultTested;
-
-        if (hasBackup) {
-          // Exit early if we found a backup, since the default
-          //  wallets use the same seed, one backup is enough
-          break;
-        }
-      }
-      return hasBackup;
+      final bitcoin = defaultWallets.where((wallet) => wallet.isBitcoin).first;
+      return bitcoin.latestPhysicalBackup != null ||
+          bitcoin.latestEncryptedBackup != null;
     } catch (e) {
       return false; // If any error occurs, we assume backup is not complete
     }

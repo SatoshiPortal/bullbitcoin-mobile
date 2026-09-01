@@ -106,16 +106,18 @@ Future<void> main({bool isInitialized = false}) async {
         final restored = await restoreVaultUsecase.execute(
           decryptedVault: decryptedVault,
         );
-        expect(restored, isA<Ok<Null, RecoverBullCoreFailure>>());
+        expect(restored, isA<Ok<List<String>, RecoverBullCoreFailure>>());
 
         final wallets = await walletRepository.getWallets(
           onlyDefaults: true,
-          onlyBitcoin: true,
           environment: Environment.mainnet,
         );
 
-        expect(wallets.length, 1);
-        final wallet = wallets.first;
+        expect(
+          (restored as Ok<List<String>, RecoverBullCoreFailure>).value,
+          unorderedEquals(wallets.map((wallet) => wallet.id)),
+        );
+        final wallet = wallets.singleWhere((wallet) => wallet.isBitcoin);
         expect(wallet.masterFingerprint, isNotEmpty);
         final seed = await seedRepository.get(wallet.masterFingerprint);
         final seedModel = SeedModel.fromEntity(seed);

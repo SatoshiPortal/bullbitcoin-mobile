@@ -49,6 +49,12 @@ class OnboardingRouter {
                 // with the recently created or recovered wallets before
                 // navigating.
                 context.read<WalletBloc>().add(const WalletStarted());
+                if (state.dataBackupEnableFailed) {
+                  SnackBarUtils.showSnackBar(
+                    context,
+                    context.loc.onboardingDataBackupEnableFailed,
+                  );
+                }
                 if (state.step == OnboardingStep.create) {
                   context.goNamed(WalletRoute.walletHome.name);
                 }

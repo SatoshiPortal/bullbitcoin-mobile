@@ -12,6 +12,7 @@ sealed class OnboardingState with _$OnboardingState {
     OnboardingStepStatus onboardingStepStatus,
     @Default('') String statusError,
     @Default(false) bool transitioning,
+    @Default(false) bool dataBackupEnableFailed,
   }) = _OnboardingState;
   const OnboardingState._();
 

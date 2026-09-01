@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -55,7 +56,8 @@ enum SettingsRoute {
   pinCode('pin-code'),
   language('language'),
   currency('currency'),
-  backupSettings('backup-settings'),
+  walletRecoverySettings('wallet-recovery'),
+  dataBackupSettings('data-backup-settings'),
   walletDetailsWalletList('wallet-details'),
   walletDetailsSelectedWallet(':walletId'),
   walletOptions(':walletId/options'),
@@ -216,13 +218,19 @@ class SettingsRouter {
         builder: (context, state) => const PinCodeSettingFlow(),
       ),
       GoRoute(
-        path: SettingsRoute.backupSettings.path,
-        name: SettingsRoute.backupSettings.name,
-        builder: (context, state) => const BackupSettingsScreen(),
+        path: SettingsRoute.walletRecoverySettings.path,
+        name: SettingsRoute.walletRecoverySettings.name,
+        builder: (context, state) => const WalletRecoverySettingsScreen(),
         routes: [
-          BackupSettingsSettingsRouter.route,
+          ...BackupSettingsSettingsRouter.walletRecoveryRoutes,
           TestWalletBackupRouter.route,
         ],
+      ),
+      GoRoute(
+        path: SettingsRoute.dataBackupSettings.path,
+        name: SettingsRoute.dataBackupSettings.name,
+        builder: (context, state) => const DataBackupSettingsScreen(),
+        routes: BackupSettingsSettingsRouter.dataBackupRoutes,
       ),
       GoRoute(
         path: SettingsRoute.walletDetailsWalletList.path,
