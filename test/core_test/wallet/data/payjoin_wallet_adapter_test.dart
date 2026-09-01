@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide ScriptType;
@@ -70,7 +72,14 @@ void main() {
           allowFinalizedForeignInputs: true,
         ),
       ).thenAnswer((_) async => (psbt: 'signed', isFinalized: true));
-      final adapter = PayjoinWalletAdapter(seed, wallet, metadata);
+      final adapter = PayjoinWalletAdapter(
+        wallet,
+        metadata,
+        WalletSigningMaterialResolver(
+          seedDatasource: seed,
+          session: WalletUnlockSession(),
+        ),
+      );
 
       final result = await adapter.signPsbt(
         walletId: 'wallet',

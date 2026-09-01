@@ -36,6 +36,8 @@ import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_inp
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_input_parser.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -116,6 +118,10 @@ void main() {
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       seedDatasource: seedDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -648,6 +654,10 @@ void main() {
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       seedDatasource: seedDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -721,6 +731,10 @@ void main() {
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       seedDatasource: seedDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -770,6 +784,10 @@ void main() {
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       seedDatasource: seedDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -831,6 +849,10 @@ void main() {
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       seedDatasource: seedDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );
@@ -884,6 +906,10 @@ void main() {
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       seedDatasource: seedDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
     );

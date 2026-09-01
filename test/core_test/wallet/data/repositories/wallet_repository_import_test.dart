@@ -24,6 +24,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -33,6 +36,8 @@ class _MockWalletMetadataDatasource extends Mock
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+
+class _MockSeedDatasource extends Mock implements SeedDatasource {}
 
 class _MockElectrumServersPort extends Mock implements ElectrumServersPort {}
 
@@ -90,6 +95,10 @@ void main() {
       bdkWalletDatasource: bdkDatasource,
       lwkWalletDatasource: lwkDatasource,
       serversPort: _MockElectrumServersPort(),
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: _MockSeedDatasource(),
+        session: WalletUnlockSession(),
+      ),
     );
 
     when(

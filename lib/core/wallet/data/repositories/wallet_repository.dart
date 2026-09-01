@@ -32,6 +32,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/seed_derived_wallet_recove
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_definition_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
@@ -56,6 +57,7 @@ class WalletRepository
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServersPort _serversPort;
+  final WalletSigningMaterialResolver _signingMaterial;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -65,7 +67,9 @@ class WalletRepository
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._serversPort,
-  }) : _bdkWallet = bdkWalletDatasource,
+    required WalletSigningMaterialResolver signingMaterialResolver,
+  }) : _signingMaterial = signingMaterialResolver,
+       _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
@@ -335,6 +339,7 @@ class WalletRepository
     if (metadata == null) {
       return null;
     }
+    if (!_isVisible(metadata)) return null;
     // Get the balance
     final balance = await _getBalance(metadata, sync: sync);
 
@@ -364,6 +369,7 @@ class WalletRepository
                   wallet.isBitcoin) &&
               (onlyLiquid == null || onlyLiquid == false || wallet.isLiquid),
         )
+        .where(_isVisible)
         .toList();
 
     final balances = await Future.wait(
@@ -595,6 +601,22 @@ class WalletRepository
     );
   }
 
+  /// Canonicalizes a definition's descriptor through the same parser the
+  /// import path uses, so a stored descriptor and a backed-up one are compared
+  /// in one notation instead of two.
+  WalletDefinition _canonicalDefinition(WalletDefinition definition) =>
+      WalletDefinition(
+        walletRef: definition.walletRef,
+        network: definition.network,
+        descriptor: parseBitcoinDescriptor(
+          descriptor: definition.descriptor,
+          network: definition.network,
+        ).descriptor,
+        signerDevice: definition.signerDevice,
+        birthday: definition.birthday,
+        provenance: definition.provenance,
+      );
+
   Future<bool> matchesSeedDerivedRecoveryIdentity({
     required String walletId,
     required String seedFingerprint,
@@ -812,6 +834,9 @@ class WalletRepository
     if (metadata == null) {
       throw WalletError.notFound(walletId);
     }
+    if (!_isVisible(metadata)) {
+      throw PassphraseWalletLockedException(walletId);
+    }
     final balance = await _getBalance(metadata);
     return WalletBalances(
       immatureSat: balance.immatureSat.toInt(),
@@ -990,6 +1015,14 @@ class WalletRepository
     }
   }
 
+  /// A passphrase wallet's public projection stays in storage while it is
+  /// locked, but is not part of the catalog anyone can spend from (spec 20.2).
+  bool _isVisible(WalletMetadataModel metadata) =>
+      _signingMaterial.hasPrivateCapability(
+        provenance: metadata.provenance,
+        walletId: metadata.id,
+      );
+
   Future<bool> isTorRequired() async {
     final defaultWallets = await getWallets(
       onlyDefaults: true,
@@ -1100,19 +1133,6 @@ WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
       signerDevice: metadata.signerDevice?.toEntity(),
       birthday: metadata.birthday,
       provenance: metadata.provenance,
-    );
-
-WalletDefinition _canonicalDefinition(WalletDefinition definition) =>
-    WalletDefinition(
-      walletRef: definition.walletRef,
-      network: definition.network,
-      descriptor: DescriptorDerivation.canonicalCombinedPublicBitcoinDescriptor(
-        definition.descriptor,
-        definition.network,
-      ),
-      signerDevice: definition.signerDevice,
-      birthday: definition.birthday,
-      provenance: definition.provenance,
     );
 
 String _recoveryPath(WalletMetadataModel metadata) {

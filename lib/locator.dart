@@ -35,6 +35,7 @@ import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.d
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
+import 'package:bb_mobile/features/passphrase_wallet/passphrase_wallet_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_flow_locator.dart';
 import 'package:bb_mobile/features/psbt_signing/psbt_signing_locator.dart';
@@ -52,10 +53,10 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
-import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -149,7 +150,6 @@ class AppLocator {
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
     ConsolidationLocator.setup(locator);
-    BackupSettingsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     RecoverBullLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
@@ -185,7 +185,9 @@ class AppLocator {
     ReplaceByFeeLocator.setup(locator);
     NostrIdentityLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
+    PassphraseWalletLocator.setup(locator);
     WalletBackupLocator.setup(locator);
+    BackupSettingsLocator.setup(locator);
     if (startWalletBackupTriggers) {
       WalletBackupLocator.start(locator);
     }

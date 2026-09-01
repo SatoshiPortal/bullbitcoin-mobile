@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:drift/drift.dart';
 
@@ -271,7 +272,7 @@ bool _definitionsDiffer(
   if (!_isBackedUpDefinition(current)) return false;
   return previous == null ||
       previous.publicDescriptor != current.publicDescriptor ||
-      previous.signers != current.signers ||
+      !_sameSigners(previous.signers, current.signers) ||
       previous.birthday != current.birthday ||
       previous.provenance != current.provenance ||
       previous.seedPassphraseUsed != current.seedPassphraseUsed;
@@ -281,3 +282,16 @@ bool _isBackedUpDefinition(WalletMetadataModel metadata) =>
     metadata.isBitcoin &&
     (metadata.provenance == WalletProvenance.watchOnly ||
         metadata.provenance == WalletProvenance.externalSigner);
+
+/// Signer rows are plain lists, so `!=` would compare identity and report every
+/// re-store as a change. Compare the facts a definition backs up instead.
+bool _sameSigners(
+  List<WalletSignerModel> previous,
+  List<WalletSignerModel> current,
+) {
+  if (previous.length != current.length) return false;
+  for (var index = 0; index < previous.length; index++) {
+    if (previous[index] != current[index]) return false;
+  }
+  return true;
+}

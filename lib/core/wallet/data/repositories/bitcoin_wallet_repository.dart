@@ -33,23 +33,31 @@ import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final FrozenWalletUtxoDatasource _frozenUtxos;
   final ElectrumServersPort? electrumServers;
 
+  /// Per-descriptor-key seeds for multi-signer descriptor wallets. Standard
+  /// single-signature signing goes through [_signingMaterial] instead, so a
+  /// passphrase wallet's mnemonic is never read from the persistent store.
+  final SeedDatasource _seed;
+  final WalletSigningMaterialResolver _signingMaterial;
+
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
-    required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
+    required SeedDatasource seedDatasource,
+    required WalletSigningMaterialResolver signingMaterialResolver,
     this.electrumServers,
   }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
-       _frozenUtxos = frozenWalletUtxoDatasource;
+       _frozenUtxos = frozenWalletUtxoDatasource,
+       _signingMaterial = signingMaterialResolver;
 
   Future<({WalletMetadataModel metadata, PublicBdkWalletModel wallet})>
   _publicWalletContext(String walletId) async {
@@ -649,17 +657,16 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       throw StateError('Standard local single-signature wallet required');
     }
 
-    final seed = await _seed.get(descriptorKey.masterFingerprint);
-    if (seed is! MnemonicSeedModel) {
-      throw StateError('Standard local single-signature wallet required');
-    }
-    final mnemonic = seed.mnemonicWords.join(' ');
+    // Material comes from the resolver, never the seed store directly: a
+    // passphrase wallet's mnemonic lives only in the volatile session.
+    final material = await _signingMaterial.resolve(metadata);
+    final mnemonic = material.mnemonic;
 
     final wallet =
         WalletModel.privateBdk(
               id: metadata.id,
               mnemonic: mnemonic,
-              passphrase: seed.passphrase,
+              passphrase: material.passphrase,
               scriptType: scriptType,
               account: account,
               isTestnet: metadata.isTestnet,

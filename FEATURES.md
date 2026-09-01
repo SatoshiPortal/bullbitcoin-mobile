@@ -30,6 +30,7 @@ graph TB
     NOSTR_IDENTITY[Nostr Identity]
     WALLET_BACKUP[Wallet Backup<br/>---<br/>Typed backup snapshot & codec,<br/>remote protocol, durable state,<br/>serialized job runner]
     KEYCHAIN_MANIFEST[Keychain Manifest<br/>---<br/>Wallet inventory, Nostr keys,<br/>passphrase wallet records]
+    PASSPHRASE_WALLETS[Passphrase Wallets<br/>---<br/>Passphrase entry, derivation,<br/>scan port; keeps no secret at rest]
     BACKUP_SETTINGS[Backup Settings<br/>---<br/>Backup UI & reminders,<br/>file import/export,<br/>failure taxonomy mapping]
     RECOVERBULL[RecoverBull]
     WIZARD[Onboarding Wizard]
@@ -102,6 +103,8 @@ graph TB
     BACKUP_SETTINGS --> TX_HISTORY
     BACKUP_SETTINGS --> RECOVERBULL
     BACKUP_SETTINGS --> BACKUPS
+    PASSPHRASE_WALLETS --> KEYCHAIN_MANIFEST
+    PASSPHRASE_WALLETS --> WALLETS
     RECOVERBULL --> WALLET_BACKUP
     WIZARD --> WALLET_BACKUP
     ONBOARDING --> WIZARD
@@ -160,6 +163,7 @@ graph TB
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
     SETTINGS --> KEYCHAIN_MANIFEST
+    SETTINGS --> PASSPHRASE_WALLETS
     SETTINGS --> BACKUP_SETTINGS
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR

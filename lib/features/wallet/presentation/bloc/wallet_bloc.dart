@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -38,17 +39,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._seedStoreTypeDatasource,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
+    WalletFacade? walletFacade,
   }) : super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletUpdated>(_onUpdated);
+    on<WalletCatalogReloaded>(_onCatalogReloaded);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<ElectrumSyncResultChanged>(_onElectrumSyncResultChanged);
     on<WalletDeleted>(_onDeleted);
-    on<DismissBackupWarning>(_onDismissBackupWarning);
     on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
+    // Home follows the wallet feature's published catalog rather than deciding
+    // for itself which wallets are visible: a passphrase wallet appears while
+    // its private session is loaded and disappears the moment it is locked
+    // (spec 20.2).
+    _visibleCatalogSubscription = walletFacade
+        ?.watchVisibleWalletCatalog()
+        .listen((wallets) => add(WalletCatalogReloaded(wallets: wallets)));
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -67,6 +76,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _electrumSyncResultsSubscription;
+  StreamSubscription? _visibleCatalogSubscription;
 
   bool? _lastBitcoinSyncSuccess;
   bool? _lastLiquidSyncSuccess;
@@ -77,7 +87,46 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _electrumSyncResultsSubscription?.cancel();
+    _visibleCatalogSubscription?.cancel();
     return super.close();
+  }
+
+  Future<void> _onCatalogReloaded(
+    WalletCatalogReloaded event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      // A published catalog is already environment-scoped and
+      // visibility-filtered, so take it as-is. An empty one falls through to
+      // the usecase, which is the only place that turns "nothing to show" into
+      // NoWalletsFoundException.
+      final published = event.wallets;
+      final wallets = published != null && published.isNotEmpty
+          ? published
+          : await _getWalletsUsecase.execute();
+      emit(
+        state.copyWith(
+          status: WalletStatus.success,
+          wallets: wallets,
+          syncStatus: {
+            for (final wallet in wallets)
+              wallet.id: state.syncStatus[wallet.id] ?? false,
+          },
+          noWalletsFoundException: null,
+          error: null,
+        ),
+      );
+    } on NoWalletsFoundException catch (error) {
+      emit(
+        state.copyWith(
+          status: WalletStatus.failure,
+          noWalletsFoundException: error,
+          error: error,
+        ),
+      );
+    } catch (error) {
+      emit(state.copyWith(status: WalletStatus.failure, error: error));
+    }
   }
 
   Future<void> _onStarted(
@@ -377,13 +426,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } finally {
       emit(state.copyWith(isDeletingWallet: false));
     }
-  }
-
-  void _onDismissBackupWarning(
-    DismissBackupWarning event,
-    Emitter<WalletState> emit,
-  ) {
-    emit(state.copyWith(backupWarningDismissed: true));
   }
 
   void _onDismissLegacyStorageWarning(

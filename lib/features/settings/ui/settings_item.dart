@@ -256,7 +256,9 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.nostrKeys,
-      section: SettingsItemSection.backup,
+      // General settings, not the backup section: Nostr identities are a
+      // wallet-wide concern, and the stack deliberately surfaces them there.
+      section: SettingsItemSection.root,
       title: localization.settingsNostrKeysTitle,
       path: path(
         SettingsItemSection.backup,

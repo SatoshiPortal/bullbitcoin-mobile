@@ -50,9 +50,10 @@ import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_scre
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/passphrase_wallet/public/passphrase_wallet_routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -197,6 +198,7 @@ class SettingsRouter {
         builder: (context, state) => const ThemeSettingsScreen(),
       ),
       KeychainManifestRoutes.route,
+      PassphraseWalletRoutes.route,
 
       GoRoute(
         path: SettingsRoute.pinCode.path,
