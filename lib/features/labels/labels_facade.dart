@@ -6,9 +6,12 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
+import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/label_change_notifier.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
+import 'package:meta/meta.dart';
 
 export 'package:bb_mobile/features/labels/label.dart';
 export 'package:bb_mobile/features/labels/new_label.dart';
@@ -35,13 +38,17 @@ class LabelsFacade {
   final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
   final StoreLabelUsecase _storeLabelsUsecase;
   final TrashLabelUsecase _trashLabelUsecase;
+  final LabelChangeNotifier _changeNotifier;
 
   LabelsFacade({
     required this._fetchLabelByReferenceUsecase,
     required this._fetchAllLabelsUsecase,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
+    required this._changeNotifier,
   });
+
+  Stream<void> get changes => _changeNotifier.changes;
 
   Future<List<Label>> fetchByReference(String reference) async {
     final result = await _fetchLabelByReferenceUsecase.execute(reference);
@@ -63,6 +70,31 @@ class LabelsFacade {
           .toList(),
       (_) => const <Label>[],
     );
+  }
+
+  @useResult
+  Future<Result<List<Label>, LabelFailure>> fetchAllStrict() async {
+    final result = await _fetchAllLabelsUsecase.execute();
+    return result.map(
+      (labels) => labels
+          .map(LabelMapper.applicationLabelToLabel)
+          .toList(growable: false),
+    );
+  }
+
+  bool isValid(NewLabel label) {
+    try {
+      LabelEntity(
+        id: 0,
+        type: label.type,
+        label: label.label,
+        reference: label.reference,
+        origin: label.origin,
+      );
+      return true;
+    } on LabelValidationException {
+      return false;
+    }
   }
 
   /// Distinct user-defined label strings used to feed the suggestion chips
@@ -89,9 +121,15 @@ class LabelsFacade {
         origin: label.origin,
       ),
     );
-    return result.map((stored) => LabelMapper.applicationLabelToLabel(stored));
+    return result.map((stored) {
+      _changeNotifier.notify();
+      return LabelMapper.applicationLabelToLabel(stored);
+    });
   }
 
-  Future<Result<Null, LabelFailure>> trash(int id) =>
-      _trashLabelUsecase.execute(id);
+  Future<Result<Null, LabelFailure>> trash(int id) async {
+    final result = await _trashLabelUsecase.execute(id);
+    if (result case Ok()) _changeNotifier.notify();
+    return result;
+  }
 }

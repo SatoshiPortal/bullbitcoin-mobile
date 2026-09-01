@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/wallet/domain/entities/frozen_wallet_outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 
 abstract interface class WalletUtxoRepository {
+  Stream<void> get freezeChanges;
+
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId});
 
   /// Freezes the given outpoints, attributed to [walletId] (the wallet origin).
@@ -27,4 +30,16 @@ abstract interface class WalletUtxoRepository {
   /// `walletId` (the wallet origin) is kept only for BIP329 export attribution,
   /// never for exclusion.
   Future<List<Outpoint>> getAllFrozenOutpoints();
+
+  /// Returns every persisted freeze with its exact wallet attribution.
+  ///
+  /// Unlike [getAllFrozenOutpoints], this preserves an empty wallet id used by
+  /// imported, unattributed freezes. Backup/export callers must not infer a
+  /// wallet from the outpoint or reduce the id to a BIP329 origin.
+  Future<List<FrozenWalletOutpoint>> getAllFrozenWalletOutpoints();
+
+  /// Atomically upserts exact wallet-attributed freezes during recovery.
+  Future<void> restoreFrozenWalletOutpoints(
+    List<FrozenWalletOutpoint> outpoints,
+  );
 }
