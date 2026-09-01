@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -83,7 +84,11 @@ class WalletDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   _CopyField(
                     label: context.loc.walletDetailsDescriptorLabel,
-                    value: wallet.externalPublicDescriptor,
+                    value: DescriptorDerivation.combinePublicBitcoinDescriptors(
+                      externalDescriptor: wallet.externalPublicDescriptor,
+                      internalDescriptor: wallet.internalPublicDescriptor,
+                      network: wallet.network,
+                    ),
                     copyLabel: context.loc.walletDetailsCopyButton,
                   ),
                   const SizedBox(height: 18),

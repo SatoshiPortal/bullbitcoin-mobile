@@ -47,6 +47,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/refresh_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
+import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
@@ -65,6 +66,7 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    bool startWalletBackupTriggers = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -172,6 +174,10 @@ class AppLocator {
     ReplaceByFeeLocator.setup(locator);
     NostrIdentityLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
+    WalletBackupLocator.setup(locator);
+    if (startWalletBackupTriggers) {
+      WalletBackupLocator.start(locator);
+    }
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
