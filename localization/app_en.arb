@@ -14582,5 +14582,6 @@
   "sendErrorTransactionChanged": "The transaction details changed. Review the amount, destination, and fees, then confirm again.",
   "@sendErrorTransactionChanged": {
     "description": "Message shown when a transaction must be rebuilt because its details changed."
-  }
+  },
+  "walletBackupManifestPassphraseWallet": "Passphrase Wallet"
 }
