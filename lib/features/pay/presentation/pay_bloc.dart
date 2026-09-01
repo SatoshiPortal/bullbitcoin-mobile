@@ -20,8 +20,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -59,6 +61,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
     required this._getPayjoinUsecase,
+    required this._getPayjoinTradingEnabledUsecase,
+    required this._setPayjoinTradingEnabledUsecase,
     required this._getNetworkFeesUsecase,
     required this._calculateLiquidAbsoluteFeesUsecase,
     required this._calculateBitcoinAbsoluteFeesUsecase,
@@ -80,7 +84,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       transformer: droppable(),
     );
     on<PayPollOrderStatus>(_onPollOrderStatus);
-    on<PayPayjoinToggled>(_onPayjoinToggled);
+    on<PayPayjoinToggled>(_onPayjoinToggled, transformer: droppable());
     on<PayPayjoinSessionUpdated>(_onPayjoinSessionUpdated);
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<PayUtxosSelected>(_onUtxosSelected);
@@ -108,6 +112,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetPayjoinUsecase _getPayjoinUsecase;
+  final GetPayjoinTradingEnabledUsecase _getPayjoinTradingEnabledUsecase;
+  final SetPayjoinTradingEnabledUsecase _setPayjoinTradingEnabledUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
   final CalculateBitcoinAbsoluteFeesUsecase
@@ -506,6 +512,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
       );
       return;
     }
+    if (payPaymentState.isUpdatingPayjoin) return;
 
     if (payPaymentState.isPayinBroadcast) {
       emit(payPaymentState.copyWith(isConfirmingPayment: true));
@@ -610,7 +617,18 @@ class PayBloc extends Bloc<PayEvent, PayState>
                 confirmationDeadline == null
             ? null
             : PayjoinSessionWindow.forOrderDeadline(confirmationDeadline);
-        if (payPaymentState.isPayjoinEnabled && payjoinWindow != null) {
+        final tradingEnabled = await _getPayjoinTradingEnabledUsecase.execute();
+        final usePayjoin =
+            payPaymentState.isPayjoinEnabled &&
+            tradingEnabled &&
+            payjoinWindow != null;
+        if (!tradingEnabled && payPaymentState.isPayjoinEnabled) {
+          final current = _currentPaymentState;
+          if (current != null) {
+            emit(current.copyWith(isPayjoinEnabled: false));
+          }
+        }
+        if (usePayjoin) {
           final payjoinBip21 = payPaymentState.payOrder.bip21URI!;
           PayjoinSenderSession payjoinSender;
           try {
@@ -756,15 +774,42 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
   }
 
-  void _onPayjoinToggled(PayPayjoinToggled event, Emitter<PayState> emit) {
+  Future<void> _onPayjoinToggled(
+    PayPayjoinToggled event,
+    Emitter<PayState> emit,
+  ) async {
     final paymentState = _currentPaymentState;
     if (paymentState == null || paymentState.selectedWallet?.isLiquid == true) {
       return;
     }
-    if (paymentState.isConfirmingPayment || paymentState.isPayinBroadcast) {
+    if (paymentState.isConfirmingPayment ||
+        paymentState.isPayinBroadcast ||
+        paymentState.isUpdatingPayjoin) {
       return;
     }
-    emit(paymentState.copyWith(isPayjoinEnabled: event.enabled));
+    final previous = paymentState.isPayjoinEnabled;
+    emit(paymentState.copyWith(isUpdatingPayjoin: true, error: null));
+    final failure = await _setPayjoinTradingEnabledUsecase.execute(
+      event.enabled,
+    );
+    final current = _currentPaymentState;
+    if (current == null) return;
+    if (failure == null) {
+      emit(
+        current.copyWith(
+          isPayjoinEnabled: event.enabled,
+          isUpdatingPayjoin: false,
+        ),
+      );
+    } else {
+      emit(
+        current.copyWith(
+          isPayjoinEnabled: previous,
+          isUpdatingPayjoin: false,
+          error: failure,
+        ),
+      );
+    }
   }
 
   // From Sell: Poll for order status

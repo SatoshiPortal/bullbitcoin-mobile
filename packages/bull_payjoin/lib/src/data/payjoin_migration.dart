@@ -89,6 +89,8 @@ Future<void> importLegacyPayjoinData(
           PayjoinPoliciesCompanion.insert(
             id: const Value(1),
             enabled: defaults.enabled,
+            tradingEnabled: Value(defaults.tradingEnabled),
+            sendEnabled: Value(defaults.sendEnabled),
             minimumAmountSat: defaults.minimumAmount.value.toInt(),
             sessionLifetimeSeconds: defaults.sessionLifetime.inSeconds,
           ),

@@ -26,10 +26,12 @@ class SettingsFacade {
     requestConsent: requestConsent,
   );
 
-  Stream<({bool enabled, int minimumAmountSat})> watchPayjoinPolicy() {
+  Stream<({bool enabled, bool tradingEnabled, int minimumAmountSat})>
+  watchPayjoinPolicy() {
     return _watchPayjoinPolicyUsecase.execute().map(
       (policy) => (
         enabled: policy.enabled,
+        tradingEnabled: policy.tradingEnabled,
         minimumAmountSat: policy.minimumAmount.value.toInt(),
       ),
     );

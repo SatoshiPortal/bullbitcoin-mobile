@@ -27,6 +27,8 @@ sealed class SellError with _$SellError {
   /// operation, so the refreshed order is refused rather than paid.
   const factory SellError.depositAddressChanged() =
       DepositAddressChangedSellError;
+  const factory SellError.payjoinSettingUpdateFailed() =
+      PayjoinSettingUpdateFailedSellError;
   const factory SellError.unexpected({required String message}) =
       UnexpectedSellError;
   const factory SellError.insufficientBalance({
@@ -43,6 +45,8 @@ sealed class SellError with _$SellError {
     orderNotFound: () => context.loc.sellOrderNotFoundError,
     orderAlreadyConfirmed: () => context.loc.sellOrderAlreadyConfirmedError,
     depositAddressChanged: () => context.loc.sellDepositAddressChangedError,
+    payjoinSettingUpdateFailed: () =>
+        context.loc.payjoinTradingSettingUpdateError,
     unexpected: (message) => message,
     insufficientBalance: (_) => context.loc.sellInsufficientBalanceError,
   );

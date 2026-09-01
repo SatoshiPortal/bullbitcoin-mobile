@@ -14157,7 +14157,27 @@
   "@settingsPayjoinAdvancedTitle": {
     "description": "Title of the Payjoin advanced-settings screen containing minimum amount, session expiry and servers."
   },
-  "settingsPayjoinEnabledLabel": "Payjoin enabled",
+  "settingsPayjoinSendEnabledLabel": "Send with Payjoin",
+  "@settingsPayjoinSendEnabledLabel": {
+    "description": "Label next to the payjoin-on-sends switch; independent of the receive and trading switches"
+  },
+  "settingsPayjoinSendDescription": "Uses payjoin when sending bitcoin to a payment request that supports it. The sender takes no additional risk; payjoin risk considerations apply to the receiving side.",
+  "@settingsPayjoinSendDescription": {
+    "description": "Explanation under the payjoin-on-sends switch"
+  },
+  "settingsPayjoinTradingEnabledLabel": "Trade with Payjoin",
+  "@settingsPayjoinTradingEnabledLabel": {
+    "description": "Label next to the payjoin-for-trades switch (buy/sell/pay orders); independent of the global payjoin switch"
+  },
+  "settingsPayjoinTradingDescription": "Uses payjoin when sending or receiving bitcoin for Bull Bitcoin trades (buy, sell and bill payments). Independent of the other Payjoin settings: the Bull Bitcoin exchange is already the counterparty to the trade.",
+  "payjoinTradingSettingUpdateError": "Could not update the Payjoin trading setting. Try again.",
+  "@payjoinTradingSettingUpdateError": {
+    "description": "Shown when persisting the Payjoin trading preference fails."
+  },
+  "@settingsPayjoinTradingDescription": {
+    "description": "Explanation under the payjoin-for-trades switch"
+  },
+  "settingsPayjoinEnabledLabel": "Receive with Payjoin",
   "@settingsPayjoinEnabledLabel": {
     "description": "Label next to the global payjoin enable/disable switch"
   },
@@ -14360,10 +14380,6 @@
   "payjoinViaRegularSend": "via regular send",
   "@payjoinViaRegularSend": {
     "description": "Suffix appended to a completed order summary when the payment did not use payjoin"
-  },
-  "payjoinUseToggle": "Use payjoin",
-  "@payjoinUseToggle": {
-    "description": "Label of the toggle that lets the customer opt out of payjoin before confirming an order"
   },
   "addressViewErrorWalletNotFound": "This wallet could not be found.",
   "@addressViewErrorWalletNotFound": {

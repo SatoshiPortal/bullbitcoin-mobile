@@ -14,6 +14,8 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_is_dev_mode_usec
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_send_enabled_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
@@ -101,6 +103,16 @@ class SettingsLocator {
             locator<MarkPayjoinDisclaimerShownUsecase>(),
       ),
     );
+    locator.registerFactory<SetPayjoinTradingEnabledUsecase>(
+      () => SetPayjoinTradingEnabledUsecase(
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
+      ),
+    );
+    locator.registerFactory<SetPayjoinSendEnabledUsecase>(
+      () => SetPayjoinSendEnabledUsecase(
+        payjoinPolicy: locator<PayjoinPolicyAccess>(),
+      ),
+    );
     locator.registerFactory<SetPayjoinMinAmountUsecase>(
       () => SetPayjoinMinAmountUsecase(
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
@@ -138,6 +150,9 @@ class SettingsLocator {
         setExchangeTestnetBasicAuthUsecase:
             locator<SetExchangeTestnetBasicAuthUsecase>(),
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
+        setPayjoinTradingEnabledUsecase:
+            locator<SetPayjoinTradingEnabledUsecase>(),
+        setPayjoinSendEnabledUsecase: locator<SetPayjoinSendEnabledUsecase>(),
         watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
         setPayjoinMinAmountUsecase: locator<SetPayjoinMinAmountUsecase>(),
         setPayjoinExpireAfterSecUsecase:

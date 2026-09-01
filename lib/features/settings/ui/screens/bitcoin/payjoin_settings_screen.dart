@@ -28,6 +28,45 @@ class PayjoinSettingsScreen extends StatefulWidget {
 
 class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
   bool _updating = false;
+  bool _updatingTrading = false;
+  bool _updatingSend = false;
+
+  Future<void> _setPayjoinSendEnabled(bool enabled) async {
+    if (_updatingSend) return;
+    setState(() => _updatingSend = true);
+
+    final cubit = context.read<SettingsCubit>();
+    final result = await cubit.togglePayjoinSendEnabled(enabled);
+    result.fold((_) {}, (failure) {
+      log.warning(
+        'Failed to update Payjoin send from settings: ${failure.logMessage}',
+      );
+      if (mounted) {
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      }
+    });
+
+    if (mounted) setState(() => _updatingSend = false);
+  }
+
+  Future<void> _setPayjoinTradingEnabled(bool enabled) async {
+    if (_updatingTrading) return;
+    setState(() => _updatingTrading = true);
+
+    final cubit = context.read<SettingsCubit>();
+    final result = await cubit.togglePayjoinTradingEnabled(enabled);
+    result.fold((_) {}, (failure) {
+      log.warning(
+        'Failed to update Payjoin trading from settings: '
+        '${failure.logMessage}',
+      );
+      if (mounted) {
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      }
+    });
+
+    if (mounted) setState(() => _updatingTrading = false);
+  }
 
   Future<void> _setPayjoinEnabled(bool enabled) async {
     if (_updating) return;
@@ -58,57 +97,92 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     final isEnabled = context.select(
       (SettingsCubit cubit) => cubit.state.isPayjoinEnabled,
     );
+    final isTradingEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isPayjoinTradingEnabled,
+    );
+    final isSendEnabled = context.select(
+      (SettingsCubit cubit) => cubit.state.isPayjoinSendEnabled,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsPayjoinTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: BBText(
-                      context.loc.settingsPayjoinEnabledLabel,
-                      style: context.font.bodyLarge,
-                    ),
-                  ),
-                  BBSwitch(
-                    value: isEnabled,
-                    onChanged: _updating ? null : _setPayjoinEnabled,
-                  ),
-                ],
-              ),
-              const Gap(16),
-              BorderedTappableTile(
-                onTap: () async {
-                  await PayjoinDisclaimerDialog.show(context);
-                },
-                child: Row(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
                   children: [
                     Expanded(
                       child: BBText(
-                        context.loc.settingsPayjoinDisclaimerRowLabel,
+                        context.loc.settingsPayjoinEnabledLabel,
                         style: context.font.bodyLarge,
                       ),
                     ),
-                    const Icon(Icons.chevron_right),
+                    BBSwitch(
+                      value: isEnabled,
+                      onChanged: _updating ? null : _setPayjoinEnabled,
+                    ),
                   ],
                 ),
-              ),
-              if (isEnabled) ...[
+                const Gap(16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BBText(
+                        context.loc.settingsPayjoinTradingEnabledLabel,
+                        style: context.font.bodyLarge,
+                      ),
+                    ),
+                    BBSwitch(
+                      value: isTradingEnabled,
+                      onChanged: _updatingTrading
+                          ? null
+                          : _setPayjoinTradingEnabled,
+                    ),
+                  ],
+                ),
+                const Gap(4),
+                BBText(
+                  context.loc.settingsPayjoinTradingDescription,
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
+                  ),
+                ),
+                const Gap(16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BBText(
+                        context.loc.settingsPayjoinSendEnabledLabel,
+                        style: context.font.bodyLarge,
+                      ),
+                    ),
+                    BBSwitch(
+                      value: isSendEnabled,
+                      onChanged: _updatingSend ? null : _setPayjoinSendEnabled,
+                    ),
+                  ],
+                ),
+                const Gap(4),
+                BBText(
+                  context.loc.settingsPayjoinSendDescription,
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
+                  ),
+                ),
                 const Gap(16),
                 BorderedTappableTile(
-                  onTap: () => context.pushNamed(
-                    SettingsRoute.payjoinAdvancedSettings.name,
-                  ),
+                  onTap: () async {
+                    await PayjoinDisclaimerDialog.show(context);
+                  },
                   child: Row(
                     children: [
                       Expanded(
                         child: BBText(
-                          context.loc.settingsPayjoinAdvancedTitle,
+                          context.loc.settingsPayjoinDisclaimerRowLabel,
                           style: context.font.bodyLarge,
                         ),
                       ),
@@ -116,8 +190,27 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                     ],
                   ),
                 ),
+                if (isEnabled || isTradingEnabled || isSendEnabled) ...[
+                  const Gap(16),
+                  BorderedTappableTile(
+                    onTap: () => context.pushNamed(
+                      SettingsRoute.payjoinAdvancedSettings.name,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BBText(
+                            context.loc.settingsPayjoinAdvancedTitle,
+                            style: context.font.bodyLarge,
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right),
+                      ],
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

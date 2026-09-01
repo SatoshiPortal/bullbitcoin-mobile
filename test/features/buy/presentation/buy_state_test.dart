@@ -36,41 +36,33 @@ void main() {
   });
 
   group('BuyState Payjoin choice', () {
-    test(
-      'offers Payjoin only when both gates and a Bitcoin wallet are set',
-      () {
-        final state = BuyState(
-          userSummary: userSummary,
-          selectedWallet: bitcoinWallet,
-          payjoinGloballyEnabled: true,
-        );
+    test('offers Payjoin when the exchange supports it and a Bitcoin wallet is '
+        'set', () {
+      final state = BuyState(
+        userSummary: userSummary,
+        selectedWallet: bitcoinWallet,
+      );
 
-        expect(state.canOfferPayjoin, isTrue);
-        expect(
-          state.copyWith(payjoinGloballyEnabled: false).canOfferPayjoin,
-          isFalse,
-        );
+      expect(state.canOfferPayjoin, isTrue);
 
-        expect(
-          state
-              .copyWith(userSummary: _userSummary(payjoinReceiveEnabled: false))
-              .canOfferPayjoin,
-          isFalse,
-        );
+      expect(
+        state
+            .copyWith(userSummary: _userSummary(payjoinReceiveEnabled: false))
+            .canOfferPayjoin,
+        isFalse,
+      );
 
-        expect(
-          state.copyWith(selectedWallet: liquidWallet).canOfferPayjoin,
-          isFalse,
-        );
-        expect(state.copyWith(selectedWallet: null).canOfferPayjoin, isFalse);
-      },
-    );
+      expect(
+        state.copyWith(selectedWallet: liquidWallet).canOfferPayjoin,
+        isFalse,
+      );
+      expect(state.copyWith(selectedWallet: null).canOfferPayjoin, isFalse);
+    });
 
     test('uses Payjoin only when the pre-order toggle remains enabled', () {
       final state = BuyState(
         userSummary: userSummary,
         selectedWallet: bitcoinWallet,
-        payjoinGloballyEnabled: true,
         isPayjoinEnabled: true,
         isFiatCurrencyInput: false,
         bitcoinUnit: BitcoinUnit.sats,

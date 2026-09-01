@@ -30,8 +30,10 @@ class PlacePayOrderUsecase {
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
+      // A pay (bill payment) order is an exchange trade: gated by the
+      // payjoin TRADING setting, independent of the global payjoin setting.
       final payjoinEnabled = switch (await _payjoinPolicy.load()) {
-        Ok(:final value) => value.enabled,
+        Ok(:final value) => value.tradingEnabled,
         Err() => false,
       };
       final isTestnet = settings.environment.isTestnet;

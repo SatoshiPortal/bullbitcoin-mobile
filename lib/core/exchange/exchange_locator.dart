@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/http/authenticated_bullbitcoin_dio_factory.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/http/bullbitcoin_api_key_provider.dart';
@@ -345,6 +346,9 @@ class ExchangeLocator {
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+    locator.registerFactory<GetPayjoinTradingEnabledUsecase>(
+      () => GetPayjoinTradingEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
 
     locator.registerFactory<GetAnnouncementsUsecase>(

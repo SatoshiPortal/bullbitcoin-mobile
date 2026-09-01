@@ -213,6 +213,12 @@ abstract interface class _PayjoinRuntimeContract {
   Future<Result<PayjoinPolicy, PayjoinFailure>> load();
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watchPolicy();
   Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled);
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
+    bool tradingEnabled,
+  );
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  );
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount);
   Future<Result<PayjoinPolicy, PayjoinFailure>> setSessionLifetime(
     Duration lifetime,
@@ -309,6 +315,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         ),
         expireAfterSec: lifetime.inSeconds,
         amountSat: request.amount?.value.toInt(),
+        isTrade: request.isTrade,
       );
       return Ok(_toSession(session) as PayjoinReceiverSession);
     } catch (_) {
@@ -359,7 +366,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   @override
   Future<Result<void, PayjoinFailure>> disableAll() async {
     try {
-      await _engine.disableReceivers();
+      await _engine.settleAllReceivers();
       return const Ok(null);
     } catch (_) {
       return const Err(
@@ -468,6 +475,51 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         }
       }
       return Ok(saved);
+    });
+  }
+
+  @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
+    bool tradingEnabled,
+  ) async {
+    return _policyMutationLock.synchronized(() async {
+      late final PayjoinPolicy saved;
+      try {
+        saved = await _policy.setTradingEnabled(tradingEnabled);
+      } catch (_) {
+        return const Err(PayjoinStorageFailure('Policy update failed'));
+      }
+      if (!tradingEnabled) {
+        // Same as setEnabled(false): the sweep is policy-aware, so it settles
+        // exactly the trade receivers that just lost their permission and
+        // leaves enabled-gated sessions alone.
+        try {
+          await _engine.disableReceivers();
+        } catch (_) {
+          return const Err(
+            PayjoinInvalidSessionTransitionFailure(
+              'Policy disabled but receivers could not settle',
+            ),
+          );
+        }
+      }
+      return Ok(saved);
+    });
+  }
+
+  @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  ) async {
+    return _policyMutationLock.synchronized(() async {
+      try {
+        // No sweep on disable: sender sessions have no engine policy gate —
+        // once created the money is committed and the session must resolve.
+        // The switch only gates the creation of NEW sender sessions.
+        return Ok(await _policy.setSendEnabled(sendEnabled));
+      } catch (_) {
+        return const Err(PayjoinStorageFailure('Policy update failed'));
+      }
     });
   }
 
@@ -617,6 +669,16 @@ final class _PolicyRole implements PayjoinPolicyAccess {
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled) =>
       _runtime.setEnabled(enabled);
+
+  @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
+    bool tradingEnabled,
+  ) => _runtime.setTradingEnabled(tradingEnabled);
+
+  @override
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  ) => _runtime.setSendEnabled(sendEnabled);
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount) =>

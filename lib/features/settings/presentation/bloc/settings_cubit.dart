@@ -15,6 +15,8 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_exchange_testnet
 import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_send_enabled_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_trading_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_after_sec_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
@@ -42,6 +44,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._setErrorReportingUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
+    required this._setPayjoinTradingEnabledUsecase,
+    required this._setPayjoinSendEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
     required this._setPayjoinMinAmountUsecase,
     required this._setPayjoinExpireAfterSecUsecase,
@@ -66,6 +70,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
+  final SetPayjoinTradingEnabledUsecase _setPayjoinTradingEnabledUsecase;
+  final SetPayjoinSendEnabledUsecase _setPayjoinSendEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
   final SetPayjoinMinAmountUsecase _setPayjoinMinAmountUsecase;
   final SetPayjoinExpireAfterSecUsecase _setPayjoinExpireAfterSecUsecase;
@@ -226,6 +232,44 @@ class SettingsCubit extends Cubit<SettingsState> {
       final policy = state.payjoinPolicy;
       if (policy != null && policy.enabled != updated) {
         emit(state.copyWith(payjoinPolicy: policy.copyWith(enabled: updated)));
+      }
+      return Ok(updated);
+    }, (failure) => Err(failure));
+  }
+
+  Future<Result<bool, SettingsFailure>> togglePayjoinTradingEnabled(
+    bool enabled,
+  ) async {
+    log.config(
+      'Payjoin trading toggled: $enabled was ${state.isPayjoinTradingEnabled}',
+    );
+    final result = await _setPayjoinTradingEnabledUsecase.execute(enabled);
+    return result.fold((updated) {
+      final policy = state.payjoinPolicy;
+      if (policy != null && policy.tradingEnabled != updated) {
+        emit(
+          state.copyWith(
+            payjoinPolicy: policy.copyWith(tradingEnabled: updated),
+          ),
+        );
+      }
+      return Ok(updated);
+    }, (failure) => Err(failure));
+  }
+
+  Future<Result<bool, SettingsFailure>> togglePayjoinSendEnabled(
+    bool enabled,
+  ) async {
+    log.config(
+      'Payjoin send toggled: $enabled was ${state.isPayjoinSendEnabled}',
+    );
+    final result = await _setPayjoinSendEnabledUsecase.execute(enabled);
+    return result.fold((updated) {
+      final policy = state.payjoinPolicy;
+      if (policy != null && policy.sendEnabled != updated) {
+        emit(
+          state.copyWith(payjoinPolicy: policy.copyWith(sendEnabled: updated)),
+        );
       }
       return Ok(updated);
     }, (failure) => Err(failure));

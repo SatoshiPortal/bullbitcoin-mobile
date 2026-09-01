@@ -16,6 +16,8 @@ void main() {
             const PayjoinPolicyRow(
               id: 1,
               enabled: true,
+              tradingEnabled: true,
+              sendEnabled: true,
               minimumAmountSat: 10000,
               sessionLifetimeSeconds: 86400,
             ),

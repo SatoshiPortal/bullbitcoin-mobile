@@ -65,6 +65,16 @@ abstract interface class PayjoinPolicyAccess {
   Future<Result<PayjoinPolicy, PayjoinFailure>> setEnabled(bool enabled);
 
   @useResult
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setTradingEnabled(
+    bool tradingEnabled,
+  );
+
+  @useResult
+  Future<Result<PayjoinPolicy, PayjoinFailure>> setSendEnabled(
+    bool sendEnabled,
+  );
+
+  @useResult
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(Sats amount);
 
   @useResult

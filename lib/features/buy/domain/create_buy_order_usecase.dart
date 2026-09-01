@@ -60,9 +60,11 @@ class CreateBuyOrderUsecase {
           ? OrderBitcoinNetwork.liquid
           : OrderBitcoinNetwork.bitcoin;
 
+      // A buy order is an exchange trade: gated by the payjoin TRADING
+      // setting, independent of the global payjoin setting.
       final policyResult = await _payjoinPolicy.load();
       final payjoinEnabled = switch (policyResult) {
-        Ok(:final value) => value.enabled,
+        Ok(:final value) => value.tradingEnabled,
         Err() => false,
       };
       final wantsPayjoin =
@@ -77,6 +79,7 @@ class CreateBuyOrderUsecase {
         try {
           final result = await _payjoinReceiver.start(
             StartPayjoinReceiver(
+              isTrade: true,
               walletId: payjoinWalletId,
               network: isTestnet
                   ? BitcoinNetwork.testnet
