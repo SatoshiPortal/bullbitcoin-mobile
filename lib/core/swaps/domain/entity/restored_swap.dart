@@ -66,10 +66,24 @@ class RestorableSwap {
   final RestoredSwap swap;
   final bool existsLocally;
 
-  const RestorableSwap({required this.swap, required this.existsLocally});
+  /// True when the local row exists but records no on-chain resolution we
+  /// can trust (no proven claim/refund txid): the swap is stored yet stuck,
+  /// so a rescue must still be offered. A local row can lie about being
+  /// settled — the old vout-0 outspend recovery stamped Boltz's own refund
+  /// as our claim and wedged swaps as `completed` — so "exists locally"
+  /// alone must not hide the rescue.
+  final bool locallyUnresolved;
+
+  const RestorableSwap({
+    required this.swap,
+    required this.existsLocally,
+    this.locallyUnresolved = false,
+  });
 
   /// Actionable here: on-chain funds locked & unresolved
-  /// ([RestoredSwap.recoverable]) and not yet imported locally. Drives the
+  /// ([RestoredSwap.recoverable]) and either not imported locally or
+  /// imported but stuck ([locallyUnresolved]). Drives the
   /// pending-vs-completed display and whether a rescue can be attempted.
-  bool get isRescuable => swap.recoverable && !existsLocally;
+  bool get isRescuable =>
+      swap.recoverable && (!existsLocally || locallyUnresolved);
 }

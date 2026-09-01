@@ -1,0 +1,358 @@
+import 'dart:math';
+
+import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bull_sdk/boltz.dart' as boltz;
+
+/// Broadcasts the refund of a rescued swap and settles it, or — when the
+/// broadcast fails because the lockup is already spent — verifies on-chain
+/// who spent it before settling.
+///
+/// This is the refund driver the rescue flow lost when the legacy Boltz
+/// watcher was removed: `rescueSwap` stores the swap as `refundable`, and
+/// without this nothing ever moves the locked funds. Ported from the
+/// watcher's `_refundChain`/`_refundLnSend` (cooperative first, script path
+/// on failure, live fees floored at relay minimum), plus the
+/// destination-verified outspend recovery: an already-spent lockup only
+/// settles the swap when the spending tx is in OUR wallet — Boltz refunding
+/// its own expired lockup looks identical to a generic outspend check and
+/// must never be recorded as our refund.
+class RefundRescuedSwapUsecase {
+  final BoltzSwapRepository _swapRepository;
+  final WalletAddressRepository _walletAddressRepository;
+  final WalletTransactionRepository _walletTransactionRepository;
+  final FeesRepository _feesRepository;
+
+  RefundRescuedSwapUsecase({
+    required this._swapRepository,
+    required this._walletAddressRepository,
+    required this._walletTransactionRepository,
+    required this._feesRepository,
+  });
+
+  /// Returns the refund txid (freshly broadcast, or recovered from an
+  /// already-spent lockup verified as ours). Throws [RefundRescuedSwapException]
+  /// when no refund could be made; the swap then stays `refundable` so the
+  /// rescue can be retried.
+  Future<String> execute(Swap swap) async {
+    final refundTxid = switch (swap) {
+      ChainSwap() => swap.refundTxid,
+      LnSendSwap() => swap.refundTxid,
+      LnReceiveSwap() => throw RefundRescuedSwapException(
+        'reverse swap ${swap.id} is claimed, never refunded',
+      ),
+    };
+    if (refundTxid != null) {
+      log.fine(
+        'SWAP_RESCUE: ${swap.id} already has refundTxid=$refundTxid — '
+        'nothing to do',
+      );
+      return refundTxid;
+    }
+
+    final isLiquid = switch (swap.type) {
+      SwapType.liquidToBitcoin || SwapType.liquidToLightning => true,
+      SwapType.bitcoinToLiquid || SwapType.bitcoinToLightning => false,
+      _ => throw RefundRescuedSwapException(
+        'swap ${swap.id} type ${swap.type.name} has no refund path',
+      ),
+    };
+
+    log.fine(
+      'SWAP_RESCUE: refunding ${swap.id} type=${swap.type.name} '
+      'status=${swap.status.name} refundOnLiquid=$isLiquid',
+    );
+
+    try {
+      final refundAddress = await _resolveRefundAddress(swap);
+      log.fine('SWAP_RESCUE: ${swap.id} refund address $refundAddress');
+
+      final networkFee = await _feesRepository.getNetworkFees(
+        network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
+      );
+      final txSize = await _swapRepository.getSwapRefundTxSize(
+        swapId: swap.id,
+        swapType: swap.type,
+        refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
+      );
+      var absoluteFees = _absoluteWithFloor(
+        networkFee.toAbsolute(txSize).fastest.value.toInt(),
+        txSize: txSize,
+        isLiquid: isLiquid,
+      );
+      log.fine(
+        'SWAP_RESCUE: ${swap.id} cooperative refund txSize=$txSize '
+        'fees=$absoluteFees',
+      );
+
+      String txid;
+      try {
+        txid = await _broadcastRefund(
+          swap,
+          refundAddress: refundAddress,
+          absoluteFees: absoluteFees,
+          cooperate: true,
+        );
+      } catch (e, st) {
+        log.severe(
+          message:
+              'SWAP_RESCUE: cooperative refund failed for ${swap.id} '
+              '(${_errorMessage(e)}); trying script path',
+          error: e,
+          trace: st,
+        );
+        final scriptPathTxSize = await _swapRepository.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          isCooperative: false,
+          refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
+        );
+        absoluteFees = _absoluteWithFloor(
+          networkFee.toAbsolute(scriptPathTxSize).fastest.value.toInt(),
+          txSize: scriptPathTxSize,
+          isLiquid: isLiquid,
+        );
+        log.fine(
+          'SWAP_RESCUE: ${swap.id} script-path refund '
+          'txSize=$scriptPathTxSize fees=$absoluteFees',
+        );
+        txid = await _broadcastRefund(
+          swap,
+          refundAddress: refundAddress,
+          absoluteFees: absoluteFees,
+          cooperate: false,
+        );
+      }
+
+      await _swapRepository.updateSwapFields(
+        swap.id,
+        status: SwapStatus.refunded,
+        refundTxid: txid,
+        refundAddress: refundAddress,
+        refundFee: absoluteFees,
+        completionTime: DateTime.now(),
+      );
+      log.fine(
+        'SWAP_RESCUE: refund succeeded for ${swap.id} txid=$txid '
+        'fees=$absoluteFees',
+      );
+      await log.flush();
+      return txid;
+    } catch (e, st) {
+      log.severe(
+        message:
+            'SWAP_RESCUE: refund failed for ${swap.id}: '
+            '${_errorMessage(e)}',
+        error: e,
+        trace: st,
+      );
+      final recovered = await _recoverFromVerifiedOutspend(swap);
+      await log.flush();
+      if (recovered != null) return recovered;
+      if (_isNonFinalError(e)) {
+        throw RefundRescuedSwapException(
+          'refund for ${swap.id} is not yet final (timelock has not passed); '
+          'try again later',
+        );
+      }
+      throw RefundRescuedSwapException(
+        'refund failed for ${swap.id}: ${_errorMessage(e)}',
+      );
+    }
+  }
+
+  Future<String> _broadcastRefund(
+    Swap swap, {
+    required String refundAddress,
+    required int absoluteFees,
+    required bool cooperate,
+  }) {
+    switch (swap.type) {
+      case SwapType.liquidToBitcoin:
+        return _swapRepository.refundLiquidToBitcoinSwap(
+          swapId: swap.id,
+          liquidRefundAddress: refundAddress,
+          absoluteFees: absoluteFees,
+          cooperate: cooperate,
+        );
+      case SwapType.bitcoinToLiquid:
+        return _swapRepository.refundBitcoinToLiquidSwap(
+          swapId: swap.id,
+          bitcoinRefundAddress: refundAddress,
+          absoluteFees: absoluteFees,
+          cooperate: cooperate,
+        );
+      case SwapType.liquidToLightning:
+        return _swapRepository.refundLiquidToLightningSwap(
+          swapId: swap.id,
+          liquidAddress: refundAddress,
+          absoluteFees: absoluteFees,
+          cooperate: cooperate,
+        );
+      case SwapType.bitcoinToLightning:
+        return _swapRepository.refundBitcoinToLightningSwap(
+          swapId: swap.id,
+          bitcoinAddress: refundAddress,
+          absoluteFees: absoluteFees,
+          cooperate: cooperate,
+        );
+      case SwapType.lightningToBitcoin:
+      case SwapType.lightningToLiquid:
+        throw RefundRescuedSwapException(
+          'reverse swap ${swap.id} has no refund transaction',
+        );
+    }
+  }
+
+  /// After a failed broadcast, checks whether the lockup is already spent
+  /// and — only when the spending tx is in the wallet the refund pays into —
+  /// settles the swap on it. Spends by anyone else (Boltz refunding its own
+  /// lockup) are logged and ignored: the swap stays refundable.
+  Future<String?> _recoverFromVerifiedOutspend(Swap swap) async {
+    try {
+      final Network network;
+      SwapDirection? swapDirection;
+      switch (swap) {
+        case ChainSwap():
+          network = Network.fromEnvironment(
+            isTestnet: false,
+            isLiquid: swap.type == SwapType.liquidToBitcoin,
+          );
+          swapDirection = swap.type == SwapType.liquidToBitcoin
+              ? SwapDirection.liquidToBitcoin
+              : SwapDirection.bitcoinToLiquid;
+        case LnSendSwap():
+          network = Network.fromEnvironment(
+            isTestnet: false,
+            isLiquid: swap.type == SwapType.liquidToLightning,
+          );
+        case LnReceiveSwap():
+          return null;
+      }
+
+      final outspends = await _swapRepository.checkLockupOutspends(
+        swapId: swap.id,
+        swapType: swap.type,
+        network: network,
+        swapDirection: swapDirection,
+        isClaim: false,
+      );
+      if (outspends.isEmpty) {
+        log.fine(
+          'SWAP_RESCUE: ${swap.id} lockup outputs all unspent — funds still '
+          'locked, swap stays refundable',
+        );
+        return null;
+      }
+
+      final sendWalletId = switch (swap) {
+        ChainSwap() => swap.sendWalletId,
+        LnSendSwap() => swap.sendWalletId,
+        LnReceiveSwap() => null,
+      };
+      SwapTxOutspend? ours;
+      for (final candidate in outspends) {
+        final txid = candidate.txid;
+        if (txid == null || sendWalletId == null) continue;
+        final tx = await _walletTransactionRepository.getWalletTransaction(
+          txid,
+          walletId: sendWalletId,
+        );
+        if (tx != null) {
+          ours = candidate;
+          break;
+        }
+      }
+      if (ours == null) {
+        log.warning(
+          'SWAP_RESCUE: ${swap.id} lockup outputs spent by '
+          '${outspends.map((o) => o.txid).whereType<String>().join(',')} '
+          'but none is in our wallet — NOT settling (spender is likely '
+          'Boltz, not our refund); swap stays refundable',
+        );
+        return null;
+      }
+
+      final txid = ours.txid!;
+      log.fine(
+        'SWAP_RESCUE: ${swap.id} refund already on-chain as $txid '
+        '(verified in wallet) — settling',
+      );
+      await _swapRepository.updateSwapFields(
+        swap.id,
+        status: SwapStatus.refunded,
+        refundTxid: txid,
+        completionTime: ours.timestamp ?? DateTime.now(),
+      );
+      return txid;
+    } catch (e, st) {
+      log.severe(
+        message: 'SWAP_RESCUE: outspend check failed for ${swap.id}',
+        error: e,
+        trace: st,
+      );
+      return null;
+    }
+  }
+
+  Future<String> _resolveRefundAddress(Swap swap) async {
+    final (existing, sendWalletId) = switch (swap) {
+      ChainSwap() => (swap.refundAddress, swap.sendWalletId),
+      LnSendSwap() => (swap.refundAddress, swap.sendWalletId),
+      LnReceiveSwap() => (null, null),
+    };
+    if (existing != null) return existing;
+    if (sendWalletId == null) {
+      throw RefundRescuedSwapException(
+        'swap ${swap.id} has no wallet to refund into',
+      );
+    }
+    final address = await _walletAddressRepository.generateNewReceiveAddress(
+      walletId: sendWalletId,
+    );
+    await _swapRepository.updateSwapFields(
+      swap.id,
+      refundAddress: address.address,
+    );
+    return address.address;
+  }
+
+  /// Floors an absolute fee at the network's relay minimum so a low estimate
+  /// can never produce an unbroadcastable transaction. Liquid floors at
+  /// 0.1 sat/vb (plus discount-CT padding), Bitcoin at 1 sat/vb.
+  int _absoluteWithFloor(
+    int absolute, {
+    required int txSize,
+    required bool isLiquid,
+  }) {
+    final floor = isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
+    return max(absolute, floor);
+  }
+
+  bool _isNonFinalError(Object error) {
+    final message = _errorMessage(error).toLowerCase();
+    return message.contains('non-final') ||
+        message.contains('non_final') ||
+        message.contains('nonfinal') ||
+        message.contains('non-bip68-final') ||
+        message.contains('locktime');
+  }
+
+  String _errorMessage(Object error) {
+    if (error is boltz.BoltzError) {
+      return error.message;
+    }
+    return error.toString();
+  }
+}
+
+class RefundRescuedSwapException extends BullException {
+  RefundRescuedSwapException(super.message);
+}

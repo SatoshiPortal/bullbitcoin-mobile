@@ -3,6 +3,8 @@ import 'dart:io' show Platform;
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -58,6 +60,9 @@ class AppStartupLocator {
         checkBackupUsecase: locator<CheckBackupUsecase>(),
         isTorRequiredUsecase: locator<IsTorRequiredUsecase>(),
         initTorUsecase: locator<InitTorUsecase>(),
+        logSwapCensusUsecase: locator<LogSwapCensusUsecase>(),
+        verifyChainSwapCompletionsUsecase:
+            locator<VerifyChainSwapCompletionsUsecase>(),
       ),
     );
   }

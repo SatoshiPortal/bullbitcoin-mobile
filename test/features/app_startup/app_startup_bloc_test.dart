@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -31,6 +33,11 @@ class _MockIsTorRequiredUsecase extends Mock implements IsTorRequiredUsecase {}
 
 class _MockInitTorUsecase extends Mock implements InitTorUsecase {}
 
+class _MockLogSwapCensusUsecase extends Mock implements LogSwapCensusUsecase {}
+
+class _MockVerifyChainSwapCompletionsUsecase extends Mock
+    implements VerifyChainSwapCompletionsUsecase {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
@@ -46,6 +53,8 @@ void main() {
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockCheckLegacyInstallUsecase checkLegacyInstall;
   late _MockIsTorRequiredUsecase isTorRequired;
+  late _MockLogSwapCensusUsecase logSwapCensus;
+  late _MockVerifyChainSwapCompletionsUsecase verifyChainSwapCompletions;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -55,6 +64,8 @@ void main() {
     checkBackupUsecase: _MockCheckBackupUsecase(),
     isTorRequiredUsecase: isTorRequired,
     initTorUsecase: _MockInitTorUsecase(),
+    logSwapCensusUsecase: logSwapCensus,
+    verifyChainSwapCompletionsUsecase: verifyChainSwapCompletions,
   );
 
   setUp(() {
@@ -63,9 +74,13 @@ void main() {
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     checkLegacyInstall = _MockCheckLegacyInstallUsecase();
     isTorRequired = _MockIsTorRequiredUsecase();
+    logSwapCensus = _MockLogSwapCensusUsecase();
+    verifyChainSwapCompletions = _MockVerifyChainSwapCompletionsUsecase();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
     when(() => isTorRequired.execute()).thenAnswer((_) async => false);
+    when(() => logSwapCensus.execute()).thenAnswer((_) async {});
+    when(() => verifyChainSwapCompletions.execute()).thenAnswer((_) async {});
   });
 
   test(
