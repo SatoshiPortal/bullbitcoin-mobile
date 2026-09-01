@@ -217,7 +217,8 @@ class RecoverBullRemoteDatasource {
 
 /// Production bridge for the pinned client. It filters before returning so a
 /// complete public `/attempts` map never enters package state.
-final class RecoverBullAttemptMonitoringRemoteAdapter {
+final class RecoverBullAttemptMonitoringRemoteAdapter
+    implements RecoverBullAttemptMonitoringRemotePort {
   final RecoverBullRemoteDatasource datasource;
   final Future<RecoverBullTorRoute> Function() routeFactory;
 
@@ -226,6 +227,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter {
     required this.routeFactory,
   });
 
+  @override
   Future<RecoverBullAttemptsSnapshot?> poll({
     required String? etag,
     required List<String> backupDigests,
@@ -267,7 +269,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter {
           ),
       };
     } on KeyServerException catch (error) {
-      if (error.code == 503) {
+      if (error.code == 404 || error.code == 503) {
         return RecoverBullAttemptsSnapshot(
           collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
             0,

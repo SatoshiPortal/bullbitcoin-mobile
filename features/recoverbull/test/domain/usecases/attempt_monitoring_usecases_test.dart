@@ -457,6 +457,47 @@ void main() {
     await db.close();
   });
 
+  test(
+    'successful fetch without status adopts from the global snapshot',
+    () async {
+      final (db, store) = await build();
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {store.digestFor(id): 4},
+          windowStartedAt: {store.digestFor(id): window},
+        );
+
+      await RecordLocalAttemptUsecase(
+        store,
+        remote: remote,
+      ).execute(backupIdHex: _hex(id));
+
+      final row = (await store.monitoredBackups()).single;
+      expect(row.expectedServerDistinctCandidateTotal, 4);
+      expect(row.currentWindow, attemptWindowIdentity(window));
+      expect(row.lastWarningWindow, attemptWindowIdentity(window));
+      await db.close();
+    },
+  );
+
+  test('missing digest in the global snapshot is not adopted', () async {
+    final (db, store) = await build();
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: {store.digestFor(List<int>.filled(16, 9)): 4},
+      );
+
+    await RecordLocalAttemptUsecase(
+      store,
+      remote: remote,
+    ).execute(backupIdHex: _hex(id));
+
+    expect(await store.monitoredBackups(), isEmpty);
+    await db.close();
+  });
+
   test('opaque alert handle is not its digest or URL', () {
     final alert = public.RecoverBullAttemptAlert(
       public.RecoverBullAttemptAlertKind.suspiciousActivity,

@@ -75,14 +75,18 @@ class FetchVaultKeyFromServerUsecase {
     EncryptedVault vault,
     VaultKeyFetchResult value,
   ) async {
-    if (value.attemptStatus != null) {
-      try {
-        final alert = await _recordAttempt?.execute(
-          backupIdHex: vault.id,
-          attemptStatus: value.attemptStatus,
-        );
-        if (alert != null) _alertPort?.publish(alert);
-      } catch (_) {}
+    try {
+      final alert = await _recordAttempt?.execute(
+        backupIdHex: vault.id,
+        attemptStatus: value.attemptStatus,
+      );
+      if (alert != null) _alertPort?.publish(alert);
+    } catch (error, stackTrace) {
+      log.warning(
+        'attempt monitoring update failed',
+        error: error,
+        trace: stackTrace,
+      );
     }
     return Ok(value.vaultKey);
   }

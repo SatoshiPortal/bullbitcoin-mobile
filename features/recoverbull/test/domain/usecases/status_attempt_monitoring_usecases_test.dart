@@ -11,7 +11,6 @@ import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
-import 'package:convert/convert.dart' as convert;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -48,7 +47,6 @@ void main() {
       backupKey: List<int>.filled(32, 9),
     );
     final vault = EncryptedVault(file: backup.toJson());
-    await store.registerBackup(convert.hex.decode(vault.id));
     final repository = _Repository();
     final session = _Session();
     final route = RecoverBullTorRoute(
@@ -90,6 +88,7 @@ void main() {
       recordAttempt: record,
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
+    expect(await store.monitoredBackups(), hasLength(1));
     await TrashVaultKeyUsecase(
       repository: repository,
       ensureSession: session,
@@ -97,12 +96,7 @@ void main() {
       log: const TestLogSink(),
     ).execute(vault: vault, password: 'password');
 
-    expect(
-      (await store.monitoredBackups())
-          .single
-          .expectedServerDistinctCandidateTotal,
-      1,
-    );
+    expect(await store.monitoredBackups(), isEmpty);
     await database.close();
   });
 }

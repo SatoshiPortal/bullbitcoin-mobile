@@ -170,7 +170,10 @@ final class RecoverBullFeature {
     final fetchVaultKey = FetchVaultKeyFromServerUsecase(
       repository: repository,
       ensureTor: ensureTor,
-      recordAttempt: RecordLocalAttemptUsecase(attemptMonitoringStore),
+      recordAttempt: RecordLocalAttemptUsecase(
+        attemptMonitoringStore,
+        remote: productionAttemptMonitoringRemote,
+      ),
       alertPort: attemptMonitoring,
       log: log,
     );

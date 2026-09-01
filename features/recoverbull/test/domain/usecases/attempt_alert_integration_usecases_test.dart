@@ -26,6 +26,19 @@ class _Repository extends Mock implements RecoverBullRepository {}
 
 class _Ensure extends Mock implements EnsureRecoverBullTorSessionUsecase {}
 
+final class _ServiceBusyRemote
+    implements RecoverBullAttemptMonitoringRemotePort {
+  @override
+  Future<RecoverBullAttemptsSnapshot?> poll({
+    required String? etag,
+    required List<String> backupDigests,
+  }) async => RecoverBullAttemptsSnapshot(
+    collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+    totalAttempts: const {},
+    serviceBusy: true,
+  );
+}
+
 RecoverBullTorRoute _route({Future<void> Function()? onClose}) =>
     RecoverBullTorRoute(
       TorRoute(
@@ -134,6 +147,46 @@ void main() {
     expect(await monitoring.alerts.first, isEmpty);
     await database.close();
   });
+
+  test(
+    'successful fetch enrolls a pending adoption when attempts are unavailable',
+    () async {
+      final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+      await database.ensureState();
+      final store = RecoverBullAttemptMonitoringStore(database);
+      final backup = sdk.RecoverBull.createBackup(
+        secret: [1, 2, 3],
+        backupKey: List<int>.filled(32, 9),
+      );
+      final vault = EncryptedVault(file: backup.toJson());
+      final repository = _Repository();
+      when(
+        () => repository.fetchVaultKeyWithStatus(any(), any(), any(), any()),
+      ).thenAnswer(
+        (_) async => const Ok(
+          VaultKeyFetchResult(vaultKey: 'aabb', attemptStatus: null),
+        ),
+      );
+
+      final result = await FetchVaultKeyFromServerUsecase(
+        repository: repository,
+        ensureTor: _Ensure(),
+        recordAttempt: RecordLocalAttemptUsecase(
+          store,
+          remote: _ServiceBusyRemote(),
+        ),
+        log: const TestLogSink(),
+      ).execute(vault: vault, password: 'password', route: _route());
+
+      expect(result, isA<Ok>());
+      final row = (await store.monitoredBackups()).single;
+      expect(row.origin, 'adopted');
+      expect(row.expectedServerDistinctCandidateTotal, 0);
+      expect(row.currentWindow, 0);
+      expect(row.lastWarningWindow, 0);
+      await database.close();
+    },
+  );
 
   test(
     'distinct suspicious alerts remain independently acknowledgeable',

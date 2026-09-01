@@ -123,7 +123,7 @@ final class RecoverBullAttemptMonitoringStore {
       await _row(_digest(identifier)) != null;
 
   Future<void> removeBackup(String backupIdHex) async {
-    final digest = Uint8List.fromList(_decodeHash(backupIdHex));
+    final digest = _digest(_decodeHash(backupIdHex));
     await (database.delete(
       database.recoverbullMonitoredBackup,
     )..where((row) => row.digest.equals(digest))).go();

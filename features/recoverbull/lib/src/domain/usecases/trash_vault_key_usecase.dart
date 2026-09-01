@@ -59,6 +59,9 @@ final class TrashVaultKeyUsecase {
           if (alert != null) alertPort?.publish(alert);
         } catch (_) {}
       }
+      if (result case Ok()) {
+        await recordAttempt?.store.removeBackup(vault.id);
+      }
       return result;
     } finally {
       if (ownsRoute) {
