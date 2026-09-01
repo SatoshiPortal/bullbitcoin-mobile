@@ -101,6 +101,7 @@ final class CheckBackupAttemptMonitoringUsecase {
         _hex(entry.key): entry.value,
     };
     for (final row in rows) {
+      if (row.currentWindow == 0 && row.lastWarningWindow == 0) continue;
       final hash = _hex(row.digest);
       final observed = entries[hash];
       if (observed == null ||

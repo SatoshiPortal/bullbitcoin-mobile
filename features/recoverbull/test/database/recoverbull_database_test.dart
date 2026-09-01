@@ -1,13 +1,25 @@
-import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
+import 'package:bull_recoverbull/src/domain/usecases/check_backup_attempt_monitoring_usecase.dart';
+import 'package:bull_recoverbull/src/public/recoverbull.dart';
 import 'package:drift/native.dart';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 import 'dart:io';
 import 'package:path/path.dart' as p;
+
+final class _DatabaseTestRemote
+    implements RecoverBullAttemptMonitoringRemotePort {
+  RecoverBullAttemptsSnapshot? response;
+
+  @override
+  Future<RecoverBullAttemptsSnapshot?> poll({
+    required String? etag,
+    required List<String> backupDigests,
+  }) async => response;
+}
 
 void main() {
   test('new state starts without imported backup status', () async {
@@ -153,7 +165,7 @@ void main() {
   });
 
   test(
-    'storing a changed server atomically invalidates attempt monitoring state',
+    'storing a changed server preserves identifiers and resets monitoring state',
     () async {
       final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
       await database.ensureState();
@@ -188,33 +200,90 @@ void main() {
       expect(state.lastUnavailabilityWarningAt, isNull);
       expect(state.generation, 1);
       expect(state.revision, 1);
-      expect(await store.monitoredBackups(), isEmpty);
+      expect(await store.monitoredBackups(), hasLength(1));
+      final remote = _DatabaseTestRemote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: DateTime.utc(2026, 1, 2),
+          totalAttempts: {(await store.monitoredBackups()).single.digest: 1},
+        );
+      expect(
+        await CheckBackupAttemptMonitoringUsecase(
+          store: store,
+          remote: remote,
+          clock: () => DateTime.utc(2026, 1, 2, 1),
+        ).execute(),
+        isEmpty,
+      );
       await database.close();
     },
   );
 
   test(
-    'schema has exactly the two logical tables and bundled sqlite is usable',
+    'public setServer preserves monitored backups while resetting state',
     () async {
-      final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
-      final tables = await database
-          .customSelect(
-            "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'",
-          )
-          .get();
-      expect(tables.map((row) => row.read<String>('name')).toSet(), {
-        'recoverbull_state',
-        'recoverbull_monitored_backup',
-      });
-      expect(
-        (await database.customSelect('SELECT sqlite_version()').getSingle())
-            .read<String>('sqlite_version()'),
-        isNotEmpty,
+      final directory = await Directory.systemTemp.createTemp(
+        'recoverbull-server-',
       );
-      expect(sqlite.sqlite3.version.toString(), isNotEmpty);
-      await database.close();
+      final path = p.join(directory.path, 'state.sqlite');
+      final lifecycle = RecoverBullLifecycle();
+      final database = await lifecycle.openDatabase(path);
+      final store = RecoverBullAttemptMonitoringStore(database);
+      await store.registerBackup(List<int>.filled(32, 1));
+      await store.recordOwnAttempt(
+        List<int>.filled(32, 1),
+        serverTotalAttempts: 4,
+        window: DateTime.utc(2026),
+      );
+      await database
+          .update(database.recoverbullState)
+          .write(
+            RecoverbullStateCompanion(
+              etag: const Value('etag'),
+              collectionStartedAt: Value(DateTime.utc(2026)),
+              lastSuccessfulCheckAt: Value(DateTime.utc(2026)),
+            ),
+          );
+
+      final core = RecoverBullCore(
+        config: RecoverBullConfig(databasePath: path),
+        dependencies: const RecoverBullDependencies(),
+        lifecycle: lifecycle,
+      );
+      await core.setServer(Uri.parse('http://newexample.onion'));
+
+      final row = (await store.monitoredBackups()).single;
+      expect(row.expectedServerDistinctCandidateTotal, 0);
+      expect(row.currentWindow, 0);
+      expect(row.lastWarningWindow, isNull);
+      final state = await store.state();
+      expect(state.etag, isNull);
+      expect(state.collectionStartedAt, isNull);
+      expect(state.lastSuccessfulCheckAt, isNull);
+      await lifecycle.dispose();
+      await directory.delete(recursive: true);
     },
   );
+
+  test('schema has the monitoring tables and bundled sqlite is usable', () async {
+    final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    final tables = await database
+        .customSelect(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'",
+        )
+        .get();
+    expect(tables.map((row) => row.read<String>('name')).toSet(), {
+      'recoverbull_state',
+      'recoverbull_monitored_backup',
+      'recoverbull_drive_backup_cache',
+    });
+    expect(
+      (await database.customSelect('SELECT sqlite_version()').getSingle())
+          .read<String>('sqlite_version()'),
+      isNotEmpty,
+    );
+    expect(sqlite.sqlite3.version.toString(), isNotEmpty);
+    await database.close();
+  });
 
   test(
     'attempt monitoring polling cannot overwrite the own-attempt baseline',

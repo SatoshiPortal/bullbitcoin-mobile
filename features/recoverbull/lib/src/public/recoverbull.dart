@@ -425,7 +425,24 @@ final class RecoverBullCore {
         state.serverUrlOverride ?? config.effectiveDefaultServer.toString(),
       );
       if (oldEffective == server) return;
-      await db.delete(db.recoverbullMonitoredBackup).go();
+      final monitoredBackups = await db
+          .select(db.recoverbullMonitoredBackup)
+          .get();
+      for (final backup in monitoredBackups) {
+        await (db.update(db.recoverbullMonitoredBackup)..where(
+              (row) =>
+                  row.digest.equals(backup.digest) &
+                  row.rowRevision.equals(backup.rowRevision),
+            ))
+            .write(
+              RecoverbullMonitoredBackupCompanion(
+                expectedServerDistinctCandidateTotal: const Value(0),
+                currentWindow: const Value(0),
+                lastWarningWindow: const Value(null),
+                rowRevision: Value(backup.rowRevision + 1),
+              ),
+            );
+      }
       await db
           .update(db.recoverbullState)
           .write(

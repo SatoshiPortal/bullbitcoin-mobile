@@ -303,6 +303,22 @@ final class RecoverBullAttemptMonitoringStore {
                   .firstOrNull ??
               snapshot.collectionStartedAt,
         );
+        if (row.currentWindow == 0 && row.lastWarningWindow == 0) {
+          await (database.update(database.recoverbullMonitoredBackup)..where(
+                (t) =>
+                    t.digest.equals(row.digest) &
+                    t.rowRevision.equals(row.rowRevision),
+              ))
+              .write(
+                RecoverbullMonitoredBackupCompanion(
+                  expectedServerDistinctCandidateTotal: Value(observed),
+                  currentWindow: Value(observedWindow),
+                  lastWarningWindow: const Value(null),
+                  rowRevision: Value(row.rowRevision + 1),
+                ),
+              );
+          continue;
+        }
         if (row.currentWindow != 0 && row.currentWindow != observedWindow) {
           await (database.update(database.recoverbullMonitoredBackup)..where(
                 (t) =>

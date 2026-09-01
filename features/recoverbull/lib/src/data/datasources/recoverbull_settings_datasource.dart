@@ -21,7 +21,17 @@ class RecoverbullSettingsDatasource {
         state.serverUrlOverride ?? _defaultServer.toString(),
       );
       if (oldEffective == url) return;
-      await _database.delete(_database.recoverbullMonitoredBackup).go();
+      await (_database.update(_database.recoverbullMonitoredBackup)).write(
+        const RecoverbullMonitoredBackupCompanion(
+          expectedServerDistinctCandidateTotal: Value(0),
+          currentWindow: Value(0),
+          // Zero is a private marker for a row awaiting its first observation
+          // on the new server. A newly created row keeps null and still alerts
+          // on its first server-side attempt.
+          lastWarningWindow: Value(0),
+          rowRevision: Value(0),
+        ),
+      );
       await _database
           .update(_database.recoverbullState)
           .write(
