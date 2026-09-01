@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_routes.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
@@ -30,6 +31,7 @@ enum SettingsItemId {
   backup,
   startBackup,
   recoverbull,
+  nostrKeys,
   labels,
   transactionHistory,
   walletSettings,
@@ -237,6 +239,18 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchRecoverbullKeywords,
         [english.backupSettingsRecoverBullSettings],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.nostrKeys,
+      section: SettingsItemSection.backup,
+      title: localization.settingsNostrKeysTitle,
+      path: path(
+        SettingsItemSection.backup,
+        localization.settingsNostrKeysTitle,
+      ),
+      icon: Icons.key,
+      open: (context) => context.pushNamed(KeychainManifestRoutes.listName),
+      keywords: [english.settingsNostrKeysTitle, 'nostr', 'nsec', 'npub'],
     ),
     SettingsItem(
       id: SettingsItemId.labels,

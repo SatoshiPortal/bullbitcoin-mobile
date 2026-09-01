@@ -73,4 +73,20 @@ void main() {
       expect(findTextField(tester).maxLines, 3);
     });
   });
+
+  testWidgets('shows its label and validation message', (tester) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullInputText(
+          value: '',
+          label: 'Name',
+          errorText: 'Name is required',
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Name is required'), findsOneWidget);
+  });
 }

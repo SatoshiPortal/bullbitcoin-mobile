@@ -28,6 +28,7 @@ graph TB
     NETWORK[Network]
     BIP85[BIP85]
     NOSTR_IDENTITY[Nostr Identity]
+    KEYCHAIN_MANIFEST[Keychain Manifest<br/>---<br/>Wallet inventory, Nostr keys,<br/>passphrase wallet records]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -140,6 +141,7 @@ graph TB
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
+    SETTINGS --> KEYCHAIN_MANIFEST
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
