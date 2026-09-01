@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -51,7 +52,9 @@ void main() {
         seed: seed,
         network: Network.bitcoinMainnet,
         scriptType: ScriptType.bip84,
+        provenance: WalletProvenance.defaultSeed,
         isDefault: true,
+        birthday: null,
       ),
     ).thenThrow(StateError('recovery failed'));
     final usecase = CheckForExistingDefaultWalletsUsecase(

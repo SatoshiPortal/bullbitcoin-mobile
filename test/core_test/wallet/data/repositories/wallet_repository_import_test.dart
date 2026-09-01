@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -534,6 +535,8 @@ void main() {
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
       isDefault: true,
+      birthday: null,
+      provenance: WalletProvenance.defaultSeed,
     );
 
     final stored =
@@ -627,6 +630,8 @@ void main() {
       seed: Seed.bytes(bytes: seedBytes, masterFingerprint: _fingerprint),
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
+      birthday: null,
+      provenance: WalletProvenance.importedMnemonic,
     );
 
     final stored =

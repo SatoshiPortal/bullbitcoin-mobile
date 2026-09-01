@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -66,6 +67,7 @@ void main() {
           network: Network.liquidMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
+          provenance: WalletProvenance.defaultSeed,
           birthday: any(named: 'birthday'),
         ),
       ).thenThrow(Exception('Liquid wallet creation failed'));
@@ -81,6 +83,7 @@ void main() {
           network: Network.bitcoinMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
+          provenance: WalletProvenance.defaultSeed,
           birthday: any(named: 'birthday'),
         ),
       );
@@ -134,6 +137,7 @@ void main() {
           network: Network.liquidMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
+          provenance: WalletProvenance.defaultSeed,
           birthday: any(named: 'birthday'),
         ),
       ).thenAnswer((_) async => liquidWallet);
@@ -143,6 +147,7 @@ void main() {
           network: Network.bitcoinMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
+          provenance: WalletProvenance.defaultSeed,
           birthday: any(named: 'birthday'),
         ),
       ).thenThrow(Exception('Bitcoin wallet creation failed'));

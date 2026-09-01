@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -37,6 +38,7 @@ void main() {
         network: Network.bitcoinTestnet,
         scriptType: ScriptType.bip84,
         isDefault: false,
+        provenance: WalletProvenance.defaultSeed,
       );
 
       expect(

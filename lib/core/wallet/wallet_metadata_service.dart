@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.da
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -107,6 +109,8 @@ class WalletMetadataService {
     required ScriptType scriptType,
     String? label,
     required bool isDefault,
+    required WalletProvenance provenance,
+    bool? seedPassphraseUsed,
     DateTime? birthday,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(
@@ -179,6 +183,10 @@ class WalletMetadataService {
       isPhysicalBackupTested: false,
       isEncryptedVaultTested: false,
       birthday: birthday,
+      provenance: provenance,
+      seedPassphraseUsed:
+          seedPassphraseUsed ??
+          (seed is MnemonicSeed ? seed.passphrase?.isNotEmpty ?? false : null),
     );
   }
 
