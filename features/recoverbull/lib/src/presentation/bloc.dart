@@ -26,11 +26,11 @@ import '../domain/usecases/connect_to_key_server_usecase.dart';
 import '../domain/recoverbull_failure.dart';
 import '../router/flow_type.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_tor/tor.dart' as tor;
 
-part 'bloc.freezed.dart';
+part 'bloc.mapper.dart';
 part 'event.dart';
 part 'state.dart';
 

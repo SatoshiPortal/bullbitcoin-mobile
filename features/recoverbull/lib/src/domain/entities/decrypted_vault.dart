@@ -1,22 +1,41 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+// Public constructor names differ from private backing fields to preserve immutable views.
+// ignore_for_file: prefer_initializing_formals
 
-part 'decrypted_vault.freezed.dart';
-part 'decrypted_vault.g.dart';
+import 'dart:collection';
 
-@Freezed(toStringOverride: false)
-abstract class DecryptedVault with _$DecryptedVault {
-  const factory DecryptedVault({
-    @Default([]) List<String> mnemonic,
+import 'package:dart_mappable/dart_mappable.dart';
+
+part 'decrypted_vault.mapper.dart';
+
+@MappableClass(
+  generateMethods:
+      GenerateMethods.decode | GenerateMethods.equals | GenerateMethods.copy,
+)
+final class DecryptedVault with DecryptedVaultMappable {
+  final List<String> _mnemonic;
+  final String masterFingerprint;
+  final bool isEncryptedVaultTested;
+  final bool isPhysicalBackupTested;
+  final DateTime? latestEncryptedBackup;
+  final DateTime? latestPhysicalBackup;
+
+  const DecryptedVault({
+    List<String> mnemonic = const [],
     // TODO(azad): masterFingerprint should be computed from mnemonic
-    @Default('') String masterFingerprint,
-    @Default(false) bool isEncryptedVaultTested,
-    @Default(false) bool isPhysicalBackupTested,
-    DateTime? latestEncryptedBackup,
-    DateTime? latestPhysicalBackup,
-  }) = _DecryptedVault;
+    this.masterFingerprint = '',
+    this.isEncryptedVaultTested = false,
+    this.isPhysicalBackupTested = false,
+    this.latestEncryptedBackup,
+    this.latestPhysicalBackup,
+  }) : _mnemonic = mnemonic;
 
   factory DecryptedVault.fromJson(Map<String, dynamic> json) =>
-      _$DecryptedVaultFromJson(json);
+      DecryptedVaultMapper.fromMap(json);
+
+  List<String> get mnemonic => UnmodifiableListView(_mnemonic);
+
+  Map<String, dynamic> toJson() =>
+      DecryptedVaultMapper.ensureInitialized().encodeMap<DecryptedVault>(this);
 
   @override
   String toString() => 'DecryptedVault(<redacted>)';

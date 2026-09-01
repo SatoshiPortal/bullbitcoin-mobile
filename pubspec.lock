@@ -550,6 +550,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.0"
+  dart_mappable_builder:
+    dependency: transitive
+    description:
+      name: dart_mappable_builder
+      sha256: eb89efebad96bae52333ae4bd6b8fdcfb44c921f8a38f44893f2c72ed15c860c
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.8.0"
   dart_style:
     dependency: transitive
     description:

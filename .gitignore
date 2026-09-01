@@ -36,6 +36,7 @@ op/builds
 lib/generated
 *.freezed.dart
 *.g.dart
+/features/recoverbull/**/*.mapper.dart
 
 # l10n internationalization related
 localization*.dart
