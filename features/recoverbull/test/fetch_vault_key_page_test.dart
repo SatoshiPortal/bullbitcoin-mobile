@@ -4,7 +4,7 @@ import 'package:bull_recoverbull/src/domain/presentation_failure.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/ui/pages/fetch_vault_key_page.dart';
 import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
-import 'package:bull_recoverbull/l10n/recoverbull_localizations.dart';
+import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../l10n/recoverbull_localizations.dart';
+import '../../../generated/l10n/recoverbull_localizations.dart';
 import '../../public/recoverbull.dart';
 
 /// Opaque attempt monitoring advisory for shell placement. It accepts only public alert

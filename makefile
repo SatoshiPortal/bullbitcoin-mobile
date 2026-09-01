@@ -47,7 +47,7 @@ bootstrap:
 	@echo "🧩 Melos bootstrap"
 	@fvm dart run melos bootstrap
 
-analyze:
+analyze: build-runner translations
 	@echo "🔍 Analyze whole project (matches CI: --fatal-warnings --fatal-infos)"
 	@fvm flutter analyze --fatal-warnings --fatal-infos
 
@@ -80,17 +80,16 @@ pr-governance-test:
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
-	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
-	@(cd features/recoverbull && fvm dart run build_runner build --force-jit)
+	@fvm dart run build_runner build --workspace --force-jit
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@bash -c 'trap "kill \$$(jobs -p) 2>/dev/null || true" INT TERM EXIT; fvm dart run build_runner watch --delete-conflicting-outputs --force-jit & (cd packages/bull_payjoin && fvm dart run build_runner watch --force-jit) & (cd features/recoverbull && fvm dart run build_runner watch --force-jit) & wait'
+	@fvm dart run build_runner watch --workspace --force-jit
 
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter gen-l10n
+	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/recoverbull && fvm flutter gen-l10n)
 
 hooks:
@@ -399,7 +398,7 @@ devcontainer-up:
 
 test: unit-test integration-test
 
-unit-test:
+unit-test: build-runner translations
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
 	@set -e; for p in packages/*/; do \
@@ -427,7 +426,7 @@ unit-test:
 # integration_test/` does). all_test.dart is a generated, gitignored artifact —
 # tools/gen_all_test.dart regenerates it from disk below, so adding a test file
 # needs no manual wiring.
-integration-test:
+integration-test: build-runner translations
 	@echo "🧪 integration tests"
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded

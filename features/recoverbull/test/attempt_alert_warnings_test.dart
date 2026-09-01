@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bull_recoverbull/l10n/recoverbull_localizations.dart';
+import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart'
     hide RecoverBullAttemptAlert, RecoverBullAttemptAlertKind;

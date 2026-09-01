@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../../l10n/recoverbull_localizations.dart';
+import '../../generated/l10n/recoverbull_localizations.dart';
 
 extension RecoverBullLocalizationsContext on BuildContext {
   RecoverBullLocalizations get recoverBullLoc =>
