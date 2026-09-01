@@ -128,6 +128,7 @@ graph TB
     SWAPS --> BULL_PAYJOIN
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
+    SETTINGS --> SP
     WALLETS --> SP
     SWAPS --> UTXO_MGMT
     CORE --> TOR

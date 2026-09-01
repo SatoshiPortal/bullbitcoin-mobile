@@ -19,6 +19,8 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amou
 import 'package:bb_mobile/features/settings/domain/usecases/set_screen_capture_protection_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +47,12 @@ class _MockSetIsSuperuserUsecase extends Mock
 class _MockSetIsDevModeUsecase extends Mock implements SetIsDevModeUsecase {}
 
 class _MockSetThemeModeUsecase extends Mock implements SetThemeModeUsecase {}
+
+class _MockRevokeSpWalletForSettingsUsecase extends Mock
+    implements RevokeSpWalletForSettingsUsecase {}
+
+class _MockCheckSpWalletSetupForSettingsUsecase extends Mock
+    implements CheckSpWalletSetupForSettingsUsecase {}
 
 class _MockSetErrorReportingUsecase extends Mock
     implements SetErrorReportingUsecase {}
@@ -78,6 +86,8 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.setIsSuperuserUsecase,
     required super.setIsDevModeUsecase,
     required super.setThemeModeUsecase,
+    required super.revokeSpWalletUsecase,
+    required super.checkSpWalletSetupUsecase,
     required super.setErrorReportingUsecase,
     required super.setScreenCaptureProtectionUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
@@ -112,6 +122,8 @@ void main() {
       setIsSuperuserUsecase: _MockSetIsSuperuserUsecase(),
       setIsDevModeUsecase: _MockSetIsDevModeUsecase(),
       setThemeModeUsecase: _MockSetThemeModeUsecase(),
+      revokeSpWalletUsecase: _MockRevokeSpWalletForSettingsUsecase(),
+      checkSpWalletSetupUsecase: _MockCheckSpWalletSetupForSettingsUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase:
           _MockSetScreenCaptureProtectionUsecase(),

@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -44,6 +45,7 @@ enum SettingsItemId {
   testnetMode,
   seedViewer,
   bip85,
+  sp,
   language,
   theme,
   currency,
@@ -141,10 +143,15 @@ List<SettingsItem> settingsItemsOf(BuildContext context) {
     (SettingsCubit cubit) => cubit.state.isDevModeEnabled ?? false,
   );
 
+  final isSpWalletSetup = context.select(
+    (SettingsCubit cubit) => cubit.state.isSpWalletSetup,
+  );
+
   return buildSettingsItems(
     localization: context.loc,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
+    isSpWalletSetup: isSpWalletSetup,
   );
 }
 
@@ -152,6 +159,7 @@ List<SettingsItem> buildSettingsItems({
   required AppLocalizations localization,
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
+  bool isSpWalletSetup = false,
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
@@ -493,6 +501,27 @@ List<SettingsItem> buildSettingsItems({
           localization.settingsSearchBip85Keywords,
           english.settingsSearchBip85Keywords,
           [english.bitcoinSettingsBip85EntropiesTitle],
+        ),
+        isSuperuser: true,
+      ),
+    // One row either way: it offers to create the SP wallet until there is one,
+    // then opens its settings.
+    if (isSuperuser && isDevModeEnabled)
+      SettingsItem(
+        id: SettingsItemId.sp,
+        section: SettingsItemSection.wallet,
+        title: isSpWalletSetup
+            ? localization.spSettingsTitle
+            : localization.spSetupTitle,
+        path: path(
+          SettingsItemSection.wallet,
+          isSpWalletSetup
+              ? localization.spSettingsTitle
+              : localization.spSetupTitle,
+        ),
+        icon: isSpWalletSetup ? Icons.currency_bitcoin : Icons.science,
+        open: (context) => context.pushNamed(
+          isSpWalletSetup ? SpRoute.spSettings.name : SpSetupRoute.spSetup.name,
         ),
         isSuperuser: true,
       ),
