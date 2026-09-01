@@ -53,6 +53,69 @@ void main() {
     await db.close();
   });
 
+  test('adopting a backup seeds its observed baseline and window', () async {
+    final (db, store) = await build();
+    await store.registerBackup(
+      id,
+      origin: MonitoredBackupOrigin.adopted,
+      observedTotal: 3,
+      window: attemptWindowIdentity(window),
+    );
+    final row = (await store.monitoredBackups()).single;
+    expect(row.expectedServerDistinctCandidateTotal, 3);
+    expect(row.currentWindow, attemptWindowIdentity(window));
+    expect(row.lastWarningWindow, attemptWindowIdentity(window));
+    await db.close();
+  });
+
+  test('adopted baseline stays silent until the next server attempt', () async {
+    final (db, store) = await build();
+    await store.registerBackup(
+      id,
+      origin: MonitoredBackupOrigin.adopted,
+      observedTotal: 3,
+      window: attemptWindowIdentity(window),
+    );
+    final digest = (await store.monitoredBackups()).single.digest;
+    var now = window;
+    final check = CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 3},
+          windowStartedAt: {digest: window},
+        ),
+      clock: () => now,
+    );
+    expect(await check.execute(), isEmpty);
+    (check.remote as _Remote).response = RecoverBullAttemptsSnapshot(
+      collectionStartedAt: window,
+      totalAttempts: {digest: 4},
+      windowStartedAt: {digest: window},
+    );
+    now = now.add(const Duration(minutes: 2));
+    expect((await check.execute()).single, isA<SuspiciousActivityAlert>());
+    await db.close();
+  });
+
+  test('created baseline alerts on its first server attempt', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id, origin: MonitoredBackupOrigin.created);
+    final digest = (await store.monitoredBackups()).single.digest;
+    final alerts = await CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 1},
+          windowStartedAt: {digest: window},
+        ),
+    ).execute();
+    expect(alerts.single, isA<SuspiciousActivityAlert>());
+    await db.close();
+  });
+
   test('status recording uses the server total as the baseline', () async {
     final (db, store) = await build();
     await store.registerBackup(id);

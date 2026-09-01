@@ -51,6 +51,8 @@ final class RecoverBullAttemptMonitoringSnapshotToken {
   });
 }
 
+enum MonitoredBackupOrigin { created, adopted }
+
 final class RecoverBullAttemptMonitoringApplyResult {
   final bool accepted;
   final int conflicts;
@@ -120,18 +122,36 @@ final class RecoverBullAttemptMonitoringStore {
   Future<bool> isMonitored(List<int> identifier) async =>
       await _row(_digest(identifier)) != null;
 
+  Future<void> removeBackup(String backupIdHex) async {
+    final digest = Uint8List.fromList(_decodeHash(backupIdHex));
+    await (database.delete(
+      database.recoverbullMonitoredBackup,
+    )..where((row) => row.digest.equals(digest))).go();
+  }
+
   List<int> digestFor(List<int> identifier) => _digest(identifier);
 
-  Future<void> registerBackup(List<int> identifier) async {
+  Future<void> registerBackup(
+    List<int> identifier, {
+    MonitoredBackupOrigin origin = MonitoredBackupOrigin.created,
+    int observedTotal = 0,
+    int window = 0,
+  }) async {
+    if (observedTotal < 0) throw ArgumentError.value(observedTotal);
+    if (window < 0) throw ArgumentError.value(window);
     final digest = _digest(identifier);
+    final adopted = origin == MonitoredBackupOrigin.adopted;
     await database.transaction(() async {
       await database
           .into(database.recoverbullMonitoredBackup)
           .insert(
             RecoverbullMonitoredBackupCompanion.insert(
               digest: digest,
-              expectedServerDistinctCandidateTotal: const Value(0),
-              currentWindow: const Value(0),
+              expectedServerDistinctCandidateTotal: Value(
+                adopted ? observedTotal : 0,
+              ),
+              currentWindow: Value(adopted ? window : 0),
+              lastWarningWindow: adopted ? Value(window) : const Value(null),
             ),
             mode: InsertMode.insertOrIgnore,
           );
