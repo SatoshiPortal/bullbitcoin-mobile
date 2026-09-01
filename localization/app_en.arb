@@ -14750,6 +14750,10 @@
   "@walletSpTitle": {
     "description": "Title for the Silent Payments wallet card"
   },
+  "walletSpExperimental": "Experimental",
+  "@walletSpExperimental": {
+    "description": "Label on the Silent Payments wallet card indicating experimental status"
+  },
   "spReceive": "Receive",
   "@spReceive": {
     "description": "Silent Payments: receive action label"

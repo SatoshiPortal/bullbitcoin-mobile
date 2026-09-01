@@ -49,6 +49,15 @@ class ExecuteAutoSwapFeeOverride extends WalletEvent {
   const ExecuteAutoSwapFeeOverride();
 }
 
+class RefreshSpWallet extends WalletEvent {
+  const RefreshSpWallet();
+}
+
+class SetSpWalletBalance extends WalletEvent {
+  final int amount;
+  const SetSpWalletBalance(this.amount);
+}
+
 class ElectrumSyncResultChanged extends WalletEvent {
   final ElectrumSyncResult result;
   const ElectrumSyncResultChanged(this.result);

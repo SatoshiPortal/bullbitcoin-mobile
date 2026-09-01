@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/sync/sync_coordinator.dart';
@@ -10,9 +9,14 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_result
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -47,6 +51,20 @@ class _MockCheckBackupNeededUsecase extends Mock
 class _MockExternalTorStatusUsecase extends Mock
     implements GetExternalTorProxyStatusUsecase {}
 
+class _MockCheckSpWalletSetupForWalletUsecase extends Mock
+    implements CheckSpWalletSetupForWalletUsecase {}
+
+class _MockCheckSpScanningForWalletUsecase extends Mock
+    implements CheckSpScanningForWalletUsecase {}
+
+class _MockRefreshSpWalletForWalletUsecase extends Mock
+    implements RefreshSpWalletForWalletUsecase {}
+
+class _MockWatchSpWalletUsecase extends Mock implements WatchSpWalletUsecase {}
+
+class _MockCheckSpFeatureGateForWalletUsecase extends Mock
+    implements CheckSpFeatureGateForWalletUsecase {}
+
 WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
   return WalletBloc(
     getWalletsUsecase: _MockGetWalletsUsecase(),
@@ -61,6 +79,13 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
     seedStoreTypeDatasource: _MockSeedStoreTypeDatasource(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
+    checkSpWalletSetupForWalletUsecase:
+        _MockCheckSpWalletSetupForWalletUsecase(),
+    checkSpScanningForWalletUsecase: _MockCheckSpScanningForWalletUsecase(),
+    refreshSpWalletForWalletUsecase: _MockRefreshSpWalletForWalletUsecase(),
+    watchSpWalletUsecase: _MockWatchSpWalletUsecase(),
+    checkSpFeatureGateForWalletUsecase:
+        _MockCheckSpFeatureGateForWalletUsecase(),
   );
 }
 

@@ -16,6 +16,12 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isDeletingWallet,
     WalletError? walletDeletionError,
     @Default(false) bool isCheckingServiceStatus,
+    @Default(0) int spBalanceSat,
+    @Default(false) bool isSpWalletSetup,
+    // The SP feature gate (superuser + dev mode), mirrored here so the wallet
+    // UI reads its own state instead of importing the settings feature.
+    @Default(false) bool isSpFeatureEnabled,
+    @Default(false) bool isSpWalletLoading,
     @Default(false) bool backupWarningDismissed,
     @Default(false) bool isOnLegacyStorage,
     @Default(false) bool legacyStorageWarningDismissed,
@@ -37,10 +43,17 @@ sealed class WalletState with _$WalletState {
 
   bool get noWalletsFound => noWalletsFoundException != null;
 
-  int totalBalance() => wallets.fold<int>(
-    0,
-    (previousValue, element) => previousValue + element.balanceSat.toInt(),
-  );
+  /// The SP balance counts only while the SP card is shown, on the same
+  /// condition the card itself uses. A wallet the user cannot see must not
+  /// move the total.
+  bool get showSpWallet => isSpFeatureEnabled && isSpWalletSetup;
+
+  int totalBalance() =>
+      wallets.fold<int>(
+        0,
+        (previousValue, element) => previousValue + element.balanceSat.toInt(),
+      ) +
+      (showSpWallet ? spBalanceSat : 0);
 
   bool hasNoBackup() {
     final defaultWallets = wallets.where((wallet) => wallet.isDefault);
