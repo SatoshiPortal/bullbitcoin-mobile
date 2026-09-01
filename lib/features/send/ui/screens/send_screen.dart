@@ -26,7 +26,7 @@ import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';

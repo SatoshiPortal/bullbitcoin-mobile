@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
