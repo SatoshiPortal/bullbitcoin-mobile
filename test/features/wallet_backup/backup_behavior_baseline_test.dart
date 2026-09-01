@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -242,7 +243,7 @@ void main() {
     });
 
     test(
-      'a file exported by another seed is rejected as the wrong seed',
+      'a file signed by another seed is rejected before comparison',
       () async {
         final device = await _device();
         expect(await device.facade.setEnabled(true), _succeeds);
@@ -264,11 +265,36 @@ void main() {
           isA<Err<WalletBackupImportComparison, WalletBackupFailure>>().having(
             (result) => result.failure,
             'failure',
-            isA<WalletBackupParentFingerprintMismatchFailure>(),
+            isA<WalletBackupInvalidEnvelopeFailure>(),
           ),
         );
       },
     );
+
+    test('a modified readable backup is rejected before comparison', () async {
+      final device = await _device();
+      await _addWallet(device, walletId: 'signed-wallet', label: 'Original');
+      final export = _value(
+        await device.facade.buildExport(
+          protection: WalletBackupFileProtection.unencrypted,
+          confirmedUnencrypted: true,
+        ),
+      );
+      final modified = utf8
+          .decode(export.copyBytes())
+          .replaceFirst('Original', 'Modified');
+
+      expect(
+        await device.facade.compareFile(
+          Uint8List.fromList(utf8.encode(modified)),
+        ),
+        isA<Err<WalletBackupImportComparison, WalletBackupFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<WalletBackupInvalidEnvelopeFailure>(),
+        ),
+      );
+    });
   });
 }
 
@@ -330,9 +356,12 @@ Future<WalletBackupCiphertext> _foreignRootedBackup(
       confirmedUnencrypted: true,
     ),
   );
+  final root =
+      jsonDecode(utf8.decode(export.copyBytes())) as Map<String, dynamic>
+        ..remove('signature');
   final envelope = _value(
     otherWallet.encryption.decodeCanonical(
-      bytes: export.copyBytes(),
+      bytes: Uint8List.fromList(utf8.encode(jsonEncode(root))),
       expectedParentFingerprint: foreignSeedFingerprint,
     ),
   );
@@ -350,9 +379,12 @@ Future<WalletBackupCiphertext> _backupFromTheFuture(
       confirmedUnencrypted: true,
     ),
   );
-  final plaintext = utf8
-      .decode(export.copyBytes())
-      .replaceFirst('"version":1,', '"version":2,');
+  final root =
+      jsonDecode(utf8.decode(export.copyBytes())) as Map<String, dynamic>
+        ..remove('signature');
+  final plaintext = jsonEncode(
+    root,
+  ).replaceFirst('"version":1,', '"version":2,');
   final backup = RecoverBull.createBackup(
     secret: utf8.encode(plaintext),
     backupKey: hex.decode(device.encryptionKey.hex),

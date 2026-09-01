@@ -14704,5 +14704,23 @@
   "@walletBackupManifestView": {},
   "walletBackupManifestCopy": "Copy",
   "@walletBackupManifestCopy": {},
+  "walletBackupFileUnencryptedWarning": "Export unencrypted wallet data?",
+  "walletBackupFileUnencryptedConfirmation": "This file contains public descriptors, labels, Nostr public keys, and wallet metadata. Anyone who reads it may be able to identify your wallet activity. It contains no seed phrase or private key.",
+  "walletBackupFileContinue": "Export anyway",
+  "walletBackupFileImportTitle": "Recover from a backup file",
+  "walletBackupFileImportExplanation": "The app validates the whole file. If automatic Bull backup is on and the server is reachable, you'll compare it with the server backup before choosing. Recovery restores wallet data and never deletes local wallets.",
+  "walletBackupFileChoose": "Choose file",
+  "walletBackupFileExportEncrypted": "Export encrypted",
+  "@walletBackupFileExportEncrypted": {
+    "description": "Manual data backup action that encrypts the exported file."
+  },
+  "walletBackupFileExportUnencrypted": "Export unencrypted",
+  "@walletBackupFileExportUnencrypted": {
+    "description": "Manual data backup action that exports readable JSON after confirmation."
+  },
+  "walletBackupFileImportAction": "Import",
+  "@walletBackupFileImportAction": {
+    "description": "Manual data backup import action."
+  },
   "walletBackupManifestPassphraseWallet": "Passphrase Wallet"
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
@@ -14,24 +15,47 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_r
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_export_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/decode_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_file_signature.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/frozen_wallet_outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bitcoin_base/bitcoin_base.dart';
+import 'package:convert/convert.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 import '../keychain_manifest/support/manifest_fixtures.dart';
 import 'metadata/support/portable_settings_fixture.dart';
 import 'support/canonical_backup_snapshot.dart';
 
+class _MockNostrIdentityFacade extends Mock implements NostrIdentityFacade {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('file validation', () {
+    test('freezes the readable-backup signature contract', () {
+      final bytes = Uint8List.fromList(utf8.encode('{"v":1}'));
+      final digest = WalletBackupFileSignature.digest(bytes);
+      final privateKey = ECPrivate.fromHex('0' * 63 + '1');
+
+      expect(
+        hex.encode(digest),
+        'd2dc6330bf12b435230e3ad9e2d783b037f498d766e45629c50ae126ecbbd1c3',
+      );
+      expect(
+        privateKey.signBip340(digest, tweak: false),
+        'dec994004ef579cddaa70e57aa7d9131042c906a500897b8c25a9e4446993d3'
+        'd87f8ac1a181ec2d6b7e3e81192d10dd1c9fe34ad0c68bda11f8fb8be0b969507',
+      );
+    });
+
     test('an export cannot contain zero bytes', () {
       expect(
         () => WalletBackupExport(suggestedFilename: 'backup.json', bytes: []),
@@ -45,6 +69,7 @@ void main() {
         final decoder = DecodeWalletBackupFileUsecase(
           () async => Ok(_key),
           _Encryption(),
+          _testIdentity(),
         );
 
         expect(
@@ -79,17 +104,65 @@ void main() {
     test(
       'decode accepts conventional whitespace before plaintext JSON',
       () async {
+        final identity = _testIdentity();
+        final signed = _signedReadableJson('{"v":1}');
+        final root = jsonDecode(utf8.decode(signed)) as Map<String, dynamic>;
+        final reordered = utf8.encode(
+          ' \n${jsonEncode({'signature': root['signature'], 'v': 1})}',
+        );
         final decoder = DecodeWalletBackupFileUsecase(
           () async => Ok(_key),
           const _Encryption(acceptPlaintext: true),
+          identity,
         );
 
         expect(
-          await decoder.execute(Uint8List.fromList(utf8.encode(' \n{"v":1}'))),
+          await decoder.execute(Uint8List.fromList(reordered)),
           isA<Ok<WalletBackupSnapshot, WalletBackupFailure>>(),
         );
       },
     );
+
+    test('readable export is signed and unsigned JSON is rejected', () async {
+      final identity = _testIdentity();
+      final exporter = BuildWalletBackupExportUsecase(
+        buildSnapshot:
+            ({required parentFingerprint, allowEmpty = false}) async =>
+                Ok(_fileSnapshot()),
+        resolveKey: () async => Ok(_key),
+        encryption: const _Encryption(acceptPlaintext: true),
+        identity: identity,
+        nowUtc: () => DateTime.utc(2026),
+      );
+      final export = await exporter.execute(
+        protection: WalletBackupFileProtection.unencrypted,
+        confirmedUnencrypted: true,
+      );
+      final bytes = (export as Ok<WalletBackupExport, WalletBackupFailure>)
+          .value
+          .copyBytes();
+      final root = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+
+      expect(root.keys.last, 'signature');
+      expect(root['signature'], matches(RegExp(r'^[0-9a-f]{128}$')));
+      final decoder = DecodeWalletBackupFileUsecase(
+        () async => Ok(_key),
+        const _Encryption(acceptPlaintext: true),
+        identity,
+      );
+      expect(
+        await decoder.execute(bytes),
+        isA<Ok<WalletBackupSnapshot, WalletBackupFailure>>(),
+      );
+      expect(
+        await decoder.execute(Uint8List.fromList(utf8.encode('{"v":1}'))),
+        isA<Err>().having(
+          (value) => value.failure,
+          'failure',
+          isA<WalletBackupInvalidEnvelopeFailure>(),
+        ),
+      );
+    });
   });
 
   group('comparison', () {
@@ -1016,11 +1089,44 @@ final class _Encryption implements WalletBackupEncryptionRepository {
   @override
   Result<Uint8List, WalletBackupFailure> encodeCanonical(
     WalletBackupSnapshot envelope,
-  ) => throw UnimplementedError();
+  ) => acceptPlaintext
+      ? Ok(Uint8List.fromList(utf8.encode('{"v":1}')))
+      : throw UnimplementedError();
 
   @override
   Result<WalletBackupCiphertext, WalletBackupFailure> encrypt({
     required WalletBackupSnapshot envelope,
     required WalletBackupEncryptionKey key,
   }) => throw UnimplementedError();
+}
+
+NostrIdentityFacade _testIdentity() {
+  final identity = _MockNostrIdentityFacade();
+  final privateKey = ECPrivate.fromHex('0' * 63 + '1');
+  final publicKey = hex.encode(privateKey.getPublic().toXOnly());
+  when(
+    identity.walletBackupPublicKey,
+  ).thenAnswer((_) async => Ok<String, NostrIdentityFailure>(publicKey));
+  when(() => identity.signWalletBackupHash(any())).thenAnswer((
+    invocation,
+  ) async {
+    final digest = invocation.positionalArguments.single as String;
+    return Ok<String, NostrIdentityFailure>(
+      privateKey.signBip340(hex.decode(digest), tweak: false),
+    );
+  });
+  return identity;
+}
+
+Uint8List _signedReadableJson(String canonicalUnsignedJson) {
+  final privateKey = ECPrivate.fromHex('0' * 63 + '1');
+  final unsignedBytes = Uint8List.fromList(utf8.encode(canonicalUnsignedJson));
+  final signature = privateKey.signBip340(
+    WalletBackupFileSignature.digest(unsignedBytes),
+    tweak: false,
+  );
+  final root = jsonDecode(canonicalUnsignedJson) as Map<String, dynamic>;
+  return Uint8List.fromList(
+    utf8.encode(jsonEncode({...root, 'signature': signature})),
+  );
 }
