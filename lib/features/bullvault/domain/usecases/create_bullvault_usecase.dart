@@ -116,9 +116,15 @@ class CreateBullVaultUsecase {
                 (request.mobilePassphrase?.isEmpty ?? true))) {
           return const Err(BullVaultInvalidSignerFailure());
         }
-        final storedSeed = await _getDefaultSeedUsecase.execute(
+        final Seed storedSeed;
+        switch (await _getDefaultSeedUsecase.execute(
           environment: settings.environment,
-        );
+        )) {
+          case Ok(:final value):
+            storedSeed = value;
+          case Err():
+            return const Err(BullVaultCreationFailure());
+        }
         final canonicalSeed = _keyService.canonicalSeed(storedSeed);
         if (canonicalSeed == null) {
           return const Err(BullVaultCreationFailure());

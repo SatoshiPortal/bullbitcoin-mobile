@@ -73,6 +73,7 @@ dependencies:
   auto_size_text: ^3.0.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
+  bech32: ^0.2.2
   crypto: ^3.0.7
   synchronized: ^3.4.0
   json_annotation: ^4.9.0

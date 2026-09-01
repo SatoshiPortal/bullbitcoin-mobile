@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
@@ -356,6 +357,35 @@ class WalletRepository
       for (final (index, metadata) in filteredWallets.indexed)
         _toWallet(metadata, balances[index]),
     ];
+  }
+
+  Future<List<String>> getDefaultBitcoinWalletFingerprints({
+    Environment? environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet),
+        )
+        .map(_localMasterFingerprint)
+        .whereType<String>()
+        .toList(growable: false);
+  }
+
+  /// The master fingerprint of the wallet's locally held key, read from its
+  /// signer rows now that wallet metadata no longer carries one directly.
+  static String? _localMasterFingerprint(WalletMetadataModel wallet) {
+    for (final signer in wallet.signers) {
+      if (signer.signer != Signer.local) continue;
+      for (final key in signer.descriptorKeys) {
+        if (key.masterFingerprint.isNotEmpty) return key.masterFingerprint;
+      }
+    }
+    return null;
   }
 
   Future<void> updateEncryptedBackupTime({
