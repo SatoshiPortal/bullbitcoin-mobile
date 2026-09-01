@@ -66,10 +66,15 @@ class WalletRepository {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
+
+    /// Earliest time before which this wallet provably cannot have funds.
+    /// Use null when the creation or import history cannot establish that bound.
+    required DateTime? birthday,
+    required WalletProvenance provenance,
+    bool? seedPassphraseUsed,
     String? label,
     bool isDefault = false,
     bool sync = false,
-    DateTime? birthday,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -89,6 +94,8 @@ class WalletRepository {
       scriptType: scriptType,
       label: walletLabel,
       isDefault: isDefault,
+      provenance: provenance,
+      seedPassphraseUsed: seedPassphraseUsed,
       birthday: birthday,
     );
 

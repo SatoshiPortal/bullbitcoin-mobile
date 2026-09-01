@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
@@ -69,7 +70,9 @@ class CheckForExistingDefaultWalletsUsecase {
           seed: seed,
           network: network,
           scriptType: ScriptType.bip84,
+          provenance: WalletProvenance.defaultSeed,
           isDefault: true,
+          birthday: null,
         );
         defaultWallets = await _walletRepository.getWallets(
           onlyDefaults: true,

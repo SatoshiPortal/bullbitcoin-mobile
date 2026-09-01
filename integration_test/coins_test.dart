@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -160,6 +161,8 @@ Future<void> main({bool isInitialized = false}) async {
           seed: seed,
           network: Network.bitcoinTestnet,
           scriptType: ScriptType.bip84,
+          birthday: null,
+          provenance: WalletProvenance.importedMnemonic,
         );
         await walletRepository.getWallets(sync: true);
       });
