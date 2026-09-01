@@ -826,6 +826,29 @@ class BdkWalletDatasource {
       ),
     );
   }
+
+  Future<BigInt> dryScanDescriptors({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required bool isTestnet,
+    required ElectrumConnection electrumServer,
+  }) {
+    return compute(
+      _performDescriptorDryScan,
+      _DescriptorDryScanParams(
+        externalDescriptor: externalDescriptor,
+        internalDescriptor: internalDescriptor,
+        isTestnet: isTestnet,
+        electrumUrl: electrumServer.url,
+        electrumSocks5: electrumServer.socks5,
+        electrumStopGap: electrumServer.stopGap,
+        electrumTimeout: electrumServer.timeout,
+        electrumRetry: electrumServer.retry,
+        electrumValidateDomain: electrumServer.validateDomain,
+        rootIsolateToken: ServicesBinding.rootIsolateToken!,
+      ),
+    );
+  }
 }
 
 // Top-level function for isolate execution
@@ -1043,6 +1066,71 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
     satoshis: BigInt.from(balance.confirmed.toSat()),
     transactions: transactions.length,
   );
+}
+
+class _DescriptorDryScanParams {
+  final String externalDescriptor;
+  final String internalDescriptor;
+  final bool isTestnet;
+  final String electrumUrl;
+  final String? electrumSocks5;
+  final int electrumStopGap;
+  final int electrumTimeout;
+  final int electrumRetry;
+  final bool electrumValidateDomain;
+  final RootIsolateToken rootIsolateToken;
+
+  _DescriptorDryScanParams({
+    required this.externalDescriptor,
+    required this.internalDescriptor,
+    required this.isTestnet,
+    required this.electrumUrl,
+    required this.electrumSocks5,
+    required this.electrumStopGap,
+    required this.electrumTimeout,
+    required this.electrumRetry,
+    required this.electrumValidateDomain,
+    required this.rootIsolateToken,
+  });
+}
+
+Future<BigInt> _performDescriptorDryScan(
+  _DescriptorDryScanParams params,
+) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
+  final network = params.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+  final networkKind = params.isTestnet
+      ? bdk.NetworkKind.test
+      : bdk.NetworkKind.main;
+  final wallet = bdk.Wallet(
+    descriptor: bdk.Descriptor(
+      descriptor: params.externalDescriptor,
+      networkKind: networkKind,
+    ),
+    changeDescriptor: bdk.Descriptor(
+      descriptor: params.internalDescriptor,
+      networkKind: networkKind,
+    ),
+    network: network,
+    persister: bdk.Persister.newInMemory(),
+    lookahead: 0,
+  );
+  final blockchain = _createElectrumClient(
+    url: params.electrumUrl,
+    socks5: params.electrumSocks5,
+    timeout: params.electrumTimeout,
+    retry: params.electrumRetry,
+    validateDomain: params.electrumValidateDomain,
+  );
+  final request = wallet.startFullScan().build();
+  final update = blockchain.fullScan(
+    request: request,
+    stopGap: params.electrumStopGap,
+    batchSize: _batchSizeFor(params.electrumStopGap),
+    fetchPrevTxouts: false,
+  );
+  wallet.applyUpdate(update: update);
+  return BigInt.from(wallet.balance().confirmed.toSat());
 }
 
 int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);

@@ -1,12 +1,5 @@
 {
   "settingsBtcMapTitle": "Карта",
-  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если:",
-  "backupWarningLoseReasonLostPhone": "Потеряете телефон",
-  "backupWarningLoseReasonDeletedApp": "Удалите приложение",
-  "backupWarningLoseReasonCriticalIssue": "Столкнётесь с критической проблемой приложения или устройства",
-  "backupWarningLoseReasonKeystore": "Устройство аннулирует keystore при смене блокировки экрана или способа аутентификации устройства",
-  "backupWarningLoseReasonCloudRestore": "Восстановление устройства из облачной резервной копии",
-  "backupWarningNoRecovery": "Без резервной копии восстановить кошелёк невозможно.",
   "translationWarningTitle": "Переводы, созданные ИИ",
   "translationWarningDescription": "Большинство переводов в этом приложении были созданы с помощью ИИ и могут содержать неточности. Если вы заметили ошибки или хотите помочь улучшить переводы, вы можете отправить исправление в наш репозиторий на GitHub.",
   "translationWarningContributeButton": "Помочь улучшить переводы",
@@ -4133,18 +4126,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "ДА",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "НЕТ, Я ПОНИМАЮ РИСК",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -4449,8 +4430,6 @@
   "homeActionSell": "Продать",
   "homeActionPay": "Оплатить",
   "homeActionTransfer": "Перевести",
-  "backupCardTitle": "Защитите свои биткоины.",
-  "backupCardSubtitle": "Создайте резервную копию кошелька прямо сейчас.",
   "mempoolCustomServerNoSsl": "Без SSL",
   "autoswapTargetBalanceLabel": "Целевой баланс мгновенного кошелька",
   "autoswapMaximumBalanceLabel": "Максимальный баланс мгновенного кошелька",

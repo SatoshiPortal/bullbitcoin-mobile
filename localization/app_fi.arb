@@ -1,12 +1,5 @@
 {
   "settingsBtcMapTitle": "Kartta",
-  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos:",
-  "backupWarningLoseReasonLostPhone": "kadotat puhelimesi",
-  "backupWarningLoseReasonDeletedApp": "poistat sovelluksen",
-  "backupWarningLoseReasonCriticalIssue": "kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman",
-  "backupWarningLoseReasonKeystore": "laitteesi mitätöi keystoren, kun vaihdat lukitusnäytön tai laitteen tunnistautumistavan",
-  "backupWarningLoseReasonCloudRestore": "palautat laitteen pilvivarmuuskopiosta",
-  "backupWarningNoRecovery": "Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
   "@@locale": "fi",
   "translationWarningTitle": "Tekoälyn luomat käännökset",
   "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit lähettää korjauksen GitHub-tietovarastoomme.",
@@ -4118,18 +4111,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "KYLLÄ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -4434,8 +4415,6 @@
   "homeActionSell": "Myy",
   "homeActionPay": "Maksa",
   "homeActionTransfer": "Siirrä",
-  "backupCardTitle": "Suojaa bitcoinisi.",
-  "backupCardSubtitle": "Varmuuskopioi lompakkosi nyt.",
   "mempoolCustomServerNoSsl": "Ei SSL:ää",
   "autoswapTargetBalanceLabel": "Instant Wallet -tavoitesaldo",
   "autoswapMaximumBalanceLabel": "Instant Wallet -enimmäissaldo",

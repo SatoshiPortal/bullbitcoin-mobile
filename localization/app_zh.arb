@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "地图",
   "recipientsListLoadError": "无法加载收款人。下拉以重试。",
-  "backupWarningDescription": "如果没有备份，在以下情况下您将无法访问您的比特币：",
-  "backupWarningLoseReasonLostPhone": "您丢失手机",
-  "backupWarningLoseReasonDeletedApp": "您删除应用程序",
-  "backupWarningLoseReasonCriticalIssue": "应用程序或设备出现严重问题",
-  "backupWarningLoseReasonKeystore": "更改锁屏密码/设备验证方式时，您的设备会使密钥库（Keystore）失效",
-  "backupWarningLoseReasonCloudRestore": "通过云端备份恢复您的设备",
-  "backupWarningNoRecovery": "没有备份，就无法恢复您的钱包。",
   "translationWarningTitle": "AI生成的翻译",
   "translationWarningDescription": "此应用中的大多数翻译是使用AI生成的，可能存在不准确之处。如果您发现任何错误或想帮助改进翻译，可以在我们的GitHub仓库中提交修复。",
   "translationWarningContributeButton": "帮助改进翻译",
@@ -4128,18 +4121,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "立即备份您的钱包",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "是",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "不，我了解风险",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -4325,8 +4306,6 @@
   "homeActionSell": "出售",
   "homeActionPay": "支付",
   "homeActionTransfer": "转账",
-  "backupCardTitle": "保护您的比特币。",
-  "backupCardSubtitle": "立即备份您的钱包。",
   "mempoolCustomServerNoSsl": "无 SSL",
   "autoswapTargetBalanceLabel": "目标即时钱包余额",
   "autoswapMaximumBalanceLabel": "最大即时钱包余额",

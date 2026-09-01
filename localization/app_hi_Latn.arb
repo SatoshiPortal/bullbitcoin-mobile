@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "Naksha",
   "recipientsListLoadError": "Recipients load nahi ho sake. Dobara try karne ke liye neeche kheenchein.",
-  "backupWarningDescription": "Backup ke bina, aap apne bitcoin access kho denge agar:",
-  "backupWarningLoseReasonLostPhone": "Aap apna phone kho dete hain",
-  "backupWarningLoseReasonDeletedApp": "Aap app delete karte hain",
-  "backupWarningLoseReasonCriticalIssue": "Koi critical app ya device issue aata hai",
-  "backupWarningLoseReasonKeystore": "Jab aap lockscreen ya device authentication change karte hain, tab aapka device keystore ko invalid kar deta hai",
-  "backupWarningLoseReasonCloudRestore": "Apne device ko cloud backup se restore karna",
-  "backupWarningNoRecovery": "Backup ke bina wallet recover karne ka koi tarika nahi hai.",
   "@@locale": "hi_Latn",
   "translationWarningTitle": "AI-Generated Anuvad",
   "@translationWarningTitle": {
@@ -11015,18 +11008,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "ABHI APNA WALLET BACKUP KARO",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "HAAN",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NAHI, MUJHE RISK SAMAJH AA GAYA",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -12284,8 +12265,6 @@
   "homeActionSell": "Becho",
   "homeActionPay": "Pay Karo",
   "homeActionTransfer": "Transfer Karo",
-  "backupCardTitle": "Apne bitcoin ko surakshit rakho.",
-  "backupCardSubtitle": "Abhi apne wallet ka backup lo.",
   "mempoolCustomServerNoSsl": "Koi SSL nahi",
   "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
   "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",

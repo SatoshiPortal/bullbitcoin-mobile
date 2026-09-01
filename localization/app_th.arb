@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "แผนที่",
   "recipientsListLoadError": "ไม่สามารถโหลดผู้รับได้ ดึงลงเพื่อลองใหม่",
-  "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
-  "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
-  "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
-  "backupWarningLoseReasonCriticalIssue": "เกิดปัญหาร้ายแรงกับแอปหรืออุปกรณ์",
-  "backupWarningLoseReasonKeystore": "อุปกรณ์ของคุณจะยกเลิกคีย์สโตร์เมื่อเปลี่ยนรหัสล็อกหน้าจอ/วิธียืนยันตัวตนของอุปกรณ์",
-  "backupWarningLoseReasonCloudRestore": "การกู้คืนอุปกรณ์ของคุณจากการสำรองข้อมูลบนคลาวด์",
-  "backupWarningNoRecovery": "หากไม่มีข้อมูลสำรอง จะไม่มีทางกู้คืนกระเป๋าเงินของคุณได้",
   "bitboxErrorMultipleDevicesFound": "อุปกรณ์หลายหน้าจอ กรุณาตรวจสอบอุปกรณ์เดียว.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -11845,8 +11838,6 @@
   "homeActionSell": "ขาย",
   "homeActionPay": "จ่าย",
   "homeActionTransfer": "โอน",
-  "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
-  "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้",
   "mempoolCustomServerNoSsl": "ไม่มี SSL",
   "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
   "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
@@ -12367,9 +12358,6 @@
   "errorReportingAcceptButton": "ยอมรับ",
   "errorReportingCancelButton": "ยกเลิก",
   "errorReportingRestartSnackbar": "รีสตาร์ทแอปเพื่อให้การเปลี่ยนแปลงนี้มีผล",
-  "backupWarningTitle": "สำรองกระเป๋าสตางค์ของคุณตอนนี้",
-  "backupWarningBackupNow": "ใช่",
-  "backupWarningBackupLater": "ไม่ ฉันเข้าใจความเสี่ยง",
   "transactionSwapOpenWithin24h": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำ Swap ของคุณให้เสร็จสมบูรณ์",
   "recipientsScreenTitle": "เลือกผู้รับเงิน",
   "recipientsScreenSubtitle": "คุณกำลังจ่ายเงินให้ใคร?",

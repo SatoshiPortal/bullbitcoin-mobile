@@ -18,3 +18,9 @@ class WalletAlreadyExistsException implements Exception {
 
   const WalletAlreadyExistsException(this.walletId);
 }
+
+class PassphraseWalletLockedException implements Exception {
+  final String walletId;
+
+  const PassphraseWalletLockedException(this.walletId);
+}

@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "मानचित्र",
   "recipientsListLoadError": "प्राप्तकर्ता लोड नहीं हो सके। पुनः प्रयास के लिए नीचे खींचें।",
-  "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
-  "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
-  "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
-  "backupWarningLoseReasonCriticalIssue": "कोई गंभीर ऐप अथवा डिवाइस संबंधित समस्या आती है",
-  "backupWarningLoseReasonKeystore": "जब आप लॉकस्क्रीन या डिवाइस ऑथेंटिकेशन बदलते हैं, तो आपका डिवाइस कीस्टोर (keystore) को अमान्य कर देता है",
-  "backupWarningLoseReasonCloudRestore": "अपने डिवाइस को क्लाउड बैकअप से रिस्टोर करना",
-  "backupWarningNoRecovery": "बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
   "@@locale": "hi",
   "bitboxErrorMultipleDevicesFound": "एकाधिक बिटबॉक्स उपकरण पाए गए। कृपया सुनिश्चित करें कि केवल एक डिवाइस जुड़ा हुआ है।।",
   "@bitboxErrorMultipleDevicesFound": {
@@ -11975,18 +11968,6 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "backupWarningTitle": "अभी अपना वॉलेट बैकअप करें",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "हाँ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "नहीं, मैं जोखिम समझता/समझती हूँ",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
@@ -12103,8 +12084,6 @@
   "homeActionSell": "बेचें",
   "homeActionPay": "भुगतान करें",
   "homeActionTransfer": "ट्रांसफ़र करें",
-  "backupCardTitle": "अपने बिटकॉइन को सुरक्षित रखें।",
-  "backupCardSubtitle": "अभी अपने वॉलेट का बैकअप लें।",
   "mempoolCustomServerNoSsl": "कोई SSL नहीं",
   "autoswapTargetBalanceLabel": "लक्षित Instant Wallet बैलेंस",
   "autoswapMaximumBalanceLabel": "अधिकतम Instant Wallet बैलेंस",

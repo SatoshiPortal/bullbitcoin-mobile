@@ -15,16 +15,19 @@ import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
+import 'package:bb_mobile/features/passphrase_wallet/public/passphrase_wallet_routes.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
-import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/is_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/read_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
@@ -37,6 +40,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:primitives/primitives.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -60,6 +64,33 @@ void resumePayjoinsOnAppResume(
   }
 }
 
+/// The app's single lifecycle owner for private signing material (spec F15).
+///
+/// Clearing happens on the first sign of leaving the foreground, before the
+/// app can be snapshotted or killed. Navigation back to the locked Passphrase
+/// page waits for the resume, and is driven by the lock the wallet feature
+/// published rather than by a flag this widget keeps for itself (decision 5).
+/// Returns whether the caller should navigate.
+@visibleForTesting
+bool applyWalletLockOnAppLifecycle(
+  AppLifecycleState state,
+  WalletFacade wallet,
+) {
+  // iOS lifecycle is `active → inactive → hidden → paused`. The user can
+  // force-quit from the app switcher during `inactive` and skip both the
+  // `hidden` and `paused` transitions, so lock there too.
+  if (state == AppLifecycleState.inactive ||
+      state == AppLifecycleState.hidden ||
+      state == AppLifecycleState.paused) {
+    wallet.lockPrivateWalletSession();
+    return false;
+  }
+  if (state == AppLifecycleState.resumed) {
+    return wallet.takePendingLockNavigationRequest();
+  }
+  return false;
+}
+
 class Bull {
   static Future<void> init({String? payjoinDatabasePath}) async {
     await initLogs();
@@ -79,7 +110,14 @@ class Bull {
     await initLocator(payjoinDatabasePath: payjoinDatabasePath);
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
-    await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    if (await locator<WizardFacade>().applyPendingChoices() case Err(
+      :final failure,
+    )) {
+      log.warning(
+        'Could not apply pending wizard choices after app initialization',
+        error: failure.runtimeType,
+      );
+    }
     final settings = locator<SettingsRepository>();
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     if (Platform.isAndroid || Platform.isIOS) {
@@ -247,6 +285,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     if (locator.isRegistered<PayjoinLifecycle>()) {
       resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
     }
+    final returnToPassphraseWallets =
+        locator.isRegistered<WalletFacade>() &&
+        applyWalletLockOnAppLifecycle(state, locator<WalletFacade>());
     // iOS lifecycle is `active → inactive → hidden → paused`. The user can
     // force-quit from the app switcher during `inactive` and skip both the
     // `hidden` and `paused` flushes, so flush there too.
@@ -254,6 +295,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         state == AppLifecycleState.hidden ||
         state == AppLifecycleState.paused) {
       log.flush();
+    } else if (returnToPassphraseWallets) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          AppRouter.router.goNamed(PassphraseWalletRoute.wallets.name);
+        }
+      });
     }
   }
 
@@ -275,6 +322,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
         BlocProvider(create: (_) => locator<WalletBloc>()),
+        BlocProvider.value(value: locator<BackupReminderCubit>()..load()),
         // Make the exchange cubit available to the whole app so redirects
         // can use it to check if the user is authenticated
         BlocProvider(create: (_) => locator<ExchangeCubit>()),

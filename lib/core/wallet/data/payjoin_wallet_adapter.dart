@@ -1,21 +1,24 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
-  final SeedDatasource _seed;
   final BdkWalletDatasource _wallet;
   final WalletMetadataDatasource _metadata;
+  final WalletSigningMaterialResolver _signingMaterial;
 
-  const PayjoinWalletAdapter(this._seed, this._wallet, this._metadata);
+  const PayjoinWalletAdapter(
+    this._wallet,
+    this._metadata,
+    this._signingMaterial,
+  );
 
   @override
   Future<String> signPsbt({
@@ -94,15 +97,12 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     BitcoinNetwork network,
   ) async {
     final metadata = await _loadMetadata(walletId, network);
-    final seed = await _seed.get(metadata.masterFingerprint);
-    if (seed is! MnemonicSeedModel) {
-      throw StateError('Payjoin requires a local mnemonic wallet');
-    }
+    final material = await _signingMaterial.resolve(metadata);
     return WalletModel.privateBdk(
           id: walletId,
           scriptType: metadata.scriptType,
-          mnemonic: seed.mnemonicWords.join(' '),
-          passphrase: seed.passphrase,
+          mnemonic: material.mnemonic,
+          passphrase: material.passphrase,
           isTestnet: metadata.isTestnet,
         )
         as PrivateBdkWalletModel;

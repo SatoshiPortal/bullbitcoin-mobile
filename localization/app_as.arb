@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "মানচিত্ৰ",
   "recipientsListLoadError": "প্ৰাপকসকল ল’ড কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
-  "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
-  "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
-  "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
-  "backupWarningLoseReasonCriticalIssue": "কোনো গুৰুতৰ এপ্প বা ডিভাইচ সম্পৰ্কীয় সমস্যা হ'লে",
-  "backupWarningLoseReasonKeystore": "আপুনি লকস্ক্ৰীন বা ডিভাইচ অথেণ্টিকেশ্বন সলালে আপোনাৰ ডিভাইচে কীষ্টোৰ (keystore) অবৈধ কৰি দিয়ে",
-  "backupWarningLoseReasonCloudRestore": "ক্লাউড বেকআপৰ পৰা আপোনাৰ ডিভাইচ ৰিষ্টোৰ কৰা",
-  "backupWarningNoRecovery": "বেকআপ অবিহনে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰাৰ কোনো উপায় নাই।",
   "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -8862,18 +8855,6 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "backupWarningTitle": "এতিয়াই আপোনাৰ WALLET বেকআপ কৰক",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "হয়",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "নহয়, মই বিপদৰ বিষয়ে জানো",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "paySinpeReceipt": "SINPE Receipt",
   "@paySinpeReceipt": {
     "description": "Title for SINPE receipt bottom sheet"
@@ -8990,8 +8971,6 @@
   "homeActionSell": "বিক্ৰী কৰক",
   "homeActionPay": "পৰিশোধ কৰক",
   "homeActionTransfer": "ট্ৰান্সফাৰ কৰক",
-  "backupCardTitle": "আপোনাৰ বিটক'ইন সুৰক্ষিত কৰক।",
-  "backupCardSubtitle": "এতিয়াই আপোনাৰ ৱালেট বেকআপ কৰক।",
   "mempoolCustomServerNoSsl": "কোনো SSL নাই",
   "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet বেলেন্স",
   "autoswapMaximumBalanceLabel": "সৰ্বাধিক Instant Wallet বেলেন্স",
