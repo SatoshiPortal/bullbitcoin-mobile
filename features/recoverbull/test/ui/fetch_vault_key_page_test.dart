@@ -238,6 +238,57 @@ void main() {
     },
   );
 
+  testWidgets(
+    'test flow reaches completion after the intermediate decrypted-vault '
+    'emission the bloc really produces',
+    (tester) async {
+      final bloc = _MutableRecoverBullBloc(
+        const RecoverBullState(flow: RecoverBullFlow.testVault),
+      );
+      addTearDown(bloc.close);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates:
+              RecoverBullLocalizations.localizationsDelegates,
+          supportedLocales: RecoverBullLocalizations.supportedLocales,
+          home: BlocProvider<RecoverBullBloc>.value(
+            value: bloc,
+            child: const FetchVaultKeyPage(
+              input: 'redacted',
+              inputType: InputType.vaultKey,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      bloc.emitState(
+        const RecoverBullState(
+          flow: RecoverBullFlow.testVault,
+          vaultKey: 'fetched-key',
+        ),
+      );
+      await tester.pumpAndSettle();
+      bloc.emitState(
+        const RecoverBullState(
+          flow: RecoverBullFlow.testVault,
+          vaultKey: 'fetched-key',
+          decryptedVault: DecryptedVault(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      bloc.emitState(
+        const RecoverBullState(
+          flow: RecoverBullFlow.testVault,
+          isFlowFinished: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TestCompletedPage), findsOneWidget);
+    },
+  );
+
   testWidgets('pending provider save keeps the user on provider selection', (
     tester,
   ) async {
