@@ -966,6 +966,50 @@ void main() {
       ).called(1);
     });
 
+    test('reports nothing while the address is still being typed', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenThrow(StateError('invalid'));
+
+      // Every keystroke of a real address is an unparseable prefix. Reporting
+      // the parse result here put "invalid address" on screen from the first
+      // character; it belongs to Continue, against the finished input.
+      for (final prefix in ['b', 'bc', 'bc1', 'bc1q']) {
+        await cubit.onChangedText(prefix);
+        expect(
+          cubit.state.failure,
+          isNull,
+          reason: 'typing "$prefix" must not raise a failure yet',
+        );
+      }
+
+      await cubit.continueOnAddressConfirmed();
+
+      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+    });
+
+    test('clears a Continue failure once the user edits the address', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+      ).thenThrow(StateError('invalid'));
+
+      await cubit.onChangedText('nonsense');
+      await cubit.continueOnAddressConfirmed();
+      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+
+      await cubit.onChangedText('nonsense2');
+
+      expect(
+        cubit.state.failure,
+        isNull,
+        reason: 'editing the field must dismiss the stale error',
+      );
+    });
+
     test('parses the current input when continuing', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);

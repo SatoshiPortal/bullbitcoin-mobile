@@ -37,9 +37,12 @@ class SendWithPayjoinUsecase {
       case Ok(:final value):
         return core.Ok(value);
       case Err(:final failure):
+        // Both parts: Failure has no toString() override, so passing the value
+        // itself would log "Instance of 'PayjoinX'" and drop the message,
+        // while passing only logMessage drops the type.
         log.warning(
           'Failed to start Payjoin send',
-          error: failure.logMessage ?? failure.runtimeType.toString(),
+          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
         );
         return core.Err(
           SendTransactionConfirmationFailure(

@@ -347,10 +347,6 @@ class SendCubit extends Cubit<SendState>
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: null,
           sendMax: false,
-          // Don't show exception if text field is clear
-          failure: sanitizedText.isNotEmpty
-              ? const SendInvalidPaymentRequestFailure()
-              : null,
         ),
       );
       if (recipientCleared) clearBitcoinFeePreviews();

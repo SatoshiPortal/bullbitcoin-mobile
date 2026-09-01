@@ -21,7 +21,7 @@ class WatchPayjoinUsecase {
         case Err(:final failure):
           log.warning(
             'Failed to watch Payjoin session',
-            error: failure.logMessage ?? failure.runtimeType.toString(),
+            error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
           );
           yield core.Err(
             SendTransactionConfirmationFailure(

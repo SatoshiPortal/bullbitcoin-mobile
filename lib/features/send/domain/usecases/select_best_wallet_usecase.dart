@@ -9,8 +9,31 @@ import 'package:meta/meta.dart';
 class SelectBestWalletUsecase {
   SelectBestWalletUsecase();
 
+  /// Logs once, for the outcome the caller actually gets. The individual
+  /// attempts stay silent: `_selectLiquidThenBitcoin` runs two of them, so
+  /// logging per attempt reported a warning for a selection that then
+  /// succeeded, and two warnings for one that failed.
   @useResult
   Result<Wallet, SendFailure> execute({
+    required List<Wallet> wallets,
+    required PaymentRequest request,
+    int? amountSat,
+  }) {
+    final result = _select(
+      wallets: wallets,
+      request: request,
+      amountSat: amountSat,
+    );
+    if (result case Err(:final failure)) {
+      log.warning(
+        'No wallet selected for this payment',
+        error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+      );
+    }
+    return result;
+  }
+
+  Result<Wallet, SendFailure> _select({
     required List<Wallet> wallets,
     required PaymentRequest request,
     int? amountSat,
@@ -49,7 +72,6 @@ class SelectBestWalletUsecase {
           wallets: wallets,
         );
       case PsbtPaymentRequest():
-        log.warning('No wallet selection rule for ${request.runtimeType}');
         return const Err(
           SendInvalidPaymentRequestFailure(
             logMessage: 'unsupported payment request',
@@ -108,7 +130,6 @@ class SelectBestWalletUsecase {
       }
     }
 
-    log.warning('Not enough funds available to make this payment');
     return const Err(SendInsufficientBalanceFailure('no wallet covers it'));
   }
 }
