@@ -236,6 +236,7 @@ final class _WalletBackupGraph {
     final decodeFile = DecodeWalletBackupFileUsecase(
       resolveKey.execute,
       encryption,
+      nostrIdentity,
     );
     final recover = RecoverWalletBackupUsecase(
       fetchImport: fetchImport.execute,
@@ -282,6 +283,7 @@ final class _WalletBackupGraph {
         buildSnapshot: buildSnapshot.execute,
         resolveKey: resolveKey.execute,
         encryption: encryption,
+        identity: nostrIdentity,
       ),
       CompareWalletBackupFileUsecase(
         decodeFile.execute,

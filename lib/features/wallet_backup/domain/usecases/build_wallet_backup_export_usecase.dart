@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_file_signature.dart';
+import 'package:convert/convert.dart';
 import 'package:primitives/primitives.dart';
 
 typedef BuildWalletBackupSnapshot =
@@ -18,12 +21,14 @@ final class BuildWalletBackupExportUsecase {
   final Future<Result<WalletBackupKey, WalletBackupFailure>> Function()
   _resolveKey;
   final WalletBackupEncryptionRepository _encryption;
+  final NostrIdentityFacade _identity;
   final DateTime Function() _nowUtc;
 
   const BuildWalletBackupExportUsecase({
     required this._buildSnapshot,
     required this._resolveKey,
     required this._encryption,
+    required this._identity,
     this._nowUtc = _systemNowUtc,
   });
 
@@ -60,8 +65,23 @@ final class BuildWalletBackupExportUsecase {
     switch (protection) {
       case WalletBackupFileProtection.unencrypted:
         switch (_encryption.encodeCanonical(envelope)) {
-          case Ok(:final value):
-            bytes = value;
+          case Ok(value: final canonicalBytes):
+            final digest = WalletBackupFileSignature.digest(canonicalBytes);
+            switch (await _identity.signWalletBackupHash(hex.encode(digest))) {
+              case Err():
+                return const Err(WalletBackupSigningFailure());
+              case Ok(value: final signature)
+                  when WalletBackupFileSignature.isValidSignature(signature):
+                final root = jsonDecode(utf8.decode(canonicalBytes));
+                if (root is! Map<String, dynamic>) {
+                  return const Err(WalletBackupInvalidEnvelopeFailure());
+                }
+                bytes = utf8.encode(
+                  jsonEncode({...root, 'signature': signature}),
+                );
+              case Ok():
+                return const Err(WalletBackupSigningFailure());
+            }
           case Err(:final failure):
             return Err(failure);
         }

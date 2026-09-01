@@ -1,4 +1,7 @@
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
+import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
+import 'package:primitives/primitives.dart';
+import 'package:meta/meta.dart';
 
 abstract class WizardRepository {
   /// `true` once the user has completed the wizard for the current
@@ -9,6 +12,8 @@ abstract class WizardRepository {
   Future<void> markComplete();
 
   Future<void> savePending(WizardChoices choices);
+  @useResult
+  Future<Result<void, WizardFailure>> saveMetadataBackupChoice(bool enabled);
   Future<WizardChoices?> readPending();
   Future<void> clearPending();
 }
