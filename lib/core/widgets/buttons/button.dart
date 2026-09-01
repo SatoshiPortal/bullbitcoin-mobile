@@ -21,6 +21,7 @@ class BBButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
+    this.compact = false,
   }) : size = ButtonSize.large;
 
   const BBButton.small({
@@ -38,6 +39,7 @@ class BBButton extends StatelessWidget {
     this.height,
     this.width,
     this.textStyle,
+    this.compact = false,
   }) : size = ButtonSize.small;
 
   final String? icon;
@@ -55,6 +57,10 @@ class BBButton extends StatelessWidget {
   final double? height;
   final double? width;
   final TextStyle? textStyle;
+
+  /// Shrink to the label instead of the fixed small width, for a chip-sized
+  /// action that sits in a row or a wrap with others.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +94,11 @@ class BBButton extends StatelessWidget {
           onTap: () => disabled ? null : onPressed(),
           borderRadius: radius,
           child: Container(
-            height: height ?? 52,
-            width: width ?? (size == ButtonSize.large ? null : 160),
-            padding: height != null
+            height: height ?? (compact ? 36 : 52),
+            width: width ?? (size == ButtonSize.large || compact ? null : 160),
+            padding: compact
+                ? const EdgeInsets.symmetric(horizontal: 16)
+                : height != null
                 ? null
                 : const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
@@ -101,6 +109,7 @@ class BBButton extends StatelessWidget {
               borderRadius: radius,
             ),
             child: Row(
+              mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (iconData == null && icon == null) ...[
