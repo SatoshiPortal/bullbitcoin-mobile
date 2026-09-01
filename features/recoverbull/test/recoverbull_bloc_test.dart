@@ -24,7 +24,7 @@ import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_u
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/domain/usecases/connect_to_key_server_usecase.dart';
-import 'package:bull_recoverbull/src/domain/presentation_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:primitives/primitives.dart';
@@ -202,7 +202,7 @@ void main() {
     });
 
     test('drops concurrent password fetches', () async {
-      final pending = Completer<Result<String, core.RecoverBullCoreFailure>>();
+      final pending = Completer<Result<String, core.RecoverBullFailure>>();
       final vault = _MockEncryptedVault();
       when(
         () => fetchKey.execute(
@@ -212,7 +212,7 @@ void main() {
       ).thenAnswer((_) => pending.future);
       when(
         () => decrypt.execute(vault: vault, vaultKey: 'key'),
-      ).thenReturn(const Err(core.RecoverBullUnexpectedCoreFailure()));
+      ).thenReturn(const Err(core.RecoverBullUnexpectedFailure()));
       final bloc = buildBloc(
         flow: RecoverBullFlow.recoverVault,
         preSelectedVault: vault,
@@ -273,7 +273,7 @@ void main() {
             filename: any(named: 'filename'),
           ),
         ).thenAnswer(
-          (_) async => const Err(core.RecoverBullUnexpectedCoreFailure()),
+          (_) async => const Err(core.RecoverBullUnexpectedFailure()),
         );
 
         final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
@@ -536,7 +536,7 @@ void main() {
             Completer<
               Result<
                 ({EncryptedVault vault, String vaultKey}),
-                core.RecoverBullCoreFailure
+                core.RecoverBullFailure
               >
             >();
         final vault = _MockEncryptedVault();
@@ -590,7 +590,7 @@ void main() {
           Completer<
             Result<
               ({EncryptedVault vault, String vaultKey}),
-              core.RecoverBullCoreFailure
+              core.RecoverBullFailure
             >
           >();
       final vault = _MockEncryptedVault();
@@ -651,7 +651,7 @@ void main() {
   test(
     'closing while fetching prevents decrypt, restore, emit, and callback',
     () async {
-      final pending = Completer<Result<String, core.RecoverBullCoreFailure>>();
+      final pending = Completer<Result<String, core.RecoverBullFailure>>();
       final vault = _MockEncryptedVault();
       when(
         () => fetchKey.execute(vault: vault, password: 'pw'),
@@ -773,8 +773,7 @@ void main() {
       final vault = _MockEncryptedVault();
       final decrypted = DecryptedVault(mnemonic: const ['abandon']);
       final restoreStarted = Completer<void>();
-      final allowRestore =
-          Completer<Result<Null, core.RecoverBullCoreFailure>>();
+      final allowRestore = Completer<Result<Null, core.RecoverBullFailure>>();
       final effects = <String>[];
       when(
         () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
@@ -811,7 +810,7 @@ void main() {
 
   test('closing a pending route preparation still closes the bloc', () async {
     final preparation =
-        Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+        Completer<Result<RecoverBullTorRoute, core.RecoverBullFailure>>();
     when(
       () => ensureRecoverBullTorSession.execute(
         restartEmbedded: any(named: 'restartEmbedded'),
@@ -903,7 +902,7 @@ void main() {
   group('Tor retry concurrency', () {
     test('drops a second retry while the first one is in flight', () async {
       final pending =
-          Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+          Completer<Result<RecoverBullTorRoute, core.RecoverBullFailure>>();
       when(
         () => ensureRecoverBullTorSession.execute(restartEmbedded: true),
       ).thenAnswer((_) => pending.future);
@@ -1055,7 +1054,7 @@ void main() {
 
     test('does not dispatch a server check after the bloc closes', () async {
       final pending =
-          Completer<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>();
+          Completer<Result<RecoverBullTorRoute, core.RecoverBullFailure>>();
       when(
         () => ensureRecoverBullTorSession.execute(),
       ).thenAnswer((_) => pending.future);

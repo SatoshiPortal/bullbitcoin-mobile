@@ -118,7 +118,7 @@ void main() {
   });
 
   test('repository failure is returned without a partial vault', () async {
-    const failure = RecoverBullUnexpectedCoreFailure('expected failure');
+    const failure = RecoverBullUnexpectedFailure('expected failure');
     when(
       () => recoverBullRepository.createVault(
         rootXprv: any(named: 'rootXprv'),
@@ -136,15 +136,13 @@ void main() {
 
     expect(
       result,
-      isA<
-        Err<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
-      >(),
+      isA<Err<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>(),
     );
     expect(
       (result
               as Err<
                 ({EncryptedVault vault, String vaultKey}),
-                RecoverBullCoreFailure
+                RecoverBullFailure
               >)
           .failure,
       same(failure),

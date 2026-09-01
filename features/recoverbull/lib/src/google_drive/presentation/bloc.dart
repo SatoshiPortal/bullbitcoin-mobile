@@ -4,7 +4,7 @@ import 'package:bull_recoverbull/src/domain/usecases/google_drive/fetch_all_driv
 import 'package:bull_recoverbull/src/domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
 import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bull_recoverbull/src/domain/recoverbull_google_drive_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/google_drive/presentation/event.dart';
 import 'package:bull_recoverbull/src/google_drive/presentation/state.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';

@@ -22,7 +22,7 @@ final class TrashVaultKeyUsecase {
     this.alertPort,
   ]);
 
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>> execute({
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>> execute({
     required EncryptedVault vault,
     required String password,
     RecoverBullTorRoute? route,
@@ -35,7 +35,7 @@ final class TrashVaultKeyUsecase {
     };
   }
 
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>> _trash(
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>> _trash(
     EncryptedVault vault,
     String password,
     RecoverBullTorRoute route, {

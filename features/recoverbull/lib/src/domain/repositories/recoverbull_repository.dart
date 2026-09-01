@@ -8,9 +8,7 @@ import '../recoverbull_tor_route.dart';
 
 abstract interface class RecoverBullRepository {
   @useResult
-  Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
-  >
+  Future<Result<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>
   createVault({
     required String rootXprv,
     required String plaintext,
@@ -18,13 +16,13 @@ abstract interface class RecoverBullRepository {
   });
 
   @useResult
-  Result<DecryptedVault, RecoverBullCoreFailure> restoreVault({
+  Result<DecryptedVault, RecoverBullFailure> restoreVault({
     required EncryptedVault vault,
     required String vaultKey,
   });
 
   @useResult
-  Future<Result<Null, RecoverBullCoreFailure>> storeVaultKey(
+  Future<Result<Null, RecoverBullFailure>> storeVaultKey(
     String identifier,
     String password,
     String salt,
@@ -33,7 +31,7 @@ abstract interface class RecoverBullRepository {
   );
 
   @useResult
-  Future<Result<String, RecoverBullCoreFailure>> fetchVaultKey(
+  Future<Result<String, RecoverBullFailure>> fetchVaultKey(
     String identifier,
     String password,
     String salt,
@@ -41,7 +39,7 @@ abstract interface class RecoverBullRepository {
   );
 
   @useResult
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>>
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>>
   fetchVaultKeyWithStatus(
     String identifier,
     String password,
@@ -50,7 +48,7 @@ abstract interface class RecoverBullRepository {
   );
 
   @useResult
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>>
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>>
   trashVaultKeyWithStatus(
     String identifier,
     String password,

@@ -99,7 +99,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullFailure>>());
   });
 
   test('rejects an external SOCKS route', () async {
@@ -114,7 +114,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
     verifyNever(() => sessions.open());
   });
 
@@ -126,9 +126,8 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullCoreFailure>>());
-    final route =
-        (result as Ok<RecoverBullTorRoute, RecoverBullCoreFailure>).value;
+    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullFailure>>());
+    final route = (result as Ok<RecoverBullTorRoute, RecoverBullFailure>).value;
     expect(route.endpoint.host, '127.0.0.1');
     expect(route.endpoint.port, 9050);
     verifyNever(() => embeddedTor.ensureReady());
@@ -144,8 +143,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    final route =
-        (result as Ok<RecoverBullTorRoute, RecoverBullCoreFailure>).value;
+    final route = (result as Ok<RecoverBullTorRoute, RecoverBullFailure>).value;
     expect(route.endpoint.port, 19050);
   });
 
@@ -156,7 +154,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
     verifyNever(() => externalTor.verify(any()));
     verifyNever(() => embeddedTor.ensureReady());
   });
@@ -171,9 +169,9 @@ void main() {
 
       final result = await usecase.execute();
 
-      expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+      expect(result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
       expect(
-        (result as Err<RecoverBullTorRoute, RecoverBullCoreFailure>).failure,
+        (result as Err<RecoverBullTorRoute, RecoverBullFailure>).failure,
         isA<ExternalTorProxyUnavailableFailure>(),
       );
       verifyNever(() => embeddedTor.ensureReady());
@@ -212,7 +210,7 @@ void main() {
 
     final result = await usecase.execute(restartEmbedded: true);
 
-    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    expect(result, isA<Ok<RecoverBullTorRoute, RecoverBullFailure>>());
     verifyNever(() => embeddedTor.ensureReady());
     verifyNever(() => embeddedTor.retry());
   });
@@ -224,9 +222,9 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
     expect(
-      (result as Err<RecoverBullTorRoute, RecoverBullCoreFailure>).failure,
+      (result as Err<RecoverBullTorRoute, RecoverBullFailure>).failure,
       isA<KeyServerUnavailableFailure>(),
     );
   });
@@ -238,9 +236,9 @@ void main() {
 
     final result = await usecase.execute();
 
-    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
     expect(
-      (result as Err<RecoverBullTorRoute, RecoverBullCoreFailure>).failure,
+      (result as Err<RecoverBullTorRoute, RecoverBullFailure>).failure,
       isA<KeyServerUnavailableFailure>(),
     );
   });
@@ -267,7 +265,7 @@ void main() {
 
       final result = await usecase.execute();
 
-      expect(result, isA<Err<RecoverBullTorRoute, RecoverBullCoreFailure>>());
+      expect(result, isA<Err<RecoverBullTorRoute, RecoverBullFailure>>());
       expect(sessionClosed, isTrue);
     },
   );

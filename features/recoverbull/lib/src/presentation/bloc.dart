@@ -23,7 +23,7 @@ import 'package:bull_recoverbull/src/domain/usecases/verify_decrypted_vault_usec
 import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_recoverbull/src/domain/usecases/connect_to_key_server_usecase.dart';
-import 'package:bull_recoverbull/src/domain/presentation_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,7 +61,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final VerifyDecryptedVaultUsecase verifyDecryptedVaultUsecase;
 
   StreamSubscription<tor.TorConnectionState>? _torSubscription;
-  Future<Result<RecoverBullTorRoute, core.RecoverBullCoreFailure>>?
+  Future<Result<RecoverBullTorRoute, core.RecoverBullFailure>>?
   _pendingRoutePreparation;
   bool _closingBloc = false;
   RecoverBullTorRoute? _route;
@@ -794,14 +794,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   }
 
   // Maps a core failure surfaced while selecting/fetching a vault.
-  RecoverBullFailure _selectFailure(core.RecoverBullCoreFailure failure) =>
+  RecoverBullFailure _selectFailure(core.RecoverBullFailure failure) =>
       switch (failure) {
         core.InvalidVaultFileFailure() => const InvalidVaultFileFormatFailure(),
         _ => const SelectVaultFailure(),
       };
 
   // Maps a core failure surfaced while fetching the vault key from the server.
-  RecoverBullFailure _fetchKeyFailure(core.RecoverBullCoreFailure failure) =>
+  RecoverBullFailure _fetchKeyFailure(core.RecoverBullFailure failure) =>
       switch (failure) {
         core.KeyServerInvalidCredentialsFailure() =>
           const InvalidVaultCredentialsFailure(),
@@ -820,7 +820,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   // cooldown or invalid credentials still reach the user) but falls back to the
   // creation-specific error instead of the generic unexpected one.
   RecoverBullFailure _storeKeyFailure(
-    core.RecoverBullCoreFailure failure,
+    core.RecoverBullFailure failure,
   ) => switch (failure) {
     core.KeyServerInvalidCredentialsFailure() =>
       const InvalidVaultCredentialsFailure(),
@@ -834,7 +834,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     _ => const VaultCreationFailure(),
   };
 
-  RecoverBullFailure _torFailure(core.RecoverBullCoreFailure failure) =>
+  RecoverBullFailure _torFailure(core.RecoverBullFailure failure) =>
       switch (failure) {
         core.ExternalTorProxyUnavailableFailure() =>
           const ExternalTorProxyUnavailableFailure(),

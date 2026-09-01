@@ -8,7 +8,7 @@ class PickVaultUsecase {
 
   PickVaultUsecase({required this._fileSystemRepository});
 
-  Future<Result<EncryptedVault, RecoverBullCoreFailure>> execute() {
+  Future<Result<EncryptedVault, RecoverBullFailure>> execute() {
     return _fileSystemRepository.pickVault();
   }
 }

@@ -9,7 +9,7 @@ class FetchVaultFromDriveUsecase {
 
   FetchVaultFromDriveUsecase({required this._driveRepository});
 
-  Future<Result<EncryptedVault, RecoverBullCoreFailure>> execute(
+  Future<Result<EncryptedVault, RecoverBullFailure>> execute(
     DriveFileMetadata driveFileMetadata,
   ) {
     return _driveRepository.fetchVault(driveFileMetadata.id);

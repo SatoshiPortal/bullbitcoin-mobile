@@ -62,7 +62,7 @@ void main() {
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
     when(() => repository.checkConnection(any())).thenAnswer((_) async {});
 
-    expect(await usecase.execute(), isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(await usecase.execute(), isA<Ok<bool, RecoverBullFailure>>());
     verify(() => repository.checkConnection(session)).called(1);
     expect(sessionClosed, isTrue);
   });
@@ -72,7 +72,7 @@ void main() {
       (_) async => const Err(KeyServerUnavailableFailure('tor down')),
     );
 
-    expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
+    expect(await usecase.execute(), isA<Err<bool, RecoverBullFailure>>());
     verifyNever(() => repository.checkConnection(any()));
   });
 
@@ -85,9 +85,9 @@ void main() {
 
       final result = await usecase.execute();
 
-      expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
+      expect(result, isA<Err<bool, RecoverBullFailure>>());
       expect(
-        (result as Err<bool, RecoverBullCoreFailure>).failure,
+        (result as Err<bool, RecoverBullFailure>).failure,
         isA<ExternalTorProxyUnavailableFailure>(),
       );
       verifyNever(() => repository.checkConnection(any()));
@@ -103,7 +103,7 @@ void main() {
       () => repository.checkConnection(any()),
     ).thenThrow(Exception('key server unreachable'));
 
-    expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
+    expect(await usecase.execute(), isA<Err<bool, RecoverBullFailure>>());
     expect(sessionClosed, isTrue);
   });
 
@@ -116,7 +116,7 @@ void main() {
 
     final result = await usecase.execute();
 
-    final failure = (result as Err<bool, RecoverBullCoreFailure>).failure;
+    final failure = (result as Err<bool, RecoverBullFailure>).failure;
     expect(failure, isA<KeyServerUnavailableFailure>());
     expect(failure.logMessage, isNot(contains(rawMessage)));
   });
@@ -127,7 +127,7 @@ void main() {
       () => repository.checkConnection(any()),
     ).thenAnswer((_) async => throw Exception('timeout'));
 
-    expect(await usecase.execute(), isA<Err<bool, RecoverBullCoreFailure>>());
+    expect(await usecase.execute(), isA<Err<bool, RecoverBullFailure>>());
     expect(sessionClosed, isTrue);
   });
 
@@ -136,7 +136,7 @@ void main() {
 
     final result = await usecase.execute(route: session);
 
-    expect(result, isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(result, isA<Ok<bool, RecoverBullFailure>>());
     verifyNever(() => ensureSession.execute());
     expect(sessionClosed, isFalse);
   });
@@ -148,7 +148,7 @@ void main() {
 
     final result = await usecase.execute(route: session);
 
-    expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<bool, RecoverBullFailure>>());
     verifyNever(() => ensureSession.execute());
     expect(sessionClosed, isFalse);
   });
@@ -162,6 +162,6 @@ void main() {
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
     when(() => repository.checkConnection(session)).thenAnswer((_) async {});
 
-    expect(await usecase.execute(), isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(await usecase.execute(), isA<Ok<bool, RecoverBullFailure>>());
   });
 }

@@ -27,9 +27,7 @@ class CreateEncryptedVaultUsecase {
   // Orchestrates wallet + seed (still-throwing core repos) and the recoverbull
   // repo. The local try/catch is the boundary for the wallet/seed calls; the
   // recoverbull repo already returns a Result that we forward.
-  Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
-  >
+  Future<Result<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>
   execute() async {
     try {
       final defaultBitcoinWallets = await _walletRepository.getWallets(
@@ -39,7 +37,7 @@ class CreateEncryptedVaultUsecase {
 
       if (defaultBitcoinWallets.isEmpty) {
         return const Err(
-          RecoverBullUnexpectedCoreFailure('No default Bitcoin wallet found'),
+          RecoverBullUnexpectedFailure('No default Bitcoin wallet found'),
         );
       }
 
@@ -50,12 +48,12 @@ class CreateEncryptedVaultUsecase {
       );
       final mnemonic = defaultSeed.mnemonicWords;
       if (mnemonic.isEmpty) {
-        return const Err(RecoverBullUnexpectedCoreFailure('Invalid seed'));
+        return const Err(RecoverBullUnexpectedFailure('Invalid seed'));
       }
       try {
         Mnemonic.fromWords(words: mnemonic);
       } catch (_) {
-        return const Err(RecoverBullUnexpectedCoreFailure('Invalid seed'));
+        return const Err(RecoverBullUnexpectedFailure('Invalid seed'));
       }
       // BIP85 derivation is network-independent. Always serialize the root
       // with the canonical mainnet version expected by bip85_entropy.
@@ -86,9 +84,7 @@ class CreateEncryptedVaultUsecase {
       );
     } catch (_, st) {
       log.severe(message: 'createEncryptedVault failed', trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Unable to create vault'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Unable to create vault'));
     }
   }
 }

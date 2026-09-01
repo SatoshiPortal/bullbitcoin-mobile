@@ -5,7 +5,7 @@ import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Data boundary for local file pick/save. Catches picker/IO exceptions and
-/// validates the picked file, returning a [RecoverBullCoreFailure].
+/// validates the picked file, returning a [RecoverBullFailure].
 class FileSystemRepository {
   final FileStorageDatasource _fileStorageDataSource;
 
@@ -14,7 +14,7 @@ class FileSystemRepository {
 
   /// Picks a file and validates it is an encrypted vault. (Validation lives
   /// here, not in the use-case.)
-  Future<Result<EncryptedVault, RecoverBullCoreFailure>> pickVault() async {
+  Future<Result<EncryptedVault, RecoverBullFailure>> pickVault() async {
     try {
       final file = await _fileStorageDataSource.pickFile();
       final fileContent = await file.readAsString();
@@ -24,13 +24,11 @@ class FileSystemRepository {
       return Ok(EncryptedVault(file: fileContent));
     } catch (e, st) {
       log.severe(message: 'pickVault failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('File operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('File operation failed'));
     }
   }
 
-  Future<Result<Null, RecoverBullCoreFailure>> saveFile(
+  Future<Result<Null, RecoverBullFailure>> saveFile(
     String content,
     String filename,
   ) async {
@@ -39,9 +37,7 @@ class FileSystemRepository {
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'saveFile failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('File operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('File operation failed'));
     }
   }
 }

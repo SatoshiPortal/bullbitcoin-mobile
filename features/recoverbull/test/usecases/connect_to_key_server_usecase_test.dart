@@ -63,7 +63,7 @@ void main() {
     );
   });
 
-  Future<Result<bool, RecoverBullCoreFailure>> run() =>
+  Future<Result<bool, RecoverBullFailure>> run() =>
       usecase.execute(onAttempt: attempts.add);
 
   test('stops at the first answer instead of exhausting the budget', () async {
@@ -71,7 +71,7 @@ void main() {
       () => checkConnection.execute(route: route),
     ).thenAnswer((_) async => const Ok(true));
 
-    expect(await run(), isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(await run(), isA<Ok<bool, RecoverBullFailure>>());
     expect(attempts, [1]);
     verify(() => checkConnection.execute(route: route)).called(1);
     verify(() => ensureSession.execute()).called(1);
@@ -83,7 +83,7 @@ void main() {
       () => checkConnection.execute(route: route),
     ).thenAnswer((_) async => const Ok(false));
 
-    expect(await run(), isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(await run(), isA<Ok<bool, RecoverBullFailure>>());
     expect(attempts, [1, 2, 3]);
     expect(attempts.length, ConnectToKeyServerUsecase.maxAttempts);
     verify(
@@ -105,7 +105,7 @@ void main() {
         return Ok(calls == 2);
       });
 
-      expect(await run(), isA<Ok<bool, RecoverBullCoreFailure>>());
+      expect(await run(), isA<Ok<bool, RecoverBullFailure>>());
       expect(attempts, [1, 2]);
       verify(() => checkConnection.execute(route: route)).called(2);
       expect(closeCount, 1);
@@ -141,7 +141,7 @@ void main() {
 
     final result = await usecase.execute(onAttempt: attempts.add);
 
-    expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<bool, RecoverBullFailure>>());
     expect(attempts, [1]);
     expect(waited, isEmpty);
     expect(closeCount, 1);
@@ -154,7 +154,7 @@ void main() {
 
     final result = await run();
 
-    expect(result, isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(result, isA<Ok<bool, RecoverBullFailure>>());
     expect(attempts, [1, 2, 3]);
     verify(
       () => checkConnection.execute(route: route),
@@ -171,7 +171,7 @@ void main() {
 
       final result = await run();
 
-      expect(result, isA<Err<bool, RecoverBullCoreFailure>>());
+      expect(result, isA<Err<bool, RecoverBullFailure>>());
       expect(attempts, [1]);
       verifyNever(() => checkConnection.execute(route: any(named: 'route')));
       expect(closeCount, 0);
@@ -198,6 +198,6 @@ void main() {
     expect(closeStarted, isTrue);
     releaseClose = true;
 
-    expect(await future, isA<Ok<bool, RecoverBullCoreFailure>>());
+    expect(await future, isA<Ok<bool, RecoverBullFailure>>());
   });
 }

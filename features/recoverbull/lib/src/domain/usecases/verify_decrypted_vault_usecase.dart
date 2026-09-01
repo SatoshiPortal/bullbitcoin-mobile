@@ -15,7 +15,7 @@ class VerifyDecryptedVaultUsecase {
 
   const VerifyDecryptedVaultUsecase(this._walletRepository);
 
-  Future<Result<VaultVerificationResult, RecoverBullCoreFailure>> execute({
+  Future<Result<VaultVerificationResult, RecoverBullFailure>> execute({
     required DecryptedVault decryptedVault,
   }) async {
     try {
@@ -36,9 +36,7 @@ class VerifyDecryptedVaultUsecase {
             : VaultVerificationResult.mismatch,
       );
     } catch (_) {
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Unable to verify vault'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Unable to verify vault'));
     }
   }
 

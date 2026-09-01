@@ -21,7 +21,7 @@ final class FetchVaultKeyWithStatusFromServerUsecase {
     this.alertPort,
   ]);
 
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>> execute({
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>> execute({
     required EncryptedVault vault,
     required String password,
   }) async {
@@ -32,7 +32,7 @@ final class FetchVaultKeyWithStatusFromServerUsecase {
     };
   }
 
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>> _fetch(
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>> _fetch(
     EncryptedVault vault,
     String password,
     RecoverBullTorRoute route, {

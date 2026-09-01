@@ -7,7 +7,7 @@ class SaveFileToSystemUsecase {
 
   SaveFileToSystemUsecase({required this._fileSystemRepository});
 
-  Future<Result<Null, RecoverBullCoreFailure>> execute({
+  Future<Result<Null, RecoverBullFailure>> execute({
     required String content,
     required String filename,
   }) {

@@ -23,7 +23,7 @@ class FetchVaultKeyFromServerUsecase {
   ]) : _recordAttempt = recordAttempt,
        _alertPort = alertPort;
 
-  Future<Result<String, RecoverBullCoreFailure>> execute({
+  Future<Result<String, RecoverBullFailure>> execute({
     required EncryptedVault vault,
     required String password,
     RecoverBullTorRoute? route,
@@ -36,7 +36,7 @@ class FetchVaultKeyFromServerUsecase {
     };
   }
 
-  Future<Result<String, RecoverBullCoreFailure>> _fetch(
+  Future<Result<String, RecoverBullFailure>> _fetch(
     EncryptedVault vault,
     String password,
     RecoverBullTorRoute session, {
@@ -69,7 +69,7 @@ class FetchVaultKeyFromServerUsecase {
     }
   }
 
-  Future<Result<String, RecoverBullCoreFailure>> _recordAndReturn(
+  Future<Result<String, RecoverBullFailure>> _recordAndReturn(
     EncryptedVault vault,
     VaultKeyFetchResult value,
   ) async {

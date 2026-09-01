@@ -37,7 +37,7 @@ class EnsureRecoverBullTorSessionUsecase {
   }) : _torHttpClientFactory =
            torHttpClientFactory ?? const TorHttpClientFactory();
 
-  Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>> execute({
+  Future<Result<RecoverBullTorRoute, RecoverBullFailure>> execute({
     bool restartEmbedded = false,
   }) async {
     final stopwatch = Stopwatch()..start();
@@ -68,7 +68,7 @@ class EnsureRecoverBullTorSessionUsecase {
         }
         switch (await _tor.external.verify(endpoint)) {
           case TorReady(:final route):
-            final value = Ok<RecoverBullTorRoute, RecoverBullCoreFailure>(
+            final value = Ok<RecoverBullTorRoute, RecoverBullFailure>(
               RecoverBullTorRoute(
                 route,
                 () async {},
@@ -89,7 +89,7 @@ class EnsureRecoverBullTorSessionUsecase {
       final readiness = restartEmbedded
           ? await _embeddedTor.retry()
           : await _embeddedTor.ensureReady();
-      final Result<RecoverBullTorRoute, RecoverBullCoreFailure>
+      final Result<RecoverBullTorRoute, RecoverBullFailure>
       result = await switch (readiness) {
         TorReady(:final route) when route.source == TorSource.embedded =>
           _openSession(),
@@ -113,8 +113,7 @@ class EnsureRecoverBullTorSessionUsecase {
     }
   }
 
-  Future<Result<RecoverBullTorRoute, RecoverBullCoreFailure>>
-  _openSession() async {
+  Future<Result<RecoverBullTorRoute, RecoverBullFailure>> _openSession() async {
     try {
       final session = await _embeddedTor.sessions.open();
       try {

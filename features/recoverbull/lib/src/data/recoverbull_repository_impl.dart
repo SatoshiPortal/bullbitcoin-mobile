@@ -36,7 +36,7 @@ import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
 
 /// Data boundary for the RecoverBull key server and vault crypto. Catches the
 /// foreign exceptions the datasources/SDK throw, logs the raw reason, and
-/// returns a [RecoverBullCoreFailure] — no exception crosses this boundary.
+/// returns a [RecoverBullFailure] — no exception crosses this boundary.
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
   final RecoverBullRemoteDatasource _remoteDatasource;
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
@@ -58,9 +58,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   /// [derivationPath] into the resulting vault. Assembly stays at this data
   /// boundary; the worker receives no repository or external resource.
   @override
-  Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
-  >
+  Future<Result<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>>
   createVault({
     required String rootXprv,
     required String plaintext,
@@ -80,16 +78,14 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         error: 'Vault processing failed',
         trace: st,
       );
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Vault processing failed'));
     }
   }
 
   /// Decrypts [vault] with [vaultKey] and decodes it into a [DecryptedVault].
   /// Wrong key / corrupt data surface as a failure, never an exception.
   @override
-  Result<DecryptedVault, RecoverBullCoreFailure> restoreVault({
+  Result<DecryptedVault, RecoverBullFailure> restoreVault({
     required EncryptedVault vault,
     required String vaultKey,
   }) {
@@ -107,14 +103,12 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         error: 'Vault processing failed',
         trace: st,
       );
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Vault processing failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Vault processing failed'));
     }
   }
 
   @override
-  Future<Result<Null, RecoverBullCoreFailure>> storeVaultKey(
+  Future<Result<Null, RecoverBullFailure>> storeVaultKey(
     String identifier,
     String password,
     String salt,
@@ -144,13 +138,13 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         trace: st,
       );
       return const Err(
-        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+        RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
   }
 
   @override
-  Future<Result<String, RecoverBullCoreFailure>> fetchVaultKey(
+  Future<Result<String, RecoverBullFailure>> fetchVaultKey(
     String identifier,
     String password,
     String salt,
@@ -178,13 +172,13 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         trace: st,
       );
       return const Err(
-        RecoverBullUnexpectedCoreFailure('Vault key processing failed'),
+        RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
   }
 
   @override
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>>
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>>
   fetchVaultKeyWithStatus(
     String identifier,
     String password,
@@ -208,9 +202,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return Err(
         e is recoverbull.KeyServerException
             ? _mapKeyServer(e)
-            : const RecoverBullUnexpectedCoreFailure(
-                'Vault key processing failed',
-              ),
+            : const RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
   }
@@ -231,7 +223,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   }
 
   @override
-  Future<Result<VaultKeyFetchResult, RecoverBullCoreFailure>>
+  Future<Result<VaultKeyFetchResult, RecoverBullFailure>>
   trashVaultKeyWithStatus(
     String identifier,
     String password,
@@ -255,9 +247,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return Err(
         e is recoverbull.KeyServerException
             ? _mapKeyServer(e)
-            : const RecoverBullUnexpectedCoreFailure(
-                'Vault key processing failed',
-              ),
+            : const RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
   }
@@ -308,7 +298,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   }
 
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
-  RecoverBullCoreFailure _mapKeyServer(recoverbull.KeyServerException e) {
+  RecoverBullFailure _mapKeyServer(recoverbull.KeyServerException e) {
     final code = e.code;
     if (code == 401) {
       return const KeyServerInvalidCredentialsFailure(

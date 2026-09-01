@@ -8,8 +8,7 @@ class FetchAllDriveFileMetadataUsecase {
 
   FetchAllDriveFileMetadataUsecase({required this._driveRepository});
 
-  Future<Result<List<DriveFileMetadata>, RecoverBullCoreFailure>>
-  execute() async {
+  Future<Result<List<DriveFileMetadata>, RecoverBullFailure>> execute() async {
     final connected = await _driveRepository.connect();
     if (connected case Err(:final failure)) return Err(failure);
     return _driveRepository.fetchAllMetadata();

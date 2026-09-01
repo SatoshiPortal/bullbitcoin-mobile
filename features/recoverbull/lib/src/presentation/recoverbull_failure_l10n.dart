@@ -1,4 +1,4 @@
-import 'package:bull_recoverbull/src/domain/presentation_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bull_recoverbull/src/l10n/context_localizations.dart';
 
@@ -26,6 +26,18 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.recoverbullSelectBackupFileNotValidError,
     VaultRateLimitedFailure(:final retryIn) =>
       context.loc.recoverbullErrorRateLimited(_cooldown(context, retryIn)),
+    KeyServerInvalidCredentialsFailure() =>
+      context.loc.recoverbullErrorUnexpected,
+    KeyServerRateLimitedFailure() => context.loc.recoverbullErrorUnexpected,
+    KeyServerRejectedFailure() => context.loc.recoverbullErrorUnexpected,
+    KeyServerUnavailableFailure() => context.loc.recoverbullErrorUnexpected,
+    InvalidVaultFileFailure() => context.loc.recoverbullErrorUnexpected,
+    RecoverBullGoogleDriveFetchFailure() =>
+      context.loc.recoverbullGoogleDriveErrorFetchFailed,
+    RecoverBullGoogleDriveDeleteFailure() =>
+      context.loc.recoverbullGoogleDriveErrorDeleteFailed,
+    RecoverBullGoogleDriveExportFailure() =>
+      context.loc.recoverbullGoogleDriveErrorExportFailed,
     RecoverBullUnexpectedFailure() => context.loc.recoverbullErrorUnexpected,
   };
 

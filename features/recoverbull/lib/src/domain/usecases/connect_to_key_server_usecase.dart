@@ -34,7 +34,7 @@ class ConnectToKeyServerUsecase {
   /// The first attempt, including Tor route acquisition, is immediate. Delaying
   /// it would add a second to every start, including the common case where the
   /// server answers at once.
-  Future<Result<bool, RecoverBullCoreFailure>> execute({
+  Future<Result<bool, RecoverBullFailure>> execute({
     required void Function(int attempt) onAttempt,
     RecoverBullTorRoute? route,
   }) async {

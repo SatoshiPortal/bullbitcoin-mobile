@@ -7,7 +7,7 @@ class ConnectToGoogleDriveUsecase {
 
   ConnectToGoogleDriveUsecase({required this._driveRepository});
 
-  Future<Result<Null, RecoverBullCoreFailure>> execute() {
+  Future<Result<Null, RecoverBullFailure>> execute() {
     return _driveRepository.connect();
   }
 }

@@ -8,7 +8,7 @@ class FetchLatestGoogleDriveVaultUsecase {
 
   FetchLatestGoogleDriveVaultUsecase({required this._driveRepository});
 
-  Future<Result<EncryptedVault, RecoverBullCoreFailure>> execute() {
+  Future<Result<EncryptedVault, RecoverBullFailure>> execute() {
     return _driveRepository.fetchLatestVault();
   }
 }

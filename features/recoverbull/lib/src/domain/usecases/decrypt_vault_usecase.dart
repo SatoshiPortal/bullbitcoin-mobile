@@ -10,7 +10,7 @@ class DecryptVaultUsecase {
   DecryptVaultUsecase({required RecoverBullRepository recoverBullRepository})
     : _recoverBull = recoverBullRepository;
 
-  Result<DecryptedVault, RecoverBullCoreFailure> execute({
+  Result<DecryptedVault, RecoverBullFailure> execute({
     required EncryptedVault vault,
     required String vaultKey,
   }) {

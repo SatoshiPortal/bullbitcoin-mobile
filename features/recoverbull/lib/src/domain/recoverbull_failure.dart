@@ -33,6 +33,11 @@ final class VaultCreationFailure extends RecoverBullFailure {
   const VaultCreationFailure();
 }
 
+/// The key is already on the server; only the selected provider save failed.
+final class VaultProviderSaveFailure extends RecoverBullFailure {
+  const VaultProviderSaveFailure();
+}
+
 final class TorNotStartedFailure extends RecoverBullFailure {
   const TorNotStartedFailure();
 }
@@ -64,42 +69,44 @@ final class VaultRateLimitedFailure extends RecoverBullFailure {
   const VaultRateLimitedFailure({required this.retryIn});
 }
 
-/// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
-/// the presentation extension returns the shared generic string.
-final class RecoverBullUnexpectedFailure extends RecoverBullFailure {
-  const RecoverBullUnexpectedFailure([super.logMessage]);
-}
-
-sealed class RecoverBullCoreFailure extends Failure {
-  const RecoverBullCoreFailure([super.logMessage]);
-}
-
-final class ExternalTorProxyUnavailableFailure extends RecoverBullCoreFailure {
+final class ExternalTorProxyUnavailableFailure extends RecoverBullFailure {
   const ExternalTorProxyUnavailableFailure([super.logMessage]);
 }
 
-final class KeyServerInvalidCredentialsFailure extends RecoverBullCoreFailure {
+final class KeyServerInvalidCredentialsFailure extends RecoverBullFailure {
   const KeyServerInvalidCredentialsFailure([super.logMessage]);
 }
 
-final class KeyServerRateLimitedFailure extends RecoverBullCoreFailure {
+final class KeyServerRateLimitedFailure extends RecoverBullFailure {
   final Duration? retryIn;
   const KeyServerRateLimitedFailure({this.retryIn, String? logMessage})
     : super(logMessage);
 }
 
-final class KeyServerRejectedFailure extends RecoverBullCoreFailure {
+final class KeyServerRejectedFailure extends RecoverBullFailure {
   const KeyServerRejectedFailure([super.logMessage]);
 }
 
-final class KeyServerUnavailableFailure extends RecoverBullCoreFailure {
+final class KeyServerUnavailableFailure extends RecoverBullFailure {
   const KeyServerUnavailableFailure([super.logMessage]);
 }
 
-final class InvalidVaultFileFailure extends RecoverBullCoreFailure {
+final class InvalidVaultFileFailure extends RecoverBullFailure {
   const InvalidVaultFileFailure([super.logMessage]);
 }
 
-final class RecoverBullUnexpectedCoreFailure extends RecoverBullCoreFailure {
-  const RecoverBullUnexpectedCoreFailure([super.logMessage]);
+final class RecoverBullGoogleDriveFetchFailure extends RecoverBullFailure {
+  const RecoverBullGoogleDriveFetchFailure([super.logMessage]);
+}
+
+final class RecoverBullGoogleDriveDeleteFailure extends RecoverBullFailure {
+  const RecoverBullGoogleDriveDeleteFailure([super.logMessage]);
+}
+
+final class RecoverBullGoogleDriveExportFailure extends RecoverBullFailure {
+  const RecoverBullGoogleDriveExportFailure([super.logMessage]);
+}
+
+final class RecoverBullUnexpectedFailure extends RecoverBullFailure {
+  const RecoverBullUnexpectedFailure([super.logMessage]);
 }

@@ -8,76 +8,65 @@ import 'package:bull_recoverbull/src/support/logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Data boundary for Google Drive vault storage. Catches Drive/auth/IO
-/// exceptions, logs the raw reason, and returns a [RecoverBullCoreFailure].
+/// exceptions, logs the raw reason, and returns a [RecoverBullFailure].
 class GoogleDriveRepository {
   final GoogleDriveAppDatasource _dataSource;
 
   GoogleDriveRepository({required GoogleDriveAppDatasource datasource})
     : _dataSource = datasource;
 
-  Future<Result<Null, RecoverBullCoreFailure>> connect() async {
+  Future<Result<Null, RecoverBullFailure>> connect() async {
     try {
       await _dataSource.connect();
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'drive connect failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 
   Future<void> disconnect() => _dataSource.disconnect();
 
-  Future<Result<List<DriveFileMetadata>, RecoverBullCoreFailure>>
+  Future<Result<List<DriveFileMetadata>, RecoverBullFailure>>
   fetchAllMetadata() async {
     try {
       return Ok(await _fetchAllMetadata());
     } catch (e, st) {
       log.severe(message: 'drive fetchAllMetadata failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 
-  Future<Result<EncryptedVault, RecoverBullCoreFailure>> fetchVault(
+  Future<Result<EncryptedVault, RecoverBullFailure>> fetchVault(
     String fileId,
   ) async {
     try {
       return Ok(EncryptedVault(file: await _fetchContent(fileId)));
     } catch (e, st) {
       log.severe(message: 'drive fetchVault failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 
   /// Raw file content (not parsed as a vault) — used when exporting a backup
   /// file verbatim to local storage.
-  Future<Result<String, RecoverBullCoreFailure>> fetchRawFile(
-    String fileId,
-  ) async {
+  Future<Result<String, RecoverBullFailure>> fetchRawFile(String fileId) async {
     try {
       return Ok(await _fetchContent(fileId));
     } catch (e, st) {
       log.severe(message: 'drive fetchRawFile failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 
   /// Fetches the most recently created vault. (The "pick latest" shaping lives
   /// here, not in the use-case, and an empty Drive surfaces as a failure rather
   /// than the `StateError` `reduce` would throw.)
-  Future<Result<EncryptedVault, RecoverBullCoreFailure>>
-  fetchLatestVault() async {
+  Future<Result<EncryptedVault, RecoverBullFailure>> fetchLatestVault() async {
     try {
       final backups = await _fetchAllMetadata();
       if (backups.isEmpty) {
-        return const Err(RecoverBullUnexpectedCoreFailure('no drive backups'));
+        return const Err(RecoverBullUnexpectedFailure('no drive backups'));
       }
       final latest = backups.reduce(
         (a, b) => a.createdTime.compareTo(b.createdTime) > 0 ? a : b,
@@ -85,33 +74,27 @@ class GoogleDriveRepository {
       return Ok(EncryptedVault(file: await _fetchContent(latest.id)));
     } catch (e, st) {
       log.severe(message: 'drive fetchLatestVault failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 
-  Future<Result<Null, RecoverBullCoreFailure>> store(String content) async {
+  Future<Result<Null, RecoverBullFailure>> store(String content) async {
     try {
       await _dataSource.store(content);
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'drive store failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 
-  Future<Result<Null, RecoverBullCoreFailure>> trash(String fileId) async {
+  Future<Result<Null, RecoverBullFailure>> trash(String fileId) async {
     try {
       await _dataSource.trash(fileId);
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'drive trash failed', error: e, trace: st);
-      return const Err(
-        RecoverBullUnexpectedCoreFailure('Drive operation failed'),
-      );
+      return const Err(RecoverBullUnexpectedFailure('Drive operation failed'));
     }
   }
 

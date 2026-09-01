@@ -13,7 +13,7 @@ class ExportDriveFileUsecase {
     required this._fileSystemRepository,
   });
 
-  Future<Result<Null, RecoverBullCoreFailure>> execute(
+  Future<Result<Null, RecoverBullFailure>> execute(
     DriveFileMetadata fileMetadata,
   ) async {
     final content = await _driveRepository.fetchRawFile(fileMetadata.id);

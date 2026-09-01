@@ -68,7 +68,7 @@ void main() {
   }
 
   // identifier/salt must be valid hex (the repo HEX-decodes them).
-  Future<Result<String, RecoverBullCoreFailure>> fetch() =>
+  Future<Result<String, RecoverBullFailure>> fetch() =>
       repository.fetchVaultKey('00', 'password', '00', route);
 
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
@@ -79,8 +79,8 @@ void main() {
 
       final result = await fetch();
 
-      expect(result, isA<Err<String, RecoverBullCoreFailure>>());
-      final failure = (result as Err<String, RecoverBullCoreFailure>).failure;
+      expect(result, isA<Err<String, RecoverBullFailure>>());
+      final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerInvalidCredentialsFailure>());
     });
 
@@ -95,7 +95,7 @@ void main() {
 
       final result = await fetch();
 
-      final failure = (result as Err<String, RecoverBullCoreFailure>).failure;
+      final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerRateLimitedFailure>());
       expect((failure as KeyServerRateLimitedFailure).retryIn, isNotNull);
     });
@@ -105,7 +105,7 @@ void main() {
 
       final result = await fetch();
 
-      final failure = (result as Err<String, RecoverBullCoreFailure>).failure;
+      final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerRateLimitedFailure>());
       expect((failure as KeyServerRateLimitedFailure).retryIn, isNull);
     });
@@ -116,7 +116,7 @@ void main() {
       final result = await fetch();
 
       expect(
-        (result as Err<String, RecoverBullCoreFailure>).failure,
+        (result as Err<String, RecoverBullFailure>).failure,
         isA<KeyServerRejectedFailure>(),
       );
     });
@@ -127,7 +127,7 @@ void main() {
       final result = await fetch();
 
       expect(
-        (result as Err<String, RecoverBullCoreFailure>).failure,
+        (result as Err<String, RecoverBullFailure>).failure,
         isA<KeyServerUnavailableFailure>(),
       );
     });
@@ -138,19 +138,19 @@ void main() {
       final result = await fetch();
 
       expect(
-        (result as Err<String, RecoverBullCoreFailure>).failure,
+        (result as Err<String, RecoverBullFailure>).failure,
         isA<KeyServerUnavailableFailure>(),
       );
     });
   });
 
-  test('non-KeyServer error -> RecoverBullUnexpectedCoreFailure', () async {
+  test('non-KeyServer error -> RecoverBullUnexpectedFailure', () async {
     stubFetchThrows(Exception('socket: 1.2.3.4 reset'));
 
     final result = await fetch();
 
-    final failure = (result as Err<String, RecoverBullCoreFailure>).failure;
-    expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
+    final failure = (result as Err<String, RecoverBullFailure>).failure;
+    expect(failure, isA<RecoverBullUnexpectedFailure>());
   });
 
   test(
@@ -176,14 +176,14 @@ void main() {
       expect(
         result,
         isA<
-          Ok<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
+          Ok<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>
         >(),
       );
       final created =
           (result
                   as Ok<
                     ({EncryptedVault vault, String vaultKey}),
-                    RecoverBullCoreFailure
+                    RecoverBullFailure
                   >)
               .value;
       expect(created.vaultKey, expectedVaultKey);
@@ -192,9 +192,9 @@ void main() {
         vault: created.vault,
         vaultKey: created.vaultKey,
       );
-      expect(restored, isA<Ok<DecryptedVault, RecoverBullCoreFailure>>());
+      expect(restored, isA<Ok<DecryptedVault, RecoverBullFailure>>());
       expect(
-        (restored as Ok<DecryptedVault, RecoverBullCoreFailure>)
+        (restored as Ok<DecryptedVault, RecoverBullFailure>)
             .value
             .masterFingerprint,
         'deadbeef',
@@ -214,17 +214,17 @@ void main() {
       expect(
         result,
         isA<
-          Err<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
+          Err<({EncryptedVault vault, String vaultKey}), RecoverBullFailure>
         >(),
       );
       expect(
         (result
                 as Err<
                   ({EncryptedVault vault, String vaultKey}),
-                  RecoverBullCoreFailure
+                  RecoverBullFailure
                 >)
             .failure,
-        isA<RecoverBullUnexpectedCoreFailure>(),
+        isA<RecoverBullUnexpectedFailure>(),
       );
     },
   );
@@ -236,8 +236,8 @@ void main() {
 
     final result = await fetch();
 
-    expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
-    expect((result as Ok<String, RecoverBullCoreFailure>).value, 'abcd');
+    expect(result, isA<Ok<String, RecoverBullFailure>>());
+    expect((result as Ok<String, RecoverBullFailure>).value, 'abcd');
   });
 
   // Guards the package:hex -> package:convert codec swap and the
@@ -267,7 +267,7 @@ void main() {
         route,
       );
 
-      expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
+      expect(result, isA<Ok<String, RecoverBullFailure>>());
       // Pin the decoded bytes, not just that the call happened: proves the
       // spaces were stripped and the codec produced the right bytes, rather
       // than merely not throwing. fetch(identifier, password, salt) — the two
@@ -294,7 +294,7 @@ void main() {
         route,
       );
 
-      expect(result, isA<Ok<String, RecoverBullCoreFailure>>());
+      expect(result, isA<Ok<String, RecoverBullFailure>>());
       // Proves convert case-folds (RFC 4648): 'ABCD'/'EF01' decode to the same
       // bytes as lowercase, with no manual .toLowerCase() in _normalizeHex.
       final captured = verify(
@@ -323,10 +323,10 @@ void main() {
         route,
       );
 
-      expect(result, isA<Err<String, RecoverBullCoreFailure>>());
+      expect(result, isA<Err<String, RecoverBullFailure>>());
       expect(
-        (result as Err<String, RecoverBullCoreFailure>).failure,
-        isA<RecoverBullUnexpectedCoreFailure>(),
+        (result as Err<String, RecoverBullFailure>).failure,
+        isA<RecoverBullUnexpectedFailure>(),
       );
       verifyNever(
         () => remote.fetch(any(), any(), any(), route: any(named: 'route')),
@@ -344,8 +344,8 @@ void main() {
       );
 
       expect(
-        (result as Err<String, RecoverBullCoreFailure>).failure,
-        isA<RecoverBullUnexpectedCoreFailure>(),
+        (result as Err<String, RecoverBullFailure>).failure,
+        isA<RecoverBullUnexpectedFailure>(),
       );
       verifyNever(
         () => remote.fetch(any(), any(), any(), route: any(named: 'route')),

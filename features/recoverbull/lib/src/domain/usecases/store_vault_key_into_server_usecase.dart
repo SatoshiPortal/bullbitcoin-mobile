@@ -15,7 +15,7 @@ class StoreVaultKeyIntoServerUsecase {
     this._ensureTorSessionUsecase,
   );
 
-  Future<Result<Null, RecoverBullCoreFailure>> execute({
+  Future<Result<Null, RecoverBullFailure>> execute({
     required String password,
     required EncryptedVault vault,
     required String vaultKey,
@@ -37,7 +37,7 @@ class StoreVaultKeyIntoServerUsecase {
     };
   }
 
-  Future<Result<Null, RecoverBullCoreFailure>> _store(
+  Future<Result<Null, RecoverBullFailure>> _store(
     String password,
     EncryptedVault vault,
     String vaultKey,

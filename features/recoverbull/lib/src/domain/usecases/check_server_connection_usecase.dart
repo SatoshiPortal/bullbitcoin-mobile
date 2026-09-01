@@ -20,7 +20,7 @@ class CheckServerConnectionUsecase {
   /// duration of this call, and closes it before returning. When [route] is
   /// provided, the caller retains ownership: this use case uses its endpoint
   /// but never acquires or closes it.
-  Future<Result<bool, RecoverBullCoreFailure>> execute({
+  Future<Result<bool, RecoverBullFailure>> execute({
     RecoverBullTorRoute? route,
   }) async {
     try {

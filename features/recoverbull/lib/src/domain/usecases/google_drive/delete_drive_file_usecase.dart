@@ -7,7 +7,7 @@ class DeleteDriveFileUsecase {
 
   DeleteDriveFileUsecase({required this._driveRepository});
 
-  Future<Result<Null, RecoverBullCoreFailure>> execute(String fileId) {
+  Future<Result<Null, RecoverBullFailure>> execute(String fileId) {
     return _driveRepository.trash(fileId);
   }
 }

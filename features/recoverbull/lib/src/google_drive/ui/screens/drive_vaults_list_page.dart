@@ -1,7 +1,7 @@
 import 'package:bull_recoverbull/src/domain/entities/drive_file_metadata.dart';
 import 'package:bull_recoverbull/src/google_drive/presentation/bloc.dart';
 import 'package:bull_recoverbull/src/google_drive/presentation/event.dart';
-import 'package:bull_recoverbull/src/google_drive/presentation/recoverbull_google_drive_failure_l10n.dart';
+import 'package:bull_recoverbull/src/presentation/recoverbull_failure_l10n.dart';
 import 'package:bull_recoverbull/src/google_drive/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_recoverbull/src/l10n/context_localizations.dart';

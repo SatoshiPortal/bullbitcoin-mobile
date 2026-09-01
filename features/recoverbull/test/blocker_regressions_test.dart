@@ -281,7 +281,7 @@ void main() {
       ensure,
     ).execute(vault: vault, password: 'password');
 
-    expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullCoreFailure>>());
+    expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
     expect(closed, isTrue);
   });
 

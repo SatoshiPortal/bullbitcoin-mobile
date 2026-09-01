@@ -64,7 +64,7 @@ void main() {
       ensure,
     ).execute(vault: vault, password: 'password');
 
-    expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullCoreFailure>>());
+    expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
     expect(closeCount, 1);
   });
 
@@ -78,7 +78,7 @@ void main() {
       ensure,
     ).execute(vault: vault, password: 'password');
 
-    expect(result, isA<Err<VaultKeyFetchResult, RecoverBullCoreFailure>>());
+    expect(result, isA<Err<VaultKeyFetchResult, RecoverBullFailure>>());
     expect(closeCount, 1);
   });
 }
