@@ -1,30 +1,36 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
+import 'package:bb_mobile/core/utils/transaction_day_label.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
-import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
-class TransactionsByDayList extends StatelessWidget {
+/// Items grouped by day, each group under its day label.
+///
+/// The caller owns the item type and its row, so this widget stays free of
+/// feature imports.
+class TransactionsByDayList<T> extends StatelessWidget {
   const TransactionsByDayList({
     super.key,
-    required this.transactionsByDay,
-    required this.onDetailsClosed,
-    this.ongoingSwaps,
+    required this.itemsByDay,
+    required this.itemBuilder,
+    required this.loadingMessage,
+    required this.emptyMessage,
+    this.header,
     this.errorMessage,
     this.sliver = false,
   });
 
-  final Map<int, List<Transaction>>? transactionsByDay;
-  final List<Transaction>? ongoingSwaps;
-  final String? errorMessage;
+  /// Items keyed by the day's epoch milliseconds. Null means still loading.
+  final Map<int, List<T>>? itemsByDay;
+  final Widget Function(BuildContext, T) itemBuilder;
+  final String loadingMessage;
+  final String emptyMessage;
 
-  /// Called when a row's details screen is closed, so the owner can pick up
-  /// anything edited there — labels, in particular.
-  final VoidCallback onDetailsClosed;
+  /// Rendered above the first day group, and counts as content: while it is
+  /// set the list never shows [emptyMessage].
+  final Widget? header;
+  final String? errorMessage;
 
   /// When true, returns Sliver* widgets so the list can live inside a
   /// CustomScrollView and share the parent's scroll/refresh gesture.
@@ -53,14 +59,14 @@ class TransactionsByDayList extends StatelessWidget {
           ),
         ),
       );
-    } else if (transactionsByDay == null) {
+    } else if (itemsByDay == null) {
       return _wrapPlaceholder(
         Center(
           child: Column(
             children: [
               const Gap(16),
               BBText(
-                'Loading transactions...',
+                loadingMessage,
                 maxLines: 2,
                 textAlign: .center,
                 style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
@@ -71,15 +77,14 @@ class TransactionsByDayList extends StatelessWidget {
           ),
         ),
       );
-    } else if (transactionsByDay!.isEmpty &&
-        (ongoingSwaps == null || ongoingSwaps!.isEmpty)) {
+    } else if (itemsByDay!.isEmpty && header == null) {
       return _wrapPlaceholder(
         Center(
           child: Column(
             children: [
               const Gap(16),
               BBText(
-                'No transactions yet.',
+                emptyMessage,
                 maxLines: 2,
                 textAlign: .center,
                 style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
@@ -91,50 +96,27 @@ class TransactionsByDayList extends StatelessWidget {
         ),
       );
     } else {
-      final itemCount =
-          transactionsByDay!.entries.length +
-          (ongoingSwaps != null && ongoingSwaps!.isNotEmpty ? 1 : 0);
-      Widget itemBuilder(BuildContext context, int index) {
-        // Show ongoing swaps section at the top
-        if (ongoingSwaps != null && ongoingSwaps!.isNotEmpty && index == 0) {
-          return OngoingSwapsWidget(
-            ongoingSwaps: ongoingSwaps!,
-            onDetailsClosed: onDetailsClosed,
-          );
-        }
+      final hasHeader = header != null;
+      final itemCount = itemsByDay!.entries.length + (hasHeader ? 1 : 0);
+      Widget dayBuilder(BuildContext context, int index) {
+        if (hasHeader && index == 0) return header!;
 
-        // Adjust index if we have ongoing swaps
-        final adjustedIndex = ongoingSwaps != null && ongoingSwaps!.isNotEmpty
-            ? index - 1
-            : index;
-        final entry = transactionsByDay!.entries.elementAt(adjustedIndex);
+        final entry = itemsByDay!.entries.elementAt(
+          hasHeader ? index - 1 : index,
+        );
         final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
-        final txs = entry.value;
-        final now = DateTime.now();
-        final today = DateTime(now.year, now.month, now.day);
-        final yesterday = DateTime(now.year, now.month, now.day - 1);
 
         return Column(
           crossAxisAlignment: .start,
           children: [
             BBText(
-              date.compareTo(today) > 0
-                  ? 'Pending'
-                  : date.isAtSameMomentAs(today)
-                  ? 'Today'
-                  : date.isAtSameMomentAs(yesterday)
-                  ? 'Yesterday'
-                  : date.year == DateTime.now().year
-                  ? DateFormat.MMMMd().format(date)
-                  : DateFormat.yMMMMd().format(date),
+              transactionDayLabel(context, date),
               style: context.font.titleSmall?.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),
             const Gap(16),
-            ...txs.map(
-              (tx) => TxListItem(tx: tx, onDetailsClosed: onDetailsClosed),
-            ),
+            ...entry.value.map((item) => itemBuilder(context, item)),
             const Gap(16),
           ],
         );
@@ -145,14 +127,14 @@ class TransactionsByDayList extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           sliver: SliverList.builder(
             itemCount: itemCount,
-            itemBuilder: itemBuilder,
+            itemBuilder: dayBuilder,
           ),
         );
       }
       return ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         itemCount: itemCount,
-        itemBuilder: itemBuilder,
+        itemBuilder: dayBuilder,
       );
     }
   }
