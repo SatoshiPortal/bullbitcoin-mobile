@@ -15,12 +15,14 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_re
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/labels/label_change_notifier.dart';
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
   static void registerPorts(GetIt locator) {
+    locator.registerLazySingleton(LabelChangeNotifier.new);
     locator.registerLazySingleton<LabelsRepositoryPort>(
       () => DriftLabelsRepositoryAdapter(database: locator<SqliteDatabase>()),
     );
@@ -62,6 +64,7 @@ class LabelsLocator {
         labelRepository: locator<LabelsRepositoryPort>(),
         labelConverter: locator<LabelsConverterPort>(),
         walletFreeze: locator<WalletFreezePort>(),
+        changeNotifier: locator<LabelChangeNotifier>(),
       ),
     );
 
@@ -89,6 +92,7 @@ class LabelsLocator {
         fetchAllLabelsUsecase: locator<FetchAllLabelsUsecase>(),
         storeLabelsUsecase: locator<StoreLabelUsecase>(),
         trashLabelUsecase: locator<TrashLabelUsecase>(),
+        changeNotifier: locator<LabelChangeNotifier>(),
       ),
     );
   }

@@ -239,8 +239,12 @@ void main() {
       ).captured.cast<ElectrumSettings>();
       expect(savedElectrum, everyElement(hasSocks('127.0.0.1:9050')));
       verifyNever(() => settings.setEnvironment(any()));
-      verifyNever(() => settings.setUseTorProxy(any()));
-      verifyNever(() => settings.setTorProxyPort(any()));
+      verifyNever(
+        () => settings.setTorProxy(
+          enabled: any(named: 'enabled'),
+          port: any(named: 'port'),
+        ),
+      );
       verifyNever(() => settings.setIsSuperuser(any()));
       verifyNever(() => settings.setIsDevMode(any()));
       verifyNever(() => settings.setErrorReportingEnabled(any()));

@@ -60,10 +60,13 @@ void main() {
       when(() => seed.get('73c5da0a')).thenAnswer(
         (_) async => const SeedModel.mnemonic(mnemonicWords: ['test']),
       );
+      // Private wallet models keep identity equality (they carry a mnemonic),
+      // so match any model here and check the derived fields afterwards.
+      registerFallbackValue(privateWallet as PrivateBdkWalletModel);
       when(
         () => wallet.signPsbt(
           'psbt',
-          wallet: privateWallet as PrivateBdkWalletModel,
+          wallet: any(named: 'wallet'),
           allowFinalizedForeignInputs: true,
         ),
       ).thenAnswer((_) async => (psbt: 'signed', isFinalized: true));
@@ -76,6 +79,22 @@ void main() {
       );
 
       expect(result, 'signed');
+      final signedWith =
+          verify(
+                () => wallet.signPsbt(
+                  'psbt',
+                  wallet: captureAny(named: 'wallet'),
+                  allowFinalizedForeignInputs: true,
+                ),
+              ).captured.single
+              as PrivateBdkWalletModel;
+      final expected = privateWallet as PrivateBdkWalletModel;
+      expect(signedWith.id, expected.id);
+      expect(signedWith.scriptType, expected.scriptType);
+      expect(signedWith.mnemonic, expected.mnemonic);
+      expect(signedWith.passphrase, expected.passphrase);
+      expect(signedWith.account, expected.account);
+      expect(signedWith.isTestnet, expected.isTestnet);
     },
   );
 }
