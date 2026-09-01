@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 import '../database/recoverbull_database.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import '../domain/usecases/check_backup_attempt_monitoring_usecase.dart';
-import '../domain/entities/recoverbull_attempt_alert.dart' as domain_alert;
+import '../domain/entities/attempt_alert.dart' as domain_alert;
 import '../domain/recoverbull_attempt_alert_port.dart';
 import '../domain/recoverbull_lifecycle_port.dart';
 import '../domain/recoverbull_server_url.dart';
@@ -92,10 +92,6 @@ final class RecoverBullServerSettings {
   });
 }
 
-sealed class RecoverBullAttemptAlert {
-  const RecoverBullAttemptAlert();
-}
-
 enum RecoverBullAttemptAlertKind {
   suspiciousActivity,
   targetedLockout,
@@ -104,12 +100,13 @@ enum RecoverBullAttemptAlertKind {
   countersWiped,
 }
 
-final class RecoverBullAttemptAlertState extends RecoverBullAttemptAlert {
+final class RecoverBullAttemptAlert {
   final RecoverBullAttemptAlertKind kind;
   final Object _handle;
-  RecoverBullAttemptAlertState(this.kind, [Object? handle])
-    : _handle = handle ?? Object();
-  Object get opaqueHandle => _handle;
+
+  RecoverBullAttemptAlert(this.kind) : _handle = Object();
+
+  const RecoverBullAttemptAlert._(this.kind, this._handle);
 }
 
 final class _AlertIdentity {
@@ -181,9 +178,7 @@ final class RecoverBullAttemptMonitoring
       for (final alert in alerts) {
         final alreadyVisible = _visibleAlerts.any(
           (visible) =>
-              visible is RecoverBullAttemptAlertState &&
-              visible.kind == alert.kind &&
-              visible.opaqueHandle == alert.opaqueHandle,
+              visible.kind == alert.kind && visible._handle == alert._handle,
         );
         if (!alreadyVisible) _visibleAlerts.add(alert);
       }
@@ -197,13 +192,12 @@ final class RecoverBullAttemptMonitoring
   }
 
   @override
-  void publish(domain_alert.RecoverbullAttemptAlert alert) {
+  void publish(domain_alert.AttemptAlert alert) {
     final publicAlert = _publicAlert(alert);
     final alreadyVisible = _visibleAlerts.any(
       (visible) =>
-          visible is RecoverBullAttemptAlertState &&
           visible.kind == publicAlert.kind &&
-          visible.opaqueHandle == publicAlert.opaqueHandle,
+          visible._handle == publicAlert._handle,
     );
     if (alreadyVisible) return;
     _visibleAlerts.add(publicAlert);
@@ -212,37 +206,35 @@ final class RecoverBullAttemptMonitoring
     }
   }
 
-  RecoverBullAttemptAlertState _publicAlert(
-    domain_alert.RecoverbullAttemptAlert alert,
-  ) {
+  RecoverBullAttemptAlert _publicAlert(domain_alert.AttemptAlert alert) {
     return switch (alert) {
       domain_alert.SuspiciousActivityAlert(
         :final backupIdHash,
         :final windowStartedAt,
       ) =>
-        RecoverBullAttemptAlertState(
+        RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.suspiciousActivity,
           _AlertIdentity(
             's:$backupIdHash:${windowStartedAt.toUtc().microsecondsSinceEpoch}',
           ),
         ),
       domain_alert.TargetedLockoutAlert(:final backupIdHash) =>
-        RecoverBullAttemptAlertState(
+        RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.targetedLockout,
           _AlertIdentity('l:$backupIdHash'),
         ),
       domain_alert.ServicePressureAlert(:final kind) =>
-        RecoverBullAttemptAlertState(
+        RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.servicePressure,
           _AlertIdentity('p:$kind'),
         ),
       domain_alert.AttemptMonitoringUnavailableAlert() =>
-        RecoverBullAttemptAlertState(
+        RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.unavailable,
           const _AlertIdentity('u'),
         ),
       domain_alert.CountersWipedAlert(:final wipedAt) =>
-        RecoverBullAttemptAlertState(
+        RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.countersWiped,
           _AlertIdentity('c:${wipedAt.toUtc().microsecondsSinceEpoch}'),
         ),
@@ -254,11 +246,8 @@ final class RecoverBullAttemptMonitoring
 
   @override
   Future<void> acknowledge(RecoverBullAttemptAlert alert) async {
-    if (alert is! RecoverBullAttemptAlertState) return;
     _visibleAlerts.removeWhere(
-      (candidate) =>
-          candidate is RecoverBullAttemptAlertState &&
-          candidate.opaqueHandle == alert.opaqueHandle,
+      (candidate) => candidate._handle == alert._handle,
     );
     if (!_alertUpdates.isClosed) {
       _alertUpdates.add(List.unmodifiable(_visibleAlerts));

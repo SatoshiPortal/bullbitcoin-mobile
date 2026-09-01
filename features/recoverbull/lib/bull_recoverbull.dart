@@ -13,7 +13,6 @@ export 'src/public/recoverbull.dart'
         RecoverBullAttemptMonitoringController,
         RecoverBullAttemptAlert,
         RecoverBullAttemptAlertKind,
-        RecoverBullAttemptAlertState,
         recoverBullDefaultServerUrl;
 export 'src/domain/entities/recoverbull_network.dart';
 export 'src/domain/entities/recoverbull_tor_settings.dart';

@@ -35,7 +35,7 @@ class RecoverBullAttemptAlertWarnings extends StatelessWidget {
       );
 
   String _title(RecoverBullLocalizations l10n, RecoverBullAttemptAlert alert) =>
-      switch ((alert as RecoverBullAttemptAlertState).kind) {
+      switch (alert.kind) {
         RecoverBullAttemptAlertKind.suspiciousActivity =>
           l10n.recoverbullAttemptMonitoringSuspiciousActivityTitle,
         RecoverBullAttemptAlertKind.targetedLockout =>
@@ -51,7 +51,7 @@ class RecoverBullAttemptAlertWarnings extends StatelessWidget {
   Widget? _subtitle(
     RecoverBullLocalizations l10n,
     RecoverBullAttemptAlert alert,
-  ) => switch ((alert as RecoverBullAttemptAlertState).kind) {
+  ) => switch (alert.kind) {
     RecoverBullAttemptAlertKind.suspiciousActivity => Text(
       l10n.recoverbullAttemptMonitoringSuspiciousActivityBody,
     ),

@@ -1,7 +1,7 @@
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart' as public;
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
-import 'package:bull_recoverbull/src/domain/entities/recoverbull_attempt_alert.dart';
+import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
 import 'package:bull_recoverbull/src/domain/usecases/check_backup_attempt_monitoring_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/acknowledge_attempt_alert_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/is_recoverbull_attempt_monitoring_enabled_usecase.dart';
@@ -395,11 +395,12 @@ void main() {
   });
 
   test('opaque alert handle is not its digest or URL', () {
-    final alert = public.RecoverBullAttemptAlertState(
+    final alert = public.RecoverBullAttemptAlert(
       public.RecoverBullAttemptAlertKind.suspiciousActivity,
     );
-    expect(alert.opaqueHandle.toString(), isNot(contains('http')));
-    expect(alert.opaqueHandle.toString(), isNot(contains('00')));
+    expect(alert.kind, public.RecoverBullAttemptAlertKind.suspiciousActivity);
+    expect(alert.toString(), isNot(contains('http')));
+    expect(alert.toString(), isNot(contains('00')));
   });
 
   test(

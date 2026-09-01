@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
-import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart'
-    hide RecoverBullAttemptAlert, RecoverBullAttemptAlertKind;
+import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/ui/widgets/attempt_alert_warnings.dart';
 import 'package:drift/native.dart';
@@ -115,7 +114,7 @@ void main() {
   ) async {
     final kinds = RecoverBullAttemptAlertKind.values;
     for (final kind in kinds) {
-      final controller = _Controller([RecoverBullAttemptAlertState(kind)]);
+      final controller = _Controller([RecoverBullAttemptAlert(kind)]);
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates:

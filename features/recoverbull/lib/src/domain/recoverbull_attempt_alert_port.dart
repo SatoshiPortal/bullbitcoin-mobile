@@ -1,5 +1,5 @@
-import 'entities/recoverbull_attempt_alert.dart';
+import 'entities/attempt_alert.dart';
 
 abstract interface class RecoverBullAttemptAlertPort {
-  void publish(RecoverbullAttemptAlert alert);
+  void publish(AttemptAlert alert);
 }

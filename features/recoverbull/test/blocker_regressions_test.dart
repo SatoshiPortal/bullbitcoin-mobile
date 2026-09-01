@@ -5,7 +5,7 @@ import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
-import 'package:bull_recoverbull/src/domain/entities/recoverbull_attempt_alert.dart';
+import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
 import 'package:bull_recoverbull/src/domain/entities/recoverbull_network.dart';
 import 'package:bull_recoverbull/src/domain/entities/recoverbull_wallet.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_wallet_repository.dart';
@@ -189,7 +189,7 @@ void main() {
     var alerts = await monitoring.alerts.firstWhere(
       (alerts) => alerts.isNotEmpty,
     );
-    expect(alerts.single, isA<RecoverBullAttemptAlertState>());
+    expect(alerts.single, isA<RecoverBullAttemptAlert>());
     await monitoring.acknowledge(alerts.single);
 
     await FetchVaultKeyWithStatusFromServerUsecase(
@@ -200,7 +200,7 @@ void main() {
     ).execute(vault: vault, password: 'password');
 
     alerts = await monitoring.alerts.firstWhere((alerts) => alerts.isNotEmpty);
-    expect(alerts.single, isA<RecoverBullAttemptAlertState>());
+    expect(alerts.single, isA<RecoverBullAttemptAlert>());
     await monitoring.acknowledge(alerts.single);
 
     await TrashVaultKeyUsecase(
@@ -210,7 +210,7 @@ void main() {
       monitoring,
     ).execute(vault: vault, password: 'password', route: route);
     alerts = await monitoring.alerts.firstWhere((alerts) => alerts.isNotEmpty);
-    expect(alerts.single, isA<RecoverBullAttemptAlertState>());
+    expect(alerts.single, isA<RecoverBullAttemptAlert>());
     await monitoring.acknowledge(alerts.single);
     expect(await monitoring.alerts.first, isEmpty);
     await database.close();

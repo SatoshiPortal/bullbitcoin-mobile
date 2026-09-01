@@ -1,6 +1,6 @@
 import 'package:convert/convert.dart' as convert;
 import '../entities/key_server_attempts.dart';
-import '../entities/recoverbull_attempt_alert.dart';
+import '../entities/attempt_alert.dart';
 import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 
 final class RecordLocalAttemptUsecase {

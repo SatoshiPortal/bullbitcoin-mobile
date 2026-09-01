@@ -1,6 +1,6 @@
 import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import '../entities/key_server_attempts.dart';
-import '../entities/recoverbull_attempt_alert.dart';
+import '../entities/attempt_alert.dart';
 
 final class CheckBackupAttemptMonitoringUsecase {
   static const snapshotFreshness = Duration(seconds: 60);
@@ -21,7 +21,7 @@ final class CheckBackupAttemptMonitoringUsecase {
 
   static DateTime _utcNow() => DateTime.now().toUtc();
 
-  Future<List<RecoverbullAttemptAlert>> execute() async {
+  Future<List<AttemptAlert>> execute() async {
     final rows = await store.monitoredBackups();
     if (rows.isEmpty) {
       return const [];
@@ -62,7 +62,7 @@ final class CheckBackupAttemptMonitoringUsecase {
         if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
       ];
     }
-    final alerts = <RecoverbullAttemptAlert>[];
+    final alerts = <AttemptAlert>[];
     final collection = await store.state();
     var wiped = false;
     if (collection.collectionStartedAt != null &&

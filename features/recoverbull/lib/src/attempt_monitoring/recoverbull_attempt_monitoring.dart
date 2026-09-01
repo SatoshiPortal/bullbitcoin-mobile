@@ -6,23 +6,6 @@ import 'package:drift/drift.dart';
 import '../database/recoverbull_database.dart';
 import '../domain/entities/key_server_attempts.dart';
 
-enum RecoverBullAttemptAlertKind {
-  suspiciousActivity,
-  targetedLockout,
-  servicePressure,
-  unavailable,
-  countersWiped,
-}
-
-final class RecoverBullAttemptAlert {
-  final RecoverBullAttemptAlertKind kind;
-  final Object _handle;
-
-  const RecoverBullAttemptAlert._(this.kind, this._handle);
-
-  Object get opaqueHandle => _handle;
-}
-
 /// Only this port is visible to the controller. The production adapter in the
 /// data layer supplies the pinned recoverbull client's `/attempts` result.
 abstract interface class RecoverBullAttemptMonitoringRemotePort {

@@ -1,8 +1,8 @@
-sealed class RecoverbullAttemptAlert {
-  const RecoverbullAttemptAlert();
+sealed class AttemptAlert {
+  const AttemptAlert();
 }
 
-final class SuspiciousActivityAlert extends RecoverbullAttemptAlert {
+final class SuspiciousActivityAlert extends AttemptAlert {
   final String backupIdHash;
   final int observedTotal;
   final int expectedTotal;
@@ -16,24 +16,24 @@ final class SuspiciousActivityAlert extends RecoverbullAttemptAlert {
   });
 }
 
-final class TargetedLockoutAlert extends RecoverbullAttemptAlert {
+final class TargetedLockoutAlert extends AttemptAlert {
   final String backupIdHash;
   const TargetedLockoutAlert({required this.backupIdHash});
 }
 
 enum ServicePressureKind { serviceBusy, mapNearlyFull }
 
-final class ServicePressureAlert extends RecoverbullAttemptAlert {
+final class ServicePressureAlert extends AttemptAlert {
   final ServicePressureKind kind;
   const ServicePressureAlert(this.kind);
 }
 
-final class AttemptMonitoringUnavailableAlert extends RecoverbullAttemptAlert {
+final class AttemptMonitoringUnavailableAlert extends AttemptAlert {
   final Duration? since;
   const AttemptMonitoringUnavailableAlert({required this.since});
 }
 
-final class CountersWipedAlert extends RecoverbullAttemptAlert {
+final class CountersWipedAlert extends AttemptAlert {
   final DateTime wipedAt;
   const CountersWipedAlert({required this.wipedAt});
 }
