@@ -56,8 +56,8 @@ dependencies:
   file_picker: 10.3.6
   bull_sdk:
     git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      url: https://github.com/pythcoiner/bull_sdk
+      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
       path: packages/bull_sdk
   boltz_stream:
     git:
@@ -148,6 +148,13 @@ dependencies:
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.22.0
   keyboard_actions: ^4.2.1
+
+dependency_overrides:
+  bull_sdk:
+    git:
+      url: https://github.com/pythcoiner/bull_sdk
+      ref: b14f7cd45b414ba2a733ef9e2d70151f6f8b2200
+      path: packages/bull_sdk
 
 dev_dependencies:
   build_runner: ^2.10.4
