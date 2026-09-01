@@ -14746,6 +14746,10 @@
   "@spFailureAddressNetworkMismatch": {
     "description": "Silent Payments send failure: SP address network does not match the wallet"
   },
+  "walletSpTitle": "Silent Payments",
+  "@walletSpTitle": {
+    "description": "Title for the Silent Payments wallet card"
+  },
   "spReceive": "Receive",
   "@spReceive": {
     "description": "Silent Payments: receive action label"
@@ -15351,6 +15355,10 @@
   "spFailureInvalidAddress": "This is not a valid bitcoin or silent payment address.",
   "@spFailureInvalidAddress": {
     "description": "Silent Payments send failure: the recipient address is not recognized"
+  },
+  "sendErrorAddressNetworkMismatch": "This address is for a different network than your wallet.",
+  "@sendErrorAddressNetworkMismatch": {
+    "description": "Send failure: the recipient address belongs to another network"
   },
   "transactionListPending": "Pending",
   "@transactionListPending": {

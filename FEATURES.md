@@ -115,6 +115,7 @@ graph TB
     SEND --> FEES
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
+    SEND --> SP
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT

@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../coins/wallet_utxo_fixture.dart';
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 /// Stubs the wallet properties read by [SendState] balance and fee math.
 class _FakeWallet extends Fake implements Wallet {
@@ -137,14 +138,16 @@ void main() {
   group('SendState.absoluteFees — Liquid', () {
     test('returns liquidAbsoluteFees verbatim (already PSET-derived)', () {
       final state = SendState(
-        selectedWallet: liquidWallet(),
+        selectedWallet: SendWalletBitcoin(liquidWallet()),
         liquidAbsoluteFees: 1234,
       );
       expect(state.absoluteFees, 1234);
     });
 
     test('returns null when liquidAbsoluteFees not set', () {
-      final state = SendState(selectedWallet: liquidWallet());
+      final state = SendState(
+        selectedWallet: SendWalletBitcoin(liquidWallet()),
+      );
       expect(state.absoluteFees, isNull);
     });
 
@@ -152,7 +155,7 @@ void main() {
       // Cross-talk guard: a stray bitcoin fee in state must never leak into
       // the liquid display path.
       final state = SendState(
-        selectedWallet: liquidWallet(),
+        selectedWallet: SendWalletBitcoin(liquidWallet()),
         liquidAbsoluteFees: 100,
         bitcoinAbsoluteFeesSat: 9999,
       );
@@ -167,7 +170,7 @@ void main() {
       // sat (ceil + sub-dust change absorption at weight 561). The
       // displayed fee MUST be 16, not 14.
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(0.1),
         bitcoinTxSize: 140,
@@ -178,7 +181,7 @@ void main() {
 
     test('reproducer tx 2 (b734968d…): real 30 wins over predicted 28', () {
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(0.2),
         bitcoinTxSize: 140,
@@ -190,7 +193,7 @@ void main() {
     test('ignores liquidAbsoluteFees on the Bitcoin path', () {
       // Cross-talk guard the other direction.
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         bitcoinAbsoluteFeesSat: 100,
         liquidAbsoluteFees: 9999,
       );
@@ -200,7 +203,7 @@ void main() {
 
   test('MAX uses selected balance and the real built fee', () {
     final state = SendState(
-      selectedWallet: _FakeWallet(130000),
+      selectedWallet: SendWalletBitcoin(_FakeWallet(130000)),
       utxos: [
         walletUtxoFixture(sats: 100000),
         walletUtxoFixture(sats: 30000, vout: 1),
@@ -214,7 +217,7 @@ void main() {
 
   test('MAX available balance uses the selected total before fees', () {
     final state = SendState(
-      selectedWallet: _FakeWallet(130000),
+      selectedWallet: SendWalletBitcoin(_FakeWallet(130000)),
       selectedUtxos: [walletUtxoFixture(sats: 30000)],
     );
 
@@ -223,7 +226,7 @@ void main() {
 
   test('MAX clamps a selected balance that cannot cover its fee', () {
     final state = SendState(
-      selectedWallet: _FakeWallet(10000),
+      selectedWallet: SendWalletBitcoin(_FakeWallet(10000)),
       selectedUtxos: [walletUtxoFixture(sats: 1000)],
       bitcoinAbsoluteFeesSat: 1200,
     );
@@ -241,7 +244,7 @@ void main() {
 
     test('returns null when no PSBT has been built yet', () {
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(0.1),
         bitcoinTxSize: 140,
@@ -258,7 +261,7 @@ void main() {
         minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
       );
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         bitcoinFeesList: feeOptions,
         bitcoinTxSize: 140,
       );
@@ -273,7 +276,7 @@ void main() {
       // brief '…' is honest about "not yet known" and works with the
       // shimmer placeholders elsewhere in the modal flow.
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         bitcoinUnit: BitcoinUnit.sats,
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(10),
@@ -290,7 +293,7 @@ void main() {
     // and the bug we're fixing would resurface.
     test('copyWith(bitcoinAbsoluteFeesSat: null) actually nulls the field', () {
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         bitcoinAbsoluteFeesSat: 42,
       );
       expect(state.bitcoinAbsoluteFeesSat, 42);
@@ -305,7 +308,7 @@ void main() {
     test('omitting bitcoinAbsoluteFeesSat from copyWith preserves it', () {
       // The other half of the contract: passing nothing keeps the value.
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         bitcoinAbsoluteFeesSat: 42,
       );
       final unchanged = state.copyWith(buildingTransaction: true);
@@ -329,7 +332,7 @@ void main() {
     test('at 0.1 sat/vByte the displayed fee is the on-chain fee verbatim '
         '(tx f0b40a72…)', () {
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(0.1),
         bitcoinTxSize: 140,
@@ -341,7 +344,7 @@ void main() {
     test('at 0.2 sat/vByte the displayed fee is the on-chain fee verbatim '
         '(tx b734968d…)', () {
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(0.2),
         bitcoinTxSize: 140,
@@ -356,7 +359,7 @@ void main() {
       // arithmetic — the test guards against any reintroduction of a
       // `rate × vsize` shortcut.
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(10),
         bitcoinTxSize: 140,
@@ -372,7 +375,7 @@ void main() {
   group('SendState frozen/spendable balance (D7)', () {
     test('frozenBalanceSat sums only frozen utxos', () {
       final state = SendState(
-        selectedWallet: _FakeWallet(300000),
+        selectedWallet: SendWalletBitcoin(_FakeWallet(300000)),
         utxos: [
           walletUtxoFixture(sats: 100000, vout: 0),
           walletUtxoFixture(sats: 50000, vout: 1, isFrozen: true),
@@ -385,7 +388,7 @@ void main() {
 
     test('spendableBalanceSat = wallet balance - frozen total', () {
       final state = SendState(
-        selectedWallet: _FakeWallet(300000),
+        selectedWallet: SendWalletBitcoin(_FakeWallet(300000)),
         utxos: [
           walletUtxoFixture(sats: 100000, vout: 0),
           walletUtxoFixture(sats: 50000, vout: 1, isFrozen: true),
@@ -396,7 +399,9 @@ void main() {
     });
 
     test('falls back to the full balance before utxos have loaded', () {
-      final state = SendState(selectedWallet: _FakeWallet(300000));
+      final state = SendState(
+        selectedWallet: SendWalletBitcoin(_FakeWallet(300000)),
+      );
 
       expect(state.frozenBalanceSat, 0);
       expect(state.spendableBalanceSat, 300000);
@@ -418,7 +423,7 @@ void main() {
         required int frozen,
       }) {
         return SendState(
-          selectedWallet: _FakeWallet(balance),
+          selectedWallet: SendWalletBitcoin(_FakeWallet(balance)),
           inputAmountCurrencyCode: BitcoinUnit.sats.code,
           amount: '$sats',
           utxos: frozen > 0
@@ -473,7 +478,7 @@ void main() {
       final state = SendState(
         paymentRequest: bip21WithPj(),
         payjoinGloballyEnabled: true,
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         payjoinOptedOut: true,
       );
       expect(state.isPayjoinAvailable, isTrue);
@@ -522,7 +527,7 @@ void main() {
     test('true when enabled globally, not a self-transfer, a locally-signing '
         'wallet, and the BIP21 URI carries a pj= parameter', () {
       final state = SendState(
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         paymentRequest: bip21WithPj(),
         payjoinGloballyEnabled: true,
         isToSelf: false,
@@ -544,17 +549,19 @@ void main() {
         "device-specific sign button never reaches signTransaction's payjoin "
         'branch, so the indicator must not promise one', () {
       final state = SendState(
-        selectedWallet: Wallet(
-          origin: 'test-hw-origin',
-          network: Network.bitcoinMainnet,
-          xpubFingerprint: '00000000',
-          scriptType: ScriptType.bip84,
-          xpub: '',
-          externalPublicDescriptor: '',
-          internalPublicDescriptor: '',
-          signer: SignerEntity.remote,
-          signerDevice: SignerDeviceEntity.ledgerNanoX,
-          balanceSat: BigInt.from(100000),
+        selectedWallet: SendWalletBitcoin(
+          Wallet(
+            origin: 'test-hw-origin',
+            network: Network.bitcoinMainnet,
+            xpubFingerprint: '00000000',
+            scriptType: ScriptType.bip84,
+            xpub: '',
+            externalPublicDescriptor: '',
+            internalPublicDescriptor: '',
+            signer: SignerEntity.remote,
+            signerDevice: SignerDeviceEntity.ledgerNanoX,
+            balanceSat: BigInt.from(100000),
+          ),
         ),
         paymentRequest: bip21WithPj(),
         payjoinGloballyEnabled: true,
@@ -586,7 +593,7 @@ void main() {
     test('true when a Bitcoin wallet sends through a Liquid chain swap', () {
       final state = SendState(
         sendType: SendType.liquid,
-        selectedWallet: bitcoinWallet(),
+        selectedWallet: SendWalletBitcoin(bitcoinWallet()),
         paymentRequest: const LiquidPaymentRequest(
           address: unconfidentialAddress,
           isTestnet: false,

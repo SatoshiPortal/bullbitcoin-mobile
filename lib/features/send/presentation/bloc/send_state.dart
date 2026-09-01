@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -95,7 +96,7 @@ abstract class SendState with _$SendState {
     PaymentRequest? paymentRequest,
     Bolt11PaymentRequest? lightningInvoice,
     @Default([]) List<Wallet> wallets,
-    Wallet? selectedWallet,
+    SendWalletView? selectedWallet,
     @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
     // Fail-closed default: until getCurrencies()/onCurrencyChanged() have
@@ -609,4 +610,12 @@ extension SendStateFeePercent on SendState {
   }
 
   bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
+
+  /// The wallet entity behind [selectedWallet], for the paths that sign, select
+  /// coins or quote a swap. Null on the silent payments path, where none of
+  /// those run and there is no entity to hand them.
+  Wallet? get selectedBitcoinWallet => switch (selectedWallet) {
+    SendWalletBitcoin(:final wallet) => wallet,
+    SendWalletSp() || null => null,
+  };
 }

@@ -46,8 +46,16 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.da
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class SendLocator {
@@ -161,6 +169,27 @@ class SendLocator {
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
       ),
     );
+    locator.registerFactory<ValidateSpRecipientForSendUsecase>(
+      () => ValidateSpRecipientForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<ValidateSpAmountForSendUsecase>(
+      () => ValidateSpAmountForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<GetSpNetworkForSendUsecase>(
+      () => GetSpNetworkForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<PrepareSpPaymentForSendUsecase>(
+      () => PrepareSpPaymentForSendUsecase(locator<SpFacade>()),
+    );
+    locator.registerFactory<RefreshSpWalletForSendUsecase>(
+      () => RefreshSpWalletForSendUsecase(
+        locator<SpFacade>(),
+        locator<GetSpNetworkForSendUsecase>(),
+      ),
+    );
+    locator.registerFactory<SendSpPaymentForSendUsecase>(
+      () => SendSpPaymentForSendUsecase(locator<SpFacade>()),
+    );
     locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
       () => VerifyChainSwapAmountSendUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -178,9 +207,13 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<SendCubit, Wallet?, void>(
-      (wallet, _) => SendCubit(
+    // param2 carries the localized SP wallet label, non-null exactly in SP mode.
+    locator.registerFactoryParam<SendCubit, Wallet?, String?>(
+      (wallet, spWalletLabel) => SendCubit(
         wallet: wallet,
+        mode: spWalletLabel == null
+            ? const SendModeBitcoin()
+            : SendModeSp(walletLabel: spWalletLabel),
         labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
@@ -233,6 +266,15 @@ class SendLocator {
             locator<CheckLiquidConsolidationUsecase>(),
         getSendPayjoinEnabledUsecase: locator<GetSendPayjoinEnabledUsecase>(),
         verifySignedTxUsecase: locator<VerifySignedTxUsecase>(),
+        validateSpRecipientForSendUsecase:
+            locator<ValidateSpRecipientForSendUsecase>(),
+        validateSpAmountForSendUsecase:
+            locator<ValidateSpAmountForSendUsecase>(),
+        getSpNetworkForSendUsecase: locator<GetSpNetworkForSendUsecase>(),
+        prepareSpPaymentForSendUsecase:
+            locator<PrepareSpPaymentForSendUsecase>(),
+        sendSpPaymentForSendUsecase: locator<SendSpPaymentForSendUsecase>(),
+        refreshSpWalletForSendUsecase: locator<RefreshSpWalletForSendUsecase>(),
       ),
     );
   }

@@ -49,12 +49,21 @@ import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_u
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/sp_send_wallet.dart';
+import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
+import 'package:bb_mobile/features/send/presentation/send_mode.dart';
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
@@ -173,8 +182,35 @@ class _FakeNewLabel extends Fake implements NewLabel {}
 /// that drives `signTransaction` into its payjoin branch — nothing about the
 /// production class is changed; the tests exercise the real
 /// `signTransaction` → `_watchPayjoin` code path.
+class _MockValidateSpRecipientForSendUsecase extends Mock
+    implements ValidateSpRecipientForSendUsecase {}
+
+class _MockValidateSpAmountForSendUsecase extends Mock
+    implements ValidateSpAmountForSendUsecase {}
+
+class _MockGetSpNetworkForSendUsecase extends Mock
+    implements GetSpNetworkForSendUsecase {}
+
+GetSpNetworkForSendUsecase _spNetworkStub([
+  Network network = Network.bitcoinMainnet,
+]) {
+  final stub = _MockGetSpNetworkForSendUsecase();
+  when(stub.execute).thenReturn(Ok(network));
+  return stub;
+}
+
+class _MockPrepareSpPaymentForSendUsecase extends Mock
+    implements PrepareSpPaymentForSendUsecase {}
+
+class _MockSendSpPaymentForSendUsecase extends Mock
+    implements SendSpPaymentForSendUsecase {}
+
+class _MockRefreshSpWalletForSendUsecase extends Mock
+    implements RefreshSpWalletForSendUsecase {}
+
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
+    super.mode,
     required super.labelsFacade,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
@@ -214,6 +250,12 @@ class _TestableSendCubit extends SendCubit {
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
     required super.verifySignedTxUsecase,
+    required super.validateSpRecipientForSendUsecase,
+    required super.validateSpAmountForSendUsecase,
+    required super.getSpNetworkForSendUsecase,
+    required super.prepareSpPaymentForSendUsecase,
+    required super.sendSpPaymentForSendUsecase,
+    required super.refreshSpWalletForSendUsecase,
     super.parsePaymentRequest,
   });
 
@@ -353,7 +395,18 @@ void main() {
 
   _TestableSendCubit buildCubit({
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
+    bool isSpMode = false,
+    String spWalletLabel = '',
+    ValidateSpAmountForSendUsecase? validateSpAmountForSendUsecase,
+    GetSpNetworkForSendUsecase? getSpNetworkForSendUsecase,
+    RefreshSpWalletForSendUsecase? refreshSpWalletForSendUsecase,
+    PrepareSpPaymentForSendUsecase? prepareSpPaymentForSendUsecase,
+    SendSpPaymentForSendUsecase? sendSpPaymentForSendUsecase,
+    ValidateSpRecipientForSendUsecase? validateSpRecipientForSendUsecase,
   }) => _TestableSendCubit(
+    mode: isSpMode
+        ? SendModeSp(walletLabel: spWalletLabel)
+        : const SendModeBitcoin(),
     labelsFacade: labelsFacade,
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
@@ -393,6 +446,18 @@ void main() {
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
     verifySignedTxUsecase: verifySignedTxUsecase,
+    validateSpRecipientForSendUsecase:
+        validateSpRecipientForSendUsecase ??
+        _MockValidateSpRecipientForSendUsecase(),
+    validateSpAmountForSendUsecase:
+        validateSpAmountForSendUsecase ?? _MockValidateSpAmountForSendUsecase(),
+    getSpNetworkForSendUsecase: getSpNetworkForSendUsecase ?? _spNetworkStub(),
+    prepareSpPaymentForSendUsecase:
+        prepareSpPaymentForSendUsecase ?? _MockPrepareSpPaymentForSendUsecase(),
+    sendSpPaymentForSendUsecase:
+        sendSpPaymentForSendUsecase ?? _MockSendSpPaymentForSendUsecase(),
+    refreshSpWalletForSendUsecase:
+        refreshSpWalletForSendUsecase ?? _MockRefreshSpWalletForSendUsecase(),
     parsePaymentRequest: parsePaymentRequest,
   );
 
@@ -404,7 +469,7 @@ void main() {
   SendState payjoinReadyState({String label = ''}) => SendState(
     step: SendStep.confirm,
     sendType: SendType.bitcoin,
-    selectedWallet: _bitcoinLocalWallet(),
+    selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
     paymentRequest: _payjoinBip21(),
     payjoinGloballyEnabled: true,
     isToSelf: false,
@@ -419,6 +484,17 @@ void main() {
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(_bitcoinLocalWallet());
     registerFallbackValue(BigInt.zero);
+    registerFallbackValue(Sats.zero);
+    registerFallbackValue(
+      SpTxDraft(
+        id: 'fallback',
+        inputs: const [],
+        outputs: const [],
+        feeSat: Sats.zero,
+        changeSat: Sats.zero,
+      ),
+    );
+    registerFallbackValue(<SpRecipient>[]);
     registerFallbackValue(
       const PaymentRequest.bitcoin(address: 'fallback', isTestnet: true),
     );
@@ -722,7 +798,7 @@ void main() {
     SendState hardwareSignReadyState() => SendState(
       step: SendStep.confirm,
       sendType: SendType.bitcoin,
-      selectedWallet: _bitcoinLocalWallet(),
+      selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
       unsignedPsbt: 'cHNidP8=',
       confirmedAmountSat: 50000,
     );
@@ -838,7 +914,7 @@ void main() {
     SendState lightningReadyState({String label = ''}) => SendState(
       step: SendStep.confirm,
       sendType: SendType.lightning,
-      selectedWallet: _bitcoinLocalWallet(),
+      selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
       paymentRequest: const PaymentRequest.bolt11(
         invoice: 'lnbc1-invoice',
         amountSat: 50000,
@@ -890,7 +966,7 @@ void main() {
     SendState plainSignedState({String label = ''}) => SendState(
       step: SendStep.sending,
       sendType: SendType.bitcoin,
-      selectedWallet: _bitcoinLocalWallet(),
+      selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
       paymentRequest: _payjoinBip21(),
       payjoinGloballyEnabled: false,
       isToSelf: false,
@@ -1336,7 +1412,9 @@ void main() {
         ).thenAnswer((_) async => const <WalletUtxo>[]);
         cubit.setStateForTest(
           SendState(
-            selectedWallet: _bitcoinWallet(balanceSat: 20000),
+            selectedWallet: SendWalletBitcoin(
+              _bitcoinWallet(balanceSat: 20000),
+            ),
             utxos: [selected],
             selectedUtxos: [selected],
             unsignedPsbt: 'unsigned-psbt',
@@ -1382,7 +1460,9 @@ void main() {
           SendState(
             step: SendStep.amount,
             sendType: SendType.bitcoin,
-            selectedWallet: _bitcoinWallet(balanceSat: 20000),
+            selectedWallet: SendWalletBitcoin(
+              _bitcoinWallet(balanceSat: 20000),
+            ),
             paymentRequest: const PaymentRequest.bitcoin(
               address: 'bc1-address',
               isTestnet: false,
@@ -1440,7 +1520,7 @@ void main() {
           SendState(
             step: SendStep.amount,
             sendType: SendType.liquid,
-            selectedWallet: _liquidWallet(balanceSat: 20000),
+            selectedWallet: SendWalletBitcoin(_liquidWallet(balanceSat: 20000)),
             paymentRequest: const PaymentRequest.liquid(
               address: 'lq1-address',
               isTestnet: false,
@@ -1495,7 +1575,9 @@ void main() {
           SendState(
             step: SendStep.amount,
             sendType: SendType.bitcoin,
-            selectedWallet: _bitcoinWallet(balanceSat: 20000),
+            selectedWallet: SendWalletBitcoin(
+              _bitcoinWallet(balanceSat: 20000),
+            ),
             paymentRequest: const PaymentRequest.bitcoin(
               address: 'bc1-address',
               isTestnet: false,
@@ -1558,7 +1640,7 @@ void main() {
         SendState(
           step: SendStep.amount,
           sendType: SendType.bitcoin,
-          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          selectedWallet: SendWalletBitcoin(_bitcoinWallet(balanceSat: 20000)),
           paymentRequest: const PaymentRequest.bitcoin(
             address: 'bc1-address',
             isTestnet: false,
@@ -1579,6 +1661,446 @@ void main() {
         cubit.state.failure,
         isNot(isA<SendInsufficientFundsForFeesFailure>()),
       );
+    });
+  });
+
+  group('SP amount gate', () {
+    late _MockValidateSpAmountForSendUsecase validateSpAmount;
+
+    _TestableSendCubit spCubit() => buildCubit(
+      isSpMode: true,
+      validateSpAmountForSendUsecase: validateSpAmount,
+    );
+
+    void stubAmount(Result<Sats, SendFailure> result) =>
+        when(() => validateSpAmount.execute(any())).thenReturn(result);
+
+    // Mirrors what the SP flow has by the amount step: the synthetic SP wallet
+    // from loadWalletWithRatesAndFees and the stand-in bitcoin payment request
+    // built by _confirmSpRecipient.
+    void seedAmount(_TestableSendCubit cubit, String amount) =>
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.amount,
+            sendType: SendType.bitcoin,
+            selectedWallet: SendWalletBitcoin(
+              _bitcoinWallet(balanceSat: 20000),
+            ),
+            paymentRequest: const PaymentRequest.bitcoin(
+              address: 'sp-address',
+              isTestnet: false,
+            ),
+            amount: amount,
+            inputAmountCurrencyCode: 'sats',
+            bitcoinFeesList: _feeOptions(),
+          ),
+        );
+
+    setUp(() {
+      validateSpAmount = _MockValidateSpAmountForSendUsecase();
+    });
+
+    test('an amount above the balance stays on the amount step', () async {
+      stubAmount(const Err(SendInsufficientBalanceFailure('exceeds')));
+      final cubit = spCubit();
+      seedAmount(cubit, '50000');
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+      expect(cubit.state.step, SendStep.amount);
+      expect(cubit.state.amountConfirmedClicked, isFalse);
+    });
+
+    test('a zero amount reports out-of-bounds, not insufficient', () async {
+      stubAmount(
+        const Err(SendAmountOutOfBoundsFailure(logMessage: 'below minimum')),
+      );
+      final cubit = spCubit();
+      seedAmount(cubit, '0');
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isA<SendAmountOutOfBoundsFailure>());
+      expect(cubit.state.step, SendStep.amount);
+    });
+
+    test('the raw SP log message never becomes the send failure', () async {
+      stubAmount(const Err(SendInsufficientBalanceFailure('exceeds')));
+      final cubit = spCubit();
+      seedAmount(cubit, '50000');
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+      expect(cubit.state.failure!.logMessage, 'exceeds');
+    });
+
+    test('the stand-in wallet carries the SP balance and network', () async {
+      final refreshSp = _MockRefreshSpWalletForSendUsecase();
+      when(refreshSp.execute).thenAnswer(
+        (_) async => Ok<SpSendWallet?, SendFailure>(
+          SpSendWallet(
+            balanceSat: BigInt.from(1000),
+            network: Network.bitcoinTestnet,
+          ),
+        ),
+      );
+      final cubit = buildCubit(
+        isSpMode: true,
+        spWalletLabel: 'Silent Payments',
+        refreshSpWalletForSendUsecase: refreshSp,
+      );
+
+      await cubit.loadWalletWithRatesAndFees();
+
+      final wallet = cubit.state.selectedWallet!;
+      expect(wallet, isA<SendWalletSp>());
+      expect(wallet.label, 'Silent Payments');
+      expect(wallet.balanceSat, BigInt.from(1000));
+      expect(wallet.network, Network.bitcoinTestnet);
+      // Nothing is ever signed against the SP wallet, so it claims no signer,
+      // no script type and no derivation path rather than inventing them.
+      expect(wallet.scriptType, isNull);
+      expect(wallet.signerDevice, isNull);
+      expect(wallet.derivationPath, isNull);
+      expect(wallet.signsLocally, isFalse);
+      expect(wallet.signsRemotely, isFalse);
+      expect(
+        cubit.state.selectedBitcoinWallet,
+        isNull,
+        reason: 'there is no wallet entity behind a silent payments send',
+      );
+    });
+
+    test('no SP wallet leaves the selection empty', () async {
+      final refreshSp = _MockRefreshSpWalletForSendUsecase();
+      when(
+        refreshSp.execute,
+      ).thenAnswer((_) async => const Ok<SpSendWallet?, SendFailure>(null));
+      final cubit = buildCubit(
+        isSpMode: true,
+        refreshSpWalletForSendUsecase: refreshSp,
+      );
+
+      await cubit.loadWalletWithRatesAndFees();
+
+      expect(cubit.state.selectedWallet, isNull);
+      expect(cubit.state.wallets, isEmpty);
+    });
+
+    test('a valid amount is not blocked by the gate', () async {
+      stubAmount(Ok(Sats.fromInt(1000)));
+      final cubit = spCubit();
+      seedAmount(cubit, '1000');
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isNot(isA<SendInsufficientBalanceFailure>()));
+      expect(cubit.state.failure, isNot(isA<SendAmountOutOfBoundsFailure>()));
+      verify(() => validateSpAmount.execute(Sats.fromInt(1000))).called(1);
+    });
+  });
+
+  group('SP build and broadcast', () {
+    late _MockValidateSpRecipientForSendUsecase validateRecipient;
+    late _MockPrepareSpPaymentForSendUsecase prepare;
+    late _MockSendSpPaymentForSendUsecase send;
+
+    SpTxDraft draft({int fee = 200, int output = 800}) => SpTxDraft(
+      id: 'draft-1',
+      inputs: const [],
+      outputs: [
+        SpRecipientStandard(
+          address: SpAddress('bc1-address'),
+          amountSat: Sats.fromInt(output),
+          isMax: false,
+        ),
+      ],
+      feeSat: Sats.fromInt(fee),
+      changeSat: Sats.zero,
+    );
+
+    _TestableSendCubit spCubit() => buildCubit(
+      isSpMode: true,
+      validateSpRecipientForSendUsecase: validateRecipient,
+      prepareSpPaymentForSendUsecase: prepare,
+      sendSpPaymentForSendUsecase: send,
+    );
+
+    void seedConfirm(_TestableSendCubit cubit, {bool sendMax = false}) =>
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.confirm,
+            sendType: SendType.bitcoin,
+            selectedWallet: SendWalletBitcoin(
+              _bitcoinWallet(balanceSat: 20000),
+            ),
+            paymentRequest: const PaymentRequest.bitcoin(
+              address: 'bc1-address',
+              isTestnet: false,
+            ),
+            amount: '1000',
+            inputAmountCurrencyCode: 'sats',
+            sendMax: sendMax,
+            // Both lists: createTransaction reloads fees when either is null.
+            bitcoinFeesList: _feeOptions(),
+            liquidFeesList: _feeOptions(),
+          ),
+        );
+
+    setUp(() {
+      validateRecipient = _MockValidateSpRecipientForSendUsecase();
+      prepare = _MockPrepareSpPaymentForSendUsecase();
+      send = _MockSendSpPaymentForSendUsecase();
+      // Explicit args, not any(): the values the cubit passes are part of what
+      // this group is checking.
+      when(
+        () => validateRecipient.execute(
+          input: 'bc1-address',
+          amountSat: Sats.fromInt(1000),
+          isMax: false,
+        ),
+      ).thenAnswer(
+        (_) async => Ok(
+          SpRecipientStandard(
+            address: SpAddress('bc1-address'),
+            amountSat: Sats.fromInt(1000),
+            isMax: false,
+          ),
+        ),
+      );
+      when(
+        () => validateRecipient.execute(
+          input: 'bc1-address',
+          amountSat: Sats.fromInt(1000),
+          isMax: true,
+        ),
+      ).thenAnswer(
+        (_) async => Ok(
+          SpRecipientStandard(
+            address: SpAddress('bc1-address'),
+            amountSat: Sats.fromInt(1000),
+            isMax: true,
+          ),
+        ),
+      );
+    });
+
+    test(
+      'a wrong-network recipient shows the mismatch, not build failed',
+      () async {
+        when(
+          () => validateRecipient.execute(
+            input: 'bc1-address',
+            amountSat: Sats.fromInt(1000),
+            isMax: false,
+          ),
+        ).thenAnswer(
+          (_) async => const Err<SpRecipient, SendFailure>(
+            SendAddressNetworkMismatchFailure('wrong network'),
+          ),
+        );
+        final cubit = spCubit();
+        seedConfirm(cubit);
+
+        await cubit.createTransaction();
+
+        expect(cubit.state.failure, isA<SendAddressNetworkMismatchFailure>());
+        verifyNever(
+          () => prepare.execute(
+            recipients: any(named: 'recipients'),
+            fee: any(named: 'fee'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'an unrecognized recipient shows an invalid address failure',
+      () async {
+        when(
+          () => validateRecipient.execute(
+            input: 'bc1-address',
+            amountSat: Sats.fromInt(1000),
+            isMax: false,
+          ),
+        ).thenAnswer(
+          (_) async => const Err<SpRecipient, SendFailure>(
+            SendInvalidPaymentRequestFailure(logMessage: 'unsupported'),
+          ),
+        );
+        final cubit = spCubit();
+        seedConfirm(cubit);
+
+        await cubit.createTransaction();
+
+        expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+      },
+    );
+
+    test('a prepare amount failure shows the balance message', () async {
+      when(
+        () => prepare.execute(
+          recipients: any(named: 'recipients'),
+          fee: any(named: 'fee'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<SpTxDraft, SendFailure>(
+          SendInsufficientBalanceFailure('exceeds'),
+        ),
+      );
+      final cubit = spCubit();
+      seedConfirm(cubit);
+
+      await cubit.createTransaction();
+
+      expect(cubit.state.failure, isA<SendInsufficientBalanceFailure>());
+    });
+
+    test('a prepare failure keeps the flow off the sending step', () async {
+      when(
+        () => prepare.execute(
+          recipients: any(named: 'recipients'),
+          fee: any(named: 'fee'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<SpTxDraft, SendFailure>(
+          SendTransactionBuildFailure('blindbit down'),
+        ),
+      );
+      final cubit = spCubit();
+      seedConfirm(cubit);
+
+      await cubit.createTransaction();
+
+      expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+      expect(cubit.state.buildingTransaction, isFalse);
+      verifyNever(() => send.execute(draft: any(named: 'draft')));
+    });
+
+    test('a successful prepare surfaces the real fee', () async {
+      when(
+        () => prepare.execute(
+          recipients: any(named: 'recipients'),
+          fee: any(named: 'fee'),
+        ),
+      ).thenAnswer((_) async => Ok(draft()));
+      final cubit = spCubit();
+      seedConfirm(cubit);
+
+      await cubit.createTransaction();
+
+      expect(cubit.state.bitcoinAbsoluteFeesSat, 200);
+      expect(cubit.state.failure, isNull);
+    });
+
+    test('MAX takes the amount from the built output, not the input', () async {
+      when(
+        () => prepare.execute(
+          recipients: any(named: 'recipients'),
+          fee: any(named: 'fee'),
+        ),
+      ).thenAnswer((_) async => Ok(draft(output: 19800)));
+      final cubit = spCubit();
+      seedConfirm(cubit, sendMax: true);
+
+      await cubit.createTransaction();
+
+      // The fee comes out of the sent amount on MAX, so the confirm page must
+      // show what the build produced rather than what was typed.
+      expect(cubit.state.confirmedAmountSat, 19800);
+    });
+
+    test('broadcasting without a draft fails instead of sending', () async {
+      final cubit = spCubit();
+      seedConfirm(cubit);
+
+      await cubit.onConfirmTransactionClicked();
+
+      expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+      expect(cubit.state.step, SendStep.confirm);
+      verifyNever(() => send.execute(draft: any(named: 'draft')));
+    });
+
+    test(
+      'a broadcast failure returns to confirm and keeps the draft',
+      () async {
+        when(
+          () => prepare.execute(
+            recipients: any(named: 'recipients'),
+            fee: any(named: 'fee'),
+          ),
+        ).thenAnswer((_) async => Ok(draft()));
+        when(() => send.execute(draft: any(named: 'draft'))).thenAnswer(
+          (_) async => const Err<String, SendFailure>(
+            SendTransactionConfirmationFailure(
+              isBroadcastFailure: true,
+              logMessage: 'inputs changed',
+            ),
+          ),
+        );
+        final cubit = spCubit();
+        seedConfirm(cubit);
+        await cubit.createTransaction();
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.broadcastingTransaction, isFalse);
+      },
+    );
+
+    test(
+      'a successful broadcast records the txid and lands on success',
+      () async {
+        when(
+          () => prepare.execute(
+            recipients: any(named: 'recipients'),
+            fee: any(named: 'fee'),
+          ),
+        ).thenAnswer((_) async => Ok(draft()));
+        when(
+          () => send.execute(draft: any(named: 'draft')),
+        ).thenAnswer((_) async => const Ok<String, SendFailure>('the-txid'));
+        final cubit = spCubit();
+        seedConfirm(cubit);
+        await cubit.createTransaction();
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.txId, 'the-txid');
+        expect(cubit.state.step, SendStep.success);
+        expect(cubit.state.failure, isNull);
+      },
+    );
+
+    test('a repeated confirm tap only starts one SP broadcast', () async {
+      when(
+        () => prepare.execute(
+          recipients: any(named: 'recipients'),
+          fee: any(named: 'fee'),
+        ),
+      ).thenAnswer((_) async => Ok(draft()));
+      final sendCompleter = Completer<Result<String, SendFailure>>();
+      when(
+        () => send.execute(draft: any(named: 'draft')),
+      ).thenAnswer((_) => sendCompleter.future);
+      final cubit = spCubit();
+      seedConfirm(cubit);
+      await cubit.createTransaction();
+
+      final first = cubit.onConfirmTransactionClicked();
+      await Future<void>.delayed(Duration.zero);
+      final second = cubit.onConfirmTransactionClicked();
+      await Future<void>.delayed(Duration.zero);
+
+      verify(() => send.execute(draft: any(named: 'draft'))).called(1);
+      sendCompleter.complete(const Ok<String, SendFailure>('the-txid'));
+      await first;
+      await second;
+      expect(cubit.state.txId, 'the-txid');
     });
   });
 }
