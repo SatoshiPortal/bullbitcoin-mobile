@@ -12,9 +12,14 @@ class WalletMetadatas extends Table {
   TextColumn get publicDescriptor => text()();
   BoolColumn get isDefault => boolean()();
   BoolColumn get isHidden => boolean().withDefault(const Constant(false))();
+  BoolColumn get hideOnHome => boolean().nullable()();
+  BoolColumn get autoSweepEnabled => boolean().nullable()();
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   DateTimeColumn get birthday => dateTime().nullable()();
+  TextColumn get provenance =>
+      text().withDefault(const Constant('watchOnly'))();
+  BoolColumn get seedPassphraseUsed => boolean().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

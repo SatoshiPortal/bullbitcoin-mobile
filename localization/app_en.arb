@@ -16531,5 +16531,6 @@
   "bullVaultLastResortDelay": "Everyday key can spend alone",
   "@bullVaultLastResortDelay": {},
   "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
-  "@bullVaultLastResortOrder": {}
+  "@bullVaultLastResortOrder": {},
+  "walletBackupManifestPassphraseWallet": "Passphrase Wallet"
 }

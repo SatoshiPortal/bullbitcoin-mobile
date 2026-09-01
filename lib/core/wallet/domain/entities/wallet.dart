@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter/material.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -122,6 +123,7 @@ abstract class Wallet with _$Wallet {
     required List<WalletSigner> signers,
     required ScriptType? scriptType,
     required String publicDescriptor,
+    @Default(WalletProvenance.defaultSeed) WalletProvenance provenance,
     required BigInt balanceSat,
     // Confirmed-only component of balanceSat (excludes trusted/untrusted
     // pending and immature funds). Nullable/optional so every existing
@@ -200,6 +202,12 @@ abstract class Wallet with _$Wallet {
   }
 
   String displayLabel(BuildContext context) {
+    if (provenance == WalletProvenance.defaultSeedPassphrase) {
+      final walletLabel = label?.trim();
+      return walletLabel == null || walletLabel.isEmpty
+          ? context.loc.walletBackupManifestPassphraseWallet
+          : walletLabel;
+    }
     if (!isDefault) return label ?? origin;
 
     return switch (network) {

@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/frozen_utxos_table.dart';
+import 'package:bb_mobile/core/storage/tables/keychain_manifest_entries_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/order_swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/mempool_servers_table.dart';
@@ -24,6 +25,7 @@ import 'package:bb_mobile/core/storage/tables/send_transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_backup_states_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -54,6 +56,10 @@ part 'sqlite_database.g.dart';
     Swaps,
     AutoSwap,
     Bip85Derivations,
+    KeychainManifestEntries,
+    KeychainManifestWalletBindings,
+    KeychainManifestNostrKeys,
+    WalletBackupStates,
     Recoverbull,
     Prices,
     FrozenUtxos,
@@ -113,7 +119,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 16;
+  static const int currentSchemaVersion = 17;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -172,6 +178,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from13To14: _reportingMigration('from13To14', Schema13To14.migrate),
         from14To15: _reportingMigration('from14To15', Schema14To15.migrate),
         from15To16: _reportingMigration('from15To16', Schema15To16.migrate),
+        from16To17: _reportingMigration('from16To17', Schema16To17.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).
