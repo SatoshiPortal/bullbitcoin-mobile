@@ -102,6 +102,12 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
           if (state.flow == RecoverBullFlow.recoverVault &&
               state.isFlowFinished) {
             _hasNavigatedAway = true;
+            if (state.dataBackupRecoveryIncomplete) {
+              SnackBarUtils.showSnackBar(
+                context,
+                context.loc.recoverbullDataBackupRecoveryIncomplete,
+              );
+            }
             context.goNamed(WalletRoute.walletHome.name);
             return;
           }

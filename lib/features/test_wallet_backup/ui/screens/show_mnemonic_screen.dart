@@ -75,15 +75,10 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
         }
         return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
           builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
-
             return _buildScreen(
               PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
+                child: AppBarWidget(title: context.loc.backupWalletTitle),
               ),
               const _MnemonicDisplay(),
             );
@@ -144,30 +139,21 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
   Future<(List<String>, String?)>? _secretFuture;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.mnemonic != null) {
-      _secretFuture ??= Future.value((widget.mnemonic!, null));
-      return;
-    }
-    final fingerprint = context
-        .read<TestWalletBackupBloc>()
-        .state
-        .selectedWallet
-        ?.singleLocalSeedFingerprint;
-    if (fingerprint != _fingerprint) {
-      _fingerprint = fingerprint;
-      _secretFuture = fingerprint == null
-          ? null
-          : context.read<TestWalletBackupBloc>().loadSelectedWalletMnemonic();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final selectedWallet = widget.mnemonic == null
         ? context.watch<TestWalletBackupBloc>().state.selectedWallet
         : null;
+    if (widget.mnemonic != null) {
+      _secretFuture ??= Future.value((widget.mnemonic!, null));
+    } else {
+      final fingerprint = selectedWallet?.singleLocalSeedFingerprint;
+      if (fingerprint != _fingerprint) {
+        _fingerprint = fingerprint;
+        _secretFuture = fingerprint == null
+            ? null
+            : context.read<TestWalletBackupBloc>().loadSelectedWalletMnemonic();
+      }
+    }
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
     return FutureBuilder<(List<String>, String?)>(

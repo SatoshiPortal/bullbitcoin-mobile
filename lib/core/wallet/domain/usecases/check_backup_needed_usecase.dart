@@ -19,10 +19,12 @@ class CheckBackupNeededUsecase {
       environment: settings.environment,
     );
 
-    return defaultWallets.isNotEmpty &&
-        defaultWallets.any(
-          (wallet) =>
-              !wallet.isEncryptedVaultTested && !wallet.isPhysicalBackupTested,
-        );
+    for (final wallet in defaultWallets) {
+      if (wallet.isBitcoin) {
+        return wallet.latestEncryptedBackup == null &&
+            wallet.latestPhysicalBackup == null;
+      }
+    }
+    return false;
   }
 }

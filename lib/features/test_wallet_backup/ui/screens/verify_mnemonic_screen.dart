@@ -42,41 +42,37 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   List<int> _selectedIndices = [];
   String? _fingerprint;
   bool _isLoading = true;
+  bool _loadFailed = false;
 
   late final Future<void> _privacyFuture = enableScreenPrivacy();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     if (widget._providedMnemonic != null) {
-      if (_isLoading) {
-        _mnemonic = widget._providedMnemonic!;
-        _shuffled = [..._mnemonic]..shuffle();
-        _isLoading = false;
-      }
-      return;
+      _mnemonic = widget._providedMnemonic!;
+      _shuffled = [..._mnemonic]..shuffle();
+      _isLoading = false;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_loadSecret());
+      });
     }
-    _loadSecretFor(
-      context
-          .read<TestWalletBackupBloc>()
-          .state
-          .selectedWallet
-          ?.singleLocalSeedFingerprint,
-    );
-  }
-
-  void _loadSecretFor(String? fingerprint) {
-    if (fingerprint == null ||
-        fingerprint.isEmpty ||
-        fingerprint == _fingerprint) {
-      return;
-    }
-    _fingerprint = fingerprint;
-    unawaited(_loadSecret());
   }
 
   Future<void> _loadSecret() async {
-    setState(() => _isLoading = true);
+    final fingerprint = context
+        .read<TestWalletBackupBloc>()
+        .state
+        .selectedWallet
+        ?.singleLocalSeedFingerprint;
+    if (fingerprint == null || fingerprint == _fingerprint) return;
+
+    _fingerprint = fingerprint;
+    setState(() {
+      _isLoading = true;
+      _loadFailed = false;
+    });
     try {
       final (mnemonic, _) = await context
           .read<TestWalletBackupBloc>()
@@ -90,7 +86,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
     }
   }
 
@@ -159,11 +158,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         }
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
-              previous.selectedWallet?.id != current.selectedWallet?.id ||
+              previous.selectedWallet?.singleLocalSeedFingerprint !=
+                  current.selectedWallet?.singleLocalSeedFingerprint ||
               previous.verificationStatus != current.verificationStatus ||
               (previous.statusError.isEmpty && current.statusError.isNotEmpty),
           listener: (context, state) {
-            _loadSecretFor(state.selectedWallet?.singleLocalSeedFingerprint);
+            if (state.selectedWallet?.singleLocalSeedFingerprint != _fingerprint) {
+              unawaited(_loadSecret());
+            }
             if (state.statusError.isNotEmpty) {
               SnackBarUtils.showSnackBar(context, state.statusError);
               context.read<TestWalletBackupBloc>().add(const ClearError());
@@ -194,15 +196,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             }
           },
           builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
-
             return _buildScreen(
               PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
+                child: AppBarWidget(title: context.loc.testBackupTitle),
               ),
             );
           },
@@ -264,6 +261,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               const Gap(16),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
+              else if (_loadFailed)
+                BBText(
+                  context.loc.oopsSomethingWentWrong,
+                  textAlign: .center,
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                )
               else
                 ExcludeSemantics(
                   child: _ShuffledMnemonicGrid(

@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -33,6 +34,9 @@ class _MockPickVault extends Mock implements PickVaultUsecase {}
 class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
+
+class _MockRemoteRecovery extends Mock
+    implements RecoverBullRemoteKeychainUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
@@ -72,6 +76,7 @@ void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
+  late _MockRemoteRecovery remoteRecovery;
   late _MockStoreKey storeKey;
   late _MockRecordBackupCreated recordBackupCreated;
   late _MockCheckConnection checkConnection;
@@ -94,6 +99,7 @@ void main() {
     pickVault = _MockPickVault();
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
+    remoteRecovery = _MockRemoteRecovery();
     storeKey = _MockStoreKey();
     recordBackupCreated = _MockRecordBackupCreated();
     checkConnection = _MockCheckConnection();
@@ -146,6 +152,7 @@ void main() {
     fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
+    recoverRemoteKeychainUsecase: remoteRecovery,
     connectToGoogleDriveUsecase: connectDrive,
     saveToGoogleDriveUsecase: saveDrive,
     ensureRecoverBullTorSessionUsecase: ensureRecoverBullTorSession,

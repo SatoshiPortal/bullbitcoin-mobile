@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasourc
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/wizard_failure.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Bump this integer whenever the wizard gains new mandatory questions.

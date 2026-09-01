@@ -198,15 +198,5 @@ class RecoverbullLocator {
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
-    locator.registerFactory<AllowPermissionUsecase>(
-      () => AllowPermissionUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
-      ),
-    );
-    locator.registerFactory<FetchPermissionUsecase>(
-      () => FetchPermissionUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
-      ),
-    );
   }
 }

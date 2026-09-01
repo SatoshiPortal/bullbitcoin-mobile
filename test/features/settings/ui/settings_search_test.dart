@@ -81,7 +81,7 @@ void main() {
     test('places wallet import under the Wallet section', () {
       final items = _englishItems();
 
-      expect(items.byId(SettingsItemId.backup).title, 'Backup');
+      expect(items.byId(SettingsItemId.backup).title, 'Wallet Recovery');
       expect(
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
@@ -111,6 +111,7 @@ void main() {
       expect(rootItems.map((item) => item.id), [
         SettingsItemId.appSettings,
         SettingsItemId.backup,
+        SettingsItemId.dataBackup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
         SettingsItemId.btcMap,
@@ -120,7 +121,8 @@ void main() {
       ]);
       expect(rootItems.map((item) => item.title), [
         'App',
-        'Backup',
+        'Wallet Recovery',
+        'Data Backup',
         'Wallet',
         'Exchange',
         'Map',

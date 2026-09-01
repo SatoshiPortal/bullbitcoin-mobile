@@ -24,6 +24,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
+import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,6 +55,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
+  final RecoverBullRemoteKeychainUsecase _recoverRemoteKeychainUsecase;
   final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
@@ -81,6 +83,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._fetchVaultKeyFromServerUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
+    required this._recoverRemoteKeychainUsecase,
     required this._connectToGoogleDriveUsecase,
     required this._saveToGoogleDriveUsecase,
     required this._ensureRecoverBullTorSessionUsecase,
@@ -575,10 +578,19 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     switch (await _restoreVaultUsecase.execute(
       decryptedVault: decryptedVault,
     )) {
-      case Ok():
+      case Ok(:final value):
+        final dataBackupRecovered = await _recoverRemoteKeychainUsecase.execute(
+          defaultCreatedWalletIds: value.toSet(),
+        );
         _walletBloc.add(const WalletStarted());
         log.fine('Vault recovered');
-        emit(state.copyWith(isFlowFinished: true, isLoading: false));
+        emit(
+          state.copyWith(
+            isFlowFinished: true,
+            dataBackupRecoveryIncomplete: !dataBackupRecovered,
+            isLoading: false,
+          ),
+        );
       case Err():
         emit(
           state.copyWith(

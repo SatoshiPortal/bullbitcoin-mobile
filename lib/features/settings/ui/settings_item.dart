@@ -29,6 +29,7 @@ import 'package:url_launcher/url_launcher.dart';
 enum SettingsItemId {
   exchange,
   backup,
+  dataBackup,
   startBackup,
   recoverbull,
   nostrKeys,
@@ -195,15 +196,28 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.backup,
       section: SettingsItemSection.root,
-      title: backupSection,
-      path: path(SettingsItemSection.root, backupSection),
+      title: localization.walletRecoverySettingsTitle,
+      path: path(
+        SettingsItemSection.root,
+        localization.walletRecoverySettingsTitle,
+      ),
       icon: Icons.backup_outlined,
-      open: (context) => context.pushNamed(SettingsRoute.backupSettings.name),
+      open: (context) =>
+          context.pushNamed(SettingsRoute.walletRecoverySettings.name),
       keywords: _keywords(
         localization.settingsSearchBackupKeywords,
         english.settingsSearchBackupKeywords,
-        [english.settingsBackupTitle],
+        [english.settingsBackupTitle, english.walletRecoverySettingsTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.dataBackup,
+      section: SettingsItemSection.root,
+      title: localization.dataBackupSettingsTitle,
+      path: path(SettingsItemSection.root, localization.dataBackupSettingsTitle),
+      icon: Icons.cloud_sync_outlined,
+      open: (context) => context.pushNamed(SettingsRoute.dataBackupSettings.name),
+      keywords: [english.dataBackupSettingsTitle, 'backup', 'cloud', 'labels'],
     ),
     SettingsItem(
       id: SettingsItemId.startBackup,

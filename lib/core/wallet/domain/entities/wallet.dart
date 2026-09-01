@@ -395,6 +395,7 @@ abstract class Wallet with _$Wallet {
       isLiquid ? !isWatchOnly : hasLocalSigner || hasRemoteSigner;
 
   bool get signsRemotely => hasRemoteSigner;
+  bool get signsLocally => singleSigner?.signer == SignerEntity.local;
   bool get isHardwareWallet => signerDevice != null;
   bool get isBitcoinHardwareWallet => isBitcoin && isHardwareWallet;
   bool get hasLocalSigner =>

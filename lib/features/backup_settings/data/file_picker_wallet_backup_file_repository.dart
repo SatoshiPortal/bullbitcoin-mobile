@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
 import 'package:bb_mobile/features/backup_settings/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';

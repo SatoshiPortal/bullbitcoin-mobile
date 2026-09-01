@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_routes.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -202,13 +204,19 @@ class SettingsRouter {
         builder: (context, state) => const PinCodeSettingFlow(),
       ),
       GoRoute(
-        path: SettingsRoute.backupSettings.path,
-        name: SettingsRoute.backupSettings.name,
-        builder: (context, state) => const BackupSettingsScreen(),
+        path: SettingsRoute.walletRecoverySettings.path,
+        name: SettingsRoute.walletRecoverySettings.name,
+        builder: (context, state) => const WalletRecoverySettingsScreen(),
         routes: [
-          BackupSettingsSettingsRouter.route,
+          ...BackupSettingsSettingsRouter.walletRecoveryRoutes,
           TestWalletBackupRouter.route,
         ],
+      ),
+      GoRoute(
+        path: SettingsRoute.dataBackupSettings.path,
+        name: SettingsRoute.dataBackupSettings.name,
+        builder: (context, state) => const DataBackupSettingsScreen(),
+        routes: BackupSettingsSettingsRouter.dataBackupRoutes,
       ),
       // A wallet is always reached from its own screen (wallet home → gear),
       // never from a list, so these carry the shared prefix themselves.

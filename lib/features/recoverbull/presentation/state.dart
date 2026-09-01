@@ -41,6 +41,7 @@ sealed class RecoverBullState with _$RecoverBullState {
     /// Tor is stuck; deriving those from a coarse status enum is impossible
     /// because it collapses all three into four values.
     @Default(tor.TorUninitialized()) tor.TorConnectionState torConnection,
+    @Default(false) bool dataBackupRecoveryIncomplete,
   }) = _RecoverBullState;
 
   const RecoverBullState._();

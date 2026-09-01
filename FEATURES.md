@@ -28,7 +28,12 @@ graph TB
     NETWORK[Network]
     BIP85[BIP85]
     NOSTR_IDENTITY[Nostr Identity]
+    WALLET_BACKUP[Wallet Backup<br/>---<br/>Typed backup snapshot & codec,<br/>remote protocol, durable state,<br/>serialized job runner]
     KEYCHAIN_MANIFEST[Keychain Manifest<br/>---<br/>Wallet inventory, Nostr keys,<br/>passphrase wallet records]
+    BACKUP_SETTINGS[Backup Settings<br/>---<br/>Backup UI & reminders,<br/>file import/export,<br/>failure taxonomy mapping]
+    RECOVERBULL[RecoverBull]
+    WIZARD[Onboarding Wizard]
+    ONBOARDING[Wallet Onboarding]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -87,6 +92,19 @@ graph TB
     AUTOSWAP --> TRANSFER
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
+    %% Wallet Backup is the only feature that reads the keychain manifest for a
+    %% backup; Backup Settings goes through its facade rather than around it.
+    WALLET_BACKUP --> NOSTR_IDENTITY
+    WALLET_BACKUP --> KEYCHAIN_MANIFEST
+    WALLET_BACKUP --> LABELS
+    BACKUP_SETTINGS --> WALLET_BACKUP
+    BACKUP_SETTINGS --> LABELS
+    BACKUP_SETTINGS --> TX_HISTORY
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
+    RECOVERBULL --> WALLET_BACKUP
+    WIZARD --> WALLET_BACKUP
+    ONBOARDING --> WIZARD
     BACKUPS --> BIP85
     BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
@@ -142,6 +160,7 @@ graph TB
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
     SETTINGS --> KEYCHAIN_MANIFEST
+    SETTINGS --> BACKUP_SETTINGS
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
