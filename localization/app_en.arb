@@ -15371,5 +15371,9 @@
   "spFailureBroadcastUncertain": "Your transaction may already have been sent. Check your transaction history before trying again.",
   "@spFailureBroadcastUncertain": {
     "description": "Silent Payments send failure: the broadcast outcome is unknown, so the user must check before retrying"
+  },
+  "settingsDevModeSpRevokeFailed": "Could not fully delete the Silent Payments wallet. It is disabled and cannot be reloaded. Turn developer mode off again to retry.",
+  "@settingsDevModeSpRevokeFailed": {
+    "description": "Shown when turning developer mode off could not remove the Silent Payments wallet from disk."
   }
 }

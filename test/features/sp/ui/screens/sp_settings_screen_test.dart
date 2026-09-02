@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_settings_state.dart';
+import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -88,7 +89,7 @@ void main() {
     when(() => spCubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => spCubit.load()).thenAnswer((_) async {});
     when(() => spCubit.scan()).thenAnswer((_) async {});
-    when(() => spCubit.revokeWallet()).thenAnswer((_) async {});
+    when(() => spCubit.revokeWallet()).thenAnswer((_) async => true);
     when(() => settingsCubit.state).thenReturn(
       const SpSettingsState(
         initialized: true,
@@ -276,5 +277,32 @@ void main() {
 
     verify(() => spCubit.revokeWallet()).called(1);
     expect(find.text('Exit target'), findsOneWidget);
+  });
+
+  testWidgets('delete failure stays on settings', (tester) async {
+    when(() => spCubit.revokeWallet()).thenAnswer((_) async => false);
+    when(() => spCubit.state).thenReturn(
+      const SpState(
+        network: BitcoinNetwork.mainnet,
+        error: SpUnexpected('delete failed'),
+      ),
+    );
+
+    await tester.pumpWidget(
+      _buildRouterPage(spCubit: spCubit, settingsCubit: settingsCubit),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Delete Silent Payments wallet'));
+    await tester.tap(find.text('Delete Silent Payments wallet'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    verify(() => spCubit.revokeWallet()).called(1);
+    expect(find.text('Server settings'), findsOneWidget);
+    expect(find.text('Exit target'), findsNothing);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
   });
 }

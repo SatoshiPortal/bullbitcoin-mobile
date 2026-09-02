@@ -198,9 +198,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleDevMode(bool isEnabled) async {
     final settings = state.storedSettings;
 
-    // Clear any previously surfaced SP revoke failure whenever the user
-    // re-toggles dev mode; they're acknowledging / retrying.
-    var revokeSpFailed = false;
+    if (state.revokeSpFailed) {
+      emit(state.copyWith(revokeSpFailed: false));
+    }
 
     // If disabling dev mode, revoke the SP wallet first
     if (!isEnabled && settings?.isDevModeEnabled == true) {
@@ -208,19 +208,13 @@ class SettingsCubit extends Cubit<SettingsState> {
       // emits SpSetupChanged; the WalletBloc observes that and refreshes itself,
       // so settings never drives the wallet for SP.
       if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
-        // RevokeSpWalletUsecase writes a `.revoked` sentinel BEFORE attempting
-        // the recursive delete, so even if delete failed the partial state is
-        // no longer dangerous: GetSpWalletUsecase refuses to load any wallet
-        // from a sentinel-marked directory. It also emits SpSetupChanged on the
-        // failure path, so the wallet still drops the SP card. Therefore it is
-        // safe to flip dev-mode off below; we flag the failure so the UI can
-        // show a generic retry prompt. The raw cause stays in the log only.
         log.severe(
-          message: 'Failed to revoke SP wallet (sentinel left in place)',
+          message: 'Failed to revoke SP wallet',
           error: failure,
           trace: StackTrace.current,
         );
-        revokeSpFailed = true;
+        emit(state.copyWith(revokeSpFailed: true));
+        return;
       }
     }
 
@@ -228,7 +222,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
-        revokeSpFailed: revokeSpFailed,
+        revokeSpFailed: false,
       ),
     );
     // A revoke (on toggle-off) drops the SP wallet, so re-read the setup flag.

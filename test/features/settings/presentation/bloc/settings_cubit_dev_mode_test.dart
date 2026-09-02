@@ -168,30 +168,26 @@ void main() {
       },
     );
 
-    test('dev-mode toggle-off still flips devmode AND surfaces revoke error in '
-        'state when RevokeSpWalletUsecase returns Err', () async {
-      // The sentinel written by RevokeSpWalletUsecase BEFORE its delete
-      // attempt makes it safe to flip dev mode off even when delete fails:
-      // GetSpWalletUsecase keys off that sentinel and will refuse to load.
-      // So the cubit must NOT refuse the toggle, but it MUST surface the
-      // error so the UI can warn the user.
-      when(
-        () => revokeSpWalletUsecase.execute(),
-      ).thenAnswer((_) async => const Err(SpUnexpected('file locked')));
-      cubit.emit(
-        cubit.state.copyWith(storedSettings: _settings(isDevModeEnabled: true)),
-      );
+    test(
+      'dev-mode toggle-off keeps dev mode enabled when revoke fails',
+      () async {
+        when(
+          () => revokeSpWalletUsecase.execute(),
+        ).thenAnswer((_) async => const Err(SpUnexpected('file locked')));
+        cubit.emit(
+          cubit.state.copyWith(
+            storedSettings: _settings(isDevModeEnabled: true),
+          ),
+        );
 
-      await cubit.toggleDevMode(false);
+        await cubit.toggleDevMode(false);
 
-      verify(() => revokeSpWalletUsecase.execute()).called(1);
-      // Dev mode still flips off (sentinel makes this safe).
-      verify(() => setIsDevModeUsecase.execute(false)).called(1);
-      expect(cubit.state.storedSettings?.isDevModeEnabled, false);
-      // The failure is flagged in state so the UI can show a generic message;
-      // the raw cause is logged at the boundary only, never stored.
-      expect(cubit.state.revokeSpFailed, isTrue);
-    });
+        verify(() => revokeSpWalletUsecase.execute()).called(1);
+        verifyNever(() => setIsDevModeUsecase.execute(false));
+        expect(cubit.state.storedSettings?.isDevModeEnabled, true);
+        expect(cubit.state.revokeSpFailed, isTrue);
+      },
+    );
 
     test(
       'successful toggle-off clears any previously-set revokeSpFailed',

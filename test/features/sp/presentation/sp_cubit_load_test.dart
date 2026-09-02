@@ -267,21 +267,24 @@ void main() {
         () => revokeUsecase.execute(),
       ).thenAnswer((_) async => const Ok(null));
 
-      await cubit.revokeWallet();
+      final revoked = await cubit.revokeWallet();
 
       verify(() => revokeUsecase.execute()).called(1);
+      expect(revoked, isTrue);
     });
 
     test(
-      'completes when the usecase returns Err (UI must still navigate)',
+      'returns false and surfaces the error when the usecase returns Err',
       () async {
         when(
           () => revokeUsecase.execute(),
         ).thenAnswer((_) async => const Err(SpUnexpected('delete failed')));
 
-        // The usecase already makes the wallet unloadable (sentinel) even on its
-        // failure path, so revokeWallet must complete instead of propagating.
-        await expectLater(cubit.revokeWallet(), completes);
+        final revoked = await cubit.revokeWallet();
+
+        expect(revoked, isFalse);
+        expect(cubit.state.error, isA<SpUnexpected>());
+        expect(cubit.state.isRevoking, isFalse);
       },
     );
   });

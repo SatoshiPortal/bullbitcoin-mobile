@@ -428,17 +428,18 @@ class SpCubit extends Cubit<SpState> {
     }
   }
 
-  Future<void> revokeWallet() async {
-    if (isClosed) return;
-    emit(state.copyWith(isRevoking: true));
-    // The usecase writes the `.revoked` sentinel and notifies observers even on
-    // its dir-delete failure path, so the wallet is already unloadable. Ignore
-    // a failure here so the UI always navigates away instead of getting stuck.
+  Future<bool> revokeWallet() async {
+    if (isClosed) return false;
+    emit(state.copyWith(isRevoking: true, error: null));
     if (await _revokeSpWalletUsecase.execute() case Err(:final failure)) {
       log.warning('SpCubit.revokeWallet: ${failure.logMessage}');
+      if (isClosed) return false;
+      emit(state.copyWith(isRevoking: false, error: failure));
+      return false;
     }
-    if (isClosed) return;
+    if (isClosed) return true;
     emit(state.copyWith(isRevoking: false));
+    return true;
   }
 
   void clearError() {

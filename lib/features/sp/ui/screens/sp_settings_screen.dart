@@ -260,8 +260,17 @@ class _WalletManagementSection extends StatelessWidget {
                     confirmLabel: context.loc.delete,
                   );
                   if (!confirmed || !context.mounted) return;
-                  await context.read<SpCubit>().revokeWallet();
+                  final deleted = await context.read<SpCubit>().revokeWallet();
                   if (!context.mounted) return;
+                  if (!deleted) {
+                    final message =
+                        context.read<SpCubit>().state.error?.toTranslated(
+                          context,
+                        ) ??
+                        context.loc.oopsSomethingWentWrong;
+                    SnackBarUtils.showSnackBar(context, message);
+                    return;
+                  }
                   context.go(exitRedirectPath);
                 },
         ),
