@@ -16,7 +16,9 @@ class BullInputText extends StatefulWidget {
     this.controller,
     required this.onChanged,
     required this.value,
+    this.label,
     this.hint,
+    this.errorText,
     this.hintStyle,
     this.rightIcon,
     this.onRightTap,
@@ -47,8 +49,14 @@ class BullInputText extends StatefulWidget {
   /// The current value (the field is controlled by the parent).
   final String value;
 
+  /// Optional field label.
+  final String? label;
+
   /// Placeholder text.
   final String? hint;
+
+  /// Validation message shown below the field.
+  final String? errorText;
 
   /// Placeholder style override.
   final TextStyle? hintStyle;
@@ -183,7 +191,9 @@ class _BullInputTextState extends State<BullInputText> {
       textAlign: TextAlign.left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
+        labelText: widget.label,
         hintText: widget.hint,
+        errorText: widget.errorText,
         hintStyle: widget.hintStyle ?? TextStyle(color: colors.textMuted),
         prefixIcon: widget.fixedPrefix != null
             ? Container(

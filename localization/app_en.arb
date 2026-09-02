@@ -14583,5 +14583,43 @@
   "@sendErrorTransactionChanged": {
     "description": "Message shown when a transaction must be rebuilt because its details changed."
   },
+  "settingsNostrKeysTitle": "Nostr keys",
+  "settingsNostrKeysEmpty": "No Nostr keys have been created yet.",
+  "settingsNostrKeysCreate": "Create Nostr key",
+  "settingsNostrKeysCreated": "Nostr key created",
+  "settingsNostrKeysFailure": "Nostr key action failed. Try again.",
+  "settingsNostrKeysName": "Name",
+  "settingsNostrKeysNameHint": "e.g. personal identity",
+  "settingsNostrKeysNameRequiredError": "Enter a name for this key.",
+  "settingsNostrKeysNameTooLongError": "Name must be 80 characters or fewer.",
+  "settingsNostrKeysDescription": "Description",
+  "settingsNostrKeysDescriptionHint": "Optional note about how you use this key",
+  "settingsNostrKeysDescriptionTooLongError": "Description must be 200 characters or fewer.",
+  "settingsNostrKeysInvalidCharactersError": "Remove line breaks or control characters.",
+  "settingsNostrKeysSave": "Save",
+  "settingsNostrKeysDetailTitle": "Nostr key",
+  "settingsNostrKeysDerivationPath": "Derivation path",
+  "settingsNostrKeysNpub": "npub",
+  "settingsNostrKeysShowNpub": "Show npub",
+  "settingsNostrKeysShowPrivate": "Show nsec",
+  "settingsNostrKeysShowSystemKeys": "Show system keys",
+  "settingsNostrKeysHideSystemKeys": "Hide system keys",
+  "settingsNostrKeysSystemKeysWarningTitle": "System keys",
+  "settingsNostrKeysSystemKeysWarningMessage": "These keys are managed by the app for troubleshooting and recovery. They are not your identities. Do not use or share them.",
+  "settingsNostrKeysSystemNpubWarningTitle": "System key npub",
+  "settingsNostrKeysSystemNpubWarningMessage": "Viewing this public key is only for troubleshooting. Do not use or share it as an identity.",
+  "settingsNostrKeysUserNsecWarningTitle": "Show your nsec",
+  "settingsNostrKeysUserNsecWarningMessage": "Your nsec is the private key for this identity. Anyone who has it controls the identity. DO NOT SHARE WITH ANYONE.",
+  "settingsNostrKeysWarningUnderstand": "I understand",
+  "settingsNostrKeysSystemMetadataBackup": "Metadata backup",
+  "settingsNostrKeysSystemMetadataBackupDescription": "Identifies and signs your encrypted metadata backup.",
+  "settingsNostrKeysSystemNsecWarningTitle": "Show system nsec",
+  "@settingsNostrKeysSystemNsecWarningTitle": {
+    "description": "Title shown before revealing a system Nostr private key."
+  },
+  "settingsNostrKeysSystemNsecWarningMessage": "This nsec is for debugging and advanced usage only. Anyone with it can control this system identity. Do not share it with anyone.",
+  "@settingsNostrKeysSystemNsecWarningMessage": {
+    "description": "Security warning shown before revealing a system Nostr private key."
+  },
   "walletBackupManifestPassphraseWallet": "Passphrase Wallet"
 }

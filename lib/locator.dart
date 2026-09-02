@@ -29,6 +29,7 @@ import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
+import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.dart';
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
@@ -170,6 +171,7 @@ class AppLocator {
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
     NostrIdentityLocator.setup(locator);
+    KeychainManifestLocator.setup(locator);
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
