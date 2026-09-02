@@ -14621,5 +14621,58 @@
   "@settingsNostrKeysSystemNsecWarningMessage": {
     "description": "Security warning shown before revealing a system Nostr private key."
   },
+  "walletBackupSettingsCancel": "Cancel",
+  "@walletBackupSettingsCancel": {
+    "description": "Cancel remote Bull backup deletion"
+  },
+  "walletBackupSettingsUnavailable": "Bull backup is temporarily unavailable.",
+  "@walletBackupSettingsUnavailable": {
+    "description": "Error when the Bull backup service cannot be reached"
+  },
+  "walletBackupSettingsDisabled": "Enable automatic Bull backup first.",
+  "@walletBackupSettingsDisabled": {
+    "description": "Error shown when backup now is requested while disabled"
+  },
+  "walletBackupSettingsUpdateRequired": "Update the app before changing this backup.",
+  "@walletBackupSettingsUpdateRequired": {
+    "description": "Error or status for a backup written by a newer app"
+  },
+  "walletBackupSettingsRecoveryBlocked": "Backup recovery needs attention.",
+  "@walletBackupSettingsRecoveryBlocked": {
+    "description": "Shown when remote wallet backup recovery was incomplete"
+  },
+  "walletBackupFileInvalid": "This backup file is invalid or belongs to another wallet",
+  "walletBackupFileReadFailure": "The backup file could not be read",
+  "walletBackupFileSaveFailure": "The backup file could not be saved",
+  "walletBackupFileTooLarge": "The backup file is too large",
+  "walletBackupSettingsServer": "Backup server",
+  "walletBackupSettingsServerUrl": "Server URL",
+  "walletBackupSettingsServerHelp": "Use HTTPS. Reset to use the Bull Bitcoin default.",
+  "walletBackupSettingsServerReset": "Reset",
+  "walletBackupSettingsServerSave": "Save",
+  "walletBackupSettingsInvalidServer": "Enter a valid HTTPS backup server URL.",
+  "@walletBackupSettingsInvalidServer": {
+    "description": "Error shown when a custom backup server URL is invalid."
+  },
+  "walletBackupSettingsServerChangeWarning": "Changing servers does not delete the encrypted backup from the previous server. Delete it first if you do not want to leave a copy there.",
+  "@walletBackupSettingsServerChangeWarning": {
+    "description": "Warning shown before changing the data backup server"
+  },
+  "walletBackupSettingsSeedMismatch": "This backup belongs to a different recovery phrase",
+  "@walletBackupSettingsSeedMismatch": {
+    "description": "Shown when a decoded Bull backup was sealed to another seed, so it cannot be recovered onto this wallet."
+  },
+  "walletBackupSettingsUnverified": "This backup could not be verified",
+  "@walletBackupSettingsUnverified": {
+    "description": "Shown when a Bull backup document fails authentication or decoding, so its contents cannot be trusted."
+  },
+  "walletBackupSettingsHeadConflict": "This backup changed on another installation",
+  "@walletBackupSettingsHeadConflict": {
+    "description": "Shown when the remote backup head moved, so this installation must reconcile before it can publish."
+  },
+  "walletBackupSettingsStorageFailure": "The app could not save recovered data",
+  "@walletBackupSettingsStorageFailure": {
+    "description": "Shown when local storage refused a read or write during a Bull backup operation."
+  },
   "walletBackupManifestPassphraseWallet": "Passphrase Wallet"
 }
