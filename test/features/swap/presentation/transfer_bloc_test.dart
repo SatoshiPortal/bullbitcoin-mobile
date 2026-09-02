@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -291,6 +292,86 @@ void main() {
       expect(
         bloc.state.buildTransactionException?.message,
         selectedCoinsInsufficientCode,
+      );
+    },
+  );
+
+  test('maps unavailable selected coins in the cached rebuild path', () async {
+    final selected = _bitcoinUtxo('selected-tx');
+    when(
+      () => validateBitcoinSelection.execute(
+        walletId: 'wallet-1',
+        selectedInputs: [selected],
+      ),
+    ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+        toWallet: _destinationWallet(),
+        receiveAddress: 'tb1qreceive',
+        amount: '1000',
+        selectedUtxos: [selected],
+        bitcoinNetworkFees: _feeOptions(),
+        feePreviewCache: const BitcoinFeePreviewCache(
+          fastest: BitcoinFeePreviewSlot(
+            feeSat: 250,
+            unsignedPsbt: 'cached-unsigned-psbt',
+            txSize: 100,
+          ),
+        ),
+      ),
+    );
+
+    bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.fastest));
+    await bloc.stream.firstWhere(
+      (state) => state.buildTransactionException != null,
+    );
+
+    expect(
+      bloc.state.buildTransactionException?.message,
+      selectedCoinsUnavailableCode,
+    );
+  });
+
+  test(
+    'maps unavailable selected coins in the non-cached rebuild path',
+    () async {
+      final selected = _bitcoinUtxo('selected-tx');
+      when(
+        () => prepareBitcoin.execute(
+          walletId: 'wallet-1',
+          address: 'tb1qreceive',
+          amountSat: 1000,
+          networkFee: any(named: 'networkFee'),
+          drain: false,
+          selectedInputs: [selected],
+          replaceByFee: true,
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+          toWallet: _destinationWallet(),
+          receiveAddress: 'tb1qreceive',
+          amount: '1000',
+          selectedUtxos: [selected],
+          signedPsbt: 'stale-psbt',
+          bitcoinNetworkFees: _feeOptions(),
+        ),
+      );
+
+      bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.fastest));
+      await bloc.stream.firstWhere(
+        (state) => state.buildTransactionException != null,
+      );
+
+      expect(
+        bloc.state.buildTransactionException?.message,
+        selectedCoinsUnavailableCode,
+      );
+      expect(bloc.state.signedPsbt, isEmpty);
+      verifyNever(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
       );
     },
   );
@@ -639,6 +720,48 @@ void main() {
       expect(bloc.state.buildTransactionException, isNotNull);
       verifyNever(
         () => broadcastBitcoin.execute('old-signed-psbt', isPsbt: true),
+      );
+    },
+  );
+
+  test(
+    'maps unavailable selected coins during confirm and clears fee previews',
+    () async {
+      final selected = _bitcoinUtxo('selected-tx');
+      when(
+        () => validateBitcoinSelection.execute(
+          walletId: 'wallet-1',
+          selectedInputs: [selected],
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(),
+          toWallet: _destinationWallet(),
+          receiveAddress: 'tb1qreceive',
+          amount: '1000',
+          selectedUtxos: [selected],
+          signedPsbt: 'signed-psbt',
+          feePreviewCache: const BitcoinFeePreviewCache(
+            fastest: BitcoinFeePreviewSlot(
+              feeSat: 250,
+              unsignedPsbt: 'cached-unsigned-psbt',
+              txSize: 100,
+            ),
+          ),
+        ),
+      );
+
+      bloc.add(const TransferEvent.confirmed());
+      await bloc.stream.firstWhere((state) => !state.isConfirming);
+
+      expect(
+        bloc.state.buildTransactionException?.message,
+        selectedCoinsUnavailableCode,
+      );
+      expect(bloc.state.feePreviewCache.fastest.isCacheReady, isFalse);
+      verifyNever(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
       );
     },
   );
