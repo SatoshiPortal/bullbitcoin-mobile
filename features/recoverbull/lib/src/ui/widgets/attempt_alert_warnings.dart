@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../generated/l10n/recoverbull_localizations.dart';
 import '../../public/recoverbull.dart';
 import '../support.dart';
+import '../screens/attempt_alert_detail_page.dart';
 
-/// Opaque attempt monitoring advisory for shell placement. It accepts only public alert
-/// types and never renders identifiers, hashes, or URLs.
+/// Opaque attempt monitoring advisory for shell placement. It accepts only public alert types and never renders identifiers, hashes, or URLs.
 class RecoverBullAttemptAlertWarnings extends StatelessWidget {
   final RecoverBullAttemptMonitoringController controller;
   const RecoverBullAttemptAlertWarnings({super.key, required this.controller});
@@ -34,7 +34,12 @@ class RecoverBullAttemptAlertWarnings extends StatelessWidget {
                         bgColor: _isSecurityAlert(alert)
                             ? context.appColors.errorContainer
                             : context.appColors.cardBackground,
-                        onTap: () {},
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                RecoverBullAttemptAlertDetailPage(alert: alert),
+                          ),
+                        ),
                       ),
                     ),
                     Align(

@@ -42,6 +42,7 @@ import '../router/recoverbull_flow.dart';
 import '../google_drive/ui/screens/drive_vaults_list_page.dart';
 import '../ui/screens/server_confirmation_page.dart';
 import '../ui/screens/settings_page.dart';
+import '../ui/screens/recoverbull_settings_cubit.dart';
 import '../google_drive/presentation/state.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:bull_logger/bull_logger.dart' show LogSink;
@@ -397,11 +398,15 @@ final class RecoverBullFeature {
               ),
               settingsPageBuilder: (context) => SettingsPage(
                 log: log,
-                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
-                  recoverBullRepository: _repository,
-                ),
-                storeUrlUsecase: StoreRecoverbullUrlUsecase(
-                  recoverBullRepository: _repository,
+                cubit: RecoverBullSettingsCubit(
+                  log: log,
+                  fetchUrl: FetchRecoverbullUrlUsecase(
+                    recoverBullRepository: _repository,
+                  ),
+                  storeUrl: StoreRecoverbullUrlUsecase(
+                    recoverBullRepository: _repository,
+                  ),
+                  monitoring: _attemptMonitoring,
                 ),
               ),
               requestPermissionPageBuilder: (context) => RequestPermissionPage(
@@ -424,11 +429,15 @@ final class RecoverBullFeature {
               ),
               settingsPageBuilder: (context) => SettingsPage(
                 log: log,
-                fetchUrlUsecase: FetchRecoverbullUrlUsecase(
-                  recoverBullRepository: _repository,
-                ),
-                storeUrlUsecase: StoreRecoverbullUrlUsecase(
-                  recoverBullRepository: _repository,
+                cubit: RecoverBullSettingsCubit(
+                  log: log,
+                  fetchUrl: FetchRecoverbullUrlUsecase(
+                    recoverBullRepository: _repository,
+                  ),
+                  storeUrl: StoreRecoverbullUrlUsecase(
+                    recoverBullRepository: _repository,
+                  ),
+                  monitoring: _attemptMonitoring,
                 ),
               ),
               requestPermissionPageBuilder: (context) => RequestPermissionPage(

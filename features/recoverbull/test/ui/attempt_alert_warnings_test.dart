@@ -24,6 +24,13 @@ class _Controller implements RecoverBullAttemptMonitoringController {
   @override
   bool get enabled => true;
   @override
+  Future<RecoverBullMonitoringStatus> status() async =>
+      const RecoverBullMonitoringStatus(
+        enabled: true,
+        monitoredCount: 0,
+        lastSuccessfulCheck: null,
+      );
+  @override
   Future<List<RecoverBullAttemptAlert>> check() async => visible;
   @override
   Future<List<RecoverBullAttemptAlert>> checkOnColdLaunch() async => visible;
