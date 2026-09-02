@@ -3290,6 +3290,53 @@
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
   },
+  "transactionValueWhenReceived": "Value when received",
+  "@transactionValueWhenReceived": {
+    "description": "Label above the fiat value a received transaction was worth at the time"
+  },
+  "transactionValueWhenSent": "Value when sent",
+  "@transactionValueWhenSent": {
+    "description": "Label above the fiat value a sent transaction was worth at the time"
+  },
+  "transactionValueAtSendTime": "at {time}, when you sent",
+  "@transactionValueAtSendTime": {
+    "description": "Says which moment a sent value was priced at",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionValueAtSettleTime": "at {time}, when it settled",
+  "@transactionValueAtSettleTime": {
+    "description": "Says which moment a swap value was priced at",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionValueAtConfirmTime": "at {time}, when it confirmed",
+  "@transactionValueAtConfirmTime": {
+    "description": "Says which moment a confirmed value was priced at",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionValueSentBetween": "sent between {from} and {to}",
+  "@transactionValueSentBetween": {
+    "description": "Says the window an incoming on-chain payment was broadcast within",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "transactionDetailLabelTransactionFee": "Transaction Fee",
   "@transactionDetailLabelTransactionFee": {
     "description": "Label for transaction fee"
