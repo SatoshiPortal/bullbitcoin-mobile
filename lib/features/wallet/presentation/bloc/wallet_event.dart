@@ -8,6 +8,15 @@ class WalletStarted extends WalletEvent {
   const WalletStarted();
 }
 
+class WalletCatalogReloaded extends WalletEvent {
+  const WalletCatalogReloaded({this.wallets});
+
+  /// The catalog published by the wallet facade, when the reload was driven by
+  /// a private-session change. Null when the caller only knows the catalog is
+  /// stale and the bloc has to read it itself.
+  final List<Wallet>? wallets;
+}
+
 class WalletRefreshed extends WalletEvent {
   const WalletRefreshed({this.trigger = SyncTrigger.automatic});
 
@@ -44,10 +53,6 @@ class StartTorInitialization extends WalletEvent {
 class ElectrumSyncResultChanged extends WalletEvent {
   final ElectrumSyncResult result;
   const ElectrumSyncResultChanged(this.result);
-}
-
-class DismissBackupWarning extends WalletEvent {
-  const DismissBackupWarning();
 }
 
 class DismissLegacyStorageWarning extends WalletEvent {

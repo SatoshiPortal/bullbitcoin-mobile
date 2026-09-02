@@ -1,12 +1,5 @@
 {
   "settingsBtcMapTitle": "Carte",
-  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si :",
-  "backupWarningLoseReasonLostPhone": "Vous perdez votre téléphone",
-  "backupWarningLoseReasonDeletedApp": "Vous supprimez l'application",
-  "backupWarningLoseReasonCriticalIssue": "Un problème critique lié à l'application ou à l'appareil survient",
-  "backupWarningLoseReasonKeystore": "Votre appareil invalide le keystore lorsque vous modifiez l'authentification de l'écran de verrouillage ou de l'appareil",
-  "backupWarningLoseReasonCloudRestore": "Restaurer votre appareil à partir d'une sauvegarde dans le cloud",
-  "backupWarningNoRecovery": "Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
   "@@locale": "fr",
   "translationWarningTitle": "Traductions générées par IA",
   "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez soumettre une correction sur notre dépôt GitHub.",
@@ -4115,18 +4108,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "OUI",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NON, JE COMPRENDS LE RISQUE",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -4431,8 +4412,6 @@
   "homeActionSell": "Vendre",
   "homeActionPay": "Payer",
   "homeActionTransfer": "Transférer",
-  "backupCardTitle": "Protégez vos bitcoins.",
-  "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant.",
   "mempoolCustomServerNoSsl": "Sans SSL",
   "autoswapTargetBalanceLabel": "Solde cible du portefeuille instantané",
   "autoswapMaximumBalanceLabel": "Solde maximal du portefeuille instantané",

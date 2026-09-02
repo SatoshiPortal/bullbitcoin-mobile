@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "خريطة",
   "recipientsListLoadError": "تعذّر تحميل المستلمين. اسحب للأسفل لإعادة المحاولة.",
-  "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
-  "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
-  "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
-  "backupWarningLoseReasonCriticalIssue": "حدوث مشكلة خطيرة في التطبيق أو الجهاز",
-  "backupWarningLoseReasonKeystore": "يقوم جهازك بإبطال مخزن المفاتيح (keystore) عند تغيير طريقة قفل الشاشة أو مصادقة الجهاز",
-  "backupWarningLoseReasonCloudRestore": "استعادة جهازك من نسخة احتياطية على السحابة",
-  "backupWarningNoRecovery": "لا توجد طريقة لاستعادة محفظتك بدون نسخة احتياطية.",
   "ledgerHelpTitle": "Ledger Troubleshooting",
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
@@ -11845,8 +11838,6 @@
   "homeActionSell": "بيع",
   "homeActionPay": "دفع",
   "homeActionTransfer": "تحويل",
-  "backupCardTitle": "احمِ بيتكوين الخاص بك.",
-  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
   "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
   "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
@@ -12367,9 +12358,6 @@
   "errorReportingAcceptButton": "قبول",
   "errorReportingCancelButton": "إلغاء",
   "errorReportingRestartSnackbar": "أعِد تشغيل التطبيق لتطبيق هذا التغيير",
-  "backupWarningTitle": "انسخ محفظتك احتياطيًا الآن",
-  "backupWarningBackupNow": "نعم",
-  "backupWarningBackupLater": "لا، أنا أتفهّم المخاطرة",
   "recipientsScreenTitle": "اختر المستلم",
   "recipientsScreenSubtitle": "لمن تدفع؟",
   "recipientsTabNew": "مستلم جديد",

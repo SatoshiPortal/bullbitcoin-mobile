@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_routes.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/passphrase_wallet/public/passphrase_wallet_routes.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
@@ -131,6 +132,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
+                  icon: Icons.password,
+                  title: context.loc.passphraseWalletSettingsTitle,
+                  onTap: () {
+                    context.pushNamed(PassphraseWalletRoute.wallets.name);
+                  },
+                ),
+                SettingsEntryItem(
                   icon: Icons.app_settings_alt,
                   title: context.loc.settingsAppSettingsTitle,
                   onTap: () {
@@ -144,7 +152,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     context.pushNamed(KeychainManifestRoutes.listName);
                   },
                 ),
-
                 SettingsEntryItem(
                   icon: Icons.map,
                   title: context.loc.settingsBtcMapTitle,

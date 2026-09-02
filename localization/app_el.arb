@@ -1,12 +1,5 @@
 {
   "settingsBtcMapTitle": "Χάρτης",
-  "backupWarningDescription": "Χωρίς αντίγραφο ασφαλείας, θα χάσετε την πρόσβαση στα bitcoin σας εάν:",
-  "backupWarningLoseReasonLostPhone": "Χάσετε το τηλέφωνό σας",
-  "backupWarningLoseReasonDeletedApp": "Διαγράψετε την εφαρμογή",
-  "backupWarningLoseReasonCriticalIssue": "Προκύψει κρίσιμο πρόβλημα στην εφαρμογή ή τη συσκευή",
-  "backupWarningLoseReasonKeystore": "Η συσκευή σας ακυρώνει το keystore όταν αλλάζετε την οθόνη κλειδώματος ή τον έλεγχο ταυτότητας της συσκευής",
-  "backupWarningLoseReasonCloudRestore": "Επαναφορά της συσκευής σας από αντίγραφο ασφαλείας στο cloud",
-  "backupWarningNoRecovery": "Δεν υπάρχει τρόπος να ανακτήσετε το πορτοφόλι σας χωρίς αντίγραφο ασφαλείας.",
   "bitboxErrorMultipleDevicesFound": "Πολλαπλές συσκευές BitBox βρέθηκαν. Παρακαλούμε βεβαιωθείτε ότι μόνο μία συσκευή είναι συνδεδεμένη.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -11959,8 +11952,6 @@
   "homeActionSell": "Πώληση",
   "homeActionPay": "Πληρωμή",
   "homeActionTransfer": "Μεταφορά",
-  "backupCardTitle": "Προστατέψτε τα bitcoin σας.",
-  "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα.",
   "mempoolCustomServerNoSsl": "Χωρίς SSL",
   "autoswapTargetBalanceLabel": "Στόχος υπολοίπου άμεσου πορτοφολιού",
   "autoswapMaximumBalanceLabel": "Μέγιστο υπόλοιπο άμεσου πορτοφολιού",
@@ -12473,9 +12464,6 @@
   "errorReportingAcceptButton": "Αποδοχή",
   "errorReportingCancelButton": "Ακύρωση",
   "errorReportingRestartSnackbar": "Επανεκκινήστε την εφαρμογή για να εφαρμοστεί αυτή η αλλαγή",
-  "backupWarningTitle": "ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ",
-  "backupWarningBackupNow": "ΝΑΙ",
-  "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
   "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
   "logsViewerDeleteTitle": "Διαγραφή αρχείων καταγραφής",
   "logsViewerDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα αρχεία καταγραφής; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",

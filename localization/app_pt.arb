@@ -1,12 +1,5 @@
 {
   "settingsBtcMapTitle": "Mapa",
-  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
-  "backupWarningLoseReasonLostPhone": "Perder o telefone",
-  "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
-  "backupWarningLoseReasonCriticalIssue": "Ocorrer um problema crítico relacionado ao aplicativo ou ao dispositivo",
-  "backupWarningLoseReasonKeystore": "O seu dispositivo invalida o keystore ao alterar a autenticação do ecrã de bloqueio ou do dispositivo",
-  "backupWarningLoseReasonCloudRestore": "Restaurar o seu dispositivo a partir de uma cópia de segurança na nuvem",
-  "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
   "translationWarningTitle": "Traduções geradas por IA",
   "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se notar erros ou quiser ajudar a melhorar as traduções, pode submeter uma correção no nosso repositório GitHub.",
   "translationWarningContributeButton": "Ajudar a melhorar traduções",
@@ -4182,18 +4175,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "SIM",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NÃO, ENTENDO O RISCO",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -4498,8 +4479,6 @@
   "homeActionSell": "Vender",
   "homeActionPay": "Pagar",
   "homeActionTransfer": "Transferir",
-  "backupCardTitle": "Proteja os seus bitcoins.",
-  "backupCardSubtitle": "Faça uma cópia de segurança da sua carteira agora.",
   "mempoolCustomServerNoSsl": "Sem SSL",
   "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
   "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",

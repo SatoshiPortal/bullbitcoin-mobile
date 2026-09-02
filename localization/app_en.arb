@@ -336,6 +336,21 @@
   "@backupSettingsScreenTitle": {
     "description": "AppBar title for backup settings screen"
   },
+  "walletRecoverySettingsTitle": "Wallet Recovery",
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "dataBackupSettingsTitle": "Data Backup",
+  "@dataBackupSettingsTitle": {
+    "description": "Settings entry and page title for wallet data backups"
+  },
+  "dataBackupNoSecretsDescription": "Data Backup preserves wallet recovery information and app data. It never contains seed phrases, private keys, or spending authority.",
+  "backupSettingsHeroBackUpTitle": "Back up your wallet",
+  "backupSettingsHeroBackUpBody": "If this phone is lost, stolen, or broken, your money is gone. Nothing can be recovered without a backup.",
+  "backupSettingsStartBackupAction": "START BACKUP",
+  "backupHealthReminderTitle": "Can you still recover your wallet?",
+  "backupHealthRecoverbullOnlyBody": "Without a physical backup, you cannot recover your wallet if the Encrypted Vault server is unavailable.",
+  "backupHealthAddPhysicalBackupAction": "ADD A PHYSICAL BACKUP",
   "settingsExchangeSettingsTitle": "Exchange Settings",
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
@@ -7710,6 +7725,10 @@
   "@backupSettingsRecoverBullSettings": {
     "description": "Button text for Recoverbull"
   },
+  "backupSettingsEncryptedVaultSettings": "Encrypted vault settings",
+  "@backupSettingsEncryptedVaultSettings": {
+    "description": "Button text for encrypted vault configuration"
+  },
   "backupWalletImportanceWarning": "Without a backup, you will eventually lose access to your money. It is critically important to do a backup.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
@@ -7725,6 +7744,10 @@
   "backupWalletEncryptedVaultTag": "Easy and simple (1 minute)",
   "@backupWalletEncryptedVaultTag": {
     "description": "Tag indicating difficulty and time for encrypted vault backup"
+  },
+  "backupWalletEncryptedVaultUsesTorTag": "Uses Tor",
+  "@backupWalletEncryptedVaultUsesTorTag": {
+    "description": "Tag indicating that encrypted vault traffic uses Tor"
   },
   "backupWalletPhysicalBackupTitle": "Physical backup",
   "@backupWalletPhysicalBackupTitle": {
@@ -12688,46 +12711,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "BACKUP YOUR WALLET NOW",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if:",
-  "@backupWarningDescription": {
-    "description": "Lead-in line above the list of ways the wallet can be lost"
-  },
-  "backupWarningLoseReasonLostPhone": "You lose your phone",
-  "@backupWarningLoseReasonLostPhone": {
-    "description": "Backup warning bullet: lost phone"
-  },
-  "backupWarningLoseReasonDeletedApp": "You delete the app",
-  "@backupWarningLoseReasonDeletedApp": {
-    "description": "Backup warning bullet: deleted app"
-  },
-  "backupWarningLoseReasonCriticalIssue": "A critical app or device issue occurs",
-  "@backupWarningLoseReasonCriticalIssue": {
-    "description": "Backup warning bullet: critical app or device issue"
-  },
-  "backupWarningLoseReasonKeystore": "Your device invalidates the keystore when changing the lockscreen/device authentication",
-  "@backupWarningLoseReasonKeystore": {
-    "description": "Backup warning bullet: keystore invalidation on lockscreen/auth change"
-  },
-  "backupWarningLoseReasonCloudRestore": "Restoring your device from a cloud backup",
-  "@backupWarningLoseReasonCloudRestore": {
-    "description": "Backup warning bullet: restoring device from a cloud backup"
-  },
-  "backupWarningNoRecovery": "There is no way to recover your wallet without a backup.",
-  "@backupWarningNoRecovery": {
-    "description": "Bold closing line of the backup warning"
-  },
-  "backupWarningBackupNow": "YES",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NO, I UNDERSTAND THE RISK",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
@@ -13552,14 +13535,6 @@
   "homeActionTransfer": "Transfer",
   "@homeActionTransfer": {
     "description": "Label for the Transfer action button on the wallet home screen"
-  },
-  "backupCardTitle": "Protect your bitcoin.",
-  "@backupCardTitle": {
-    "description": "Title of the backup reminder card on the home screen"
-  },
-  "backupCardSubtitle": "Back up your wallet now.",
-  "@backupCardSubtitle": {
-    "description": "Subtitle of the backup reminder card on the home screen"
   },
   "logsViewerDeleteTitle": "Delete logs",
   "@logsViewerDeleteTitle": {
@@ -14621,130 +14596,6 @@
   "@settingsNostrKeysSystemNsecWarningMessage": {
     "description": "Security warning shown before revealing a system Nostr private key."
   },
-  "walletBackupSettingsCancel": "Cancel",
-  "@walletBackupSettingsCancel": {
-    "description": "Cancel remote Bull backup deletion"
-  },
-  "walletBackupSettingsUnavailable": "Bull backup is temporarily unavailable.",
-  "@walletBackupSettingsUnavailable": {
-    "description": "Error when the Bull backup service cannot be reached"
-  },
-  "walletBackupSettingsDisabled": "Enable automatic Bull backup first.",
-  "@walletBackupSettingsDisabled": {
-    "description": "Error shown when backup now is requested while disabled"
-  },
-  "walletBackupSettingsUpdateRequired": "Update the app before changing this backup.",
-  "@walletBackupSettingsUpdateRequired": {
-    "description": "Error or status for a backup written by a newer app"
-  },
-  "walletBackupSettingsRecoveryBlocked": "Backup recovery needs attention.",
-  "@walletBackupSettingsRecoveryBlocked": {
-    "description": "Shown when remote wallet backup recovery was incomplete"
-  },
-  "walletBackupFileInvalid": "This backup file is invalid or belongs to another wallet",
-  "walletBackupFileReadFailure": "The backup file could not be read",
-  "walletBackupFileSaveFailure": "The backup file could not be saved",
-  "walletBackupFileTooLarge": "The backup file is too large",
-  "walletBackupSettingsServer": "Backup server",
-  "walletBackupSettingsServerUrl": "Server URL",
-  "walletBackupSettingsServerHelp": "Use HTTPS. Reset to use the Bull Bitcoin default.",
-  "walletBackupSettingsServerReset": "Reset",
-  "walletBackupSettingsServerSave": "Save",
-  "walletBackupSettingsInvalidServer": "Enter a valid HTTPS backup server URL.",
-  "@walletBackupSettingsInvalidServer": {
-    "description": "Error shown when a custom backup server URL is invalid."
-  },
-  "walletBackupSettingsServerChangeWarning": "Changing servers does not delete the encrypted backup from the previous server. Delete it first if you do not want to leave a copy there.",
-  "@walletBackupSettingsServerChangeWarning": {
-    "description": "Warning shown before changing the data backup server"
-  },
-  "walletBackupSettingsSeedMismatch": "This backup belongs to a different recovery phrase",
-  "@walletBackupSettingsSeedMismatch": {
-    "description": "Shown when a decoded Bull backup was sealed to another seed, so it cannot be recovered onto this wallet."
-  },
-  "walletBackupSettingsUnverified": "This backup could not be verified",
-  "@walletBackupSettingsUnverified": {
-    "description": "Shown when a Bull backup document fails authentication or decoding, so its contents cannot be trusted."
-  },
-  "walletBackupSettingsHeadConflict": "This backup changed on another installation",
-  "@walletBackupSettingsHeadConflict": {
-    "description": "Shown when the remote backup head moved, so this installation must reconcile before it can publish."
-  },
-  "walletBackupSettingsStorageFailure": "The app could not save recovered data",
-  "@walletBackupSettingsStorageFailure": {
-    "description": "Shown when local storage refused a read or write during a Bull backup operation."
-  },
-  "walletBackupManifestTitle": "Wallet recovery manifest",
-  "walletBackupManifestDescription": "This read-only inventory shows the wallets currently on this device and included in the next Data Backup. It contains no seed phrases, passphrases, or private keys.",
-  "walletBackupManifestSigner": "Signer",
-  "walletBackupManifestPassphrase": "Seed passphrase",
-  "walletBackupManifestPassphraseUsed": "Used",
-  "walletBackupManifestPassphraseNotUsed": "Not used",
-  "walletBackupManifestPassphraseUnknown": "Unknown",
-  "walletBackupManifestDefault": "Default wallet",
-  "walletBackupManifestBip85": "Deterministic product wallet",
-  "walletBackupManifestImportedMnemonic": "Imported mnemonic wallet",
-  "walletBackupManifestWatchOnly": "External watch-only wallet",
-  "walletBackupManifestExternalSigner": "External signer wallet",
-  "walletBackupManifestKeys": "Keys",
-  "@walletBackupManifestKeys": {},
-  "walletBackupManifestKeysOnDevice": "On this device",
-  "@walletBackupManifestKeysOnDevice": {},
-  "walletBackupManifestKeysPassphrase": "On this device but requires passphrase",
-  "@walletBackupManifestKeysPassphrase": {},
-  "walletBackupManifestKeysExternal": "External signer",
-  "@walletBackupManifestKeysExternal": {},
-  "walletBackupManifestKeysAbsent": "Watch-only",
-  "@walletBackupManifestKeysAbsent": {},
-  "walletBackupManifestKeysRequired": "Original mnemonic required",
-  "@walletBackupManifestKeysRequired": {},
-  "walletBackupManifestSourcePath": "Source path",
-  "@walletBackupManifestSourcePath": {},
-  "walletBackupManifestView": "View",
-  "@walletBackupManifestView": {},
-  "walletBackupManifestCopy": "Copy",
-  "@walletBackupManifestCopy": {},
-  "walletBackupFileUnencryptedWarning": "Export unencrypted wallet data?",
-  "walletBackupFileUnencryptedConfirmation": "This file contains public descriptors, labels, Nostr public keys, and wallet metadata. Anyone who reads it may be able to identify your wallet activity. It contains no seed phrase or private key.",
-  "walletBackupFileContinue": "Export anyway",
-  "walletBackupFileImportTitle": "Recover from a backup file",
-  "walletBackupFileImportExplanation": "The app validates the whole file. If automatic Bull backup is on and the server is reachable, you'll compare it with the server backup before choosing. Recovery restores wallet data and never deletes local wallets.",
-  "walletBackupFileChoose": "Choose file",
-  "walletBackupFileExportEncrypted": "Export encrypted",
-  "@walletBackupFileExportEncrypted": {
-    "description": "Manual data backup action that encrypts the exported file."
-  },
-  "walletBackupFileExportUnencrypted": "Export unencrypted",
-  "@walletBackupFileExportUnencrypted": {
-    "description": "Manual data backup action that exports readable JSON after confirmation."
-  },
-  "walletBackupFileImportAction": "Import",
-  "@walletBackupFileImportAction": {
-    "description": "Manual data backup import action."
-  },
-  "walletRecoverySettingsTitle": "Wallet Recovery",
-  "@walletRecoverySettingsTitle": {
-    "description": "Settings entry and page title for recovering wallet funds"
-  },
-  "dataBackupSettingsTitle": "Data Backup",
-  "@dataBackupSettingsTitle": {
-    "description": "Settings entry and page title for wallet data backups"
-  },
-  "dataBackupNoSecretsDescription": "Data Backup preserves wallet recovery information and app data. It never contains seed phrases, private keys, or spending authority.",
-  "backupSettingsHeroBackUpTitle": "Back up your wallet",
-  "backupSettingsHeroBackUpBody": "If this phone is lost, stolen, or broken, your money is gone. Nothing can be recovered without a backup.",
-  "backupSettingsStartBackupAction": "START BACKUP",
-  "backupHealthReminderTitle": "Can you still recover your wallet?",
-  "backupHealthRecoverbullOnlyBody": "Without a physical backup, you cannot recover your wallet if the Encrypted Vault server is unavailable.",
-  "backupHealthAddPhysicalBackupAction": "ADD A PHYSICAL BACKUP",
-  "backupSettingsEncryptedVaultSettings": "Encrypted vault settings",
-  "@backupSettingsEncryptedVaultSettings": {
-    "description": "Button text for encrypted vault configuration"
-  },
-  "backupWalletEncryptedVaultUsesTorTag": "Uses Tor",
-  "@backupWalletEncryptedVaultUsesTorTag": {
-    "description": "Tag indicating that encrypted vault traffic uses Tor"
-  },
   "walletBackupSettingsTitle": "Bull backup",
   "@walletBackupSettingsTitle": {
     "description": "Title for the automatic encrypted Bull backup controls"
@@ -14769,6 +14620,15 @@
   "@walletBackupSettingsNeverBackedUp": {
     "description": "Status shown before the first successful Bull backup"
   },
+  "walletBackupSettingsLastBackup": "Last backup: {date}",
+  "@walletBackupSettingsLastBackup": {
+    "description": "Status showing the last successful Bull backup time",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "walletBackupSettingsBackupNow": "Back up now",
   "@walletBackupSettingsBackupNow": {
     "description": "Button to publish the Bull backup immediately"
@@ -14785,9 +14645,29 @@
   "@walletBackupSettingsDeleteDescription": {
     "description": "Description of remote Bull backup deletion"
   },
+  "walletBackupSettingsCancel": "Cancel",
+  "@walletBackupSettingsCancel": {
+    "description": "Cancel remote Bull backup deletion"
+  },
   "walletBackupSettingsDeleteConfirm": "Delete",
   "@walletBackupSettingsDeleteConfirm": {
     "description": "Confirm remote Bull backup deletion"
+  },
+  "walletBackupSettingsUnavailable": "Bull backup is temporarily unavailable.",
+  "@walletBackupSettingsUnavailable": {
+    "description": "Error when the Bull backup service cannot be reached"
+  },
+  "walletBackupSettingsDisabled": "Enable automatic Bull backup first.",
+  "@walletBackupSettingsDisabled": {
+    "description": "Error shown when backup now is requested while disabled"
+  },
+  "walletBackupSettingsUpdateRequired": "Update the app before changing this backup.",
+  "@walletBackupSettingsUpdateRequired": {
+    "description": "Error or status for a backup written by a newer app"
+  },
+  "walletBackupSettingsRecoveryBlocked": "Backup recovery needs attention.",
+  "@walletBackupSettingsRecoveryBlocked": {
+    "description": "Shown when remote wallet backup recovery was incomplete"
   },
   "walletMetadataBackupConsentTitle": "Enable Bull backup?",
   "@walletMetadataBackupConsentTitle": {
@@ -14849,6 +14729,17 @@
   "@onboardingDataBackupEnableFailed": {
     "description": "Non-blocking warning when wallet onboarding succeeds but the selected Data Backup opt-in could not be applied."
   },
+  "backupSettingsRecoveryMethods": "Recovery methods",
+  "@backupSettingsRecoveryMethods": {
+    "description": "Heading for physical and encrypted wallet recovery methods."
+  },
+  "backupSettingsTestedOn": "Tested {date}",
+  "@backupSettingsTestedOn": {
+    "description": "Status showing when a recovery method was last tested.",
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "walletBackupContentsTitle": "Protected wallet data",
   "@walletBackupContentsTitle": {
     "description": "Heading for the data covered by wallet backup."
@@ -14864,6 +14755,12 @@
   "@walletBackupMetadataRow": {
     "description": "Navigation row to the backed-up wallet data and settings summary."
   },
+  "walletBackupFileUnencryptedWarning": "Export unencrypted wallet data?",
+  "walletBackupFileUnencryptedConfirmation": "This file contains public descriptors, labels, Nostr public keys, and wallet metadata. Anyone who reads it may be able to identify your wallet activity. It contains no seed phrase or private key.",
+  "walletBackupFileContinue": "Export anyway",
+  "walletBackupFileImportTitle": "Recover from a backup file",
+  "walletBackupFileImportExplanation": "The app validates the whole file. If automatic Bull backup is on and the server is reachable, you'll compare it with the server backup before choosing. Recovery restores wallet data and never deletes local wallets.",
+  "walletBackupFileChoose": "Choose file",
   "walletBackupFileCompareTitle": "Choose a data backup",
   "walletBackupFileDifferentExplanation": "The file and server backups differ. Review both and choose the complete backup you want to recover.",
   "walletBackupFileSameExplanation": "The file and server backups contain the same wallet data.",
@@ -14871,6 +14768,12 @@
   "walletBackupFileServerUnavailableExplanation": "The backup server could not be reached. You can still use this file now. Automatic backup will remain paused until you reconnect and finish reconciliation.",
   "walletBackupFileFileSummary": "Selected file",
   "walletBackupFileServerSummary": "Server backup",
+  "walletBackupFileSummaryCounts": "{wallets} wallets, {nostr} Nostr identities, {external} external wallets",
+  "@walletBackupFileSummaryCounts": {"placeholders": {"wallets": {"type": "int"}, "nostr": {"type": "int"}, "external": {"type": "int"}}},
+  "walletBackupFileSummaryDate": "Created {date}",
+  "@walletBackupFileSummaryDate": {"placeholders": {"date": {"type": "String"}}},
+  "walletBackupFileDifferences": "Different: {items}",
+  "@walletBackupFileDifferences": {"placeholders": {"items": {"type": "String"}}},
   "walletBackupFileExternalWallets": "External wallets",
   "walletBackupFileCancelImport": "Cancel without changing anything",
   "walletBackupFileUseServer": "Use server backup",
@@ -14884,7 +14787,13 @@
     "description": "Action that resumes comparison of an imported backup with the backup server"
   },
   "walletBackupFileExported": "Backup saved",
+  "walletBackupFileRestored": "Recovered {count} backup items",
+  "@walletBackupFileRestored": {"placeholders": {"count": {"type": "int"}}},
+  "walletBackupFileInvalid": "This backup file is invalid or belongs to another wallet",
   "walletBackupFileRecoveryFailed": "The backup file could not be recovered",
+  "walletBackupFileReadFailure": "The backup file could not be read",
+  "walletBackupFileSaveFailure": "The backup file could not be saved",
+  "walletBackupFileTooLarge": "The backup file is too large",
   "walletBackupContentsRetry": "Reload protected wallet data",
   "@walletBackupContentsRetry": {
     "description": "Retry action when local backup contents cannot be read."
@@ -14904,9 +14813,78 @@
   "@walletBackupMetadataExcluded": {
     "description": "Explanation of data intentionally absent from wallet backup."
   },
+  "walletBackupSettingsServer": "Backup server",
+  "walletBackupSettingsServerUrl": "Server URL",
+  "walletBackupSettingsServerHelp": "Use HTTPS. Reset to use the Bull Bitcoin default.",
+  "walletBackupSettingsServerReset": "Reset",
+  "walletBackupSettingsServerSave": "Save",
+  "walletBackupSettingsInvalidServer": "Enter a valid HTTPS backup server URL.",
+  "@walletBackupSettingsInvalidServer": {
+    "description": "Error shown when a custom backup server URL is invalid."
+  },
   "walletBackupMetadataAppSettings": "App settings",
   "@walletBackupMetadataAppSettings": {
     "description": "Heading for portable app settings included in wallet metadata backup"
+  },
+  "walletBackupMetadataAppSettingsValue": "{unit} · {currency} · {language} · {theme} · Hide amounts: {hideAmounts}",
+  "@walletBackupMetadataAppSettingsValue": {
+    "description": "Summary of portable display settings included in backup",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      },
+      "theme": {
+        "type": "String"
+      },
+      "hideAmounts": {
+        "type": "String"
+      }
+    }
+  },
+  "walletBackupMetadataAutoswapValue": "{status} · max balance {maxBalance} sats · trigger {triggerBalance} sats · max fee {maxFee}% · block high fees {blockHighFees} · recipient {recipient}",
+  "@walletBackupMetadataAutoswapValue": {
+    "description": "Summary of autoswap settings included in backup",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "maxBalance": {
+        "type": "int"
+      },
+      "triggerBalance": {
+        "type": "int"
+      },
+      "maxFee": {
+        "type": "double"
+      },
+      "blockHighFees": {
+        "type": "String"
+      },
+      "recipient": {
+        "type": "String"
+      }
+    }
+  },
+  "walletBackupMetadataPayjoinValue": "{status} · minimum {minimum} sats · session {sessionSeconds} seconds",
+  "@walletBackupMetadataPayjoinValue": {
+    "description": "Summary of Payjoin settings included in backup",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "minimum": {
+        "type": "int"
+      },
+      "sessionSeconds": {
+        "type": "int"
+      }
+    }
   },
   "walletBackupMetadataOn": "On",
   "@walletBackupMetadataOn": {
@@ -14920,9 +14898,156 @@
   "@walletBackupMetadataNotSet": {
     "description": "Missing optional value in wallet metadata backup settings view"
   },
+  "walletBackupMetadataElectrumValue": "{network}: {servers} · validate domains {validateDomains} · gap {stopGap} · timeout {timeout}s · retries {retry}",
+  "@walletBackupMetadataElectrumValue": {
+    "description": "One network Electrum configuration included in backup",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "servers": {
+        "type": "String"
+      },
+      "validateDomains": {
+        "type": "String"
+      },
+      "stopGap": {
+        "type": "int"
+      },
+      "timeout": {
+        "type": "int"
+      },
+      "retry": {
+        "type": "int"
+      }
+    }
+  },
+  "walletBackupMetadataMempoolValue": "{network}: {server} · fee estimation {feeEstimation}",
+  "@walletBackupMetadataMempoolValue": {
+    "description": "One network mempool configuration included in backup",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      },
+      "server": {
+        "type": "String"
+      },
+      "feeEstimation": {
+        "type": "String"
+      }
+    }
+  },
+  "walletBackupManifestRow": "Wallet recovery manifest ({count})",
+  "@walletBackupManifestRow": {
+    "description": "Navigation row to the wallet recovery manifest.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "walletBackupManifestTitle": "Wallet recovery manifest",
+  "walletBackupManifestDescription": "This read-only inventory shows the wallets currently on this device and included in the next Data Backup. It contains no seed phrases, passphrases, or private keys.",
+  "walletBackupManifestSigner": "Signer",
+  "walletBackupManifestPassphrase": "Seed passphrase",
+  "walletBackupManifestPassphraseUsed": "Used",
+  "walletBackupManifestPassphraseNotUsed": "Not used",
+  "walletBackupManifestPassphraseUnknown": "Unknown",
+  "walletBackupManifestDefault": "Default wallet",
+  "walletBackupManifestPassphraseWallet": "Passphrase Wallet",
+  "passphraseWalletSettingsTitle": "Passphrase",
+  "passphraseWalletPageTitle": "Passphrase wallets",
+  "passphraseWalletHistoryIntro": "You have created passphrase wallets in the past. Here are the ones this app is aware of.",
+  "passphraseWalletBalanceLabel": "Wallet balance",
+  "passphraseWalletCreationDateLabel": "Creation date",
+  "passphraseWalletShowHint": "Show hint",
+  "passphraseWalletEditHint": "Edit hint",
+  "passphraseWalletHintTitle": "Passphrase hint",
+  "passphraseWalletNoHint": "No hint has been saved for this wallet.",
+  "passphraseWalletForget": "Forget passphrase wallet",
+  "passphraseWalletForgetTitle": "Forget this passphrase wallet?",
+  "passphraseWalletForgetBody": "This removes the wallet descriptor, hint, and local public wallet data from this app. It does not move or destroy funds, and older backups may still contain the wallet record.",
+  "passphraseWalletInputTitle": "Enter passphrase",
+  "passphraseWalletInputHelp": "Use the in-app keyboard. Passphrases are case-sensitive and spaces and punctuation are preserved. Only printable ASCII characters are supported.",
+  "passphraseWalletEnter": "Enter passphrase",
+  "passphraseWalletLoaded": "Passphrase wallet loaded",
+  "passphraseWalletLoadedStatus": "Loaded",
+  "passphraseWalletCreateNewPassphrase": "Create new passphrase wallet",
+  "passphraseWalletShow": "Show passphrase",
+  "passphraseWalletHide": "Hide passphrase",
+  "passphraseWalletInvalid": "Enter a non-empty passphrase using printable ASCII characters only.",
+  "passphraseWalletDisclaimerTitle": "Before you continue",
+  "passphraseWalletDisclaimerBody": "Adding a passphrase creates a completely new Bitcoin wallet. You can only recover the funds in this wallet by combining your seed words (your backup) with your passphrase. If you lose your passphrase, you will never be able to recover your funds. Make sure to remember it or write it down *separately from your backup seed words*. Every time you open the app, you will have to enter your passphrase to access the bitcoins in the wallet. You can add an optional passphrase hint.",
+  "passphraseWalletOptionalHint": "Passphrase hint (optional)",
+  "passphraseWalletHintHelp": "The hint will be included in your metadata wallet backup. Do not type your actual passphrase as the hint. The hint should just help you remember it or how to recover it, in case you forget it.",
+  "passphraseWalletEditPassphrase": "Edit passphrase",
+  "passphraseWalletUnmatchedWarning": "This passphrase does not match any of the passphrase wallets you have used in this app in the past. You are about to create an entirely new wallet.",
+  "passphraseWalletCreateNew": "Create new wallet",
+  "passphraseWalletSavedNotOpened": "Wallet saved, but it could not be opened. Try unlocking it again.",
+  "passphraseWalletLoadError": "Passphrase wallets could not be loaded.",
+  "passphraseWalletOpenError": "The passphrase wallet could not be opened.",
+  "passphraseWalletSyncError": "Balance unavailable",
+  "passphraseWalletSyncing": "Checking balance…",
+  "passphraseWalletLocked": "Locked",
+  "passphraseWalletUpdateHintTitle": "Edit passphrase hint",
+  "passphraseWalletRemoveHint": "Remove hint",
+  "passphraseWalletKeyboardLetters": "ABC",
+  "passphraseWalletKeyboardSymbols": "#+=",
+  "passphraseWalletKeyboardSpace": "Space",
+  "walletBackupManifestBip85": "Deterministic product wallet",
+  "walletBackupManifestImportedMnemonic": "Imported mnemonic wallet",
+  "walletBackupManifestWatchOnly": "External watch-only wallet",
+  "walletBackupManifestExternalSigner": "External signer wallet",
+  "walletBackupManifestKeys": "Keys",
+  "@walletBackupManifestKeys": {},
+  "walletBackupManifestKeysOnDevice": "On this device",
+  "@walletBackupManifestKeysOnDevice": {},
+  "walletBackupManifestKeysPassphrase": "On this device but requires passphrase",
+  "@walletBackupManifestKeysPassphrase": {},
+  "walletBackupManifestKeysExternal": "External signer",
+  "@walletBackupManifestKeysExternal": {},
+  "walletBackupManifestKeysAbsent": "Watch-only",
+  "@walletBackupManifestKeysAbsent": {},
+  "walletBackupManifestKeysRequired": "Original mnemonic required",
+  "@walletBackupManifestKeysRequired": {},
+  "walletBackupManifestSourcePath": "Source path",
+  "@walletBackupManifestSourcePath": {},
+  "walletBackupManifestView": "View",
+  "@walletBackupManifestView": {},
+  "walletBackupManifestCopy": "Copy",
+  "@walletBackupManifestCopy": {},
   "walletBackupFileAutomaticDisabledExplanation": "Automatic Bull backup is off. You can recover the selected file without contacting a backup server.",
   "@walletBackupFileAutomaticDisabledExplanation": {
     "description": "Explanation shown when manual recovery comparison skips the server because automatic backup is disabled."
+  },
+  "walletBackupFileProtectedDataCounts": "{labels} labels, {frozen} frozen coins, {preferences} wallet preferences",
+  "@walletBackupFileProtectedDataCounts": {
+    "description": "Exact protected-data counts in a backup snapshot comparison.",
+    "placeholders": {
+      "labels": {
+        "type": "int"
+      },
+      "frozen": {
+        "type": "int"
+      },
+      "preferences": {
+        "type": "int"
+      }
+    }
+  },
+  "walletBackupSettingsServerChangeWarning": "Changing servers does not delete the encrypted backup from the previous server. Delete it first if you do not want to leave a copy there.",
+  "@walletBackupSettingsServerChangeWarning": {
+    "description": "Warning shown before changing the data backup server"
+  },
+  "walletBackupFileExportEncrypted": "Export encrypted",
+  "@walletBackupFileExportEncrypted": {
+    "description": "Manual data backup action that encrypts the exported file."
+  },
+  "walletBackupFileExportUnencrypted": "Export unencrypted",
+  "@walletBackupFileExportUnencrypted": {
+    "description": "Manual data backup action that exports readable JSON after confirmation."
+  },
+  "walletBackupFileImportAction": "Import",
+  "@walletBackupFileImportAction": {
+    "description": "Manual data backup import action."
   },
   "backupReminderNoBackupTitle": "BACKUP YOUR WALLET NOW",
   "@backupReminderNoBackupTitle": {
@@ -15040,150 +15165,32 @@
   "@backupReminderDismissForeverConfirm": {
     "description": "Confirmation action that permanently suppresses backup reminders"
   },
-  "walletBackupSettingsLastBackup": "Last backup: {date}",
-  "@walletBackupSettingsLastBackup": {
-    "description": "Status showing the last successful Bull backup time",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
+  "passphraseWalletDetailsTitle": "Wallet details",
+  "@passphraseWalletDetailsTitle": {
+    "description": "Title of the passphrase wallet label and hint screen"
   },
-  "backupSettingsTestedOn": "Tested {date}",
-  "@backupSettingsTestedOn": {
-    "description": "Status showing when a recovery method was last tested.",
-    "placeholders": {
-      "date": { "type": "String" }
-    }
+  "passphraseWalletOptionalLabel": "Wallet label (optional)",
+  "@passphraseWalletOptionalLabel": {
+    "description": "Label for the optional passphrase wallet name field"
   },
-  "walletBackupFileSummaryCounts": "{wallets} wallets, {nostr} Nostr identities, {external} external wallets",
-  "@walletBackupFileSummaryCounts": {"placeholders": {"wallets": {"type": "int"}, "nostr": {"type": "int"}, "external": {"type": "int"}}},
-  "walletBackupFileSummaryDate": "Created {date}",
-  "@walletBackupFileSummaryDate": {"placeholders": {"date": {"type": "String"}}},
-  "walletBackupFileDifferences": "Different: {items}",
-  "@walletBackupFileDifferences": {"placeholders": {"items": {"type": "String"}}},
-  "walletBackupFileRestored": "Recovered {count} backup items",
-  "@walletBackupFileRestored": {"placeholders": {"count": {"type": "int"}}},
-  "walletBackupMetadataAppSettingsValue": "{unit} · {currency} · {language} · {theme} · Hide amounts: {hideAmounts}",
-  "@walletBackupMetadataAppSettingsValue": {
-    "description": "Summary of portable display settings included in backup",
-    "placeholders": {
-      "unit": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      },
-      "language": {
-        "type": "String"
-      },
-      "theme": {
-        "type": "String"
-      },
-      "hideAmounts": {
-        "type": "String"
-      }
-    }
+  "passphraseWalletLabelHelp": "Up to 50 characters. This name is shown on Home and in your wallet backup.",
+  "@passphraseWalletLabelHelp": {
+    "description": "Help text for the passphrase wallet label field"
   },
-  "walletBackupMetadataAutoswapValue": "{status} · max balance {maxBalance} sats · trigger {triggerBalance} sats · max fee {maxFee}% · block high fees {blockHighFees} · recipient {recipient}",
-  "@walletBackupMetadataAutoswapValue": {
-    "description": "Summary of autoswap settings included in backup",
-    "placeholders": {
-      "status": {
-        "type": "String"
-      },
-      "maxBalance": {
-        "type": "int"
-      },
-      "triggerBalance": {
-        "type": "int"
-      },
-      "maxFee": {
-        "type": "double"
-      },
-      "blockHighFees": {
-        "type": "String"
-      },
-      "recipient": {
-        "type": "String"
-      }
-    }
+  "walletBackupSettingsSeedMismatch": "This backup belongs to a different recovery phrase",
+  "@walletBackupSettingsSeedMismatch": {
+    "description": "Shown when a decoded Bull backup was sealed to another seed, so it cannot be recovered onto this wallet."
   },
-  "walletBackupMetadataPayjoinValue": "{status} · minimum {minimum} sats · session {sessionSeconds} seconds",
-  "@walletBackupMetadataPayjoinValue": {
-    "description": "Summary of Payjoin settings included in backup",
-    "placeholders": {
-      "status": {
-        "type": "String"
-      },
-      "minimum": {
-        "type": "int"
-      },
-      "sessionSeconds": {
-        "type": "int"
-      }
-    }
+  "walletBackupSettingsUnverified": "This backup could not be verified",
+  "@walletBackupSettingsUnverified": {
+    "description": "Shown when a Bull backup document fails authentication or decoding, so its contents cannot be trusted."
   },
-  "walletBackupMetadataElectrumValue": "{network}: {servers} · validate domains {validateDomains} · gap {stopGap} · timeout {timeout}s · retries {retry}",
-  "@walletBackupMetadataElectrumValue": {
-    "description": "One network Electrum configuration included in backup",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "servers": {
-        "type": "String"
-      },
-      "validateDomains": {
-        "type": "String"
-      },
-      "stopGap": {
-        "type": "int"
-      },
-      "timeout": {
-        "type": "int"
-      },
-      "retry": {
-        "type": "int"
-      }
-    }
+  "walletBackupSettingsHeadConflict": "This backup changed on another installation",
+  "@walletBackupSettingsHeadConflict": {
+    "description": "Shown when the remote backup head moved, so this installation must reconcile before it can publish."
   },
-  "walletBackupMetadataMempoolValue": "{network}: {server} · fee estimation {feeEstimation}",
-  "@walletBackupMetadataMempoolValue": {
-    "description": "One network mempool configuration included in backup",
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "server": {
-        "type": "String"
-      },
-      "feeEstimation": {
-        "type": "String"
-      }
-    }
-  },
-  "walletBackupManifestRow": "Wallet recovery manifest ({count})",
-  "@walletBackupManifestRow": {
-    "description": "Navigation row to the wallet recovery manifest.",
-    "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
-  "walletBackupFileProtectedDataCounts": "{labels} labels, {frozen} frozen coins, {preferences} wallet preferences",
-  "@walletBackupFileProtectedDataCounts": {
-    "description": "Exact protected-data counts in a backup snapshot comparison.",
-    "placeholders": {
-      "labels": {
-        "type": "int"
-      },
-      "frozen": {
-        "type": "int"
-      },
-      "preferences": {
-        "type": "int"
-      }
-    }
-  },
-  "walletBackupManifestPassphraseWallet": "Passphrase Wallet"
+  "walletBackupSettingsStorageFailure": "The app could not save recovered data",
+  "@walletBackupSettingsStorageFailure": {
+    "description": "Shown when local storage refused a read or write during a Bull backup operation."
+  }
 }

@@ -26,6 +26,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -34,8 +35,12 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -67,6 +72,8 @@ void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
+  late _MockSeedDatasource seedDatasource;
+  late WalletSigningMaterialResolver signingMaterial;
   late BitcoinWalletRepository repository;
 
   const metadata = WalletMetadataModel(
@@ -98,11 +105,16 @@ void main() {
     metadataDatasource = _MockWalletMetadataDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
+    seedDatasource = _MockSeedDatasource();
+    signingMaterial = WalletSigningMaterialResolver(
+      seedDatasource: seedDatasource,
+      session: WalletUnlockSession(),
+    );
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: _MockSeedDatasource(),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
+      signingMaterialResolver: signingMaterial,
     );
 
     when(
@@ -349,5 +361,36 @@ void main() {
 
       expect(capturedReplaceByFee(), isFalse);
     });
+  });
+
+  test('uses only the volatile session for a passphrase wallet', () async {
+    when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
+      (_) async =>
+          metadata.copyWith(provenance: WalletProvenance.defaultSeedPassphrase),
+    );
+
+    await expectLater(
+      repository.getPrivateWallet(walletId: _walletId),
+      throwsA(isA<PassphraseWalletLockedException>()),
+    );
+
+    signingMaterial.loadPrivateCapabilityIfCurrent(
+      generation: signingMaterial.beginPrivateCapabilityMount(),
+      walletId: _walletId,
+      seed:
+          Seed.mnemonic(
+                mnemonicWords: const ['abandon', 'ability'],
+                passphrase: 'exact passphrase',
+                bytes: Uint8List.fromList([1, 2]),
+                masterFingerprint: metadata.masterFingerprint,
+              )
+              as MnemonicSeed,
+    );
+
+    final wallet = await repository.getPrivateWallet(walletId: _walletId);
+
+    expect(wallet.mnemonic, 'abandon ability');
+    expect(wallet.passphrase, 'exact passphrase');
+    verifyNever(() => seedDatasource.get(any()));
   });
 }

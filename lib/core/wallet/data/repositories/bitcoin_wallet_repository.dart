@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -14,21 +12,22 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final FrozenWalletUtxoDatasource _frozenUtxos;
+  final WalletSigningMaterialResolver _signingMaterial;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
-    required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-  }) : _seed = seedDatasource,
-       _bdkWallet = bdkWalletDatasource,
-       _frozenUtxos = frozenWalletUtxoDatasource;
+    required WalletSigningMaterialResolver signingMaterialResolver,
+  }) : _bdkWallet = bdkWalletDatasource,
+       _frozenUtxos = frozenWalletUtxoDatasource,
+       _signingMaterial = signingMaterialResolver;
 
   @override
   Future<String> buildPsbt({
@@ -234,15 +233,13 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final seed =
-        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
-    final mnemonic = seed.mnemonicWords.join(' ');
+    final material = await _signingMaterial.resolve(metadata);
 
     final wallet =
         WalletModel.privateBdk(
               id: metadata.id,
-              mnemonic: mnemonic,
-              passphrase: seed.passphrase,
+              mnemonic: material.mnemonic,
+              passphrase: material.passphrase,
               scriptType: metadata.scriptType,
               isTestnet: metadata.isTestnet,
             )

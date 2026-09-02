@@ -4,6 +4,10 @@ import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/domain/backup_reminder.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_reminder_listener.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
@@ -27,7 +31,9 @@ import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
+import 'package:bb_mobile/features/recoverbull/public/recoverbull_routes.dart';
+import 'package:bb_mobile/features/recoverbull/router.dart'
+    show RecoverBullRouter;
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
@@ -38,7 +44,8 @@ import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -73,6 +80,16 @@ class AppRouter {
           final isSupportChat =
               location.contains('/support-chat') ||
               location.contains('/login-support');
+          if (location == WalletRoute.walletHome.path) {
+            final walletState = context.read<WalletBloc>().state;
+            if (walletState.status == WalletStatus.success) {
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => context.read<BackupReminderCubit>().evaluate(
+                  walletState.wallets,
+                ),
+              );
+            }
+          }
 
           return MultiBlocProvider(
             providers: [
@@ -86,59 +103,69 @@ class AppRouter {
               onPopInvokedWithResult: (didPop, _) {
                 context.goNamed(WalletRoute.walletHome.name);
               },
-              child: LegacyStorageWarningOverlay(
-                child: BackupWarningOverlay(
-                  child: Scaffold(
-                    // The app bar of the exchange tab is rendered by the
-                    // ExchangeHomeScreen itself, as an overlay.
-                    appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
-                    extendBodyBehindAppBar: true,
-                    body: child,
-                    bottomNavigationBar: isSupportChat
-                        ? null
-                        : BottomNavigationBar(
-                            currentIndex: tabIndex,
-                            onTap: (index) {
-                              if (index == 0) {
-                                context.goNamed(WalletRoute.walletHome.name);
-                              } else {
-                                // Exchange tab
-                                if (Platform.isIOS) {
-                                  final isSuperuser =
-                                      context
-                                          .read<SettingsCubit>()
-                                          .state
-                                          .isSuperuser ??
-                                      false;
-                                  if (isSuperuser) {
+              child: BlocListener<WalletBloc, WalletState>(
+                listenWhen: (previous, current) =>
+                    location == WalletRoute.walletHome.path &&
+                    previous.wallets != current.wallets &&
+                    current.status == WalletStatus.success,
+                listener: (context, state) =>
+                    context.read<BackupReminderCubit>().evaluate(state.wallets),
+                child: BackupReminderListener(
+                  onAction: (reminder) =>
+                      _openBackupReminder(context, reminder),
+                  child: LegacyStorageWarningOverlay(
+                    child: Scaffold(
+                      // The app bar of the exchange tab is rendered by the
+                      // ExchangeHomeScreen itself, as an overlay.
+                      appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+                      extendBodyBehindAppBar: true,
+                      body: child,
+                      bottomNavigationBar: isSupportChat
+                          ? null
+                          : BottomNavigationBar(
+                              currentIndex: tabIndex,
+                              onTap: (index) {
+                                if (index == 0) {
+                                  context.goNamed(WalletRoute.walletHome.name);
+                                } else {
+                                  // Exchange tab
+                                  if (Platform.isIOS) {
+                                    final isSuperuser =
+                                        context
+                                            .read<SettingsCubit>()
+                                            .state
+                                            .isSuperuser ??
+                                        false;
+                                    if (isSuperuser) {
+                                      context.goNamed(
+                                        ExchangeRoute.exchangeHome.name,
+                                      );
+                                    } else {
+                                      context.goNamed(
+                                        ExchangeRoute.exchangeLanding.name,
+                                      );
+                                    }
+                                  } else {
                                     context.goNamed(
                                       ExchangeRoute.exchangeHome.name,
                                     );
-                                  } else {
-                                    context.goNamed(
-                                      ExchangeRoute.exchangeLanding.name,
-                                    );
                                   }
-                                } else {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeHome.name,
-                                  );
                                 }
-                              }
-                            },
-                            items: [
-                              BottomNavigationBarItem(
-                                icon: const Icon(Icons.currency_bitcoin),
-                                label: context.loc.navigationTabWallet,
-                                backgroundColor: context.appColors.background,
-                              ),
-                              BottomNavigationBarItem(
-                                icon: const Icon(Icons.attach_money),
-                                label: context.loc.navigationTabExchange,
-                                backgroundColor: context.appColors.background,
-                              ),
-                            ],
-                          ),
+                              },
+                              items: [
+                                BottomNavigationBarItem(
+                                  icon: const Icon(Icons.currency_bitcoin),
+                                  label: context.loc.navigationTabWallet,
+                                  backgroundColor: context.appColors.background,
+                                ),
+                                BottomNavigationBarItem(
+                                  icon: const Icon(Icons.attach_money),
+                                  label: context.loc.navigationTabExchange,
+                                  backgroundColor: context.appColors.background,
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
               ),
@@ -185,4 +212,36 @@ class AppRouter {
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+
+  static void _openBackupReminder(
+    BuildContext context,
+    BackupReminder reminder,
+  ) {
+    switch (reminder) {
+      case BackupReminder.noTestedBackup:
+        context.pushNamed(
+          BackupSettingsSubroute.backupOptions.name,
+          extra: BackupSettingsFlow.backup,
+        );
+      case BackupReminder.largeBalanceNeedsPhysicalBackup ||
+          BackupReminder.addPhysicalBackup:
+        context.pushNamed(
+          TestWalletBackupRoute.testPhysicalBackupFlow.name,
+          extra: TestPhysicalBackupFlow.backup,
+        );
+      case BackupReminder.testPhysicalBackup:
+        context.pushNamed(
+          TestWalletBackupRoute.testPhysicalBackupFlow.name,
+          extra: TestPhysicalBackupFlow.verify,
+        );
+      case BackupReminder.testEncryptedVault:
+        context.pushNamed(
+          RecoverBullRoute.recoverbullFlows.name,
+          extra: RecoverBullFlowsExtra(
+            flow: RecoverBullFlow.testVault,
+            vault: null,
+          ),
+        );
+    }
+  }
 }

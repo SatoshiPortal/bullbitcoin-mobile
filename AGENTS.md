@@ -198,6 +198,11 @@ Rules:
 - **Tooling:** `bloc_test` for blocs/cubits, `mocktail`/`mockito` for collaborators; prefer **fakes** for repositories/datasources — the abstract interfaces exist precisely so you can swap a real implementation for a test double.
 - `make unit-test` for the test you wrote. Don't claim done until it's green.
 - Integration tests live in `integration_test/` and need device/.env fixtures.
+- **`make integration-test` uninstalls the app at teardown**, and the APK it
+  leaves in `build/app/outputs/flutter-apk/` has `all_test.dart` as its Dart
+  entrypoint — installing that APK yields a process that starts a Dart VM and
+  never renders a frame. For a runnable device build, rebuild with
+  `fvm flutter build apk --debug --flavor production` first.
 
 ## Dependencies (pubspec)
 

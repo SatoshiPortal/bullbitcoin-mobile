@@ -5,9 +5,7 @@ import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubi
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_settings_screen.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_routes.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -42,9 +40,10 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_scr
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/passphrase_wallet/public/passphrase_wallet_routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -211,6 +210,7 @@ class SettingsRouter {
         builder: (context, state) => const ThemeSettingsScreen(),
       ),
       KeychainManifestRoutes.route,
+      PassphraseWalletRoutes.route,
 
       GoRoute(
         path: SettingsRoute.pinCode.path,

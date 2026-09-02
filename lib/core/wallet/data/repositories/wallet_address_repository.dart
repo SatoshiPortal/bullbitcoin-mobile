@@ -8,6 +8,8 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 
 class WalletAddressRepository {
@@ -15,14 +17,17 @@ class WalletAddressRepository {
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final LabelsFacade _labelsFacade;
+  final WalletSigningMaterialResolver _signingMaterial;
 
   WalletAddressRepository({
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._labelsFacade,
+    required WalletSigningMaterialResolver signingMaterialResolver,
   }) : _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource;
+       _lwkWallet = lwkWalletDatasource,
+       _signingMaterial = signingMaterialResolver;
 
   Future<WalletAddress> getLastRevealedReceiveAddress({
     required String walletId,
@@ -34,6 +39,7 @@ class WalletAddressRepository {
     if (metadata == null) {
       throw WalletError.notFound(walletId);
     }
+    _ensureUnlocked(metadata.provenance, walletId);
 
     final walletModel = WalletModel.fromMetadata(metadata);
 
@@ -94,6 +100,7 @@ class WalletAddressRepository {
     if (metadata == null) {
       throw WalletError.notFound(walletId);
     }
+    _ensureUnlocked(metadata.provenance, walletId);
 
     final walletModel = WalletModel.fromMetadata(metadata);
     int index;
@@ -164,6 +171,7 @@ class WalletAddressRepository {
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (walletMetadata == null) throw WalletError.notFound(walletId);
+    _ensureUnlocked(walletMetadata.provenance, walletId);
 
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
@@ -282,6 +290,7 @@ class WalletAddressRepository {
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (walletMetadata == null) throw WalletError.notFound(walletId);
+    _ensureUnlocked(walletMetadata.provenance, walletId);
 
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
@@ -341,6 +350,7 @@ class WalletAddressRepository {
     if (metadata == null) {
       throw WalletError.notFound(walletId);
     }
+    _ensureUnlocked(metadata.provenance, walletId);
 
     final walletModel = WalletModel.fromMetadata(metadata);
     String address;
@@ -370,4 +380,10 @@ class WalletAddressRepository {
     final labels = await _labelsFacade.fetchByReference(address);
     return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
   }
+
+  void _ensureUnlocked(WalletProvenance provenance, String walletId) =>
+      _signingMaterial.requirePrivateCapability(
+        provenance: provenance,
+        walletId: walletId,
+      );
 }

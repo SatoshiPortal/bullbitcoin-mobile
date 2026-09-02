@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,16 +12,11 @@ class HomeWarnings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WalletBloc, WalletState>(
-      buildWhen: (previous, current) =>
-          previous.hasNoBackup() != current.hasNoBackup() ||
-          previous.isOnLegacyStorage != current.isOnLegacyStorage ||
-          previous.warnings != current.warnings,
+      buildWhen: (previous, current) => previous.warnings != current.warnings,
       builder: (context, state) {
-        final showBackupWarning =
-            state.hasNoBackup() && !state.isOnLegacyStorage;
         final serverWarning = state.warnings;
 
-        if (!showBackupWarning && serverWarning.isEmpty) {
+        if (serverWarning.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -32,13 +25,6 @@ class HomeWarnings extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (showBackupWarning)
-                BackupCard(
-                  onTap: () => context.pushNamed(
-                    BackupSettingsSubroute.backupOptions.name,
-                  ),
-                ),
-
               for (final warning in serverWarning) ...[
                 const Gap(5),
                 InfoCard(

@@ -1,13 +1,6 @@
 {
   "settingsBtcMapTitle": "نقشه",
   "recipientsListLoadError": "بارگیری گیرندگان ممکن نشد. برای تلاش مجدد به پایین بکشید.",
-  "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
-  "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
-  "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
-  "backupWarningLoseReasonCriticalIssue": "مشکل جدی در برنامه یا دستگاه رخ دهد",
-  "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
-  "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
-  "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
   "settingsTelegramLabel": "تلگرام",
   "@settingsTelegramLabel": {
     "description": "Label for the Telegram link in settings"
@@ -11841,8 +11834,6 @@
   "homeActionSell": "فروش",
   "homeActionPay": "پرداخت",
   "homeActionTransfer": "انتقال",
-  "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
-  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
   "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
   "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
@@ -12363,9 +12354,6 @@
   "errorReportingAcceptButton": "پذیرفتن",
   "errorReportingCancelButton": "لغو",
   "errorReportingRestartSnackbar": "برای اعمال این تغییر، برنامه را دوباره راه‌اندازی کنید",
-  "backupWarningTitle": "همین حالا از کیف پول خود پشتیبان بگیرید",
-  "backupWarningBackupNow": "بله",
-  "backupWarningBackupLater": "خیر، ریسک را می‌پذیرم",
   "transactionSwapOpenWithin24h": "برای تکمیل مبادله‌ی خود، ظرف ۲۴ ساعت برنامه را باز کنید.",
   "recipientsScreenTitle": "انتخاب گیرنده",
   "recipientsScreenSubtitle": "به چه کسی پرداخت می‌کنید؟",
