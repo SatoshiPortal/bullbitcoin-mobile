@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/transactions/data/datasources/send_timestamp_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
@@ -37,10 +39,17 @@ class BlockchainLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    if (!locator.isRegistered<SendTimestampDatasource>()) {
+      locator.registerLazySingleton<SendTimestampDatasource>(
+        () => SendTimestampDatasource(db: locator<SqliteDatabase>()),
+      );
+    }
+
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
       () => BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        sendTimestampDatasource: locator<SendTimestampDatasource>(),
       ),
     );
 
@@ -48,6 +57,7 @@ class BlockchainLocator {
       () => BroadcastLiquidTransactionUsecase(
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        sendTimestampDatasource: locator<SendTimestampDatasource>(),
       ),
     );
   }
