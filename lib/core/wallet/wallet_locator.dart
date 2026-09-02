@@ -39,6 +39,17 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_preferences_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_preferences_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/apply_recovered_wallet_preferences_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_frozen_wallet_outpoints_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_definitions_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_preferences_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/restore_frozen_wallet_outpoints_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/restore_wallet_definition_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_catalog_changes_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_preference_changes_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_utxo_freeze_changes_usecase.dart';
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -94,6 +105,10 @@ class WalletLocator {
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
+    locator.registerLazySingleton<WalletPreferencesRepository>(
+      () =>
+          WalletPreferencesRepositoryImpl(locator<WalletMetadataDatasource>()),
+    );
 
     locator.registerLazySingleton<WalletAddressRepository>(
       () => WalletAddressRepository(
@@ -116,6 +131,39 @@ class WalletLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<GetWalletDefinitionsUsecase>(
+      () => GetWalletDefinitionsUsecase(locator<WalletRepository>()),
+    );
+    locator.registerFactory<RestoreWalletDefinitionUsecase>(
+      () => RestoreWalletDefinitionUsecase(locator<WalletRepository>()),
+    );
+    locator.registerFactory<WatchWalletCatalogChangesUsecase>(
+      () => WatchWalletCatalogChangesUsecase(locator<WalletRepository>()),
+    );
+    locator.registerFactory<ApplyRecoveredWalletPreferencesUsecase>(
+      () => ApplyRecoveredWalletPreferencesUsecase(
+        locator<WalletPreferencesRepository>(),
+      ),
+    );
+    locator.registerFactory<GetWalletPreferencesUsecase>(
+      () => GetWalletPreferencesUsecase(locator<WalletPreferencesRepository>()),
+    );
+    locator.registerFactory<WatchWalletPreferenceChangesUsecase>(
+      () => WatchWalletPreferenceChangesUsecase(
+        locator<WalletPreferencesRepository>(),
+      ),
+    );
+    locator.registerFactory<GetFrozenWalletOutpointsUsecase>(
+      () => GetFrozenWalletOutpointsUsecase(locator<WalletUtxoRepository>()),
+    );
+    locator.registerFactory<RestoreFrozenWalletOutpointsUsecase>(
+      () =>
+          RestoreFrozenWalletOutpointsUsecase(locator<WalletUtxoRepository>()),
+    );
+    locator.registerFactory<WatchWalletUtxoFreezeChangesUsecase>(
+      () =>
+          WatchWalletUtxoFreezeChangesUsecase(locator<WalletUtxoRepository>()),
+    );
     locator.registerFactory<CreateDefaultWalletsUsecase>(
       () => CreateDefaultWalletsUsecase(
         seedRepository: locator<SeedRepository>(),

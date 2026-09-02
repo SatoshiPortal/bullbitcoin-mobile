@@ -5,9 +5,11 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exceptio
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -18,13 +20,15 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/seed_derived_wallet_recovery_fact.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_definition_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 
-class WalletRepository {
+class WalletRepository implements WalletDefinitionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -57,6 +61,9 @@ class WalletRepository {
 
   Stream<ElectrumSyncResult> get electrumSyncResultStream =>
       _electrumSyncResultController.stream;
+
+  @override
+  Stream<void> get catalogChanges => _walletMetadataDatasource.catalogChanges;
 
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
@@ -124,9 +131,19 @@ class WalletRepository {
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
+      provenance: metadata.provenance,
       balanceSat: balance.totalSat,
       confirmedBalanceSat: balance.confirmedSat,
     );
+  }
+
+  Future<void> updateWalletLabel({
+    required String walletId,
+    required String label,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw StateError('Wallet metadata not found');
+    await _walletMetadataDatasource.store(metadata.copyWith(label: label));
   }
 
   Future<Wallet> importDescriptor({
@@ -166,6 +183,7 @@ class WalletRepository {
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
+      provenance: metadata.provenance,
       balanceSat: balance.totalSat,
       confirmedBalanceSat: balance.confirmedSat,
     );
@@ -214,6 +232,7 @@ class WalletRepository {
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
+      provenance: metadata.provenance,
       balanceSat: balance.totalSat,
       confirmedBalanceSat: balance.confirmedSat,
     );
@@ -245,6 +264,7 @@ class WalletRepository {
       internalPublicDescriptor: metadata.internalPublicDescriptor,
       signer: metadata.signer.toEntity(),
       signerDevice: metadata.signerDevice?.toEntity(),
+      provenance: metadata.provenance,
       balanceSat: balance.totalSat,
       confirmedBalanceSat: balance.confirmedSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
@@ -307,6 +327,7 @@ class WalletRepository {
             internalPublicDescriptor: entry.value.internalPublicDescriptor,
             signer: entry.value.signer.toEntity(),
             signerDevice: entry.value.signerDevice?.toEntity(),
+            provenance: entry.value.provenance,
             balanceSat: balances[entry.key].totalSat,
             confirmedBalanceSat: balances[entry.key].confirmedSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
@@ -342,8 +363,51 @@ class WalletRepository {
         .toList(growable: false);
   }
 
+  Future<
+    List<({DateTime? latestEncryptedBackup, DateTime? latestPhysicalBackup})>
+  >
+  getDefaultBitcoinWalletBackupStatuses({
+    required Environment environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              wallet.isMainnet == environment.isMainnet,
+        )
+        .map(
+          (wallet) => (
+            latestEncryptedBackup: wallet.latestEncryptedBackup == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(
+                    wallet.latestEncryptedBackup!,
+                  ),
+            latestPhysicalBackup: wallet.latestPhysicalBackup == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(
+                    wallet.latestPhysicalBackup!,
+                  ),
+          ),
+        )
+        .toList(growable: false);
+  }
+
   Future<bool> containsWallet(String walletId) async =>
       await _walletMetadataDatasource.fetch(walletId) != null;
+
+  @override
+  Future<List<WalletDefinition>> getWalletDefinitions() async =>
+      (await _walletMetadataDatasource.fetchAll())
+          .where(
+            (metadata) =>
+                metadata.isBitcoin &&
+                (metadata.provenance == WalletProvenance.watchOnly ||
+                    metadata.provenance == WalletProvenance.externalSigner),
+          )
+          .map(_definitionFromMetadata)
+          .toList(growable: false);
 
   Future<List<SeedDerivedWalletRecoveryFact>>
   getSeedDerivedWalletRecoveryFacts() async =>
@@ -372,6 +436,75 @@ class WalletRepository {
           metadata.provenance == WalletProvenance.importedMnemonic)
         metadata.id,
   };
+
+  @override
+  Future<WalletDefinitionRestoreResult> restoreWalletDefinition(
+    WalletDefinition definition,
+  ) async {
+    if (!definition.network.isBitcoin) {
+      throw const FormatException('Only Bitcoin descriptors are supported');
+    }
+    final expected = _canonicalDefinition(definition);
+    final existing = await _walletMetadataDatasource.fetch(
+      definition.walletRef,
+    );
+    if (existing != null) {
+      final local = _canonicalDefinition(_definitionFromMetadata(existing));
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status:
+            local.hasSameDescriptor(expected) &&
+                local.provenance == expected.provenance
+            ? WalletDefinitionRestoreStatus.alreadyPresent
+            : WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+    if (expected.provenance.recoverableFromSeed) {
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status: WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+
+    final WatchOnlyWalletEntity parsed;
+    try {
+      parsed = await WatchOnlyWalletEntity.parse(
+        definition.descriptor,
+        signerDevice: definition.signerDevice,
+      );
+    } on String {
+      throw const FormatException('Wallet descriptor is not importable');
+    }
+    if (parsed is! WatchOnlyDescriptorEntity ||
+        parsed.network != definition.network) {
+      throw const FormatException('Wallet definition does not match import');
+    }
+    final input = parsed.copyWith(
+      signer: definition.provenance == WalletProvenance.defaultSeedPassphrase
+          ? SignerEntity.local
+          : definition.signerDevice == null
+          ? SignerEntity.none
+          : SignerEntity.remote,
+      signerDevice: definition.signerDevice,
+    );
+    final metadata = await WalletMetadataService.fromDescriptor(
+      input,
+      birthday: definition.birthday,
+      provenance: definition.provenance,
+    );
+    final restored = _canonicalDefinition(_definitionFromMetadata(metadata));
+    if (metadata.id != definition.walletRef ||
+        !restored.hasSameDescriptor(expected)) {
+      throw const FormatException('Wallet definition round trip changed');
+    }
+
+    await _getBalance(metadata);
+    await _walletMetadataDatasource.store(metadata);
+    return WalletDefinitionRestoreResult(
+      walletRef: metadata.id,
+      status: WalletDefinitionRestoreStatus.created,
+    );
+  }
 
   Future<bool> matchesSeedDerivedRecoveryIdentity({
     required String walletId,
@@ -645,6 +778,33 @@ class WalletRepository {
     }
   }
 }
+
+WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
+    WalletDefinition(
+      walletRef: metadata.id,
+      network: metadata.network,
+      descriptor: DescriptorDerivation.combinePublicBitcoinDescriptors(
+        externalDescriptor: metadata.externalPublicDescriptor,
+        internalDescriptor: metadata.internalPublicDescriptor,
+        network: metadata.network,
+      ),
+      signerDevice: metadata.signerDevice?.toEntity(),
+      birthday: metadata.birthday,
+      provenance: metadata.provenance,
+    );
+
+WalletDefinition _canonicalDefinition(WalletDefinition definition) =>
+    WalletDefinition(
+      walletRef: definition.walletRef,
+      network: definition.network,
+      descriptor: DescriptorDerivation.canonicalCombinedPublicBitcoinDescriptor(
+        definition.descriptor,
+        definition.network,
+      ),
+      signerDevice: definition.signerDevice,
+      birthday: definition.birthday,
+      provenance: definition.provenance,
+    );
 
 String _recoveryPath(WalletMetadataModel metadata) {
   final origin = metadata.decodeOrigin;
