@@ -334,6 +334,49 @@ void main() {
   });
 
   test(
+    'maps unavailable selected coins in the non-cached rebuild path',
+    () async {
+      final selected = _bitcoinUtxo('selected-tx');
+      when(
+        () => prepareBitcoin.execute(
+          walletId: 'wallet-1',
+          address: 'tb1qreceive',
+          amountSat: 1000,
+          networkFee: any(named: 'networkFee'),
+          drain: false,
+          selectedInputs: [selected],
+          replaceByFee: true,
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+          toWallet: _destinationWallet(),
+          receiveAddress: 'tb1qreceive',
+          amount: '1000',
+          selectedUtxos: [selected],
+          signedPsbt: 'stale-psbt',
+          bitcoinNetworkFees: _feeOptions(),
+        ),
+      );
+
+      bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.fastest));
+      await bloc.stream.firstWhere(
+        (state) => state.buildTransactionException != null,
+      );
+
+      expect(
+        bloc.state.buildTransactionException?.message,
+        selectedCoinsUnavailableCode,
+      );
+      expect(bloc.state.signedPsbt, isEmpty);
+      verifyNever(
+        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      );
+    },
+  );
+
+  test(
     'broadcasts a prepared order swap and emits its transaction id',
     () async {
       final broadcasting = _prepared(

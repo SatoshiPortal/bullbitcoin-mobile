@@ -1583,6 +1583,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           buildTransactionException: BuildTransactionException(
             e is BuildTransactionException
                 ? e.message
+                : e is NoSpendableUtxoException &&
+                      stateToUse.selectedUtxos.isNotEmpty
+                ? selectedCoinsUnavailableCode
                 : e is InsufficientFundsException &&
                       stateToUse.selectedUtxos.isNotEmpty
                 ? selectedCoinsInsufficientCode
@@ -1694,32 +1697,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       }
       emit(state.copyWith(txId: txId));
     } on NoSpendableUtxoException {
-      _clearBitcoinFeePreviews(emit);
-      emit(
-        state.copyWith(
-          buildTransactionException: BuildTransactionException(
-            selectedCoinsUnavailableCode,
-          ),
-        ),
-      );
+      _emitSelectionUnavailable(emit);
     } on InsufficientFundsException {
-      _clearBitcoinFeePreviews(emit);
-      emit(
-        state.copyWith(
-          buildTransactionException: BuildTransactionException(
-            selectedCoinsUnavailableCode,
-          ),
-        ),
-      );
+      _emitSelectionUnavailable(emit);
     } on ValidateBitcoinSelectionException {
-      _clearBitcoinFeePreviews(emit);
-      emit(
-        state.copyWith(
-          buildTransactionException: BuildTransactionException(
-            selectedCoinsUnavailableCode,
-          ),
-        ),
-      );
+      _emitSelectionUnavailable(emit);
     } catch (e) {
       emit(
         state.copyWith(
@@ -1730,6 +1712,20 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     } finally {
       emit(state.copyWith(isConfirming: false));
     }
+  }
+
+  // Pre-broadcast confirmation validation failed: the staged selection can no
+  // longer be spent as previewed, so drop the fee previews and surface the
+  // unavailable-selection error for the user to re-review.
+  void _emitSelectionUnavailable(Emitter<TransferState> emit) {
+    _clearBitcoinFeePreviews(emit);
+    emit(
+      state.copyWith(
+        buildTransactionException: BuildTransactionException(
+          selectedCoinsUnavailableCode,
+        ),
+      ),
+    );
   }
 
   Future<void> _syncWalletAfterBroadcast(String walletId) async {
