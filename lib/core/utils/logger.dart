@@ -452,6 +452,22 @@ class Logger {
       RegExp(r'\b(?:[a-z]+\s+){11,23}[a-z]+\b', caseSensitive: false),
       '[REDACTED]',
     );
+    // The rule above only sees a mnemonic written as a sentence. A dumped
+    // `List<String>` of the same words is comma-separated — `[abandon,
+    // abandon, ..., about]` — and slipped straight through. What keeps this
+    // second rule from firing on ordinary log content is the conjunction of
+    // three conditions, not any one of them: the run must sit behind a
+    // collection delimiter or a separating comma, the words must be joined by
+    // commas, and there must be 12 to 24 of them, each 3-8 lowercase letters
+    // (the English BIP39 wordlist's bounds). Dart dumps enums with a dot and
+    // a capital, ids as hex, and maps with colons, so a bare comma-joined run
+    // of twelve short lowercase words is a wordlist. Neither the closing
+    // delimiter nor an immediately preceding `[` is required, so a mnemonic
+    // embedded in a longer list is caught too.
+    value = value.replaceAll(
+      RegExp(r'(?<=[\[({,])\s*(?:[a-z]{3,8}\s*,\s*){11,23}[a-z]{3,8}\b'),
+      '[REDACTED]',
+    );
     value = value.replaceAll(
       RegExp(
         r'\b(?:api[_ -]?key|token|secret|x-api-key)\s*[:=]\s*[^,; ]+',

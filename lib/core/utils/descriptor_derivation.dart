@@ -1,8 +1,52 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:satoshifier/satoshifier.dart' as satoshifier;
+import 'package:satoshifier/utils/descriptor_checksum.dart';
 
 class DescriptorDerivation {
+  static ({String external, String internal})
+  splitCombinedPublicBitcoinDescriptor(String value, Network network) {
+    final canonical = canonicalCombinedPublicBitcoinDescriptor(value, network);
+    final parsed = _parseDescriptor(canonical);
+    return (
+      external: _canonicalPublicBitcoinDescriptor(parsed.external, network),
+      internal: _canonicalPublicBitcoinDescriptor(parsed.internal, network),
+    );
+  }
+
+  static String combinePublicBitcoinDescriptors({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required Network network,
+  }) {
+    final parsed = _parseDescriptor(externalDescriptor);
+    if (_canonicalPublicBitcoinDescriptor(parsed.external, network) !=
+            _canonicalPublicBitcoinDescriptor(externalDescriptor, network) ||
+        _canonicalPublicBitcoinDescriptor(parsed.internal, network) !=
+            _canonicalPublicBitcoinDescriptor(internalDescriptor, network)) {
+      throw const FormatException('Descriptor branches do not match');
+    }
+    return canonicalCombinedPublicBitcoinDescriptor(parsed.combined, network);
+  }
+
+  static String canonicalCombinedPublicBitcoinDescriptor(
+    String value,
+    Network network,
+  ) {
+    final parsed = _parseDescriptor(value);
+    final combinedBody = parsed.combined;
+    if (_canonicalPublicBitcoinDescriptor(value, network) !=
+        _canonicalPublicBitcoinDescriptor(combinedBody, network)) {
+      throw const FormatException('Combined descriptor required');
+    }
+    final checksum = DescriptorChecksum.compute(combinedBody);
+    if (checksum == null) {
+      throw const FormatException('Invalid public wallet descriptor');
+    }
+    return '$combinedBody#$checksum';
+  }
+
   static Future<String> derivePublicBitcoinDescriptorFromXpriv(
     String xprv, {
     required ScriptType scriptType,
@@ -97,5 +141,39 @@ class DescriptorDerivation {
     }
 
     return descriptor.toString();
+  }
+}
+
+satoshifier.Descriptor _parseDescriptor(String value) {
+  try {
+    return satoshifier.Descriptor.parse(value);
+  } on FormatException {
+    rethrow;
+  } on String {
+    throw const FormatException('Invalid public wallet descriptor');
+  }
+}
+
+String _canonicalPublicBitcoinDescriptor(String value, Network network) {
+  if (!network.isBitcoin) {
+    throw const FormatException('Only Bitcoin descriptors are supported');
+  }
+  try {
+    final descriptor = bdk.Descriptor(
+      descriptor: value,
+      networkKind: network.isTestnet
+          ? bdk.NetworkKind.test
+          : bdk.NetworkKind.main,
+    );
+    descriptor.sanityCheck();
+    final public = descriptor.toString();
+    if (descriptor.toStringWithSecret() != public) {
+      throw const FormatException('Private wallet descriptor rejected');
+    }
+    return public;
+  } on FormatException {
+    rethrow;
+  } on Exception {
+    throw const FormatException('Invalid public wallet descriptor');
   }
 }
