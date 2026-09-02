@@ -53,10 +53,17 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/refresh_sp_wallet_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/send_sp_payment_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_sp_network_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
@@ -168,6 +175,24 @@ class _MockVerifySignedTxUsecase extends Mock
     implements VerifySignedTxUsecase {}
 
 /// Exposes `emit` so a test can start from a realistic mid-flow state.
+class _MockValidateSpRecipientForSendUsecase extends Mock
+    implements ValidateSpRecipientForSendUsecase {}
+
+class _MockValidateSpAmountForSendUsecase extends Mock
+    implements ValidateSpAmountForSendUsecase {}
+
+class _MockGetSpNetworkForSendUsecase extends Mock
+    implements GetSpNetworkForSendUsecase {}
+
+class _MockPrepareSpPaymentForSendUsecase extends Mock
+    implements PrepareSpPaymentForSendUsecase {}
+
+class _MockSendSpPaymentForSendUsecase extends Mock
+    implements SendSpPaymentForSendUsecase {}
+
+class _MockRefreshSpWalletForSendUsecase extends Mock
+    implements RefreshSpWalletForSendUsecase {}
+
 class _TestSendCubit extends SendCubit {
   _TestSendCubit({
     required super.labelsFacade,
@@ -209,6 +234,12 @@ class _TestSendCubit extends SendCubit {
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
     required super.verifySignedTxUsecase,
+    required super.validateSpRecipientForSendUsecase,
+    required super.validateSpAmountForSendUsecase,
+    required super.getSpNetworkForSendUsecase,
+    required super.prepareSpPaymentForSendUsecase,
+    required super.sendSpPaymentForSendUsecase,
+    required super.refreshSpWalletForSendUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -309,6 +340,13 @@ void main() {
       checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
       getSendPayjoinEnabledUsecase: _MockGetSendPayjoinEnabledUsecase(),
       verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+      validateSpRecipientForSendUsecase:
+          _MockValidateSpRecipientForSendUsecase(),
+      validateSpAmountForSendUsecase: _MockValidateSpAmountForSendUsecase(),
+      getSpNetworkForSendUsecase: _MockGetSpNetworkForSendUsecase(),
+      prepareSpPaymentForSendUsecase: _MockPrepareSpPaymentForSendUsecase(),
+      sendSpPaymentForSendUsecase: _MockSendSpPaymentForSendUsecase(),
+      refreshSpWalletForSendUsecase: _MockRefreshSpWalletForSendUsecase(),
     );
   });
 
@@ -423,7 +461,7 @@ void main() {
       cubit.seed(
         SendState(
           step: SendStep.amount,
-          selectedWallet: liquidWallet,
+          selectedWallet: SendWalletBitcoin(liquidWallet),
           sendMax: true,
           copiedRawPaymentRequest: 'ex1qrecipient',
           bitcoinFeesList: feeOptions,
@@ -458,7 +496,7 @@ void main() {
       cubit.seed(
         SendState(
           step: SendStep.sending,
-          selectedWallet: _wallet,
+          selectedWallet: SendWalletBitcoin(_wallet),
           signedBitcoinPsbt: 'cHNidP8BAHECAAAA-signed',
           label: 'rent',
         ),

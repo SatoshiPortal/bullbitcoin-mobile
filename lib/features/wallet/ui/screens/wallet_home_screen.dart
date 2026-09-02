@@ -79,6 +79,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   void _refreshOnVisible() {
     if (!mounted) return;
+    context.read<WalletBloc>().add(const RefreshSpWallet());
     context.read<WalletBloc>().add(const WalletRefreshed());
   }
 

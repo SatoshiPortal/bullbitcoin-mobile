@@ -30,6 +30,11 @@ final class SendInsufficientBalanceFailure extends SendFailure {
   const SendInsufficientBalanceFailure([super.logMessage]);
 }
 
+/// The recipient address belongs to another network than the sending wallet.
+final class SendAddressNetworkMismatchFailure extends SendFailure {
+  const SendAddressNetworkMismatchFailure([super.logMessage]);
+}
+
 /// The amount fits the balance, but not once the network fee is added.
 final class SendInsufficientFundsForFeesFailure extends SendFailure {
   const SendInsufficientFundsForFeesFailure([super.logMessage]);

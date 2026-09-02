@@ -4,6 +4,9 @@ import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_i
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
+import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -129,6 +132,14 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<RevokeSpWalletForSettingsUsecase>(
+      () => RevokeSpWalletForSettingsUsecase(spFacade: locator<SpFacade>()),
+    );
+
+    locator.registerFactory<CheckSpWalletSetupForSettingsUsecase>(
+      () => CheckSpWalletSetupForSettingsUsecase(spFacade: locator<SpFacade>()),
+    );
+
     // Blocs
     locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
@@ -141,6 +152,9 @@ class SettingsLocator {
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
+        revokeSpWalletUsecase: locator<RevokeSpWalletForSettingsUsecase>(),
+        checkSpWalletSetupUsecase:
+            locator<CheckSpWalletSetupForSettingsUsecase>(),
         setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
         setScreenCaptureProtectionUsecase:
             locator<SetScreenCaptureProtectionUsecase>(),

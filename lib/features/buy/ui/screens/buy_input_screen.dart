@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';

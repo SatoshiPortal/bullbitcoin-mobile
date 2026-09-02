@@ -26,7 +26,7 @@ import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
@@ -382,6 +382,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     final selectedWallet = context.select(
                       (SendCubit cubit) => cubit.state.selectedWallet!,
                     );
+                    // Only a real wallet can be swapped for another one. Silent
+                    // payments has exactly one and nothing to pick from.
+                    final pickableWallet = context.select(
+                      (SendCubit cubit) => cubit.state.selectedBitcoinWallet,
+                    );
                     final wallets = context.select(
                       (SendCubit cubit) => cubit.state.wallets,
                     );
@@ -404,35 +409,47 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0,
                                       ),
-                                      child: DropdownButtonFormField<Wallet>(
-                                        alignment: Alignment.centerLeft,
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          contentPadding: EdgeInsets.zero,
-                                        ),
-                                        icon: Icon(
-                                          Icons.keyboard_arrow_down,
-                                          color: context.appColors.secondary,
-                                        ),
-                                        iconSize: 24,
-                                        initialValue: selectedWallet,
-                                        items: wallets.map((w) {
-                                          return DropdownMenuItem(
-                                            value: w,
-                                            child: Text(
-                                              w.displayLabel(context),
+                                      child: pickableWallet == null
+                                          ? Text(
+                                              selectedWallet.displayLabel(
+                                                context,
+                                              ),
                                               style: context.font.headlineSmall,
+                                            )
+                                          : DropdownButtonFormField<Wallet>(
+                                              alignment: Alignment.centerLeft,
+                                              decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                                contentPadding: EdgeInsets.zero,
+                                              ),
+                                              icon: Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color:
+                                                    context.appColors.secondary,
+                                              ),
+                                              iconSize: 24,
+                                              initialValue: pickableWallet,
+                                              items: wallets.map((w) {
+                                                return DropdownMenuItem(
+                                                  value: w,
+                                                  child: Text(
+                                                    w.displayLabel(context),
+                                                    style: context
+                                                        .font
+                                                        .headlineSmall,
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              onChanged: (value) {
+                                                if (value != null) {
+                                                  context
+                                                      .read<SendCubit>()
+                                                      .updateSelectedWallet(
+                                                        value,
+                                                      );
+                                                }
+                                              },
                                             ),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            context
-                                                .read<SendCubit>()
-                                                .updateSelectedWallet(value);
-                                          }
-                                        },
-                                      ),
                                     ),
                                   ),
                                   const Gap(10),
@@ -873,13 +890,14 @@ class _BottomButtons extends StatelessWidget {
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
+    final isSpMode = context.read<SendCubit>().isSpMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasFinalizedTx) ...[
+          if (isBitcoinWallet && !hasFinalizedTx && !isSpMode) ...[
             BBButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
@@ -984,6 +1002,7 @@ class _OnchainTransactionReview extends StatelessWidget {
     final willAttemptPayjoin = context.select(
       (SendCubit cubit) => cubit.state.willAttemptPayjoin,
     );
+    final isSpMode = context.read<SendCubit>().isSpMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1000,7 +1019,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
           note: label,
-          onFeePriorityTap: hasFinalizedTx
+          onFeePriorityTap: hasFinalizedTx || isSpMode
               ? null
               : () async {
                   final sendCubit = context.read<SendCubit>();

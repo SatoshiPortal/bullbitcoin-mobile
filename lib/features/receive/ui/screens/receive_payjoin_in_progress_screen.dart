@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
