@@ -948,6 +948,42 @@ void main() {
     });
   });
 
+  test(
+    'does not broadcast when a selected coin becomes unavailable during validation',
+    () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      final selected = _utxo(amountSat: 10000);
+      when(
+        () => validateBitcoinSelectionUsecase.execute(
+          walletId: 'w-bitcoin',
+          selectedInputs: [selected],
+        ),
+      ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
+      cubit.setStateForTest(
+        SendState(
+          step: SendStep.confirm,
+          selectedWallet: _bitcoinWallet(balanceSat: 20000),
+          selectedUtxos: [selected],
+          unsignedPsbt: 'unsigned-psbt',
+          signedBitcoinPsbt: 'signed-psbt',
+        ),
+      );
+
+      await cubit.broadcastTransaction();
+
+      expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+      expect(cubit.state.unsignedPsbt, isNull);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      verifyNever(
+        () => broadcastBitcoinTxUsecase.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+        ),
+      );
+    },
+  );
+
   group('SendCubit payment request input', () {
     test('stores sanitized input while parsing it', () async {
       final cubit = buildCubit();
