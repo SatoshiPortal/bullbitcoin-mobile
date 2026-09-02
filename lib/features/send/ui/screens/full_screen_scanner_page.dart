@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +35,10 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
       widget.onScannedPaymentRequest(data);
       if (mounted) context.pop();
     } catch (e) {
+      log.info(
+        'Scanned QR is not a payment request',
+        error: e.runtimeType.toString(),
+      );
       data = (qr, null);
       widget.onScannedPaymentRequest(data);
       if (mounted) context.pop();

@@ -1943,7 +1943,7 @@
   "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
   "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
   "sendErrorUnsupportedQrCodeFormat": "Format de code QR non pris en charge",
-  "sendErrorBuildFailed": "Échec de la construction",
+  "sendErrorBuildFailed": "Ce paiement n'a pas pu être préparé. Veuillez réessayer.",
   "sendErrorConfirmationFailed": "Échec de la confirmation",
   "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "Le montant est inférieur aux limites d'échange",
@@ -4743,5 +4743,8 @@
   "sendErrorSelectedCoinsUnavailable": "Un ou plusieurs coins sélectionnés ne sont plus disponibles. Vérifiez votre sélection et réessayez.",
   "sendErrorSelectedCoinsInsufficient": "Les coins sélectionnés ne couvrent pas le montant et les frais. Sélectionnez plus de coins ou réduisez le montant.",
   "psbtFlowInvalidPsbtError": "Cette transaction n'a pas pu être lue. Retournez en arrière et créez-la à nouveau.",
-  "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR."
+  "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR.",
+  "sendErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
+  "sendErrorExchangeOrderMismatch": "Ce paiement ne correspond plus à la commande. Veuillez recommencer le paiement.",
+  "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
 }

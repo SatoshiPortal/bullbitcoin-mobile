@@ -3294,7 +3294,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Строить не удалось",
+  "sendErrorBuildFailed": "Не удалось подготовить этот платёж. Пожалуйста, попробуйте снова.",
   "transactionDetailSwapProgress": "Прогресс",
   "backupWalletInstructionLoseBackup": "Если вы потеряете резервное копирование на 12 слов, вы не сможете восстановить доступ к Bitcoin Wallet.",
   "payIsCorporateAccount": "Это корпоративный счет?",
@@ -4917,5 +4917,8 @@
   "statusCheckResultsMayBeOutdated": "Результаты могут быть устаревшими",
   "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова.",
   "psbtFlowInvalidPsbtError": "Не удалось прочитать эту транзакцию. Вернитесь и создайте её заново.",
-  "psbtFlowQrEncodingError": "Не удалось преобразовать эту транзакцию в QR-код."
+  "psbtFlowQrEncodingError": "Не удалось преобразовать эту транзакцию в QR-код.",
+  "sendErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
+  "sendErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново."
 }

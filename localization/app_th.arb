@@ -10026,7 +10026,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "สร้าง",
+  "sendErrorBuildFailed": "ไม่สามารถเตรียมการชำระเงินนี้ได้ โปรดลองอีกครั้ง",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12242,5 +12242,8 @@
   "statusCheckResultsMayBeOutdated": "ผลลัพธ์อาจล้าสมัย",
   "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
   "psbtFlowInvalidPsbtError": "ไม่สามารถอ่านธุรกรรมนี้ได้ กลับไปและสร้างใหม่อีกครั้ง",
-  "psbtFlowQrEncodingError": "ไม่สามารถแปลงธุรกรรมนี้เป็นรหัส QR ได้"
+  "psbtFlowQrEncodingError": "ไม่สามารถแปลงธุรกรรมนี้เป็นรหัส QR ได้",
+  "sendErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
+  "sendErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่"
 }

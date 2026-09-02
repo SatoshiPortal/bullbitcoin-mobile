@@ -6870,7 +6870,7 @@
   "@sendErrorUnsupportedQrCodeFormat": {
     "description": "Error shown when a scanned QR code does not contain a recognisable Bitcoin payment request"
   },
-  "sendErrorBuildFailed": "Build Failed",
+  "sendErrorBuildFailed": "This payment could not be prepared. Please try again.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -14101,5 +14101,17 @@
   "psbtFlowQrEncodingError": "This transaction could not be turned into a QR code.",
   "@psbtFlowQrEncodingError": {
     "description": "Shown when a readable PSBT could not be encoded into animated QR parts."
+  },
+  "sendErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@sendErrorFeeBelowRelayFloor": {
+    "description": "Shown when the built transaction fee falls under the network relay floor, so no node would accept it. Actionable: the user must raise the fee."
+  },
+  "sendErrorExchangeOrderMismatch": "This payment no longer matches the order. Please start the payment again.",
+  "@sendErrorExchangeOrderMismatch": {
+    "description": "Shown when the built transaction does not pay exactly the pinned Exchange order (amount or payin address). Fail-closed: the transaction is refused before signing."
+  },
+  "sendErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@sendErrorFeesUnavailable": {
+    "description": "Shown when the network fee rates cannot be fetched. Blocking: the send cannot be built without them, so the message tells the user what to do rather than showing a generic error."
   }
 }

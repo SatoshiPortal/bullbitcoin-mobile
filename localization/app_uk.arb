@@ -3382,7 +3382,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Побудова в'язниці",
+  "sendErrorBuildFailed": "Не вдалося підготувати цей платіж. Будь ласка, спробуйте ще раз.",
   "backupWalletInstructionLoseBackup": "Якщо ви втратите резервну копію 12 слів, ви не зможете відновити доступ до біткоїнів.",
   "sellSendPaymentInsufficientBalance": "Недостатній баланс у вибраному гаманці для завершення цього замовлення продажу.",
   "swapTransferPendingTitle": "Передача",
@@ -4908,5 +4908,8 @@
   "statusCheckResultsMayBeOutdated": "Результати можуть бути застарілими",
   "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз.",
   "psbtFlowInvalidPsbtError": "Не вдалося прочитати цю транзакцію. Повернітеся та створіть її знову.",
-  "psbtFlowQrEncodingError": "Не вдалося перетворити цю транзакцію на QR-код."
+  "psbtFlowQrEncodingError": "Не вдалося перетворити цю транзакцію на QR-код.",
+  "sendErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
+  "sendErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново."
 }

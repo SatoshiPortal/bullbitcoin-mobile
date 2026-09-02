@@ -2145,7 +2145,7 @@
   "sendErrorInvoiceExpired": "Hóa đơn này đã hết hạn. Hãy yêu cầu người nhận cung cấp hóa đơn mới.",
   "sendErrorInsufficientBalanceForPayment": "Không đủ số dư để chi trả khoản thanh toán này",
   "sendErrorInvalidAddressOrInvoice": "Địa chỉ thanh toán Bitcoin hoặc hóa đơn không hợp lệ",
-  "sendErrorBuildFailed": "Tạo giao dịch thất bại",
+  "sendErrorBuildFailed": "Không thể chuẩn bị khoản thanh toán này. Vui lòng thử lại.",
   "sendErrorConfirmationFailed": "Xác nhận thất bại",
   "sendErrorInsufficientBalanceForSwap": "Không đủ số dư để thanh toán swap này qua Liquid và không nằm trong giới hạn swap để thanh toán qua Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "Số tiền dưới giới hạn swap",
@@ -3463,5 +3463,8 @@
   "statusCheckResultsMayBeOutdated": "Kết quả có thể đã lỗi thời",
   "onboardingBackupVerificationError": "Ví của bạn đã được khôi phục, nhưng không thể hoàn tất việc xác minh bản sao lưu. Vui lòng thử lại.",
   "psbtFlowInvalidPsbtError": "Không thể đọc giao dịch này. Hãy quay lại và tạo lại giao dịch.",
-  "psbtFlowQrEncodingError": "Không thể chuyển giao dịch này thành mã QR."
+  "psbtFlowQrEncodingError": "Không thể chuyển giao dịch này thành mã QR.",
+  "sendErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
+  "sendErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán."
 }

@@ -5676,7 +5676,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "Asamarthit QR code format",
-  "sendErrorBuildFailed": "Build Fail Ho Gayi",
+  "sendErrorBuildFailed": "Yah payment taiyar nahi ki ja saki. Kripya phir koshish karein.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12109,5 +12109,8 @@
   "statusCheckResultsMayBeOutdated": "Result purane ho sakte hain",
   "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
   "psbtFlowInvalidPsbtError": "Yah transaction padha nahi ja saka. Wapas jaakar ise phir se banaayein.",
-  "psbtFlowQrEncodingError": "Is transaction ko QR code mein convert nahi kiya ja saka."
+  "psbtFlowQrEncodingError": "Is transaction ko QR code mein convert nahi kiya ja saka.",
+  "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
+  "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein."
 }

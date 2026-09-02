@@ -3,12 +3,14 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:meta/meta.dart';
 
 class GetSendCrossChainQuoteUsecase {
   final SwapFacade _swapFacade;
 
   const GetSendCrossChainQuoteUsecase(this._swapFacade);
 
+  @useResult
   Future<Result<OrderSwapQuote, SendFailure>> execute({
     required Wallet wallet,
     required BigInt amountSat,

@@ -10026,7 +10026,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "असफल",
+  "sendErrorBuildFailed": "यह भुगतान तैयार नहीं किया जा सका। कृपया फिर कोशिश करें।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12428,5 +12428,8 @@
   "statusCheckResultsMayBeOutdated": "परिणाम पुराने हो सकते हैं",
   "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
   "psbtFlowInvalidPsbtError": "यह लेनदेन पढ़ा नहीं जा सका। वापस जाएँ और इसे फिर से बनाएँ।",
-  "psbtFlowQrEncodingError": "इस लेनदेन को QR कोड में परिवर्तित नहीं किया जा सका।"
+  "psbtFlowQrEncodingError": "इस लेनदेन को QR कोड में परिवर्तित नहीं किया जा सका।",
+  "sendErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
+  "sendErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।"
 }

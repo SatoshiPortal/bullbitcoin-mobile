@@ -2300,7 +2300,7 @@
   "sendErrorInvoiceExpired": "ამ ინვოისს ვადა გაუვიდა. სთხოვეთ მიმღებს ახალი ინვოისი.",
   "sendErrorInsufficientBalanceForPayment": "ამ გადახდის დასაფარად საკმარისი ბალანსი არ არის",
   "sendErrorInvalidAddressOrInvoice": "არასწორი Bitcoin გადახდის მისამართი ან ინვოისი",
-  "sendErrorBuildFailed": "შექმნა ვერ მოხერხდა",
+  "sendErrorBuildFailed": "ამ გადახდის მომზადება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "sendErrorConfirmationFailed": "დადასტურება ვერ მოხერხდა",
   "sendErrorInsufficientBalanceForSwap": "საკმარისი ბალანსი არ არის ამ სვაპის Liquid-ის მეშვეობით გადასახდელად და თანხა სვაპის ლიმიტებში არ ტევა Bitcoin-ის მეშვეობით გადასახდელად.",
   "sendErrorAmountBelowSwapLimits": "თანხა სვაპის ლიმიტებზე დაბალია",
@@ -3610,5 +3610,8 @@
   "statusCheckResultsMayBeOutdated": "შედეგები შეიძლება მოძველებული იყოს",
   "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა.",
   "psbtFlowInvalidPsbtError": "ამ ტრანზაქციის წაკითხვა ვერ მოხერხდა. დაბრუნდით და შექმენით ის ხელახლა.",
-  "psbtFlowQrEncodingError": "ამ ტრანზაქციის QR კოდად გარდაქმნა ვერ მოხერხდა."
+  "psbtFlowQrEncodingError": "ამ ტრანზაქციის QR კოდად გარდაქმნა ვერ მოხერხდა.",
+  "sendErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
+  "sendErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა."
 }

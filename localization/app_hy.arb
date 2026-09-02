@@ -2145,7 +2145,7 @@
   "sendErrorInvoiceExpired": "Այս ապրանքագրի ժամկետը լրացել է։ Խնդրեք ստացողից նոր ապրանքագիր։",
   "sendErrorInsufficientBalanceForPayment": "Այս վճարումը ծածկելու համար բավարար մնացորդ չկա",
   "sendErrorInvalidAddressOrInvoice": "Անվավեր Bitcoin վճարման հասցե կամ ապրանքագիր",
-  "sendErrorBuildFailed": "Կառուցումը ձախողվեց",
+  "sendErrorBuildFailed": "Այս վճարումը չհաջողվեց նախապատրաստել։ Խնդրում ենք կրկին փորձել։",
   "sendErrorConfirmationFailed": "Հաստատումը ձախողվեց",
   "sendErrorInsufficientBalanceForSwap": "Բավարար մնացորդ չկա այս փոխանակումը Liquid-ի միջոցով վճարելու համար, և գումարը փոխանակման սահմաններից դուրս է Bitcoin-ի միջոցով վճարելու համար։",
   "sendErrorAmountBelowSwapLimits": "Գումարը փոխանակման սահմաններից ցածր է",
@@ -3463,5 +3463,8 @@
   "statusCheckResultsMayBeOutdated": "Արդյունքները կարող են հնացած լինել",
   "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։",
   "psbtFlowInvalidPsbtError": "Այս գործարքը հնարավոր չեղավ կարդալ։ Վերադարձեք և ստեղծեք այն նորից։",
-  "psbtFlowQrEncodingError": "Այս գործարքը հնարավոր չեղավ վերածել QR կոդի։"
+  "psbtFlowQrEncodingError": "Այս գործարքը հնարավոր չեղավ վերածել QR կոդի։",
+  "sendErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
+  "sendErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։"
 }

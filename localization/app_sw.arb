@@ -2158,7 +2158,7 @@
   "sendErrorInvoiceExpired": "Muda wa ankara hii umeisha. Muombe mpokeaji ankara mpya.",
   "sendErrorInsufficientBalanceForPayment": "Salio halitoshi kufunika malipo haya",
   "sendErrorInvalidAddressOrInvoice": "Anwani ya Malipo ya Bitcoin au Ankara Batili",
-  "sendErrorBuildFailed": "Kuunda Kumeshindwa",
+  "sendErrorBuildFailed": "Malipo haya hayakuweza kutayarishwa. Tafadhali jaribu tena.",
   "sendErrorConfirmationFailed": "Uthibitisho Umeshindwa",
   "sendErrorInsufficientBalanceForSwap": "Salio halitoshi kulipa swap hii kupitia Liquid na hakiko ndani ya kikomo cha swap kulipa kupitia Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "Kiasi kiko chini ya kikomo cha swap",
@@ -3475,5 +3475,8 @@
   "statusCheckResultsMayBeOutdated": "Matokeo yanaweza kuwa ya zamani",
   "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena.",
   "psbtFlowInvalidPsbtError": "Muamala huu haukuweza kusomwa. Rudi na uunde tena.",
-  "psbtFlowQrEncodingError": "Muamala huu haukuweza kubadilishwa kuwa msimbo wa QR."
+  "psbtFlowQrEncodingError": "Muamala huu haukuweza kubadilishwa kuwa msimbo wa QR.",
+  "sendErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
+  "sendErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya."
 }

@@ -8266,7 +8266,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Δημιουργήστε το Failed",
+  "sendErrorBuildFailed": "Αυτή η πληρωμή δεν μπόρεσε να προετοιμαστεί. Δοκιμάστε ξανά.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -11721,5 +11721,8 @@
   "statusCheckResultsMayBeOutdated": "Τα αποτελέσματα ενδέχεται να είναι μη ενημερωμένα",
   "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
   "psbtFlowInvalidPsbtError": "Αυτή η συναλλαγή δεν μπόρεσε να διαβαστεί. Επιστρέψτε και δημιουργήστε την ξανά.",
-  "psbtFlowQrEncodingError": "Αυτή η συναλλαγή δεν μπόρεσε να μετατραπεί σε κωδικό QR."
+  "psbtFlowQrEncodingError": "Αυτή η συναλλαγή δεν μπόρεσε να μετατραπεί σε κωδικό QR.",
+  "sendErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
+  "sendErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή."
 }
