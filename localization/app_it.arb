@@ -3295,7 +3295,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Costruisci falliti",
+  "sendErrorBuildFailed": "Non è stato possibile preparare questo pagamento. Riprovi.",
   "transactionDetailSwapProgress": "Progressi di Swap",
   "backupWalletInstructionLoseBackup": "Se si perde il backup di 12 parole, non sarà in grado di recuperare l'accesso al portafoglio Bitcoin.",
   "payIsCorporateAccount": "E' un conto aziendale?",
@@ -4911,5 +4911,8 @@
   "statusCheckResultsMayBeOutdated": "I risultati potrebbero essere obsoleti",
   "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova.",
   "psbtFlowInvalidPsbtError": "Non è stato possibile leggere questa transazione. Torna indietro e creala di nuovo.",
-  "psbtFlowQrEncodingError": "Non è stato possibile convertire questa transazione in un codice QR."
+  "psbtFlowQrEncodingError": "Non è stato possibile convertire questa transazione in un codice QR.",
+  "sendErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
+  "sendErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento."
 }

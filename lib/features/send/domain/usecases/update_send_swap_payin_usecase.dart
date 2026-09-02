@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/swap_failure_to_send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:meta/meta.dart';
 
 enum SendSwapPayinUpdate {
   prepared,
@@ -15,6 +16,7 @@ class UpdateSendSwapPayinUsecase {
 
   const UpdateSendSwapPayinUsecase(this._swapFacade);
 
+  @useResult
   Future<Result<OrderSwapRecord, SendFailure>> execute({
     required String localId,
     required SendSwapPayinUpdate update,
@@ -27,7 +29,7 @@ class UpdateSendSwapPayinUsecase {
       case SendSwapPayinUpdate.prepared:
         if (signedTransaction == null || isPsbt == null) {
           return const Err(
-            SendTransactionBuildFailure('Signed transaction is required'),
+            SendUnexpectedFailure('Signed transaction is required'),
           );
         }
         result = await _swapFacade.savePreparedPayin(
@@ -38,7 +40,7 @@ class UpdateSendSwapPayinUsecase {
       case SendSwapPayinUpdate.replaced:
         if (signedTransaction == null || isPsbt == null) {
           return const Err(
-            SendTransactionBuildFailure('Signed transaction is required'),
+            SendUnexpectedFailure('Signed transaction is required'),
           );
         }
         result = await _swapFacade.replacePreparedPayin(

@@ -9339,7 +9339,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "البناء",
+  "sendErrorBuildFailed": "لم يتم تحضير هذا الدفع. يرجى المحاولة مرة أخرى.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12241,5 +12241,8 @@
   "statusCheckResultsMayBeOutdated": "قد تكون النتائج قديمة",
   "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
   "psbtFlowInvalidPsbtError": "لا يمكن قراءة هذه المعاملة. ارجع وأنشئها مرة أخرى.",
-  "psbtFlowQrEncodingError": "لا يمكن تحويل هذه المعاملة إلى رمز QR."
+  "psbtFlowQrEncodingError": "لا يمكن تحويل هذه المعاملة إلى رمز QR.",
+  "sendErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
+  "sendErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد."
 }

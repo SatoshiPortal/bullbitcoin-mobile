@@ -7740,7 +7740,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Изграждането се провали",
+  "sendErrorBuildFailed": "Това плащане не можа да бъде подготвено. Моля, опитайте отново.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -10230,5 +10230,8 @@
   "statusCheckResultsMayBeOutdated": "Резултатите може да са остарели",
   "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
   "psbtFlowInvalidPsbtError": "Тази транзакция не можа да бъде прочетена. Върнете се и я създайте отново.",
-  "psbtFlowQrEncodingError": "Тази транзакция не може да бъде преобразувана в QR код."
+  "psbtFlowQrEncodingError": "Тази транзакция не може да бъде преобразувана в QR код.",
+  "sendErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
+  "sendErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново."
 }

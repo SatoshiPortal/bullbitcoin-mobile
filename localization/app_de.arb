@@ -3234,7 +3234,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
+  "sendErrorBuildFailed": "Diese Zahlung konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
   "transactionDetailSwapProgress": "Swap-Fortschritt",
   "backupWalletInstructionLoseBackup": "Wenn Sie Ihre 12 Wörter (Seed-Phrase) verlieren, können Sie den Zugriff auf Ihre Bitcoin-Wallet nicht wiederherstellen.",
   "payIsCorporateAccount": "Ist dies ein Firmenkonto?",
@@ -4896,5 +4896,8 @@
   "statusCheckResultsMayBeOutdated": "Die Ergebnisse könnten veraltet sein",
   "onboardingBackupVerificationError": "Ihre Wallet wurde wiederhergestellt, aber die Backup-Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
   "psbtFlowInvalidPsbtError": "Diese Transaktion konnte nicht gelesen werden. Gehen Sie zurück und erstellen Sie sie erneut.",
-  "psbtFlowQrEncodingError": "Diese Transaktion konnte nicht in einen QR-Code umgewandelt werden."
+  "psbtFlowQrEncodingError": "Diese Transaktion konnte nicht in einen QR-Code umgewandelt werden.",
+  "sendErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
+  "sendErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut."
 }

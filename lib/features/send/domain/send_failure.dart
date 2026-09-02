@@ -78,8 +78,29 @@ final class SendRateLimitedFailure extends SendFailure {
     : super(logMessage);
 }
 
+/// The wallet could not produce a spendable transaction for this payment.
+/// Reserved for the build itself failing — BDK/LWK rejected the inputs, or the
+/// PSET could not be measured.
 final class SendTransactionBuildFailure extends SendFailure {
   const SendTransactionBuildFailure([super.logMessage]);
+}
+
+/// The transaction was built, but its fee lands under the network's relay
+/// floor, so no node would accept it.
+/// The floor itself is not carried as a field: the message deliberately does
+/// not quote it, so a field would be written and never read.
+final class SendFeeBelowRelayFloorFailure extends SendFailure {
+  const SendFeeBelowRelayFloorFailure([super.logMessage]);
+}
+
+/// The network fee rates could not be fetched.
+final class SendFeesUnavailableFailure extends SendFailure {
+  const SendFeesUnavailableFailure([super.logMessage]);
+}
+
+/// The built transaction does not pay exactly the pinned Exchange order.
+final class SendExchangeOrderMismatchFailure extends SendFailure {
+  const SendExchangeOrderMismatchFailure([super.logMessage]);
 }
 
 final class SendTransactionConfirmationFailure extends SendFailure {

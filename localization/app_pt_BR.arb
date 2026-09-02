@@ -9939,7 +9939,7 @@
   "@passportStep5": {
     "description": "Passport troubleshooting tip 1"
   },
-  "sendErrorBuildFailed": "Construa Falhado",
+  "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -12250,5 +12250,8 @@
   "statusCheckResultsMayBeOutdated": "Os resultados podem estar desatualizados",
   "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente.",
   "psbtFlowInvalidPsbtError": "Não foi possível ler esta transação. Volte e crie-a novamente.",
-  "psbtFlowQrEncodingError": "Não foi possível converter esta transação em um código QR."
+  "psbtFlowQrEncodingError": "Não foi possível converter esta transação em um código QR.",
+  "sendErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
+  "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente."
 }

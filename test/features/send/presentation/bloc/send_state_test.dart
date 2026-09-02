@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -636,6 +637,65 @@ void main() {
     test('false with no payment request yet', () {
       const state = SendState(sendType: SendType.liquid);
       expect(state.isUnconfidentialLiquidDestination, isFalse);
+    });
+  });
+
+  group('failure placement predicates', () {
+    test('hasBuildFailure means only "could not construct the transaction"', () {
+      // Narrow on purpose: it gates whether the amount screen mounts its error
+      // block. Widening it to "any build-stage failure" would double-render
+      // next to the amount field's own error line.
+      expect(
+        const SendState(failure: SendTransactionBuildFailure()).hasBuildFailure,
+        isTrue,
+      );
+      for (final other in const <SendFailure>[
+        SendFeeBelowRelayFloorFailure(),
+        SendFeesUnavailableFailure(),
+        SendExchangeOrderMismatchFailure(),
+        SendUnexpectedFailure(),
+      ]) {
+        expect(
+          SendState(failure: other).hasBuildFailure,
+          isFalse,
+          reason: '${other.runtimeType} is not a construction failure',
+        );
+      }
+    });
+
+    test('only a broadcast failure sets hasBroadcastFailure', () {
+      expect(
+        const SendState(
+          failure: SendTransactionConfirmationFailure(isBroadcastFailure: true),
+        ).hasBroadcastFailure,
+        isTrue,
+      );
+      expect(
+        const SendState(
+          failure: SendTransactionConfirmationFailure(),
+        ).hasBroadcastFailure,
+        isFalse,
+      );
+      expect(
+        const SendState(failure: SendUnexpectedFailure()).hasBroadcastFailure,
+        isFalse,
+      );
+    });
+
+    test('frozenBalanceHint only fires for a shortfall with frozen coins', () {
+      expect(
+        const SendState(
+          failure: SendInsufficientBalanceFailure(),
+        ).frozenBalanceHint,
+        isNull,
+        reason: 'nothing frozen means no Manage coins hint',
+      );
+      expect(
+        const SendState(
+          failure: SendTransactionBuildFailure(),
+        ).frozenBalanceHint,
+        isNull,
+      );
     });
   });
 }

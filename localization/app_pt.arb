@@ -3273,7 +3273,7 @@
       }
     }
   },
-  "sendErrorBuildFailed": "Construa Falhado",
+  "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "transactionDetailSwapProgress": "Progresso de balanço",
   "backupWalletInstructionLoseBackup": "Se você perder seu backup de 12 palavras, você não será capaz de recuperar o acesso à carteira Bitcoin.",
   "payIsCorporateAccount": "Isto é uma conta corporativa?",
@@ -4957,5 +4957,8 @@
   "statusCheckResultsMayBeOutdated": "Os resultados podem estar desatualizados",
   "onboardingBackupVerificationError": "A sua carteira foi recuperada, mas a verificação da cópia de segurança não pôde ser concluída. Por favor, tente novamente.",
   "psbtFlowInvalidPsbtError": "Não foi possível ler esta transação. Volte e crie-a novamente.",
-  "psbtFlowQrEncodingError": "Não foi possível converter esta transação num código QR."
+  "psbtFlowQrEncodingError": "Não foi possível converter esta transação num código QR.",
+  "sendErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
+  "sendErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente."
 }

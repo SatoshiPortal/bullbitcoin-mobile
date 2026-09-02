@@ -3590,7 +3590,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "অসমৰ্থিত QR ক'ড ফৰ্মেট",
-  "sendErrorBuildFailed": "নিৰ্মাণ বিফল হৈছে",
+  "sendErrorBuildFailed": "এই পৰিশোধ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
@@ -9350,5 +9350,8 @@
   "statusCheckResultsMayBeOutdated": "ফলাফল পুৰণা হ'ব পাৰে",
   "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "psbtFlowInvalidPsbtError": "এই লেনদেন পঢ়িব পৰা নগ'ল। উভতি গৈ ইয়াক পুনৰ সৃষ্টি কৰক।",
-  "psbtFlowQrEncodingError": "এই লেনদেনক QR ক'ডলৈ ৰূপান্তৰ কৰিব পৰা নগ'ল।"
+  "psbtFlowQrEncodingError": "এই লেনদেনক QR ক'ডলৈ ৰূপান্তৰ কৰিব পৰা নগ'ল।",
+  "sendErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
+  "sendErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।"
 }
