@@ -18,6 +18,8 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     required bool isTestnet,
     required bool isRbf,
     int? confirmationTimestamp,
+    int? lockTime,
+    int? confirmationHeight,
     String? unblindedUrl,
     @Default(false) bool isToSelf,
   }) = _WalletTransactionModel;
