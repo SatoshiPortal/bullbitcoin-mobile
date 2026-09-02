@@ -1,9 +1,12 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateSellOrderUsecase {
@@ -23,7 +26,8 @@ class CreateSellOrderUsecase {
   /// the global payjoin setting and the network, so a caller can pass the user's
   /// intent without also having to re-check the policy. The exchange applies its
   /// own pilot gate on top.
-  Future<SellOrder> execute({
+  @useResult
+  Future<Result<SellOrder, SellFailure>> execute({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required OrderBitcoinNetwork network,
@@ -58,12 +62,32 @@ class CreateSellOrderUsecase {
         'Sell Payjoin order response: requested=$resolvedUsePayjoin, '
         'bip21Present=${order.bip21URI != null}',
       );
-      return order;
-    } on SellError {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw SellError.unexpected(message: '$e');
+      return Ok(order);
+    } on ApiKeyException catch (e) {
+      return Err(SellUnauthenticatedFailure(e.message));
+    } on BullBitcoinApiMinAmountException catch (e) {
+      return Err(
+        SellBelowMinAmountFailure(
+          minAmount: e.minAmount,
+          currency: e.currency,
+          logMessage: e.message,
+        ),
+      );
+    } on BullBitcoinApiMaxAmountException catch (e) {
+      return Err(
+        SellAboveMaxAmountFailure(
+          maxAmount: e.maxAmount,
+          currency: e.currency,
+          logMessage: e.message,
+        ),
+      );
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to place the sell order',
+        error: e,
+        trace: st,
+      );
+      return Err(SellUnexpectedFailure('$e'));
     }
   }
 }

@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class SendWithPayjoinUsecase {
@@ -7,7 +9,9 @@ class SendWithPayjoinUsecase {
 
   const SendWithPayjoinUsecase(this._sender);
 
-  Future<PayjoinSenderSession> execute({
+  /// Starts the payjoin payin for a sell order.
+  @useResult
+  Future<Result<PayjoinSenderSession, SellFailure>> execute({
     required String walletId,
     required bool isTestnet,
     required String bip21,
@@ -29,13 +33,22 @@ class SendWithPayjoinUsecase {
             : DateTime.now().add(Duration(seconds: expireAfterSec)),
       ),
     );
-    return switch (result) {
-      Ok(:final value) => value,
-      Err() => throw SendPayjoinException('Failed to start Payjoin sale'),
-    };
+    switch (result) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err(:final failure):
+        // Both parts: Failure has no toString() override, so the value alone
+        // would log "Instance of 'PayjoinX'" and the message alone drops the
+        // type.
+        log.warning(
+          'Failed to start the Payjoin sale',
+          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+        );
+        return Err(
+          SellUnexpectedFailure(
+            failure.logMessage ?? 'Failed to start Payjoin sale',
+          ),
+        );
+    }
   }
-}
-
-class SendPayjoinException extends BullException {
-  SendPayjoinException(super.message);
 }

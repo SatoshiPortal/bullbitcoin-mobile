@@ -1,23 +1,22 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/load_sell_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/read_sell_payin_txid_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/prepare_sell_liquid_payin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
+import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
@@ -27,57 +26,36 @@ import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok, Sats;
-
-class _MockGetUserSummary extends Mock
-    implements GetExchangeUserSummaryUsecase {}
-
-class _MockGetSettings extends Mock implements GetSettingsUsecase {}
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result, Sats;
 
 class _MockCreateSellOrder extends Mock implements CreateSellOrderUsecase {}
 
 class _MockRefreshSellOrder extends Mock implements RefreshSellOrderUsecase {}
 
-class _MockPrepareBitcoinSend extends Mock
-    implements PrepareBitcoinSendUsecase {}
+class _MockPrepareSellLiquidPayin extends Mock
+    implements PrepareSellLiquidPayinUsecase {}
 
-class _MockPrepareLiquidSend extends Mock implements PrepareLiquidSendUsecase {}
+class _MockSignSellPayin extends Mock implements SignSellPayinUsecase {}
 
-class _MockSignBitcoinTx extends Mock implements SignBitcoinTxUsecase {}
+class _MockCalculateSellLiquidFees extends Mock
+    implements CalculateSellLiquidFeesUsecase {}
 
-class _MockSignLiquidTx extends Mock implements SignLiquidTxUsecase {}
+class _MockLoadSellWalletUtxos extends Mock
+    implements LoadSellWalletUtxosUsecase {}
 
-class _MockBroadcastBitcoin extends Mock
-    implements BroadcastBitcoinTransactionUsecase {}
+class _MockLoadSellContext extends Mock implements LoadSellContextUsecase {}
 
-class _MockBroadcastLiquid extends Mock
-    implements BroadcastLiquidTransactionUsecase {}
+class _MockPrepareSellBitcoinPayin extends Mock
+    implements PrepareSellBitcoinPayinUsecase {}
 
-class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
-
-class _MockCalculateLiquidFees extends Mock
-    implements CalculateLiquidAbsoluteFeesUsecase {}
-
-class _MockCalculateBitcoinFees extends Mock
-    implements CalculateBitcoinAbsoluteFeesUsecase {}
-
-class _MockConvertSatsToCurrency extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
-
-class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
-
-class _MockGetWalletUtxos extends Mock implements GetWalletUtxosUsecase {}
-
-class _MockGetOrder extends Mock implements GetOrderUsecase {}
+class _MockBroadcastSellPayin extends Mock
+    implements BroadcastSellPayinUsecase {}
 
 class _MockSendWithPayjoin extends Mock implements SendWithPayjoinUsecase {}
 
@@ -108,26 +86,19 @@ class _FakeLabel extends Fake implements Label {}
 /// avoids the order polling timer that order creation starts.
 class _SeedableSellBloc extends SellBloc {
   _SeedableSellBloc({
-    required super.getExchangeUserSummaryUsecase,
-    required super.getSettingsUsecase,
+    required super.loadSellContextUsecase,
     required super.createSellOrderUsecase,
     required super.refreshSellOrderUsecase,
-    required super.prepareBitcoinSendUsecase,
-    required super.prepareLiquidSendUsecase,
-    required super.signBitcoinTxUsecase,
-    required super.signLiquidTxUsecase,
-    required super.broadcastBitcoinTransactionUsecase,
-    required super.broadcastLiquidTransactionUsecase,
+    required super.prepareSellBitcoinPayinUsecase,
+    required super.prepareSellLiquidPayinUsecase,
+    required super.signSellPayinUsecase,
+    required super.broadcastSellPayinUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
-    required super.getNetworkFeesUsecase,
-    required super.calculateLiquidAbsoluteFeesUsecase,
-    required super.calculateBitcoinAbsoluteFeesUsecase,
-    required super.convertSatsToCurrencyAmountUsecase,
-    required super.getAddressAtIndexUsecase,
-    required super.getWalletUtxosUsecase,
-    required super.getOrderUsecase,
+    required super.calculateSellLiquidFeesUsecase,
+    required super.loadSellWalletUtxosUsecase,
+    required super.readSellPayinTxidUsecase,
     required super.labelsFacade,
     required super.labelCompletedSellOrderUsecase,
     required super.previewBitcoinFeeUsecase,
@@ -165,12 +136,10 @@ void main() {
     minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
   );
 
-  late _MockPrepareBitcoinSend prepareBitcoinSend;
-  late _MockSignBitcoinTx signBitcoinTx;
-  late _MockBroadcastBitcoin broadcastBitcoin;
-  late _MockCalculateBitcoinFees calculateBitcoinFees;
-  late _MockGetNetworkFees getNetworkFees;
-  late _MockGetOrder getOrder;
+  late _MockPrepareSellBitcoinPayin prepareSellBitcoinPayin;
+  late _MockSignSellPayin signSellPayin;
+  late _MockBroadcastSellPayin broadcastSellPayin;
+  late _MockLoadSellContext loadSellContext;
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
   late _MockGetPayjoin getPayjoin;
@@ -185,7 +154,7 @@ void main() {
 
   /// Every `networkFee` the bloc handed to a PSBT build, in call order.
   List<NetworkFee> capturedBuildFees() => verify(
-    () => prepareBitcoinSend.execute(
+    () => prepareSellBitcoinPayin.execute(
       walletId: any(named: 'walletId'),
       address: any(named: 'address'),
       amountSat: any(named: 'amountSat'),
@@ -198,7 +167,7 @@ void main() {
   /// Asserts the bloc never asked for a PSBT build. Separate from
   /// [capturedBuildFees] because `verify` needs at least one matching call.
   void verifyNoBuilds() => verifyNever(
-    () => prepareBitcoinSend.execute(
+    () => prepareSellBitcoinPayin.execute(
       walletId: any(named: 'walletId'),
       address: any(named: 'address'),
       amountSat: any(named: 'amountSat'),
@@ -245,25 +214,25 @@ void main() {
   });
 
   setUp(() {
-    prepareBitcoinSend = _MockPrepareBitcoinSend();
-    signBitcoinTx = _MockSignBitcoinTx();
-    broadcastBitcoin = _MockBroadcastBitcoin();
-    calculateBitcoinFees = _MockCalculateBitcoinFees();
-    getNetworkFees = _MockGetNetworkFees();
-    getOrder = _MockGetOrder();
+    prepareSellBitcoinPayin = _MockPrepareSellBitcoinPayin();
+    signSellPayin = _MockSignSellPayin();
+    broadcastSellPayin = _MockBroadcastSellPayin();
+    loadSellContext = _MockLoadSellContext();
     sendWithPayjoin = _MockSendWithPayjoin();
     watchPayjoin = _MockWatchPayjoin();
     when(
       () => watchPayjoin.execute(any()),
     ).thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
-    when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
+    when(
+      () => getPayjoin.execute(any()),
+    ).thenAnswer((_) async => const Ok<PayjoinSession?, SellFailure>(null));
     refreshSellOrder = _MockRefreshSellOrder();
     labelsFacade = _MockLabelsFacade();
     labelCompletedSellOrder = _MockLabelCompletedSellOrderUsecase();
     when(
       () => labelCompletedSellOrder.execute(order: any(named: 'order')),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok<void, SellFailure>(null));
     previewBitcoinFee = _MockPreviewBitcoinFee();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     sellOrder = _MockSellOrder();
@@ -290,7 +259,7 @@ void main() {
     ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
 
     when(
-      () => prepareBitcoinSend.execute(
+      () => prepareSellBitcoinPayin.execute(
         walletId: any(named: 'walletId'),
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
@@ -299,48 +268,48 @@ void main() {
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: unsignedPsbt, txSize: 110, isToSelf: false),
+      (_) async => Ok<PreparedSellBitcoinPayin, SellFailure>((
+        unsignedPsbt: unsignedPsbt,
+        txSize: 110,
+        isToSelf: false,
+        absoluteFees: 200,
+      )),
     );
     when(
-      () => calculateBitcoinFees.execute(psbt: any(named: 'psbt')),
-    ).thenAnswer((_) async => 200);
-    when(
-      () => signBitcoinTx.execute(
+      () => signSellPayin.bitcoin(
         psbt: any(named: 'psbt'),
         walletId: any(named: 'walletId'),
       ),
-    ).thenAnswer((_) async => (signedPsbt: unsignedPsbt, txSize: 110));
+    ).thenAnswer(
+      (_) async => Ok<({String signedPsbt, int txSize}), SellFailure>((
+        signedPsbt: unsignedPsbt,
+        txSize: 110,
+      )),
+    );
     when(
-      () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
-    ).thenAnswer((_) async => expectedTxid);
+      () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+    ).thenAnswer((_) async => Ok<String, SellFailure>(expectedTxid));
     when(
       () => labelsFacade.store(any()),
     ).thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
     when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => feeOptions);
+      () => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')),
+    ).thenAnswer((_) async => Ok<FeeOptions, SellFailure>(feeOptions));
 
     bloc = _SeedableSellBloc(
-      getExchangeUserSummaryUsecase: _MockGetUserSummary(),
-      getSettingsUsecase: _MockGetSettings(),
+      loadSellContextUsecase: loadSellContext,
       createSellOrderUsecase: _MockCreateSellOrder(),
       refreshSellOrderUsecase: refreshSellOrder,
-      prepareBitcoinSendUsecase: prepareBitcoinSend,
-      prepareLiquidSendUsecase: _MockPrepareLiquidSend(),
-      signBitcoinTxUsecase: signBitcoinTx,
-      signLiquidTxUsecase: _MockSignLiquidTx(),
-      broadcastBitcoinTransactionUsecase: broadcastBitcoin,
-      broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
+      prepareSellBitcoinPayinUsecase: prepareSellBitcoinPayin,
+      prepareSellLiquidPayinUsecase: _MockPrepareSellLiquidPayin(),
+      signSellPayinUsecase: signSellPayin,
+      broadcastSellPayinUsecase: broadcastSellPayin,
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
       getPayjoinUsecase: getPayjoin,
-      getNetworkFeesUsecase: getNetworkFees,
-      calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
-      calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
-      convertSatsToCurrencyAmountUsecase: _MockConvertSatsToCurrency(),
-      getAddressAtIndexUsecase: _MockGetAddressAtIndex(),
-      getWalletUtxosUsecase: _MockGetWalletUtxos(),
-      getOrderUsecase: getOrder,
+      calculateSellLiquidFeesUsecase: _MockCalculateSellLiquidFees(),
+      loadSellWalletUtxosUsecase: _MockLoadSellWalletUtxos(),
+      readSellPayinTxidUsecase: const ReadSellPayinTxidUsecase(),
       labelsFacade: labelsFacade,
       labelCompletedSellOrderUsecase: labelCompletedSellOrder,
       previewBitcoinFeeUsecase: previewBitcoinFee,
@@ -416,23 +385,25 @@ void main() {
             expireAfterSec: any(named: 'expireAfterSec'),
           ),
         ).thenAnswer(
-          (_) async => PayjoinSenderSession(
-            status: PayjoinStatus.requested,
-            uri: bip21,
-            network: BitcoinNetwork.mainnet,
-            walletId: 'wallet-1',
-            originalTransactionId: expectedTxid,
-            amount: Sats.fromInt(100000),
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          (_) async => Ok<PayjoinSenderSession, SellFailure>(
+            PayjoinSenderSession(
+              status: PayjoinStatus.requested,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: expectedTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            ),
           ),
         );
 
         // The order fetch must succeed, otherwise the premature success this test
         // guards against is hidden by a failing fetch rather than absent.
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => sellOrder);
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         // Long enough to outlast the post-broadcast order fetch delay.
@@ -463,17 +434,23 @@ void main() {
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
         ),
-      ).thenThrow(SendPayjoinException('Failed to start Payjoin sale'));
+      ).thenAnswer(
+        (_) async => const Err<PayjoinSenderSession, SellFailure>(
+          SellUnexpectedFailure('Failed to start Payjoin sale'),
+        ),
+      );
       when(() => getPayjoin.execute(bip21)).thenAnswer(
-        (_) async => PayjoinSenderSession(
-          status: PayjoinStatus.started,
-          uri: bip21,
-          network: BitcoinNetwork.mainnet,
-          walletId: 'wallet-1',
-          originalTransactionId: expectedTxid,
-          amount: Sats.fromInt(100000),
-          createdAt: DateTime(2026),
-          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        (_) async => Ok<PayjoinSession?, SellFailure>(
+          PayjoinSenderSession(
+            status: PayjoinStatus.started,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
         ),
       );
 
@@ -495,7 +472,7 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
       );
     });
 
@@ -515,10 +492,16 @@ void main() {
           networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
           expireAfterSec: any(named: 'expireAfterSec'),
         ),
-      ).thenThrow(SendPayjoinException('Failed to start Payjoin sale'));
+      ).thenAnswer(
+        (_) async => const Err<PayjoinSenderSession, SellFailure>(
+          SellUnexpectedFailure('Failed to start Payjoin sale'),
+        ),
+      );
       // No session row: the failure happened before the write-ahead
       // persist, so nothing can broadcast later and retrying is safe.
-      when(() => getPayjoin.execute(bip21)).thenAnswer((_) async => null);
+      when(
+        () => getPayjoin.execute(bip21),
+      ).thenAnswer((_) async => const Ok<PayjoinSession?, SellFailure>(null));
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -539,8 +522,8 @@ void main() {
             'aaaa1111c0ea01904322222851b2e702d37651be2644f4757cc4421f39261b55';
         when(() => sellOrder.bip21URI).thenReturn(bip21);
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => sellOrder);
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
@@ -552,29 +535,33 @@ void main() {
             expireAfterSec: any(named: 'expireAfterSec'),
           ),
         ).thenAnswer(
-          (_) async => PayjoinSenderSession(
-            status: PayjoinStatus.requested,
-            uri: bip21,
-            network: BitcoinNetwork.mainnet,
-            walletId: 'wallet-1',
-            originalTransactionId: expectedTxid,
-            amount: Sats.fromInt(100000),
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-          ),
-        );
-        when(() => watchPayjoin.execute(bip21)).thenAnswer(
-          (_) => Stream.value(
+          (_) async => Ok<PayjoinSenderSession, SellFailure>(
             PayjoinSenderSession(
-              status: PayjoinStatus.completed,
+              status: PayjoinStatus.requested,
               uri: bip21,
               network: BitcoinNetwork.mainnet,
               walletId: 'wallet-1',
               originalTransactionId: expectedTxid,
-              transactionId: payjoinTxid,
               amount: Sats.fromInt(100000),
               createdAt: DateTime(2026),
               expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            ),
+          ),
+        );
+        when(() => watchPayjoin.execute(bip21)).thenAnswer(
+          (_) => Stream.value(
+            Ok<PayjoinSession, SellFailure>(
+              PayjoinSenderSession(
+                status: PayjoinStatus.completed,
+                uri: bip21,
+                network: BitcoinNetwork.mainnet,
+                walletId: 'wallet-1',
+                originalTransactionId: expectedTxid,
+                transactionId: payjoinTxid,
+                amount: Sats.fromInt(100000),
+                createdAt: DateTime(2026),
+                expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+              ),
             ),
           ),
         );
@@ -598,8 +585,22 @@ void main() {
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => sellOrder.bip21URI).thenReturn(bip21);
       when(
-        () => calculateBitcoinFees.execute(psbt: any(named: 'psbt')),
-      ).thenAnswer((_) async => 1100);
+        () => prepareSellBitcoinPayin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<PreparedSellBitcoinPayin, SellFailure>((
+          unsignedPsbt: unsignedPsbt,
+          txSize: 110,
+          isToSelf: false,
+          absoluteFees: 1100,
+        )),
+      );
       bloc.seed(
         (bloc.state as SellPaymentState).copyWith(
           selectedFeeOption: FeeSelection.custom,
@@ -618,15 +619,17 @@ void main() {
           expireAfterSec: any(named: 'expireAfterSec'),
         ),
       ).thenAnswer(
-        (_) async => PayjoinSenderSession(
-          status: PayjoinStatus.requested,
-          uri: bip21,
-          network: BitcoinNetwork.mainnet,
-          walletId: 'wallet-1',
-          originalTransactionId: expectedTxid,
-          amount: Sats.fromInt(100000),
-          createdAt: DateTime(2026),
-          expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+        (_) async => Ok<PayjoinSenderSession, SellFailure>(
+          PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          ),
         ),
       );
 
@@ -666,19 +669,21 @@ void main() {
             expireAfterSec: any(named: 'expireAfterSec'),
           ),
         ).thenAnswer(
-          (_) async => PayjoinSenderSession(
-            status: PayjoinStatus.requested,
-            uri: bip21,
-            network: BitcoinNetwork.mainnet,
-            walletId: 'wallet-1',
-            originalTransactionId: expectedTxid,
-            amount: Sats.fromInt(100000),
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          (_) async => Ok<PayjoinSenderSession, SellFailure>(
+            PayjoinSenderSession(
+              status: PayjoinStatus.requested,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: expectedTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            ),
           ),
         );
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -696,7 +701,7 @@ void main() {
           ),
         ).called(1);
         verifyNever(
-          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
         );
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -713,7 +718,7 @@ void main() {
         // The post-broadcast order fetch fails, which used to re-enable Confirm
         // with the transaction already on the wire (#2522).
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -730,10 +735,10 @@ void main() {
         await Future<void>.delayed(const Duration(seconds: 6));
 
         verify(
-          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
         ).called(1);
         verify(
-          () => prepareBitcoinSend.execute(
+          () => prepareSellBitcoinPayin.execute(
             walletId: any(named: 'walletId'),
             address: any(named: 'address'),
             amountSat: any(named: 'amountSat'),
@@ -761,8 +766,8 @@ void main() {
           () => refreshedOrder.payinStatus,
         ).thenReturn(OrderPayinStatus.inProgress);
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => refreshedOrder);
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(refreshedOrder));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
         final successState = await bloc.stream.firstWhere(
@@ -782,9 +787,9 @@ void main() {
       // the broadcast. Holding the fetch open puts the latch inside that
       // window — where the poll used to emit its pre-await snapshot and re-arm
       // Confirm with the transaction already sent (#2522).
-      final pollFetch = Completer<Order>();
+      final pollFetch = Completer<Result<Order, SellFailure>>();
       when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
       ).thenAnswer((_) => pollFetch.future);
 
       final polledOrder = _MockSellOrder();
@@ -804,7 +809,7 @@ void main() {
         ),
       );
 
-      pollFetch.complete(polledOrder);
+      pollFetch.complete(Ok<Order, SellFailure>(polledOrder));
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       final state = bloc.state as SellPaymentState;
@@ -819,7 +824,7 @@ void main() {
     'the price-lock refresh leaves a confirmation in flight alone',
     () async {
       when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
       ).thenThrow(GetOrderException('dns failure'));
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
@@ -852,7 +857,7 @@ void main() {
       () => sellOrder.confirmationDeadline,
     ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
     when(
-      () => prepareBitcoinSend.execute(
+      () => prepareSellBitcoinPayin.execute(
         walletId: any(named: 'walletId'),
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
@@ -876,7 +881,7 @@ void main() {
         orderId: any(named: 'orderId'),
         expectedDepositAddress: any(named: 'expectedDepositAddress'),
       ),
-    ).thenAnswer((_) async => refreshedOrder);
+    ).thenAnswer((_) async => Ok<SellOrder, SellFailure>(refreshedOrder));
 
     bloc.add(const SellEvent.sendPaymentConfirmed());
     await Future<void>.delayed(const Duration(milliseconds: 200));
@@ -888,7 +893,7 @@ void main() {
       ),
     ).called(1);
     verifyNever(
-      () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastSellPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
     );
 
     final state = bloc.state as SellPaymentState;
@@ -923,7 +928,11 @@ void main() {
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
         ),
-      ).thenThrow(const SellError.depositAddressChanged());
+      ).thenAnswer(
+        (_) async => const Err<SellOrder, SellFailure>(
+          SellDepositAddressChangedFailure(),
+        ),
+      );
 
       bloc.add(const SellEvent.orderRefreshTimePassed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -936,7 +945,7 @@ void main() {
             'a refreshed order with a different deposit address must never '
             'replace the order the payin is built from',
       );
-      expect(state.error, isA<DepositAddressChangedSellError>());
+      expect(state.error, isA<SellDepositAddressChangedFailure>());
     });
 
     test(
@@ -955,7 +964,7 @@ void main() {
             orderId: any(named: 'orderId'),
             expectedDepositAddress: any(named: 'expectedDepositAddress'),
           ),
-        ).thenAnswer((_) async => refreshedOrder);
+        ).thenAnswer((_) async => Ok<SellOrder, SellFailure>(refreshedOrder));
 
         bloc.add(const SellEvent.orderRefreshTimePassed());
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -975,15 +984,15 @@ void main() {
         () => tampered.payinStatus,
       ).thenReturn(OrderPayinStatus.awaitingPayment);
       when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => tampered);
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) async => Ok<Order, SellFailure>(tampered));
 
       bloc.add(const SellEvent.pollOrderStatus());
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       final state = bloc.state as SellPaymentState;
       expect(state.sellOrder, same(sellOrder));
-      expect(state.error, isA<DepositAddressChangedSellError>());
+      expect(state.error, isA<SellDepositAddressChangedFailure>());
     });
 
     test(
@@ -994,8 +1003,8 @@ void main() {
           () => tampered.payinStatus,
         ).thenReturn(OrderPayinStatus.inProgress);
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) async => tampered);
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
+        ).thenAnswer((_) async => Ok<Order, SellFailure>(tampered));
 
         bloc.add(const SellEvent.pollOrderStatus());
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1003,7 +1012,7 @@ void main() {
         expect(bloc.state, isA<SellPaymentState>());
         expect(
           (bloc.state as SellPaymentState).error,
-          isA<DepositAddressChangedSellError>(),
+          isA<SellDepositAddressChangedFailure>(),
         );
       },
     );
@@ -1015,23 +1024,27 @@ void main() {
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
         ),
-      ).thenThrow(const SellError.depositAddressChanged());
+      ).thenAnswer(
+        (_) async => const Err<SellOrder, SellFailure>(
+          SellDepositAddressChangedFailure(),
+        ),
+      );
       when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => sellOrder);
+        () => loadSellContext.order(orderId: any(named: 'orderId')),
+      ).thenAnswer((_) async => Ok<Order, SellFailure>(sellOrder));
 
       bloc.add(const SellEvent.orderRefreshTimePassed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       expect(
         (bloc.state as SellPaymentState).error,
-        isA<DepositAddressChangedSellError>(),
+        isA<SellDepositAddressChangedFailure>(),
       );
 
       bloc.add(const SellEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 200));
 
       final builtAddresses = verify(
-        () => prepareBitcoinSend.execute(
+        () => prepareSellBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
           address: captureAny(named: 'address'),
           amountSat: any(named: 'amountSat'),
@@ -1065,10 +1078,11 @@ void main() {
     /// Parks a fee recalculation inside its network-fee fetch, then moves the
     /// flow to the success state underneath it. Returns the completer so the
     /// caller decides whether the parked fetch succeeds or fails.
-    Future<Completer<FeeOptions>> recalculationParkedPastSuccess() async {
-      final feeFetch = Completer<FeeOptions>();
+    Future<Completer<Result<FeeOptions, SellFailure>>>
+    recalculationParkedPastSuccess() async {
+      final feeFetch = Completer<Result<FeeOptions, SellFailure>>();
       when(
-        () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
+        () => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')),
       ).thenAnswer((_) => feeFetch.future);
 
       bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
@@ -1086,7 +1100,7 @@ void main() {
         'nothing', () async {
       final feeFetch = await recalculationParkedPastSuccess();
 
-      feeFetch.complete(feeOptions);
+      feeFetch.complete(Ok<FeeOptions, SellFailure>(feeOptions));
       await Future<void>.delayed(const Duration(milliseconds: 200));
 
       // Republishing the pre-broadcast payment state here would take the user
@@ -1108,12 +1122,35 @@ void main() {
     });
 
     test(
+      'a failed recalculation restores the previous fee and reports why',
+      () async {
+        final before = bloc.state as SellPaymentState;
+        expect(before.absoluteFees, isNotNull);
+        when(
+          () => loadSellContext.networkFees(isLiquid: any(named: 'isLiquid')),
+        ).thenAnswer(
+          (_) async =>
+              const Err<FeeOptions, SellFailure>(SellFeesUnavailableFailure()),
+        );
+
+        bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+
+        // The row drops its fee while recalculating; leaving it null would show
+        // "calculating" forever with no explanation.
+        final after = bloc.state as SellPaymentState;
+        expect(after.absoluteFees, before.absoluteFees);
+        expect(after.error, isA<SellFeesUnavailableFailure>());
+      },
+    );
+
+    test(
       'the payin is built at the selected preset, not Fastest',
       () async {
         // Nothing must complete the order — the assertion is about the rate the
         // build was asked for.
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.feeOptionSelected(FeeSelection.economic));
@@ -1137,7 +1174,7 @@ void main() {
       'a typed custom rate is committed on dismissal and paid',
       () async {
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenThrow(GetOrderException('dns failure'));
         final customFee = NetworkFee.relativeFromSatPerVbyte(3);
 
@@ -1198,7 +1235,7 @@ void main() {
       'fee selection is inert once the payin is broadcast',
       () async {
         when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
+          () => loadSellContext.order(orderId: any(named: 'orderId')),
         ).thenThrow(GetOrderException('dns failure'));
 
         bloc.add(const SellEvent.sendPaymentConfirmed());
