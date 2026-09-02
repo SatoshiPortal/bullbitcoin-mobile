@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
 /// Why a single anchor sits where it does. Drives the wording beside the
@@ -47,6 +48,7 @@ sealed class TransactionAnchor {
 
     // Nothing moved, so a value would read as income or spend.
     if (wt?.isToSelf ?? false) return const NoAnchor();
+    if (_isBetweenOwnWallets(transaction)) return const NoAnchor();
 
     // A swap settles within seconds of the payment, so it needs no bounding.
     final swap = transaction.swap;
@@ -93,6 +95,25 @@ sealed class TransactionAnchor {
       from: confirmedAt.subtract(_blockInterval * gap),
       to: confirmedAt,
     );
+  }
+
+  /// Whether a swap moves the user's own coins between two of their own
+  /// wallets.
+  ///
+  /// Economically this is a self-transfer across rails, so it shows no value
+  /// for the same reason an on-chain self-send does. `isToSelf` cannot catch
+  /// it: that flag lives on [WalletTransaction] and is never set on a swap.
+  static bool _isBetweenOwnWallets(Transaction transaction) {
+    final orderSwap = transaction.orderSwap;
+    if (orderSwap != null) {
+      return orderSwap.sourceWalletId != null &&
+          orderSwap.destinationWalletId != null;
+    }
+    final swap = transaction.swap;
+    if (swap is ChainSwap) {
+      return swap.receiveWalletId != null;
+    }
+    return false;
   }
 }
 

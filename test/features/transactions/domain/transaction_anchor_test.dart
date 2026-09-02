@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -178,6 +180,36 @@ void main() {
       final anchor = TransactionAnchor.of(tx);
       expect(anchor, isA<SingleAnchor>());
       expect((anchor as SingleAnchor).at, _at('2026-08-28T18:44:00Z'));
+    });
+  });
+
+  group('a swap between two of your own wallets shows nothing', () {
+    Swap chain({String? receiveWalletId}) => Swap.chain(
+      id: 's1',
+      keyIndex: 0,
+      type: SwapType.bitcoinToLiquid,
+      status: SwapStatus.completed,
+      environment: Environment.mainnet,
+      creationTime: _at('2026-09-01T12:00:00Z'),
+      completionTime: _at('2026-09-01T12:05:00Z'),
+      sendWalletId: 'w1',
+      paymentAddress: 'addr',
+      paymentAmount: 100000,
+      receiveWalletId: receiveWalletId,
+    );
+
+    test('an internal chain swap resolves to none', () {
+      // Economically a self-transfer across rails. isToSelf cannot catch it:
+      // that flag lives on WalletTransaction and is never set on a swap.
+      final tx = Transaction(swap: chain(receiveWalletId: 'w2'));
+      expect(TransactionAnchor.of(tx), isA<NoAnchor>());
+    });
+
+    test('a chain swap paying out externally still shows a value', () {
+      final tx = Transaction(swap: chain());
+      final anchor = TransactionAnchor.of(tx);
+      expect(anchor, isA<SingleAnchor>());
+      expect((anchor as SingleAnchor).reason, AnchorReason.settled);
     });
   });
 
