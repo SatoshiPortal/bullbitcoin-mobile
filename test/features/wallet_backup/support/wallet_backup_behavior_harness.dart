@@ -449,6 +449,7 @@ final class WalletBackupBehaviorHarness {
     final decodeFile = DecodeWalletBackupFileUsecase(
       resolveKey.execute,
       encryption,
+      nostrIdentity,
     );
     final recover = RecoverWalletBackupUsecase(
       fetchImport: fetchImport.execute,
@@ -489,6 +490,7 @@ final class WalletBackupBehaviorHarness {
         buildSnapshot: buildSnapshot.execute,
         resolveKey: resolveKey.execute,
         encryption: encryption,
+        identity: nostrIdentity,
       ),
       CompareWalletBackupFileUsecase(
         decodeFile.execute,
