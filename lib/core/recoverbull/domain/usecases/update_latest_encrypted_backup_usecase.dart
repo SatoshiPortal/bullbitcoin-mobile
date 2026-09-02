@@ -41,21 +41,22 @@ class UpdateLatestEncryptedVaultTestUsecase {
         environment: settings.environment,
       );
 
+      if (availableWallets.isEmpty ||
+          availableWallets.any(
+            (wallet) => wallet.masterFingerprint != decodedFingerprint,
+          )) {
+        return const Err(
+          InvalidVaultFileFailure(
+            'The vault does not belong to the current wallet.',
+          ),
+        );
+      }
+
       for (final wallet in availableWallets) {
-        if (wallet.masterFingerprint == decodedFingerprint) {
-          await _walletRepository.updateEncryptedBackupTime(
-            time: DateTime.now(),
-            walletId: wallet.id,
-          );
-        } else {
-          log.warning(
-            'The vault mnemonic does not match the current default wallet.',
-          );
-          await _walletRepository.updateEncryptedBackupTime(
-            time: null,
-            walletId: wallet.id,
-          );
-        }
+        await _walletRepository.updateEncryptedBackupTime(
+          time: DateTime.now(),
+          walletId: wallet.id,
+        );
       }
       return const Ok(null);
     } catch (e, st) {

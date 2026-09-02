@@ -106,7 +106,14 @@ class RecoverBullRemoteDatasource {
 
       final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
-      await KeyServer(address: url, client: client).infos();
+      try {
+        await KeyServer(
+          address: url,
+          client: client,
+        ).infos().timeout(const Duration(seconds: 10));
+      } finally {
+        client.close();
+      }
     } catch (e) {
       log.severe(
         message: 'checkConnection error',

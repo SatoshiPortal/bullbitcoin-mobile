@@ -109,9 +109,18 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
                 SettingsEntryItem(
                   icon: Icons.save,
-                  title: context.loc.settingsWalletBackupTitle,
+                  title: context.loc.walletRecoverySettingsTitle,
                   onTap: () {
-                    context.pushNamed(SettingsRoute.backupSettings.name);
+                    context.pushNamed(
+                      SettingsRoute.walletRecoverySettings.name,
+                    );
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.cloud_sync_outlined,
+                  title: context.loc.dataBackupSettingsTitle,
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.dataBackupSettings.name);
                   },
                 ),
                 SettingsEntryItem(

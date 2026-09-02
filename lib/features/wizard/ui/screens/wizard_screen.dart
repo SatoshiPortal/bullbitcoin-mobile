@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/metadata_backup_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_step.dart';
@@ -18,7 +19,7 @@ import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
+/// 5-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
 /// from the last page's "Get started" button. `initState` runs a
@@ -84,7 +85,23 @@ class _WizardScreenState extends State<WizardScreen> {
     _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
   }
 
+  void _pickMetadataBackup(bool enabled) {
+    context.read<WizardBloc>().add(WizardEvent.metadataBackupPicked(enabled));
+  }
+
   void _tryFinish(WizardChoices choices) {
+    if (choices.metadataBackupEnabled == null) {
+      _controller.animateToPage(
+        WizardPage.metadataBackup.index,
+        duration: _pageDuration,
+        curve: _pageCurve,
+      );
+      SnackBarUtils.showSnackBar(
+        context,
+        context.loc.wizardMetadataBackupRequired,
+      );
+      return;
+    }
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
         WizardPage.mission.index,
@@ -103,6 +120,7 @@ class _WizardScreenState extends State<WizardScreen> {
     final vGap = Device.screen.height * 0.02;
 
     final isWelcome = _page == WizardPage.welcome;
+    final isMetadataBackup = _page == WizardPage.metadataBackup;
     final isMission = _page == WizardPage.mission;
     final isLast = _page.isLast;
     return PopScope(
@@ -128,8 +146,26 @@ class _WizardScreenState extends State<WizardScreen> {
           children: [
             if (isWelcome) const WelcomeBgPattern(),
             SafeArea(
-              child: BlocBuilder<WizardBloc, WizardState>(
-                buildWhen: (a, b) => a.choices != b.choices,
+              child: BlocConsumer<WizardBloc, WizardState>(
+                listenWhen: (previous, current) =>
+                    previous.metadataBackupSaving &&
+                    !current.metadataBackupSaving,
+                listener: (context, state) {
+                  if (state.metadataBackupSaveFailed) {
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.wizardMetadataBackupSaveFailed,
+                    );
+                  } else if (_page == WizardPage.metadataBackup) {
+                    _controller.nextPage(
+                      duration: _pageDuration,
+                      curve: _pageCurve,
+                    );
+                  }
+                },
+                buildWhen: (a, b) =>
+                    a.choices != b.choices ||
+                    a.metadataBackupSaving != b.metadataBackupSaving,
                 builder: (context, state) {
                   final c = state.choices;
                   final bloc = context.read<WizardBloc>();
@@ -154,6 +190,7 @@ class _WizardScreenState extends State<WizardScreen> {
                                   setState(() => _page = WizardPage.values[i]),
                               children: [
                                 const WelcomeStep(),
+                                const MetadataBackupStep(),
                                 CustomizeStep(
                                   themeMode: c.themeMode,
                                   language: c.language,
@@ -206,7 +243,41 @@ class _WizardScreenState extends State<WizardScreen> {
                                 ),
                                 SizedBox(height: vGap),
                               ],
-                              if (isMission)
+                              if (isMetadataBackup)
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: BBButton.big(
+                                        label: context
+                                            .loc
+                                            .wizardMetadataBackupEnable,
+                                        onPressed: () =>
+                                            _pickMetadataBackup(true),
+                                        disabled: state.metadataBackupSaving,
+                                        bgColor: context.appColors.primary,
+                                        textColor: context.appColors.onPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: BBButton.small(
+                                        label: context
+                                            .loc
+                                            .wizardMetadataBackupDecline,
+                                        onPressed: () =>
+                                            _pickMetadataBackup(false),
+                                        disabled: state.metadataBackupSaving,
+                                        bgColor: context.appColors.surface,
+                                        textColor: context.appColors.error,
+                                        borderColor: context.appColors.error,
+                                        outlined: true,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              else if (isMission)
                                 MissionConsentRow(
                                   consent: c.reportingConsent,
                                   onYes: () => _pickConsent(true),

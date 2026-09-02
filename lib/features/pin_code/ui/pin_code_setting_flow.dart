@@ -48,7 +48,7 @@ class PinCodeSettingFlow extends StatelessWidget {
                 context.loc.pinCodeBackupRequiredWarning,
               );
               context.goNamed(WalletRoute.walletHome.name);
-              context.pushNamed(SettingsRoute.backupSettings.name);
+              context.pushNamed(SettingsRoute.walletRecoverySettings.name);
             default:
               break;
           }

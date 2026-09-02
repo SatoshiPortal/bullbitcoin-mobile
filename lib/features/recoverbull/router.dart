@@ -16,6 +16,8 @@ import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
+import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -57,6 +59,9 @@ class RecoverBullRouter {
               locator<FetchVaultKeyFromServerUsecase>(),
           decryptVaultUsecase: locator<DecryptVaultUsecase>(),
           restoreVaultUsecase: locator<RestoreVaultUsecase>(),
+          recoverRemoteKeychainUsecase: RecoverBullRemoteKeychainUsecase(
+            locator<WalletBackupFacade>(),
+          ),
           connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
           saveToGoogleDriveUsecase: locator<SaveVaultToGoogleDriveUsecase>(),
           initializeTorUsecase: locator<InitTorUsecase>(),
