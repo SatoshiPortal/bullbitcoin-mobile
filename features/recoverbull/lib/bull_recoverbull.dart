@@ -8,6 +8,7 @@ export 'src/public/recoverbull.dart'
         RecoverBullLifecycle,
         RecoverBullHealth,
         RecoverBullServerSettings,
+        RecoverBullMonitoringStatus,
         RecoverBullRecoveryResult,
         RecoverBullAttemptMonitoringController,
         RecoverBullAttemptAlert,

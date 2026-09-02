@@ -1,5 +1,5 @@
 import '../../../data/file_system_repository.dart';
-import '../../../data/google_drive_repository.dart';
+import '../../repositories/google_drive_repository.dart';
 import '../../entities/drive_file_metadata.dart';
 import '../../recoverbull_failure.dart';
 import 'package:primitives/primitives.dart';

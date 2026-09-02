@@ -735,5 +735,18 @@
   "torSettingsDescDisconnected": "Tor proxy is not running",
   "@torSettingsDescDisconnected": {
     "description": "Description when Tor is disconnected"
-  }
+  },
+  "recoverbullMonitoringTitle": "Backup monitoring",
+  "recoverbullMonitoringEnabled": "Monitor backups",
+  "recoverbullMonitoringCount": "Backups monitored: {count}",
+  "recoverbullMonitoringLastCheck": "Last successful check: {date}",
+  "recoverbullMonitoringUncovered": "No backups are currently covered.",
+  "recoverbullMonitoringExplanation": "RecoverBull uses one global attempts request and filters your monitored backups locally.",
+  "recoverbullAttemptAlertDetailsTitle": "Backup monitoring details",
+  "recoverbullAttemptAlertReference": "Backup reference: {reference}",
+  "recoverbullAttemptAlertAttempts": "Attempts: {observed} / expected: {expected}",
+  "recoverbullAttemptAlertWindow": "Window started: {date}",
+  "recoverbullAttemptAlertAction": "Recommended action: stop using this backup and contact support.",
+  "recoverbullAttemptAlertLockoutGuidance": "Never enter your seed, password, PIN, or key material in response to this alert.",
+  "recoverbullAttemptAlertInformational": "This is informational and does not indicate a security incident."
 }

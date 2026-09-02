@@ -47,14 +47,20 @@ final class FetchVaultKeyWithStatusFromServerUsecase {
         vault.salt,
         route,
       );
-      if (result case Ok(:final value) when value.attemptStatus != null) {
+      if (result case Ok(:final value)) {
         try {
           final alert = await recordAttempt?.execute(
             backupIdHex: vault.id,
             attemptStatus: value.attemptStatus,
           );
           if (alert != null) alertPort?.publish(alert);
-        } catch (_) {}
+        } catch (error, stackTrace) {
+          log.warning(
+            'attempt monitoring update failed',
+            error: error,
+            trace: stackTrace,
+          );
+        }
       }
       return result;
     } finally {

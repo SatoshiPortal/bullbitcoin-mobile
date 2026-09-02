@@ -298,5 +298,18 @@
   "closeDialogButton": "Fermer",
   "@closeDialogButton": {
     "description": "Button to close the value dialog."
-  }
+  },
+  "recoverbullMonitoringTitle": "Surveillance des sauvegardes",
+  "recoverbullMonitoringEnabled": "Surveiller les sauvegardes",
+  "recoverbullMonitoringCount": "Sauvegardes surveillées : {count}",
+  "recoverbullMonitoringLastCheck": "Dernier contrôle réussi : {date}",
+  "recoverbullMonitoringUncovered": "Aucune sauvegarde n’est actuellement couverte.",
+  "recoverbullMonitoringExplanation": "RecoverBull utilise une requête globale des tentatives et filtre localement vos sauvegardes surveillées.",
+  "recoverbullAttemptAlertDetailsTitle": "Détails de la surveillance",
+  "recoverbullAttemptAlertReference": "Référence de sauvegarde : {reference}",
+  "recoverbullAttemptAlertAttempts": "Tentatives : {observed} / attendu : {expected}",
+  "recoverbullAttemptAlertWindow": "Début de la fenêtre : {date}",
+  "recoverbullAttemptAlertAction": "Action recommandée : cessez d’utiliser cette sauvegarde et contactez le support.",
+  "recoverbullAttemptAlertLockoutGuidance": "Ne saisissez jamais votre seed, mot de passe, code PIN ou clé en réponse à cette alerte.",
+  "recoverbullAttemptAlertInformational": "Cette information n’indique pas un incident de sécurité."
 }

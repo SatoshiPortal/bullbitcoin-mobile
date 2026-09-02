@@ -115,9 +115,9 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
           }
           if (state.decryptedVault != null && state.vaultKey != null) {
             if (_hasNavigatedAway) return;
-            _hasNavigatedAway = true;
             switch (state.flow) {
               case RecoverBullFlow.viewVaultKey:
+                _hasNavigatedAway = true;
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) =>

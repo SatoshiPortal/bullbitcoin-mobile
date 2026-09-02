@@ -1,5 +1,4 @@
 import '../../attempt_monitoring/recoverbull_attempt_monitoring.dart';
-import '../entities/key_server_attempts.dart';
 import '../entities/attempt_alert.dart';
 
 final class CheckBackupAttemptMonitoringUsecase {
@@ -62,6 +61,12 @@ final class CheckBackupAttemptMonitoringUsecase {
         if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
       ];
     }
+    if (snapshot.targetedLockouts.isNotEmpty) {
+      return [
+        for (final digest in snapshot.targetedLockouts)
+          TargetedLockoutAlert(backupIdHash: _hex(digest)),
+      ];
+    }
     final alerts = <AttemptAlert>[];
     final collection = await store.state();
     var wiped = false;
@@ -96,39 +101,22 @@ final class CheckBackupAttemptMonitoringUsecase {
       for (final entry in snapshot.totalAttempts.entries)
         _hex(entry.key): entry.value,
     };
-    final windows = {
-      for (final entry in snapshot.windowStartedAt.entries)
-        _hex(entry.key): entry.value,
-    };
     for (final row in rows) {
+      if (row.currentWindow == 0 && row.lastWarningWindow == 0) continue;
       final hash = _hex(row.digest);
       final observed = entries[hash];
       if (observed == null ||
           observed <= row.expectedServerDistinctCandidateTotal) {
         continue;
       }
-      final window = attemptWindowIdentity(
-        windows[hash] ?? snapshot.collectionStartedAt,
+      alerts.add(
+        SuspiciousActivityAlert(
+          backupIdHash: hash,
+          observedTotal: observed,
+          expectedTotal: row.expectedServerDistinctCandidateTotal,
+          windowStartedAt: snapshot.collectionStartedAt,
+        ),
       );
-      if (row.lastWarningWindow != window) {
-        alerts.add(
-          SuspiciousActivityAlert(
-            backupIdHash: hash,
-            observedTotal: observed,
-            expectedTotal: row.expectedServerDistinctCandidateTotal,
-            windowStartedAt: snapshot.collectionStartedAt,
-          ),
-        );
-        await store.replaceBackup(
-          AttemptMonitoringBackupState(
-            serverUrl: '',
-            backupIdHash: hash,
-            expectedTotalAttempts: row.expectedServerDistinctCandidateTotal,
-            currentWindow: row.currentWindow,
-            lastWarningWindow: window,
-          ),
-        );
-      }
     }
     return alerts;
   }

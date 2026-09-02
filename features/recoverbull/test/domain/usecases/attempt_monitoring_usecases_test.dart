@@ -8,9 +8,12 @@ import 'package:bull_recoverbull/src/domain/usecases/is_recoverbull_attempt_moni
 import 'package:bull_recoverbull/src/domain/usecases/record_local_attempt_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/register_monitored_backup_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/set_recoverbull_attempt_monitoring_enabled_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/discover_drive_backups_usecase.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_drive_discovery_port.dart';
 import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_monitoring.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'dart:convert';
 
 class _Remote implements RecoverBullAttemptMonitoringRemotePort {
   RecoverBullAttemptsSnapshot? response;
@@ -26,6 +29,76 @@ class _Remote implements RecoverBullAttemptMonitoringRemotePort {
     lastEtag = etag;
     return response;
   }
+}
+
+final class _DriveDiscovery implements RecoverBullDriveDiscoveryPort {
+  const _DriveDiscovery();
+
+  @override
+  Future<T> withDiscoverySession<T>(
+    Future<T> Function(RecoverBullDriveDiscoverySession? session) action,
+  ) => action(
+    _TestDiscoverySession(account: 'account', files: files, content: content),
+  );
+
+  Future<String> account() async => 'account';
+
+  Future<List<RecoverBullDriveFile>> files() async => [
+    RecoverBullDriveFile(id: 'file', createdTime: DateTime.utc(2026)),
+  ];
+
+  Future<String> content(String fileId) async =>
+      _validVault('000102030405060708090a0b0c0d0e0f');
+}
+
+final class _CountingDrive implements RecoverBullDriveDiscoveryPort {
+  int contentCalls = 0;
+  final String currentAccount;
+  final String fileId;
+  final String backupId;
+
+  _CountingDrive(this.currentAccount, this.fileId, this.backupId);
+
+  @override
+  Future<T> withDiscoverySession<T>(
+    Future<T> Function(RecoverBullDriveDiscoverySession? session) action,
+  ) => action(
+    _TestDiscoverySession(
+      account: currentAccount,
+      files: files,
+      content: content,
+    ),
+  );
+
+  Future<String> account() async => currentAccount;
+
+  Future<List<RecoverBullDriveFile>> files() async => [
+    RecoverBullDriveFile(id: fileId, createdTime: DateTime.utc(2026)),
+  ];
+
+  Future<String> content(String fileId) async {
+    contentCalls++;
+    return _validVault(backupId);
+  }
+}
+
+final class _TestDiscoverySession implements RecoverBullDriveDiscoverySession {
+  @override
+  final String account;
+  final Future<List<RecoverBullDriveFile>> Function() _files;
+  final Future<String> Function(String) _content;
+
+  const _TestDiscoverySession({
+    required this.account,
+    required this._files,
+    required this._content,
+  });
+
+  @override
+  Future<List<RecoverBullDriveFile>> files() => _files();
+
+  @override
+  Future<String> content(String fileId) => _content(fileId);
 }
 
 void main() {
@@ -50,6 +123,112 @@ void main() {
           .expectedServerDistinctCandidateTotal,
       0,
     );
+    await db.close();
+  });
+
+  test('startup drive discovery adopts each returned backup', () async {
+    final (db, store) = await build();
+    await DiscoverDriveBackupsUsecase(
+      drive: const _DriveDiscovery(),
+      store: store,
+    ).execute();
+    final row = (await store.monitoredBackups()).single;
+    expect(row.expectedServerDistinctCandidateTotal, 0);
+    expect(row.lastWarningWindow, 0);
+    await db.close();
+  });
+
+  test(
+    'drive discovery caches file content and purges only old drive rows',
+    () async {
+      final (db, store) = await build();
+      final drive = _CountingDrive(
+        'old-account',
+        'file',
+        '101112131415161718191a1b1c1d1e1f',
+      );
+      final discovery = DiscoverDriveBackupsUsecase(drive: drive, store: store);
+      await discovery.execute();
+      await discovery.execute();
+      expect(drive.contentCalls, 1);
+      await store.registerBackup(
+        List<int>.filled(16, 7),
+        origin: MonitoredBackupOrigin.adopted,
+      );
+      final next = _CountingDrive(
+        'new-account',
+        'new-file',
+        '202122232425262728292a2b2c2d2e2f',
+      );
+      await DiscoverDriveBackupsUsecase(drive: next, store: store).execute();
+      final rows = await store.monitoredBackups();
+      expect(rows, hasLength(2));
+      expect(rows.where((row) => row.driveAccount == 'old-account'), isEmpty);
+      expect(rows.where((row) => row.driveAccount == null), hasLength(1));
+      await db.close();
+    },
+  );
+
+  test('adopting a backup seeds its observed baseline and window', () async {
+    final (db, store) = await build();
+    await store.registerBackup(
+      id,
+      origin: MonitoredBackupOrigin.adopted,
+      observedTotal: 3,
+      window: attemptWindowIdentity(window),
+    );
+    final row = (await store.monitoredBackups()).single;
+    expect(row.expectedServerDistinctCandidateTotal, 3);
+    expect(row.currentWindow, attemptWindowIdentity(window));
+    expect(row.lastWarningWindow, attemptWindowIdentity(window));
+    await db.close();
+  });
+
+  test('adopted baseline stays silent until the next server attempt', () async {
+    final (db, store) = await build();
+    await store.registerBackup(
+      id,
+      origin: MonitoredBackupOrigin.adopted,
+      observedTotal: 3,
+      window: attemptWindowIdentity(window),
+    );
+    final digest = (await store.monitoredBackups()).single.digest;
+    var now = DateTime.now().toUtc();
+    final check = CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 3},
+          windowStartedAt: {digest: window},
+        ),
+      clock: () => now,
+    );
+    expect(await check.execute(), isEmpty);
+    (check.remote as _Remote).response = RecoverBullAttemptsSnapshot(
+      collectionStartedAt: window,
+      totalAttempts: {digest: 4},
+      windowStartedAt: {digest: window},
+    );
+    now = now.add(const Duration(hours: 2));
+    expect((await check.execute()).single, isA<SuspiciousActivityAlert>());
+    await db.close();
+  });
+
+  test('created baseline alerts on its first server attempt', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id, origin: MonitoredBackupOrigin.created);
+    final digest = (await store.monitoredBackups()).single.digest;
+    final alerts = await CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {digest: 1},
+          windowStartedAt: {digest: window},
+        ),
+    ).execute();
+    expect(alerts.single, isA<SuspiciousActivityAlert>());
     await db.close();
   });
 
@@ -367,6 +546,26 @@ void main() {
     await db.close();
   });
 
+  test(
+    'a rate-limited monitored backup emits a targeted lockout alert',
+    () async {
+      final (db, store) = await build();
+      await store.registerBackup(id);
+      final digest = (await store.monitoredBackups()).single.digest;
+      final alerts = await CheckBackupAttemptMonitoringUsecase(
+        store: store,
+        remote: _Remote()
+          ..response = RecoverBullAttemptsSnapshot(
+            collectionStartedAt: window,
+            totalAttempts: const {},
+            targetedLockouts: [digest],
+          ),
+      ).execute();
+      expect(alerts.single, isA<TargetedLockoutAlert>());
+      await db.close();
+    },
+  );
+
   test('disable wipes monitored identifiers and resets generation', () async {
     final (db, store) = await build();
     await store.registerBackup(id);
@@ -391,6 +590,47 @@ void main() {
           .expectedServerDistinctCandidateTotal,
       0,
     );
+    await db.close();
+  });
+
+  test(
+    'successful fetch without status adopts from the global snapshot',
+    () async {
+      final (db, store) = await build();
+      final remote = _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: {store.digestFor(id): 4},
+          windowStartedAt: {store.digestFor(id): window},
+        );
+
+      await RecordLocalAttemptUsecase(
+        store,
+        remote: remote,
+      ).execute(backupIdHex: _hex(id));
+
+      final row = (await store.monitoredBackups()).single;
+      expect(row.expectedServerDistinctCandidateTotal, 4);
+      expect(row.currentWindow, attemptWindowIdentity(window));
+      expect(row.lastWarningWindow, attemptWindowIdentity(window));
+      await db.close();
+    },
+  );
+
+  test('missing digest in the global snapshot is not adopted', () async {
+    final (db, store) = await build();
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: {store.digestFor(List<int>.filled(16, 9)): 4},
+      );
+
+    await RecordLocalAttemptUsecase(
+      store,
+      remote: remote,
+    ).execute(backupIdHex: _hex(id));
+
+    expect(await store.monitoredBackups(), isEmpty);
     await db.close();
   });
 
@@ -724,7 +964,7 @@ void main() {
     },
   );
 
-  test('the same window does not re-raise on a second recovery', () async {
+  test('the same window re-raises after a later check', () async {
     final (db, store) = await build();
     await store.registerBackup(id);
     final digest = (await store.monitoredBackups()).single.digest;
@@ -734,15 +974,21 @@ void main() {
         totalAttempts: {digest: 2},
         windowStartedAt: {digest: window},
       );
+    var now = DateTime.now().toUtc();
     final check = CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: remote,
+      clock: () => now,
     );
     expect(
       (await check.execute()).whereType<SuspiciousActivityAlert>(),
       hasLength(1),
     );
-    expect(await check.execute(), isEmpty);
+    now = now.add(const Duration(hours: 2));
+    expect(
+      (await check.execute()).whereType<SuspiciousActivityAlert>(),
+      hasLength(1),
+    );
     await db.close();
   });
 
@@ -760,6 +1006,15 @@ void main() {
 
 String _hex(List<int> bytes) =>
     bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+
+String _validVault(String seed) => jsonEncode({
+  'version': 1,
+  'created_at': 1780000000000,
+  'id': (seed + seed).substring(0, 64),
+  'salt': '000102030405060708090a0b0c0d0e0f',
+  'ciphertext': base64Encode(List<int>.generate(64, (i) => i)),
+  'path': "m/83696968'/0'/0'",
+});
 
 KeyServerAttemptStatus _status(int total, {DateTime? at}) =>
     KeyServerAttemptStatus(

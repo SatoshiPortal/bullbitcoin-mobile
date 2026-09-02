@@ -598,8 +598,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
     try {
       await _registerMonitoredBackupUsecase?.execute(backupIdHex: vault.id);
-    } catch (_) {
+    } catch (error, stackTrace) {
       // Local attempt monitoring is advisory after the external provider succeeded.
+      log.error(
+        'attempt monitoring registration failed',
+        error: error,
+        trace: stackTrace,
+      );
     }
     if (isClosed || _closingBloc || emit.isDone) {
       _pendingProviderVault = null;

@@ -224,6 +224,56 @@
             "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "origin",
+            "getter_name": "origin",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'created\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_account",
+            "getter_name": "driveAccount",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_id",
+            "getter_name": "driveFileId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_created_at",
+            "getter_name": "driveFileCreatedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_modified_at",
+            "getter_name": "driveFileModifiedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -236,6 +286,74 @@
         ],
         "explicit_pk": [
           "digest"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_drive_backup_cache",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "account",
+            "getter_name": "account",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_id",
+            "getter_name": "driveFileId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "backup_digest",
+            "getter_name": "backupDigest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_created_at",
+            "getter_name": "driveFileCreatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_modified_at",
+            "getter_name": "driveFileModifiedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "account",
+          "drive_file_id"
         ]
       }
     }
@@ -255,7 +373,16 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_monitored_backup\" (\"digest\" BLOB NOT NULL CHECK (length(digest) = 32), \"expected_server_distinct_candidate_total\" INTEGER NOT NULL DEFAULT 0, \"current_window\" INTEGER NOT NULL DEFAULT 0, \"last_warning_window\" INTEGER NULL, \"row_revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"digest\"), CHECK (expected_server_distinct_candidate_total >= 0), CHECK (current_window >= 0), CHECK (last_warning_window IS NULL OR last_warning_window >= 0), CHECK (row_revision >= 0));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_monitored_backup\" (\"digest\" BLOB NOT NULL CHECK (length(digest) = 32), \"expected_server_distinct_candidate_total\" INTEGER NOT NULL DEFAULT 0, \"current_window\" INTEGER NOT NULL DEFAULT 0, \"last_warning_window\" INTEGER NULL, \"row_revision\" INTEGER NOT NULL DEFAULT 0, \"origin\" TEXT NOT NULL DEFAULT 'created', \"drive_account\" TEXT NULL, \"drive_file_id\" TEXT NULL, \"drive_file_created_at\" TEXT NULL, \"drive_file_modified_at\" TEXT NULL, PRIMARY KEY (\"digest\"), CHECK (expected_server_distinct_candidate_total >= 0), CHECK (current_window >= 0), CHECK (last_warning_window IS NULL OR last_warning_window >= 0), CHECK (row_revision >= 0));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_drive_backup_cache",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_drive_backup_cache\" (\"account\" TEXT NOT NULL, \"drive_file_id\" TEXT NOT NULL, \"backup_digest\" BLOB NOT NULL, \"drive_file_created_at\" TEXT NOT NULL, \"drive_file_modified_at\" TEXT NULL, PRIMARY KEY (\"account\", \"drive_file_id\"));"
         }
       ]
     }

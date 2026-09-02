@@ -43,6 +43,11 @@ class RecoverbullMonitoredBackup extends Table {
   IntColumn get currentWindow => integer().withDefault(const Constant(0))();
   IntColumn get lastWarningWindow => integer().nullable()();
   IntColumn get rowRevision => integer().withDefault(const Constant(0))();
+  TextColumn get origin => text().withDefault(const Constant('created'))();
+  TextColumn get driveAccount => text().nullable()();
+  TextColumn get driveFileId => text().nullable()();
+  DateTimeColumn get driveFileCreatedAt => dateTime().nullable()();
+  DateTimeColumn get driveFileModifiedAt => dateTime().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {digest};
@@ -56,7 +61,24 @@ class RecoverbullMonitoredBackup extends Table {
   ];
 }
 
-@DriftDatabase(tables: [RecoverbullState, RecoverbullMonitoredBackup])
+class RecoverbullDriveBackupCache extends Table {
+  TextColumn get account => text()();
+  TextColumn get driveFileId => text()();
+  BlobColumn get backupDigest => blob()();
+  DateTimeColumn get driveFileCreatedAt => dateTime()();
+  DateTimeColumn get driveFileModifiedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {account, driveFileId};
+}
+
+@DriftDatabase(
+  tables: [
+    RecoverbullState,
+    RecoverbullMonitoredBackup,
+    RecoverbullDriveBackupCache,
+  ],
+)
 final class RecoverBullDatabase extends _$RecoverBullDatabase {
   static const schema = 1;
   final bool initialPermissionGranted;

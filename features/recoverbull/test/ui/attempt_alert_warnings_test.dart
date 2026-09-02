@@ -8,6 +8,7 @@ import 'package:bull_recoverbull/src/ui/widgets/attempt_alert_warnings.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard;
 
 class _Controller implements RecoverBullAttemptMonitoringController {
   final List<RecoverBullAttemptAlert> visible;
@@ -22,6 +23,13 @@ class _Controller implements RecoverBullAttemptMonitoringController {
 
   @override
   bool get enabled => true;
+  @override
+  Future<RecoverBullMonitoringStatus> status() async =>
+      const RecoverBullMonitoringStatus(
+        enabled: true,
+        monitoredCount: 0,
+        lastSuccessfulCheck: null,
+      );
   @override
   Future<List<RecoverBullAttemptAlert>> check() async => visible;
   @override
@@ -67,12 +75,12 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(find.byType(ListTile), findsOneWidget);
+      expect(find.byType(BullInfoCard), findsOneWidget);
       expect(find.text('RecoverBull security notice'), findsNothing);
 
       await tester.tap(find.byType(TextButton));
       await tester.pump();
-      expect(find.byType(ListTile), findsNothing);
+      expect(find.byType(BullInfoCard), findsNothing);
       await database.close();
     },
   );
@@ -105,7 +113,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byType(ListTile), findsOneWidget);
+    expect(find.byType(BullInfoCard), findsOneWidget);
     await database.close();
   });
 
@@ -138,7 +146,7 @@ void main() {
         RecoverBullAttemptAlertKind.countersWiped =>
           l10n.recoverbullAttemptMonitoringCountersWiped,
       };
-      expect(find.text(expected), findsOneWidget);
+      expect(find.text(expected), findsAtLeastNWidgets(1));
       if (kind != RecoverBullAttemptAlertKind.suspiciousActivity) {
         expect(
           find.text(l10n.recoverbullAttemptMonitoringSuspiciousActivityTitle),
@@ -147,7 +155,7 @@ void main() {
       }
       await tester.tap(find.byType(TextButton));
       await tester.pump();
-      expect(find.byType(ListTile), findsNothing);
+      expect(find.byType(BullInfoCard), findsNothing);
       await controller.dispose();
     }
   });

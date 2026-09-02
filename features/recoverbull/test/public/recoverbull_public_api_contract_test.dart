@@ -59,6 +59,14 @@ final class _Monitoring implements RecoverBullAttemptMonitoringController {
 
   @override
   Future<void> setEnabled(bool enabled) async {}
+
+  @override
+  Future<RecoverBullMonitoringStatus> status() async =>
+      const RecoverBullMonitoringStatus(
+        enabled: false,
+        monitoredCount: 0,
+        lastSuccessfulCheck: null,
+      );
 }
 
 void main() {

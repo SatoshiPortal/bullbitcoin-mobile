@@ -1,23 +1,34 @@
-import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
-import '../../domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../l10n/context_localizations.dart';
 import '../support.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'recoverbull_settings_cubit.dart';
+import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
+import '../../domain/usecases/store_recoverbull_url_usecase.dart';
+import '../../public/recoverbull.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
   final LogSink log;
-  final FetchRecoverbullUrlUsecase fetchUrlUsecase;
-  final StoreRecoverbullUrlUsecase storeUrlUsecase;
-  const SettingsPage({
+  final RecoverBullSettingsCubit cubit;
+  SettingsPage({
     super.key,
     required this.log,
-    required this.fetchUrlUsecase,
-    required this.storeUrlUsecase,
-  });
+    RecoverBullSettingsCubit? cubit,
+    FetchRecoverbullUrlUsecase? fetchUrlUsecase,
+    StoreRecoverbullUrlUsecase? storeUrlUsecase,
+    RecoverBullAttemptMonitoringController? monitoring,
+  }) : cubit =
+           cubit ??
+           RecoverBullSettingsCubit(
+             log: log,
+             fetchUrl: fetchUrlUsecase!,
+             storeUrl: storeUrlUsecase!,
+             monitoring: monitoring,
+           );
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -26,15 +37,13 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final _urlController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-  bool _isSaving = false;
   bool _isEditing = false;
   String _originalUrl = '';
 
   @override
   void initState() {
     super.initState();
-    _loadUrl();
+    widget.cubit.load();
   }
 
   @override
@@ -43,39 +52,18 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
-  Future<void> _loadUrl() async {
-    setState(() => _isLoading = true);
-    try {
-      final url = await widget.fetchUrlUsecase.execute();
-      _originalUrl = url.toString();
-    } catch (e) {
-      widget.log.warning('recoverbull.settings.load_failed');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
   Future<void> _saveUrl() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isSaving = true);
-    try {
-      final url = Uri.parse(_urlController.text);
-      await widget.storeUrlUsecase.execute(url);
-      _originalUrl = url.toString();
-      if (mounted) {
-        setState(() => _isEditing = false);
-      }
-    } catch (e) {
-      widget.log.warning('recoverbull.settings.save_failed');
-      if (mounted) {
-        SnackBarUtils.showSnackBar(
-          context,
-          context.loc.recoverbullErrorUnexpected,
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
+    final saved = await widget.cubit.save(_urlController.text);
+    if (saved && mounted) {
+      _originalUrl = widget.cubit.state.url;
+      setState(() => _isEditing = false);
+    } else if (mounted) {
+      SnackBarUtils.showSnackBar(
+        context,
+        context.loc.recoverbullErrorUnexpected,
+      );
     }
   }
 
@@ -105,6 +93,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_originalUrl.isEmpty && widget.cubit.state.url.isNotEmpty) {
+      _originalUrl = widget.cubit.state.url;
+    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -117,116 +108,164 @@ class _SettingsPageState extends State<SettingsPage> {
           color: context.appColors.onSurface,
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: .stretch,
-                  children: [
-                    const Gap(16),
-                    Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
+      body: BlocBuilder<RecoverBullSettingsCubit, RecoverBullSettingsState>(
+        bloc: widget.cubit,
+        builder: (context, settings) => settings.loading
+            ? const Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: .stretch,
+                    children: [
+                      const Gap(16),
+                      Row(
+                        mainAxisAlignment: .spaceBetween,
+                        children: [
+                          BBText(
+                            context.loc.recoverbullSettingsKeyServerUrl,
+                            style: context.font.titleMedium,
+                            color: context.appColors.onSurface,
+                          ),
+                          if (!_isEditing)
+                            TextButton.icon(
+                              onPressed: () {
+                                _urlController.text = _originalUrl;
+                                setState(() => _isEditing = true);
+                              },
+                              icon: const Icon(Icons.edit, size: 18),
+                              label: Text(context.loc.recoverbullSettingsEdit),
+                            ),
+                        ],
+                      ),
+                      const Gap(12),
+                      if (_isEditing) ...[
+                        TextFormField(
+                          controller: _urlController,
+                          validator: _validateUrl,
+                          maxLines: null,
+                          autofocus: true,
+                          style: context.font.bodyMedium,
+                          decoration: InputDecoration(
+                            hintText: context.loc.recoverbullSettingsUrlHint,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            contentPadding: const EdgeInsets.all(16),
+                          ),
+                        ),
+                      ] else ...[
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: context.appColors.cardBackground,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: context.appColors.border),
+                          ),
+                          child: BBText(
+                            _originalUrl,
+                            style: context.font.bodyMedium,
+                            color: context.appColors.onSurface,
+                          ),
+                        ),
+                      ],
+                      if (settings.monitoring case final monitoring?) ...[
+                        const Gap(24),
                         BBText(
-                          context.loc.recoverbullSettingsKeyServerUrl,
+                          context.loc.recoverbullMonitoringTitle,
                           style: context.font.titleMedium,
                           color: context.appColors.onSurface,
                         ),
-                        if (!_isEditing)
-                          TextButton.icon(
-                            onPressed: () {
-                              _urlController.text = _originalUrl;
-                              setState(() => _isEditing = true);
-                            },
-                            icon: const Icon(Icons.edit, size: 18),
-                            label: Text(context.loc.recoverbullSettingsEdit),
-                          ),
-                      ],
-                    ),
-                    const Gap(12),
-                    if (_isEditing) ...[
-                      TextFormField(
-                        controller: _urlController,
-                        validator: _validateUrl,
-                        maxLines: null,
-                        autofocus: true,
-                        style: context.font.bodyMedium,
-                        decoration: InputDecoration(
-                          hintText: context.loc.recoverbullSettingsUrlHint,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.all(16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BBText(
+                                context.loc.recoverbullMonitoringEnabled,
+                                style: context.font.bodyMedium,
+                                color: context.appColors.onSurface,
+                              ),
+                            ),
+                            BullSwitch(
+                              value: monitoring.enabled,
+                              onChanged: widget.cubit.setMonitoringEnabled,
+                            ),
+                          ],
                         ),
-                      ),
-                    ] else ...[
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: context.appColors.cardBackground,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: context.appColors.border),
-                        ),
-                        child: BBText(
-                          _originalUrl,
+                        Text(
+                          monitoring.isUncovered
+                              ? context.loc.recoverbullMonitoringUncovered
+                              : context.loc.recoverbullMonitoringCount(
+                                  monitoring.monitoredCount,
+                                ),
                           style: context.font.bodyMedium,
-                          color: context.appColors.onSurface,
+                        ),
+                        if (monitoring.lastSuccessfulCheck case final date?)
+                          Text(
+                            context.loc.recoverbullMonitoringLastCheck(
+                              MaterialLocalizations.of(
+                                context,
+                              ).formatMediumDate(date.toLocal()),
+                            ),
+                            style: context.font.bodySmall,
+                          ),
+                        const Gap(8),
+                        Text(
+                          context.loc.recoverbullMonitoringExplanation,
+                          style: context.font.bodySmall,
+                        ),
+                      ],
+                      const Spacer(),
+                      if (_isEditing) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BBButton.big(
+                                label: context.loc.recoverbullSettingsCancel,
+                                onPressed: _cancelEdit,
+                                bgColor: context.appColors.cardBackground,
+                                textColor: context.appColors.onSurface,
+                              ),
+                            ),
+                            const Gap(8),
+                            Expanded(
+                              child: BBButton.big(
+                                label: context.loc.recoverbullSettingsSave,
+                                onPressed: _saveUrl,
+                                bgColor: context.appColors.onSurface,
+                                textColor: context.appColors.surface,
+                                disabled: settings.saving,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Gap(16),
+                      ],
+                      GestureDetector(
+                        onTap: _openRecoverBullWebsite,
+                        child: Row(
+                          mainAxisAlignment: .center,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: context.appColors.primary,
+                            ),
+                            const Gap(8),
+                            BBText(
+                              context.loc.recoverbullLearnMore,
+                              style: context.font.bodyMedium,
+                              color: context.appColors.primary,
+                            ),
+                          ],
                         ),
                       ),
+                      const Gap(24),
                     ],
-                    const Spacer(),
-                    if (_isEditing) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: BBButton.big(
-                              label: context.loc.recoverbullSettingsCancel,
-                              onPressed: _cancelEdit,
-                              bgColor: context.appColors.cardBackground,
-                              textColor: context.appColors.onSurface,
-                            ),
-                          ),
-                          const Gap(8),
-                          Expanded(
-                            child: BBButton.big(
-                              label: context.loc.recoverbullSettingsSave,
-                              onPressed: _saveUrl,
-                              bgColor: context.appColors.onSurface,
-                              textColor: context.appColors.surface,
-                              disabled: _isSaving,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Gap(16),
-                    ],
-                    GestureDetector(
-                      onTap: _openRecoverBullWebsite,
-                      child: Row(
-                        mainAxisAlignment: .center,
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 20,
-                            color: context.appColors.primary,
-                          ),
-                          const Gap(8),
-                          BBText(
-                            context.loc.recoverbullLearnMore,
-                            style: context.font.bodyMedium,
-                            color: context.appColors.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Gap(24),
-                  ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 }

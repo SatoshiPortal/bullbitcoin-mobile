@@ -84,6 +84,21 @@ final class RecoverBullServerSettings {
   });
 }
 
+@immutable
+final class RecoverBullMonitoringStatus {
+  final bool enabled;
+  final int monitoredCount;
+  final DateTime? lastSuccessfulCheck;
+
+  const RecoverBullMonitoringStatus({
+    required this.enabled,
+    required this.monitoredCount,
+    required this.lastSuccessfulCheck,
+  });
+
+  bool get isUncovered => monitoredCount == 0;
+}
+
 enum RecoverBullAttemptAlertKind {
   suspiciousActivity,
   targetedLockout,
@@ -94,24 +109,27 @@ enum RecoverBullAttemptAlertKind {
 
 final class RecoverBullAttemptAlert {
   final RecoverBullAttemptAlertKind kind;
-  final Object _handle;
+  final String? backupReference;
+  final int? observedTotal;
+  final int? expectedTotal;
+  final DateTime? windowStartedAt;
+  final String _identity;
 
-  RecoverBullAttemptAlert(this.kind) : _handle = Object();
+  RecoverBullAttemptAlert(this.kind)
+    : backupReference = null,
+      observedTotal = null,
+      expectedTotal = null,
+      windowStartedAt = null,
+      _identity = kind.name;
 
-  const RecoverBullAttemptAlert._(this.kind, this._handle);
-}
-
-final class _AlertIdentity {
-  final String _value;
-
-  const _AlertIdentity(this._value);
-
-  @override
-  bool operator ==(Object other) =>
-      other is _AlertIdentity && other._value == _value;
-
-  @override
-  int get hashCode => _value.hashCode;
+  const RecoverBullAttemptAlert._(
+    this.kind,
+    this._identity, {
+    this.backupReference,
+    this.observedTotal,
+    this.expectedTotal,
+    this.windowStartedAt,
+  });
 }
 
 abstract interface class RecoverBullAttemptMonitoringController {
@@ -121,6 +139,7 @@ abstract interface class RecoverBullAttemptMonitoringController {
   Future<void> acknowledge(RecoverBullAttemptAlert alert);
   bool get enabled;
   Stream<List<RecoverBullAttemptAlert>> get alerts;
+  Future<RecoverBullMonitoringStatus> status();
 }
 
 final class RecoverBullAttemptMonitoring
@@ -148,6 +167,16 @@ final class RecoverBullAttemptMonitoring
   bool get enabled => _enabled;
 
   @override
+  Future<RecoverBullMonitoringStatus> status() async {
+    final state = await _store.state();
+    return RecoverBullMonitoringStatus(
+      enabled: state.attemptMonitoringEnabled,
+      monitoredCount: (await _store.monitoredBackups()).length,
+      lastSuccessfulCheck: state.lastSuccessfulCheckAt,
+    );
+  }
+
+  @override
   Stream<List<RecoverBullAttemptAlert>> get alerts async* {
     yield List.unmodifiable(_visibleAlerts);
     yield* _alertUpdates.stream;
@@ -170,7 +199,8 @@ final class RecoverBullAttemptMonitoring
       for (final alert in alerts) {
         final alreadyVisible = _visibleAlerts.any(
           (visible) =>
-              visible.kind == alert.kind && visible._handle == alert._handle,
+              visible.kind == alert.kind &&
+              visible._identity == alert._identity,
         );
         if (!alreadyVisible) _visibleAlerts.add(alert);
       }
@@ -189,7 +219,7 @@ final class RecoverBullAttemptMonitoring
     final alreadyVisible = _visibleAlerts.any(
       (visible) =>
           visible.kind == publicAlert.kind &&
-          visible._handle == publicAlert._handle,
+          visible._identity == publicAlert._identity,
     );
     if (alreadyVisible) return;
     _visibleAlerts.add(publicAlert);
@@ -202,33 +232,35 @@ final class RecoverBullAttemptMonitoring
     return switch (alert) {
       domain_alert.SuspiciousActivityAlert(
         :final backupIdHash,
+        :final observedTotal,
+        :final expectedTotal,
         :final windowStartedAt,
       ) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.suspiciousActivity,
-          _AlertIdentity(
-            's:$backupIdHash:${windowStartedAt.toUtc().microsecondsSinceEpoch}',
-          ),
+          's:$backupIdHash:${windowStartedAt.toUtc().microsecondsSinceEpoch}',
+          backupReference: _safeReference(backupIdHash),
+          observedTotal: observedTotal,
+          expectedTotal: expectedTotal,
+          windowStartedAt: windowStartedAt,
         ),
       domain_alert.TargetedLockoutAlert(:final backupIdHash) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.targetedLockout,
-          _AlertIdentity('l:$backupIdHash'),
+          'l:$backupIdHash',
+          backupReference: _safeReference(backupIdHash),
         ),
       domain_alert.ServicePressureAlert(:final kind) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.servicePressure,
-          _AlertIdentity('p:$kind'),
+          'p:$kind',
         ),
       domain_alert.AttemptMonitoringUnavailableAlert() =>
-        RecoverBullAttemptAlert._(
-          RecoverBullAttemptAlertKind.unavailable,
-          const _AlertIdentity('u'),
-        ),
+        RecoverBullAttemptAlert._(RecoverBullAttemptAlertKind.unavailable, 'u'),
       domain_alert.CountersWipedAlert(:final wipedAt) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.countersWiped,
-          _AlertIdentity('c:${wipedAt.toUtc().microsecondsSinceEpoch}'),
+          'c:${wipedAt.toUtc().microsecondsSinceEpoch}',
         ),
     };
   }
@@ -239,12 +271,15 @@ final class RecoverBullAttemptMonitoring
   @override
   Future<void> acknowledge(RecoverBullAttemptAlert alert) async {
     _visibleAlerts.removeWhere(
-      (candidate) => candidate._handle == alert._handle,
+      (candidate) => candidate._identity == alert._identity,
     );
     if (!_alertUpdates.isClosed) {
       _alertUpdates.add(List.unmodifiable(_visibleAlerts));
     }
   }
+
+  static String _safeReference(String value) =>
+      value.length <= 8 ? value : value.substring(0, 8);
 }
 
 final class _CallbackAttemptMonitoringRemote
@@ -425,7 +460,24 @@ final class RecoverBullCore {
         state.serverUrlOverride ?? config.effectiveDefaultServer.toString(),
       );
       if (oldEffective == server) return;
-      await db.delete(db.recoverbullMonitoredBackup).go();
+      final monitoredBackups = await db
+          .select(db.recoverbullMonitoredBackup)
+          .get();
+      for (final backup in monitoredBackups) {
+        await (db.update(db.recoverbullMonitoredBackup)..where(
+              (row) =>
+                  row.digest.equals(backup.digest) &
+                  row.rowRevision.equals(backup.rowRevision),
+            ))
+            .write(
+              RecoverbullMonitoredBackupCompanion(
+                expectedServerDistinctCandidateTotal: const Value(0),
+                currentWindow: const Value(0),
+                lastWarningWindow: const Value(null),
+                rowRevision: Value(backup.rowRevision + 1),
+              ),
+            );
+      }
       await db
           .update(db.recoverbullState)
           .write(

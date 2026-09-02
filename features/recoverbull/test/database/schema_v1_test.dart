@@ -24,7 +24,11 @@ void main() {
           (entity['data']! as Map<String, Object?>)['name']! as String:
               entity['data']! as Map<String, Object?>,
     };
-    expect(tables.keys, {'recoverbull_state', 'recoverbull_monitored_backup'});
+    expect(tables.keys, {
+      'recoverbull_state',
+      'recoverbull_monitored_backup',
+      'recoverbull_drive_backup_cache',
+    });
 
     final stateColumns = (tables['recoverbull_state']!['columns']! as List)
         .cast<Map<String, Object?>>();
