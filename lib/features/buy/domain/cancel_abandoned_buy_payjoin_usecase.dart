@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class CancelAbandonedBuyPayjoinUsecase {
@@ -8,9 +11,10 @@ class CancelAbandonedBuyPayjoinUsecase {
 
   const CancelAbandonedBuyPayjoinUsecase(this._sessions, this._receiver);
 
-  Future<void> execute(BuyOrder? order) async {
+  @useResult
+  Future<Result<void, BuyFailure>> execute(BuyOrder? order) async {
     final uri = order?.bip21URI;
-    if (order == null || uri == null) return;
+    if (order == null || uri == null) return const Ok(null);
 
     // Only an order whose pay-in never started is abandoned. Cancelling a live
     // one would drop the receiver session while the exchange is paying it.
@@ -27,27 +31,40 @@ class CancelAbandonedBuyPayjoinUsecase {
       OrderPayinStatus.rejected ||
       OrderPayinStatus.unknown => false,
     };
-    if (isPayinLive) return;
+    if (isPayinLive) return const Ok(null);
 
     final result = await _sessions.list(
       PayjoinSessionFilter(ongoingOnly: true),
     );
-    final payjoins = switch (result) {
-      Ok(:final value) => value,
-      Err() => <PayjoinSession>[],
-    };
+    final List<PayjoinSession> payjoins;
+    switch (result) {
+      case Ok(:final value):
+        payjoins = value;
+      case Err(:final failure):
+        log.warning(
+          'Could not list Payjoin sessions; skipping the abandoned-session '
+          'cleanup',
+          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+        );
+        return Err(BuyUnexpectedFailure(failure.logMessage));
+    }
     for (final payjoin in payjoins) {
       if (payjoin case PayjoinReceiverSession(
         :final id,
         :final pjUri,
       ) when _samePayjoinEndpoint(pjUri, uri)) {
         final cancelResult = await _receiver.cancel(id);
-        if (cancelResult case Err()) {
-          throw StateError('Failed to cancel Payjoin receiver');
+        if (cancelResult case Err(:final failure)) {
+          log.warning(
+            'Failed to cancel the abandoned Payjoin receiver',
+            error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+          );
+          return Err(BuyUnexpectedFailure(failure.logMessage));
         }
-        return;
+        return const Ok(null);
       }
     }
+    return const Ok(null);
   }
 
   bool _samePayjoinEndpoint(String sessionUri, String orderUri) {

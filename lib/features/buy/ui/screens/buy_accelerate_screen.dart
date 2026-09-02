@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,9 @@ class BuyAccelerateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final BuyFailure? accelerateFailure = context.select(
+      (BuyBloc bloc) => bloc.state.accelerateFailure,
+    );
     final isAcceleratingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isAcceleratingOrder,
     );
@@ -104,6 +109,16 @@ class BuyAccelerateScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
+                if (accelerateFailure != null) ...[
+                  Text(
+                    accelerateFailure.toTranslated(context),
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Gap(16),
+                ],
                 if (isAcceleratingOrder)
                   const Center(child: CircularProgressIndicator())
                 else

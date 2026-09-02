@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -81,7 +82,7 @@ void main() {
       );
 
       final before = DateTime.now();
-      await usecase.execute(
+      final result = await usecase.execute(
         toAddress: 'tb1qexampleaddress',
         orderAmount: const FiatAmount(100),
         currency: FiatCurrency.cad,
@@ -91,6 +92,8 @@ void main() {
         payjoinAmountSat: 50000,
       );
       final after = DateTime.now();
+
+      expect(result, isA<Ok<BuyOrder, BuyFailure>>());
 
       final expiresAt = captured?.expiresAt;
       expect(expiresAt, isNotNull, reason: 'a payjoin session must be started');

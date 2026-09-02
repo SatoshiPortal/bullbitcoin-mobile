@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class CreateBuyOrderUsecase {
@@ -41,7 +43,8 @@ class CreateBuyOrderUsecase {
   /// [payjoinAmountSat] only has to be close: the exchange replaces the amount
   /// inside the URI with the one it actually pays. It is required because the
   /// exchange rejects a payjoin URI without an amount.
-  Future<BuyOrder> execute({
+  @useResult
+  Future<Result<BuyOrder, BuyFailure>> execute({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
@@ -129,7 +132,7 @@ class CreateBuyOrderUsecase {
         final orderWithPayjoin = payjoinBip21 != null && order.bip21URI == null
             ? order.copyWith(bip21URI: payjoinBip21)
             : order;
-        return orderWithPayjoin;
+        return Ok(orderWithPayjoin);
       } catch (_) {
         // The session would otherwise sit and poll the directory for a day for
         // an order that never existed.
@@ -141,11 +144,39 @@ class CreateBuyOrderUsecase {
         }
         rethrow;
       }
-    } on BuyError {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw BuyError.unexpected(message: '$e');
+    } on ApiKeyException catch (e, st) {
+      // Severe: a session that expired mid-flow is not something the user did
+      // wrong, and it is the one failure here worth finding in Sentry.
+      log.severe(
+        message: 'Buy order rejected: not authenticated',
+        error: e,
+        trace: st,
+      );
+      return Err(BuyUnauthenticatedFailure(e.message));
+    } on BullBitcoinApiMinAmountException catch (e) {
+      // The two amount bounds are expected user input errors, so they are
+      // logged at info rather than severe; the bound itself travels in the
+      // failure so the screen can name it.
+      log.info('Buy order below the minimum: ${e.message}');
+      return Err(
+        BuyBelowMinAmountFailure(
+          minAmount: e.minAmount,
+          currency: e.currency,
+          logMessage: e.message,
+        ),
+      );
+    } on BullBitcoinApiMaxAmountException catch (e) {
+      log.info('Buy order above the maximum: ${e.message}');
+      return Err(
+        BuyAboveMaxAmountFailure(
+          maxAmount: e.maxAmount,
+          currency: e.currency,
+          logMessage: e.message,
+        ),
+      );
+    } catch (e, st) {
+      log.severe(message: 'Failed to place the buy order', error: e, trace: st);
+      return Err(BuyUnexpectedFailure('$e'));
     }
   }
 }

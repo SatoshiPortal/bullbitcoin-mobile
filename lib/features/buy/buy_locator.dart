@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
+import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
 import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
@@ -47,23 +48,28 @@ class BuyLocator {
         transactionsFacade: locator<TransactionsFacade>(),
       ),
     );
+    locator.registerFactory<LoadBuyContextUsecase>(
+      () => LoadBuyContextUsecase(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        getWalletsUsecase: locator<GetWalletsUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
+      ),
+    );
     registerBlocs(locator);
   }
 
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<BuyBloc>(
       () => BuyBloc(
-        getWalletsUsecase: locator<GetWalletsUsecase>(),
-        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        loadBuyContextUsecase: locator<LoadBuyContextUsecase>(),
         confirmBuyOrderUsecase: locator<ConfirmBuyOrderUsecase>(),
         createBuyOrderUsecase: locator<CreateBuyOrderUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         refreshBuyOrderUsecase: locator<RefreshBuyOrderUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
         accelerateBuyOrderUsecase: locator<AccelerateBuyOrderUsecase>(),
-        getSettingsUsecase: locator<GetSettingsUsecase>(),
         cancelAbandonedBuyPayjoinUsecase:
             locator<CancelAbandonedBuyPayjoinUsecase>(),
         getBuyPayjoinEnabledUsecase: locator<GetBuyPayjoinEnabledUsecase>(),

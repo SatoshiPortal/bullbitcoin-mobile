@@ -1942,10 +1942,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "आपका ऑर्डर अभी नहीं बनाया जा सका। कृपया दोबारा कोशिश करें या सहायता से संपर्क करें।",
-  "buyOrderAlreadyConfirmedError": "यह खरीद आदेश पहले ही पुष्टि की गई है।।",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "बैंक ट्रान्सफर",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -2210,10 +2206,6 @@
   "sellOrderPlaced": "सफलतापूर्वक ऑर्डर करें",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "इस खरीद आदेश को पूरा करने के लिए अपने बुल बिटकॉइन खाते में अपर्याप्त धन।।",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "सुनिश्चित करें कि आपने लेज़र लाइव से बिटकॉइन ऐप का नवीनतम संस्करण स्थापित किया है।।",
   "@ledgerHelpStep4": {
@@ -2601,10 +2593,6 @@
   "payAccountNumberHint": "खाता संख्या दर्ज करें",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "खरीद आदेश नहीं मिला था। फिर से प्रयास करें।।",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "नहीं ",
   "@backupWalletGoogleDrivePrivacyMessage2": {
