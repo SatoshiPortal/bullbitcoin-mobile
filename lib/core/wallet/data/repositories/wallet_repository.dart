@@ -316,6 +316,22 @@ class WalletRepository {
         .toList();
   }
 
+  Future<List<String>> getDefaultBitcoinWalletFingerprints({
+    Environment? environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet),
+        )
+        .map((wallet) => wallet.masterFingerprint)
+        .toList(growable: false);
+  }
+
   Future<void> updateEncryptedBackupTime({
     required DateTime? time,
     required String walletId,

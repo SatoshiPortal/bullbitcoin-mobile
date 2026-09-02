@@ -6,6 +6,11 @@ import 'package:convert/convert.dart' as convert;
 class RecoverbullBip85Utils {
   static final CustomApplication recoverbullApplication =
       CustomApplication.fromNumber(1608);
+  static const vaultKeyNamespace = 0;
+  static const maxVaultKeyIndex = (1 << 31) - 2;
+
+  static String get vaultKeyPathPrefix =>
+      "${recoverbullApplication.number}'/$vaultKeyNamespace'/";
 
   static int findApplicationNumber(String path) {
     // Old format was using `m/` prefix, which was unnecessarirly added by rust-bip85 before I forked it.
@@ -24,7 +29,7 @@ class RecoverbullBip85Utils {
   }
 
   static Bip85HardenedPath formatRecoverBullPath(int index) {
-    return Bip85HardenedPath("${recoverbullApplication.number}'/0'/$index'");
+    return Bip85HardenedPath('$vaultKeyPathPrefix$index\'');
   }
 
   // m/1608'/0'/586053381' -> 0'/586053381
@@ -48,6 +53,6 @@ class RecoverbullBip85Utils {
 
   static int _getRandomIndex() {
     final random = Random.secure();
-    return random.nextInt((1 << 31) - 1);
+    return random.nextInt(maxVaultKeyIndex + 1);
   }
 }

@@ -23,6 +23,7 @@ graph TB
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
     BIP85[BIP85]
+    NOSTR_IDENTITY[Nostr Identity]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
