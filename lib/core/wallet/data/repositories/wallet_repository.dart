@@ -17,9 +17,12 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/seed_derived_wallet_recovery_fact.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -332,6 +335,59 @@ class WalletRepository {
         .toList(growable: false);
   }
 
+  Future<bool> containsWallet(String walletId) async =>
+      await _walletMetadataDatasource.fetch(walletId) != null;
+
+  Future<List<SeedDerivedWalletRecoveryFact>>
+  getSeedDerivedWalletRecoveryFacts() async =>
+      (await _walletMetadataDatasource.fetchAll())
+          .where(
+            (metadata) =>
+                metadata.provenance == WalletProvenance.defaultSeed ||
+                metadata.provenance == WalletProvenance.importedMnemonic,
+          )
+          .map(
+            (metadata) => SeedDerivedWalletRecoveryFact(
+              walletId: metadata.id,
+              seedFingerprint: Fingerprint(metadata.masterFingerprint),
+              network: metadata.network,
+              scriptType: metadata.scriptType,
+              provenance: metadata.provenance,
+              derivationPath: _recoveryPath(metadata),
+              seedPassphraseUsed: metadata.seedPassphraseUsed,
+            ),
+          )
+          .toList(growable: false);
+
+  Future<Set<String>> getLocallyKeyedWalletIds() async => {
+    for (final metadata in await _walletMetadataDatasource.fetchAll())
+      if (metadata.provenance.recoverableFromSeed ||
+          metadata.provenance == WalletProvenance.importedMnemonic)
+        metadata.id,
+  };
+
+  Future<bool> matchesSeedDerivedRecoveryIdentity({
+    required String walletId,
+    required String seedFingerprint,
+    required Network network,
+    required ScriptType scriptType,
+    required WalletProvenance provenance,
+    required String derivationPath,
+    required bool? seedPassphraseUsed,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) return false;
+    final actualPath = _recoveryPath(metadata);
+    return metadata.masterFingerprint.toLowerCase() ==
+            seedFingerprint.toLowerCase() &&
+        metadata.network == network &&
+        metadata.scriptType == scriptType &&
+        metadata.provenance == provenance &&
+        metadata.seedPassphraseUsed == seedPassphraseUsed &&
+        metadata.isDefault == (provenance == WalletProvenance.defaultSeed) &&
+        actualPath == derivationPath;
+  }
+
   Future<void> updateEncryptedBackupTime({
     required DateTime? time,
     required String walletId,
@@ -581,4 +637,12 @@ class WalletRepository {
       );
     }
   }
+}
+
+String _recoveryPath(WalletMetadataModel metadata) {
+  final origin = metadata.decodeOrigin;
+  final account = origin.account.endsWith('h')
+      ? "${origin.account.substring(0, origin.account.length - 1)}'"
+      : origin.account;
+  return "m/${origin.script.purpose}'/${origin.network.coinType}'/$account";
 }

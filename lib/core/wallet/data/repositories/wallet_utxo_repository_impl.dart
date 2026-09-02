@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/frozen_wallet_outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -25,6 +26,9 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     required this._lwkWalletDatasource,
     required this._frozenWalletUtxoDatasource,
   });
+
+  @override
+  Stream<void> get freezeChanges => _frozenWalletUtxoDatasource.changes;
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
@@ -129,5 +133,36 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   Future<List<Outpoint>> getAllFrozenOutpoints() async {
     final rows = await _frozenWalletUtxoDatasource.getAllFrozen();
     return rows.map((row) => (txId: row.txId, vout: row.vout)).toList();
+  }
+
+  @override
+  Future<List<FrozenWalletOutpoint>> getAllFrozenWalletOutpoints() async {
+    final rows = await _frozenWalletUtxoDatasource.getAllFrozen();
+    return rows
+        .map(
+          (row) => FrozenWalletOutpoint(
+            walletId: row.walletId,
+            txId: row.txId,
+            vout: row.vout,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  @override
+  Future<void> restoreFrozenWalletOutpoints(
+    List<FrozenWalletOutpoint> outpoints,
+  ) {
+    return _frozenWalletUtxoDatasource.restoreFrozenWalletOutpoints(
+      outpoints
+          .map(
+            (outpoint) => (
+              walletId: outpoint.walletId,
+              txId: outpoint.txId,
+              vout: outpoint.vout,
+            ),
+          )
+          .toList(growable: false),
+    );
   }
 }
