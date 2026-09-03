@@ -2,63 +2,50 @@ import 'dart:async';
 
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Toast utility — duplicated from `core/widgets/snackbar_utils.dart` and
-/// **extended** with an optional leading icon and an action (`actionLabel` +
-/// `onAction`) for the unfreeze Undo toast. The core copy is left untouched.
+/// The single application toast implementation.
 class BullSnackBar {
   BullSnackBar._();
 
   static OverlayEntry? _entry;
   static Timer? _timer;
   static _BullSnackBarWidgetState? _activeState;
+  static const _displayDuration = Duration(seconds: 3);
 
-  static const Duration _displayDuration = Duration(seconds: 3);
-
-  /// Show a message toast, optionally with a [leadingIcon] and an action
-  /// (`actionLabel` + `onAction`) rendered as a tappable label (e.g. "Undo").
   static void show(
     BuildContext context, {
     required String message,
     IconData? leadingIcon,
     String? actionLabel,
     VoidCallback? onAction,
-  }) {
-    _show(
-      context,
-      _BullSnackBarContent(
-        message: message,
-        leadingIcon: leadingIcon,
-        actionLabel: actionLabel,
-        onAction: onAction == null
-            ? null
-            : () {
-                dismiss();
-                onAction();
-              },
-      ),
-    );
-  }
+  }) => showContent(
+    context,
+    _BullSnackBarContent(
+      message: message,
+      leadingIcon: leadingIcon,
+      actionLabel: actionLabel,
+      onAction: onAction == null
+          ? null
+          : () {
+              dismiss();
+              onAction();
+            },
+    ),
+  );
 
-  static void _show(BuildContext context, Widget content) {
+  /// Shows custom content using the same canonical toast surface and behavior.
+  static void showContent(BuildContext context, Widget content) {
     _disposeEntryImmediate();
     _entry = OverlayEntry(
       builder: (_) => Positioned(
-        bottom: 96,
+        top: 0,
         left: 16,
         right: 16,
         child: SafeArea(
-          top: false,
-          minimum: const EdgeInsets.only(bottom: 8),
-          // Size the bubble to its content and centre it, so the trailing
-          // action (e.g. "Undo") hugs the message instead of being stranded at
-          // the far edge of a forced full-width bar.
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: _BullSnackBarWidget(content: content),
-          ),
+          bottom: false,
+          minimum: const EdgeInsets.only(top: 8),
+          child: _BullSnackBarWidget(content: content),
         ),
       ),
     );
@@ -66,11 +53,10 @@ class BullSnackBar {
     _scheduleAutoDismiss();
   }
 
-  /// Dismiss the active toast (animated when possible).
   static void dismiss() {
     final state = _activeState;
     if (state != null && !state._dismissing && state.mounted) {
-      state._beginDismiss(direction: const Offset(0, 1));
+      state._beginDismiss(const Offset(0, -1));
     } else {
       _disposeEntryImmediate();
     }
@@ -112,20 +98,21 @@ class _BullSnackBarContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.bull;
+    final foreground = context.bull.onSecondaryFixed;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (leadingIcon != null) ...[
-          BullIcon(leadingIcon!, size: 20, color: colors.onSecondaryFixed),
+          BullIcon(leadingIcon!, size: 20, color: foreground),
           const SizedBox(width: 12),
         ],
         Flexible(
           child: Text(
             message,
+            textAlign: TextAlign.center,
             style: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: colors.onSecondaryFixed),
+            ).textTheme.bodySmall?.copyWith(color: foreground, fontSize: 14),
           ),
         ),
         if (actionLabel != null && onAction != null) ...[
@@ -134,10 +121,8 @@ class _BullSnackBarContent extends StatelessWidget {
             onTap: onAction,
             child: Text(
               actionLabel!,
-              // Design coral (#ff8a80); error reads as a warm red on the
-              // fixed-dark toast in both brightnesses.
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.error,
+                color: foreground,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -150,7 +135,6 @@ class _BullSnackBarContent extends StatelessWidget {
 
 class _BullSnackBarWidget extends StatefulWidget {
   const _BullSnackBarWidget({required this.content});
-
   final Widget content;
 
   @override
@@ -159,165 +143,148 @@ class _BullSnackBarWidget extends StatefulWidget {
 
 class _BullSnackBarWidgetState extends State<_BullSnackBarWidget>
     with SingleTickerProviderStateMixin {
-  static const Offset _enterFromOffset = Offset(0, 120);
-
-  Offset _offset = _enterFromOffset;
+  Offset _offset = const Offset(0, -120);
+  Offset _dragOffset = Offset.zero;
   double _opacity = 0;
   bool _dismissing = false;
-  late AnimationController _controller;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     BullSnackBar._activeState = this;
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
+    _controller = AnimationController(vsync: this);
     _runAnim(
-      toOffset: Offset.zero,
-      toOpacity: 1.0,
-      curve: Curves.easeOutCubic,
-      duration: const Duration(milliseconds: 250),
+      Offset.zero,
+      1,
+      const Duration(milliseconds: 250),
+      Curves.easeOutCubic,
     );
   }
 
   @override
   void dispose() {
-    if (BullSnackBar._activeState == this) {
-      BullSnackBar._activeState = null;
-    }
+    if (BullSnackBar._activeState == this) BullSnackBar._activeState = null;
     _controller.dispose();
     super.dispose();
   }
 
-  void _runAnim({
-    required Offset toOffset,
-    required double toOpacity,
-    required Curve curve,
-    required Duration duration,
-    VoidCallback? onComplete,
-  }) {
+  void _runAnim(
+    Offset target,
+    double opacity,
+    Duration duration,
+    Curve curve, [
+    VoidCallback? done,
+  ]) {
     final fromOffset = _offset;
     final fromOpacity = _opacity;
     _controller.duration = duration;
-    final anim = CurvedAnimation(parent: _controller, curve: curve);
+    final animation = CurvedAnimation(parent: _controller, curve: curve);
     void listener() {
       if (!mounted) return;
       setState(() {
-        _offset = Offset.lerp(fromOffset, toOffset, anim.value)!;
-        _opacity = (fromOpacity + (toOpacity - fromOpacity) * anim.value).clamp(
-          0.0,
-          1.0,
-        );
+        _offset = Offset.lerp(fromOffset, target, animation.value)!;
+        _opacity = (fromOpacity + (opacity - fromOpacity) * animation.value)
+            .clamp(0, 1);
       });
     }
 
-    anim.addListener(listener);
+    animation.addListener(listener);
     _controller
       ..reset()
       ..forward().whenComplete(() {
-        anim.removeListener(listener);
-        if (mounted && onComplete != null) onComplete();
+        animation.removeListener(listener);
+        if (mounted) done?.call();
       });
   }
 
-  void _beginDismiss({required Offset direction}) {
+  void _beginDismiss(Offset direction) {
     if (_dismissing) return;
     _dismissing = true;
-    final screen = MediaQuery.sizeOf(context);
-    final target = Offset(
-      direction.dx == 0
-          ? _offset.dx
-          : direction.dx * (screen.width * 0.7 + 100),
-      direction.dy == 0
-          ? _offset.dy
-          : direction.dy * (screen.height * 0.4 + 100),
-    );
+    final size = MediaQuery.sizeOf(context);
     _runAnim(
-      toOffset: target,
-      toOpacity: 0,
-      curve: Curves.easeIn,
-      duration: const Duration(milliseconds: 220),
-      onComplete: BullSnackBar._completeDismiss,
+      Offset(
+        direction.dx * (size.width * .7 + 100),
+        direction.dy * (size.height * .4 + 100),
+      ),
+      0,
+      const Duration(milliseconds: 220),
+      Curves.easeIn,
+      BullSnackBar._completeDismiss,
     );
-  }
-
-  void _snapBack() {
-    _runAnim(
-      toOffset: Offset.zero,
-      toOpacity: 1,
-      curve: Curves.easeOutCubic,
-      duration: const Duration(milliseconds: 220),
-    );
-    BullSnackBar._scheduleAutoDismiss();
   }
 
   void _onDragStart() {
     if (_dismissing) return;
+    _dragOffset = Offset.zero;
     _controller.stop(canceled: true);
     BullSnackBar._pauseAutoDismiss();
   }
 
+  void _snapBack() {
+    _runAnim(
+      Offset.zero,
+      1,
+      const Duration(milliseconds: 220),
+      Curves.easeOutCubic,
+    );
+    BullSnackBar._scheduleAutoDismiss();
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    if (_dismissing) return;
+    final velocity = details.primaryVelocity ?? 0;
+    if (_dragOffset.dx.abs() > 60 || velocity.abs() > 500) {
+      final sign = (_dragOffset.dx == 0 ? velocity : _dragOffset.dx).sign;
+      _beginDismiss(Offset(sign, 0));
+    } else {
+      _snapBack();
+    }
+  }
+
+  void _onVerticalDragEnd(DragEndDetails details) {
+    if (_dismissing) return;
+    final velocity = details.primaryVelocity ?? 0;
+    if (_dragOffset.dy.abs() > 60 || velocity.abs() > 500) {
+      final sign = (_dragOffset.dy == 0 ? velocity : _dragOffset.dy).sign;
+      _beginDismiss(Offset(0, sign));
+    } else {
+      _snapBack();
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
-    final colors = context.bull;
-    return GestureDetector(
-      onHorizontalDragStart: (_) => _onDragStart(),
-      onHorizontalDragUpdate: (d) {
-        if (_dismissing) return;
-        setState(() => _offset = _offset.translate(d.delta.dx, 0));
-      },
-      onHorizontalDragEnd: (d) {
-        if (_dismissing) return;
-        final v = d.primaryVelocity ?? 0;
-        if (_offset.dx.abs() > 60 || v.abs() > 500) {
-          final sign = _offset.dx != 0 ? _offset.dx.sign : v.sign;
-          _beginDismiss(direction: Offset(sign, 0));
-        } else {
-          _snapBack();
-        }
-      },
-      onHorizontalDragCancel: () {
-        if (!_dismissing) _snapBack();
-      },
-      onVerticalDragStart: (_) => _onDragStart(),
-      onVerticalDragUpdate: (d) {
-        if (_dismissing) return;
-        setState(() => _offset = _offset.translate(0, d.delta.dy));
-      },
-      onVerticalDragEnd: (d) {
-        if (_dismissing) return;
-        final v = d.primaryVelocity ?? 0;
-        if (_offset.dy.abs() > 60 || v.abs() > 500) {
-          final sign = _offset.dy != 0 ? _offset.dy.sign : v.sign;
-          _beginDismiss(direction: Offset(0, sign));
-        } else {
-          _snapBack();
-        }
-      },
-      onVerticalDragCancel: () {
-        if (!_dismissing) _snapBack();
-      },
-      child: Transform.translate(
-        offset: _offset,
-        child: Opacity(
-          opacity: _opacity,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              // Fixed-dark toast surface (design #23252b) — secondaryFixed is
-              // the dark ink in both brightnesses, so the toast never inverts.
-              decoration: BoxDecoration(
-                color: colors.secondaryFixed,
-                borderRadius: BorderRadius.circular(BullRadius.xs),
-              ),
-              child: widget.content,
+  Widget build(BuildContext context) => GestureDetector(
+    onHorizontalDragStart: (_) => _onDragStart(),
+    onHorizontalDragUpdate: (d) => setState(() {
+      _dragOffset += Offset(d.delta.dx, 0);
+      _offset += Offset(d.delta.dx, 0);
+    }),
+    onHorizontalDragEnd: _onHorizontalDragEnd,
+    onHorizontalDragCancel: _snapBack,
+    onVerticalDragStart: (_) => _onDragStart(),
+    onVerticalDragUpdate: (d) => setState(() {
+      _dragOffset += Offset(0, d.delta.dy);
+      _offset += Offset(0, d.delta.dy);
+    }),
+    onVerticalDragEnd: _onVerticalDragEnd,
+    onVerticalDragCancel: _snapBack,
+    child: Transform.translate(
+      offset: _offset,
+      child: Opacity(
+        opacity: _opacity,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: context.bull.secondaryFixed.withValues(alpha: .8),
+              borderRadius: BorderRadius.circular(20),
             ),
+            child: widget.content,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
