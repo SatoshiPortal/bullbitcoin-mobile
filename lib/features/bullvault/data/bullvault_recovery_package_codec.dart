@@ -18,7 +18,7 @@ final class BullVaultRecoveryPackageCodec {
     'network',
     'policyVersion',
     'previousVaultId',
-    'scheduleYears',
+    'schedule',
     'schemaVersion',
   };
 
@@ -34,6 +34,17 @@ final class BullVaultRecoveryPackageCodec {
           decoded['schemaVersion'] != schemaVersion ||
           decoded['policyVersion'] != BullVaultPolicy.schemaVersion) {
         throw const FormatException('Unsupported BullVault recovery version');
+      }
+      if (decoded['descriptor'] is! String ||
+          decoded['lineageId'] is! String ||
+          (decoded['birthHeight'] != null && decoded['birthHeight'] is! int) ||
+          (decoded['previousVaultId'] != null &&
+              decoded['previousVaultId'] is! String) ||
+          !Network.values.any(
+            (network) =>
+                network.isBitcoin && network.name == decoded['network'],
+          )) {
+        throw const FormatException('Invalid BullVault recovery metadata');
       }
       final network = Network.values.byName(decoded['network'] as String);
       final recognized = _descriptorService.recognizeStructure(
@@ -56,17 +67,23 @@ final class BullVaultRecoveryPackageCodec {
         throw const FormatException('Invalid BullVault lineage');
       }
       final schedule = _decodeSchedule(
-        decoded['scheduleYears'],
+        decoded['schedule'],
         protection: recognized.protection,
         includesInheritance: recognized.inheritanceKey != null,
+        includesLastResort: recognized.lastResortActivationTimestamp != null,
       );
-      final policy = BullVaultPolicy.restoreRecoveryPackage(
-        recognizedPolicy: recognized,
-        lineageId: lineageId,
-        schedule: schedule,
-        birthHeight: birthHeight,
-        createdAt: createdAt,
-      );
+      final BullVaultPolicy policy;
+      try {
+        policy = BullVaultPolicy.restoreRecoveryPackage(
+          recognizedPolicy: recognized,
+          lineageId: lineageId,
+          schedule: schedule,
+          birthHeight: birthHeight,
+          createdAt: createdAt,
+        );
+      } on ArgumentError catch (error) {
+        throw FormatException('Invalid BullVault recovery metadata', error);
+      }
       if ((policy.vaultGeneration == 0 && previousVaultId != null) ||
           (policy.vaultGeneration > 0 &&
               policy.hasKnownOriginalSchedule &&
@@ -79,7 +96,7 @@ final class BullVaultRecoveryPackageCodec {
       );
     } on FormatException {
       rethrow;
-    } on Object catch (error) {
+    } on Exception catch (error) {
       throw FormatException('Invalid BullVault recovery package', error);
     }
   }
@@ -99,7 +116,7 @@ final class BullVaultRecoveryPackageCodec {
         if (package.previousVaultId != null)
           'previousVaultId': package.previousVaultId,
         if (schedule != null)
-          'scheduleYears': _encodeSchedule(
+          'schedule': _encodeSchedule(
             schedule,
             protection: policy.protection,
             includesInheritance: policy.inheritanceKey != null,
@@ -113,6 +130,7 @@ final class BullVaultRecoveryPackageCodec {
     Object? value, {
     required BullVaultProtection protection,
     required bool includesInheritance,
+    required bool includesLastResort,
   }) {
     if (value == null) return null;
     if (value is! Map<String, dynamic>) {
@@ -121,44 +139,59 @@ final class BullVaultRecoveryPackageCodec {
     final expectedFields = _scheduleFields(
       protection: protection,
       includesInheritance: includesInheritance,
+      includesLastResort: includesLastResort,
     );
-    if (value.keys.toSet().difference(expectedFields).isNotEmpty ||
-        expectedFields.difference(value.keys.toSet()).isNotEmpty ||
-        value.values.any((years) => years is! int)) {
+    if (value.keys.toSet().difference({...expectedFields, 'unit'}).isNotEmpty ||
+        {...expectedFields, 'unit'}.difference(value.keys.toSet()).isNotEmpty ||
+        expectedFields.any((field) => value[field] is! int) ||
+        !BullVaultScheduleUnit.values.any(
+          (unit) => unit.name == value['unit'],
+        )) {
       throw const FormatException('Invalid BullVault schedule metadata');
     }
+    final unit = BullVaultScheduleUnit.values.byName(value['unit'] as String);
     final defaults = BullVaultSchedule.defaultsFor(
       protection: protection,
       includesInheritance: includesInheritance,
+      unit: unit,
     );
-    return defaults.copyWith(
-      coldYears: value['cold'] as int?,
-      recoveryYears: value['recovery'] as int?,
-      inheritanceYears: value['inheritance'] as int?,
-    );
+    try {
+      return defaults.copyWith(
+        coldDelay: value['cold'] as int?,
+        recoveryDelay: value['recovery'] as int?,
+        inheritanceDelay: value['inheritance'] as int?,
+        lastResortDelay: value['lastResort'] as int?,
+      );
+    } on ArgumentError catch (error) {
+      throw FormatException('Invalid BullVault schedule metadata', error);
+    }
   }
 
-  static Map<String, int> _encodeSchedule(
+  static Map<String, Object> _encodeSchedule(
     BullVaultSchedule schedule, {
     required BullVaultProtection protection,
     required bool includesInheritance,
   }) => {
+    'unit': schedule.unit.name,
     if (_scheduleFields(
       protection: protection,
       includesInheritance: includesInheritance,
     ).contains('cold'))
-      'cold': schedule.coldYears,
-    'recovery': schedule.recoveryYears,
-    if (includesInheritance) 'inheritance': schedule.inheritanceYears,
+      'cold': schedule.coldDelay,
+    'recovery': schedule.recoveryDelay,
+    if (includesInheritance) 'inheritance': schedule.inheritanceDelay,
+    'lastResort': ?schedule.lastResortDelay,
   };
 
   static Set<String> _scheduleFields({
     required BullVaultProtection protection,
     required bool includesInheritance,
+    bool includesLastResort = false,
   }) => {
     if (protection == BullVaultProtection.standard || !includesInheritance)
       'cold',
     'recovery',
     if (includesInheritance) 'inheritance',
+    if (includesLastResort) 'lastResort',
   };
 }

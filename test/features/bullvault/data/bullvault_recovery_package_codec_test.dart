@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -24,10 +23,7 @@ const _fourthMnemonic = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong';
 
 void main() {
   final descriptorPort = _ParsingDescriptorPort();
-  final descriptorService = BullVaultDescriptorService(
-    descriptorPort,
-    const _UnusedSeedVerificationPort(),
-  );
+  final descriptorService = BullVaultDescriptorService(descriptorPort);
   final codec = BullVaultRecoveryPackageCodec(descriptorService);
 
   test('serializes the compact public recovery format', () {
@@ -50,7 +46,7 @@ void main() {
       'lineageId',
       'network',
       'policyVersion',
-      'scheduleYears',
+      'schedule',
       'schemaVersion',
     });
     expect(encoded, isNot(contains('mnemonic')));
@@ -58,9 +54,9 @@ void main() {
 
     final restored = codec.decode(encoded);
     expect(restored.policy.descriptor, policy.descriptor);
-    expect(restored.policy.schedule?.coldYears, 3);
-    expect(restored.policy.schedule?.recoveryYears, 2);
-    expect(restored.policy.schedule?.inheritanceYears, 5);
+    expect(restored.policy.schedule?.coldDelay, 3);
+    expect(restored.policy.schedule?.recoveryDelay, 2);
+    expect(restored.policy.schedule?.inheritanceDelay, 5);
   });
 
   for (final profile in [
@@ -118,6 +114,127 @@ void main() {
     expect(restored.previousVaultId, 'previous-wallet');
   });
 
+  for (final protection in BullVaultProtection.values) {
+    for (final recoveryKey in [false, true]) {
+      test(
+        'restores ${protection.name} last-resort recovery with recovery key: $recoveryKey',
+        () {
+          final schedule = BullVaultSchedule.defaultsFor(
+            protection: protection,
+            includesInheritance: true,
+            unit: BullVaultScheduleUnit.hours,
+          ).copyWith(lastResortDelay: 7);
+          final policy = _policy(
+            descriptorPort,
+            protection: protection,
+            includesInheritance: true,
+            generation: 1,
+            lineageId: 'lineage',
+            schedule: schedule,
+            delayedMobileRecovery: recoveryKey,
+          );
+          final json =
+              jsonDecode(
+                    codec.encode(
+                      BullVaultRecoveryPackage(
+                        policy: policy,
+                        previousVaultId: 'previous-vault',
+                      ),
+                    ),
+                  )
+                  as Map<String, dynamic>;
+          final restored = codec.decode(jsonEncode(json)).policy;
+          expect(restored.descriptor, policy.descriptor);
+          expect(restored.schedule?.lastResortDelay, 7);
+          expect(
+            restored.lastResortActivationTimestamp,
+            policy.lastResortActivationTimestamp,
+          );
+          expect(restored.vaultGeneration, 1);
+          expect(restored.delayedMobileRecoveryKey != null, recoveryKey);
+
+          final scheduleJson = json['schedule'] as Map<String, dynamic>;
+          scheduleJson['lastResort'] = 8;
+          expect(() => codec.decode(jsonEncode(json)), throwsFormatException);
+          json.remove('schedule');
+          final unknownSchedule = codec.decode(jsonEncode(json)).policy;
+          expect(unknownSchedule.schedule, isNull);
+          expect(
+            unknownSchedule.lastResortActivationTimestamp,
+            policy.lastResortActivationTimestamp,
+          );
+          expect(unknownSchedule.renewalSchedule.lastResortDelay, 7);
+        },
+      );
+    }
+  }
+
+  test('preserves known metadata when enriching a recovery package', () {
+    final original = BullVaultRecoveryPackage(
+      policy: _policy(
+        descriptorPort,
+        protection: BullVaultProtection.standard,
+        includesInheritance: false,
+        generation: 1,
+        lineageId: 'original-lineage',
+      ),
+      previousVaultId: 'previous-wallet',
+    );
+    final json = jsonDecode(codec.encode(original)) as Map<String, dynamic>;
+    expect(original.canBeEnrichedBy(codec.decode(jsonEncode(json))), isTrue);
+
+    for (final changes in <Map<String, dynamic>>[
+      {'birthHeight': original.policy.birthHeight! + 1},
+      {'schedule': null},
+      {'lineageId': 'different-lineage'},
+      {'previousVaultId': 'different-wallet'},
+    ]) {
+      final incoming = {...json, ...changes}
+        ..removeWhere((_, value) => value == null);
+      expect(
+        original.canBeEnrichedBy(codec.decode(jsonEncode(incoming))),
+        isFalse,
+        reason: 'Known metadata cannot be replaced or forgotten: $changes',
+      );
+    }
+
+    final withoutSchedule = {...json}..remove('schedule');
+    final knownDate = codec.decode(jsonEncode(withoutSchedule));
+    withoutSchedule['createdAt'] = '2028-01-15T12:00:00Z';
+    expect(
+      knownDate.canBeEnrichedBy(codec.decode(jsonEncode(withoutSchedule))),
+      isFalse,
+    );
+  });
+
+  test('preserves practice schedule timing', () {
+    const schedule = BullVaultSchedule(
+      coldDelay: 2,
+      recoveryDelay: 3,
+      unit: BullVaultScheduleUnit.hours,
+    );
+    final policy = _policy(
+      descriptorPort,
+      protection: BullVaultProtection.standard,
+      includesInheritance: false,
+      schedule: schedule,
+    );
+
+    final restored = codec.decode(
+      codec.encode(BullVaultRecoveryPackage(policy: policy)),
+    );
+
+    expect(restored.policy.schedule?.unit, BullVaultScheduleUnit.hours);
+    expect(
+      restored.policy.coldActivationTimestamp,
+      schedule.coldActivationTimestamp(policy.createdAt!),
+    );
+    expect(
+      restored.policy.recoveryActivationTimestamp,
+      schedule.recoveryActivationTimestamp(policy.createdAt!),
+    );
+  });
+
   test('validates optional schedule metadata against the descriptor', () {
     final policy = _policy(
       descriptorPort,
@@ -127,12 +244,12 @@ void main() {
     final json =
         jsonDecode(codec.encode(BullVaultRecoveryPackage(policy: policy)))
             as Map<String, dynamic>;
-    final schedule = json['scheduleYears'] as Map<String, dynamic>;
+    final schedule = json['schedule'] as Map<String, dynamic>;
     schedule['recovery'] = (schedule['recovery'] as int) + 1;
 
     expect(() => codec.decode(jsonEncode(json)), throwsFormatException);
 
-    json['scheduleYears'] = null;
+    json['schedule'] = null;
     final restored = codec.decode(jsonEncode(json));
     expect(restored.policy.schedule, isNull);
     expect(restored.policy.recoveryActivationTimestamp, isNotNull);
@@ -154,14 +271,14 @@ void main() {
 
     expect(json, isNot(contains('birthHeight')));
     expect(json, isNot(contains('createdAt')));
-    expect(json, isNot(contains('scheduleYears')));
+    expect(json, isNot(contains('schedule')));
     expect(restored.policy.birthHeight, isNull);
     expect(restored.policy.createdAt, isNull);
     expect(restored.policy.schedule, isNull);
     expect(restored.policy.descriptor, created.descriptor);
   });
 
-  test('rejects unknown fields', () {
+  test('rejects invalid recovery metadata without masking internal errors', () {
     final policy = _policy(
       descriptorPort,
       protection: BullVaultProtection.standard,
@@ -173,6 +290,26 @@ void main() {
     json['unexpected'] = true;
 
     expect(() => codec.decode(jsonEncode(json)), throwsFormatException);
+    json.remove('unexpected');
+    final valid = Map<String, dynamic>.from(json);
+    for (final invalid in <Map<String, Object>>[
+      {'network': 'unknown'},
+      {'network': Network.liquidMainnet.name},
+      {'network': Network.liquidTestnet.name},
+      {'descriptor': 42},
+      {'lineageId': false},
+      {'birthHeight': 'invalid'},
+      {'previousVaultId': []},
+    ]) {
+      expect(
+        () => codec.decode(jsonEncode({...valid, ...invalid})),
+        throwsFormatException,
+        reason: '$invalid',
+      );
+    }
+    descriptorPort.failParsing = true;
+    addTearDown(() => descriptorPort.failParsing = false);
+    expect(() => codec.decode(jsonEncode(valid)), throwsStateError);
   });
 }
 
@@ -182,12 +319,17 @@ BullVaultPolicy _policy(
   required bool includesInheritance,
   int generation = 0,
   String? lineageId,
+  BullVaultSchedule? schedule,
+  bool delayedMobileRecovery = false,
 }) {
   final signers = [
     _signer(
       BullVaultSignerRole.everyday,
       0,
-      deriveSignerKeys(testMnemonics[0]),
+      deriveSignerKeys(
+        testMnemonics[0],
+        password: delayedMobileRecovery ? 'vault passphrase' : '',
+      ),
     ),
     _signer(BullVaultSignerRole.cold, 1, deriveSignerKeys(testMnemonics[1])),
     if (protection.usesTwoColdKeys)
@@ -204,10 +346,17 @@ BullVaultPolicy _policy(
       ),
   ];
   final everyday = signers[0];
+  final recovery = delayedMobileRecovery
+      ? _signer(
+          BullVaultSignerRole.delayedMobileRecovery,
+          0,
+          deriveSignerKeys(testMnemonics[0]),
+        )
+      : null;
   final cold = signers[1];
   final secondCold = protection.usesTwoColdKeys ? signers[2] : null;
   final inheritance = includesInheritance ? signers.last : null;
-  final schedule = BullVaultSchedule.defaultsFor(
+  schedule ??= BullVaultSchedule.defaultsFor(
     protection: protection,
     includesInheritance: includesInheritance,
   );
@@ -219,6 +368,7 @@ BullVaultPolicy _policy(
           network: Network.bitcoinTestnet,
           protection: protection,
           everydayKey: everyday,
+          delayedMobileRecoveryKey: recovery,
           coldKey: cold,
           secondColdKey: secondCold,
           inheritanceKey: inheritance,
@@ -235,6 +385,7 @@ BullVaultPolicy _policy(
     descriptor: descriptor,
     protection: protection,
     everydayKey: everyday,
+    delayedMobileRecoveryKey: recovery,
     coldKey: cold,
     secondColdKey: secondCold,
     inheritanceKey: inheritance,
@@ -263,13 +414,16 @@ BullVaultSignerKey _signer(
     xpub: keys.xpub.split(']').last,
     derivationPath: "m/48'/1'/0'/2'",
   ),
-  signer: role == BullVaultSignerRole.everyday
+  signer:
+      role == BullVaultSignerRole.everyday ||
+          role == BullVaultSignerRole.delayedMobileRecovery
       ? SignerEntity.local
       : SignerEntity.remote,
   signerDevice: null,
 );
 
 final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
+  bool failParsing = false;
   @override
   ({
     String descriptor,
@@ -280,7 +434,13 @@ final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
   parseBitcoinDescriptor({
     required String descriptor,
     required Network network,
-  }) => parseTestBullVaultDescriptor(descriptor: descriptor, network: network);
+  }) {
+    if (failParsing) throw StateError('Descriptor parsing failed');
+    return parseTestBullVaultDescriptor(
+      descriptor: descriptor,
+      network: network,
+    );
+  }
 
   @override
   ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
@@ -297,15 +457,5 @@ final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
     List<WalletSigner> signers = const [],
     bool isHidden = false,
     bool sync = false,
-  }) => throw UnimplementedError();
-}
-
-final class _UnusedSeedVerificationPort implements SeedVerificationPort {
-  const _UnusedSeedVerificationPort();
-
-  @override
-  Future<bool> matchesXpubs({
-    required String fingerprint,
-    required List<({String derivationPath, String xpub})> keys,
   }) => throw UnimplementedError();
 }

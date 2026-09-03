@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/dialog/signer_passphrase_dialog.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_review.dart';
 import 'package:bb_mobile/features/psbt_signing/presentation/psbt_signing_cubit.dart';
 import 'package:bb_mobile/features/psbt_signing/presentation/psbt_signing_failure_l10n.dart';
@@ -241,7 +242,7 @@ class _ReviewView extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: BullButton.big(
               label: context.loc.psbtSigningSignWithDevice,
-              onPressed: context.read<PsbtSigningCubit>().sign,
+              onPressed: () => _sign(context),
               bgColor: context.appColors.secondary,
               textColor: context.appColors.onSecondary,
               disabled: !review.canSign || state.isSigning,
@@ -250,6 +251,23 @@ class _ReviewView extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _sign(BuildContext context) async {
+    final review = state.review!;
+    String? passphrase;
+    if (review.requiresPassphrase) {
+      passphrase = await showSignerPassphraseDialog(
+        context,
+        title: context.loc.sendBullVaultPassphraseTitle,
+        description: context.loc.sendBullVaultPassphraseDescription,
+        hint: context.loc.passphraseLabel,
+        cancelLabel: context.loc.cancel,
+        confirmLabel: context.loc.confirmButton,
+      );
+      if (passphrase == null || !context.mounted) return;
+    }
+    await context.read<PsbtSigningCubit>().sign(passphrase: passphrase);
   }
 }
 

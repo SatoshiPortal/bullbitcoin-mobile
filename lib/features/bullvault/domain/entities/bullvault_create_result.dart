@@ -5,14 +5,17 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.da
 
 final class BullVaultCreateResult {
   final Wallet wallet;
-  final BullVaultPolicy policy;
   final BullVaultRecord record;
-  final BullVaultRecoveryPackage recoveryPackage;
 
-  const BullVaultCreateResult({
-    required this.wallet,
-    required this.policy,
-    required this.record,
-    required this.recoveryPackage,
-  });
+  const BullVaultCreateResult({required this.wallet, required this.record});
+
+  BullVaultPolicy get policy => record.recoveryPackage.policy;
+
+  BullVaultRecoveryPackage get recoveryPackage => record.recoveryPackage;
+
+  BullVaultCreateResult copyWith({Wallet? wallet, BullVaultRecord? record}) =>
+      BullVaultCreateResult(
+        wallet: wallet ?? this.wallet,
+        record: record ?? this.record,
+      );
 }

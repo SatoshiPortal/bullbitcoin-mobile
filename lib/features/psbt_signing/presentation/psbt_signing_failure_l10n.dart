@@ -10,6 +10,10 @@ extension PsbtSigningFailureL10n on PsbtSigningFailure {
     PsbtSigningWalletMismatchFailure() => context.loc.psbtSigningWalletMismatch,
     PsbtSigningMissingLocalKeyFailure() =>
       context.loc.psbtSigningMissingLocalKey,
+    PsbtSigningPassphraseRequiredFailure() =>
+      context.loc.bullVaultPassphraseRequired,
+    PsbtSigningPassphraseMismatchFailure() =>
+      context.loc.sendBullVaultPassphraseIncorrect,
     PsbtSigningMissingUtxoFailure() => context.loc.psbtSigningMissingUtxo,
     PsbtSigningFrozenUtxoFailure() => context.loc.psbtSigningFrozenUtxo,
     PsbtSigningUnsupportedSighashFailure() =>

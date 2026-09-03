@@ -14,6 +14,26 @@ class SeedRepository implements SeedVerificationPort {
 
   const SeedRepository({required this._source});
 
+  /// Ensures the passphrase-free seed has its own durable storage identity.
+  Future<String> ensureCanonicalSeed(Seed seed) async {
+    final canonical = switch (seed) {
+      MnemonicSeed(:final mnemonicWords) => SeedModel.mnemonic(
+        mnemonicWords: mnemonicWords,
+      ),
+      BytesSeed(:final bytes) => SeedModel.bytes(bytes: bytes),
+    };
+    final fingerprint = canonical.masterFingerprint;
+    if (await _source.exists(fingerprint)) {
+      final stored = await _source.get(fingerprint);
+      if (!listEquals(stored.bytes, canonical.bytes)) {
+        throw const FormatException('Stored seed does not match its owner');
+      }
+    } else {
+      await _source.store(fingerprint: fingerprint, seed: canonical);
+    }
+    return fingerprint;
+  }
+
   Future<MnemonicSeed> createFromMnemonic({
     required List<String> mnemonicWords,
     String? passphrase,

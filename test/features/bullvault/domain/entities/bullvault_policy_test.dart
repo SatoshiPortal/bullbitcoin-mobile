@@ -16,6 +16,159 @@ import '../../../../core_test/wallet/bdk_wallet_test_fixture.dart';
 const _fourthMnemonic = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong';
 
 void main() {
+  test(
+    'last-resort recovery follows inheritance within the schedule limits',
+    () {
+      final reference = DateTime.utc(2027, 1, 15, 12);
+      for (final unit in BullVaultScheduleUnit.values) {
+        for (final protection in BullVaultProtection.values) {
+          final schedule = BullVaultSchedule.defaultsFor(
+            protection: protection,
+            includesInheritance: true,
+            unit: unit,
+          );
+          for (final (delay, valid) in [
+            (null, true),
+            (0, false),
+            (5, false),
+            (7, true),
+            (10, true),
+            (11, false),
+          ]) {
+            final selected = schedule.copyWith(lastResortDelay: delay);
+            expect(
+              selected.isValid(
+                protection: protection,
+                includesInheritance: true,
+              ),
+              valid,
+            );
+            if (valid && delay != null) {
+              expect(
+                selected.lastResortActivationTimestamp(reference),
+                greaterThan(selected.inheritanceActivationTimestamp(reference)),
+              );
+              expect(
+                selected.lastResortActivationDate(reference),
+                unit == BullVaultScheduleUnit.hours
+                    ? reference.add(Duration(hours: delay))
+                    : DateTime.utc(2027 + delay, 1, 15, 12),
+              );
+            }
+          }
+        }
+      }
+      expect(
+        const BullVaultSchedule(lastResortDelay: 7).isValid(
+          protection: BullVaultProtection.standard,
+          includesInheritance: false,
+        ),
+        false,
+      );
+    },
+  );
+
+  test(
+    'allocates the final solo path independently for everyday and recovery keys',
+    () {
+      final cold = _signerForRole(
+        BullVaultSignerRole.cold,
+        1,
+        deriveSignerKeys(testMnemonics[1]),
+      );
+      final secondCold = _signerForRole(
+        BullVaultSignerRole.secondCold,
+        2,
+        deriveSignerKeys(testMnemonics[2]),
+      );
+      final inheritance = _signerForRole(
+        BullVaultSignerRole.inheritance,
+        3,
+        deriveSignerKeys(_fourthMnemonic),
+      );
+      final reference = DateTime.utc(2027, 1, 15, 12);
+      for (final protection in BullVaultProtection.values) {
+        for (final useRecoveryKey in [false, true]) {
+          final everyday = _signerForRole(
+            BullVaultSignerRole.everyday,
+            0,
+            deriveSignerKeys(
+              testMnemonics[0],
+              password: useRecoveryKey ? 'vault passphrase' : '',
+            ),
+          );
+          final recovery = useRecoveryKey
+              ? _signerForRole(
+                  BullVaultSignerRole.delayedMobileRecovery,
+                  0,
+                  deriveSignerKeys(testMnemonics[0]),
+                )
+              : null;
+          final schedule = BullVaultSchedule.defaultsFor(
+            protection: protection,
+            includesInheritance: true,
+          ).copyWith(lastResortDelay: 7);
+          final descriptors = <String>[];
+          for (final generation in [0, 1]) {
+            final descriptor = BullVaultPolicy.descriptorTemplate(
+              vaultGeneration: generation,
+              network: Network.bitcoinTestnet,
+              protection: protection,
+              everydayKey: everyday,
+              delayedMobileRecoveryKey: recovery,
+              coldKey: cold,
+              secondColdKey: protection.usesTwoColdKeys ? secondCold : null,
+              inheritanceKey: inheritance,
+              schedule: schedule,
+              referenceTime: reference,
+            );
+            final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+              descriptor: descriptor,
+              isTestnet: true,
+            );
+            final finalPair = BullVaultPolicy.branchPairForOccurrence(
+              vaultGeneration: generation,
+              occurrencesPerGeneration: useRecoveryKey ? 2 : 3,
+              occurrence: useRecoveryKey ? 1 : 2,
+            );
+            final expression = (recovery ?? everyday).expression(
+              receiveBranch: finalPair.receive,
+              changeBranch: finalPair.change,
+            );
+            expect(
+              descriptor,
+              contains(
+                'and_v(v:after(${schedule.lastResortActivationTimestamp(reference)}),pk($expression))',
+              ),
+            );
+            expect(
+              _branchPairs(descriptor, everyday),
+              hasLength(useRecoveryKey ? 1 : 3),
+            );
+            if (recovery != null) {
+              expect(_branchPairs(descriptor, recovery), hasLength(2));
+            }
+            expect(
+              parsed.externalDescriptor,
+              contains('/${finalPair.receive}/*'),
+            );
+            expect(
+              parsed.internalDescriptor,
+              contains('/${finalPair.change}/*'),
+            );
+            descriptors.add(descriptor);
+          }
+          expect(
+            _signerBranchRoles(
+              descriptors[0],
+            ).intersection(_signerBranchRoles(descriptors[1])),
+            isEmpty,
+          );
+        }
+      }
+    },
+  );
+
   test('builds the policy with absolute timestamps', () {
     final keys = [
       for (final (index, words) in testMnemonics.take(3).indexed)
@@ -307,6 +460,83 @@ void main() {
     }
   });
 
+  test('keeps passphrase-free recovery descriptor vectors stable', () {
+    final everyday = _signerForRole(
+      BullVaultSignerRole.everyday,
+      0,
+      deriveSignerKeys(testMnemonics[0], password: 'vault passphrase'),
+    );
+    final recovery = _signerForRole(
+      BullVaultSignerRole.delayedMobileRecovery,
+      0,
+      deriveSignerKeys(testMnemonics[0]),
+    );
+    final cold = _signerForRole(
+      BullVaultSignerRole.cold,
+      1,
+      deriveSignerKeys(testMnemonics[1]),
+    );
+    final secondCold = _signerForRole(
+      BullVaultSignerRole.secondCold,
+      2,
+      deriveSignerKeys(testMnemonics[2]),
+    );
+    final inheritance = _signerForRole(
+      BullVaultSignerRole.inheritance,
+      3,
+      deriveSignerKeys(_fourthMnemonic),
+    );
+    final profiles = [
+      (
+        protection: BullVaultProtection.standard,
+        includesInheritance: false,
+        checksum: 'mkl4aape',
+      ),
+      (
+        protection: BullVaultProtection.standard,
+        includesInheritance: true,
+        checksum: 'n3jh8q8p',
+      ),
+      (
+        protection: BullVaultProtection.extra,
+        includesInheritance: false,
+        checksum: '37gq5qq4',
+      ),
+      (
+        protection: BullVaultProtection.extra,
+        includesInheritance: true,
+        checksum: '0exz2c48',
+      ),
+    ];
+
+    for (final profile in profiles) {
+      final schedule = BullVaultSchedule.defaultsFor(
+        protection: profile.protection,
+        includesInheritance: profile.includesInheritance,
+      );
+      final descriptor = BullVaultPolicy.descriptorTemplate(
+        vaultGeneration: 0,
+        network: Network.bitcoinTestnet,
+        protection: profile.protection,
+        everydayKey: everyday,
+        delayedMobileRecoveryKey: recovery,
+        coldKey: cold,
+        secondColdKey: profile.protection.usesTwoColdKeys ? secondCold : null,
+        inheritanceKey: profile.includesInheritance ? inheritance : null,
+        schedule: schedule,
+        referenceTime: DateTime.utc(2027, 1, 15, 12),
+      );
+      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+        descriptor: descriptor,
+        isTestnet: true,
+      );
+
+      expect(parsed.descriptor, '$descriptor#${profile.checksum}');
+      expect(_branchPairs(descriptor, everyday), ['<0;1>']);
+      expect(_branchPairs(descriptor, recovery), ['<0;1>']);
+    }
+  });
+
   test('adds delayed cold and mobile recovery to extra protection', () {
     final everyday = _signerForRole(
       BullVaultSignerRole.everyday,
@@ -520,42 +750,42 @@ void main() {
       isTrue,
     );
     expect(
-      const BullVaultSchedule(coldYears: 3, recoveryYears: 3).isValid(
+      const BullVaultSchedule(coldDelay: 3, recoveryDelay: 3).isValid(
         protection: BullVaultProtection.standard,
         includesInheritance: false,
       ),
       isFalse,
     );
     expect(
-      const BullVaultSchedule(recoveryYears: 10, inheritanceYears: 5).isValid(
+      const BullVaultSchedule(recoveryDelay: 10, inheritanceDelay: 5).isValid(
         protection: BullVaultProtection.extra,
         includesInheritance: false,
       ),
       isTrue,
     );
     expect(
-      const BullVaultSchedule(coldYears: 5, recoveryYears: 5).isValid(
+      const BullVaultSchedule(coldDelay: 5, recoveryDelay: 5).isValid(
         protection: BullVaultProtection.extra,
         includesInheritance: false,
       ),
       isFalse,
     );
     expect(
-      const BullVaultSchedule(recoveryYears: 10, inheritanceYears: 5).isValid(
+      const BullVaultSchedule(recoveryDelay: 10, inheritanceDelay: 5).isValid(
         protection: BullVaultProtection.extra,
         includesInheritance: true,
       ),
       isFalse,
     );
     expect(
-      const BullVaultSchedule(coldYears: 0).isValid(
+      const BullVaultSchedule(coldDelay: 0).isValid(
         protection: BullVaultProtection.standard,
         includesInheritance: false,
       ),
       isFalse,
     );
     expect(
-      const BullVaultSchedule(inheritanceYears: 11).isValid(
+      const BullVaultSchedule(inheritanceDelay: 11).isValid(
         protection: BullVaultProtection.extra,
         includesInheritance: true,
       ),
@@ -564,7 +794,7 @@ void main() {
   });
 
   test('uses calendar years and clamps leap-day anniversaries', () {
-    const schedule = BullVaultSchedule(coldYears: 1);
+    const schedule = BullVaultSchedule(coldDelay: 1);
 
     expect(
       schedule.coldActivationDate(DateTime.utc(2028, 2, 29, 15, 30)),
@@ -572,12 +802,31 @@ void main() {
     );
   });
 
+  test('uses exact hours for practice schedules', () {
+    const schedule = BullVaultSchedule(
+      coldDelay: 2,
+      recoveryDelay: 3,
+      unit: BullVaultScheduleUnit.hours,
+    );
+    final reference = DateTime.utc(2028, 2, 29, 15, 30);
+
+    expect(
+      schedule.coldActivationDate(reference),
+      DateTime.utc(2028, 2, 29, 17, 30),
+    );
+    expect(
+      schedule.recoveryActivationDate(reference),
+      DateTime.utc(2028, 2, 29, 18, 30),
+    );
+    expect(schedule.isPractice, isTrue);
+  });
+
   test('keeps inherited two-key recovery before solo recovery', () {
     const schedule = BullVaultSchedule.standardWithInheritance;
 
-    expect(schedule.recoveryYears, 2);
-    expect(schedule.coldYears, 3);
-    expect(schedule.inheritanceYears, 5);
+    expect(schedule.recoveryDelay, 2);
+    expect(schedule.coldDelay, 3);
+    expect(schedule.inheritanceDelay, 5);
     expect(
       schedule.isValid(
         protection: BullVaultProtection.standard,
@@ -590,8 +839,8 @@ void main() {
   test('keeps extra recovery later than the standard defaults', () {
     const schedule = BullVaultSchedule.extraWithoutInheritance;
 
-    expect(schedule.coldYears, 3);
-    expect(schedule.recoveryYears, 5);
+    expect(schedule.coldDelay, 3);
+    expect(schedule.recoveryDelay, 5);
     expect(
       schedule.isValid(
         protection: BullVaultProtection.extra,

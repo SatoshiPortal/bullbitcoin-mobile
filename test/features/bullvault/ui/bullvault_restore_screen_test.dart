@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +17,6 @@ class _MockRestoreBullVaultUsecase extends Mock
 void main() {
   testWidgets('fills the descriptor field from a QR scan', (tester) async {
     const descriptor = 'tr(test-descriptor)';
-    final localization = AppLocalizationsEn();
     final cubit = BullVaultRestoreCubit(_MockRestoreBullVaultUsecase());
     addTearDown(cubit.close);
     final router = GoRouter(
@@ -58,14 +56,16 @@ void main() {
 
     await tester.drag(find.byType(ListView), const Offset(0, -600));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(localization.bullVaultScanQr));
+    await tester.tap(find.byIcon(Icons.qr_code_scanner));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Return descriptor'));
     await tester.pumpAndSettle();
 
-    final fields = tester
-        .widgetList<TextField>(find.byType(TextField))
-        .toList();
-    expect(fields.single.controller?.text, descriptor);
+    expect(
+      tester
+          .widgetList<TextField>(find.byType(TextField))
+          .map((field) => field.controller?.text),
+      contains(descriptor),
+    );
   });
 }

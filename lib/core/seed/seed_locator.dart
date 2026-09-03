@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/seed/data/seed_store_type_repository_impl.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_store_type_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/ensure_canonical_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
@@ -43,6 +44,9 @@ class SeedLocator {
   }
 
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<EnsureCanonicalSeedUsecase>(
+      () => EnsureCanonicalSeedUsecase(locator<SeedRepository>()),
+    );
     locator.registerFactory<GetDefaultSeedUsecase>(
       () => GetDefaultSeedUsecase(
         walletRepository: locator<WalletRepository>(),

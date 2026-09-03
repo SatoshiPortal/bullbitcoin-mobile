@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 
 enum BullVaultLifecycleStatus {
@@ -13,7 +14,8 @@ final class BullVaultRecord {
   final String walletId;
   final String lineageId;
   final int vaultGeneration;
-  final int mobileAccount;
+  final int? mobileAccount;
+  final String? mobileSeedFingerprint;
   final int? birthHeight;
   final BullVaultRecoveryPackage recoveryPackage;
   final String? previousVaultId;
@@ -31,6 +33,7 @@ final class BullVaultRecord {
     required this.lineageId,
     required this.vaultGeneration,
     required this.mobileAccount,
+    String? mobileSeedFingerprint,
     required this.birthHeight,
     required this.recoveryPackage,
     this.previousVaultId,
@@ -42,7 +45,16 @@ final class BullVaultRecord {
     this.recoveryPackageConfirmed = false,
     this.mobileBackupDeferred = false,
     required this.createdAt,
-  }) {
+  }) : mobileSeedFingerprint = mobileAccount == null
+           ? null
+           : mobileSeedFingerprint ??
+                 recoveryPackage
+                     .policy
+                     .everydayKey
+                     .accountKey
+                     .masterFingerprint {
+    final storedMobileAccount = mobileAccount;
+    final storedMobileSeedFingerprint = this.mobileSeedFingerprint;
     final storedBirthHeight = birthHeight;
     final everydayPath =
         recoveryPackage.policy.everydayKey.accountKey.derivationPath;
@@ -53,8 +65,14 @@ final class BullVaultRecord {
     if (walletId.isEmpty ||
         lineageId.isEmpty ||
         vaultGeneration < 0 ||
-        mobileAccount < 0 ||
-        policyMobileAccount != mobileAccount ||
+        (storedMobileAccount != null && storedMobileAccount < 0) ||
+        (recoveryPackage.policy.everydayKey.signer == SignerEntity.local
+            ? policyMobileAccount != storedMobileAccount
+            : storedMobileAccount != null) ||
+        ((storedMobileAccount == null) !=
+            (storedMobileSeedFingerprint == null)) ||
+        (storedMobileSeedFingerprint != null &&
+            storedMobileSeedFingerprint.trim().isEmpty) ||
         (storedBirthHeight != null && storedBirthHeight <= 0) ||
         recoveryPackage.policy.lineageId != lineageId ||
         recoveryPackage.policy.vaultGeneration != vaultGeneration) {
@@ -88,6 +106,7 @@ final class BullVaultRecord {
     lineageId: lineageId,
     vaultGeneration: vaultGeneration,
     mobileAccount: mobileAccount,
+    mobileSeedFingerprint: mobileSeedFingerprint,
     birthHeight: birthHeight,
     recoveryPackage: recoveryPackage,
     previousVaultId: previousVaultId,

@@ -52,7 +52,7 @@ void main() {
       inheritanceStep
           .copyWith(
             step: BullVaultOnboardingStep.review,
-            schedule: const BullVaultSchedule(coldYears: 3, recoveryYears: 3),
+            schedule: const BullVaultSchedule(coldDelay: 3, recoveryDelay: 3),
             timeReference: _timeReference(),
           )
           .canContinue,
@@ -87,7 +87,6 @@ void main() {
         publicDescriptor: 'tr(test)',
         balanceSat: BigInt.zero,
       ),
-      policy: policy,
       record: BullVaultRecord(
         walletId: 'bullvault-wallet',
         lineageId: policy.lineageId,
@@ -97,7 +96,6 @@ void main() {
         recoveryPackage: recoveryPackage,
         createdAt: DateTime.utc(2026, 1, 1),
       ),
-      recoveryPackage: recoveryPackage,
     );
 
     final initial = BullVaultOnboardingState(
@@ -157,7 +155,6 @@ void main() {
         publicDescriptor: 'tr(test)',
         balanceSat: BigInt.zero,
       ),
-      policy: policy,
       record: BullVaultRecord(
         walletId: 'bullvault-wallet',
         lineageId: policy.lineageId,
@@ -167,7 +164,6 @@ void main() {
         recoveryPackage: BullVaultRecoveryPackage(policy: policy),
         createdAt: DateTime.utc(2027, 1, 15),
       ),
-      recoveryPackage: BullVaultRecoveryPackage(policy: policy),
     );
     final readyExceptHardware = BullVaultOnboardingState(
       step: BullVaultOnboardingStep.complete,

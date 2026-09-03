@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.da
 
 final class BullVaultDetails {
   final BullVaultRecord record;
-  final BullVaultPolicy policy;
   final Duration? timeUntilFirstRecovery;
   final bool showEarlyRenewalWarning;
   final String? migrationAddress;
@@ -12,7 +11,6 @@ final class BullVaultDetails {
 
   BullVaultDetails({
     required this.record,
-    required this.policy,
     required this.timeUntilFirstRecovery,
     required this.showEarlyRenewalWarning,
     required this.migrationAddress,
@@ -24,6 +22,8 @@ final class BullVaultDetails {
       );
     }
   }
+
+  BullVaultPolicy get policy => record.recoveryPackage.policy;
 
   bool get hasPreviousFunds => previousVaults.any((vault) => vault.hasFunds);
 }
