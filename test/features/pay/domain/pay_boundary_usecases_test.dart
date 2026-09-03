@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart'
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
@@ -13,7 +14,6 @@ import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -30,8 +30,8 @@ class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
 class _MockCalculateBitcoinFees extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
 
-class _MockCalculateLiquidFees extends Mock
-    implements CalculateLiquidAbsoluteFeesUsecase {}
+class _MockLiquidWalletRepository extends Mock
+    implements LiquidWalletRepository {}
 
 class _MockSellOrder extends Mock implements SellOrder {}
 
@@ -155,15 +155,15 @@ void main() {
 
   group('CalculatePayAbsoluteFeesUsecase', () {
     late _MockCalculateBitcoinFees bitcoin;
-    late _MockCalculateLiquidFees liquid;
+    late _MockLiquidWalletRepository liquid;
     late CalculatePayAbsoluteFeesUsecase usecase;
 
     setUp(() {
       bitcoin = _MockCalculateBitcoinFees();
-      liquid = _MockCalculateLiquidFees();
+      liquid = _MockLiquidWalletRepository();
       usecase = CalculatePayAbsoluteFeesUsecase(
         calculateBitcoinAbsoluteFeesUsecase: bitcoin,
-        calculateLiquidAbsoluteFeesUsecase: liquid,
+        liquidWalletRepository: liquid,
       );
     });
 
@@ -182,8 +182,8 @@ void main() {
 
     test('a PSET fee read failure is sanitized', () async {
       when(
-        () => liquid.execute(pset: any(named: 'pset')),
-      ).thenThrow(CalculateLiquidAbsoluteFeesException(_rawReason));
+        () => liquid.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
+      ).thenThrow(Exception(_rawReason));
 
       final result = await usecase.liquid(pset: 'pset');
 

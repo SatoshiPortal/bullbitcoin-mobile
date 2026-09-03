@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
@@ -13,9 +15,6 @@ import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -23,11 +22,11 @@ import 'package:primitives/primitives.dart';
 class _MockPrepareBitcoinSend extends Mock
     implements PrepareBitcoinSendUsecase {}
 
-class _MockPrepareLiquidSend extends Mock implements PrepareLiquidSendUsecase {}
+class _MockLiquidWalletRepository extends Mock
+    implements LiquidWalletRepository {}
 
-class _MockSignBitcoinTx extends Mock implements SignBitcoinTxUsecase {}
-
-class _MockSignLiquidTx extends Mock implements SignLiquidTxUsecase {}
+class _MockBitcoinWalletRepository extends Mock
+    implements BitcoinWalletRepository {}
 
 class _MockBroadcastBitcoin extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
@@ -113,12 +112,14 @@ void main() {
   });
 
   group('PreparePayLiquidPayinUsecase', () {
-    late _MockPrepareLiquidSend prepare;
+    late _MockLiquidWalletRepository liquidWallet;
     late PreparePayLiquidPayinUsecase usecase;
 
     setUp(() {
-      prepare = _MockPrepareLiquidSend();
-      usecase = PreparePayLiquidPayinUsecase(prepareLiquidSendUsecase: prepare);
+      liquidWallet = _MockLiquidWalletRepository();
+      usecase = PreparePayLiquidPayinUsecase(
+        liquidWalletRepository: liquidWallet,
+      );
     });
 
     Future<Result<String, PayFailure>> run() => usecase.execute(
@@ -130,7 +131,7 @@ void main() {
 
     void stubThrow(Object error) {
       when(
-        () => prepare.execute(
+        () => liquidWallet.buildPset(
           walletId: any(named: 'walletId'),
           address: any(named: 'address'),
           feeRate: any(named: 'feeRate'),
@@ -176,17 +177,14 @@ void main() {
     test(
       'a Bitcoin signing failure never carries the descriptor out',
       () async {
-        final sign = _MockSignBitcoinTx();
+        final bitcoinWallet = _MockBitcoinWalletRepository();
         when(
-          () => sign.execute(
-            psbt: any(named: 'psbt'),
-            walletId: any(named: 'walletId'),
-          ),
-        ).thenThrow(SignBitcoinTxException(_rawReason));
+          () => bitcoinWallet.signPsbt(any(), walletId: any(named: 'walletId')),
+        ).thenThrow(Exception(_rawReason));
 
         final result = await SignPayPayinUsecase(
-          signBitcoinTxUsecase: sign,
-          signLiquidTxUsecase: _MockSignLiquidTx(),
+          bitcoinWalletRepository: bitcoinWallet,
+          liquidWalletRepository: _MockLiquidWalletRepository(),
         ).bitcoin(psbt: 'psbt', walletId: 'wallet-1');
 
         final failure =
@@ -198,17 +196,17 @@ void main() {
     );
 
     test('a Liquid signing failure is sanitized too', () async {
-      final sign = _MockSignLiquidTx();
+      final liquidWallet = _MockLiquidWalletRepository();
       when(
-        () => sign.execute(
+        () => liquidWallet.signPset(
           pset: any(named: 'pset'),
           walletId: any(named: 'walletId'),
         ),
-      ).thenThrow(SignLiquidTxException(_rawReason));
+      ).thenThrow(Exception(_rawReason));
 
       final result = await SignPayPayinUsecase(
-        signBitcoinTxUsecase: _MockSignBitcoinTx(),
-        signLiquidTxUsecase: sign,
+        bitcoinWalletRepository: _MockBitcoinWalletRepository(),
+        liquidWalletRepository: liquidWallet,
       ).liquid(pset: 'pset', walletId: 'wallet-1');
 
       expect(

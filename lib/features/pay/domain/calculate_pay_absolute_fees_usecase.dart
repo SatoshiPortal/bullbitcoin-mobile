@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -9,11 +9,11 @@ import 'package:primitives/primitives.dart';
 class CalculatePayAbsoluteFeesUsecase {
   final CalculateBitcoinAbsoluteFeesUsecase
   _calculateBitcoinAbsoluteFeesUsecase;
-  final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
+  final LiquidWalletRepository _liquidWalletRepository;
 
   const CalculatePayAbsoluteFeesUsecase({
     required this._calculateBitcoinAbsoluteFeesUsecase,
-    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._liquidWalletRepository,
   });
 
   @useResult
@@ -33,7 +33,11 @@ class CalculatePayAbsoluteFeesUsecase {
   @useResult
   Future<Result<int, PayFailure>> liquid({required String pset}) async {
     try {
-      return Ok(await _calculateLiquidAbsoluteFeesUsecase.execute(pset: pset));
+      // The repository reports (discounted vsize, absolute fees); only the fee
+      // is wanted here.
+      final (_, absoluteFees) = await _liquidWalletRepository
+          .getPsetSizeAndAbsoluteFees(pset: pset);
+      return Ok(absoluteFees);
     } catch (e, st) {
       log.severe(
         message: 'Failed to read the absolute fees of a pay payin PSET',

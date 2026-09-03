@@ -25,15 +25,13 @@ import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
@@ -85,13 +83,13 @@ class PayLocator {
     );
     locator.registerFactory<PreparePayLiquidPayinUsecase>(
       () => PreparePayLiquidPayinUsecase(
-        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
     locator.registerFactory<SignPayPayinUsecase>(
       () => SignPayPayinUsecase(
-        signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
-        signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
+        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
     locator.registerFactory<BroadcastPayPayinUsecase>(
@@ -129,8 +127,7 @@ class PayLocator {
       () => CalculatePayAbsoluteFeesUsecase(
         calculateBitcoinAbsoluteFeesUsecase:
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-        calculateLiquidAbsoluteFeesUsecase:
-            locator<CalculateLiquidAbsoluteFeesUsecase>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
     locator.registerFactory<EstimatePayPayinFeesUsecase>(
