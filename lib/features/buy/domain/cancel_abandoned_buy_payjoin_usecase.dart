@@ -61,7 +61,7 @@ class CancelAbandonedBuyPayjoinUsecase {
           );
           return Err(BuyUnexpectedFailure(failure.logMessage));
         }
-        return const Ok(null);
+        break;
       }
     }
     return const Ok(null);

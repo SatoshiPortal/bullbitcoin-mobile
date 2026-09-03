@@ -185,15 +185,11 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+        throw ApiKeyNotFoundException();
       }
 
       if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
+        throw ApiKeyInactiveException();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createBuyOrder(
@@ -333,9 +329,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! BuyOrder) {
-        throw Exception(
-          'Expected BuyOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('BuyOrder');
       }
 
       return order;
@@ -412,9 +406,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! BuyOrder) {
-        throw Exception(
-          'Expected BuyOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('BuyOrder');
       }
 
       return order;

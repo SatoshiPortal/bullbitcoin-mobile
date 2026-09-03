@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -76,6 +77,22 @@ void main() {
         case Err(:final failure):
           expect(failure, isA<BuyUnexpectedFailure>());
           expect(failure.logMessage, contains('secret123'));
+      }
+    });
+
+    test('maps a missing or inactive API key to unauthenticated', () async {
+      for (final exception in [
+        ApiKeyNotFoundException(),
+        ApiKeyInactiveException(),
+      ]) {
+        when(() => mainnet.refreshBuyOrder('order-1')).thenThrow(exception);
+
+        final result = await build().execute(orderId: 'order-1');
+
+        expect(
+          (result as Err<BuyOrder, BuyFailure>).failure,
+          isA<BuyUnauthenticatedFailure>(),
+        );
       }
     });
 

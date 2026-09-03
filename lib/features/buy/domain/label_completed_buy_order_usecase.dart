@@ -6,7 +6,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Writes the privileged exchange-buy labels when a buy order explicitly
-/// completes.
+/// completes (issue #2624: labels must never be written from history reads).
 class LabelCompletedBuyOrderUsecase {
   final TransactionsFacade _transactionsFacade;
 
