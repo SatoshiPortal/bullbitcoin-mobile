@@ -373,6 +373,26 @@ void main() {
     expect(option.fileData, isNot(contains('Name: 1234567890abcdef\n')));
   });
 
+  test('uses the selected signer registration name', () async {
+    final wallet = _wallet(
+      devices: const [SignerDeviceEntity.specter, SignerDeviceEntity.specter],
+      registrationNames: const ['Primary key', 'Recovery key'],
+      taproot: true,
+    );
+    when(
+      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
+    ).thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 2)));
+
+    final result = await usecase.execute(wallet, signerId: 'signer-1');
+
+    final option =
+        (result as Ok<List<WalletRegistrationOption>, SettingsFailure>)
+                .value
+                .single
+            as AvailableWalletRegistration;
+    expect(option.qrData, startsWith('addwallet Recovery key&'));
+  });
+
   test('maps policy analysis failures to a settings failure', () async {
     final wallet = _wallet(devices: const [SignerDeviceEntity.jade]);
     when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id)).thenAnswer(
@@ -406,6 +426,7 @@ Wallet _wallet({
   bool nestedUnsortedMultisig = false,
   bool usesDisjointBranches = false,
   bool taproot = false,
+  List<String?>? registrationNames,
 }) {
   final signers = [
     for (final (index, device) in devices.indexed)
@@ -418,6 +439,7 @@ Wallet _wallet({
         derivationPath: 'm/48h/0h/0h/2h',
         signer: SignerEntity.remote,
         signerDevice: device,
+        registrationName: registrationNames?[index],
       ),
   ];
   final keys = signers.expand((signer) => signer.descriptorKeys).indexed.map((

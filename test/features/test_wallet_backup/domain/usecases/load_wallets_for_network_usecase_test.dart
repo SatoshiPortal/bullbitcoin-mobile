@@ -27,7 +27,7 @@ void main() {
   });
 
   test(
-    'returns only standard single-signature wallets with one local seed',
+    'returns wallets with exactly one local seed regardless of policy',
     () async {
       final eligible = _wallet(
         origin: 'eligible',
@@ -80,11 +80,22 @@ void main() {
             derivationPath: "m/84'/0'/0'",
             signer: SignerEntity.local,
             signerDevice: null,
+          ).copyWith(localSeedFingerprint: '66666666'),
+          WalletSigner.single(
+            id: 'cold',
+            descriptorKeyId: 'cold-key',
+            masterFingerprint: '77777777',
+            xpubFingerprint: '77777778',
+            xpub: 'xpub-cold',
+            signer: SignerEntity.remote,
+            signerDevice: null,
           ),
         ],
         scriptType: null,
-        externalDescriptor: 'wsh(and_v(v:pk(xpub-miniscript/0/*),older(10)))',
-        internalDescriptor: 'wsh(and_v(v:pk(xpub-miniscript/1/*),older(10)))',
+        externalDescriptor:
+            'wsh(and_v(v:pk(xpub-miniscript/0/*),pk(xpub-cold/0/*)))',
+        internalDescriptor:
+            'wsh(and_v(v:pk(xpub-miniscript/1/*),pk(xpub-cold/1/*)))',
       );
       final missingFingerprint = _wallet(
         origin: 'missing-fingerprint',
@@ -120,7 +131,7 @@ void main() {
         (_) async => [multisig, miniscript, missingFingerprint, eligible],
       );
 
-      expect(await usecase.execute(), [eligible]);
+      expect(await usecase.execute(), [miniscript, eligible]);
     },
   );
 }

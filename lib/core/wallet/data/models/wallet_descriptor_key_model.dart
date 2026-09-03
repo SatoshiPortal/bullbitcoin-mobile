@@ -12,5 +12,6 @@ abstract class WalletDescriptorKeyModel with _$WalletDescriptorKeyModel {
     required String xpub,
     required String? derivationPath,
     @Default('') String descriptorPath,
+    @Default(false) bool requiresPassphrase,
   }) = _WalletDescriptorKeyModel;
 }

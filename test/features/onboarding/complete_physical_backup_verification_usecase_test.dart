@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_physical_backup_verified_usecase.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,6 +12,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 void main() {
   test(
@@ -23,9 +27,14 @@ void main() {
         origin: 'liquid',
         network: Network.liquidMainnet,
       );
+      final shared = requested.copyWith(
+        origin: 'shared',
+        signers: [...requested.signers, ...other.signers],
+      );
+      var wallets = [requested, liquid, other, shared];
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => [requested, liquid, other]);
+      ).thenAnswer((_) async => wallets);
       when(
         () => walletRepository.updateBackupInfo(
           walletId: any(named: 'walletId'),
@@ -34,7 +43,18 @@ void main() {
           latestEncryptedBackup: any(named: 'latestEncryptedBackup'),
           latestPhysicalBackup: any(named: 'latestPhysicalBackup'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((invocation) async {
+        wallets = [
+          for (final wallet in wallets)
+            wallet.id == invocation.namedArguments[#walletId]
+                ? wallet.copyWith(
+                    isPhysicalBackupTested:
+                        invocation.namedArguments[#isPhysicalBackupTested]
+                            as bool,
+                  )
+                : wallet,
+        ];
+      });
       final usecase = CompletePhysicalBackupVerificationUsecase(
         walletRepository: walletRepository,
         settingsRepository: settingsRepository,
@@ -52,6 +72,15 @@ void main() {
         ),
       ).captured;
       expect(captured, ['requested', 'liquid']);
+      final getWallets = _MockGetWalletsUsecase();
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => wallets);
+      final check = CheckPhysicalBackupVerifiedUsecase(getWallets);
+      expect(await check.execute('deadbeef'), isTrue);
+      expect(await check.execute('cafebabe'), isFalse);
+      wallets = [shared.copyWith(isPhysicalBackupTested: true)];
+      expect(await check.execute('cafebabe'), isFalse);
     },
   );
 }

@@ -114,7 +114,7 @@ class ImportWalletUsecase {
           try {
             final wallets = await _wallet.getWallets();
             final seedIsInUse = wallets.any(
-              (wallet) => wallet.localMasterFingerprints.contains(
+              (wallet) => wallet.localSeedFingerprints.contains(
                 seedCreatedByThisImport,
               ),
             );

@@ -96,6 +96,21 @@ class WalletMetadataDatasource {
     return updatedRows == 1;
   }
 
+  Future<bool> updateSignerRegistrationName({
+    required String walletId,
+    required String signerId,
+    required String registrationName,
+  }) async {
+    final updatedRows =
+        await (_sqlite.update(_sqlite.walletSigners)..where(
+              (row) => row.walletId.equals(walletId) & row.id.equals(signerId),
+            ))
+            .write(
+              WalletSignersCompanion(registrationName: Value(registrationName)),
+            );
+    return updatedRows == 1;
+  }
+
   Future<bool> updateSyncedAt({
     required String walletId,
     required DateTime syncedAt,

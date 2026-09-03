@@ -7790,6 +7790,8 @@ final class Schema16 extends i0.VersionedSchema {
         _column_290,
         _column_136,
         _column_137,
+        _column_291,
+        _column_292,
       ],
       attachedDatabase: database,
     ),
@@ -7810,12 +7812,13 @@ final class Schema16 extends i0.VersionedSchema {
         _column_161,
         _column_126,
         _column_290,
-        _column_291,
+        _column_293,
         _column_127,
         _column_128,
         _column_133,
-        _column_292,
-        _column_293,
+        _column_294,
+        _column_295,
+        _column_296,
       ],
       attachedDatabase: database,
     ),
@@ -8188,11 +8191,8 @@ final class Schema16 extends i0.VersionedSchema {
       columns: [
         _column_126,
         _column_161,
-        _column_294,
-        _column_139,
-        _column_295,
-        _column_296,
         _column_297,
+        _column_139,
         _column_298,
         _column_299,
         _column_300,
@@ -8201,9 +8201,12 @@ final class Schema16 extends i0.VersionedSchema {
         _column_303,
         _column_304,
         _column_305,
-        _column_231,
         _column_306,
         _column_307,
+        _column_308,
+        _column_231,
+        _column_309,
+        _column_310,
       ],
       attachedDatabase: database,
     ),
@@ -8218,7 +8221,7 @@ final class Schema16 extends i0.VersionedSchema {
         'PRIMARY KEY(transaction_id, tx_id, vout)',
         'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
       ],
-      columns: [_column_308, _column_240, _column_241],
+      columns: [_column_311, _column_240, _column_241],
       attachedDatabase: database,
     ),
     alias: null,
@@ -8232,7 +8235,7 @@ final class Schema16 extends i0.VersionedSchema {
         'PRIMARY KEY(transaction_id, node, option_index)',
         'FOREIGN KEY(transaction_id)REFERENCES send_transactions(id)ON DELETE CASCADE',
       ],
-      columns: [_column_308, _column_309, _column_310],
+      columns: [_column_311, _column_312, _column_313],
       attachedDatabase: database,
     ),
     alias: null,
@@ -8333,6 +8336,10 @@ class Shape44 extends i0.VersionedTable {
       columnsByName['signer']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get signerDevice =>
       columnsByName['signer_device']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get registrationName =>
+      columnsByName['registration_name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get localSeedFingerprint =>
+      columnsByName['local_seed_fingerprint']! as i1.GeneratedColumn<String>;
 }
 
 i1.GeneratedColumn<int> _column_290(String aliasedName) =>
@@ -8342,6 +8349,22 @@ i1.GeneratedColumn<int> _column_290(String aliasedName) =>
       false,
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_291(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'registration_name',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_292(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'local_seed_fingerprint',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
     );
 
 class Shape45 extends i0.VersionedTable {
@@ -8364,9 +8387,11 @@ class Shape45 extends i0.VersionedTable {
       columnsByName['derivation_path']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get descriptorPath =>
       columnsByName['descriptor_path']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get requiresPassphrase =>
+      columnsByName['requires_passphrase']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_291(String aliasedName) =>
+i1.GeneratedColumn<String> _column_293(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'signer_id',
       aliasedName,
@@ -8374,7 +8399,7 @@ i1.GeneratedColumn<String> _column_291(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_292(String aliasedName) =>
+i1.GeneratedColumn<String> _column_294(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'derivation_path',
       aliasedName,
@@ -8382,7 +8407,7 @@ i1.GeneratedColumn<String> _column_292(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<String> _column_293(String aliasedName) =>
+i1.GeneratedColumn<String> _column_295(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'descriptor_path',
       aliasedName,
@@ -8390,6 +8415,16 @@ i1.GeneratedColumn<String> _column_293(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL DEFAULT \'\'',
       defaultValue: const i1.CustomExpression('\'\''),
+    );
+i1.GeneratedColumn<int> _column_296(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'requires_passphrase',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints:
+          'NOT NULL DEFAULT 0 CHECK (requires_passphrase IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
     );
 
 class Shape46 extends i0.VersionedTable {
@@ -8432,7 +8467,7 @@ class Shape46 extends i0.VersionedTable {
       columnsByName['revision']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_294(String aliasedName) =>
+i1.GeneratedColumn<String> _column_297(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'stage',
       aliasedName,
@@ -8440,7 +8475,7 @@ i1.GeneratedColumn<String> _column_294(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_295(String aliasedName) =>
+i1.GeneratedColumn<String> _column_298(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'recipient',
       aliasedName,
@@ -8448,7 +8483,7 @@ i1.GeneratedColumn<String> _column_295(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_296(String aliasedName) =>
+i1.GeneratedColumn<String> _column_299(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'amount',
       aliasedName,
@@ -8456,7 +8491,7 @@ i1.GeneratedColumn<String> _column_296(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_297(String aliasedName) =>
+i1.GeneratedColumn<String> _column_300(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'amount_currency_code',
       aliasedName,
@@ -8464,7 +8499,7 @@ i1.GeneratedColumn<String> _column_297(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_298(String aliasedName) =>
+i1.GeneratedColumn<int> _column_301(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'send_max',
       aliasedName,
@@ -8472,7 +8507,7 @@ i1.GeneratedColumn<int> _column_298(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL CHECK (send_max IN (0, 1))',
     );
-i1.GeneratedColumn<String> _column_299(String aliasedName) =>
+i1.GeneratedColumn<String> _column_302(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'fee_selection',
       aliasedName,
@@ -8480,7 +8515,7 @@ i1.GeneratedColumn<String> _column_299(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<String> _column_300(String aliasedName) =>
+i1.GeneratedColumn<String> _column_303(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'custom_fee_kind',
       aliasedName,
@@ -8488,7 +8523,7 @@ i1.GeneratedColumn<String> _column_300(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_301(String aliasedName) =>
+i1.GeneratedColumn<int> _column_304(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'custom_fee_value',
       aliasedName,
@@ -8496,7 +8531,7 @@ i1.GeneratedColumn<int> _column_301(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<int> _column_302(String aliasedName) =>
+i1.GeneratedColumn<int> _column_305(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'replace_by_fee',
       aliasedName,
@@ -8504,7 +8539,7 @@ i1.GeneratedColumn<int> _column_302(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL CHECK (replace_by_fee IN (0, 1))',
     );
-i1.GeneratedColumn<int> _column_303(String aliasedName) =>
+i1.GeneratedColumn<int> _column_306(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'payjoin_opted_out',
       aliasedName,
@@ -8514,7 +8549,7 @@ i1.GeneratedColumn<int> _column_303(String aliasedName) =>
           'NOT NULL DEFAULT 0 CHECK (payjoin_opted_out IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
     );
-i1.GeneratedColumn<String> _column_304(String aliasedName) =>
+i1.GeneratedColumn<String> _column_307(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'psbt',
       aliasedName,
@@ -8522,7 +8557,7 @@ i1.GeneratedColumn<String> _column_304(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<String> _column_305(String aliasedName) =>
+i1.GeneratedColumn<String> _column_308(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'final_transaction',
       aliasedName,
@@ -8530,7 +8565,7 @@ i1.GeneratedColumn<String> _column_305(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
     );
-i1.GeneratedColumn<String> _column_306(String aliasedName) =>
+i1.GeneratedColumn<String> _column_309(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'updated_at',
       aliasedName,
@@ -8538,7 +8573,7 @@ i1.GeneratedColumn<String> _column_306(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_307(String aliasedName) =>
+i1.GeneratedColumn<int> _column_310(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'revision',
       aliasedName,
@@ -8558,7 +8593,7 @@ class Shape47 extends i0.VersionedTable {
       columnsByName['vout']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_308(String aliasedName) =>
+i1.GeneratedColumn<String> _column_311(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'transaction_id',
       aliasedName,
@@ -8577,7 +8612,7 @@ class Shape48 extends i0.VersionedTable {
       columnsByName['option_index']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<String> _column_309(String aliasedName) =>
+i1.GeneratedColumn<String> _column_312(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'node',
       aliasedName,
@@ -8585,7 +8620,7 @@ i1.GeneratedColumn<String> _column_309(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
-i1.GeneratedColumn<int> _column_310(String aliasedName) =>
+i1.GeneratedColumn<int> _column_313(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'option_index',
       aliasedName,

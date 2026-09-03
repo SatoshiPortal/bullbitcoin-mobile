@@ -1,7 +1,12 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,11 +18,8 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 
-class _MockWallet extends Mock implements Wallet {}
+class _MockSeedRepository extends Mock implements SeedRepository {}
 
-/// Orphan-seed cleanup (issue #2324), against the real `Secrets`.
-///
-/// `Secrets.trash` is unconditional — the package does not know what a wallet is — so the guard asserted here is entirely this usecase's. The old test proved it with `verifyNever(delete)` on a mock; it is now proved by the entry still being in the keystore, which is the thing that actually matters.
 void main() {
   const words = [
     'abandon',
@@ -42,16 +44,32 @@ void main() {
   late DeleteWalletUsecase usecase;
   late String fingerprint;
 
-  String key() => 'seed_$fingerprint';
+  const walletId = 'wallet-1';
+  const fingerprint = 'deadbeef';
 
-  _MockWallet buildWallet({String? masterFingerprint, bool local = true}) {
-    final wallet = _MockWallet();
-    when(() => wallet.isDefault).thenReturn(isDefault);
-    final fingerprints = masterFingerprint.isEmpty
-        ? const <String>[]
-        : [masterFingerprint];
-    when(() => wallet.localMasterFingerprints).thenReturn(fingerprints);
-    return wallet;
+  Wallet buildWallet({
+    String masterFingerprint = fingerprint,
+    bool isDefault = false,
+    SignerEntity signer = SignerEntity.local,
+    String? localSeedFingerprint,
+  }) {
+    return Wallet(
+      origin: walletId,
+      network: Network.bitcoinTestnet,
+      isDefault: isDefault,
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: masterFingerprint,
+          xpubFingerprint: '12345678',
+          xpub: 'xpub',
+          signer: signer,
+          signerDevice: null,
+        ).copyWith(localSeedFingerprint: localSeedFingerprint),
+      ],
+      scriptType: ScriptType.bip84,
+      publicDescriptor: 'wpkh(xpub/<0;1>/*)',
+      balanceSat: BigInt.zero,
+    );
   }
 
   setUp(() async {
@@ -76,8 +94,12 @@ void main() {
     ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
   });
 
-  group('DeleteWalletUsecase — orphan seed cleanup (issue #2324)', () {
-    test('deletes the secret once no remaining wallet references it', () async {
+  group('DeleteWalletUsecase seed ownership', () {
+    test('deletes the seed once no remaining wallet references it', () async {
+      final wallet = buildWallet(
+        masterFingerprint: 'cafebabe',
+        localSeedFingerprint: fingerprint,
+      );
       when(
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
@@ -89,33 +111,38 @@ void main() {
       expect(storage.entries, isNot(contains(key())));
     });
 
-    test(
-      'keeps the secret while another wallet shares the fingerprint',
-      () async {
-        when(
-          () => walletRepository.getWallet(walletId),
-        ).thenAnswer((_) async => Ok<Wallet, WalletFailure>(buildWallet()));
-        when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => Ok([buildWallet()]));
+    for (final protectedSibling in [false, true]) {
+      test(
+        'keeps the seed used by a ${protectedSibling ? 'protected' : 'standard'} sibling',
+        () async {
+          final wallet = buildWallet();
+          final sibling = buildWallet(
+            masterFingerprint: protectedSibling ? 'cafebabe' : fingerprint,
+            localSeedFingerprint: protectedSibling ? fingerprint : null,
+          );
+          when(
+            () => walletRepository.getWallet(walletId),
+          ).thenAnswer((_) async => Ok(wallet));
+          when(
+            () => walletRepository.getWallets(),
+          ).thenAnswer((_) async => Ok([sibling]));
 
-        final result = await usecase.execute(walletId: walletId);
+          await usecase.execute(walletId: walletId);
 
-        expect(result, isA<Ok<void, WalletFailure>>());
-        expect(storage.entries, contains(key()));
-      },
-    );
+          verifyNever(() => seedRepository.delete(any()));
+        },
+      );
+    }
 
     test('ignores the fingerprint on a remote-only sibling', () async {
       final wallet = buildWallet();
-      final sibling = buildWallet();
-      when(() => sibling.localMasterFingerprints).thenReturn(const []);
+      final sibling = buildWallet(signer: SignerEntity.remote);
       when(
         () => walletRepository.getWallet(walletId),
-      ).thenAnswer((_) async => wallet);
+      ).thenAnswer((_) async => Ok(wallet));
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => [sibling]);
+      ).thenAnswer((_) async => Ok([sibling]));
 
       await usecase.execute(walletId: walletId);
 

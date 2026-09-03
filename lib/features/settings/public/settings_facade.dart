@@ -10,6 +10,7 @@ export '../ui/settings_router.dart' show SettingsRoute;
 export 'payjoin_disclaimer_dialog.dart';
 export 'settings_entry_registry.dart'
     show SettingsEntryContribution, SettingsEntrySection;
+export 'wallet_registration_request.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {
