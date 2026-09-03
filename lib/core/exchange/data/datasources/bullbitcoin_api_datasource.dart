@@ -1,7 +1,7 @@
 import 'dart:convert' show jsonEncode;
 import 'dart:math' show pow;
 
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
@@ -924,24 +924,4 @@ Never _throwOrderApiError(dynamic error, String contextMessage) {
 
   final message = errorMap['message'];
   throw Exception('$contextMessage${message is String ? ': $message' : ''}');
-}
-
-class BullBitcoinApiMinAmountException extends BullException {
-  final double minAmount;
-  final String currency;
-
-  BullBitcoinApiMinAmountException({
-    required this.minAmount,
-    required this.currency,
-  }) : super('Minimum amount is $minAmount $currency');
-}
-
-class BullBitcoinApiMaxAmountException extends BullException {
-  final double maxAmount;
-  final String currency;
-
-  BullBitcoinApiMaxAmountException({
-    required this.maxAmount,
-    required this.currency,
-  }) : super('Maximum amount is $maxAmount $currency');
 }

@@ -1554,7 +1554,6 @@
   },
   "mempoolCustomServerUrl": "Статус на сервери",
   "buyUnexpectedError": "Не вдалося створити ваше замовлення. Спробуйте ще раз або зверніться до підтримки.",
-  "buyOrderAlreadyConfirmedError": "Цей замовлення було підтверджено.",
   "sendServerNetworkFees": "Статус на сервери",
   "importWatchOnlyImport": "Імпорт",
   "backupWalletBackupButton": "Зареєструватися",
@@ -1610,7 +1609,6 @@
     }
   },
   "sellOrderPlaced": "Продати замовлення успішно",
-  "buyInsufficientFundsError": "Недостатні кошти в обліковому записі Bull Bitcoin для завершення цього замовлення.",
   "ledgerHelpStep4": "Переконайтеся, що ви встановили останню версію додатку Bitcoin від Ledger Live.",
   "recoverbullPleaseWait": "Будь ласка, почекайте, коли ми встановлюємо безпечне підключення...",
   "broadcastSignedTxBroadcast": "Радіоканал",
@@ -1697,7 +1695,6 @@
   "importQrDeviceError": "Заборонено імпортувати гаманець",
   "statusCheckOffline": "Оффлайн",
   "testBackupGoogleDrivePrivacyPart2": "не буде ",
-  "buyOrderNotFoundError": "Не знайдено замовлення. Будь ласка, спробуйте знову.",
   "backupWalletGoogleDrivePrivacyMessage2": "не буде ",
   "payAddressRequired": "Обов'язкова інформація",
   "payTotalAmount": "Загальна кількість",

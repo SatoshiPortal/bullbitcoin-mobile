@@ -1,8 +1,11 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class RefreshBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -15,7 +18,10 @@ class RefreshBuyOrderUsecase {
     required this._settingsRepository,
   });
 
-  Future<BuyOrder> execute({required String orderId}) async {
+  @useResult
+  Future<Result<BuyOrder, BuyFailure>> execute({
+    required String orderId,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -23,14 +29,21 @@ class RefreshBuyOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
       final order = await repo.refreshBuyOrder(orderId);
-      return order;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw RefreshBuyOrderException('$e');
+      return Ok(order);
+    } on ApiKeyException catch (e, st) {
+      log.severe(
+        message: 'Cannot refresh the buy order: not authenticated',
+        error: e,
+        trace: st,
+      );
+      return Err(BuyUnauthenticatedFailure(e.message));
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to refresh the buy order',
+        error: e,
+        trace: st,
+      );
+      return Err(BuyUnexpectedFailure('$e'));
     }
   }
-}
-
-class RefreshBuyOrderException extends BullException {
-  RefreshBuyOrderException(super.message);
 }

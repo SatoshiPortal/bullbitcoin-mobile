@@ -1934,10 +1934,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "Siparişiniz şu anda oluşturulamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
-  "buyOrderAlreadyConfirmedError": "Bu satın sipariş zaten doğrulandı.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "Banka Transfer",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -2202,10 +2198,6 @@
   "sellOrderPlaced": "Satış siparişi başarıyla yerleştirilir",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "Bu satın siparişi tamamlamak için Bull Bitcoin hesabınızdaki yeterli fonlar.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "Bitcoin uygulamasının son versiyonunu Ledger Live'dan yükledikten emin olun.",
   "@ledgerHelpStep4": {
@@ -2593,10 +2585,6 @@
   "payAccountNumberHint": "Hesap numarası girin",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "Satın alma emri bulunamadı. Lütfen tekrar deneyin.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "olmayacak ",
   "@backupWalletGoogleDrivePrivacyMessage2": {

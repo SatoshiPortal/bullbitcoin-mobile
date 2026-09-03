@@ -2152,10 +2152,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "Vaši objednávku nyní nelze vytvořit. Zkuste to prosím znovu nebo kontaktujte podporu.",
-  "buyOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "Bankovní převod",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -2408,10 +2404,6 @@
   "sellOrderPlaced": "Prodejní objednávka byla úspěšně dokončena",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "Nedostatečné prostředky ve vašem účtu Bull Bitcoin k dokončení této objednávky.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "Ujistěte se, že jste nainstalovali nejnovější verzi aplikace Bitcoin z aplikace Ledger Live.",
   "@ledgerHelpStep4": {
@@ -2786,10 +2778,6 @@
   "payAccountNumberHint": "Zadejte číslo účtu",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "Kupní objednávka nebyla nalezena. Prosím, zkuste to znovu.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "ne ",
   "@backupWalletGoogleDrivePrivacyMessage2": {

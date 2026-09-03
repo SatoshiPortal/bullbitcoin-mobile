@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,17 @@ class BuyAccelerateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final BuyFailure? accelerateFailure = context.select(
+      (BuyBloc bloc) => bloc.state.accelerateFailure,
+    );
     final isAcceleratingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isAcceleratingOrder,
+    );
+    // Deliberately not `accelerateFailure == null`: a failed confirm attempt
+    // leaves the order loaded and retrying is legitimate. Only the absence of
+    // an order makes the confirm below dispatch into a no-op.
+    final hasOrder = context.select(
+      (BuyBloc bloc) => bloc.state.buyOrder != null,
     );
     final fees = context.select(
       (BuyBloc bloc) => bloc.state.accelerationNetworkFees,
@@ -76,17 +87,23 @@ class BuyAccelerateScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
+                  // The fee, its fiat estimate and the rate all come from the
+                  // reads this screen performs on entry, so a failure is what
+                  // leaves them empty. The confirmation time is a constant.
                   BuyConfirmDetailRow(
                     label: context.loc.buyNetworkFees,
                     value: formattedAbsoluteFee,
+                    isUnavailable: accelerateFailure != null,
                   ),
                   BuyConfirmDetailRow(
                     label: context.loc.buyEstimatedFeeValue,
                     value: formattedFeeFiatEstimate,
+                    isUnavailable: accelerateFailure != null,
                   ),
                   BuyConfirmDetailRow(
                     label: context.loc.buyNetworkFeeRate,
                     value: formattedRelativeFee,
+                    isUnavailable: accelerateFailure != null,
                   ),
                   BuyConfirmDetailRow(
                     label: context.loc.buyConfirmationTime,
@@ -104,6 +121,16 @@ class BuyAccelerateScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
+                if (accelerateFailure != null) ...[
+                  Text(
+                    accelerateFailure.toTranslated(context),
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Gap(16),
+                ],
                 if (isAcceleratingOrder)
                   const Center(child: CircularProgressIndicator())
                 else
@@ -118,7 +145,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                 const Gap(16),
                 BBButton.big(
                   label: context.loc.buyConfirmExpress,
-                  disabled: isAcceleratingOrder,
+                  disabled: isAcceleratingOrder || !hasOrder,
                   onPressed: () {
                     context.read<BuyBloc>().add(
                       const BuyEvent.accelerateTransactionConfirmed(),
