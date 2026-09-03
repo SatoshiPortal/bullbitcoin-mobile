@@ -1131,10 +1131,6 @@
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
   },
-  "payOrderAlreadyConfirmed": "এই পেমেন্ট অর্ডারটি ইতোমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "লেনদেন সই করা হচ্ছে",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1351,10 +1347,6 @@
   "buyYouPay": "আপনি পরিশোধ করবেন",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "এই পেমেন্ট অর্ডারটি ইতোমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "Bull Bitcoin ওয়ালেটটি আপনাকে পাসপোর্টে থাকা QR কোড স্ক্যান করতে বলবে। সেটি স্ক্যান করুন।",
   "@passportStep12": {
@@ -1868,10 +1860,6 @@
   "howToDecideBackupText1": "লোকেরা তাদের বিটকয়েন হারানোর সবচেয়ে সাধারণ উপায়গুলোর একটি হলো শারীরিক ব্যাকআপটি হারিয়ে ফেলা। আপনার শারীরিক ব্যাকআপটি যদি কারো হাতে পড়ে, তবে সে আপনার সব বিটকয়েন চুরি করতে পারবে। আপনি যদি খুব বেশি আত্মবিশ্বাসী হন যে আপনি এটি ভালোভাবে গোপন রাখতে পারবেন এবং কখনোই হারাবেন না, তবে এটি একটি ভালো বিকল্প।",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "পেমেন্ট অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "বুল বিটকয়েন ওয়ালেট আপনাকে Coldcard-এ থাকা QR কোডটি স্ক্যান করতে বলবে। এটি স্ক্যান করুন।",
   "@coldcardStep13": {
@@ -8782,10 +8770,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "রেফারেন্স নম্বর",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -9296,10 +9280,6 @@
   "ledgerErrorInvalidPsbt": "অবৈধ PSBT ফর্ম্যাট সনাক্ত হয়েছে।",
   "ledgerErrorMissingDerivationPath": "ডেরিভেশন পাথ প্রয়োজন",
   "ledgerErrorMissingScriptType": "স্ক্রিপ্ট টাইপ প্রয়োজন",
-  "payBelowMinAmount": "আপনি এই ওয়ালেট দিয়ে ন্যূনতম পরিমাণের নিচে পাঠানোর চেষ্টা করছেন।",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "দয়া করে আপনার Ledger ডিভাইসে ঠিকানাটি নিশ্চিত করুন।",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -9657,10 +9637,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner নির্দেশনা",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "পেমেন্ট অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "Bull Bitcoin ওয়ালেট-এ \"আমি শেষ করেছি\" ক্লিক করুন",
   "@jadeStep12": {
@@ -10163,10 +10139,6 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "payInsufficientBalance": "নির্বাচিত ওয়ালেটে এই পেমেন্ট অর্ডারটি সম্পূর্ণ করতে পর্যাপ্ত টাকা নেই।",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "লগ দেখুন",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10447,10 +10419,6 @@
   "sellSendPaymentNetworkFees": "নেটওয়ার্ক ফি",
   "@sellSendPaymentNetworkFees": {
     "description": "Field label for network fees"
-  },
-  "payAboveMaxAmount": "আপনি এই ওয়ালেট দিয়ে পাঠাতে পারা সর্বোচ্চ পরিমাণের বেশি পাঠানোর চেষ্টা করছেন।",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
   },
   "receiveNetworkUnavailable": "{network} বর্তমানে অনুপলব্ধ",
   "@receiveNetworkUnavailable": {

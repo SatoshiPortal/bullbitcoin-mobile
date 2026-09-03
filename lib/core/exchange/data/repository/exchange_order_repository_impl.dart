@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
@@ -271,7 +270,10 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const PayError.unauthenticated();
+        throw ApiKeyException(
+          'API key not found or inactive. '
+          'Please login to your Bull Bitcoin account.',
+        );
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createPayOrder(
@@ -287,16 +289,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
           orderModel.toEntity(isTestnet: _isTestnet) as FiatPaymentOrder;
 
       return order;
-    } on BullBitcoinApiMinAmountException catch (e) {
-      throw PayError.belowMinAmount(
-        minAmount: e.minAmount,
-        currency: e.currency,
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      throw PayError.aboveMaxAmount(
-        maxAmount: e.maxAmount,
-        currency: e.currency,
-      );
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to place pay order: $e');
     }
@@ -484,15 +482,16 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! FiatPaymentOrder) {
-        throw const PayError.unexpected(
-          message:
-              'Expected FiatPaymentOrder but received a different order type',
+        throw Exception(
+          'Expected FiatPaymentOrder but received a different order type',
         );
       }
 
       return order;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
-      throw PayError.unexpected(message: 'Failed to refresh pay order: $e');
+      throw Exception('Failed to refresh pay order: $e');
     }
   }
 
