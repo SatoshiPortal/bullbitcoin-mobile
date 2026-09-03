@@ -24,6 +24,22 @@ final class PsbtSigningReview {
         .difference(input.signedDescriptorKeyIds)
         .isNotEmpty,
   );
+
+  bool get requiresPassphrase {
+    final unsignedLocalKeyIds = transaction.inputs
+        .expand(
+          (input) => input.localDescriptorKeyIds.difference(
+            input.signedDescriptorKeyIds,
+          ),
+        )
+        .toSet();
+    return wallet.signers
+        .expand((signer) => signer.descriptorKeys)
+        .any(
+          (key) =>
+              unsignedLocalKeyIds.contains(key.id) && key.requiresPassphrase,
+        );
+  }
 }
 
 enum PsbtSigningResultStatus { partial, finalizable }

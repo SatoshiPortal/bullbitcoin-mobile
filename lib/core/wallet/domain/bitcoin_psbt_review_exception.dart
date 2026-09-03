@@ -33,3 +33,13 @@ final class BitcoinPsbtUnsupportedSpendModeException
     extends BitcoinPsbtReviewException {
   const BitcoinPsbtUnsupportedSpendModeException();
 }
+
+final class BitcoinSignerPassphraseRequiredException
+    extends BitcoinPsbtReviewException {
+  const BitcoinSignerPassphraseRequiredException();
+}
+
+final class BitcoinSignerPassphraseMismatchException
+    extends BitcoinPsbtReviewException {
+  const BitcoinSignerPassphraseMismatchException();
+}

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -179,7 +180,14 @@ _standardWallet(
     externalDescriptor: external.toString(),
     internalDescriptor: internal.toString(),
     masterFingerprint: root.asPublic().masterFingerprint(),
-    xpub: account.asPublic().toString(),
+    xpub:
+        Bip32Derivation.getBip32Xpub(
+          account.asPublic().toString().split(']').last,
+        ).convert(
+          scriptType.getXpubType(
+            isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+          ),
+        ),
     xpubFingerprint: account.asPublic().masterFingerprint(),
   );
 }

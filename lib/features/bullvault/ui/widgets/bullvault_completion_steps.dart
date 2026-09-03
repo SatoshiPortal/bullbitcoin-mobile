@@ -138,6 +138,8 @@ final class BullVaultHardwareSetupStep extends StatelessWidget {
 final class BullVaultMobileBackupStep extends StatelessWidget {
   final bool seedBackupVerified;
   final bool recoverBullBackupVerified;
+  final bool mobilePassphraseRequired;
+  final bool passphraseFreeRecoveryEnabled;
   final Future<void> Function() onVerifySeedBackup;
   final Future<void> Function() onSetUpRecoverBull;
 
@@ -145,6 +147,8 @@ final class BullVaultMobileBackupStep extends StatelessWidget {
     super.key,
     required this.seedBackupVerified,
     required this.recoverBullBackupVerified,
+    required this.mobilePassphraseRequired,
+    required this.passphraseFreeRecoveryEnabled,
     required this.onVerifySeedBackup,
     required this.onSetUpRecoverBull,
   });
@@ -162,7 +166,11 @@ final class BullVaultMobileBackupStep extends StatelessWidget {
       ),
       const Gap(12),
       Text(
-        context.loc.bullVaultMobileBackupDescription,
+        mobilePassphraseRequired
+            ? passphraseFreeRecoveryEnabled
+                  ? context.loc.bullVaultMobileBackupRecoveryDescription
+                  : context.loc.bullVaultMobileBackupPassphraseDescription
+            : context.loc.bullVaultMobileBackupDescription,
         style: context.font.bodyMedium?.copyWith(
           color: context.appColors.textMuted,
         ),
@@ -174,7 +182,11 @@ final class BullVaultMobileBackupStep extends StatelessWidget {
         title: seedBackupVerified
             ? context.loc.bullVaultPhysicalBackupVerified
             : context.loc.bullVaultPhysicalBackupMissing,
-        description: context.loc.bullVaultPhysicalBackupDescription,
+        description: mobilePassphraseRequired
+            ? passphraseFreeRecoveryEnabled
+                  ? context.loc.bullVaultPhysicalBackupRecoveryDescription
+                  : context.loc.bullVaultPhysicalBackupPassphraseDescription
+            : context.loc.bullVaultPhysicalBackupDescription,
         onTap: seedBackupVerified ? null : onVerifySeedBackup,
       ),
       const Gap(12),
@@ -183,7 +195,11 @@ final class BullVaultMobileBackupStep extends StatelessWidget {
         title: recoverBullBackupVerified
             ? context.loc.bullVaultRecoverBullVerified
             : context.loc.bullVaultRecoverBullMissing,
-        description: context.loc.bullVaultRecoverBullDescription,
+        description: mobilePassphraseRequired
+            ? passphraseFreeRecoveryEnabled
+                  ? context.loc.bullVaultRecoverBullRecoveryDescription
+                  : context.loc.bullVaultRecoverBullPassphraseDescription
+            : context.loc.bullVaultRecoverBullDescription,
         onTap: recoverBullBackupVerified ? null : onSetUpRecoverBull,
       ),
     ],
@@ -194,6 +210,36 @@ final class BullVaultReadyStep extends StatelessWidget {
   final bool hasDeferredSetup;
 
   const BullVaultReadyStep({super.key, required this.hasDeferredSetup});
+
+  @override
+  Widget build(BuildContext context) => BullVaultCompletionMessage(
+    title: context.loc.bullVaultCreatedTitle,
+    description: context.loc.bullVaultCreatedDescription,
+    footer: hasDeferredSetup
+        ? InfoCard(
+            description: context.loc.bullVaultDeferredSetupDescription,
+            tagColor: context.appColors.warning,
+            bgColor: context.appColors.warningContainer,
+          )
+        : Text(
+            context.loc.bullVaultTestDeposit,
+            style: context.font.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+  );
+}
+
+final class BullVaultCompletionMessage extends StatelessWidget {
+  final String title;
+  final String description;
+  final Widget? footer;
+
+  const BullVaultCompletionMessage({
+    super.key,
+    required this.title,
+    required this.description,
+    this.footer,
+  });
 
   @override
   Widget build(BuildContext context) => Column(
@@ -207,31 +253,19 @@ final class BullVaultReadyStep extends StatelessWidget {
       ),
       const Gap(20),
       Text(
-        context.loc.bullVaultCreatedTitle,
+        title,
         style: context.font.headlineLarge,
         textAlign: TextAlign.center,
       ),
       const Gap(12),
       Text(
-        context.loc.bullVaultCreatedDescription,
+        description,
         style: context.font.bodyMedium?.copyWith(
           color: context.appColors.textMuted,
         ),
         textAlign: TextAlign.center,
       ),
-      const Gap(24),
-      if (hasDeferredSetup)
-        InfoCard(
-          description: context.loc.bullVaultDeferredSetupDescription,
-          tagColor: context.appColors.warning,
-          bgColor: context.appColors.warningContainer,
-        )
-      else
-        Text(
-          context.loc.bullVaultTestDeposit,
-          style: context.font.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
+      if (footer != null) ...[const Gap(24), footer!],
     ],
   );
 }

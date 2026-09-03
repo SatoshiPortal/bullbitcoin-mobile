@@ -22,12 +22,13 @@ class CreateBullVaultOnboardingUsecase {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
+        final seedFingerprint = value.record.mobileSeedFingerprint;
         return Ok(
           BullVaultOnboardingSnapshot(
             result: value,
-            mobileBackupStatus: await _checkMobileBackupsUsecase.execute(
-              value.policy.everydayKey.accountKey.masterFingerprint,
-            ),
+            mobileBackupStatus: seedFingerprint == null
+                ? null
+                : await _checkMobileBackupsUsecase.execute(seedFingerprint),
           ),
         );
     }

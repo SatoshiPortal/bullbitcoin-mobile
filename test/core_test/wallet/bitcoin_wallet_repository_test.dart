@@ -28,7 +28,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -69,7 +68,6 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
 
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
-  late _MockSeedDatasource seedDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
   late BitcoinWalletRepository repository;
@@ -112,12 +110,11 @@ void main() {
   setUp(() {
     FakeSecureStoragePlatform().install();
     metadataDatasource = _MockWalletMetadataDatasource();
-    seedDatasource = _MockSeedDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      seedDatasource: _MockSeedDatasource(),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
     );

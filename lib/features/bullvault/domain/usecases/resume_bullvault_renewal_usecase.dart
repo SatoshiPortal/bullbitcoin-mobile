@@ -102,7 +102,7 @@ class ResumeBullVaultRenewalUsecase {
           visibleWallet: successorWallet,
           hiddenWallet: previousWallet,
         );
-        return const Ok(null);
+        current = linkedSuccessor;
       } on Exception {
         return const Err(BullVaultRenewalFailure());
       }
@@ -167,9 +167,7 @@ class ResumeBullVaultRenewalUsecase {
           previous: current,
           replacement: BullVaultCreateResult(
             wallet: wallet,
-            policy: policy,
             record: replacement,
-            recoveryPackage: recovery,
           ),
         ),
       );

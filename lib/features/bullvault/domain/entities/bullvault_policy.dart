@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
@@ -27,6 +29,7 @@ final class BullVaultPolicy {
   final String descriptor;
   final BullVaultProtection protection;
   final BullVaultSignerKey everydayKey;
+  final BullVaultSignerKey? delayedMobileRecoveryKey;
   final BullVaultSignerKey coldKey;
   final BullVaultSignerKey? secondColdKey;
   final BullVaultSignerKey? inheritanceKey;
@@ -37,6 +40,7 @@ final class BullVaultPolicy {
   final int? coldActivationTimestamp;
   final int? recoveryActivationTimestamp;
   final int? inheritanceActivationTimestamp;
+  final int? lastResortActivationTimestamp;
   final DateTime? createdAt;
 
   BullVaultPolicy({
@@ -47,6 +51,7 @@ final class BullVaultPolicy {
     required this.descriptor,
     required this.protection,
     required this.everydayKey,
+    this.delayedMobileRecoveryKey,
     required this.coldKey,
     required this.secondColdKey,
     required this.inheritanceKey,
@@ -57,6 +62,7 @@ final class BullVaultPolicy {
     required this.coldActivationTimestamp,
     required this.recoveryActivationTimestamp,
     required this.inheritanceActivationTimestamp,
+    this.lastResortActivationTimestamp,
     required DateTime? createdAt,
   }) : createdAt = createdAt?.toUtc() {
     if (!network.isBitcoin) {
@@ -68,6 +74,7 @@ final class BullVaultPolicy {
           vaultGeneration,
           protection: protection,
           includesInheritance: inheritanceKey != null,
+          includesLastResort: lastResortActivationTimestamp != null,
         )) {
       throw ArgumentError('BullVault requires valid lineage metadata');
     }
@@ -79,21 +86,78 @@ final class BullVaultPolicy {
     }
     if (reusesSignerKey([
       everydayKey,
+      ?delayedMobileRecoveryKey,
       coldKey,
       ?secondColdKey,
       ?inheritanceKey,
     ])) {
       throw ArgumentError('BullVault signer keys must be independent');
     }
+    final recoveryKey = delayedMobileRecoveryKey;
+    if (recoveryKey != null &&
+        ((everydayKey.signer != SignerEntity.local ||
+                    recoveryKey.signer != SignerEntity.local) &&
+                (everydayKey.signer != SignerEntity.none ||
+                    recoveryKey.signer != SignerEntity.none) ||
+            !_usesSameBip48Account(
+              everydayKey,
+              recoveryKey,
+              network.coinType,
+            ))) {
+      throw ArgumentError(
+        'Delayed mobile recovery must use the everyday Bull account',
+      );
+    }
   }
 
   bool get hasKnownOriginalSchedule => schedule != null;
+
+  BullVaultPolicy withEverydayOwnership(
+    SignerEntity signer, {
+    bool requiresPassphrase = false,
+  }) => BullVaultPolicy(
+    id: id,
+    lineageId: lineageId,
+    vaultGeneration: vaultGeneration,
+    network: network,
+    descriptor: descriptor,
+    protection: protection,
+    everydayKey: everydayKey.copyWith(
+      accountKey: everydayKey.accountKey.copyWith(
+        requiresPassphrase: requiresPassphrase,
+      ),
+      signer: signer,
+      clearSignerDevice: signer != SignerEntity.remote,
+    ),
+    delayedMobileRecoveryKey: delayedMobileRecoveryKey?.copyWith(
+      signer: signer == SignerEntity.local
+          ? SignerEntity.local
+          : SignerEntity.none,
+      clearSignerDevice: true,
+    ),
+    coldKey: coldKey,
+    secondColdKey: secondColdKey,
+    inheritanceKey: inheritanceKey,
+    schedule: schedule,
+    birthHeight: birthHeight,
+    referenceTimestamp: referenceTimestamp,
+    chainMedianTimePast: chainMedianTimePast,
+    coldActivationTimestamp: coldActivationTimestamp,
+    recoveryActivationTimestamp: recoveryActivationTimestamp,
+    inheritanceActivationTimestamp: inheritanceActivationTimestamp,
+    lastResortActivationTimestamp: lastResortActivationTimestamp,
+    createdAt: createdAt,
+  );
 
   BullVaultSchedule get renewalSchedule =>
       schedule ??
       BullVaultSchedule.defaultsFor(
         protection: protection,
         includesInheritance: inheritanceKey != null,
+      ).copyWith(
+        lastResortDelay: lastResortActivationTimestamp == null
+            ? null
+            : BullVaultSchedule.defaultLastResortDelay,
       );
 
   factory BullVaultPolicy.build({
@@ -103,6 +167,7 @@ final class BullVaultPolicy {
     required String descriptor,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
@@ -123,6 +188,7 @@ final class BullVaultPolicy {
       descriptor: descriptor,
       protection: protection,
       everydayKey: everydayKey,
+      delayedMobileRecoveryKey: delayedMobileRecoveryKey,
       coldKey: coldKey,
       secondColdKey: secondColdKey,
       inheritanceKey: inheritanceKey,
@@ -140,6 +206,9 @@ final class BullVaultPolicy {
       inheritanceActivationTimestamp: inheritanceKey == null
           ? null
           : schedule.inheritanceActivationTimestamp(timeReference.deviceTime),
+      lastResortActivationTimestamp: schedule.lastResortActivationTimestamp(
+        timeReference.deviceTime,
+      ),
       createdAt: timeReference.deviceTime,
     );
   }
@@ -150,12 +219,14 @@ final class BullVaultPolicy {
     required String descriptor,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
     required int? coldActivationTimestamp,
     required int recoveryActivationTimestamp,
     required int? inheritanceActivationTimestamp,
+    int? lastResortActivationTimestamp,
   }) {
     final id = sha256.convert(utf8.encode(descriptor)).toString();
     return BullVaultPolicy(
@@ -166,6 +237,7 @@ final class BullVaultPolicy {
       descriptor: descriptor,
       protection: protection,
       everydayKey: everydayKey,
+      delayedMobileRecoveryKey: delayedMobileRecoveryKey,
       coldKey: coldKey,
       secondColdKey: secondColdKey,
       inheritanceKey: inheritanceKey,
@@ -176,6 +248,7 @@ final class BullVaultPolicy {
       coldActivationTimestamp: coldActivationTimestamp,
       recoveryActivationTimestamp: recoveryActivationTimestamp,
       inheritanceActivationTimestamp: inheritanceActivationTimestamp,
+      lastResortActivationTimestamp: lastResortActivationTimestamp,
       createdAt: null,
     );
   }
@@ -203,6 +276,7 @@ final class BullVaultPolicy {
       descriptor: descriptor,
       protection: recognizedPolicy.protection,
       everydayKey: recognizedPolicy.everydayKey,
+      delayedMobileRecoveryKey: recognizedPolicy.delayedMobileRecoveryKey,
       coldKey: recognizedPolicy.coldKey,
       secondColdKey: recognizedPolicy.secondColdKey,
       inheritanceKey: recognizedPolicy.inheritanceKey,
@@ -214,6 +288,8 @@ final class BullVaultPolicy {
       recoveryActivationTimestamp: recognizedPolicy.recoveryActivationTimestamp,
       inheritanceActivationTimestamp:
           recognizedPolicy.inheritanceActivationTimestamp,
+      lastResortActivationTimestamp:
+          recognizedPolicy.lastResortActivationTimestamp,
       createdAt: createdAt,
     );
   }
@@ -223,6 +299,7 @@ final class BullVaultPolicy {
     required Network network,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
@@ -244,6 +321,7 @@ final class BullVaultPolicy {
       network: network,
       protection: protection,
       everydayKey: everydayKey,
+      delayedMobileRecoveryKey: delayedMobileRecoveryKey,
       coldKey: coldKey,
       secondColdKey: secondColdKey,
       inheritanceKey: inheritanceKey,
@@ -257,6 +335,9 @@ final class BullVaultPolicy {
       inheritanceActivationTimestamp: inheritanceKey == null
           ? null
           : schedule.inheritanceActivationTimestamp(referenceTime),
+      lastResortActivationTimestamp: schedule.lastResortActivationTimestamp(
+        referenceTime,
+      ),
     );
   }
 
@@ -265,12 +346,14 @@ final class BullVaultPolicy {
     required Network network,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
     required int? coldActivationTimestamp,
     required int recoveryActivationTimestamp,
     required int? inheritanceActivationTimestamp,
+    int? lastResortActivationTimestamp,
   }) {
     _validateActivationTimestamps(
       protection: protection,
@@ -278,6 +361,7 @@ final class BullVaultPolicy {
       cold: coldActivationTimestamp,
       recovery: recoveryActivationTimestamp,
       inheritance: inheritanceActivationTimestamp,
+      lastResort: lastResortActivationTimestamp,
     );
     if (protection.usesTwoColdKeys != (secondColdKey != null)) {
       throw ArgumentError('BullVault protection does not match its signers');
@@ -289,7 +373,9 @@ final class BullVaultPolicy {
     );
     final everydayPairs = _branchPairsForGeneration(
       vaultGeneration,
-      occurrencesPerGeneration: 2,
+      occurrencesPerGeneration: delayedMobileRecoveryKey == null
+          ? (lastResortActivationTimestamp == null ? 2 : 3)
+          : 1,
     );
     final coldPairs = _branchPairsForGeneration(
       vaultGeneration,
@@ -302,10 +388,30 @@ final class BullVaultPolicy {
       receiveBranch: everydayPairs[0].receive,
       changeBranch: everydayPairs[0].change,
     );
-    final everydayRecovery = everydayKey.expression(
-      receiveBranch: everydayPairs[1].receive,
-      changeBranch: everydayPairs[1].change,
+    final delayedMobileKey = delayedMobileRecoveryKey ?? everydayKey;
+    final delayedMobilePairs = delayedMobileRecoveryKey == null
+        ? everydayPairs
+        : _branchPairsForGeneration(
+            vaultGeneration,
+            occurrencesPerGeneration: lastResortActivationTimestamp == null
+                ? 1
+                : 2,
+          );
+    final everydayRecovery = delayedMobileKey.expression(
+      receiveBranch:
+          delayedMobilePairs[delayedMobileRecoveryKey == null ? 1 : 0].receive,
+      changeBranch:
+          delayedMobilePairs[delayedMobileRecoveryKey == null ? 1 : 0].change,
     );
+    final lastResortKey = lastResortActivationTimestamp == null
+        ? null
+        : delayedMobileKey.expression(
+            receiveBranch: delayedMobilePairs.last.receive,
+            changeBranch: delayedMobilePairs.last.change,
+          );
+    final lastResort = lastResortKey == null
+        ? null
+        : 'and_v(v:after($lastResortActivationTimestamp),pk($lastResortKey))';
     final coldPrimary = coldKey.expression(
       receiveBranch: coldPairs[0].receive,
       changeBranch: coldPairs[0].change,
@@ -354,7 +460,10 @@ final class BullVaultPolicy {
           'and_v(v:after($recoveryActivationTimestamp),multi_a(2,$everydayRecovery,$coldRecovery,$secondColdRecovery,$inheritanceRecovery))';
       final inheritance =
           'and_v(v:after($inheritanceActivationTimestamp),pk($inheritanceSolo))';
-      return 'tr(${_numsKey(network, nums.receive, nums.change)},{$primary,{$recovery,$inheritance}})';
+      final finalRecovery = lastResort == null
+          ? inheritance
+          : '{$inheritance,$lastResort}';
+      return 'tr(${_numsKey(network, nums.receive, nums.change)},{$primary,{$recovery,$finalRecovery}})';
     }
 
     final primary = 'multi_a(2,${primaryKeys.join(',')})';
@@ -387,7 +496,10 @@ final class BullVaultPolicy {
     final cold = 'and_v(v:after($coldActivationTimestamp),pk($coldSolo))';
     final inheritance =
         'and_v(v:after($inheritanceActivationTimestamp),pk($inheritanceSolo))';
-    return 'tr(${_numsKey(network, nums.receive, nums.change)},{$primary,{$recovery,{$cold,$inheritance}}})';
+    final finalRecovery = lastResort == null
+        ? inheritance
+        : '{$inheritance,$lastResort}';
+    return 'tr(${_numsKey(network, nums.receive, nums.change)},{$primary,{$recovery,{$cold,$finalRecovery}}})';
   }
 
   static List<BullVaultBranchPair> _branchPairsForGeneration(
@@ -433,10 +545,12 @@ final class BullVaultPolicy {
     int vaultGeneration, {
     required BullVaultProtection protection,
     required bool includesInheritance,
+    bool includesLastResort = false,
   }) {
     if (vaultGeneration < 0) return false;
     final occurrences =
-        protection == BullVaultProtection.standard && includesInheritance
+        includesLastResort ||
+            protection == BullVaultProtection.standard && includesInheritance
         ? 3
         : 2;
     final lastPairIndex = ((vaultGeneration + 1) * occurrences) - 1;
@@ -470,7 +584,13 @@ final class BullVaultPolicy {
   bool hasSameSignerConfigurationAs(BullVaultPolicy other) =>
       network == other.network &&
       protection == other.protection &&
+      (lastResortActivationTimestamp != null) ==
+          (other.lastResortActivationTimestamp != null) &&
       _sameAccountKey(everydayKey, other.everydayKey) &&
+      _sameOptionalAccountKey(
+        delayedMobileRecoveryKey,
+        other.delayedMobileRecoveryKey,
+      ) &&
       _sameAccountKey(coldKey, other.coldKey) &&
       _sameOptionalAccountKey(secondColdKey, other.secondColdKey) &&
       _sameOptionalAccountKey(inheritanceKey, other.inheritanceKey);
@@ -491,6 +611,23 @@ final class BullVaultPolicy {
   ) =>
       Bip32Derivation.getBip32Xpub(first.accountKey.xpub).toBase58() ==
       Bip32Derivation.getBip32Xpub(second.accountKey.xpub).toBase58();
+
+  static bool _usesSameBip48Account(
+    BullVaultSignerKey first,
+    BullVaultSignerKey second,
+    int coinType,
+  ) {
+    final firstAccount = Bip48Derivation.account(
+      first.accountKey.derivationPath,
+      coinType: coinType,
+    );
+    return firstAccount != null &&
+        firstAccount ==
+            Bip48Derivation.account(
+              second.accountKey.derivationPath,
+              coinType: coinType,
+            );
+  }
 
   bool _hasValidScheduleMetadata() {
     final schedule = this.schedule;
@@ -531,7 +668,9 @@ final class BullVaultPolicy {
         protection == BullVaultProtection.standard || inheritanceKey == null
         ? schedule.coldActivationTimestamp(createdAt)
         : null;
-    return coldActivationTimestamp == expectedCold &&
+    return lastResortActivationTimestamp ==
+            schedule.lastResortActivationTimestamp(createdAt) &&
+        coldActivationTimestamp == expectedCold &&
         recoveryActivationTimestamp ==
             schedule.recoveryActivationTimestamp(createdAt) &&
         inheritanceActivationTimestamp ==
@@ -548,6 +687,7 @@ final class BullVaultPolicy {
         cold: coldActivationTimestamp,
         recovery: recoveryActivationTimestamp,
         inheritance: inheritanceActivationTimestamp,
+        lastResort: lastResortActivationTimestamp,
       );
       return true;
     } on ArgumentError {
@@ -561,6 +701,7 @@ final class BullVaultPolicy {
     required int? cold,
     required int? recovery,
     required int? inheritance,
+    int? lastResort,
   }) {
     if (recovery == null ||
         recovery < _locktimeTimestampThreshold ||
@@ -581,7 +722,9 @@ final class BullVaultPolicy {
       (BullVaultProtection.extra, true) =>
         cold == null && inheritance != null && recovery < inheritance,
     };
-    if (!valid) {
+    if (!valid ||
+        (lastResort != null &&
+            (inheritance == null || lastResort <= inheritance))) {
       throw ArgumentError('BullVault requires ordered activation timestamps');
     }
   }

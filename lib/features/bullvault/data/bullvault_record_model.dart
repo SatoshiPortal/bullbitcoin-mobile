@@ -2,7 +2,9 @@ final class BullVaultRecordModel {
   final String walletId;
   final String lineageId;
   final int vaultGeneration;
-  final int mobileAccount;
+  final int? mobileAccount;
+  final String? mobileSeedFingerprint;
+  final bool mobilePassphraseRequired;
   final int? birthHeight;
   final String recoveryPackage;
   final String? previousVaultId;
@@ -20,6 +22,8 @@ final class BullVaultRecordModel {
     required this.lineageId,
     required this.vaultGeneration,
     required this.mobileAccount,
+    required this.mobileSeedFingerprint,
+    this.mobilePassphraseRequired = false,
     required this.birthHeight,
     required this.recoveryPackage,
     required this.previousVaultId,
@@ -38,12 +42,15 @@ final class BullVaultRecordModel {
         walletId: json['walletId'] as String,
         lineageId: json['lineageId'] as String,
         vaultGeneration: json['vaultGeneration'] as int,
-        mobileAccount: json['mobileAccount'] as int,
+        mobileAccount: json['mobileAccount'] as int?,
+        mobileSeedFingerprint: json['mobileSeedFingerprint'] as String?,
+        mobilePassphraseRequired:
+            json['mobilePassphraseRequired'] as bool? ?? false,
         birthHeight: json['birthHeight'] as int?,
         recoveryPackage: json['recoveryPackage'] as String,
         previousVaultId: json['previousVaultId'] as String?,
         successorWalletId: json['successorWalletId'] as String?,
-        status: json['status'] as String? ?? 'active',
+        status: json['status'] as String,
         hardwareSetupComplete: json['hardwareSetupComplete'] as bool? ?? false,
         hardwareSetupDeferred: json['hardwareSetupDeferred'] as bool? ?? false,
         completedHardwareSignerIds: [
@@ -63,6 +70,8 @@ final class BullVaultRecordModel {
     'lineageId': lineageId,
     'vaultGeneration': vaultGeneration,
     'mobileAccount': mobileAccount,
+    'mobileSeedFingerprint': mobileSeedFingerprint,
+    'mobilePassphraseRequired': mobilePassphraseRequired,
     'birthHeight': birthHeight,
     'recoveryPackage': recoveryPackage,
     'previousVaultId': previousVaultId,

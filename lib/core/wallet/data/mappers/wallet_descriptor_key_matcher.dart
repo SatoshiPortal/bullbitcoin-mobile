@@ -20,18 +20,21 @@ bool walletDescriptorKeyMatches({
   final normalizedFingerprint = fingerprint?.toLowerCase();
   final masterFingerprint = key.masterFingerprint.toLowerCase();
   final xpubFingerprint = key.xpubFingerprint.toLowerCase();
-  if (masterFingerprint.isNotEmpty &&
-      normalizedFingerprint != masterFingerprint) {
-    return false;
-  }
-  if (masterFingerprint.isEmpty &&
-      xpubFingerprint.isNotEmpty &&
-      normalizedFingerprint != xpubFingerprint) {
+  final hasMasterOrigin =
+      masterFingerprint.isNotEmpty &&
+      normalizedFingerprint == masterFingerprint;
+  final hasAccountOrigin =
+      xpubFingerprint.isNotEmpty && normalizedFingerprint == xpubFingerprint;
+  if (!hasMasterOrigin &&
+      !hasAccountOrigin &&
+      (masterFingerprint.isNotEmpty || xpubFingerprint.isNotEmpty)) {
     return false;
   }
 
   final sourcePath = _pathParts(derivationPath);
-  final accountPath = _pathParts(key.derivationPath);
+  final accountPath = hasAccountOrigin && !hasMasterOrigin
+      ? const <String>[]
+      : _pathParts(key.derivationPath);
   if (accountPath.isNotEmpty && !_startsWith(sourcePath, accountPath)) {
     return false;
   }

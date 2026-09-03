@@ -197,6 +197,7 @@ BullVaultRecord _record(
     lineageId: policy.lineageId,
     vaultGeneration: generation,
     mobileAccount: 0,
+    mobileSeedFingerprint: everyday.accountKey.masterFingerprint,
     birthHeight: 3_000_000,
     recoveryPackage: BullVaultRecoveryPackage(
       previousVaultId: previousVaultId,
@@ -230,7 +231,9 @@ BullVaultSignerKey _signer(BullVaultSignerRole role, int mnemonicIndex) {
       xpub: derived.xpub.split(']').last,
       derivationPath: "m/48'/1'/0'/2'",
     ),
-    signer: SignerEntity.remote,
+    signer: role == BullVaultSignerRole.everyday
+        ? SignerEntity.local
+        : SignerEntity.remote,
     signerDevice: null,
   );
 }

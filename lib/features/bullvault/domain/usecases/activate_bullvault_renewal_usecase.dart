@@ -66,7 +66,7 @@ class ActivateBullVaultRenewalUsecase {
     }
     final requiredSignerIds = {
       for (final signer in replacementWallet.signers)
-        if (signer.signer != SignerEntity.local) signer.id,
+        if (signer.signer == SignerEntity.remote) signer.id,
     };
     if ((replacement.status != BullVaultLifecycleStatus.pending &&
             replacement.status != BullVaultLifecycleStatus.activating) ||
@@ -136,8 +136,8 @@ class ActivateBullVaultRenewalUsecase {
         final pending = replacement.copyWith(
           status: BullVaultLifecycleStatus.pending,
         );
-        if (await _repository.save(pending) case Err()) {
-          throw StateError('Could not restore BullVault renewal state');
+        if (await _repository.save(pending) case Err(:final failure)) {
+          return Err(failure);
         }
       } on Exception {
         return const Err(BullVaultRenewalFailure());

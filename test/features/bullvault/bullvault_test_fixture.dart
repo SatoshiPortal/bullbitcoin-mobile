@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -22,10 +21,7 @@ import '../../core_test/wallet/bdk_wallet_test_fixture.dart';
 BullVaultRecoveryPackageCodec testBullVaultRecoveryPackageCodec() {
   final descriptorPort = _TestDescriptorPort();
   return BullVaultRecoveryPackageCodec(
-    BullVaultDescriptorService(
-      descriptorPort,
-      const _UnusedSeedVerificationPort(),
-    ),
+    BullVaultDescriptorService(descriptorPort),
   );
 }
 
@@ -36,9 +32,15 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
   Network network = Network.bitcoinMainnet,
   BullVaultProtection protection = BullVaultProtection.standard,
   bool includesInheritance = false,
+  bool usesBullMobile = true,
 }) {
   final createdAt = DateTime.utc(2027);
-  final everyday = _signer(BullVaultSignerRole.everyday, 0, network);
+  final everyday = _signer(
+    BullVaultSignerRole.everyday,
+    0,
+    network,
+    signer: usesBullMobile ? SignerEntity.local : SignerEntity.remote,
+  );
   final cold = _signer(BullVaultSignerRole.cold, 1, network);
   final secondCold = protection.usesTwoColdKeys
       ? _signer(BullVaultSignerRole.secondCold, 2, network)
@@ -95,10 +97,12 @@ BullVaultCreateResult testBullVaultCreateResult({
   String? lineageId,
   int generation = 0,
   int mobileAccount = 0,
+  String? mobileSeedFingerprint,
   BullVaultLifecycleStatus status = BullVaultLifecycleStatus.pending,
   Network network = Network.bitcoinMainnet,
   BullVaultProtection protection = BullVaultProtection.standard,
   bool includesInheritance = false,
+  bool usesBullMobile = true,
 }) {
   final recoveryPackage = testBullVaultRecoveryPackage(
     previousVaultId: previousVaultId,
@@ -107,6 +111,7 @@ BullVaultCreateResult testBullVaultCreateResult({
     network: network,
     protection: protection,
     includesInheritance: includesInheritance,
+    usesBullMobile: usesBullMobile,
   );
   final policy = recoveryPackage.policy;
   final createdAt = DateTime.utc(2027);
@@ -125,19 +130,15 @@ BullVaultCreateResult testBullVaultCreateResult({
     walletId: walletId,
     lineageId: policy.lineageId,
     vaultGeneration: generation,
-    mobileAccount: mobileAccount,
+    mobileAccount: usesBullMobile ? mobileAccount : null,
+    mobileSeedFingerprint: mobileSeedFingerprint,
     birthHeight: policy.birthHeight,
     recoveryPackage: recoveryPackage,
     previousVaultId: previousVaultId,
     status: status,
     createdAt: createdAt,
   );
-  return BullVaultCreateResult(
-    wallet: wallet,
-    policy: policy,
-    record: record,
-    recoveryPackage: recoveryPackage,
-  );
+  return BullVaultCreateResult(wallet: wallet, record: record);
 }
 
 BullVaultDetails testBullVaultDetails({
@@ -153,7 +154,6 @@ BullVaultDetails testBullVaultDetails({
   );
   return BullVaultDetails(
     record: created.record,
-    policy: created.policy,
     timeUntilFirstRecovery: protection == BullVaultProtection.extra
         ? null
         : const Duration(days: 365),
@@ -228,21 +228,12 @@ final class _TestDescriptorPort implements BitcoinDescriptorPort {
   }) => throw UnimplementedError();
 }
 
-final class _UnusedSeedVerificationPort implements SeedVerificationPort {
-  const _UnusedSeedVerificationPort();
-
-  @override
-  Future<bool> matchesXpubs({
-    required String fingerprint,
-    required List<({String derivationPath, String xpub})> keys,
-  }) => throw UnimplementedError();
-}
-
 BullVaultSignerKey _signer(
   BullVaultSignerRole role,
   int mnemonicIndex,
-  Network network,
-) {
+  Network network, {
+  SignerEntity? signer,
+}) {
   final derived = deriveSignerKeys(
     testMnemonics[mnemonicIndex],
     isTestnet: network.isTestnet,
@@ -257,9 +248,11 @@ BullVaultSignerKey _signer(
       xpub: derived.xpub.split(']').last,
       derivationPath: "m/48'/${network.coinType}'/0'/2'",
     ),
-    signer: role == BullVaultSignerRole.everyday
-        ? SignerEntity.local
-        : SignerEntity.remote,
+    signer:
+        signer ??
+        (role == BullVaultSignerRole.everyday
+            ? SignerEntity.local
+            : SignerEntity.remote),
     signerDevice: null,
   );
 }

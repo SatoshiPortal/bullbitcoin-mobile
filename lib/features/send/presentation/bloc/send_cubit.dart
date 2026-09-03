@@ -298,9 +298,12 @@ class SendCubit extends Cubit<SendState>
   int _bitcoinSignerResultGeneration = 0;
   int _bitcoinSignerResultOperations = 0;
 
-  SendTransactionSigningFailure _mapBitcoinSigningFailure(
-    BitcoinSigningFailure failure,
-  ) => SendTransactionSigningFailure(failure.logMessage);
+  SendFailure _mapBitcoinSigningFailure(BitcoinSigningFailure failure) =>
+      switch (failure.kind) {
+        BitcoinSigningFailureKind.passphraseMismatch =>
+          SendSignerPassphraseMismatchFailure(failure.logMessage),
+        _ => SendTransactionSigningFailure(failure.logMessage),
+      };
 
   @override
   Future<void> close() async {
@@ -4992,12 +4995,17 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  Future<bool> signBitcoinWithBull(WalletSigner signer) {
+  Future<bool> signBitcoinWithBull(WalletSigner signer, {String? passphrase}) {
     if (state.signingTransaction) return Future.value(false);
-    return _runBitcoinSignerResult(() => _signBitcoinWithBull(signer));
+    return _runBitcoinSignerResult(
+      () => _signBitcoinWithBull(signer, passphrase: passphrase),
+    );
   }
 
-  Future<bool> _signBitcoinWithBull(WalletSigner signer) async {
+  Future<bool> _signBitcoinWithBull(
+    WalletSigner signer, {
+    String? passphrase,
+  }) async {
     final generation = ++_bitcoinSignerResultGeneration;
     final psbt = state.unsignedPsbt;
     final wallet = state.selectedWallet;
@@ -5012,6 +5020,7 @@ class SendCubit extends Cubit<SendState>
         requireFinalized: false,
         tryFinalize: false,
         signerId: signer.id,
+        passphrase: passphrase,
       );
       if (!_isCurrentBitcoinSignerResult(
         generation: generation,
