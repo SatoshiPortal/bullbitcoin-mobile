@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -11,14 +13,29 @@ class _MockSeedRepository extends Mock implements SeedRepository {}
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
-class _MockWallet extends Mock implements Wallet {}
-
 void main() {
   late _MockSeedRepository seedRepository;
   late _MockWalletRepository walletRepository;
   late DeleteSeedUsecase usecase;
 
-  const fingerprint = 'abc123';
+  const fingerprint = 'deadbeef';
+
+  Wallet wallet({bool protected = false, bool remote = false}) => Wallet(
+    origin: 'wallet',
+    network: Network.bitcoinTestnet,
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: protected ? 'cafebabe' : fingerprint,
+        xpubFingerprint: '12345678',
+        xpub: 'xpub',
+        signer: remote ? SignerEntity.remote : SignerEntity.local,
+        signerDevice: null,
+      ).copyWith(localSeedFingerprint: protected ? fingerprint : null),
+    ],
+    scriptType: ScriptType.bip84,
+    publicDescriptor: 'wpkh(xpub/<0;1>/*)',
+    balanceSat: BigInt.zero,
+  );
 
   setUp(() {
     seedRepository = _MockSeedRepository();
@@ -44,30 +61,28 @@ void main() {
       },
     );
 
-    test(
-      'returns SeedDeleteFailure when a wallet still uses the seed — guard',
-      () async {
-        final wallet = _MockWallet();
-        when(() => wallet.localMasterFingerprints).thenReturn([fingerprint]);
-        when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => [wallet]);
+    for (final protected in [false, true]) {
+      test(
+        'refuses deletion while a ${protected ? 'protected' : 'standard'} wallet uses the seed',
+        () async {
+          when(
+            () => walletRepository.getWallets(),
+          ).thenAnswer((_) async => [wallet(protected: protected)]);
 
-        final result = await usecase.execute(fingerprint);
+          final result = await usecase.execute(fingerprint);
 
-        expect(result, isA<Err>());
-        expect((result as Err).failure, isA<SeedDeleteFailure>());
-        // The blocked seed is never handed to the repository for deletion.
-        verifyNever(() => seedRepository.delete(any()));
-      },
-    );
+          expect(result, isA<Err>());
+          expect((result as Err).failure, isA<SeedDeleteFailure>());
+          // The blocked seed is never handed to the repository for deletion.
+          verifyNever(() => seedRepository.delete(any()));
+        },
+      );
+    }
 
     test('ignores a fingerprint used only by a remote signer', () async {
-      final wallet = _MockWallet();
-      when(() => wallet.localMasterFingerprints).thenReturn(const []);
       when(
         () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => [wallet]);
+      ).thenAnswer((_) async => [wallet(remote: true)]);
       when(
         () => seedRepository.delete(fingerprint),
       ).thenAnswer((_) async => const Ok(null));

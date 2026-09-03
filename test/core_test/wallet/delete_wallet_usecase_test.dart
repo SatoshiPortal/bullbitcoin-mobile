@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,8 +16,6 @@ class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 
 class _MockSeedRepository extends Mock implements SeedRepository {}
 
-class _MockWallet extends Mock implements Wallet {}
-
 void main() {
   late _MockWalletRepository walletRepository;
   late _MockBoltzSwapRepository swapRepository;
@@ -23,19 +23,31 @@ void main() {
   late DeleteWalletUsecase usecase;
 
   const walletId = 'wallet-1';
-  const fingerprint = 'abc123';
+  const fingerprint = 'deadbeef';
 
-  _MockWallet buildWallet({
+  Wallet buildWallet({
     String masterFingerprint = fingerprint,
     bool isDefault = false,
+    SignerEntity signer = SignerEntity.local,
+    String? localSeedFingerprint,
   }) {
-    final wallet = _MockWallet();
-    when(() => wallet.isDefault).thenReturn(isDefault);
-    final fingerprints = masterFingerprint.isEmpty
-        ? const <String>[]
-        : [masterFingerprint];
-    when(() => wallet.localMasterFingerprints).thenReturn(fingerprints);
-    return wallet;
+    return Wallet(
+      origin: walletId,
+      network: Network.bitcoinTestnet,
+      isDefault: isDefault,
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: masterFingerprint,
+          xpubFingerprint: '12345678',
+          xpub: 'xpub',
+          signer: signer,
+          signerDevice: null,
+        ).copyWith(localSeedFingerprint: localSeedFingerprint),
+      ],
+      scriptType: ScriptType.bip84,
+      publicDescriptor: 'wpkh(xpub/<0;1>/*)',
+      balanceSat: BigInt.zero,
+    );
   }
 
   setUp(() {
@@ -59,9 +71,12 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
   });
 
-  group('DeleteWalletUsecase — orphan seed cleanup (issue #2324)', () {
+  group('DeleteWalletUsecase seed ownership', () {
     test('deletes the seed once no remaining wallet references it', () async {
-      final wallet = buildWallet();
+      final wallet = buildWallet(
+        masterFingerprint: 'cafebabe',
+        localSeedFingerprint: fingerprint,
+      );
       when(
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => wallet);
@@ -72,28 +87,32 @@ void main() {
       verify(() => seedRepository.delete(fingerprint)).called(1);
     });
 
-    test(
-      'keeps the seed while another wallet shares the fingerprint',
-      () async {
-        final wallet = buildWallet();
-        final sibling = buildWallet();
-        when(
-          () => walletRepository.getWallet(walletId),
-        ).thenAnswer((_) async => wallet);
-        when(
-          () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => [sibling]);
+    for (final protectedSibling in [false, true]) {
+      test(
+        'keeps the seed used by a ${protectedSibling ? 'protected' : 'standard'} sibling',
+        () async {
+          final wallet = buildWallet();
+          final sibling = buildWallet(
+            masterFingerprint: protectedSibling ? 'cafebabe' : fingerprint,
+            localSeedFingerprint: protectedSibling ? fingerprint : null,
+          );
+          when(
+            () => walletRepository.getWallet(walletId),
+          ).thenAnswer((_) async => wallet);
+          when(
+            () => walletRepository.getWallets(),
+          ).thenAnswer((_) async => [sibling]);
 
-        await usecase.execute(walletId: walletId);
+          await usecase.execute(walletId: walletId);
 
-        verifyNever(() => seedRepository.delete(any()));
-      },
-    );
+          verifyNever(() => seedRepository.delete(any()));
+        },
+      );
+    }
 
     test('ignores the fingerprint on a remote-only sibling', () async {
       final wallet = buildWallet();
-      final sibling = buildWallet();
-      when(() => sibling.localMasterFingerprints).thenReturn(const []);
+      final sibling = buildWallet(signer: SignerEntity.remote);
       when(
         () => walletRepository.getWallet(walletId),
       ).thenAnswer((_) async => wallet);

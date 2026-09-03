@@ -50,7 +50,7 @@ class TestWalletBackupBloc
       throw Exception('No wallet selected');
     }
     return _getMnemonicFromFingerprintUsecase.execute(
-      wallet.localMasterFingerprints.single,
+      wallet.localSeedFingerprints.single,
     );
   }
 
@@ -65,7 +65,7 @@ class TestWalletBackupBloc
       if (event.fingerprint case final fingerprint?) {
         final normalizedFingerprint = fingerprint.toLowerCase();
         selected = wallets.firstWhere(
-          (wallet) => wallet.localMasterFingerprints.any(
+          (wallet) => wallet.localSeedFingerprints.any(
             (value) => value.toLowerCase() == normalizedFingerprint,
           ),
         );
@@ -112,13 +112,13 @@ class TestWalletBackupBloc
       }
 
       final isCorrect = await _verifyPhysicalBackupUsecase.execute(
-        fingerprint: wallet.localMasterFingerprints.single,
+        fingerprint: wallet.localSeedFingerprints.single,
         mnemonic: event.reorderedWords,
       );
 
       if (isCorrect) {
         await _completePhysicalBackupVerificationUsecase.execute(
-          fingerprint: wallet.localMasterFingerprints.single,
+          fingerprint: wallet.localSeedFingerprints.single,
         );
         emit(
           state.copyWith(

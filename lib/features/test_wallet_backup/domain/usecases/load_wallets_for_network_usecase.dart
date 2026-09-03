@@ -21,11 +21,7 @@ class LoadWalletsForNetworkUsecase {
         environment: settings.environment,
       );
       return wallets
-          .where(
-            (wallet) =>
-                wallet.isStandardLocalSingleSignatureWallet &&
-                wallet.localMasterFingerprints.length == 1,
-          )
+          .where((wallet) => wallet.singleLocalSeedFingerprint != null)
           .toList();
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);

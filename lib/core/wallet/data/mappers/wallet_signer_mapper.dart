@@ -13,6 +13,7 @@ extension WalletDescriptorKeyModelMapper on WalletDescriptorKeyModel {
     xpub: xpub,
     derivationPath: derivationPath,
     descriptorPath: descriptorPath,
+    requiresPassphrase: requiresPassphrase,
   );
 }
 
@@ -25,6 +26,7 @@ extension WalletDescriptorKeyMapper on WalletDescriptorKey {
     xpub: xpub,
     derivationPath: derivationPath,
     descriptorPath: descriptorPath,
+    requiresPassphrase: requiresPassphrase,
   );
 }
 
@@ -33,6 +35,8 @@ extension WalletSignerModelMapper on WalletSignerModel {
     id: id,
     signer: signer.toEntity(),
     signerDevice: signerDevice?.toEntity(),
+    registrationName: registrationName,
+    localSeedFingerprint: localSeedFingerprint,
     descriptorKeys: descriptorKeys.map((key) => key.toEntity()).toList(),
   );
 }
@@ -44,6 +48,8 @@ extension WalletSignerMapper on WalletSigner {
     signerDevice: signerDevice == null
         ? null
         : SignerDevice.fromEntity(signerDevice!),
+    registrationName: registrationName,
+    localSeedFingerprint: localSeedFingerprint,
     descriptorKeys: descriptorKeys.map((key) => key.toModel()).toList(),
   );
 }

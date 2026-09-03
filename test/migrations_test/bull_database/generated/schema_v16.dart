@@ -1266,6 +1266,23 @@ class WalletSigners extends Table
     requiredDuringInsert: false,
     $customConstraints: 'NULL',
   );
+  late final GeneratedColumn<String> registrationName = GeneratedColumn<String>(
+    'registration_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> localSeedFingerprint =
+      GeneratedColumn<String>(
+        'local_seed_fingerprint',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
   @override
   List<GeneratedColumn> get $columns => [
     walletId,
@@ -1273,6 +1290,8 @@ class WalletSigners extends Table
     position,
     signer,
     signerDevice,
+    registrationName,
+    localSeedFingerprint,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1309,6 +1328,14 @@ class WalletSigners extends Table
         DriftSqlType.string,
         data['${effectivePrefix}signer_device'],
       ),
+      registrationName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registration_name'],
+      ),
+      localSeedFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_seed_fingerprint'],
+      ),
     );
   }
 
@@ -1334,12 +1361,16 @@ class WalletSignersData extends DataClass
   final int position;
   final String signer;
   final String? signerDevice;
+  final String? registrationName;
+  final String? localSeedFingerprint;
   const WalletSignersData({
     required this.walletId,
     required this.id,
     required this.position,
     required this.signer,
     this.signerDevice,
+    this.registrationName,
+    this.localSeedFingerprint,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1350,6 +1381,12 @@ class WalletSignersData extends DataClass
     map['signer'] = Variable<String>(signer);
     if (!nullToAbsent || signerDevice != null) {
       map['signer_device'] = Variable<String>(signerDevice);
+    }
+    if (!nullToAbsent || registrationName != null) {
+      map['registration_name'] = Variable<String>(registrationName);
+    }
+    if (!nullToAbsent || localSeedFingerprint != null) {
+      map['local_seed_fingerprint'] = Variable<String>(localSeedFingerprint);
     }
     return map;
   }
@@ -1363,6 +1400,12 @@ class WalletSignersData extends DataClass
       signerDevice: signerDevice == null && nullToAbsent
           ? const Value.absent()
           : Value(signerDevice),
+      registrationName: registrationName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registrationName),
+      localSeedFingerprint: localSeedFingerprint == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localSeedFingerprint),
     );
   }
 
@@ -1377,6 +1420,10 @@ class WalletSignersData extends DataClass
       position: serializer.fromJson<int>(json['position']),
       signer: serializer.fromJson<String>(json['signer']),
       signerDevice: serializer.fromJson<String?>(json['signerDevice']),
+      registrationName: serializer.fromJson<String?>(json['registrationName']),
+      localSeedFingerprint: serializer.fromJson<String?>(
+        json['localSeedFingerprint'],
+      ),
     );
   }
   @override
@@ -1388,6 +1435,8 @@ class WalletSignersData extends DataClass
       'position': serializer.toJson<int>(position),
       'signer': serializer.toJson<String>(signer),
       'signerDevice': serializer.toJson<String?>(signerDevice),
+      'registrationName': serializer.toJson<String?>(registrationName),
+      'localSeedFingerprint': serializer.toJson<String?>(localSeedFingerprint),
     };
   }
 
@@ -1397,12 +1446,20 @@ class WalletSignersData extends DataClass
     int? position,
     String? signer,
     Value<String?> signerDevice = const Value.absent(),
+    Value<String?> registrationName = const Value.absent(),
+    Value<String?> localSeedFingerprint = const Value.absent(),
   }) => WalletSignersData(
     walletId: walletId ?? this.walletId,
     id: id ?? this.id,
     position: position ?? this.position,
     signer: signer ?? this.signer,
     signerDevice: signerDevice.present ? signerDevice.value : this.signerDevice,
+    registrationName: registrationName.present
+        ? registrationName.value
+        : this.registrationName,
+    localSeedFingerprint: localSeedFingerprint.present
+        ? localSeedFingerprint.value
+        : this.localSeedFingerprint,
   );
   WalletSignersData copyWithCompanion(WalletSignersCompanion data) {
     return WalletSignersData(
@@ -1413,6 +1470,12 @@ class WalletSignersData extends DataClass
       signerDevice: data.signerDevice.present
           ? data.signerDevice.value
           : this.signerDevice,
+      registrationName: data.registrationName.present
+          ? data.registrationName.value
+          : this.registrationName,
+      localSeedFingerprint: data.localSeedFingerprint.present
+          ? data.localSeedFingerprint.value
+          : this.localSeedFingerprint,
     );
   }
 
@@ -1423,13 +1486,23 @@ class WalletSignersData extends DataClass
           ..write('id: $id, ')
           ..write('position: $position, ')
           ..write('signer: $signer, ')
-          ..write('signerDevice: $signerDevice')
+          ..write('signerDevice: $signerDevice, ')
+          ..write('registrationName: $registrationName, ')
+          ..write('localSeedFingerprint: $localSeedFingerprint')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(walletId, id, position, signer, signerDevice);
+  int get hashCode => Object.hash(
+    walletId,
+    id,
+    position,
+    signer,
+    signerDevice,
+    registrationName,
+    localSeedFingerprint,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1438,7 +1511,9 @@ class WalletSignersData extends DataClass
           other.id == this.id &&
           other.position == this.position &&
           other.signer == this.signer &&
-          other.signerDevice == this.signerDevice);
+          other.signerDevice == this.signerDevice &&
+          other.registrationName == this.registrationName &&
+          other.localSeedFingerprint == this.localSeedFingerprint);
 }
 
 class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
@@ -1447,6 +1522,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
   final Value<int> position;
   final Value<String> signer;
   final Value<String?> signerDevice;
+  final Value<String?> registrationName;
+  final Value<String?> localSeedFingerprint;
   final Value<int> rowid;
   const WalletSignersCompanion({
     this.walletId = const Value.absent(),
@@ -1454,6 +1531,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
     this.position = const Value.absent(),
     this.signer = const Value.absent(),
     this.signerDevice = const Value.absent(),
+    this.registrationName = const Value.absent(),
+    this.localSeedFingerprint = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WalletSignersCompanion.insert({
@@ -1462,6 +1541,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
     required int position,
     required String signer,
     this.signerDevice = const Value.absent(),
+    this.registrationName = const Value.absent(),
+    this.localSeedFingerprint = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : walletId = Value(walletId),
        id = Value(id),
@@ -1473,6 +1554,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
     Expression<int>? position,
     Expression<String>? signer,
     Expression<String>? signerDevice,
+    Expression<String>? registrationName,
+    Expression<String>? localSeedFingerprint,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1481,6 +1564,9 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
       if (position != null) 'position': position,
       if (signer != null) 'signer': signer,
       if (signerDevice != null) 'signer_device': signerDevice,
+      if (registrationName != null) 'registration_name': registrationName,
+      if (localSeedFingerprint != null)
+        'local_seed_fingerprint': localSeedFingerprint,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1491,6 +1577,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
     Value<int>? position,
     Value<String>? signer,
     Value<String?>? signerDevice,
+    Value<String?>? registrationName,
+    Value<String?>? localSeedFingerprint,
     Value<int>? rowid,
   }) {
     return WalletSignersCompanion(
@@ -1499,6 +1587,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
       position: position ?? this.position,
       signer: signer ?? this.signer,
       signerDevice: signerDevice ?? this.signerDevice,
+      registrationName: registrationName ?? this.registrationName,
+      localSeedFingerprint: localSeedFingerprint ?? this.localSeedFingerprint,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1521,6 +1611,14 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
     if (signerDevice.present) {
       map['signer_device'] = Variable<String>(signerDevice.value);
     }
+    if (registrationName.present) {
+      map['registration_name'] = Variable<String>(registrationName.value);
+    }
+    if (localSeedFingerprint.present) {
+      map['local_seed_fingerprint'] = Variable<String>(
+        localSeedFingerprint.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1535,6 +1633,8 @@ class WalletSignersCompanion extends UpdateCompanion<WalletSignersData> {
           ..write('position: $position, ')
           ..write('signer: $signer, ')
           ..write('signerDevice: $signerDevice, ')
+          ..write('registrationName: $registrationName, ')
+          ..write('localSeedFingerprint: $localSeedFingerprint, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1621,6 +1721,16 @@ class WalletDescriptorKeys extends Table
     $customConstraints: 'NOT NULL DEFAULT \'\'',
     defaultValue: const CustomExpression('\'\''),
   );
+  late final GeneratedColumn<int> requiresPassphrase = GeneratedColumn<int>(
+    'requires_passphrase',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (requires_passphrase IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     walletId,
@@ -1632,6 +1742,7 @@ class WalletDescriptorKeys extends Table
     xpub,
     derivationPath,
     descriptorPath,
+    requiresPassphrase,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1687,6 +1798,10 @@ class WalletDescriptorKeys extends Table
         DriftSqlType.string,
         data['${effectivePrefix}descriptor_path'],
       )!,
+      requiresPassphrase: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}requires_passphrase'],
+      )!,
     );
   }
 
@@ -1717,6 +1832,7 @@ class WalletDescriptorKeysData extends DataClass
   final String xpub;
   final String? derivationPath;
   final String descriptorPath;
+  final int requiresPassphrase;
   const WalletDescriptorKeysData({
     required this.walletId,
     required this.id,
@@ -1727,6 +1843,7 @@ class WalletDescriptorKeysData extends DataClass
     required this.xpub,
     this.derivationPath,
     required this.descriptorPath,
+    required this.requiresPassphrase,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1742,6 +1859,7 @@ class WalletDescriptorKeysData extends DataClass
       map['derivation_path'] = Variable<String>(derivationPath);
     }
     map['descriptor_path'] = Variable<String>(descriptorPath);
+    map['requires_passphrase'] = Variable<int>(requiresPassphrase);
     return map;
   }
 
@@ -1758,6 +1876,7 @@ class WalletDescriptorKeysData extends DataClass
           ? const Value.absent()
           : Value(derivationPath),
       descriptorPath: Value(descriptorPath),
+      requiresPassphrase: Value(requiresPassphrase),
     );
   }
 
@@ -1776,6 +1895,7 @@ class WalletDescriptorKeysData extends DataClass
       xpub: serializer.fromJson<String>(json['xpub']),
       derivationPath: serializer.fromJson<String?>(json['derivationPath']),
       descriptorPath: serializer.fromJson<String>(json['descriptorPath']),
+      requiresPassphrase: serializer.fromJson<int>(json['requiresPassphrase']),
     );
   }
   @override
@@ -1791,6 +1911,7 @@ class WalletDescriptorKeysData extends DataClass
       'xpub': serializer.toJson<String>(xpub),
       'derivationPath': serializer.toJson<String?>(derivationPath),
       'descriptorPath': serializer.toJson<String>(descriptorPath),
+      'requiresPassphrase': serializer.toJson<int>(requiresPassphrase),
     };
   }
 
@@ -1804,6 +1925,7 @@ class WalletDescriptorKeysData extends DataClass
     String? xpub,
     Value<String?> derivationPath = const Value.absent(),
     String? descriptorPath,
+    int? requiresPassphrase,
   }) => WalletDescriptorKeysData(
     walletId: walletId ?? this.walletId,
     id: id ?? this.id,
@@ -1816,6 +1938,7 @@ class WalletDescriptorKeysData extends DataClass
         ? derivationPath.value
         : this.derivationPath,
     descriptorPath: descriptorPath ?? this.descriptorPath,
+    requiresPassphrase: requiresPassphrase ?? this.requiresPassphrase,
   );
   WalletDescriptorKeysData copyWithCompanion(
     WalletDescriptorKeysCompanion data,
@@ -1838,6 +1961,9 @@ class WalletDescriptorKeysData extends DataClass
       descriptorPath: data.descriptorPath.present
           ? data.descriptorPath.value
           : this.descriptorPath,
+      requiresPassphrase: data.requiresPassphrase.present
+          ? data.requiresPassphrase.value
+          : this.requiresPassphrase,
     );
   }
 
@@ -1852,7 +1978,8 @@ class WalletDescriptorKeysData extends DataClass
           ..write('xpubFingerprint: $xpubFingerprint, ')
           ..write('xpub: $xpub, ')
           ..write('derivationPath: $derivationPath, ')
-          ..write('descriptorPath: $descriptorPath')
+          ..write('descriptorPath: $descriptorPath, ')
+          ..write('requiresPassphrase: $requiresPassphrase')
           ..write(')'))
         .toString();
   }
@@ -1868,6 +1995,7 @@ class WalletDescriptorKeysData extends DataClass
     xpub,
     derivationPath,
     descriptorPath,
+    requiresPassphrase,
   );
   @override
   bool operator ==(Object other) =>
@@ -1881,7 +2009,8 @@ class WalletDescriptorKeysData extends DataClass
           other.xpubFingerprint == this.xpubFingerprint &&
           other.xpub == this.xpub &&
           other.derivationPath == this.derivationPath &&
-          other.descriptorPath == this.descriptorPath);
+          other.descriptorPath == this.descriptorPath &&
+          other.requiresPassphrase == this.requiresPassphrase);
 }
 
 class WalletDescriptorKeysCompanion
@@ -1895,6 +2024,7 @@ class WalletDescriptorKeysCompanion
   final Value<String> xpub;
   final Value<String?> derivationPath;
   final Value<String> descriptorPath;
+  final Value<int> requiresPassphrase;
   final Value<int> rowid;
   const WalletDescriptorKeysCompanion({
     this.walletId = const Value.absent(),
@@ -1906,6 +2036,7 @@ class WalletDescriptorKeysCompanion
     this.xpub = const Value.absent(),
     this.derivationPath = const Value.absent(),
     this.descriptorPath = const Value.absent(),
+    this.requiresPassphrase = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WalletDescriptorKeysCompanion.insert({
@@ -1918,6 +2049,7 @@ class WalletDescriptorKeysCompanion
     required String xpub,
     this.derivationPath = const Value.absent(),
     this.descriptorPath = const Value.absent(),
+    this.requiresPassphrase = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : walletId = Value(walletId),
        id = Value(id),
@@ -1936,6 +2068,7 @@ class WalletDescriptorKeysCompanion
     Expression<String>? xpub,
     Expression<String>? derivationPath,
     Expression<String>? descriptorPath,
+    Expression<int>? requiresPassphrase,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1948,6 +2081,7 @@ class WalletDescriptorKeysCompanion
       if (xpub != null) 'xpub': xpub,
       if (derivationPath != null) 'derivation_path': derivationPath,
       if (descriptorPath != null) 'descriptor_path': descriptorPath,
+      if (requiresPassphrase != null) 'requires_passphrase': requiresPassphrase,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1962,6 +2096,7 @@ class WalletDescriptorKeysCompanion
     Value<String>? xpub,
     Value<String?>? derivationPath,
     Value<String>? descriptorPath,
+    Value<int>? requiresPassphrase,
     Value<int>? rowid,
   }) {
     return WalletDescriptorKeysCompanion(
@@ -1974,6 +2109,7 @@ class WalletDescriptorKeysCompanion
       xpub: xpub ?? this.xpub,
       derivationPath: derivationPath ?? this.derivationPath,
       descriptorPath: descriptorPath ?? this.descriptorPath,
+      requiresPassphrase: requiresPassphrase ?? this.requiresPassphrase,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2008,6 +2144,9 @@ class WalletDescriptorKeysCompanion
     if (descriptorPath.present) {
       map['descriptor_path'] = Variable<String>(descriptorPath.value);
     }
+    if (requiresPassphrase.present) {
+      map['requires_passphrase'] = Variable<int>(requiresPassphrase.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2026,6 +2165,7 @@ class WalletDescriptorKeysCompanion
           ..write('xpub: $xpub, ')
           ..write('derivationPath: $derivationPath, ')
           ..write('descriptorPath: $descriptorPath, ')
+          ..write('requiresPassphrase: $requiresPassphrase, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

@@ -19,6 +19,35 @@ void main() {
     expect(await usecase.execute('DEADBEEF'), isTrue);
     expect(await usecase.execute('cafebabe'), isFalse);
   });
+
+  test(
+    'does not apply a mixed-seed wallet backup flag to either seed',
+    () async {
+      final wallet = _wallet(fingerprint: 'deadbeef');
+      final mixedWallet = wallet.copyWith(
+        signers: [
+          ...wallet.signers,
+          WalletSigner.single(
+            id: 'signer-1',
+            descriptorKeyId: 'key-1',
+            masterFingerprint: 'cafebabe',
+            xpubFingerprint: '87654321',
+            xpub: 'xpub-2',
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ),
+        ],
+      );
+      final getWallets = _MockGetWalletsUsecase();
+      when(
+        () => getWallets.execute(onlyBitcoin: true),
+      ).thenAnswer((_) async => [mixedWallet]);
+      final usecase = CheckRecoverBullBackupUsecase(getWallets);
+
+      expect(await usecase.execute('deadbeef'), isFalse);
+      expect(await usecase.execute('cafebabe'), isFalse);
+    },
+  );
 }
 
 Wallet _wallet({required String fingerprint}) => Wallet(
@@ -26,13 +55,13 @@ Wallet _wallet({required String fingerprint}) => Wallet(
   network: Network.bitcoinMainnet,
   signers: [
     WalletSigner.single(
-      masterFingerprint: fingerprint,
+      masterFingerprint: 'cafebabe',
       xpubFingerprint: fingerprint,
       xpub: 'xpub',
       derivationPath: "m/84'/0'/0'",
       signer: SignerEntity.local,
       signerDevice: null,
-    ),
+    ).copyWith(localSeedFingerprint: fingerprint),
   ],
   scriptType: ScriptType.bip84,
   publicDescriptor: 'wpkh(xpub/<0;1>/*)',

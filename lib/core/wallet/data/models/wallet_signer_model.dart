@@ -10,6 +10,8 @@ abstract class WalletSignerModel with _$WalletSignerModel {
     required String id,
     required Signer signer,
     required SignerDevice? signerDevice,
+    String? registrationName,
+    String? localSeedFingerprint,
     required List<WalletDescriptorKeyModel> descriptorKeys,
   }) = _WalletSignerModel;
 }

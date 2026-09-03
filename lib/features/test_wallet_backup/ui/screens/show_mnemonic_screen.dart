@@ -154,7 +154,7 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
         .read<TestWalletBackupBloc>()
         .state
         .selectedWallet
-        ?.masterFingerprint;
+        ?.singleLocalSeedFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
       _secretFuture = fingerprint == null
