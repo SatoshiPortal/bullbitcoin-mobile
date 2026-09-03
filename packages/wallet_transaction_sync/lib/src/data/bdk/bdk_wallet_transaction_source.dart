@@ -4,6 +4,8 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart';
 
 import '../../domain/ports/wallet_transaction_source_port.dart';
+import '../../domain/entities/wallet_source_sync_observation.dart';
+import '../../domain/entities/wallet_source_observation.dart';
 import '../../domain/wallet_source_configuration.dart';
 import '../../domain/wallet_network_key.dart';
 import '../../domain/wallet_source_registration.dart';
@@ -52,7 +54,7 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
   }
 
   @override
-  Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
+  Future<Result<WalletSourceSyncObservation, WalletTransactionSyncFailure>>
   synchronize(
     WalletSourceRegistration registration,
     WalletSourceSession session, {
@@ -67,6 +69,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
       final open = await _open(registration, configuration, file, create: true);
       final wallet = open.wallet;
       try {
+        final baselineTxids = mapBdkTransactions(
+          wallet,
+        ).map((transaction) => transaction.txid).toSet();
         // Connection phase: only connection/server errors may fall through
         // to the next URL. Nothing has been applied to the wallet yet.
         bdk.Update? update;
@@ -78,9 +83,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
             // the next one instead of aborting the whole operation.
             client = bdk.ElectrumClient(
               url: url,
-              socks5: null,
-              timeout: null,
-              retry: null,
+              socks5: configuration.socks5,
+              timeout: configuration.timeout,
+              retry: configuration.retry,
               validateDomain: configuration.validateDomain,
             );
             if (discover) {
@@ -137,11 +142,14 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
           // throw and are mapped below.
           wallet.persist(persister: open.persister);
           return Ok(
-            mapBdkObservation(
-              wallet,
-              registration: registration,
-              networkOperation: true,
-              discover: discover,
+            WalletSourceSyncObservation(
+              observation: mapBdkObservation(
+                wallet,
+                registration: registration,
+                networkOperation: true,
+                discover: discover,
+              ),
+              baselineTxids: baselineTxids,
             ),
           );
         } catch (_) {

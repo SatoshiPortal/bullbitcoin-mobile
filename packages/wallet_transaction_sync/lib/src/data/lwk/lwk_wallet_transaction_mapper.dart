@@ -28,7 +28,8 @@ WalletTransaction mapLwkTransaction(
   final kind = projection.kind.toLowerCase();
   final incoming = kind == 'incoming';
   final selfTransfer =
-      kind == 'redeposit' || lbtcBalance.abs() == _int(projection.fee);
+      kind == 'redeposit' ||
+      (!incoming && lbtcBalance.abs() == _int(projection.fee));
   final amount = selfTransfer
       ? outputs
             .where(

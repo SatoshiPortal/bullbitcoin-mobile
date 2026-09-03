@@ -16,6 +16,7 @@ The package owns:
 - registration mismatch and deletion lifecycle;
 - shared serialization of access to persisted wallet-source state;
 - BDK and LWK source adapters.
+- the package-owned durable SQLite metadata adapter, storing hashed keys and non-sensitive synchronization state only; its database path is injected by the production shell.
 
 The package does not own:
 
@@ -104,7 +105,15 @@ Recoverable source, extraction, coordination, pagination, registration, and dele
 
 ## Shared source coordination
 
-`WalletSourceOperationCoordinator` serializes operations by `(walletId, chain, network)`. Every operation receives a short-lived `WalletSourceSession`; the session is invalid after the operation completes. A timeout reports to the caller but does not release the key while timed-out work still runs.
+`WalletSourceOperationCoordinator` serializes operations by `(walletId, chain, network)`. `DurableWalletSourceOperationCoordinator` starts one dedicated actor isolate per operation. The actor performs directory creation, schema initialization, central SQLite coordination, and acquisition of one SQLite mutex database per hashed key; it holds that mutex connection and `BEGIN IMMEDIATE` for the complete source lifetime. No wallet identifier or transaction identifier is stored in these databases or lock filenames. The central database is injected by the shell and is not the Drift application schema.
+
+Requests are ordered foreground-first and FIFO within a priority. A foreground request never preempts an active operation. Pending requests heartbeat while waiting and may be removed after the configurable `pendingHeartbeatTimeout`; this TTL applies only to request rows that hold neither mutex nor claim. Admission rechecks that the caller's row still exists before activation. `acquisitionTimeout` bounds only request/mutex admission; the operation `timeout` is separate and cooperative. Active claims have no TTL or heartbeat lease. SQLite releases the per-key mutex on cooperative connection close or process exit, so a stale claim is replaced only after the mutex is acquired. Every operation receives a short-lived `WalletSourceSession`; durable sessions expose their claim capability. While a session is open, the actor-held mutex makes the claim unreplaceable, so `ensureOpen()` performs the local closed-state check without a synchronous database round trip. Retire/reactivate commands are ordered through the actor and awaited by `close()`. A timeout reports to the caller but does not release the key, claim, or session while timed-out work still runs.
+
+Coordination failures use stable sanitized categories: admission timeout, retired source, superseded request, unsupported schema, filesystem setup, busy SQLite coordination, or generic coordination failure. Categories preserve caller decisions without exposing database paths, lock paths, or raw SQLite details.
+
+An isolate must finish its task cooperatively so the coordinator can dispose its SQLite connection. An abnormal isolate-only termination can retain an FFI handle until the containing process exits; the coordinator deliberately remains unavailable instead of using a lease to risk a second LWK writer. Process-exit recovery must be verified separately on each target platform.
+
+The in-memory coordinator remains available for compatibility and tests. `synchronize` and `discover` use a disabled cooperative timeout because real network work can exceed 30 seconds; local refresh and deletion retain the default cooperative timeout. Process-death recovery is provided by SQLite connection cleanup; a true kill/restart test remains an environment-level device/process test, not a TTL-based ownership mechanism.
 
 Successful deletion retires the source key. Work that captured stale metadata before deletion cannot acquire a usable session afterwards. Partial deletion remains resumable, and only explicit successful discovery may reactivate a retired key.
 
@@ -134,6 +143,8 @@ The LWK source adapter:
 - maps source height/time only to source-reported confirmation evidence and never invents a block hash, tip, confirmation count, or mempool proof;
 - maps incompatible persisted status to `WalletSourceStateIncompatibleFailure` instead of deleting source state;
 - deletes only the explicitly configured database root.
+
+The installed LWK SDK revision exposes no wallet `close` or `dispose` API for this public watch-only object. The complete projection is therefore extracted before coordinator release; the opaque SDK object becomes unreachable and is reclaimed by the runtime.
 
 Unblinding factors never enter compact records. Package history always requests `includeUnblindingData: false`; the legacy exact-detail viewer remains a separate, explicitly reviewed in-memory path.
 

@@ -46,7 +46,7 @@ class FakeSource implements WalletTransactionSourcePort {
   refreshLocal(WalletSourceRegistration r, WalletSourceSession session) async =>
       failure == null ? Ok(value(r)) : Err(failure!);
   @override
-  Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
+  Future<Result<WalletSourceSyncObservation, WalletTransactionSyncFailure>>
   synchronize(
     WalletSourceRegistration r,
     WalletSourceSession session, {
@@ -54,7 +54,14 @@ class FakeSource implements WalletTransactionSourcePort {
   }) async {
     syncCalls++;
     if (pause != null) await pause!.future;
-    return failure == null ? Ok(value(r)) : Err(failure!);
+    return failure == null
+        ? Ok(
+            WalletSourceSyncObservation(
+              observation: value(r),
+              baselineTxids: const {},
+            ),
+          )
+        : Err(failure!);
   }
 
   @override
@@ -70,6 +77,14 @@ class FakeMetadata implements WalletSyncMetadataPort {
   bool failSuccess = false;
   @override
   Future<WalletSyncMetadata?> read(WalletNetworkKey key) async => values[key];
+  @override
+  Future<void> writeRegistration(WalletSourceRegistration registration) async {
+    values.putIfAbsent(
+      registration.key,
+      () => WalletSyncMetadata(registration: registration),
+    );
+  }
+
   @override
   Future<void> writeAttempt(WalletNetworkKey key, DateTime at) async {}
   @override

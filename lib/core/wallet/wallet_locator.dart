@@ -39,9 +39,11 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_b
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
     show
-        InMemoryWalletSourceOperationCoordinator,
+        DurableWalletSourceOperationCoordinator,
         WalletSourceOperationCoordinator;
 
 class WalletLocator {
@@ -62,9 +64,12 @@ class WalletLocator {
     );
   }
 
-  static void registerRepositories(GetIt locator) {
+  static Future<void> registerRepositories(GetIt locator) async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
     locator.registerLazySingleton<WalletSourceOperationCoordinator>(
-      InMemoryWalletSourceOperationCoordinator.new,
+      () => DurableWalletSourceOperationCoordinator(
+        databasePath: coordinationDatabasePath(documentsDirectory.path),
+      ),
     );
 
     locator.registerLazySingleton<BitcoinWalletRepository>(
@@ -128,6 +133,12 @@ class WalletLocator {
       ),
     );
   }
+
+  static String coordinationDatabasePath(String documentsDirectoryPath) =>
+      path.join(
+        documentsDirectoryPath,
+        'wallet_transaction_sync_coordination.sqlite',
+      );
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<CreateDefaultWalletsUsecase>(

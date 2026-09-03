@@ -5,6 +5,9 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../domain/entities/wallet_transaction_observation.dart';
+import '../../domain/entities/wallet_transaction.dart';
+import '../../domain/entities/wallet_source_sync_observation.dart';
+import '../../domain/entities/wallet_source_observation.dart';
 import '../../domain/ports/wallet_transaction_source_port.dart';
 import '../../domain/wallet_network_key.dart';
 import '../../domain/wallet_source_configuration.dart';
@@ -31,14 +34,18 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
     }
     try {
       final wallet = await _open(configuration);
-      return Ok(
-        await _observation(
-          wallet,
-          registration,
-          networkOperation: false,
-          discover: false,
-        ),
-      );
+      try {
+        return Ok(
+          await _observation(
+            wallet,
+            registration,
+            networkOperation: false,
+            discover: false,
+          ),
+        );
+      } finally {
+        wallet.dispose();
+      }
     } catch (error) {
       final incompatible = lwkStateIncompatibleFailure(error);
       if (incompatible != null) return Err(incompatible);
@@ -47,7 +54,7 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
   }
 
   @override
-  Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
+  Future<Result<WalletSourceSyncObservation, WalletTransactionSyncFailure>>
   synchronize(
     WalletSourceRegistration registration,
     WalletSourceSession session, {
@@ -59,36 +66,47 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
     try {
       await Directory(configuration.databaseRootPath).create(recursive: true);
       final wallet = await _open(configuration);
-      var synced = false;
-      for (final url in configuration.electrumUrls) {
-        try {
-          // LWK exposes one scan mode. Discovery deliberately requests that
-          // same capability rather than inventing a second SDK operation.
-          await wallet.sync_(
-            electrumUrl: url,
-            validateDomain: configuration.validateDomain,
-            stopAtIndex: configuration.stopAtIndex,
-            timeout: configuration.timeout,
-          );
-          synced = true;
-          break;
-        } catch (error) {
-          final incompatible = lwkStateIncompatibleFailure(error);
-          if (incompatible != null) return Err(incompatible);
-          // Connection-level failure: try the next configured endpoint.
-        }
-      }
-      if (!synced) {
-        return const Err(SourceFailure(SourceFailureReason.unavailable));
-      }
-      return Ok(
-        await _observation(
+      try {
+        final baselineTxids = (await _transactions(
           wallet,
-          registration,
-          networkOperation: true,
-          discover: discover,
-        ),
-      );
+          configuration,
+        )).map((transaction) => transaction.txid).toSet();
+        var synced = false;
+        for (final url in configuration.electrumUrls) {
+          try {
+            // LWK exposes one scan mode. Discovery deliberately requests that
+            // same capability rather than inventing a second SDK operation.
+            await wallet.sync_(
+              electrumUrl: url,
+              validateDomain: configuration.validateDomain,
+              stopAtIndex: configuration.stopAtIndex,
+              timeout: configuration.timeout,
+            );
+            synced = true;
+            break;
+          } catch (error) {
+            final incompatible = lwkStateIncompatibleFailure(error);
+            if (incompatible != null) return Err(incompatible);
+            // Connection-level failure: try the next configured endpoint.
+          }
+        }
+        if (!synced) {
+          return const Err(SourceFailure(SourceFailureReason.unavailable));
+        }
+        return Ok(
+          WalletSourceSyncObservation(
+            observation: await _observation(
+              wallet,
+              registration,
+              networkOperation: true,
+              discover: discover,
+            ),
+            baselineTxids: baselineTxids,
+          ),
+        );
+      } finally {
+        wallet.dispose();
+      }
     } catch (error) {
       final incompatible = lwkStateIncompatibleFailure(error);
       if (incompatible != null) return Err(incompatible);
@@ -168,6 +186,22 @@ final class LwkWalletTransactionSource implements WalletTransactionSourcePort {
           : WalletEvidenceLevel.localSourceState,
       sourceTip: null,
     );
+  }
+
+  Future<List<WalletTransaction>> _transactions(
+    lwk.Wallet wallet,
+    LwkElectrumConfiguration configuration,
+  ) async {
+    final asset = configuration.isTestnet
+        ? lwk.getLtestAssetId()
+        : lwk.getLbtcAssetId();
+    final projections = await wallet.transactionsProjection(
+      includeUnblindingData: false,
+    );
+    return [
+      for (final projection in projections)
+        mapLwkTransaction(projection, lbtcAssetId: asset),
+    ];
   }
 }
 

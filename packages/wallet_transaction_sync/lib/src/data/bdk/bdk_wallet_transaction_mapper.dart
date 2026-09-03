@@ -5,7 +5,7 @@ import '../../domain/entities/transaction_output.dart';
 import '../../domain/entities/transaction_position.dart';
 import '../../domain/entities/wallet_transaction.dart';
 import '../../domain/entities/wallet_transaction_observation.dart';
-import '../../domain/ports/wallet_transaction_source_port.dart';
+import '../../domain/entities/wallet_source_observation.dart';
 import '../../domain/wallet_source_registration.dart';
 
 List<WalletTransaction> mapBdkTransactions(bdk.Wallet wallet) {
@@ -41,6 +41,7 @@ WalletTransaction mapBdkTransaction(
   } catch (_) {
     evidence['feeUnavailable'] = true;
   }
+  final selfTransfer = sent > 0 && received > 0 && sent - received == fee;
 
   final inputs = transaction.input().asMap().entries.map((entry) {
     final input = entry.value;
@@ -72,6 +73,12 @@ WalletTransaction mapBdkTransaction(
     inputs: inputs,
     outputs: outputs,
     position: _position(canonical.chainPosition),
+    direction: received > sent
+        ? TransactionDirection.incoming
+        : sent > received
+        ? TransactionDirection.outgoing
+        : null,
+    selfTransfer: selfTransfer,
     evidence: evidence,
     details: {
       'ownedInputCount': inputs

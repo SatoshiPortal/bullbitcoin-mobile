@@ -1,4 +1,5 @@
 import 'wallet_transaction_snapshot.dart';
+import 'wallet_transaction.dart';
 
 class MetadataPersistenceWarning {
   final String message;
@@ -9,6 +10,11 @@ class MetadataPersistenceWarning {
 
 class WalletTransactionSyncOutcome {
   final WalletTransactionSnapshot snapshot;
+  final List<WalletTransaction> newIncomingTransactions;
   final MetadataPersistenceWarning? warning;
-  const WalletTransactionSyncOutcome(this.snapshot, {this.warning});
+  WalletTransactionSyncOutcome(
+    this.snapshot, {
+    List<WalletTransaction> newIncomingTransactions = const [],
+    this.warning,
+  }) : newIncomingTransactions = List.unmodifiable(newIncomingTransactions);
 }

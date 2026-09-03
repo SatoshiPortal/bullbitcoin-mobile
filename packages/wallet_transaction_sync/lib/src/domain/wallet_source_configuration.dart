@@ -29,6 +29,9 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
   final int stopGap;
   final bool validateDomain;
   final String databaseFilePath;
+  final String? socks5;
+  final int? timeout;
+  final int? retry;
 
   const BdkElectrumConfiguration({
     required this.externalPublicDescriptor,
@@ -38,6 +41,9 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
     required this.stopGap,
     required this.validateDomain,
     required this.databaseFilePath,
+    this.socks5,
+    this.timeout,
+    this.retry,
   });
 
   @override
@@ -55,6 +61,9 @@ final class BdkElectrumConfiguration extends WalletSourceConfiguration {
     'stopGap': stopGap,
     'validateDomain': validateDomain,
     'databaseFilePath': databaseFilePath,
+    if (socks5 != null) 'socks5': socks5,
+    if (timeout != null) 'timeout': timeout,
+    if (retry != null) 'retry': retry,
   };
 
   @override

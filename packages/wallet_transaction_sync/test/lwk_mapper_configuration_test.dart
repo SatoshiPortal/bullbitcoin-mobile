@@ -34,6 +34,7 @@ void main() {
     int? timestamp,
     String kind = 'outgoing',
     int lbtcBalance = -700,
+    int fee = 100,
     List<lwk.WalletTxOutCompact?>? outputs,
   }) => lwk.WalletTxProjection(
     txid: 'tx',
@@ -43,7 +44,7 @@ void main() {
       lwk.Balance(assetId: lbtc, value: lbtcBalance),
       const lwk.Balance(assetId: other, value: 999999),
     ],
-    fee: BigInt.from(100),
+    fee: BigInt.from(fee),
     height: height,
     unblindedUrl: 'https://secret.example/sentinel-secret',
     vsize: BigInt.from(321),
@@ -135,6 +136,17 @@ void main() {
     expect(mapped.selfTransfer, isTrue);
     expect(mapped.direction, TransactionDirection.outgoing);
     expect(mapped.amountSats, 500);
+  });
+
+  test('incoming balance equal to fee is not a self-transfer', () {
+    final mapped = mapLwkTransaction(
+      projection(kind: 'incoming', lbtcBalance: 100, fee: 100),
+      lbtcAssetId: lbtc,
+    );
+
+    expect(mapped.direction, TransactionDirection.incoming);
+    expect(mapped.selfTransfer, isFalse);
+    expect(mapped.amountSats, 100);
   });
 
   test('uses confirmed and unknown positions without inventing proof', () {
