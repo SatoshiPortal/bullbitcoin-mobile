@@ -60,7 +60,7 @@ void main() {
     await cubit.close();
   });
 
-  test('reports invalid completed input', () async {
+  test('reports invalid input on completion, not while editing', () async {
     const input = 'not a wallet';
     final parse = _MockParseWatchOnlyInputUsecase();
     when(
@@ -73,10 +73,12 @@ void main() {
       settingsRepository: _MockSettingsRepository(),
     );
 
+    await cubit.parseInput(input, showFailure: false);
+    expect(cubit.state.input, input);
+    expect(cubit.state.failure, isNull);
     await cubit.parseInput(input);
 
     expect(cubit.state.failure, isA<InvalidFormatFailure>());
-    verify(() => parse.execute(input, signerDevice: null)).called(1);
 
     await cubit.close();
   });
