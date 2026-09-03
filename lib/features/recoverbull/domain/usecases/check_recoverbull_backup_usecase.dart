@@ -14,9 +14,7 @@ class CheckRecoverBullBackupUsecase {
       (wallet) =>
           wallet.isEncryptedVaultTested &&
           wallet.latestEncryptedBackup != null &&
-          wallet.localMasterFingerprints.any(
-            (value) => value.toLowerCase() == normalized,
-          ),
+          wallet.singleLocalSeedFingerprint == normalized,
     );
   }
 }

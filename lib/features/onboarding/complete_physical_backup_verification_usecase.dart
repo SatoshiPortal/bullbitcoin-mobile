@@ -22,9 +22,9 @@ class CompletePhysicalBackupVerificationUsecase {
           ? wallets
           : wallets
                 .where(
-                  (wallet) => wallet.localMasterFingerprints.any(
-                    (value) => value.toLowerCase() == normalizedFingerprint,
-                  ),
+                  (wallet) =>
+                      wallet.singleLocalSeedFingerprint ==
+                      normalizedFingerprint,
                 )
                 .toList();
       if (matchingWallets.isEmpty) {

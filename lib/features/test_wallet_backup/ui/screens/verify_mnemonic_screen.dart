@@ -61,7 +61,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
           .read<TestWalletBackupBloc>()
           .state
           .selectedWallet
-          ?.masterFingerprint,
+          ?.singleLocalSeedFingerprint,
     );
   }
 
@@ -163,7 +163,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               previous.verificationStatus != current.verificationStatus ||
               (previous.statusError.isEmpty && current.statusError.isNotEmpty),
           listener: (context, state) {
-            _loadSecretFor(state.selectedWallet?.masterFingerprint);
+            _loadSecretFor(state.selectedWallet?.singleLocalSeedFingerprint);
             if (state.statusError.isNotEmpty) {
               SnackBarUtils.showSnackBar(context, state.statusError);
               context.read<TestWalletBackupBloc>().add(const ClearError());

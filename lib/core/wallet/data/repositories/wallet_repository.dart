@@ -30,6 +30,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -41,6 +42,7 @@ class WalletRepository
         WalletBackupMetadataPort,
         WalletVisibilityPort,
         WalletSignerDevicePort,
+        WalletSignerOwnershipPort,
         Bip48AccountUsagePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
@@ -467,6 +469,85 @@ class WalletRepository
     return _toWallet(updatedMetadata, balance);
   }
 
+  @override
+  Future<Wallet> updateSignerRegistrationName({
+    required String walletId,
+    required String signerId,
+    required String registrationName,
+  }) async {
+    final normalizedName = registrationName.trim();
+    if (normalizedName.isEmpty) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw const WalletSignerDeviceUpdateException();
+    final signerIndex = metadata.signers.indexWhere(
+      (signer) => signer.id == signerId,
+    );
+    if (signerIndex == -1) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+    final updatedSigner = metadata.signers[signerIndex]
+        .toEntity()
+        .copyWith(registrationName: normalizedName)
+        .toModel();
+    final updatedSigners = [...metadata.signers];
+    updatedSigners[signerIndex] = updatedSigner;
+    final updatedMetadata = metadata.copyWith(signers: updatedSigners);
+    final didUpdate = await _walletMetadataDatasource
+        .updateSignerRegistrationName(
+          walletId: walletId,
+          signerId: signerId,
+          registrationName: normalizedName,
+        );
+    if (!didUpdate) throw const WalletSignerDeviceUpdateException();
+    return _toWallet(updatedMetadata, await _getBalance(updatedMetadata));
+  }
+
+  @override
+  Future<Wallet> markSignerLocal({
+    required String walletId,
+    required String signerId,
+    required String seedFingerprint,
+    required Set<String> passphraseProtectedKeyIds,
+  }) async {
+    if (seedFingerprint.trim().isEmpty) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final signerIndex = metadata.signers.indexWhere(
+      (signer) => signer.id == signerId,
+    );
+    if (signerIndex == -1) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final existing = metadata.signers[signerIndex].toEntity();
+    final keyIds = existing.descriptorKeys.map((key) => key.id).toSet();
+    if (!keyIds.containsAll(passphraseProtectedKeyIds)) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final updatedSigner = WalletSigner(
+      id: existing.id,
+      signer: SignerEntity.local,
+      signerDevice: null,
+      localSeedFingerprint: seedFingerprint.toLowerCase(),
+      descriptorKeys: [
+        for (final key in existing.descriptorKeys)
+          key.copyWith(
+            requiresPassphrase: passphraseProtectedKeyIds.contains(key.id),
+          ),
+      ],
+    ).toModel();
+    final updatedSigners = [...metadata.signers];
+    updatedSigners[signerIndex] = updatedSigner;
+    final updatedMetadata = metadata.copyWith(signers: updatedSigners);
+    await _walletMetadataDatasource.store(updatedMetadata);
+    return _toWallet(updatedMetadata, await _getBalance(updatedMetadata));
+  }
+
   Future<WalletBalances> getWalletBalances({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) {
@@ -731,6 +812,9 @@ class WalletRepository
           id: entry.key,
           signer: annotationsById[entry.key]?.signer ?? SignerEntity.none,
           signerDevice: annotationsById[entry.key]?.signerDevice,
+          registrationName: annotationsById[entry.key]?.registrationName,
+          localSeedFingerprint:
+              annotationsById[entry.key]?.localSeedFingerprint,
           descriptorKeys: entry.value,
         ),
     ];

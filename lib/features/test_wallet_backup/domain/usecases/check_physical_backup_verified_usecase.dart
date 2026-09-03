@@ -13,9 +13,7 @@ class CheckPhysicalBackupVerifiedUsecase {
     return wallets.any(
       (wallet) =>
           wallet.isPhysicalBackupTested &&
-          wallet.localMasterFingerprints.any(
-            (value) => value.toLowerCase() == normalized,
-          ),
+          wallet.singleLocalSeedFingerprint == normalized,
     );
   }
 }

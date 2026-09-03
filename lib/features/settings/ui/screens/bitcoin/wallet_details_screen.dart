@@ -138,7 +138,7 @@ class WalletDetailsScreen extends StatelessWidget {
                     iconData: Icons.chevron_right,
                   ),
                   if (wallet.isBitcoin &&
-                      wallet.localMasterFingerprints.isNotEmpty) ...[
+                      wallet.localSeedFingerprints.isNotEmpty) ...[
                     const Gap(16),
                     BBButton.big(
                       label: context.loc.psbtSigningTitle,

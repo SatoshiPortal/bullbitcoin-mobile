@@ -37,13 +37,13 @@ class DeleteWalletUsecase {
       await _walletRepository.deleteWallet(walletId: walletId);
 
       // Clean up locally held seeds once no remaining wallet references them.
-      final localFingerprints = wallet.localMasterFingerprints.toSet();
+      final localFingerprints = wallet.localSeedFingerprints.toSet();
       if (localFingerprints.isNotEmpty) {
         final remainingWallets = await _walletRepository.getWallets();
         for (final fingerprint in localFingerprints) {
           final stillUsed = remainingWallets.any(
             (remaining) =>
-                remaining.localMasterFingerprints.contains(fingerprint),
+                remaining.localSeedFingerprints.contains(fingerprint),
           );
           if (stillUsed) continue;
 
