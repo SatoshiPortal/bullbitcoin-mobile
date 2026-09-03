@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -30,27 +29,24 @@ typedef PayPayinFeeEstimate = ({
 /// failure carrying the hardcoded English "Insufficient balance. Required: N
 /// sats", which reached the screen untranslated.
 class EstimatePayPayinFeesUsecase {
+  /// 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
+  static const _liquidEstimateFeeRate = RelativeFee(25);
+
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
-  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final GetPayPayinAddressUsecase _getPayPayinAddressUsecase;
+  final LoadPayNetworkFeesUsecase _loadPayNetworkFeesUsecase;
   final PreparePayBitcoinPayinUsecase _preparePayBitcoinPayinUsecase;
   final PreparePayLiquidPayinUsecase _preparePayLiquidPayinUsecase;
-  final CalculateBitcoinAbsoluteFeesUsecase
-  _calculateBitcoinAbsoluteFeesUsecase;
-  final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
+  final CalculatePayAbsoluteFeesUsecase _calculatePayAbsoluteFeesUsecase;
 
   const EstimatePayPayinFeesUsecase({
     required this._convertSatsToCurrencyAmountUsecase,
-    required this._getAddressAtIndexUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._getPayPayinAddressUsecase,
+    required this._loadPayNetworkFeesUsecase,
     required this._preparePayBitcoinPayinUsecase,
     required this._preparePayLiquidPayinUsecase,
-    required this._calculateBitcoinAbsoluteFeesUsecase,
-    required this._calculateLiquidAbsoluteFeesUsecase,
+    required this._calculatePayAbsoluteFeesUsecase,
   });
-
-  /// 0.1 sat/vByte = 25 sat/kwu — Liquid's network minrelayfee default.
-  static const _liquidEstimateFeeRate = RelativeFee(25);
 
   @useResult
   Future<Result<PayPayinFeeEstimate, PayFailure>> execute({
@@ -59,7 +55,6 @@ class EstimatePayPayinFeesUsecase {
     required String currencyCode,
   }) async {
     final double exchangeRateEstimate;
-    final String throwawayAddress;
     try {
       exchangeRateEstimate = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currencyCode,
@@ -85,19 +80,12 @@ class EstimatePayPayinFeesUsecase {
       );
     }
 
-    try {
-      final address = await _getAddressAtIndexUsecase.execute(
-        walletId: wallet.id,
-        index: 0,
-      );
-      throwawayAddress = address.address;
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to derive the pay fee-estimation address',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
+    final String throwawayAddress;
+    switch (await _getPayPayinAddressUsecase.execute(walletId: wallet.id)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        throwawayAddress = value;
     }
 
     if (wallet.isLiquid) {
@@ -114,37 +102,26 @@ class EstimatePayPayinFeesUsecase {
           pset = value;
       }
 
-      try {
-        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: pset,
-        );
-        return Ok((
-          exchangeRateEstimate: exchangeRateEstimate,
-          requiredAmountSat: requiredAmountSat,
-          absoluteFees: absoluteFees,
-          bitcoinFees: null,
-          bitcoinTxSize: null,
-        ));
-      } catch (e, st) {
-        log.severe(
-          message: 'Failed to read the absolute fees of a pay payin PSET',
-          error: e,
-          trace: st,
-        );
-        return Err(PayUnexpectedFailure('$e'));
+      switch (await _calculatePayAbsoluteFeesUsecase.liquid(pset: pset)) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          return Ok((
+            exchangeRateEstimate: exchangeRateEstimate,
+            requiredAmountSat: requiredAmountSat,
+            absoluteFees: value,
+            bitcoinFees: null,
+            bitcoinTxSize: null,
+          ));
       }
     }
 
     final FeeOptions bitcoinFees;
-    try {
-      bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to load the network fees for the pay payin estimate',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
+    switch (await _loadPayNetworkFeesUsecase.execute(isLiquid: false)) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        bitcoinFees = value;
     }
 
     // Fastest is the default selection, so the estimate shown on arrival is the
@@ -162,24 +139,19 @@ class EstimatePayPayinFeesUsecase {
         payin = value;
     }
 
-    try {
-      final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-        psbt: payin.unsignedPsbt,
-      );
-      return Ok((
-        exchangeRateEstimate: exchangeRateEstimate,
-        requiredAmountSat: requiredAmountSat,
-        absoluteFees: absoluteFees,
-        bitcoinFees: bitcoinFees,
-        bitcoinTxSize: payin.txSize,
-      ));
-    } catch (e, st) {
-      log.severe(
-        message: 'Failed to read the absolute fees of a pay payin PSBT',
-        error: e,
-        trace: st,
-      );
-      return Err(PayUnexpectedFailure('$e'));
+    switch (await _calculatePayAbsoluteFeesUsecase.bitcoin(
+      psbt: payin.unsignedPsbt,
+    )) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        return Ok((
+          exchangeRateEstimate: exchangeRateEstimate,
+          requiredAmountSat: requiredAmountSat,
+          absoluteFees: value,
+          bitcoinFees: bitcoinFees,
+          bitcoinTxSize: payin.txSize,
+        ));
     }
   }
 }

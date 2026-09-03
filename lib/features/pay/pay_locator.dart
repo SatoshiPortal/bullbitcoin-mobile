@@ -9,9 +9,14 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
@@ -102,18 +107,42 @@ class PayLocator {
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
       ),
     );
-    locator.registerFactory<EstimatePayPayinFeesUsecase>(
-      () => EstimatePayPayinFeesUsecase(
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
-        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
+    locator.registerFactory<LoadPayUserSummaryUsecase>(
+      () => LoadPayUserSummaryUsecase(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetPayOrderUsecase>(
+      () => GetPayOrderUsecase(getOrderUsecase: locator<GetOrderUsecase>()),
+    );
+    locator.registerFactory<LoadPayNetworkFeesUsecase>(
+      () => LoadPayNetworkFeesUsecase(
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        preparePayBitcoinPayinUsecase: locator<PreparePayBitcoinPayinUsecase>(),
-        preparePayLiquidPayinUsecase: locator<PreparePayLiquidPayinUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetPayPayinAddressUsecase>(
+      () => GetPayPayinAddressUsecase(
+        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
+      ),
+    );
+    locator.registerFactory<CalculatePayAbsoluteFeesUsecase>(
+      () => CalculatePayAbsoluteFeesUsecase(
         calculateBitcoinAbsoluteFeesUsecase:
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),
+      ),
+    );
+    locator.registerFactory<EstimatePayPayinFeesUsecase>(
+      () => EstimatePayPayinFeesUsecase(
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getPayPayinAddressUsecase: locator<GetPayPayinAddressUsecase>(),
+        loadPayNetworkFeesUsecase: locator<LoadPayNetworkFeesUsecase>(),
+        preparePayBitcoinPayinUsecase: locator<PreparePayBitcoinPayinUsecase>(),
+        preparePayLiquidPayinUsecase: locator<PreparePayLiquidPayinUsecase>(),
+        calculatePayAbsoluteFeesUsecase:
+            locator<CalculatePayAbsoluteFeesUsecase>(),
       ),
     );
   }
@@ -121,25 +150,23 @@ class PayLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<PayBloc>(
       () => PayBloc(
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        loadPayUserSummaryUsecase: locator<LoadPayUserSummaryUsecase>(),
         placePayOrderUsecase: locator<PlacePayOrderUsecase>(),
         refreshPayOrderUsecase: locator<RefreshPayOrderUsecase>(),
+        getPayOrderUsecase: locator<GetPayOrderUsecase>(),
         estimatePayPayinFeesUsecase: locator<EstimatePayPayinFeesUsecase>(),
         preparePayBitcoinPayinUsecase: locator<PreparePayBitcoinPayinUsecase>(),
         preparePayLiquidPayinUsecase: locator<PreparePayLiquidPayinUsecase>(),
         signPayPayinUsecase: locator<SignPayPayinUsecase>(),
         broadcastPayPayinUsecase: locator<BroadcastPayPayinUsecase>(),
         loadPayWalletUtxosUsecase: locator<LoadPayWalletUtxosUsecase>(),
+        loadPayNetworkFeesUsecase: locator<LoadPayNetworkFeesUsecase>(),
+        calculatePayAbsoluteFeesUsecase:
+            locator<CalculatePayAbsoluteFeesUsecase>(),
+        getPayPayinAddressUsecase: locator<GetPayPayinAddressUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        calculateLiquidAbsoluteFeesUsecase:
-            locator<CalculateLiquidAbsoluteFeesUsecase>(),
-        calculateBitcoinAbsoluteFeesUsecase:
-            locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
-        getOrderUsecase: locator<GetOrderUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),
