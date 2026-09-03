@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
@@ -15,13 +17,19 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullPasteInput, BullText, BullTopBar, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPasteInput, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
-class BroadcastSignedTxPage extends StatelessWidget {
+class BroadcastSignedTxPage extends StatefulWidget {
   const BroadcastSignedTxPage({super.key});
+
+  @override
+  State<BroadcastSignedTxPage> createState() => _BroadcastSignedTxPageState();
+}
+
+class _BroadcastSignedTxPageState extends State<BroadcastSignedTxPage> {
+  String _signerInput = '';
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +75,30 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         horizontal: 16,
                         vertical: 16,
                       ),
-                      child: PasteInput(
-                        text: state.transaction?.data ?? '',
+                      child: BullPasteInput(
+                        text: cubit.collectSignerResult
+                            ? _signerInput
+                            : state.transaction?.data ?? '',
                         hint: cubit.collectSignerResult
                             ? context.loc.importSignedPsbtPasteHint
                             : context.loc.broadcastSignedTxPasteHint,
-                        onChanged: cubit.tryParseTransaction,
+                        onChanged: cubit.collectSignerResult
+                            ? (value) => setState(() => _signerInput = value)
+                            : cubit.tryParseTransaction,
                       ),
                     ),
+                    if (cubit.collectSignerResult)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: BBButton.big(
+                          label: context.loc.continueButton,
+                          onPressed: () =>
+                              cubit.tryParseTransaction(_signerInput.trim()),
+                          disabled: _signerInput.trim().isEmpty,
+                          bgColor: context.appColors.primary,
+                          textColor: context.appColors.onPrimary,
+                        ),
+                      ),
                     if (state.failure != null) ...[
                       const Gap(16),
                       BBText(
