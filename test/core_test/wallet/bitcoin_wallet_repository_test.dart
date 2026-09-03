@@ -35,7 +35,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -85,7 +84,6 @@ String _destination([bdk.Network network = bdk.Network.testnet, int fill = 1]) {
 
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
-  late _MockSeedDatasource seedDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late _MockValues values;
   late Result<UnsignedSpend, SyncFailure> built;
@@ -123,7 +121,6 @@ void main() {
   setUp(() {
     FakeSecureStoragePlatform().install();
     metadataDatasource = _MockWalletMetadataDatasource();
-    seedDatasource = _MockSeedDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     values = _MockValues();
     built = Ok(
@@ -139,7 +136,7 @@ void main() {
     );
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      seedDatasource: _MockSeedDatasource(),
       bdkWalletDatasource: bdkDatasource,
       walletValuesDatasource: values,
     );

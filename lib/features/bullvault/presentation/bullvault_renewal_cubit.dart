@@ -14,7 +14,9 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_rene
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/renew_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_details_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,11 +27,18 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
   final ActivateBullVaultRenewalUsecase _activateUsecase;
   final CancelBullVaultRenewalUsecase _cancelUsecase;
   final UpdateBullVaultSetupUsecase _updateSetupUsecase;
+  final UpdateBullVaultRegistrationNameUsecase _updateRegistrationNameUsecase;
   final WatchBullVaultMigrationUsecase _watchMigrationUsecase;
   final EncodeBullVaultRecoveryPackageUsecase
   _encodeBullVaultRecoveryPackageUsecase;
   final List<StreamSubscription<Result<String?, BullVaultFailure>>>
   _migrationSubscriptions = [];
+  late final StreamSubscription<Result<BullVaultDetails?, BullVaultFailure>>
+  _detailsSubscription;
+  int _loadGeneration = 0;
+  int _migrationWatchGeneration = 0;
+  Set<String> _watchedPreviousWallets = const {};
+  String? _watchedMigrationAddress;
 
   BullVaultRenewalCubit(
     this._loadUsecase,
@@ -37,16 +46,37 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     this._activateUsecase,
     this._cancelUsecase,
     this._updateSetupUsecase,
+    this._updateRegistrationNameUsecase,
     this._watchMigrationUsecase,
     this._encodeBullVaultRecoveryPackageUsecase, {
     required String walletId,
     required this._prepareTimeReferenceUsecase,
-  }) : super(BullVaultRenewalState(walletId: walletId));
+    required WatchBullVaultDetailsUsecase watchDetailsUsecase,
+  }) : super(BullVaultRenewalState(walletId: walletId)) {
+    _detailsSubscription = watchDetailsUsecase.execute(walletId).listen((
+      result,
+    ) {
+      if (isClosed ||
+          state.isLoading ||
+          state.isRenewing ||
+          state.isActivating ||
+          state.isCancelling) {
+        return;
+      }
+      if (result case Ok(
+        value: final details?,
+      ) when details.record.walletId == state.details?.record.walletId) {
+        emit(state.copyWith(details: details));
+        _watchPreviousVaults(details);
+      }
+    });
+  }
 
   Future<void> load() async {
+    final generation = ++_loadGeneration;
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _loadUsecase.execute(state.walletId);
-    if (isClosed) return;
+    if (isClosed || generation != _loadGeneration) return;
     switch (result) {
       case Ok(:final value):
         final renewal = value.renewal;
@@ -84,9 +114,27 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
             ),
           );
         }
-        await _watchPreviousVaults(value.details);
+        _watchPreviousVaults(value.details);
       case Err(:final failure):
         emit(state.copyWith(isLoading: false, failure: failure));
+    }
+  }
+
+  Future<void> refreshDetails() async {
+    final generation = ++_loadGeneration;
+    final result = await _loadUsecase.execute(state.walletId);
+    if (isClosed || generation != _loadGeneration) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            details: value.details,
+            needsInitialSetup: value.needsInitialSetup,
+          ),
+        );
+        _watchPreviousVaults(value.details);
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
     }
   }
 
@@ -196,6 +244,36 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
   }
 
+  Future<bool> updateRegistrationName({
+    required String signerId,
+    required String name,
+  }) async {
+    final renewal = state.renewal;
+    if (renewal == null) return false;
+    final result = await _updateRegistrationNameUsecase.execute(
+      wallet: renewal.replacement.wallet,
+      signerId: signerId,
+      name: name,
+    );
+    if (isClosed) return false;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            renewal: BullVaultRenewResult(
+              previous: renewal.previous,
+              replacement: renewal.replacement.copyWith(wallet: value),
+            ),
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return false;
+    }
+  }
+
   void continueSetup() {
     if (!state.canContinueSetup) return;
     switch (state.step) {
@@ -288,7 +366,6 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
           state.copyWith(
             step: BullVaultRenewalStep.complete,
             isActivating: false,
-            isActivated: true,
           ),
         );
       case Err(:final failure):
@@ -324,9 +401,20 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
   }
 
-  Future<void> _watchPreviousVaults(BullVaultDetails details) async {
+  void _watchPreviousVaults(BullVaultDetails details) {
+    final walletIds = details.previousVaults
+        .map((previous) => previous.wallet.id)
+        .toSet();
+    if (_watchedMigrationAddress == details.migrationAddress &&
+        _watchedPreviousWallets.length == walletIds.length &&
+        _watchedPreviousWallets.containsAll(walletIds)) {
+      return;
+    }
+    _watchedPreviousWallets = walletIds;
+    _watchedMigrationAddress = details.migrationAddress;
+    final generation = ++_migrationWatchGeneration;
     for (final subscription in _migrationSubscriptions) {
-      await subscription.cancel();
+      unawaited(subscription.cancel());
     }
     _migrationSubscriptions.clear();
     for (final previous in details.previousVaults) {
@@ -336,7 +424,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
             migrationAddress: details.migrationAddress!,
           )
           .listen((result) {
-            if (isClosed) return;
+            if (isClosed || generation != _migrationWatchGeneration) return;
             switch (result) {
               case Ok(:final value):
                 final transactionIds = Map.of(state.migrationTransactionIds);
@@ -361,7 +449,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
     final requiredSignerIds = {
       for (final signer in renewal.replacement.wallet.signers)
-        if (signer.signer != SignerEntity.local) signer.id,
+        if (signer.signer == SignerEntity.remote) signer.id,
     };
     return record.completedHardwareSignerIds.containsAll(requiredSignerIds)
         ? BullVaultRenewalStep.activation
@@ -370,6 +458,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
 
   @override
   Future<void> close() async {
+    await _detailsSubscription.cancel();
     for (final subscription in _migrationSubscriptions) {
       await subscription.cancel();
     }

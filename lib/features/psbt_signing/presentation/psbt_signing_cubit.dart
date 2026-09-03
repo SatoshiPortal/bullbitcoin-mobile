@@ -54,11 +54,14 @@ class PsbtSigningCubit extends Cubit<PsbtSigningState> {
     );
   }
 
-  Future<void> sign() async {
+  Future<void> sign({String? passphrase}) async {
     final review = state.review;
     if (review == null || state.isSigning) return;
     emit(state.copyWith(isSigning: true, clearFailure: true));
-    final result = await _signExternalPsbtUsecase.execute(review);
+    final result = await _signExternalPsbtUsecase.execute(
+      review,
+      passphrase: passphrase,
+    );
     if (isClosed) return;
     result.fold(
       (signed) => emit(

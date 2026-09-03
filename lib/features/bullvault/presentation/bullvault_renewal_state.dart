@@ -31,7 +31,6 @@ final class BullVaultRenewalState {
   final bool isRenewing;
   final bool isActivating;
   final bool isCancelling;
-  final bool isActivated;
   final bool needsInitialSetup;
   final BullVaultFailure? failure;
 
@@ -52,7 +51,6 @@ final class BullVaultRenewalState {
     this.isRenewing = false,
     this.isActivating = false,
     this.isCancelling = false,
-    this.isActivated = false,
     this.needsInitialSetup = false,
     this.failure,
   });
@@ -60,7 +58,7 @@ final class BullVaultRenewalState {
   Set<String> get requiredSignerIds => {
     if (renewal case final value?)
       for (final signer in value.replacement.wallet.signers)
-        if (signer.signer != SignerEntity.local) signer.id,
+        if (signer.signer == SignerEntity.remote) signer.id,
   };
 
   bool get hardwareSetupComplete =>
@@ -72,7 +70,7 @@ final class BullVaultRenewalState {
       recoveryPackageConfirmed &&
       !isActivating &&
       !isCancelling &&
-      !isActivated;
+      step != BullVaultRenewalStep.complete;
 
   bool get canContinueSetup => switch (step) {
     BullVaultRenewalStep.recoveryPackage =>
@@ -109,7 +107,6 @@ final class BullVaultRenewalState {
     bool? isRenewing,
     bool? isActivating,
     bool? isCancelling,
-    bool? isActivated,
     bool? needsInitialSetup,
     BullVaultFailure? failure,
     bool clearRenewal = false,
@@ -140,7 +137,6 @@ final class BullVaultRenewalState {
     isRenewing: isRenewing ?? this.isRenewing,
     isActivating: isActivating ?? this.isActivating,
     isCancelling: isCancelling ?? this.isCancelling,
-    isActivated: isActivated ?? this.isActivated,
     needsInitialSetup: needsInitialSetup ?? this.needsInitialSetup,
     failure: clearFailure ? null : failure ?? this.failure,
   );

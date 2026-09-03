@@ -203,7 +203,6 @@ void main() {
     expect(
       () => BullVaultDetails(
         record: current.record,
-        policy: current.policy,
         timeUntilFirstRecovery: const Duration(days: 365),
         showEarlyRenewalWarning: false,
         migrationAddress: null,

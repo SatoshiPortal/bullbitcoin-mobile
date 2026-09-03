@@ -24,7 +24,7 @@ void main() {
     await cubit.close();
   });
 
-  test('hides the action when the wallet is not a BullVault', () async {
+  test('hides the action when BullVault details are unavailable', () async {
     final getDetails = _MockGetDetails();
     when(
       () => getDetails.execute('wallet'),

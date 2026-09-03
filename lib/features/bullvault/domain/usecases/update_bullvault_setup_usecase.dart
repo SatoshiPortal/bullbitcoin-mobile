@@ -52,7 +52,7 @@ class UpdateBullVaultSetupUsecase {
       if (wallet == null) return const Err(BullVaultRenewalFailure());
       final requiredSignerIds = {
         for (final signer in wallet.signers)
-          if (signer.signer != SignerEntity.local) signer.id,
+          if (signer.signer == SignerEntity.remote) signer.id,
       };
       hardwareSetupComplete = completedHardwareSignerIds.containsAll(
         requiredSignerIds,
@@ -79,9 +79,6 @@ class UpdateBullVaultSetupUsecase {
     final completer = Completer<void>();
     final previous = _updateLock;
     _updateLock = completer.future;
-    return previous
-        .catchError((_) {})
-        .then((_) => action())
-        .whenComplete(completer.complete);
+    return previous.then((_) => action()).whenComplete(completer.complete);
   }
 }

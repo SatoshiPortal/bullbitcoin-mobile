@@ -15990,10 +15990,6 @@
   "@psbtSigningCopyPsbt": {
     "description": "Button label for copying a signed PSBT."
   },
-  "psbtFlowQrTooLarge": "This PSBT is too large for QR. Use copy or file sharing instead.",
-  "@psbtFlowQrTooLarge": {
-    "description": "Message shown when a PSBT exceeds the animated UR QR transport limit"
-  },
   "psbtSigningPartialDescription": "Share this signed PSBT to continue.",
   "@psbtSigningPartialDescription": {
     "description": "Instructions for sharing a partially signed PSBT."
@@ -16471,18 +16467,6 @@
   "@signingKeyExportAccountUsed": {
     "description": "Warning shown when the selected BIP48 signing-key account is already reserved"
   },
-  "bullVaultRecoveryOptions": "Recovery options",
-  "@bullVaultRecoveryOptions": {
-    "description": "Heading for the BullVault recovery choices summary"
-  },
-  "bullVaultEverydayRecoveryPathYears": "The everyday key can spend alone after {years} years.",
-  "@bullVaultEverydayRecoveryPathYears": {
-    "placeholders": {
-      "years": {
-        "type": "int"
-      }
-    }
-  },
   "bullVaultReviewDescription": "Check your keys and recovery schedule carefully. To change them later, you will need to create a new BullVault.",
   "@bullVaultReviewDescription": {},
   "bullVaultCreateEntry": "Create BullVault",
@@ -16495,21 +16479,12 @@
   "@bullVaultCreatedDescription": {},
   "bullVaultColdKey": "Cold key",
   "@bullVaultColdKey": {},
-  "bullVaultCustomizeSetup": "Customize setup",
+  "bullVaultCustomizeSetup": "Advanced setup",
   "@bullVaultCustomizeSetup": {
     "description": "Secondary action for choosing additional BullVault protection and inheritance options."
   },
   "bullVaultColdTitle": "Connect your cold key",
   "@bullVaultColdTitle": {},
-  "bullVaultExtraTwoKeyRecoveryPathYears": "The inheritance key and any one owner key can spend after {years} years.",
-  "@bullVaultExtraTwoKeyRecoveryPathYears": {
-    "description": "Delayed inheritance-assisted recovery for a two-cold-key BullVault.",
-    "placeholders": {
-      "years": {
-        "type": "int"
-      }
-    }
-  },
   "bullVaultGeneration": "Vault version {generation}",
   "@bullVaultGeneration": {
     "description": "User-facing one-based BullVault version label.",
@@ -16549,15 +16524,11 @@
   "@bullVaultExtraNoInheritanceWarning": {
     "description": "Recovery and renewal warning for two-cold-key BullVaults without inheritance."
   },
-  "bullVaultProtectionChoiceDescription": "Choose the key setup that fits how you want to balance security and recovery.",
-  "@bullVaultProtectionChoiceDescription": {
-    "description": "Description shown before choosing a BullVault protection setup."
-  },
   "bullVaultColdDescription": "Choose a supported hardware wallet or another compatible signer. Store this key separately from your phone.",
   "@bullVaultColdDescription": {},
   "bullVaultScheduleDescription": "Choose when each recovery option becomes available.",
   "@bullVaultScheduleDescription": {},
-  "bullVaultAdvancedSetup": "Customize recovery",
+  "bullVaultAdvancedSetup": "Advanced setup",
   "@bullVaultAdvancedSetup": {},
   "bullVaultRestorePackageDescription": "This restores the wallet details, keys, and original recovery schedule.",
   "@bullVaultRestorePackageDescription": {
@@ -16571,34 +16542,8 @@
   "@bullVaultRegisterNow": {
     "description": "Action for a connected BullVault hardware signer that can confirm registration."
   },
-  "bullVaultExtraInheritanceScheduleSummary": "Inheritance with any owner key after {recoveryYears} years · inheritance alone after {inheritanceYears} years",
-  "@bullVaultExtraInheritanceScheduleSummary": {
-    "description": "Recovery schedule summary for two-cold-key BullVaults with inheritance.",
-    "placeholders": {
-      "recoveryYears": {
-        "type": "int"
-      },
-      "inheritanceYears": {
-        "type": "int"
-      }
-    }
-  },
-  "bullVaultColdRecoveryPathYears": "The cold key can spend alone after {years} years.",
-  "@bullVaultColdRecoveryPathYears": {
-    "placeholders": {
-      "years": {
-        "type": "int"
-      }
-    }
-  },
   "bullVaultPrimaryPathValue": "Your everyday key and cold key must sign together.",
   "@bullVaultPrimaryPathValue": {},
-  "bullVaultColdKeyIntro": "A hardware key stored separately from your phone.",
-  "@bullVaultColdKeyIntro": {},
-  "bullVaultInheritanceKeyDescription": "Use another Bull wallet or a supported hardware wallet for the inheritance key.",
-  "@bullVaultInheritanceKeyDescription": {
-    "description": "Instructions for connecting the BullVault inheritance key"
-  },
   "bullVaultNewRecoveryDates": "New recovery dates",
   "@bullVaultNewRecoveryDates": {
     "description": "Heading above the exact activation dates proposed for the renewed BullVault policy."
@@ -16718,15 +16663,6 @@
   "@bullVaultReceiveVerifyReminder": {
     "description": "Reminder shown beside address verification for a BullVault receive address."
   },
-  "bullVaultInheritanceSoloPathYears": "The inheritance key can spend alone in {years} years.",
-  "@bullVaultInheritanceSoloPathYears": {
-    "description": "Relative timing for the BullVault inheritance-only recovery path.",
-    "placeholders": {
-      "years": {
-        "type": "int"
-      }
-    }
-  },
   "bullVaultEverydayKey": "Everyday key",
   "@bullVaultEverydayKey": {},
   "bullVaultSkipMobileBackupConfirm": "Continue anyway",
@@ -16743,10 +16679,6 @@
         "type": "String"
       }
     }
-  },
-  "bullVaultExtraIntroDescription": "Your everyday key and two separately stored cold keys protect the vault. Any two of them approve transactions.",
-  "@bullVaultExtraIntroDescription": {
-    "description": "Introduction description for two-cold-key BullVault protection."
   },
   "bullVaultCreate": "Create BullVault",
   "@bullVaultCreate": {},
@@ -16768,24 +16700,11 @@
   "@bullVaultCheckingChainTime": {
     "description": "Progress text while preparing the BullVault recovery timestamps."
   },
-  "bullVaultExtraIntroTitle": "Three owner keys, any two to spend",
-  "@bullVaultExtraIntroTitle": {
-    "description": "Introduction title for two-cold-key BullVault protection."
-  },
   "bullVaultRecoveryDelay": "Inheritance can spend with another key",
   "@bullVaultRecoveryDelay": {},
   "bullVaultPreviousVaultMigrating": "The previous vault remains monitored permanently for late deposits. Move any remaining funds to the active vault.",
   "@bullVaultPreviousVaultMigrating": {
     "description": "Explanation shown after BullVault renewal"
-  },
-  "bullVaultEitherColdRecoveryPathYears": "Either cold key can spend alone after {years} years.",
-  "@bullVaultEitherColdRecoveryPathYears": {
-    "description": "Explanation of delayed recovery using either cold key.",
-    "placeholders": {
-      "years": {
-        "type": "int"
-      }
-    }
   },
   "bullVaultTitle": "Create BullVault",
   "@bullVaultTitle": {},
@@ -16823,17 +16742,6 @@
   "@bullVaultEarlyRenewalWarning": {
     "description": "Warning shown when more than half of the first delay remains"
   },
-  "bullVaultScheduleSummary": "Cold key after {coldYears} years · everyday key after {recoveryYears} years",
-  "@bullVaultScheduleSummary": {
-    "placeholders": {
-      "coldYears": {
-        "type": "int"
-      },
-      "recoveryYears": {
-        "type": "int"
-      }
-    }
-  },
   "bullVaultGetKeyFromDevice": "Continue with {device}",
   "@bullVaultGetKeyFromDevice": {
     "placeholders": {
@@ -16855,21 +16763,6 @@
   "bullVaultProtectionChoiceTitle": "Choose your protection",
   "@bullVaultProtectionChoiceTitle": {
     "description": "Title for choosing the BullVault owner-key setup."
-  },
-  "bullVaultInheritanceScheduleSummary": "Inheritance with either key after {recoveryYears} years · cold key after {coldYears} years · inheritance key after {inheritanceYears} years",
-  "@bullVaultInheritanceScheduleSummary": {
-    "description": "Compact summary of the BullVault inheritance schedule.",
-    "placeholders": {
-      "recoveryYears": {
-        "type": "int"
-      },
-      "coldYears": {
-        "type": "int"
-      },
-      "inheritanceYears": {
-        "type": "int"
-      }
-    }
   },
   "bullVaultExtraInheritanceChoiceDescription": "Optionally add an inheritance key. It can help recover the vault after the delay you choose.",
   "@bullVaultExtraInheritanceChoiceDescription": {
@@ -16897,8 +16790,6 @@
   },
   "bullVaultGenericSignerWarning": "Bull cannot confirm registration automatically. Make sure this signer supports BullVault and register the wallet before continuing.",
   "@bullVaultGenericSignerWarning": {},
-  "bullVaultIntroTitle": "Two keys with built-in recovery",
-  "@bullVaultIntroTitle": {},
   "bullVaultReplaceDeviceKey": "Use a different key",
   "@bullVaultReplaceDeviceKey": {},
   "bullVaultPreviousVaultGeneration": "Vault version {generation}",
@@ -16940,10 +16831,6 @@
   "@bullVaultFailureReviewExpired": {
     "description": "Shown when BullVault recovery dates are refreshed because the prior review was left open too long."
   },
-  "bullVaultProtectionExtraDescription": "Use this phone and two cold keys. Any two owner keys approve transactions.",
-  "@bullVaultProtectionExtraDescription": {
-    "description": "Description of the two-cold-key BullVault setup."
-  },
   "bullVaultChooseRecoveryPackage": "Choose recovery package",
   "@bullVaultChooseRecoveryPackage": {
     "description": "Action to select a BullVault recovery package file"
@@ -16964,28 +16851,10 @@
       }
     }
   },
-  "bullVaultSecondColdKeyIntro": "A second hardware key with a separate seed, stored apart from your other keys.",
-  "@bullVaultSecondColdKeyIntro": {
-    "description": "Short explanation of the second cold key."
-  },
-  "bullVaultExtraRecoverySummary": "Either cold key after {coldYears} years · everyday key after {recoveryYears} years",
-  "@bullVaultExtraRecoverySummary": {
-    "description": "Recovery summary for two-cold-key BullVaults without inheritance.",
-    "placeholders": {
-      "coldYears": {
-        "type": "int"
-      },
-      "recoveryYears": {
-        "type": "int"
-      }
-    }
-  },
   "bullVaultColdKeyTwo": "Cold key 2",
   "@bullVaultColdKeyTwo": {
     "description": "Label for the second cold key in a two-cold-key BullVault."
   },
-  "bullVaultScanQr": "Scan QR",
-  "@bullVaultScanQr": {},
   "bullVaultScanPublicKey": "Scan public account key",
   "@bullVaultScanPublicKey": {},
   "bullVaultRestoreDescription": "Use a BullVault recovery package when possible. A compatible descriptor can be used as a fallback.",
@@ -17020,8 +16889,6 @@
   "@bullVaultFailureClockMismatch": {
     "description": "BullVault setup error when phone UTC and Bitcoin median time differ by more than the allowed tolerance."
   },
-  "bullVaultIntroDescription": "Your everyday key and cold key approve transactions together. If a key is lost, recovery becomes available after the delay you choose.",
-  "@bullVaultIntroDescription": {},
   "bullVaultFinishSetup": "Finish setup",
   "@bullVaultFinishSetup": {},
   "bullVaultMigrationDestinationLocked": "The current BullVault address is fixed as the destination.",
@@ -17056,15 +16923,6 @@
   "bullVaultPhysicalBackupVerified": "Physical mnemonic backup verified",
   "@bullVaultPhysicalBackupVerified": {
     "description": "BullVault status for a verified physical Bull mnemonic backup"
-  },
-  "bullVaultTwoKeyRecoveryPathYears": "The inheritance key and either owner key can spend after {years} years.",
-  "@bullVaultTwoKeyRecoveryPathYears": {
-    "description": "Relative timing for the BullVault delayed any-two-of-three recovery path.",
-    "placeholders": {
-      "years": {
-        "type": "int"
-      }
-    }
   },
   "bullVaultUseOtherSigner": "Other signer",
   "@bullVaultUseOtherSigner": {},
@@ -17156,5 +17014,246 @@
   "bullVaultReviewRenewal": "Review renewal",
   "@bullVaultReviewRenewal": {
     "description": "Open the preview of a new BullVault recovery schedule"
+  },
+  "bullVaultInheritanceGenerateMnemonic": "Generate a new recovery phrase",
+  "@bullVaultInheritanceGenerateMnemonic": {
+    "description": "Inheritance key source that creates a new mnemonic."
+  },
+  "bullVaultPassphraseFreeRecoveryTitle": "Recover without your passphrase",
+  "@bullVaultPassphraseFreeRecoveryTitle": {
+    "description": "Title for optional delayed passphrase-free recovery."
+  },
+  "bullVaultInheritanceHardware": "Hardware wallet",
+  "@bullVaultInheritanceHardware": {
+    "description": "Inheritance key source using a hardware wallet."
+  },
+  "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
+  "@bullVaultLastResortOrder": {},
+  "bullVaultRestoreMobilePassphraseDescription": "Enter the passphrase to restore mobile signing. You can leave this blank when recovering through a passphrase-free recovery key.",
+  "@bullVaultRestoreMobilePassphraseDescription": {
+    "description": "Explanation for the optional BullVault restoration passphrase"
+  },
+  "bullVaultPracticeTimeline": "Practice timeline",
+  "@bullVaultPracticeTimeline": {
+    "description": "Title for hour-based BullVault practice mode."
+  },
+  "bullVaultMobileProtection": "Mobile protection",
+  "@bullVaultMobileProtection": {
+    "description": "Title for Bull mobile passphrase settings."
+  },
+  "bullVaultHardwareEverydayHint": "If this hardware wallet uses a passphrase, select that wallet on the device before continuing.",
+  "@bullVaultHardwareEverydayHint": {
+    "description": "Advice shown when a hardware wallet is the everyday BullVault key."
+  },
+  "bullVaultConfirmPassphraseLabel": "Confirm passphrase",
+  "@bullVaultConfirmPassphraseLabel": {
+    "description": "Label for repeated BullVault passphrase input."
+  },
+  "bullVaultMobileBackupPassphraseDescription": "Your Bull mnemonic and RecoverBull protect the mobile seed. Store the passphrase separately. The BullVault recovery package is still required.",
+  "@bullVaultMobileBackupPassphraseDescription": {
+    "description": "Explains mobile backup coverage when a BullVault passphrase is required."
+  },
+  "bullVaultInheritanceSourceTitle": "Choose the inheritance key",
+  "@bullVaultInheritanceSourceTitle": {
+    "description": "Title for inheritance key source selection."
+  },
+  "bullVaultPassphraseLabel": "Passphrase",
+  "@bullVaultPassphraseLabel": {
+    "description": "Label for BullVault passphrase input."
+  },
+  "bullVaultPassphraseDescription": "This passphrase is required whenever your everyday mobile key signs. Bull cannot recover or store it.",
+  "@bullVaultPassphraseDescription": {
+    "description": "Description for BullVault mobile passphrase entry."
+  },
+  "bullVaultGeneratedInheritanceIdentity": "Inheritance key ready · fingerprint {fingerprint}",
+  "@bullVaultGeneratedInheritanceIdentity": {
+    "description": "Confirms the public identity derived from an inheritance mnemonic.",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultDelayValue": "After {delay}",
+  "@bullVaultDelayValue": {
+    "description": "Formats a BullVault delay using an already localized duration.",
+    "placeholders": {
+      "delay": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultEverydayKeySourceTitle": "Choose your everyday key",
+  "@bullVaultEverydayKeySourceTitle": {
+    "description": "Title for selecting the signer used for normal BullVault spending."
+  },
+  "bullVaultDays": "{count, plural, =1 {1 day} other {{count} days}}",
+  "@bullVaultDays": {
+    "description": "Time remaining until a BullVault recovery becomes available, in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bullVaultHours": "{count, plural, =1 {1 hour} other {{count} hours}}",
+  "@bullVaultHours": {
+    "description": "Formats a BullVault delay in hours.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bullVaultRestoreMobilePassphraseLabel": "Mobile passphrase (if configured)",
+  "@bullVaultRestoreMobilePassphraseLabel": {
+    "description": "Optional passphrase field label shown while restoring a BullVault"
+  },
+  "bullVaultLastResortDescription": "After the final delay, your everyday key can spend alone.",
+  "@bullVaultLastResortDescription": {},
+  "bullVaultLastResortDelay": "Everyday key can spend alone",
+  "@bullVaultLastResortDelay": {},
+  "bullVaultPhysicalBackupRecoveryDescription": "A physical copy can restore delayed recovery after its recovery date without the passphrase.",
+  "@bullVaultPhysicalBackupRecoveryDescription": {
+    "description": "Explains physical backup coverage for delayed passphrase-free recovery."
+  },
+  "bullVaultNoPassphrase": "No passphrase",
+  "@bullVaultNoPassphrase": {
+    "description": "Label for a Bull mobile key without a BIP39 passphrase."
+  },
+  "sendBullVaultPassphraseTitle": "Enter your BullVault passphrase",
+  "@sendBullVaultPassphraseTitle": {
+    "description": "Title for the secure passphrase prompt before BullVault signing."
+  },
+  "bullVaultPassphraseTitle": "Protect your mobile key",
+  "@bullVaultPassphraseTitle": {
+    "description": "Title for entering a BullVault mobile-key passphrase."
+  },
+  "bullVaultPassphraseFreeRecoveryWarning": "Anyone with your Bull mnemonic or RecoverBull backup can use delayed recovery after {date} UTC without the passphrase.",
+  "@bullVaultPassphraseFreeRecoveryWarning": {
+    "description": "Warns when passphrase-free BullVault recovery becomes usable.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultUsePassphrase": "Use a passphrase",
+  "@bullVaultUsePassphrase": {
+    "description": "Label for enabling a Bull mobile BIP39 passphrase."
+  },
+  "bullVaultRegistrationNameDescription": "This name identifies the BullVault on your hardware wallet.",
+  "@bullVaultRegistrationNameDescription": {
+    "description": "Description for a hardware policy registration name."
+  },
+  "bullVaultPracticeTimelineDescription": "Use hours instead of years to practice setup and recovery with a small amount.",
+  "@bullVaultPracticeTimelineDescription": {
+    "description": "Description for BullVault practice mode."
+  },
+  "bullVaultPracticeWarningTitle": "Create a practice BullVault?",
+  "@bullVaultPracticeWarningTitle": {
+    "description": "Title for confirming an hour-based BullVault."
+  },
+  "sendBullVaultPassphraseDescription": "Enter the passphrase for this BullVault mobile key. It is used only for this signature.",
+  "@sendBullVaultPassphraseDescription": {
+    "description": "Description for the BullVault signing passphrase prompt."
+  },
+  "bullVaultPassphraseMismatch": "The passphrases do not match.",
+  "@bullVaultPassphraseMismatch": {
+    "description": "Error for mismatched BullVault passphrases."
+  },
+  "bullVaultLastResortPassphraseFreeDescription": "This path uses your delayed mobile recovery key, without the passphrase.",
+  "@bullVaultLastResortPassphraseFreeDescription": {},
+  "bullVaultInheritanceMnemonicVerifyTitle": "Verify the inheritance phrase",
+  "@bullVaultInheritanceMnemonicVerifyTitle": {
+    "description": "Title for verifying a generated inheritance mnemonic."
+  },
+  "bullVaultInheritanceMnemonicWarning": "Keep this recovery phrase separate from your phone and other BullVault keys. Bull keeps only its public key.",
+  "@bullVaultInheritanceMnemonicWarning": {
+    "description": "Warning for inheritance mnemonics."
+  },
+  "bullVaultMobileBackupRecoveryDescription": "Your Bull mnemonic and RecoverBull can restore delayed recovery without the passphrase. Everyday spending still needs it. The BullVault recovery package is still required.",
+  "@bullVaultMobileBackupRecoveryDescription": {
+    "description": "Explains mobile backup coverage when delayed passphrase-free recovery is enabled."
+  },
+  "sendBullVaultPassphraseIncorrect": "This passphrase does not match the BullVault mobile key.",
+  "@sendBullVaultPassphraseIncorrect": {
+    "description": "Message shown when BullVault signing derives a different mobile key."
+  },
+  "bullVaultDelayedMobileRecovery": "Delayed mobile recovery",
+  "@bullVaultDelayedMobileRecovery": {
+    "description": "Label for Bull mobile recovery without a passphrase."
+  },
+  "bullVaultInheritanceImportMnemonic": "Enter an existing recovery phrase",
+  "@bullVaultInheritanceImportMnemonic": {
+    "description": "Inheritance key source that accepts an existing mnemonic."
+  },
+  "bullVaultRecoverBullRecoveryDescription": "RecoverBull can restore delayed recovery after its recovery date without the passphrase. Everyday spending still needs it.",
+  "@bullVaultRecoverBullRecoveryDescription": {
+    "description": "Explains RecoverBull coverage for delayed passphrase-free recovery."
+  },
+  "bullVaultPracticeBadge": "Practice BullVault",
+  "@bullVaultPracticeBadge": {
+    "description": "Label identifying a BullVault with hour-based recovery."
+  },
+  "bullVaultRecoverBullPassphraseDescription": "RecoverBull restores the Bull mnemonic, but not the passphrase. Store the passphrase separately.",
+  "@bullVaultRecoverBullPassphraseDescription": {
+    "description": "Explains RecoverBull coverage for a passphrase-protected mobile key."
+  },
+  "bullVaultInheritanceMnemonicShowTitle": "Save the inheritance phrase",
+  "@bullVaultInheritanceMnemonicShowTitle": {
+    "description": "Title for displaying a generated inheritance mnemonic."
+  },
+  "bullVaultHardwareWallet": "Hardware wallet",
+  "@bullVaultHardwareWallet": {
+    "description": "Label for an external hardware wallet."
+  },
+  "bullVaultPassphraseRequired": "Passphrase required",
+  "@bullVaultPassphraseRequired": {
+    "description": "Label indicating that a BullVault mobile key requires its passphrase."
+  },
+  "bullVaultThisPhone": "This phone",
+  "@bullVaultThisPhone": {
+    "description": "Label for Bull mobile as the everyday signer."
+  },
+  "bullVaultInheritancePublicKey": "Scan or paste public key",
+  "@bullVaultInheritancePublicKey": {
+    "description": "Inheritance key source using a public account key."
+  },
+  "bullVaultRegistrationNameLabel": "Wallet name",
+  "@bullVaultRegistrationNameLabel": {
+    "description": "Input label for a hardware policy registration name."
+  },
+  "bullVaultRegistrationNameTitle": "Name on hardware wallet",
+  "@bullVaultRegistrationNameTitle": {
+    "description": "Title for editing a hardware policy registration name."
+  },
+  "bullVaultPassphraseNotRequired": "Passphrase not required",
+  "@bullVaultPassphraseNotRequired": {
+    "description": "Label indicating delayed BullVault mobile recovery does not need the passphrase."
+  },
+  "bullVaultPassphraseBackupAcknowledgement": "I saved this passphrase separately",
+  "@bullVaultPassphraseBackupAcknowledgement": {
+    "description": "Acknowledgement that the BullVault passphrase was backed up."
+  },
+  "bullVaultRegistrationNameInvalid": "Use a name supported by this hardware wallet.",
+  "@bullVaultRegistrationNameInvalid": {
+    "description": "Error for an invalid hardware policy registration name."
+  },
+  "bullVaultLastResortRecovery": "Last-resort recovery",
+  "@bullVaultLastResortRecovery": {
+    "description": "Optional final path where the existing everyday key can spend alone, after inheritance recovery."
+  },
+  "bullVaultPracticeWarningDescription": "This creates a real BullVault whose recovery permissions activate within hours. Use only a small practice amount.",
+  "@bullVaultPracticeWarningDescription": {
+    "description": "Warning for creating a BullVault with hour-based recovery."
+  },
+  "bullVaultPhysicalBackupPassphraseDescription": "A physical copy restores the Bull mnemonic. The passphrase is still needed for the mobile key.",
+  "@bullVaultPhysicalBackupPassphraseDescription": {
+    "description": "Explains physical backup coverage for a passphrase-protected mobile key."
+  },
+  "bullVaultPassphraseFreeRecoveryDescription": "Before the recovery date, your mobile key requires the passphrase. After that date, your Bull backup can recover without it.",
+  "@bullVaultPassphraseFreeRecoveryDescription": {
+    "description": "Description for optional delayed passphrase-free recovery."
   }
 }

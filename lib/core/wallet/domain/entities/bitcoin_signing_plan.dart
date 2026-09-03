@@ -187,6 +187,20 @@ final class BitcoinSigningPlan {
   bool requires(WalletSigner signer) =>
       eligibleSigners.any((eligible) => eligible.id == signer.id);
 
+  bool requiresPassphrase(WalletSigner signer) {
+    for (final evidence in _inputEvidence) {
+      if (_relevantDescriptorKeys(
+        policy: policy,
+        selection: selection,
+        signer: signer,
+        keychain: evidence.keychain,
+      ).any((key) => key.requiresPassphrase)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool isSigned(WalletSigner signer) {
     var hasRelevantKey = false;
     for (final evidence in _inputEvidence) {

@@ -105,7 +105,6 @@ class GetBullVaultDetailsUsecase {
           return Ok(
             BullVaultDetails(
               record: active,
-              policy: policy,
               timeUntilFirstRecovery: remaining?.isNegative == true
                   ? Duration.zero
                   : remaining,
