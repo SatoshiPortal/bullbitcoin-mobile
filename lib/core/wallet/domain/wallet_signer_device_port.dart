@@ -7,6 +7,12 @@ abstract interface class WalletSignerDevicePort {
     required String signerId,
     required SignerDeviceEntity? signerDevice,
   });
+
+  Future<Wallet> updateSignerRegistrationName({
+    required String walletId,
+    required String signerId,
+    required String registrationName,
+  });
 }
 
 final class WalletSignerDeviceUpdateException implements Exception {

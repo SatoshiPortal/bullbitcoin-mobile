@@ -150,6 +150,21 @@ abstract class Wallet with _$Wallet {
       .expand((signer) => signer.descriptorKeys)
       .map((key) => key.masterFingerprint)
       .where((fingerprint) => fingerprint.isNotEmpty);
+  String? get singleLocalSeedFingerprint {
+    final fingerprints = signers
+        .where((signer) => signer.signer == SignerEntity.local)
+        .expand(
+          (signer) => signer.localSeedFingerprint != null
+              ? [signer.localSeedFingerprint!]
+              : signer.descriptorKeys.map((key) => key.masterFingerprint),
+        )
+        .map((fingerprint) => fingerprint.toLowerCase())
+        .toSet();
+    return fingerprints.length == 1 && fingerprints.single.isNotEmpty
+        ? fingerprints.single
+        : null;
+  }
+
   WalletSigner? get singleSigner => signers.length == 1 ? signers.single : null;
   WalletDescriptorKey? get singleDescriptorKey =>
       descriptorKeys.length == 1 ? descriptorKeys.single : null;
@@ -371,11 +386,6 @@ abstract class Wallet with _$Wallet {
     return signer?.signer == SignerEntity.local &&
         isStandardSingleSignatureWallet;
   }
-
-  bool get supportsLegacySend => isLiquid
-      ? !isWatchOnly
-      : isStandardLocalSingleSignatureWallet ||
-            (signsRemotely && isStandardSingleSignatureWallet);
 
   bool get supportsSend =>
       isLiquid ? !isWatchOnly : hasLocalSigner || hasRemoteSigner;

@@ -42,6 +42,8 @@ extension WalletMetadataMapper on WalletMetadataModel {
         position: position,
         signer: signer.signer,
         signerDevice: Value(signer.signerDevice),
+        registrationName: Value(signer.registrationName),
+        localSeedFingerprint: Value(signer.localSeedFingerprint),
       ),
   ];
 
@@ -58,6 +60,7 @@ extension WalletMetadataMapper on WalletMetadataModel {
         xpub: key.xpub,
         derivationPath: Value(key.derivationPath),
         descriptorPath: Value(key.descriptorPath),
+        requiresPassphrase: Value(key.requiresPassphrase),
       ),
   ];
 
@@ -80,6 +83,8 @@ extension WalletMetadataMapper on WalletMetadataModel {
             id: signer.id,
             signer: signer.signer,
             signerDevice: signer.signerDevice,
+            registrationName: signer.registrationName,
+            localSeedFingerprint: signer.localSeedFingerprint,
             descriptorKeys: [
               for (final key in sortedKeys)
                 if (key.signerId == signer.id)
@@ -91,6 +96,7 @@ extension WalletMetadataMapper on WalletMetadataModel {
                     xpub: key.xpub,
                     derivationPath: key.derivationPath,
                     descriptorPath: key.descriptorPath,
+                    requiresPassphrase: key.requiresPassphrase,
                   ),
             ],
           ),

@@ -10,25 +10,28 @@ typedef _RegularMultisig = ({int threshold, int keyCount});
 abstract final class WalletRegistrationExportBuilder {
   static List<WalletRegistrationOption> build(
     Wallet wallet,
-    BitcoinWalletPolicy policy,
-  ) {
+    BitcoinWalletPolicy policy, {
+    String? signerId,
+  }) {
     final options = <WalletRegistrationOption>[];
     final exportedDevices = <SignerDeviceEntity>{};
     var hasBitBox = false;
     var hasLedger = false;
-    for (final signer in wallet.signers) {
+    for (final signer in wallet.signers.where(
+      (signer) => signerId == null || signer.id == signerId,
+    )) {
       final device = signer.signerDevice;
       if (device == null) continue;
       if (device.supportsWalletRegistrationExport) {
         if (exportedDevices.add(device)) {
-          options.add(_option(wallet, policy, device));
+          options.add(_option(wallet, policy, device, signerId: signer.id));
         }
       } else if (device.isBitBox && !hasBitBox) {
         hasBitBox = true;
-        options.add(_connectedOption(wallet, device));
+        options.add(_connectedOption(wallet, device, signerId: signer.id));
       } else if (device.isLedger && !hasLedger) {
         hasLedger = true;
-        options.add(_connectedOption(wallet, device));
+        options.add(_connectedOption(wallet, device, signerId: signer.id));
       }
     }
     return List.unmodifiable(options);
@@ -36,12 +39,13 @@ abstract final class WalletRegistrationExportBuilder {
 
   static WalletRegistrationOption _connectedOption(
     Wallet wallet,
-    SignerDeviceEntity device,
-  ) {
+    SignerDeviceEntity device, {
+    required String signerId,
+  }) {
     final matchingSigners = wallet.signers.where(
       (signer) => device.isLedger
-          ? signer.signerDevice?.isLedger == true
-          : device.isBitBox && signer.signerDevice?.isBitBox == true,
+          ? signer.id == signerId && signer.signerDevice?.isLedger == true
+          : signer.id == signerId && signer.signerDevice?.isBitBox == true,
     );
     if (!matchingSigners.any(wallet.hasWalletPolicyKeyOriginsFor)) {
       return UnavailableWalletRegistration(
@@ -58,8 +62,9 @@ abstract final class WalletRegistrationExportBuilder {
   static WalletRegistrationOption _option(
     Wallet wallet,
     BitcoinWalletPolicy policy,
-    SignerDeviceEntity device,
-  ) {
+    SignerDeviceEntity device, {
+    required String signerId,
+  }) {
     if (_isTaproot(wallet) && !device.supportsComplexTaprootRegistration) {
       return _unsupportedPolicy(device);
     }
@@ -79,6 +84,7 @@ abstract final class WalletRegistrationExportBuilder {
         wallet: wallet,
         device: device,
         fileName: fileName,
+        signerId: signerId,
       ),
       SignerDeviceEntity.coldcardQ => _coldcardOption(
         wallet: wallet,
@@ -102,6 +108,7 @@ abstract final class WalletRegistrationExportBuilder {
         fileName: fileName,
         allowLegacy: true,
         nameMaxLength: device == SignerDeviceEntity.jade ? 15 : 16,
+        signerId: signerId,
       ),
       SignerDeviceEntity.passport =>
         _isTaproot(wallet)
@@ -123,6 +130,7 @@ abstract final class WalletRegistrationExportBuilder {
                 fileName: fileName,
                 allowLegacy: false,
                 nameMaxLength: 16,
+                signerId: signerId,
               ),
       SignerDeviceEntity.seedsigner => _commonMultisigOption(
         wallet: wallet,
@@ -131,6 +139,7 @@ abstract final class WalletRegistrationExportBuilder {
         fileName: fileName,
         allowLegacy: false,
         nameMaxLength: 16,
+        signerId: signerId,
       ),
       SignerDeviceEntity.bitbox02 ||
       SignerDeviceEntity.ledgerNanoSPlus ||
@@ -190,6 +199,7 @@ abstract final class WalletRegistrationExportBuilder {
     required Wallet wallet,
     required SignerDeviceEntity device,
     required String fileName,
+    required String signerId,
   }) {
     final descriptor = wallet.publicDescriptor
         .split('#')
@@ -198,7 +208,8 @@ abstract final class WalletRegistrationExportBuilder {
           RegExp(r'<([0-9]+);([0-9]+)>'),
           (match) => '{${match.group(1)},${match.group(2)}}',
         );
-    final command = 'addwallet ${_walletName(wallet, 20)}&$descriptor';
+    final command =
+        'addwallet ${_walletName(wallet, 20, signerId: signerId)}&$descriptor';
     return AvailableWalletRegistration(
       device: device,
       qrData: command,
@@ -215,6 +226,7 @@ abstract final class WalletRegistrationExportBuilder {
     required String fileName,
     required bool allowLegacy,
     required int nameMaxLength,
+    required String signerId,
   }) {
     final format = _commonMultisigFormat(wallet);
     if (regularMultisig == null || format == null) {
@@ -241,6 +253,7 @@ abstract final class WalletRegistrationExportBuilder {
       format: format,
       keys: keys,
       nameMaxLength: nameMaxLength,
+      signerId: signerId,
     );
     return AvailableWalletRegistration(
       device: device,
@@ -275,11 +288,14 @@ abstract final class WalletRegistrationExportBuilder {
     required String format,
     required List<_CommonMultisigKey> keys,
     required int nameMaxLength,
+    required String signerId,
   }) {
     final path = _apostrophePath(keys.first.derivationPath);
     final buffer = StringBuffer()
       ..writeln('# Bull wallet multisig setup file')
-      ..writeln('Name: ${_walletName(wallet, nameMaxLength)}')
+      ..writeln(
+        'Name: ${_walletName(wallet, nameMaxLength, signerId: signerId)}',
+      )
       ..writeln('Policy: $threshold of ${keys.length}')
       ..writeln('Derivation: $path')
       ..writeln('Format: $format')
@@ -334,11 +350,21 @@ abstract final class WalletRegistrationExportBuilder {
     return '$body#$checksum';
   }
 
-  static String _walletName(Wallet wallet, int maxLength) {
+  static String _walletName(Wallet wallet, int maxLength, {String? signerId}) {
     final idPrefix = wallet.id.length <= 8
         ? wallet.id
         : wallet.id.substring(0, 8);
-    final source = wallet.label?.trim().isNotEmpty == true
+    String? registrationName;
+    for (final signer in wallet.signers) {
+      if ((signerId == null || signer.id == signerId) &&
+          signer.registrationName != null) {
+        registrationName = signer.registrationName;
+        break;
+      }
+    }
+    final source = registrationName?.trim().isNotEmpty == true
+        ? registrationName!.trim()
+        : wallet.label?.trim().isNotEmpty == true
         ? wallet.label!.trim()
         : 'Bull $idPrefix';
     final sanitized = source

@@ -230,7 +230,10 @@ void main() {
     });
 
     test('persists the registration HMAC for the matched signer', () async {
-      final wallet = _policyWallet(SignerDeviceEntity.ledgerNanoX);
+      final wallet = _policyWallet(
+        SignerDeviceEntity.ledgerNanoX,
+        registrationName: 'Family vault',
+      );
       final hmac = Uint8List(32);
       final policyId = _policyId(wallet);
       stubMatchedSigner();
@@ -255,6 +258,15 @@ void main() {
       );
 
       expect(result, isA<Ok<void, LedgerFailure>>());
+      final registeredPolicy =
+          verify(
+                () => datasource.registerWalletPolicy(
+                  any(),
+                  walletPolicy: captureAny(named: 'walletPolicy'),
+                ),
+              ).captured.single
+              as WalletPolicy;
+      expect(registeredPolicy.name, 'Family vault');
       verify(
         () => hmacDatasource.save(
           walletId: wallet.id,
@@ -432,6 +444,7 @@ Wallet _policyWallet(
   SignerDeviceEntity device, {
   bool nestedMultisig = false,
   String keySuffix = '',
+  String? registrationName,
 }) {
   final key = '[aabbccdd/48h/0h/0h/2h]$_xpub$keySuffix/<0;1>/*';
   return Wallet(
@@ -446,6 +459,7 @@ Wallet _policyWallet(
         derivationPath: _accountPath,
         signer: SignerEntity.remote,
         signerDevice: device,
+        registrationName: registrationName,
       ),
     ],
     scriptType: null,
@@ -599,6 +613,7 @@ String _policyId(Wallet wallet) => hex.encode(
   LedgerWalletPolicyAdapter.fromWallet(
     wallet,
     descriptorPolicyKeys: _policyAnalysis(wallet).policyKeys,
+    registrationName: wallet.signers.first.registrationName,
   ).id,
 );
 

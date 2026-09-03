@@ -79,6 +79,8 @@ class WalletSigners extends Table {
   IntColumn get position => integer()();
   TextColumn get signer => textEnum<Signer>()();
   TextColumn get signerDevice => textEnum<SignerDevice>().nullable()();
+  TextColumn get registrationName => text().nullable()();
+  TextColumn get localSeedFingerprint => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {walletId, id};
@@ -101,6 +103,8 @@ class WalletDescriptorKeys extends Table {
   TextColumn get xpub => text()();
   TextColumn get derivationPath => text().nullable()();
   TextColumn get descriptorPath => text().withDefault(const Constant(''))();
+  BoolColumn get requiresPassphrase =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {walletId, id};

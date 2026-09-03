@@ -6,12 +6,16 @@ final class WalletSigner {
   final String id;
   final SignerEntity signer;
   final SignerDeviceEntity? signerDevice;
+  final String? registrationName;
+  final String? localSeedFingerprint;
   final List<WalletDescriptorKey> descriptorKeys;
 
   WalletSigner({
     required this.id,
     required this.signer,
     required this.signerDevice,
+    this.registrationName,
+    this.localSeedFingerprint,
     required List<WalletDescriptorKey> descriptorKeys,
   }) : descriptorKeys = List.unmodifiable(descriptorKeys) {
     if (id.trim().isEmpty) throw ArgumentError.value(id, 'id');
@@ -20,6 +24,17 @@ final class WalletSigner {
     }
     if (descriptorKeys.any((key) => key.signerId != id)) {
       throw ArgumentError('Every descriptor key must reference its signer');
+    }
+    if (registrationName != null && registrationName!.trim().isEmpty) {
+      throw ArgumentError.value(registrationName, 'registrationName');
+    }
+    if (localSeedFingerprint != null && localSeedFingerprint!.trim().isEmpty) {
+      throw ArgumentError.value(localSeedFingerprint, 'localSeedFingerprint');
+    }
+    if (localSeedFingerprint != null && signer != SignerEntity.local) {
+      throw ArgumentError(
+        'Only local signers can reference a local seed fingerprint',
+      );
     }
   }
 
@@ -33,10 +48,12 @@ final class WalletSigner {
     String descriptorPath = '',
     required SignerEntity signer,
     required SignerDeviceEntity? signerDevice,
+    String? registrationName,
   }) => WalletSigner(
     id: id,
     signer: signer,
     signerDevice: signerDevice,
+    registrationName: registrationName,
     descriptorKeys: [
       WalletDescriptorKey(
         id: descriptorKeyId,
@@ -62,10 +79,17 @@ final class WalletSigner {
     SignerEntity? signer,
     SignerDeviceEntity? signerDevice,
     bool clearSignerDevice = false,
+    String? registrationName,
+    bool clearRegistrationName = false,
+    String? localSeedFingerprint,
   }) => WalletSigner(
     id: id,
     signer: signer ?? this.signer,
     signerDevice: clearSignerDevice ? null : signerDevice ?? this.signerDevice,
+    registrationName: clearRegistrationName
+        ? null
+        : registrationName ?? this.registrationName,
+    localSeedFingerprint: localSeedFingerprint ?? this.localSeedFingerprint,
     descriptorKeys: descriptorKeys,
   );
 
@@ -76,11 +100,19 @@ final class WalletSigner {
           id == other.id &&
           signer == other.signer &&
           signerDevice == other.signerDevice &&
+          registrationName == other.registrationName &&
+          localSeedFingerprint == other.localSeedFingerprint &&
           _listsEqual(descriptorKeys, other.descriptorKeys);
 
   @override
-  int get hashCode =>
-      Object.hash(id, signer, signerDevice, Object.hashAll(descriptorKeys));
+  int get hashCode => Object.hash(
+    id,
+    signer,
+    signerDevice,
+    registrationName,
+    localSeedFingerprint,
+    Object.hashAll(descriptorKeys),
+  );
 }
 
 bool _listsEqual<T>(List<T> first, List<T> second) {

@@ -12,10 +12,15 @@ WalletSignerModel walletSignerModel({
   String descriptorPath = '',
   required Signer signer,
   required SignerDevice? signerDevice,
+  String? registrationName,
+  String? localSeedFingerprint,
+  bool requiresPassphrase = false,
 }) => WalletSignerModel(
   id: id,
   signer: signer,
   signerDevice: signerDevice,
+  registrationName: registrationName,
+  localSeedFingerprint: localSeedFingerprint,
   descriptorKeys: [
     WalletDescriptorKeyModel(
       id: descriptorKeyId,
@@ -25,6 +30,7 @@ WalletSignerModel walletSignerModel({
       xpub: xpub,
       derivationPath: derivationPath,
       descriptorPath: descriptorPath,
+      requiresPassphrase: requiresPassphrase,
     ),
   ],
 );

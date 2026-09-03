@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -125,6 +126,9 @@ class WalletLocator {
       () => locator<WalletRepository>(),
     );
     locator.registerLazySingleton<WalletSignerDevicePort>(
+      () => locator<WalletRepository>(),
+    );
+    locator.registerLazySingleton<WalletSignerOwnershipPort>(
       () => locator<WalletRepository>(),
     );
     locator.registerLazySingleton<WalletVisibilityPort>(

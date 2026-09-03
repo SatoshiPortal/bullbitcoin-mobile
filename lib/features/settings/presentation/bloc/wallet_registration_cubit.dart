@@ -23,9 +23,12 @@ class WalletRegistrationCubit extends Cubit<WalletRegistrationState> {
   WalletRegistrationCubit(this._getWalletRegistrationOptionsUsecase)
     : super(const WalletRegistrationState());
 
-  Future<void> load(Wallet wallet) async {
+  Future<void> load(Wallet wallet, {String? signerId}) async {
     emit(const WalletRegistrationState(isLoading: true));
-    final result = await _getWalletRegistrationOptionsUsecase.execute(wallet);
+    final result = await _getWalletRegistrationOptionsUsecase.execute(
+      wallet,
+      signerId: signerId,
+    );
     if (isClosed) return;
     result.fold(
       (options) => emit(WalletRegistrationState(options: options)),

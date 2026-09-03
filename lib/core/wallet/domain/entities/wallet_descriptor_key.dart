@@ -6,6 +6,7 @@ final class WalletDescriptorKey {
   final String xpub;
   final String? derivationPath;
   final String descriptorPath;
+  final bool requiresPassphrase;
 
   WalletDescriptorKey({
     required this.id,
@@ -15,6 +16,7 @@ final class WalletDescriptorKey {
     required this.xpub,
     this.derivationPath,
     this.descriptorPath = '',
+    this.requiresPassphrase = false,
   }) {
     if (id.trim().isEmpty) throw ArgumentError.value(id, 'id');
     if (signerId.trim().isEmpty) {
@@ -29,16 +31,20 @@ final class WalletDescriptorKey {
     }
   }
 
-  WalletDescriptorKey copyWith({String? id, String? signerId}) =>
-      WalletDescriptorKey(
-        id: id ?? this.id,
-        signerId: signerId ?? this.signerId,
-        masterFingerprint: masterFingerprint,
-        xpubFingerprint: xpubFingerprint,
-        xpub: xpub,
-        derivationPath: derivationPath,
-        descriptorPath: descriptorPath,
-      );
+  WalletDescriptorKey copyWith({
+    String? id,
+    String? signerId,
+    bool? requiresPassphrase,
+  }) => WalletDescriptorKey(
+    id: id ?? this.id,
+    signerId: signerId ?? this.signerId,
+    masterFingerprint: masterFingerprint,
+    xpubFingerprint: xpubFingerprint,
+    xpub: xpub,
+    derivationPath: derivationPath,
+    descriptorPath: descriptorPath,
+    requiresPassphrase: requiresPassphrase ?? this.requiresPassphrase,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -50,7 +56,8 @@ final class WalletDescriptorKey {
           xpubFingerprint == other.xpubFingerprint &&
           xpub == other.xpub &&
           derivationPath == other.derivationPath &&
-          descriptorPath == other.descriptorPath;
+          descriptorPath == other.descriptorPath &&
+          requiresPassphrase == other.requiresPassphrase;
 
   @override
   int get hashCode => Object.hash(
@@ -61,5 +68,6 @@ final class WalletDescriptorKey {
     xpub,
     derivationPath,
     descriptorPath,
+    requiresPassphrase,
   );
 }

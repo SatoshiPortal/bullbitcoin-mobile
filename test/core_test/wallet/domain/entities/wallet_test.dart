@@ -8,22 +8,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Wallet wallet({
     String? derivationPath = "m/84'/0'/0'",
-    String externalDescriptor = 'wpkh(xpub/0/*)',
-    String internalDescriptor = 'wpkh(xpub/1/*)',
+    String publicDescriptor = 'wpkh(xpub/<0;1>/*)',
     String descriptorPath = '/<0;1>/*',
     ScriptType? scriptType = ScriptType.bip84,
     SignerEntity signer = SignerEntity.local,
     SignerDeviceEntity? signerDevice,
     int descriptorKeyCount = 1,
   }) {
-    final expectedInternalDescriptor = externalDescriptor.replaceAll(
-      '/0/*',
-      '/1/*',
-    );
-    final publicDescriptor = internalDescriptor == expectedInternalDescriptor
-        ? externalDescriptor.replaceAll('/0/*', '/<0;1>/*')
-        : externalDescriptor;
-
     return Wallet(
       origin: 'wallet',
       network: Network.bitcoinMainnet,
@@ -66,8 +57,7 @@ void main() {
     test('rejects a nonstandard descriptor keychain', () {
       expect(
         wallet(
-          externalDescriptor: 'wpkh(xpub/2/*)',
-          internalDescriptor: 'wpkh(xpub/3/*)',
+          publicDescriptor: 'wpkh(xpub/<2;3>/*)',
           descriptorPath: '/<2;3>/*',
         ).isStandardLocalSingleSignatureWallet,
         isFalse,
@@ -77,8 +67,7 @@ void main() {
     test('rejects derivation before the receive/change keychain', () {
       expect(
         wallet(
-          externalDescriptor: 'wpkh(xpub/0/0/*)',
-          internalDescriptor: 'wpkh(xpub/0/1/*)',
+          publicDescriptor: 'wpkh(xpub/0/<0;1>/*)',
           descriptorPath: '/0/<0;1>/*',
         ).isStandardLocalSingleSignatureWallet,
         isFalse,
@@ -89,8 +78,7 @@ void main() {
       expect(
         wallet(
           scriptType: null,
-          externalDescriptor: 'wsh(pk(xpub/0/*))',
-          internalDescriptor: 'wsh(pk(xpub/1/*))',
+          publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
         ).isStandardLocalSingleSignatureWallet,
         isFalse,
       );
@@ -111,27 +99,24 @@ void main() {
       wallet(
         derivationPath: null,
         scriptType: null,
-        externalDescriptor: 'wsh(pk(xpub/0/*))',
-        internalDescriptor: 'wsh(pk(xpub/1/*))',
+        publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
       ).derivationPath,
       isNull,
     );
     expect(wallet(derivationPath: null).derivationPath, isNull);
   });
 
-  group('Wallet.supportsLegacySend', () {
-    test('accepts standard local and remote single-signature wallets', () {
-      expect(wallet().supportsLegacySend, isTrue);
-      expect(wallet(signer: SignerEntity.remote).supportsLegacySend, isTrue);
-    });
-
+  group('Wallet.isStandardSingleSignatureWallet', () {
     test('accepts higher accounts for local and remote signers', () {
-      expect(wallet(derivationPath: "m/84'/0'/1'").supportsLegacySend, isTrue);
+      expect(
+        wallet(derivationPath: "m/84'/0'/1'").isStandardSingleSignatureWallet,
+        isTrue,
+      );
       expect(
         wallet(
           derivationPath: 'm/84h/0h/1h',
           signer: SignerEntity.remote,
-        ).supportsLegacySend,
+        ).isStandardSingleSignatureWallet,
         isTrue,
       );
     });
@@ -140,9 +125,8 @@ void main() {
       expect(
         wallet(
           scriptType: null,
-          externalDescriptor: 'wsh(pk(xpub/0/*))',
-          internalDescriptor: 'wsh(pk(xpub/1/*))',
-        ).supportsLegacySend,
+          publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
+        ).isStandardSingleSignatureWallet,
         isFalse,
       );
     });
@@ -152,16 +136,14 @@ void main() {
     expect(
       wallet(
         scriptType: null,
-        externalDescriptor: 'wsh(pk(xpub/0/*))',
-        internalDescriptor: 'wsh(pk(xpub/1/*))',
+        publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
       ).supportsSend,
       isTrue,
     );
     expect(
       wallet(
         scriptType: null,
-        externalDescriptor: 'wsh(pk(xpub/0/*))',
-        internalDescriptor: 'wsh(pk(xpub/1/*))',
+        publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
         signer: SignerEntity.none,
       ).supportsSend,
       isFalse,
@@ -188,36 +170,31 @@ void main() {
       signerDevice: SignerDeviceEntity.coldcardQ,
     );
     final taprootMk4 = wallet(
-      externalDescriptor: 'tr(xpub/0/*)',
-      internalDescriptor: 'tr(xpub/1/*)',
+      publicDescriptor: 'tr(xpub/<0;1>/*)',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.coldcardMk4,
     );
     final taprootQ = wallet(
-      externalDescriptor: 'tr(xpub/0/*)',
-      internalDescriptor: 'tr(xpub/1/*)',
+      publicDescriptor: 'tr(xpub/<0;1>/*)',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.coldcardQ,
     );
     final taprootScriptMk4 = wallet(
-      externalDescriptor: 'tr(xpub/0/*,pk(xpub/0/*))',
-      internalDescriptor: 'tr(xpub/1/*,pk(xpub/1/*))',
+      publicDescriptor: 'tr(xpub/<0;1>/*,pk(xpub/<0;1>/*))',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.coldcardMk4,
     );
     final taprootPassport = wallet(
-      externalDescriptor: 'tr(xpub/0/*)',
-      internalDescriptor: 'tr(xpub/1/*)',
+      publicDescriptor: 'tr(xpub/<0;1>/*)',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.passport,
     );
     final taprootScriptPassport = wallet(
-      externalDescriptor: 'tr(xpub/0/*,pk(xpub/0/*))',
-      internalDescriptor: 'tr(xpub/1/*,pk(xpub/1/*))',
+      publicDescriptor: 'tr(xpub/<0;1>/*,pk(xpub/<0;1>/*))',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.passport,
@@ -255,25 +232,21 @@ void main() {
 
   test('offers BitBox policies for only one controlled account key', () {
     final singleAccount = wallet(
-      externalDescriptor: 'wsh(pk(xpub/0/*))',
-      internalDescriptor: 'wsh(pk(xpub/1/*))',
+      publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.bitbox02,
     );
     final multipleAccounts = wallet(
-      externalDescriptor: 'wsh(or_d(pk(xpub-a/0/*),pk(xpub-b/0/*)))',
-      internalDescriptor: 'wsh(or_d(pk(xpub-a/1/*),pk(xpub-b/1/*)))',
+      publicDescriptor: 'wsh(or_d(pk(xpub-a/<0;1>/*),pk(xpub-b/<0;1>/*)))',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.bitbox02,
       descriptorKeyCount: 2,
     );
     final hashlock = wallet(
-      externalDescriptor:
-          'wsh(and_v(v:pk(xpub/0/*),sha256(0000000000000000000000000000000000000000000000000000000000000000)))',
-      internalDescriptor:
-          'wsh(and_v(v:pk(xpub/1/*),sha256(0000000000000000000000000000000000000000000000000000000000000000)))',
+      publicDescriptor:
+          'wsh(and_v(v:pk(xpub/<0;1>/*),sha256(0000000000000000000000000000000000000000000000000000000000000000)))',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.bitbox02,

@@ -1,6 +1,8 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_policy_registration_name.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
 
 abstract final class LedgerWalletPolicyAdapter {
@@ -15,6 +17,7 @@ abstract final class LedgerWalletPolicyAdapter {
   static WalletPolicy fromWallet(
     Wallet wallet, {
     required List<WalletDescriptorKey> descriptorPolicyKeys,
+    String? registrationName,
   }) {
     if (!wallet.supportsLedgerWalletPolicy) {
       throw const FormatException('Unsupported Ledger wallet policy');
@@ -55,7 +58,11 @@ abstract final class LedgerWalletPolicyAdapter {
       throw const FormatException('Unmapped descriptor key in policy');
     }
 
-    return WalletPolicy(_walletName(wallet), template, policyKeys);
+    return WalletPolicy(
+      _walletName(wallet, registrationName: registrationName),
+      template,
+      policyKeys,
+    );
   }
 
   static Iterable<String> _descriptorAtoms(String descriptor) sync* {
@@ -70,7 +77,16 @@ abstract final class LedgerWalletPolicyAdapter {
     if (atom.isNotEmpty) yield atom;
   }
 
-  static String _walletName(Wallet wallet) {
+  static String _walletName(Wallet wallet, {String? registrationName}) {
+    if (registrationName != null) {
+      return WalletPolicyRegistrationName.validate(
+        registrationName,
+        wallet.signers
+            .map((signer) => signer.signerDevice)
+            .whereType<SignerDeviceEntity>()
+            .firstWhere((device) => device.isLedger),
+      );
+    }
     final source = wallet.label?.trim() ?? '';
     final ascii = source.codeUnits
         .where((unit) => unit >= 0x20 && unit <= 0x7e)

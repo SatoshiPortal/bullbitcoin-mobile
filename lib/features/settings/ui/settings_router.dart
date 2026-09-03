@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
+import 'package:bb_mobile/features/settings/public/wallet_registration_request.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
@@ -285,20 +286,30 @@ class SettingsRouter {
         name: SettingsRoute.walletRegistration.name,
         builder: (context, state) {
           final walletId = state.pathParameters['walletId']!;
-          final wallet = state.extra is Wallet
-              ? state.extra! as Wallet
-              : context
-                    .read<WalletBloc>()
-                    .state
-                    .wallets
-                    .where((wallet) => wallet.id == walletId)
-                    .firstOrNull;
+          final request = state.extra is WalletRegistrationRequest
+              ? state.extra! as WalletRegistrationRequest
+              : null;
+          final wallet =
+              request?.wallet ??
+              (state.extra is Wallet
+                  ? state.extra! as Wallet
+                  : context
+                        .read<WalletBloc>()
+                        .state
+                        .wallets
+                        .where((wallet) => wallet.id == walletId)
+                        .firstOrNull);
           if (wallet == null) {
             return const WalletRegistrationWalletNotFoundScreen();
           }
           return BlocProvider(
-            create: (_) => locator<WalletRegistrationCubit>()..load(wallet),
-            child: WalletRegistrationScreen(wallet: wallet),
+            create: (_) =>
+                locator<WalletRegistrationCubit>()
+                  ..load(wallet, signerId: request?.signerId),
+            child: WalletRegistrationScreen(
+              wallet: wallet,
+              signerId: request?.signerId,
+            ),
           );
         },
       ),
