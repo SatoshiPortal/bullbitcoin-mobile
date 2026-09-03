@@ -36,8 +36,9 @@ void main() {
       ),
     );
     when(() => liquidWallet.network).thenReturn(Network.liquidMainnet);
-    when(() => liquidWallet.localMasterFingerprints)
-        .thenReturn(const ['aabbccdd']);
+    when(
+      () => liquidWallet.localSeedFingerprints,
+    ).thenReturn(const ['aabbccdd']);
     when(
       () => wallets.getWallets(
         environment: Environment.mainnet,

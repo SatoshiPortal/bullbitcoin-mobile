@@ -126,7 +126,10 @@ void main() {
     test(
       'registers an unregistered policy after matching its signer',
       () async {
-        final wallet = _policyWallet(SignerDeviceEntity.bitbox02);
+        final wallet = _policyWallet(
+          SignerDeviceEntity.bitbox02,
+          registrationName: 'Family vault',
+        );
         when(
           () => datasource.getMasterFingerprint(any()),
         ).thenAnswer((_) async => 'aabbccdd');
@@ -149,7 +152,7 @@ void main() {
             any(),
             descriptor: wallet.publicDescriptor,
             isTestnet: false,
-            name: 'Policy wallet wallet-i',
+            name: 'Family vault',
           ),
         ).thenAnswer((_) async {});
 
@@ -164,7 +167,7 @@ void main() {
             any(),
             descriptor: wallet.publicDescriptor,
             isTestnet: false,
-            name: 'Policy wallet wallet-i',
+            name: 'Family vault',
           ),
         ).called(1);
       },
@@ -458,7 +461,7 @@ const _xpub =
 const _otherXpub =
     'tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ';
 
-Wallet _policyWallet(SignerDeviceEntity device) {
+Wallet _policyWallet(SignerDeviceEntity device, {String? registrationName}) {
   const key = '[aabbccdd/48\'/0\'/0\'/2\']$_xpub/<0;1>/*';
   return Wallet(
     origin: 'wallet-id',
@@ -472,6 +475,7 @@ Wallet _policyWallet(SignerDeviceEntity device) {
         derivationPath: _accountPath,
         signer: SignerEntity.remote,
         signerDevice: device,
+        registrationName: registrationName,
       ),
     ],
     scriptType: null,

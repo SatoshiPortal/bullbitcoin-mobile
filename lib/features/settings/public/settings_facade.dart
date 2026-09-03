@@ -22,6 +22,7 @@ export '../background_setup.dart' show setupBackgroundPreferences;
 part '../ui/amount_preferences_binder.dart';
 export 'settings_entry_registry.dart'
     show SettingsEntryContribution, SettingsEntrySection;
+export 'wallet_registration_request.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {

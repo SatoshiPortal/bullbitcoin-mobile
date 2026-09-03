@@ -20,6 +20,9 @@ final _mobile = walletSignerModel(
   derivationPath: "m/48'/1'/0'/2'",
   signer: Signer.local,
   signerDevice: null,
+  registrationName: 'Family vault',
+  localSeedFingerprint: '11111111',
+  requiresPassphrase: true,
 );
 final _hardware = walletSignerModel(
   id: 'signer-1',
@@ -69,6 +72,8 @@ void main() {
     final signerRows = await database.select(database.walletSigners).get();
     signerRows.sort((a, b) => a.position.compareTo(b.position));
     expect(signerRows.map((row) => row.position), [0, 1, 2]);
+    expect(signerRows.first.registrationName, 'Family vault');
+    expect(signerRows.first.localSeedFingerprint, '11111111');
     final keyRows = await database.select(database.walletDescriptorKeys).get();
     keyRows.sort((a, b) => a.position.compareTo(b.position));
     expect(keyRows.map((row) => row.xpub), [
@@ -80,6 +85,7 @@ void main() {
       keyRows.map((row) => row.derivationPath),
       everyElement("m/48'/1'/0'/2'"),
     );
+    expect(keyRows.first.requiresPassphrase, isTrue);
   });
 
   test('replaces signer and descriptor-key rows together', () async {

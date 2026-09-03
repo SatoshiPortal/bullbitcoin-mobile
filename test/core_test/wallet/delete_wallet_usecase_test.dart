@@ -55,7 +55,7 @@ void main() {
   _MockWallet buildWallet({String? masterFingerprint, bool local = true}) {
     final wallet = _MockWallet();
     when(() => wallet.isDefault).thenReturn(false);
-    when(() => wallet.localMasterFingerprints)
+    when(() => wallet.localSeedFingerprints)
         .thenReturn(local ? [masterFingerprint ?? fingerprint] : const []);
     return wallet;
   }
@@ -160,7 +160,7 @@ void main() {
     test('ignores the fingerprint on a remote-only sibling', () async {
       final wallet = buildWallet();
       final sibling = buildWallet();
-      when(() => sibling.localMasterFingerprints).thenReturn(const []);
+      when(() => sibling.localSeedFingerprints).thenReturn(const []);
       when(() => walletRepository.getWallet(walletId))
           .thenAnswer((_) async => wallet);
       when(() => walletRepository.getWallets())

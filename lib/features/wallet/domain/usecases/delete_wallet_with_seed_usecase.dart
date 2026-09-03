@@ -62,7 +62,7 @@ class DeleteWalletUsecase {
         return Err(failure);
     }
 
-    for (final value in wallet.localMasterFingerprints.toSet()) {
+    for (final value in wallet.localSeedFingerprints.toSet()) {
       final fingerprint = Fingerprint.tryParse(value);
       if (fingerprint != null) await _deleteOrphanSeed(fingerprint);
     }

@@ -81,7 +81,7 @@ class CheckForExistingDefaultWalletsUsecase {
       );
       try {
         final secret = switch (await _secrets.fetch(
-          Fingerprint(defaultWallets.first.localMasterFingerprints.single),
+          Fingerprint(defaultWallets.first.localSeedFingerprints.single),
         )) {
           Ok(:final value) => value,
           Err(:final failure) => throw StateError(
@@ -129,7 +129,7 @@ class CheckForExistingDefaultWalletsUsecase {
     // treating that as an absence would be offering to replace a seed that
     // is still there.
     for (final wallet in defaultWallets) {
-      switch (await _secrets.fetch(Fingerprint(wallet.localMasterFingerprints.single))) {
+      switch (await _secrets.fetch(Fingerprint(wallet.localSeedFingerprints.single))) {
         case Ok():
           log.fine('FINE: Seed Found');
         case Err(failure: KeystoreLockedFailure()):
