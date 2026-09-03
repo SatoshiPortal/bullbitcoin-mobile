@@ -63,7 +63,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
           .read<TestWalletBackupBloc>()
           .state
           .selectedWallet
-          ?.localMasterFingerprints.single,
+          ?.singleLocalSeedFingerprint,
     );
   }
 
@@ -178,7 +178,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               previous.verificationStatus != current.verificationStatus ||
               previous.failure != current.failure,
           listener: (context, state) {
-            _syncSecret(state.selectedWallet?.localMasterFingerprints.single);
+            _syncSecret(state.selectedWallet?.singleLocalSeedFingerprint);
             if (state.failure case final failure?) {
               // With no wallet selected, no load is coming that would end the
               // spinner (e.g. LoadWallets itself failed), so end it here.

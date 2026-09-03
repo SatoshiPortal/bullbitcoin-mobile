@@ -40,8 +40,7 @@ class LoadWalletsForNetworkUsecase {
           );
       }
       final eligible = wallets.where((wallet) =>
-          wallet.isStandardLocalSingleSignatureWallet &&
-          wallet.localMasterFingerprints.length == 1).toList();
+          wallet.singleLocalSeedFingerprint != null).toList();
       if (eligible.isEmpty) return const Err(TestWalletBackupNoWalletsFailure());
       return Ok(eligible);
     } on Object catch (e, st) {

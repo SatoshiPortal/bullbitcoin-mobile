@@ -76,6 +76,8 @@ enum BitcoinSigningFailureKind {
   unsupportedSighash,
   unsupportedSpendMode,
   unsupportedPolicyPath,
+  passphraseRequired,
+  passphraseMismatch,
   incomplete,
   unexpected,
 }

@@ -56,7 +56,7 @@ class TestWalletBackupBloc
       return const Err(TestWalletBackupNoWalletSelectedFailure());
     }
     return _getMnemonicFromFingerprintUsecase.execute(
-      wallet.localMasterFingerprints.single,
+      wallet.localSeedFingerprints.single,
     );
   }
 
@@ -70,7 +70,7 @@ class TestWalletBackupBloc
         final fingerprint = event.fingerprint?.toLowerCase();
         final Wallet? selected = fingerprint == null
             ? value.firstWhere((w) => w.isDefault, orElse: () => value.first)
-            : value.where((w) => w.localMasterFingerprints.any((f) => f.toLowerCase() == fingerprint)).firstOrNull;
+            : value.where((w) => w.localSeedFingerprints.any((f) => f.toLowerCase() == fingerprint)).firstOrNull;
         if (selected == null) {
           emit(state.copyWith(failure: const TestWalletBackupNoWalletSelectedFailure()));
           return;
@@ -117,7 +117,7 @@ class TestWalletBackupBloc
 
     final bool isCorrect;
     switch (await _verifyPhysicalBackupUsecase.execute(
-      fingerprint: wallet.localMasterFingerprints.single,
+      fingerprint: wallet.localSeedFingerprints.single,
       mnemonic: event.reorderedWords,
     )) {
       case Ok(:final value):
@@ -136,7 +136,7 @@ class TestWalletBackupBloc
       return;
     }
 
-    if (await _completeBackupVerificationUsecase.execute(fingerprint: wallet.localMasterFingerprints.single) case Err(
+    if (await _completeBackupVerificationUsecase.execute(fingerprint: wallet.localSeedFingerprints.single) case Err(
       :final failure,
     )) {
       // The words were right but recording it failed. Reported rather than

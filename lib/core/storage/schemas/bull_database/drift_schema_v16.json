@@ -368,6 +368,26 @@
               "dart_expr": "const EnumNameConverter<SignerDevice>(SignerDevice.values)",
               "dart_type_name": "SignerDevice"
             }
+          },
+          {
+            "name": "registration_name",
+            "getter_name": "registrationName",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "local_seed_fingerprint",
+            "getter_name": "localSeedFingerprint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -480,6 +500,20 @@
             "nullable": false,
             "customConstraints": null,
             "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "requires_passphrase",
+            "getter_name": "requiresPassphrase",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"requires_passphrase\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"requires_passphrase\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
           }
@@ -3188,7 +3222,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_signers\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_signers\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"registration_name\" TEXT NULL, \"local_seed_fingerprint\" TEXT NULL, PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
         }
       ]
     },
@@ -3197,7 +3231,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_descriptor_keys\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer_id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"xpub\" TEXT NOT NULL, \"derivation_path\" TEXT NULL, \"descriptor_path\" TEXT NOT NULL DEFAULT '', PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, FOREIGN KEY(wallet_id, signer_id) REFERENCES wallet_signers(wallet_id, id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_descriptor_keys\" (\"wallet_id\" TEXT NOT NULL, \"id\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"signer_id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"xpub\" TEXT NOT NULL, \"derivation_path\" TEXT NULL, \"descriptor_path\" TEXT NOT NULL DEFAULT '', \"requires_passphrase\" INTEGER NOT NULL DEFAULT 0 CHECK (\"requires_passphrase\" IN (0, 1)), PRIMARY KEY (\"wallet_id\", \"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, FOREIGN KEY(wallet_id, signer_id) REFERENCES wallet_signers(wallet_id, id) ON DELETE CASCADE, UNIQUE(wallet_id, position));"
         }
       ]
     },

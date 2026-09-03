@@ -17,6 +17,7 @@ class DeleteSeedUsecase {
 
   @useResult
   Future<Result<void, SeedDeleteFailure>> execute(String fingerprint) async {
+    final normalizedFingerprint = fingerprint.toLowerCase();
     // Defense-in-depth: never delete a seed that still backs a wallet, even
     // though the UI only offers deletion for "old" seeds. An unreadable wallet
     // list refuses the deletion rather than assuming no wallet uses the seed —
@@ -33,7 +34,8 @@ class DeleteSeedUsecase {
           );
       }
       final hasExistingWallet = wallets.any(
-        (wallet) => wallet.localMasterFingerprints.contains(fingerprint),
+        (wallet) =>
+            wallet.localSeedFingerprints.contains(normalizedFingerprint),
       );
       if (hasExistingWallet) {
         log.warning(
@@ -50,6 +52,6 @@ class DeleteSeedUsecase {
       return Err(SeedDeleteFailure(e.toString()));
     }
 
-    return _seedRepository.delete(fingerprint);
+    return _seedRepository.delete(normalizedFingerprint);
   }
 }

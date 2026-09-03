@@ -15,8 +15,13 @@ import 'package:go_router/go_router.dart';
 
 class WalletRegistrationScreen extends StatelessWidget {
   final Wallet wallet;
+  final String? signerId;
 
-  const WalletRegistrationScreen({super.key, required this.wallet});
+  const WalletRegistrationScreen({
+    super.key,
+    required this.wallet,
+    this.signerId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +43,9 @@ class WalletRegistrationScreen extends StatelessWidget {
                     const Gap(16),
                     BullButton.big(
                       label: context.loc.retry,
-                      onPressed: () =>
-                          context.read<WalletRegistrationCubit>().load(wallet),
+                      onPressed: () => context
+                          .read<WalletRegistrationCubit>()
+                          .load(wallet, signerId: signerId),
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
                     ),

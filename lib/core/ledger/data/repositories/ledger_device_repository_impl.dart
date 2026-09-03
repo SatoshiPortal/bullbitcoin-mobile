@@ -131,8 +131,6 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
     final descriptor = _analyzePolicyDescriptor(wallet);
-    final walletPolicy = _walletPolicy(wallet, descriptor.policyKeys);
-    final policyId = hex.encode(walletPolicy.id);
     await _ensureSupportedFirmware(
       model,
       wallet: wallet,
@@ -143,6 +141,12 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       wallet: wallet,
       signerId: signerId,
     );
+    final walletPolicy = _walletPolicy(
+      wallet,
+      descriptor.policyKeys,
+      registrationName: signer.registrationName,
+    );
+    final policyId = hex.encode(walletPolicy.id);
     final hmac = await _datasource.registerWalletPolicy(
       model,
       walletPolicy: walletPolicy,
@@ -165,8 +169,6 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
     final descriptor = _analyzePolicyDescriptor(wallet);
-    final walletPolicy = _walletPolicy(wallet, descriptor.policyKeys);
-    final policyId = hex.encode(walletPolicy.id);
     await _ensureSupportedFirmware(
       model,
       wallet: wallet,
@@ -177,6 +179,12 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       wallet: wallet,
       signerId: signerId,
     );
+    final walletPolicy = _walletPolicy(
+      wallet,
+      descriptor.policyKeys,
+      registrationName: signer.registrationName,
+    );
+    final policyId = hex.encode(walletPolicy.id);
     final hmac = await _registeredHmac(wallet.id, signer.id, policyId);
     return _datasource.signWalletPsbt(
       model,
@@ -198,8 +206,6 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     _ensureSupportedPolicy(wallet);
     final model = device.toModel();
     final descriptor = _analyzePolicyDescriptor(wallet);
-    final walletPolicy = _walletPolicy(wallet, descriptor.policyKeys);
-    final policyId = hex.encode(walletPolicy.id);
     await _ensureSupportedFirmware(
       model,
       wallet: wallet,
@@ -210,6 +216,12 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
       wallet: wallet,
       signerId: signerId,
     );
+    final walletPolicy = _walletPolicy(
+      wallet,
+      descriptor.policyKeys,
+      registrationName: signer.registrationName,
+    );
+    final policyId = hex.encode(walletPolicy.id);
     final hmac = await _registeredHmac(wallet.id, signer.id, policyId);
     final verifiedAddress = await _datasource.verifyWalletAddress(
       model,
@@ -289,10 +301,12 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
 
   WalletPolicy _walletPolicy(
     Wallet wallet,
-    List<WalletDescriptorKey> policyKeys,
-  ) => LedgerWalletPolicyAdapter.fromWallet(
+    List<WalletDescriptorKey> policyKeys, {
+    String? registrationName,
+  }) => LedgerWalletPolicyAdapter.fromWallet(
     wallet,
     descriptorPolicyKeys: policyKeys,
+    registrationName: registrationName,
   );
 
   Future<Uint8List> _registeredHmac(

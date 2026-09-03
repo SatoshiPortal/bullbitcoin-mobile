@@ -16,8 +16,9 @@ class GetWalletRegistrationOptionsUsecase {
 
   @useResult
   Future<Result<List<WalletRegistrationOption>, SettingsFailure>> execute(
-    Wallet wallet,
-  ) async {
+    Wallet wallet, {
+    String? signerId,
+  }) async {
     if (!wallet.isBitcoin) return const Ok([]);
     try {
       final policyResult = await _bitcoinSigningPort.getPolicy(
@@ -25,7 +26,13 @@ class GetWalletRegistrationOptionsUsecase {
       );
       switch (policyResult) {
         case Ok(:final value):
-          return Ok(WalletRegistrationExportBuilder.build(wallet, value));
+          return Ok(
+            WalletRegistrationExportBuilder.build(
+              wallet,
+              value,
+              signerId: signerId,
+            ),
+          );
         case Err(:final failure):
           log.warning(
             'Failed to analyze wallet registration policy: '

@@ -55,7 +55,7 @@ class DeleteWalletUsecase {
         return Err(failure);
     }
 
-    for (final fingerprint in wallet.localMasterFingerprints.toSet()) {
+    for (final fingerprint in wallet.localSeedFingerprints.toSet()) {
       await _deleteOrphanSeed(fingerprint, walletId);
     }
 
@@ -77,7 +77,7 @@ class DeleteWalletUsecase {
         return;
     }
 
-    if (remaining.any((w) => w.localMasterFingerprints.contains(fingerprint))) return;
+    if (remaining.any((w) => w.localSeedFingerprints.contains(fingerprint))) return;
 
     final deleted = await _seedRepository.delete(fingerprint);
     if (deleted case Err(:final failure)) {

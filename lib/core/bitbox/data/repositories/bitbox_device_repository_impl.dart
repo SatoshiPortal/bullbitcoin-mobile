@@ -3,12 +3,14 @@ import 'package:bb_mobile/core/bitbox/data/models/bitbox_device_model.dart';
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_policy_registration_name.dart';
 
 class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
   final BitBoxDeviceDatasource _datasource;
@@ -135,7 +137,7 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
         model,
         descriptor: wallet.publicDescriptor,
         isTestnet: wallet.isTestnet,
-        name: _walletPolicyName(wallet),
+        name: _walletPolicyName(wallet, signer),
       );
     }
   });
@@ -255,14 +257,15 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
     }
   }
 
-  static String _walletPolicyName(Wallet wallet) {
-    final source = wallet.label?.trim() ?? '';
-    final label = source.codeUnits
-        .where((unit) => unit >= 0x20 && unit <= 0x7e)
-        .map(String.fromCharCode)
-        .join()
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+  static String _walletPolicyName(Wallet wallet, WalletSigner signer) {
+    final registrationName = signer.registrationName;
+    if (registrationName != null) {
+      return WalletPolicyRegistrationName.validate(
+        registrationName,
+        SignerDeviceEntity.bitbox02,
+      );
+    }
+    final label = WalletPolicyRegistrationName.normalize(wallet.label ?? '');
     final id = wallet.id.length <= 8 ? wallet.id : wallet.id.substring(0, 8);
     final suffix = ' $id';
     final name = label.isEmpty ? 'Bull Wallet' : label;
