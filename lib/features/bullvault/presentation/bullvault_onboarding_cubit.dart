@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_onboarding_snapshot.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
@@ -11,10 +12,13 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/check_bullvault_mobile_backups_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_onboarding_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_recovery_package_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_onboarding_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,6 +32,12 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
   final ActivateInitialBullVaultUsecase _activateInitialBullVaultUsecase;
   final EncodeBullVaultRecoveryPackageUsecase
   _encodeBullVaultRecoveryPackageUsecase;
+  final GenerateBullVaultInheritanceMnemonicUsecase
+  _generateInheritanceMnemonicUsecase;
+  final DeriveBullVaultMnemonicKeyUsecase _deriveInheritanceMnemonicKeyUsecase;
+  final UpdateBullVaultRegistrationNameUsecase
+  _updateBullVaultRegistrationNameUsecase;
+  var _mobilePassphrase = '';
   var _reviewRequestId = 0;
 
   BullVaultOnboardingCubit(
@@ -38,7 +48,34 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     this._updateBullVaultSetupUsecase,
     this._activateInitialBullVaultUsecase,
     this._encodeBullVaultRecoveryPackageUsecase,
-  ) : super(const BullVaultOnboardingState());
+    this._updateBullVaultRegistrationNameUsecase, [
+    this._generateInheritanceMnemonicUsecase =
+        const GenerateBullVaultInheritanceMnemonicUsecase(),
+    this._deriveInheritanceMnemonicKeyUsecase =
+        const DeriveBullVaultMnemonicKeyUsecase(),
+  ]) : super(const BullVaultOnboardingState());
+
+  Future<bool> updateHardwareRegistrationName({
+    required String signerId,
+    required String name,
+  }) async {
+    final result = state.result;
+    if (result == null) return false;
+    final updated = await _updateBullVaultRegistrationNameUsecase.execute(
+      wallet: result.wallet,
+      signerId: signerId,
+      name: name,
+    );
+    if (isClosed) return false;
+    switch (updated) {
+      case Ok(:final value):
+        emit(state.copyWith(result: result.copyWith(wallet: value)));
+        return true;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return false;
+    }
+  }
 
   Future<void> load({String? walletId}) async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
@@ -77,7 +114,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     final hasMobileBackup = backupStatus.physical || backupStatus.recoverBull;
     final completedHardwareSignerIds = result.record.completedHardwareSignerIds;
     final hardwareSignerIds = result.wallet.signers
-        .where((signer) => signer.signer != SignerEntity.local)
+        .where((signer) => signer.signer == SignerEntity.remote)
         .map((signer) => signer.id)
         .toSet();
     final hardwareSetupComplete = hardwareSignerIds.every(
@@ -87,7 +124,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         ? BullVaultOnboardingStep.recoveryPackage
         : !hardwareSetupComplete
         ? BullVaultOnboardingStep.hardwareSetup
-        : !hasMobileBackup
+        : result.record.mobileAccount != null && !hasMobileBackup
         ? BullVaultOnboardingStep.mobileBackup
         : BullVaultOnboardingStep.complete;
     emit(
@@ -97,7 +134,6 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         isCreating: false,
         step: step,
         protection: result.policy.protection,
-        protectionChoiceMade: true,
         includeInheritance: result.policy.inheritanceKey != null,
         inheritanceChoiceMade: true,
         schedule: result.policy.renewalSchedule,
@@ -114,6 +150,8 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         recoverBullBackupVerified: backupStatus.recoverBull,
         mobileBackupDeferred:
             result.record.mobileBackupDeferred && !hasMobileBackup,
+        mobilePassphraseReady: false,
+        mobilePassphraseBackedUp: false,
         failure: failure,
       ),
     );
@@ -124,6 +162,111 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       coldDevice: device,
       genericColdSigner: false,
       coldInput: state.coldDevice == device ? state.coldInput : '',
+      clearFailure: true,
+    ),
+  );
+
+  void setEverydayKeySource(BullVaultEverydayKeySource source) {
+    _mobilePassphrase = '';
+    emit(
+      state.copyWith(
+        everydayKeySource: source,
+        clearEverydayDevice: source == BullVaultEverydayKeySource.bullMobile,
+        genericEverydaySigner: source == BullVaultEverydayKeySource.hardware
+            ? state.genericEverydaySigner
+            : false,
+        everydayInput: source == BullVaultEverydayKeySource.hardware
+            ? state.everydayInput
+            : '',
+        mobilePassphraseEnabled: source == BullVaultEverydayKeySource.bullMobile
+            ? state.mobilePassphraseEnabled
+            : false,
+        passphraseFreeRecovery: source == BullVaultEverydayKeySource.bullMobile
+            ? state.passphraseFreeRecovery
+            : false,
+        mobilePassphraseReady: false,
+        mobilePassphraseBackedUp: false,
+        clearTimeReference: true,
+        clearFailure: true,
+      ),
+    );
+  }
+
+  void selectEverydayDevice(SignerDeviceEntity device) => emit(
+    state.copyWith(
+      everydayDevice: device,
+      genericEverydaySigner: false,
+      everydayInput: state.everydayDevice == device ? state.everydayInput : '',
+      clearFailure: true,
+    ),
+  );
+
+  void useGenericEverydaySigner() => emit(
+    state.copyWith(
+      clearEverydayDevice: true,
+      genericEverydaySigner: true,
+      everydayInput: '',
+      clearFailure: true,
+    ),
+  );
+
+  void setEverydayInput(String value) =>
+      emit(state.copyWith(everydayInput: value, clearFailure: true));
+
+  Future<void> acceptEverydayKeyAndContinue(String value) async {
+    if (state.step != BullVaultOnboardingStep.everydaySigner) return;
+    setEverydayInput(value);
+    await next();
+  }
+
+  void setMobilePassphraseProtection({
+    required bool enabled,
+    bool passphraseFreeRecovery = false,
+  }) {
+    _mobilePassphrase = '';
+    emit(
+      state.copyWith(
+        mobilePassphraseEnabled: enabled,
+        passphraseFreeRecovery: enabled && passphraseFreeRecovery,
+        mobilePassphraseReady: false,
+        mobilePassphraseBackedUp: false,
+        clearTimeReference: true,
+        clearFailure: true,
+      ),
+    );
+  }
+
+  void setMobilePassphrase(String value) {
+    _mobilePassphrase = value;
+    emit(
+      state.copyWith(
+        mobilePassphraseReady: value.isNotEmpty,
+        mobilePassphraseBackedUp: false,
+        clearTimeReference: true,
+        clearFailure: true,
+      ),
+    );
+  }
+
+  void setPassphraseFreeRecovery(bool enabled) => emit(
+    state.copyWith(
+      passphraseFreeRecovery: state.mobilePassphraseEnabled && enabled,
+      clearTimeReference: true,
+      clearFailure: true,
+    ),
+  );
+
+  void confirmMobilePassphraseBackup(bool value) =>
+      emit(state.copyWith(mobilePassphraseBackedUp: value, clearFailure: true));
+
+  void setPracticeMode(bool enabled) => emit(
+    state.copyWith(
+      schedule: state.schedule.copyWith(
+        unit: enabled
+            ? BullVaultScheduleUnit.hours
+            : BullVaultScheduleUnit.years,
+      ),
+      clearTimeReference: true,
       clearFailure: true,
     ),
   );
@@ -150,7 +293,6 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     emit(
       state.copyWith(
         protection: protection,
-        protectionChoiceMade: true,
         clearSecondColdDevice: !protection.usesTwoColdKeys,
         genericSecondColdSigner: protection.usesTwoColdKeys
             ? state.genericSecondColdSigner
@@ -158,22 +300,27 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         secondColdInput: protection.usesTwoColdKeys
             ? state.secondColdInput
             : '',
-        schedule: BullVaultSchedule.defaultsFor(
-          protection: protection,
-          includesInheritance: state.includeInheritance,
-        ),
+        schedule:
+            state.protection == protection ||
+                (!state.schedule.isDefaultFor(
+                      protection: state.protection,
+                      includesInheritance: state.includeInheritance,
+                    ) &&
+                    state.schedule.isValid(
+                      protection: protection,
+                      includesInheritance: state.includeInheritance,
+                    ))
+            ? state.schedule
+            : BullVaultSchedule.defaultsFor(
+                protection: protection,
+                includesInheritance: state.includeInheritance,
+                unit: state.schedule.unit,
+              ),
         clearTimeReference: true,
         clearFailure: true,
       ),
     );
   }
-
-  void customizeSetup() => emit(
-    state.copyWith(
-      step: BullVaultOnboardingStep.protectionChoice,
-      clearFailure: true,
-    ),
-  );
 
   void selectSecondColdDevice(SignerDeviceEntity device) => emit(
     state.copyWith(
@@ -214,15 +361,38 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
             ? state.genericInheritanceSigner
             : false,
         inheritanceInput: value ? state.inheritanceInput : '',
-        schedule: BullVaultSchedule.defaultsFor(
-          protection: state.protection,
-          includesInheritance: value,
-        ),
+        schedule:
+            state.includeInheritance == value ||
+                (!state.schedule.isDefaultFor(
+                      protection: state.protection,
+                      includesInheritance: state.includeInheritance,
+                    ) &&
+                    state.schedule.isValid(
+                      protection: state.protection,
+                      includesInheritance: value,
+                    ))
+            ? state.schedule
+            : BullVaultSchedule.defaultsFor(
+                protection: state.protection,
+                includesInheritance: value,
+                unit: state.schedule.unit,
+              ),
         clearTimeReference: true,
         clearFailure: true,
       ),
     );
   }
+
+  void setInheritanceSource(BullVaultInheritanceKeySource source) => emit(
+    state.copyWith(
+      inheritanceSource: source,
+      clearInheritanceDevice: source != BullVaultInheritanceKeySource.hardware,
+      genericInheritanceSigner:
+          source != BullVaultInheritanceKeySource.hardware,
+      inheritanceInput: '',
+      clearFailure: true,
+    ),
+  );
 
   void selectInheritanceDevice(SignerDeviceEntity device) => emit(
     state.copyWith(
@@ -231,15 +401,6 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       inheritanceInput: state.inheritanceDevice == device
           ? state.inheritanceInput
           : '',
-      clearFailure: true,
-    ),
-  );
-
-  void useGenericInheritanceSigner() => emit(
-    state.copyWith(
-      clearInheritanceDevice: true,
-      genericInheritanceSigner: true,
-      inheritanceInput: '',
       clearFailure: true,
     ),
   );
@@ -253,9 +414,32 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     await next();
   }
 
+  void acceptInheritanceAccountKey(String value) => emit(
+    state.copyWith(
+      inheritanceInput: value,
+      genericInheritanceSigner: true,
+      clearInheritanceDevice: true,
+      clearFailure: true,
+    ),
+  );
+
+  Result<List<String>, BullVaultFailure> generateInheritanceMnemonic() =>
+      _generateInheritanceMnemonicUsecase.execute();
+
+  Result<String, BullVaultFailure> deriveInheritanceMnemonicKey(
+    List<String> words,
+  ) {
+    final network = state.network;
+    if (network == null) return const Err(BullVaultInvalidSignerFailure());
+    return _deriveInheritanceMnemonicKeyUsecase.execute(
+      words: words,
+      network: network,
+    );
+  }
+
   void setColdYears(int value) => emit(
     state.copyWith(
-      schedule: state.schedule.copyWith(coldYears: value),
+      schedule: state.schedule.copyWith(coldDelay: value),
       clearTimeReference: state.step != BullVaultOnboardingStep.review,
       clearFailure: true,
     ),
@@ -263,7 +447,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
 
   void setRecoveryYears(int value) => emit(
     state.copyWith(
-      schedule: state.schedule.copyWith(recoveryYears: value),
+      schedule: state.schedule.copyWith(recoveryDelay: value),
       clearTimeReference: state.step != BullVaultOnboardingStep.review,
       clearFailure: true,
     ),
@@ -271,7 +455,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
 
   void setInheritanceYears(int value) => emit(
     state.copyWith(
-      schedule: state.schedule.copyWith(inheritanceYears: value),
+      schedule: state.schedule.copyWith(inheritanceDelay: value),
       clearTimeReference: state.step != BullVaultOnboardingStep.review,
       clearFailure: true,
     ),
@@ -317,7 +501,9 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     emit(
       state.copyWith(
         hardwareSetupDeferred: true,
-        step: BullVaultOnboardingStep.mobileBackup,
+        step: state.requiresSeedBackup
+            ? BullVaultOnboardingStep.mobileBackup
+            : BullVaultOnboardingStep.complete,
         clearFailure: true,
       ),
     );
@@ -353,9 +539,10 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
 
   Future<void> refreshMobileBackupStatus() async {
     final result = state.result;
-    if (result == null) return;
+    final seedFingerprint = result?.record.mobileSeedFingerprint;
+    if (result == null || seedFingerprint == null) return;
     final statusResult = await _checkBullVaultMobileBackupsUsecase.execute(
-      result.policy.everydayKey.accountKey.masterFingerprint,
+      seedFingerprint,
     );
     if (isClosed) return;
     switch (statusResult) {
@@ -442,72 +629,18 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       case BullVaultOnboardingStep.setupChoice:
         emit(
           state.copyWith(
-            step: BullVaultOnboardingStep.introduction,
-            protection: BullVaultProtection.standard,
-            protectionChoiceMade: true,
-            includeInheritance: false,
-            inheritanceChoiceMade: true,
-            schedule: BullVaultSchedule.standardWithoutInheritance,
-            clearSecondColdDevice: true,
-            genericSecondColdSigner: false,
-            secondColdInput: '',
-            clearInheritanceDevice: true,
-            inheritanceInput: '',
-            clearTimeReference: true,
-            clearFailure: true,
-          ),
-        );
-      case BullVaultOnboardingStep.protectionChoice:
-        emit(
-          state.copyWith(
             step: BullVaultOnboardingStep.inheritanceChoice,
             clearFailure: true,
           ),
         );
       case BullVaultOnboardingStep.inheritanceChoice:
-        emit(
-          state.copyWith(
-            step: BullVaultOnboardingStep.introduction,
-            clearFailure: true,
-          ),
-        );
-      case BullVaultOnboardingStep.introduction:
-        emit(
-          state.copyWith(
-            step: BullVaultOnboardingStep.coldSigner,
-            clearFailure: true,
-          ),
-        );
-      case BullVaultOnboardingStep.coldSigner:
-        if (state.usesTwoColdKeys) {
-          emit(
-            state.copyWith(
-              step: BullVaultOnboardingStep.secondColdSigner,
-              clearFailure: true,
-            ),
-          );
-        } else if (state.includeInheritance) {
-          emit(
-            state.copyWith(
-              step: BullVaultOnboardingStep.inheritance,
-              clearFailure: true,
-            ),
-          );
-        } else {
-          await _openReview();
-        }
-      case BullVaultOnboardingStep.secondColdSigner:
-        if (state.includeInheritance) {
-          emit(
-            state.copyWith(
-              step: BullVaultOnboardingStep.inheritance,
-              clearFailure: true,
-            ),
-          );
-        } else {
-          await _openReview();
-        }
-      case BullVaultOnboardingStep.inheritance:
+        await _advanceAfterSigners();
+      case BullVaultOnboardingStep.everydaySigner ||
+          BullVaultOnboardingStep.coldSigner ||
+          BullVaultOnboardingStep.secondColdSigner ||
+          BullVaultOnboardingStep.inheritance:
+        await _advanceAfterSigners();
+      case BullVaultOnboardingStep.mobilePassphrase:
         await _openReview();
       case BullVaultOnboardingStep.review:
         break;
@@ -515,7 +648,9 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         emit(
           state.copyWith(
             step: state.hardwareSetupComplete
-                ? BullVaultOnboardingStep.mobileBackup
+                ? state.requiresSeedBackup
+                      ? BullVaultOnboardingStep.mobileBackup
+                      : BullVaultOnboardingStep.complete
                 : BullVaultOnboardingStep.hardwareSetup,
             clearFailure: true,
           ),
@@ -523,7 +658,9 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       case BullVaultOnboardingStep.hardwareSetup:
         emit(
           state.copyWith(
-            step: BullVaultOnboardingStep.mobileBackup,
+            step: state.requiresSeedBackup
+                ? BullVaultOnboardingStep.mobileBackup
+                : BullVaultOnboardingStep.complete,
             clearFailure: true,
           ),
         );
@@ -548,14 +685,14 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
     _reviewRequestId++;
     final previousStep = switch (state.step) {
-      BullVaultOnboardingStep.protectionChoice =>
-        BullVaultOnboardingStep.setupChoice,
       BullVaultOnboardingStep.inheritanceChoice =>
-        BullVaultOnboardingStep.protectionChoice,
-      BullVaultOnboardingStep.introduction =>
         BullVaultOnboardingStep.setupChoice,
+      BullVaultOnboardingStep.everydaySigner =>
+        BullVaultOnboardingStep.inheritanceChoice,
       BullVaultOnboardingStep.coldSigner =>
-        BullVaultOnboardingStep.introduction,
+        state.everydayKeySource == BullVaultEverydayKeySource.hardware
+            ? BullVaultOnboardingStep.everydaySigner
+            : BullVaultOnboardingStep.inheritanceChoice,
       BullVaultOnboardingStep.secondColdSigner =>
         BullVaultOnboardingStep.coldSigner,
       BullVaultOnboardingStep.inheritance =>
@@ -563,6 +700,14 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
             ? BullVaultOnboardingStep.secondColdSigner
             : BullVaultOnboardingStep.coldSigner,
       BullVaultOnboardingStep.review =>
+        state.mobilePassphraseEnabled
+            ? BullVaultOnboardingStep.mobilePassphrase
+            : state.includeInheritance
+            ? BullVaultOnboardingStep.inheritance
+            : state.usesTwoColdKeys
+            ? BullVaultOnboardingStep.secondColdSigner
+            : BullVaultOnboardingStep.coldSigner,
+      BullVaultOnboardingStep.mobilePassphrase =>
         state.includeInheritance
             ? BullVaultOnboardingStep.inheritance
             : state.usesTwoColdKeys
@@ -571,16 +716,31 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       BullVaultOnboardingStep.hardwareSetup =>
         BullVaultOnboardingStep.recoveryPackage,
       BullVaultOnboardingStep.mobileBackup =>
-        BullVaultOnboardingStep.hardwareSetup,
-      BullVaultOnboardingStep.complete => BullVaultOnboardingStep.mobileBackup,
+        state.hardwareSignerCount == 0
+            ? BullVaultOnboardingStep.recoveryPackage
+            : BullVaultOnboardingStep.hardwareSetup,
+      BullVaultOnboardingStep.complete =>
+        state.requiresSeedBackup
+            ? BullVaultOnboardingStep.mobileBackup
+            : BullVaultOnboardingStep.hardwareSetup,
       BullVaultOnboardingStep.setupChoice ||
       BullVaultOnboardingStep.recoveryPackage => state.step,
     };
+    final resetsPassphrase =
+        state.step == BullVaultOnboardingStep.mobilePassphrase ||
+        previousStep == BullVaultOnboardingStep.mobilePassphrase;
+    if (resetsPassphrase) _mobilePassphrase = '';
     emit(
       state.copyWith(
         step: previousStep,
         isPreparingReview: false,
         clearTimeReference: state.step == BullVaultOnboardingStep.review,
+        mobilePassphraseReady: resetsPassphrase
+            ? false
+            : state.mobilePassphraseReady,
+        mobilePassphraseBackedUp: resetsPassphrase
+            ? false
+            : state.mobilePassphraseBackedUp,
         clearFailure: true,
       ),
     );
@@ -618,6 +778,52 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
   }
 
+  Future<void> _advanceAfterSigners() async {
+    final signerStep = _nextRequiredSignerStep();
+    if (signerStep != null) {
+      emit(state.copyWith(step: signerStep, clearFailure: true));
+      return;
+    }
+    if (state.mobilePassphraseEnabled &&
+        (_mobilePassphrase.isEmpty || !state.mobilePassphraseBackedUp)) {
+      emit(
+        state.copyWith(
+          step: BullVaultOnboardingStep.mobilePassphrase,
+          mobilePassphraseReady: false,
+          mobilePassphraseBackedUp: false,
+          clearFailure: true,
+        ),
+      );
+      return;
+    }
+    await _openReview();
+  }
+
+  BullVaultOnboardingStep? _nextRequiredSignerStep() {
+    if (state.everydayKeySource == BullVaultEverydayKeySource.hardware &&
+        (state.everydayInput.trim().isEmpty ||
+            (!state.genericEverydaySigner && state.everydayDevice == null))) {
+      return BullVaultOnboardingStep.everydaySigner;
+    }
+    if (state.coldInput.trim().isEmpty ||
+        (!state.genericColdSigner && state.coldDevice == null)) {
+      return BullVaultOnboardingStep.coldSigner;
+    }
+    if (state.usesTwoColdKeys &&
+        (state.secondColdInput.trim().isEmpty ||
+            (!state.genericSecondColdSigner &&
+                state.secondColdDevice == null))) {
+      return BullVaultOnboardingStep.secondColdSigner;
+    }
+    if (state.includeInheritance &&
+        (state.inheritanceInput.trim().isEmpty ||
+            (!state.genericInheritanceSigner &&
+                state.inheritanceDevice == null))) {
+      return BullVaultOnboardingStep.inheritance;
+    }
+    return null;
+  }
+
   Future<void> create({required String walletLabel}) async {
     if (state.step != BullVaultOnboardingStep.review || !state.canContinue) {
       return;
@@ -629,6 +835,20 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       BullVaultCreateRequest(
         label: walletLabel,
         protection: state.protection,
+        everydayKeySource: state.everydayKeySource,
+        everydayHardware:
+            state.everydayKeySource == BullVaultEverydayKeySource.hardware
+            ? BullVaultSignerRequest(
+                input: state.everydayInput,
+                device: state.everydayDevice,
+                genericExternal: state.genericEverydaySigner,
+              )
+            : null,
+        mobilePassphrase: state.mobilePassphraseEnabled
+            ? _mobilePassphrase
+            : null,
+        passphraseFreeRecovery:
+            state.mobilePassphraseEnabled && state.passphraseFreeRecovery,
         cold: BullVaultSignerRequest(
           input: state.coldInput,
           device: state.coldDevice,
@@ -647,6 +867,9 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
                 input: state.inheritanceInput,
                 device: state.inheritanceDevice,
                 genericExternal: state.genericInheritanceSigner,
+                requiresHardwareSetup:
+                    state.inheritanceSource ==
+                    BullVaultInheritanceKeySource.hardware,
               ),
         schedule: state.schedule,
         timeReference: timeReference,
@@ -655,6 +878,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
+        _mobilePassphrase = '';
         _restoreCompletionState(state.network!, value);
       case Err(:final failure) when failure is BullVaultReviewExpiredFailure:
         emit(state.copyWith(isCreating: false));
@@ -663,7 +887,27 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
           emit(state.copyWith(failure: failure));
         }
       case Err(:final failure):
-        emit(state.copyWith(isCreating: false, failure: failure));
+        _mobilePassphrase = '';
+        emit(
+          state.copyWith(
+            step: state.mobilePassphraseEnabled
+                ? BullVaultOnboardingStep.mobilePassphrase
+                : state.step,
+            isCreating: false,
+            mobilePassphraseReady: false,
+            mobilePassphraseBackedUp: state.mobilePassphraseEnabled
+                ? false
+                : state.mobilePassphraseBackedUp,
+            clearTimeReference: state.mobilePassphraseEnabled,
+            failure: failure,
+          ),
+        );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _mobilePassphrase = '';
+    return super.close();
   }
 }

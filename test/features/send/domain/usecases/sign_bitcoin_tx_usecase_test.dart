@@ -78,6 +78,7 @@ final class _FakeBitcoinSigningPort implements BitcoinSigningPort {
     required String walletId,
     bool tryFinalize = true,
     String? signerId,
+    String? passphrase,
   }) async {
     signCalls++;
     return Ok(signingResult);

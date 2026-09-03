@@ -4,7 +4,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_previous_vault.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
@@ -13,7 +14,8 @@ import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_policy_setup_flow.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_completion_steps.dart';
-import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_schedule_dropdown.dart';
+import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_schedule_fields.dart';
+import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_registration_name_dialog.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
 import 'package:flutter/material.dart';
@@ -246,6 +248,14 @@ final class _InitialSetup extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
+        if (details.policy.renewalSchedule.isPractice) ...[
+          InfoCard(
+            description: context.loc.bullVaultPracticeBadge,
+            tagColor: context.appColors.warning,
+            bgColor: context.appColors.warningContainer,
+          ),
+          const Gap(16),
+        ],
         Text(
           context.loc.bullVaultGeneration(details.record.vaultGeneration + 1),
           style: context.font.headlineLarge,
@@ -332,6 +342,14 @@ final class _RenewalReview extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
+        if (schedule.isPractice) ...[
+          InfoCard(
+            description: context.loc.bullVaultPracticeBadge,
+            tagColor: context.appColors.warning,
+            bgColor: context.appColors.warningContainer,
+          ),
+          const Gap(16),
+        ],
         Text(
           context.loc.bullVaultGeneration(details.record.vaultGeneration + 1),
           style: context.font.headlineLarge,
@@ -340,7 +358,15 @@ final class _RenewalReview extends StatelessWidget {
         if (details.timeUntilFirstRecovery case final remaining?) ...[
           Text(
             context.loc.bullVaultTimeRemaining(
-              context.loc.bullVaultYears((remaining.inDays / 365).ceil()),
+              remaining.inDays >= 1
+                  ? context.loc.bullVaultDays(remaining.inDays)
+                  : remaining.inHours >= 1
+                  ? context.loc.bullVaultHours(remaining.inHours)
+                  : remaining.inMinutes == 1
+                  ? context.loc.durationMinute('1')
+                  : context.loc.durationMinutes(
+                      (remaining.inSeconds / 60).ceil().toString(),
+                    ),
             ),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.textMuted,
@@ -370,59 +396,20 @@ final class _RenewalReview extends StatelessWidget {
           style: context.font.bodyMedium,
         ),
         const Gap(24),
-        if (policy.protection == BullVaultProtection.standard ||
-            policy.inheritanceKey == null) ...[
-          BullVaultScheduleDropdown(
-            label: policy.protection == BullVaultProtection.extra
-                ? context.loc.bullVaultEitherColdDelay
-                : context.loc.bullVaultColdDelay,
-            value: schedule.coldYears,
-            values: _coldValues(
-              schedule,
-              includesInheritance: policy.inheritanceKey != null,
-            ),
-            onChanged: (value) => context
-                .read<BullVaultRenewalCubit>()
-                .updateSchedule(schedule.copyWith(coldYears: value)),
-          ),
-          const Gap(12),
-        ],
-        BullVaultScheduleDropdown(
-          label: policy.inheritanceKey == null
-              ? context.loc.bullVaultEverydayDelay
-              : context.loc.bullVaultRecoveryDelay,
-          value: schedule.recoveryYears,
-          values: _recoveryValues(
-            schedule,
-            protection: policy.protection,
-            includesInheritance: policy.inheritanceKey != null,
-          ),
-          onChanged: (value) => context
+        BullVaultScheduleFields(
+          schedule: schedule,
+          usesTwoColdKeys: policy.protection == BullVaultProtection.extra,
+          includeInheritance: policy.inheritanceKey != null,
+          onColdChanged: (value) => context
               .read<BullVaultRenewalCubit>()
-              .updateSchedule(schedule.copyWith(recoveryYears: value)),
+              .updateSchedule(schedule.copyWith(coldDelay: value)),
+          onRecoveryChanged: (value) => context
+              .read<BullVaultRenewalCubit>()
+              .updateSchedule(schedule.copyWith(recoveryDelay: value)),
+          onInheritanceChanged: (value) => context
+              .read<BullVaultRenewalCubit>()
+              .updateSchedule(schedule.copyWith(inheritanceDelay: value)),
         ),
-        if (policy.inheritanceKey != null) ...[
-          const Gap(12),
-          BullVaultScheduleDropdown(
-            label: context.loc.bullVaultInheritanceDelay,
-            value: schedule.inheritanceYears,
-            values: [
-              for (
-                var year = BullVaultSchedule.minDelayYears;
-                year <= BullVaultSchedule.maxDelayYears;
-                year++
-              )
-                if (year >
-                    (policy.protection == BullVaultProtection.standard
-                        ? schedule.coldYears
-                        : schedule.recoveryYears))
-                  year,
-            ],
-            onChanged: (value) => context
-                .read<BullVaultRenewalCubit>()
-                .updateSchedule(schedule.copyWith(inheritanceYears: value)),
-          ),
-        ],
         const Gap(24),
         Text(
           context.loc.bullVaultNewRecoveryDates,
@@ -442,40 +429,6 @@ final class _RenewalReview extends StatelessWidget {
 
   static DateTime _timestampDate(int timestamp) =>
       DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true);
-
-  static List<int> _coldValues(
-    BullVaultSchedule schedule, {
-    required bool includesInheritance,
-  }) => [
-    for (
-      var year = BullVaultSchedule.minDelayYears;
-      year <= BullVaultSchedule.maxDelayYears;
-      year++
-    )
-      if (includesInheritance
-          ? year > schedule.recoveryYears && year < schedule.inheritanceYears
-          : year < schedule.recoveryYears)
-        year,
-  ];
-
-  static List<int> _recoveryValues(
-    BullVaultSchedule schedule, {
-    required BullVaultProtection protection,
-    required bool includesInheritance,
-  }) => [
-    for (
-      var year = BullVaultSchedule.minDelayYears;
-      year <= BullVaultSchedule.maxDelayYears;
-      year++
-    )
-      if (includesInheritance
-          ? year <
-                (protection == BullVaultProtection.standard
-                    ? schedule.coldYears
-                    : schedule.inheritanceYears)
-          : year > schedule.coldYears)
-        year,
-  ];
 }
 
 final class _PreviousVaultsSection extends StatelessWidget {
@@ -603,14 +556,20 @@ final class _RenewalSetup extends StatelessWidget {
       ),
       BullVaultRenewalStep.hardwareSetup => BullVaultHardwareSetupStep(
         signers: result.wallet.signers
-            .where((signer) => signer.signer != SignerEntity.local)
+            .where((signer) => signer.signer == SignerEntity.remote)
             .toList(),
         completedSignerIds: state.completedSignerIds,
         onSetUp: (signer) =>
             _completeHardwareSetup(context, signerId: signer.id),
       ),
-      BullVaultRenewalStep.activation => const _RenewalActivationStep(),
-      BullVaultRenewalStep.complete => const _RenewalActivatedStep(),
+      BullVaultRenewalStep.activation => BullVaultCompletionMessage(
+        title: context.loc.bullVaultRenewalPreparedTitle,
+        description: context.loc.bullVaultRenewalReadyDescription,
+      ),
+      BullVaultRenewalStep.complete => BullVaultCompletionMessage(
+        title: context.loc.bullVaultRenewalActivated,
+        description: context.loc.bullVaultPreviousVaultMigrating,
+      ),
     };
   }
 
@@ -622,10 +581,30 @@ final class _RenewalSetup extends StatelessWidget {
     final signer = result.wallet.signers.singleWhere(
       (candidate) => candidate.id == signerId,
     );
+    var setupResult = result;
+    var setupSigner = signer;
+    if (signer.signerDevice != null) {
+      final name = await promptBullVaultRegistrationName(
+        context,
+        signer: signer,
+        fallbackName: result.wallet.label ?? context.loc.bullVaultTitle,
+      );
+      if (name == null || !context.mounted) return;
+      final cubit = context.read<BullVaultRenewalCubit>();
+      final updated = await cubit.updateRegistrationName(
+        signerId: signer.id,
+        name: name,
+      );
+      if (!updated || !context.mounted) return;
+      setupResult = cubit.state.renewal!.replacement;
+      setupSigner = setupResult.wallet.signers.singleWhere(
+        (candidate) => candidate.id == signer.id,
+      );
+    }
     final completed = await BullVaultPolicySetupFlow.execute(
       context,
-      result: result,
-      signer: signer,
+      result: setupResult,
+      signer: setupSigner,
     );
     if (completed && context.mounted) {
       await context.read<BullVaultRenewalCubit>().completeSigner(signer.id);
@@ -655,68 +634,6 @@ final class _RenewalSetup extends StatelessWidget {
       }
     }
   }
-}
-
-final class _RenewalActivationStep extends StatelessWidget {
-  const _RenewalActivationStep();
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const Gap(32),
-      Icon(
-        Icons.check_circle_outline,
-        size: 64,
-        color: context.appColors.primary,
-      ),
-      const Gap(20),
-      Text(
-        context.loc.bullVaultRenewalPreparedTitle,
-        style: context.font.headlineLarge,
-        textAlign: TextAlign.center,
-      ),
-      const Gap(12),
-      Text(
-        context.loc.bullVaultRenewalReadyDescription,
-        style: context.font.bodyMedium?.copyWith(
-          color: context.appColors.textMuted,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    ],
-  );
-}
-
-final class _RenewalActivatedStep extends StatelessWidget {
-  const _RenewalActivatedStep();
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const Gap(32),
-      Icon(
-        Icons.check_circle_outline,
-        size: 64,
-        color: context.appColors.primary,
-      ),
-      const Gap(20),
-      Text(
-        context.loc.bullVaultRenewalActivated,
-        style: context.font.headlineLarge,
-        textAlign: TextAlign.center,
-      ),
-      const Gap(12),
-      Text(
-        context.loc.bullVaultPreviousVaultMigrating,
-        style: context.font.bodyMedium?.copyWith(
-          color: context.appColors.textMuted,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    ],
-  );
 }
 
 final class _ActivationRow extends StatelessWidget {

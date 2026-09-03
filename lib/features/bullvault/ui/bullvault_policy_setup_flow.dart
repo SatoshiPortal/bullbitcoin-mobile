@@ -48,7 +48,10 @@ abstract final class BullVaultPolicySetupFlow {
     await context.pushNamed(
       SettingsRoute.walletRegistration.name,
       pathParameters: {'walletId': result.wallet.id},
-      extra: result.wallet,
+      extra: WalletRegistrationRequest(
+        wallet: result.wallet,
+        signerId: signer.id,
+      ),
     );
     if (!context.mounted) return false;
     return await _confirmManualSetup(context, signerName: device.displayName) ??

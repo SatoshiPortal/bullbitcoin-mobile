@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_review.dart';
 
@@ -16,19 +17,27 @@ Wallet psbtSigningWallet({
   bool hasLocalSigner = true,
   bool includeRemoteSigner = true,
   bool remoteSignerIsLocal = false,
+  bool localRequiresPassphrase = false,
 }) => Wallet(
   origin: 'wallet',
   network: Network.bitcoinTestnet,
   signers: [
-    WalletSigner.single(
+    WalletSigner(
       id: 'signer-local',
-      descriptorKeyId: 'key-local',
-      masterFingerprint: localFingerprint,
-      xpubFingerprint: localFingerprint,
-      xpub: 'tpub-local',
-      derivationPath: "m/48'/1'/0'/2'",
       signer: hasLocalSigner ? SignerEntity.local : SignerEntity.remote,
       signerDevice: null,
+      localSeedFingerprint: hasLocalSigner ? localFingerprint : null,
+      descriptorKeys: [
+        WalletDescriptorKey(
+          id: 'key-local',
+          signerId: 'signer-local',
+          masterFingerprint: localFingerprint,
+          xpubFingerprint: localFingerprint,
+          xpub: 'tpub-local',
+          derivationPath: "m/48'/1'/0'/2'",
+          requiresPassphrase: localRequiresPassphrase,
+        ),
+      ],
     ),
     if (includeRemoteSigner)
       WalletSigner.single(

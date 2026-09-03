@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -12,12 +13,12 @@ import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
@@ -27,6 +28,8 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_refe
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:convert/convert.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
@@ -104,29 +107,88 @@ class CreateBullVaultUsecase {
           return Err(failure);
       }
 
-      final seed = await _getDefaultSeedUsecase.execute(
+      final storedSeed = await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
       );
-      seedFingerprint = seed.masterFingerprint;
       coinType = network.coinType;
-      late final int mobileAccount;
-      switch (await _bip48AccountRepository.claimNext(
-        seedFingerprint: seed.masterFingerprint,
-        coinType: network.coinType,
-      )) {
-        case Ok(:final value):
-          accountClaim = value;
-          mobileAccount = value.account;
-        case Err():
-          return const Err(BullVaultCreationFailure());
-      }
-      final everydayResult = _localEverydayKey(seed, mobileAccount, network);
       late final BullVaultSignerKey everyday;
-      switch (everydayResult) {
-        case Ok(:final value):
-          everyday = value;
-        case Err(:final failure):
-          return Err(failure);
+      BullVaultSignerKey? delayedMobileRecovery;
+      int? mobileAccount;
+      String? mobileSeedFingerprint;
+      if (request.everydayKeySource == BullVaultEverydayKeySource.bullMobile) {
+        if (request.everydayHardware != null ||
+            (request.passphraseFreeRecovery &&
+                (request.mobilePassphrase?.isEmpty ?? true))) {
+          return const Err(BullVaultInvalidSignerFailure());
+        }
+        final canonicalSeed = _canonicalSeed(storedSeed);
+        if (canonicalSeed == null) {
+          return const Err(BullVaultCreationFailure());
+        }
+        seedFingerprint = canonicalSeed.masterFingerprint;
+        mobileSeedFingerprint = canonicalSeed.masterFingerprint;
+        switch (await _bip48AccountRepository.claimNext(
+          seedFingerprint: canonicalSeed.masterFingerprint,
+          coinType: network.coinType,
+        )) {
+          case Ok(:final value):
+            accountClaim = value;
+            mobileAccount = value.account;
+          case Err():
+            return const Err(BullVaultCreationFailure());
+        }
+        final mobileSeed = _seedWithPassphrase(
+          canonicalSeed,
+          request.mobilePassphrase,
+        );
+        if (mobileSeed == null) {
+          return const Err(BullVaultCreationFailure());
+        }
+        final everydayResult = _localKey(
+          mobileSeed,
+          mobileAccount,
+          network,
+          role: BullVaultSignerRole.everyday,
+          requiresPassphrase: request.mobilePassphrase?.isNotEmpty == true,
+        );
+        switch (everydayResult) {
+          case Ok(:final value):
+            everyday = value;
+          case Err(:final failure):
+            return Err(failure);
+        }
+        if (request.passphraseFreeRecovery) {
+          final recoveryResult = _localKey(
+            canonicalSeed,
+            mobileAccount,
+            network,
+            role: BullVaultSignerRole.delayedMobileRecovery,
+          );
+          switch (recoveryResult) {
+            case Ok(:final value):
+              delayedMobileRecovery = value;
+            case Err(:final failure):
+              return Err(failure);
+          }
+        }
+      } else {
+        final hardware = request.everydayHardware;
+        if (hardware == null ||
+            request.mobilePassphrase != null ||
+            request.passphraseFreeRecovery) {
+          return const Err(BullVaultInvalidSignerFailure());
+        }
+        final everydayResult = _externalKey(
+          hardware,
+          BullVaultSignerRole.everyday,
+          network: network,
+        );
+        switch (everydayResult) {
+          case Ok(:final value):
+            everyday = value;
+          case Err(:final failure):
+            return Err(failure);
+        }
       }
 
       final coldResult = _externalKey(
@@ -174,6 +236,7 @@ class CreateBullVaultUsecase {
 
       if (BullVaultPolicy.reusesSignerKey([
         everyday,
+        ?delayedMobileRecovery,
         cold,
         ?secondCold,
         ?inheritance,
@@ -186,6 +249,7 @@ class CreateBullVaultUsecase {
         network: network,
         protection: request.protection,
         everydayKey: everyday,
+        delayedMobileRecoveryKey: delayedMobileRecovery,
         coldKey: cold,
         secondColdKey: secondCold,
         inheritanceKey: inheritance,
@@ -202,18 +266,18 @@ class CreateBullVaultUsecase {
         descriptor: parsed.descriptor,
         protection: request.protection,
         everydayKey: everyday,
+        delayedMobileRecoveryKey: delayedMobileRecovery,
         coldKey: cold,
         secondColdKey: secondCold,
         inheritanceKey: inheritance,
         schedule: request.schedule,
         timeReference: timeReference,
       );
-      final signerAnnotations = _signerAnnotations(parsed.descriptorKeys, [
-        everyday,
-        cold,
-        ?secondCold,
-        ?inheritance,
-      ]);
+      final signerAnnotations = BullVaultSignerKey.assignDescriptorKeys(
+        parsed.descriptorKeys,
+        [everyday, ?delayedMobileRecovery, cold, ?secondCold, ?inheritance],
+        localSeedFingerprint: mobileSeedFingerprint,
+      );
       if (signerAnnotations == null) {
         return const Err(BullVaultCreationFailure());
       }
@@ -235,6 +299,7 @@ class CreateBullVaultUsecase {
         lineageId: policy.lineageId,
         vaultGeneration: policy.vaultGeneration,
         mobileAccount: mobileAccount,
+        mobileSeedFingerprint: mobileSeedFingerprint,
         birthHeight: timeReference.chainHeight,
         recoveryPackage: recoveryPackage,
         previousVaultId: null,
@@ -249,34 +314,30 @@ class CreateBullVaultUsecase {
         keepAccountReserved = !await _rollback(wallet.id);
         return Err(failure);
       }
-      final reserved = await _bip48AccountRepository.commitClaim(
-        seedFingerprint: seed.masterFingerprint,
-        coinType: network.coinType,
-        claim: accountClaim,
-      );
-      if (reserved case Err()) {
-        final metadataDeleted = await _repository.delete(wallet.id);
-        if (metadataDeleted case Err(:final failure)) {
-          keepAccountReserved = true;
-          log.severe(
-            message: 'Failed to roll back BullVault metadata',
-            error: failure.runtimeType,
-            trace: StackTrace.current,
-          );
-        } else {
-          keepAccountReserved = !await _rollback(wallet.id);
+      final claim = accountClaim;
+      if (claim != null) {
+        final reserved = await _bip48AccountRepository.commitClaim(
+          seedFingerprint: mobileSeedFingerprint!,
+          coinType: network.coinType,
+          claim: claim,
+        );
+        if (reserved case Err()) {
+          final metadataDeleted = await _repository.delete(wallet.id);
+          if (metadataDeleted case Err(:final failure)) {
+            keepAccountReserved = true;
+            log.severe(
+              message: 'Failed to roll back BullVault metadata',
+              error: failure.runtimeType,
+              trace: StackTrace.current,
+            );
+          } else {
+            keepAccountReserved = !await _rollback(wallet.id);
+          }
+          return const Err(BullVaultCreationFailure());
         }
-        return const Err(BullVaultCreationFailure());
+        accountCommitted = true;
       }
-      accountCommitted = true;
-      return Ok(
-        BullVaultCreateResult(
-          wallet: wallet,
-          policy: policy,
-          record: record,
-          recoveryPackage: recoveryPackage,
-        ),
-      );
+      return Ok(BullVaultCreateResult(wallet: wallet, record: record));
     } on Exception catch (error, stackTrace) {
       if (importedWallet case final wallet?) {
         keepAccountReserved = !await _rollback(wallet.id);
@@ -326,17 +387,16 @@ class CreateBullVaultUsecase {
     final completer = Completer<void>();
     final previous = _creationLock;
     _creationLock = completer.future;
-    return previous
-        .catchError((_) {})
-        .then((_) => action())
-        .whenComplete(completer.complete);
+    return previous.then((_) => action()).whenComplete(completer.complete);
   }
 
-  Result<BullVaultSignerKey, BullVaultFailure> _localEverydayKey(
+  Result<BullVaultSignerKey, BullVaultFailure> _localKey(
     Seed seed,
     int account,
-    Network network,
-  ) {
+    Network network, {
+    required BullVaultSignerRole role,
+    bool requiresPassphrase = false,
+  }) {
     try {
       final derivationPath = Bip48Derivation.path(
         coinType: network.coinType,
@@ -349,14 +409,15 @@ class CreateBullVaultUsecase {
       );
       return Ok(
         BullVaultSignerKey(
-          role: BullVaultSignerRole.everyday,
+          role: role,
           accountKey: WalletDescriptorKey(
-            id: 'everyday-account',
+            id: '${role.name}-account',
             signerId: 'everyday',
             masterFingerprint: seed.masterFingerprint.toLowerCase(),
             xpubFingerprint: Bip32Derivation.getBip32Xpub(xpub).fingerprintHex,
             xpub: xpub,
             derivationPath: derivationPath,
+            requiresPassphrase: requiresPassphrase,
           ),
           signer: SignerEntity.local,
           signerDevice: null,
@@ -384,11 +445,17 @@ class CreateBullVaultUsecase {
     } else if (request.device?.supportsComplexTaprootRegistration != true) {
       return const Err(BullVaultInvalidSignerFailure());
     }
+    if (!request.requiresHardwareSetup &&
+        (!request.genericExternal || request.device != null)) {
+      return const Err(BullVaultInvalidSignerFailure());
+    }
     return _parseAccountKey(
       request.input,
       role: role,
       network: network,
-      signer: SignerEntity.remote,
+      signer: request.requiresHardwareSetup
+          ? SignerEntity.remote
+          : SignerEntity.none,
       signerDevice: request.device,
     );
   }
@@ -423,8 +490,11 @@ class CreateBullVaultUsecase {
       }
       final xpub = Bip32Derivation.getBip32Xpub(key.xpub);
       if (key.masterFingerprint.isEmpty ||
-          _normalizePath(key.derivationPath) !=
-              Bip48Derivation.path(coinType: network.coinType, account: 0) ||
+          Bip48Derivation.account(
+                _normalizePath(key.derivationPath),
+                coinType: network.coinType,
+              ) ==
+              null ||
           xpub.depth != 4 ||
           xpub.index != 0x80000002) {
         return const Err(BullVaultInvalidSignerFailure());
@@ -449,36 +519,42 @@ class CreateBullVaultUsecase {
     }
   }
 
-  List<WalletSigner>? _signerAnnotations(
-    List<WalletDescriptorKey> descriptorKeys,
-    List<BullVaultSignerKey> signers,
-  ) {
-    final annotations = <WalletSigner>[];
-    for (final signer in signers) {
-      final keys = [
-        for (final key in descriptorKeys)
-          if (_sameXpub(key.xpub, signer.accountKey.xpub))
-            key.copyWith(signerId: signer.role.name),
-      ];
-      if (keys.isEmpty) return null;
-      annotations.add(
-        WalletSigner(
-          id: signer.role.name,
-          signer: signer.signer,
-          signerDevice: signer.signerDevice,
-          descriptorKeys: keys,
-        ),
-      );
-    }
-    return annotations;
-  }
-
-  bool _sameXpub(String first, String second) =>
-      Bip32Derivation.getBip32Xpub(first).toBase58() ==
-      Bip32Derivation.getBip32Xpub(second).toBase58();
-
   String? _normalizePath(String? path) =>
       path?.replaceAll('h', "'").replaceAll('H', "'");
+
+  Seed? _canonicalSeed(Seed seed) {
+    if (seed is! MnemonicSeed) return seed;
+    try {
+      return _mnemonicSeed(seed.mnemonicWords);
+    } on Exception {
+      return null;
+    }
+  }
+
+  Seed? _seedWithPassphrase(Seed canonicalSeed, String? passphrase) {
+    if (passphrase == null || passphrase.isEmpty) return canonicalSeed;
+    if (canonicalSeed is! MnemonicSeed) return null;
+    try {
+      return _mnemonicSeed(canonicalSeed.mnemonicWords, passphrase);
+    } on Exception {
+      return null;
+    }
+  }
+
+  Seed _mnemonicSeed(List<String> words, [String passphrase = '']) {
+    final mnemonic = bip39.Mnemonic.fromWords(
+      words: words,
+      passphrase: passphrase,
+    );
+    final bytes = Uint8List.fromList(mnemonic.seed);
+    final fingerprint = bip32.Bip32Keys.fromSeed(bytes).fingerprintHex;
+    return Seed.mnemonic(
+      mnemonicWords: mnemonic.words,
+      passphrase: passphrase.isEmpty ? null : passphrase,
+      bytes: bytes,
+      masterFingerprint: fingerprint,
+    );
+  }
 
   Future<bool> _rollback(String walletId) async {
     try {

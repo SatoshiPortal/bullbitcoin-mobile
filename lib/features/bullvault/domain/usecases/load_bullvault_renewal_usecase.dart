@@ -49,15 +49,18 @@ class LoadBullVaultRenewalUsecase {
         return Err(failure);
     }
     var needsInitialSetup = !details.record.hardwareSetupComplete;
-    final backupStatus = await _checkMobileBackupsUsecase.execute(
-      details.policy.everydayKey.accountKey.masterFingerprint,
-    );
-    needsInitialSetup =
-        needsInitialSetup ||
-        switch (backupStatus) {
-          Ok(:final value) => !value.physical && !value.recoverBull,
-          Err() => true,
-        };
+    final mobileSeedFingerprint = details.record.mobileSeedFingerprint;
+    if (mobileSeedFingerprint != null) {
+      final backupStatus = await _checkMobileBackupsUsecase.execute(
+        mobileSeedFingerprint,
+      );
+      needsInitialSetup =
+          needsInitialSetup ||
+          switch (backupStatus) {
+            Ok(:final value) => !value.physical && !value.recoverBull,
+            Err() => true,
+          };
+    }
     final resumed = await _resumeUsecase.execute(walletId);
     switch (resumed) {
       case Ok(value: final renewal?):

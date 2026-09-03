@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -23,9 +24,11 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/cancel_bullvault_re
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_onboarding_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_recovery_package_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_details_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_onboarding_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
@@ -35,6 +38,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/resume_bullvault_on
 import 'package:bb_mobile/features/bullvault/domain/usecases/resume_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_home_alert_cubit.dart';
@@ -78,10 +82,7 @@ abstract final class BullVaultLocator {
       ),
     );
     locator.registerLazySingleton<BullVaultDescriptorService>(
-      () => BullVaultDescriptorService(
-        locator<BitcoinDescriptorPort>(),
-        locator<SeedVerificationPort>(),
-      ),
+      () => BullVaultDescriptorService(locator<BitcoinDescriptorPort>()),
     );
     locator.registerLazySingleton<BullVaultRepository>(() {
       final codec = BullVaultRecoveryPackageCodec(
@@ -113,10 +114,13 @@ abstract final class BullVaultLocator {
         locator<BitcoinDescriptorPort>(),
         locator<BullVaultDescriptorService>(),
         locator<GetSettingsUsecase>(),
+        locator<GetDefaultSeedUsecase>(),
         locator<GetWalletUsecase>(),
         locator<ReserveBip48AccountUsecase>(),
         locator<DeleteWalletUsecase>(),
         locator<SetWalletHiddenUsecase>(),
+        locator<WalletSignerOwnershipPort>(),
+        locator<GetAllSeedsUsecase>(),
       ),
     );
     locator.registerFactory<PrepareBullVaultTimeReferenceUsecase>(
@@ -132,6 +136,12 @@ abstract final class BullVaultLocator {
     );
     locator.registerFactory<CreateBullVaultOnboardingUsecase>(
       () => CreateBullVaultOnboardingUsecase(locator(), locator()),
+    );
+    locator.registerFactory<GenerateBullVaultInheritanceMnemonicUsecase>(
+      GenerateBullVaultInheritanceMnemonicUsecase.new,
+    );
+    locator.registerFactory<DeriveBullVaultMnemonicKeyUsecase>(
+      DeriveBullVaultMnemonicKeyUsecase.new,
     );
     locator.registerFactory<GetBullVaultDetailsUsecase>(
       () => GetBullVaultDetailsUsecase(
@@ -205,6 +215,9 @@ abstract final class BullVaultLocator {
     locator.registerLazySingleton<UpdateBullVaultSetupUsecase>(
       () => UpdateBullVaultSetupUsecase(locator(), locator()),
     );
+    locator.registerFactory<UpdateBullVaultRegistrationNameUsecase>(
+      () => UpdateBullVaultRegistrationNameUsecase(locator()),
+    );
     locator.registerFactory<WatchBullVaultMigrationUsecase>(
       () => WatchBullVaultMigrationUsecase(locator<SendFacade>()),
     );
@@ -212,7 +225,7 @@ abstract final class BullVaultLocator {
       () => CanDeleteBullVaultWalletUsecase(locator()),
     );
     locator.registerFactory<BullVaultFacade>(
-      () => BullVaultFacade(locator(), locator(), locator()),
+      () => BullVaultFacade(locator(), locator()),
     );
     locator.registerFactory<BullVaultOnboardingCubit>(
       () => BullVaultOnboardingCubit(
@@ -223,6 +236,9 @@ abstract final class BullVaultLocator {
         locator(),
         locator(),
         locator(),
+        locator<UpdateBullVaultRegistrationNameUsecase>(),
+        locator<GenerateBullVaultInheritanceMnemonicUsecase>(),
+        locator<DeriveBullVaultMnemonicKeyUsecase>(),
       ),
     );
     locator.registerFactory<BullVaultHomeAlertCubit>(
@@ -236,6 +252,7 @@ abstract final class BullVaultLocator {
     );
     locator.registerFactoryParam<BullVaultRenewalCubit, String, void>(
       (walletId, _) => BullVaultRenewalCubit(
+        locator(),
         locator(),
         locator(),
         locator(),

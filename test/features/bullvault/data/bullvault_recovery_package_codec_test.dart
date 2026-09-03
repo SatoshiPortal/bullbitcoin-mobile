@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -24,10 +23,7 @@ const _fourthMnemonic = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong';
 
 void main() {
   final descriptorPort = _ParsingDescriptorPort();
-  final descriptorService = BullVaultDescriptorService(
-    descriptorPort,
-    const _UnusedSeedVerificationPort(),
-  );
+  final descriptorService = BullVaultDescriptorService(descriptorPort);
   final codec = BullVaultRecoveryPackageCodec(descriptorService);
 
   test('serializes the compact public recovery format', () {
@@ -50,7 +46,7 @@ void main() {
       'lineageId',
       'network',
       'policyVersion',
-      'scheduleYears',
+      'schedule',
       'schemaVersion',
     });
     expect(encoded, isNot(contains('mnemonic')));
@@ -58,9 +54,9 @@ void main() {
 
     final restored = codec.decode(encoded);
     expect(restored.policy.descriptor, policy.descriptor);
-    expect(restored.policy.schedule?.coldYears, 3);
-    expect(restored.policy.schedule?.recoveryYears, 2);
-    expect(restored.policy.schedule?.inheritanceYears, 5);
+    expect(restored.policy.schedule?.coldDelay, 3);
+    expect(restored.policy.schedule?.recoveryDelay, 2);
+    expect(restored.policy.schedule?.inheritanceDelay, 5);
   });
 
   for (final profile in [
@@ -118,6 +114,72 @@ void main() {
     expect(restored.previousVaultId, 'previous-wallet');
   });
 
+  test('preserves known metadata when enriching a recovery package', () {
+    final original = BullVaultRecoveryPackage(
+      policy: _policy(
+        descriptorPort,
+        protection: BullVaultProtection.standard,
+        includesInheritance: false,
+        generation: 1,
+        lineageId: 'original-lineage',
+      ),
+      previousVaultId: 'previous-wallet',
+    );
+    final json = jsonDecode(codec.encode(original)) as Map<String, dynamic>;
+    expect(original.canBeEnrichedBy(codec.decode(jsonEncode(json))), isTrue);
+
+    for (final changes in <Map<String, dynamic>>[
+      {'birthHeight': original.policy.birthHeight! + 1},
+      {'schedule': null},
+      {'lineageId': 'different-lineage'},
+      {'previousVaultId': 'different-wallet'},
+    ]) {
+      final incoming = {...json, ...changes}
+        ..removeWhere((_, value) => value == null);
+      expect(
+        original.canBeEnrichedBy(codec.decode(jsonEncode(incoming))),
+        isFalse,
+        reason: 'Known metadata cannot be replaced or forgotten: $changes',
+      );
+    }
+
+    final withoutSchedule = {...json}..remove('schedule');
+    final knownDate = codec.decode(jsonEncode(withoutSchedule));
+    withoutSchedule['createdAt'] = '2028-01-15T12:00:00Z';
+    expect(
+      knownDate.canBeEnrichedBy(codec.decode(jsonEncode(withoutSchedule))),
+      isFalse,
+    );
+  });
+
+  test('preserves practice schedule timing', () {
+    const schedule = BullVaultSchedule(
+      coldDelay: 2,
+      recoveryDelay: 3,
+      unit: BullVaultScheduleUnit.hours,
+    );
+    final policy = _policy(
+      descriptorPort,
+      protection: BullVaultProtection.standard,
+      includesInheritance: false,
+      schedule: schedule,
+    );
+
+    final restored = codec.decode(
+      codec.encode(BullVaultRecoveryPackage(policy: policy)),
+    );
+
+    expect(restored.policy.schedule?.unit, BullVaultScheduleUnit.hours);
+    expect(
+      restored.policy.coldActivationTimestamp,
+      schedule.coldActivationTimestamp(policy.createdAt!),
+    );
+    expect(
+      restored.policy.recoveryActivationTimestamp,
+      schedule.recoveryActivationTimestamp(policy.createdAt!),
+    );
+  });
+
   test('validates optional schedule metadata against the descriptor', () {
     final policy = _policy(
       descriptorPort,
@@ -127,12 +189,12 @@ void main() {
     final json =
         jsonDecode(codec.encode(BullVaultRecoveryPackage(policy: policy)))
             as Map<String, dynamic>;
-    final schedule = json['scheduleYears'] as Map<String, dynamic>;
+    final schedule = json['schedule'] as Map<String, dynamic>;
     schedule['recovery'] = (schedule['recovery'] as int) + 1;
 
     expect(() => codec.decode(jsonEncode(json)), throwsFormatException);
 
-    json['scheduleYears'] = null;
+    json['schedule'] = null;
     final restored = codec.decode(jsonEncode(json));
     expect(restored.policy.schedule, isNull);
     expect(restored.policy.recoveryActivationTimestamp, isNotNull);
@@ -154,7 +216,7 @@ void main() {
 
     expect(json, isNot(contains('birthHeight')));
     expect(json, isNot(contains('createdAt')));
-    expect(json, isNot(contains('scheduleYears')));
+    expect(json, isNot(contains('schedule')));
     expect(restored.policy.birthHeight, isNull);
     expect(restored.policy.createdAt, isNull);
     expect(restored.policy.schedule, isNull);
@@ -182,6 +244,7 @@ BullVaultPolicy _policy(
   required bool includesInheritance,
   int generation = 0,
   String? lineageId,
+  BullVaultSchedule? schedule,
 }) {
   final signers = [
     _signer(
@@ -207,7 +270,7 @@ BullVaultPolicy _policy(
   final cold = signers[1];
   final secondCold = protection.usesTwoColdKeys ? signers[2] : null;
   final inheritance = includesInheritance ? signers.last : null;
-  final schedule = BullVaultSchedule.defaultsFor(
+  schedule ??= BullVaultSchedule.defaultsFor(
     protection: protection,
     includesInheritance: includesInheritance,
   );
@@ -297,15 +360,5 @@ final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
     List<WalletSigner> signers = const [],
     bool isHidden = false,
     bool sync = false,
-  }) => throw UnimplementedError();
-}
-
-final class _UnusedSeedVerificationPort implements SeedVerificationPort {
-  const _UnusedSeedVerificationPort();
-
-  @override
-  Future<bool> matchesXpubs({
-    required String fingerprint,
-    required List<({String derivationPath, String xpub})> keys,
   }) => throw UnimplementedError();
 }

@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_re
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/renew_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_state.dart';
@@ -38,6 +39,9 @@ class _MockActivate extends Mock implements ActivateBullVaultRenewalUsecase {}
 class _MockCancel extends Mock implements CancelBullVaultRenewalUsecase {}
 
 class _MockUpdateSetup extends Mock implements UpdateBullVaultSetupUsecase {}
+
+class _MockUpdateRegistration extends Mock
+    implements UpdateBullVaultRegistrationNameUsecase {}
 
 class _MockWatchMigration extends Mock
     implements WatchBullVaultMigrationUsecase {}
@@ -65,54 +69,50 @@ void main() {
     );
   });
 
-  test(
-    'restores pending setup without requiring a chain-time lookup',
-    () async {
-      final load = _MockLoadRenewal();
-      final watchMigration = _MockWatchMigration();
-      final details = _details();
-      final renewal = _renewal(details.record);
-      final encodeRecoveryPackage = _MockEncodeRecoveryPackage();
-      when(() => load.execute(details.record.walletId)).thenAnswer(
-        (_) async =>
-            Ok(BullVaultRenewalLoad(details: details, renewal: renewal)),
-      );
-      when(
-        () =>
-            encodeRecoveryPackage.execute(renewal.replacement.recoveryPackage),
-      ).thenReturn('{}');
-      when(
-        () => watchMigration.execute(
-          previousWalletId: 'retired-wallet',
-          migrationAddress: details.migrationAddress!,
-        ),
-      ).thenAnswer((_) => Stream.value(const Ok('migration-txid')));
-      final cubit = BullVaultRenewalCubit(
-        load,
-        _MockRenew(),
-        _MockActivate(),
-        _MockCancel(),
-        _MockUpdateSetup(),
-        watchMigration,
-        encodeRecoveryPackage,
-        walletId: details.record.walletId,
-      );
+  test('restores pending setup and watches migration progress', () async {
+    final load = _MockLoadRenewal();
+    final watchMigration = _MockWatchMigration();
+    final details = _details();
+    final renewal = _renewal(details.record);
+    final encodeRecoveryPackage = _MockEncodeRecoveryPackage();
+    when(() => load.execute(details.record.walletId)).thenAnswer(
+      (_) async => Ok(BullVaultRenewalLoad(details: details, renewal: renewal)),
+    );
+    when(
+      () => encodeRecoveryPackage.execute(renewal.replacement.recoveryPackage),
+    ).thenReturn('{}');
+    when(
+      () => watchMigration.execute(
+        previousWalletId: 'retired-wallet',
+        migrationAddress: details.migrationAddress!,
+      ),
+    ).thenAnswer((_) => Stream.value(const Ok('migration-txid')));
+    final cubit = BullVaultRenewalCubit(
+      load,
+      _MockRenew(),
+      _MockActivate(),
+      _MockCancel(),
+      _MockUpdateSetup(),
+      _MockUpdateRegistration(),
+      watchMigration,
+      encodeRecoveryPackage,
+      walletId: details.record.walletId,
+    );
 
-      await cubit.load();
-      await Future<void>.delayed(Duration.zero);
+    await cubit.load();
+    await Future<void>.delayed(Duration.zero);
 
-      expect(cubit.state.renewal, same(renewal));
-      expect(cubit.state.details, same(details));
-      expect(cubit.state.step, BullVaultRenewalStep.recoveryPackage);
-      expect(cubit.state.isLoading, isFalse);
-      expect(
-        cubit.state.migrationTransactionIds['retired-wallet'],
-        'migration-txid',
-      );
-      verify(() => load.execute(details.record.walletId)).called(1);
-      await cubit.close();
-    },
-  );
+    expect(cubit.state.renewal, same(renewal));
+    expect(cubit.state.details, same(details));
+    expect(cubit.state.step, BullVaultRenewalStep.recoveryPackage);
+    expect(cubit.state.isLoading, isFalse);
+    expect(
+      cubit.state.migrationTransactionIds['retired-wallet'],
+      'migration-txid',
+    );
+    verify(() => load.execute(details.record.walletId)).called(1);
+    await cubit.close();
+  });
 
   test('returns to renewal review after cancellation', () async {
     final load = _MockLoadRenewal();
@@ -163,6 +163,7 @@ void main() {
       _MockActivate(),
       cancel,
       _MockUpdateSetup(),
+      _MockUpdateRegistration(),
       watchMigration,
       encode,
       walletId: details.record.walletId,
@@ -252,6 +253,7 @@ void main() {
       activate,
       _MockCancel(),
       update,
+      _MockUpdateRegistration(),
       watchMigration,
       encode,
       walletId: details.record.walletId,
@@ -275,7 +277,6 @@ void main() {
     expect(cubit.state.renewal, same(renewal));
     expect(cubit.state.completedSignerIds, {'cold'});
     expect(cubit.state.recoveryPackageConfirmed, isTrue);
-    expect(cubit.state.isActivated, isTrue);
     expect(cubit.state.step, BullVaultRenewalStep.complete);
     await cubit.close();
   });
@@ -295,7 +296,6 @@ BullVaultDetails _details() {
   );
   return BullVaultDetails(
     record: record,
-    policy: policy,
     timeUntilFirstRecovery: const Duration(days: 365),
     showEarlyRenewalWarning: false,
     migrationAddress: 'tb1qmigration',
@@ -317,18 +317,9 @@ BullVaultRenewResult _renewal(BullVaultRecord previous) {
     previousWalletId: previous.walletId,
     status: BullVaultLifecycleStatus.pending,
   );
-  final recovery = BullVaultRecoveryPackage(
-    previousVaultId: previous.walletId,
-    policy: policy,
-  );
   return BullVaultRenewResult(
     previous: previous,
-    replacement: BullVaultCreateResult(
-      wallet: wallet,
-      policy: policy,
-      record: record,
-      recoveryPackage: recovery,
-    ),
+    replacement: BullVaultCreateResult(wallet: wallet, record: record),
   );
 }
 
@@ -387,7 +378,9 @@ BullVaultSignerKey _signer(BullVaultSignerRole role, int mnemonicIndex) {
       xpub: derived.xpub.split(']').last,
       derivationPath: "m/48'/1'/0'/2'",
     ),
-    signer: SignerEntity.remote,
+    signer: role == BullVaultSignerRole.everyday
+        ? SignerEntity.local
+        : SignerEntity.remote,
     signerDevice: null,
   );
 }

@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -116,6 +115,13 @@ class RenewBullVaultUsecase {
         currentWallet,
         currentRecovery.policy.everydayKey,
       );
+      final delayedMobileRecovery =
+          currentRecovery.policy.delayedMobileRecoveryKey == null
+          ? null
+          : _signerKey(
+              currentWallet,
+              currentRecovery.policy.delayedMobileRecoveryKey!,
+            );
       final cold = _signerKey(currentWallet, currentRecovery.policy.coldKey);
       final secondCold = currentRecovery.policy.secondColdKey == null
           ? null
@@ -125,6 +131,7 @@ class RenewBullVaultUsecase {
           : _signerKey(currentWallet, currentRecovery.policy.inheritanceKey!);
       if (BullVaultPolicy.reusesSignerKey([
         everyday,
+        ?delayedMobileRecovery,
         cold,
         ?secondCold,
         ?inheritance,
@@ -146,6 +153,7 @@ class RenewBullVaultUsecase {
         network: currentRecovery.policy.network,
         protection: currentRecovery.policy.protection,
         everydayKey: everyday,
+        delayedMobileRecoveryKey: delayedMobileRecovery,
         coldKey: cold,
         secondColdKey: secondCold,
         inheritanceKey: inheritance,
@@ -163,18 +171,18 @@ class RenewBullVaultUsecase {
         descriptor: parsed.descriptor,
         protection: currentRecovery.policy.protection,
         everydayKey: everyday,
+        delayedMobileRecoveryKey: delayedMobileRecovery,
         coldKey: cold,
         secondColdKey: secondCold,
         inheritanceKey: inheritance,
         schedule: request.schedule,
         timeReference: timeReference,
       );
-      final annotations = _signerAnnotations(parsed.descriptorKeys, [
-        everyday,
-        cold,
-        ?secondCold,
-        ?inheritance,
-      ]);
+      final annotations = BullVaultSignerKey.assignDescriptorKeys(
+        parsed.descriptorKeys,
+        [everyday, ?delayedMobileRecovery, cold, ?secondCold, ?inheritance],
+        existingSigners: currentWallet.signers,
+      );
       if (annotations == null) {
         await _releaseGeneration(current, generation);
         return const Err(BullVaultRenewalFailure());
@@ -196,6 +204,7 @@ class RenewBullVaultUsecase {
         lineageId: current.lineageId,
         vaultGeneration: generation,
         mobileAccount: current.mobileAccount,
+        mobileSeedFingerprint: current.mobileSeedFingerprint,
         birthHeight: timeReference.chainHeight,
         recoveryPackage: recovery,
         previousVaultId: current.walletId,
@@ -215,9 +224,7 @@ class RenewBullVaultUsecase {
       reservedGeneration = null;
       final created = BullVaultCreateResult(
         wallet: importedWallet,
-        policy: policy,
         record: replacement,
-        recoveryPackage: recovery,
       );
       return Ok(BullVaultRenewResult(previous: current, replacement: created));
     } on Exception catch (error, stackTrace) {
@@ -243,10 +250,7 @@ class RenewBullVaultUsecase {
     final completer = Completer<void>();
     final previous = _renewalLock;
     _renewalLock = completer.future;
-    return previous
-        .catchError((_) {})
-        .then((_) => action())
-        .whenComplete(completer.complete);
+    return previous.then((_) => action()).whenComplete(completer.complete);
   }
 
   BullVaultSignerKey _signerKey(
@@ -270,34 +274,11 @@ class RenewBullVaultUsecase {
         xpubFingerprint: accountKey.xpubFingerprint,
         xpub: accountKey.xpub,
         derivationPath: accountKey.derivationPath,
+        requiresPassphrase: accountKey.requiresPassphrase,
       ),
       signer: signer.signer,
       signerDevice: signer.signerDevice,
     );
-  }
-
-  List<WalletSigner>? _signerAnnotations(
-    List<WalletDescriptorKey> descriptorKeys,
-    List<BullVaultSignerKey> signers,
-  ) {
-    final annotations = <WalletSigner>[];
-    for (final signer in signers) {
-      final keys = [
-        for (final key in descriptorKeys)
-          if (_sameXpub(key.xpub, signer.accountKey.xpub))
-            key.copyWith(signerId: signer.role.name),
-      ];
-      if (keys.isEmpty) return null;
-      annotations.add(
-        WalletSigner(
-          id: signer.role.name,
-          signer: signer.signer,
-          signerDevice: signer.signerDevice,
-          descriptorKeys: keys,
-        ),
-      );
-    }
-    return annotations;
   }
 
   bool _sameXpub(String first, String second) =>

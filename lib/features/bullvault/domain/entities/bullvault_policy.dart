@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
@@ -27,6 +29,7 @@ final class BullVaultPolicy {
   final String descriptor;
   final BullVaultProtection protection;
   final BullVaultSignerKey everydayKey;
+  final BullVaultSignerKey? delayedMobileRecoveryKey;
   final BullVaultSignerKey coldKey;
   final BullVaultSignerKey? secondColdKey;
   final BullVaultSignerKey? inheritanceKey;
@@ -47,6 +50,7 @@ final class BullVaultPolicy {
     required this.descriptor,
     required this.protection,
     required this.everydayKey,
+    this.delayedMobileRecoveryKey,
     required this.coldKey,
     required this.secondColdKey,
     required this.inheritanceKey,
@@ -79,15 +83,67 @@ final class BullVaultPolicy {
     }
     if (reusesSignerKey([
       everydayKey,
+      ?delayedMobileRecoveryKey,
       coldKey,
       ?secondColdKey,
       ?inheritanceKey,
     ])) {
       throw ArgumentError('BullVault signer keys must be independent');
     }
+    final recoveryKey = delayedMobileRecoveryKey;
+    if (recoveryKey != null &&
+        ((everydayKey.signer != SignerEntity.local ||
+                    recoveryKey.signer != SignerEntity.local) &&
+                (everydayKey.signer != SignerEntity.none ||
+                    recoveryKey.signer != SignerEntity.none) ||
+            !_usesSameBip48Account(
+              everydayKey,
+              recoveryKey,
+              network.coinType,
+            ))) {
+      throw ArgumentError(
+        'Delayed mobile recovery must use the everyday Bull account',
+      );
+    }
   }
 
   bool get hasKnownOriginalSchedule => schedule != null;
+
+  BullVaultPolicy withEverydayOwnership(
+    SignerEntity signer, {
+    bool requiresPassphrase = false,
+  }) => BullVaultPolicy(
+    id: id,
+    lineageId: lineageId,
+    vaultGeneration: vaultGeneration,
+    network: network,
+    descriptor: descriptor,
+    protection: protection,
+    everydayKey: everydayKey.copyWith(
+      accountKey: everydayKey.accountKey.copyWith(
+        requiresPassphrase: requiresPassphrase,
+      ),
+      signer: signer,
+      clearSignerDevice: signer != SignerEntity.remote,
+    ),
+    delayedMobileRecoveryKey: delayedMobileRecoveryKey?.copyWith(
+      signer: signer == SignerEntity.local
+          ? SignerEntity.local
+          : SignerEntity.none,
+      clearSignerDevice: true,
+    ),
+    coldKey: coldKey,
+    secondColdKey: secondColdKey,
+    inheritanceKey: inheritanceKey,
+    schedule: schedule,
+    birthHeight: birthHeight,
+    referenceTimestamp: referenceTimestamp,
+    chainMedianTimePast: chainMedianTimePast,
+    coldActivationTimestamp: coldActivationTimestamp,
+    recoveryActivationTimestamp: recoveryActivationTimestamp,
+    inheritanceActivationTimestamp: inheritanceActivationTimestamp,
+    createdAt: createdAt,
+  );
 
   BullVaultSchedule get renewalSchedule =>
       schedule ??
@@ -103,6 +159,7 @@ final class BullVaultPolicy {
     required String descriptor,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
@@ -123,6 +180,7 @@ final class BullVaultPolicy {
       descriptor: descriptor,
       protection: protection,
       everydayKey: everydayKey,
+      delayedMobileRecoveryKey: delayedMobileRecoveryKey,
       coldKey: coldKey,
       secondColdKey: secondColdKey,
       inheritanceKey: inheritanceKey,
@@ -150,6 +208,7 @@ final class BullVaultPolicy {
     required String descriptor,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
@@ -166,6 +225,7 @@ final class BullVaultPolicy {
       descriptor: descriptor,
       protection: protection,
       everydayKey: everydayKey,
+      delayedMobileRecoveryKey: delayedMobileRecoveryKey,
       coldKey: coldKey,
       secondColdKey: secondColdKey,
       inheritanceKey: inheritanceKey,
@@ -203,6 +263,7 @@ final class BullVaultPolicy {
       descriptor: descriptor,
       protection: recognizedPolicy.protection,
       everydayKey: recognizedPolicy.everydayKey,
+      delayedMobileRecoveryKey: recognizedPolicy.delayedMobileRecoveryKey,
       coldKey: recognizedPolicy.coldKey,
       secondColdKey: recognizedPolicy.secondColdKey,
       inheritanceKey: recognizedPolicy.inheritanceKey,
@@ -223,6 +284,7 @@ final class BullVaultPolicy {
     required Network network,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
@@ -244,6 +306,7 @@ final class BullVaultPolicy {
       network: network,
       protection: protection,
       everydayKey: everydayKey,
+      delayedMobileRecoveryKey: delayedMobileRecoveryKey,
       coldKey: coldKey,
       secondColdKey: secondColdKey,
       inheritanceKey: inheritanceKey,
@@ -265,6 +328,7 @@ final class BullVaultPolicy {
     required Network network,
     required BullVaultProtection protection,
     required BullVaultSignerKey everydayKey,
+    BullVaultSignerKey? delayedMobileRecoveryKey,
     required BullVaultSignerKey coldKey,
     required BullVaultSignerKey? secondColdKey,
     required BullVaultSignerKey? inheritanceKey,
@@ -289,7 +353,7 @@ final class BullVaultPolicy {
     );
     final everydayPairs = _branchPairsForGeneration(
       vaultGeneration,
-      occurrencesPerGeneration: 2,
+      occurrencesPerGeneration: delayedMobileRecoveryKey == null ? 2 : 1,
     );
     final coldPairs = _branchPairsForGeneration(
       vaultGeneration,
@@ -302,9 +366,18 @@ final class BullVaultPolicy {
       receiveBranch: everydayPairs[0].receive,
       changeBranch: everydayPairs[0].change,
     );
-    final everydayRecovery = everydayKey.expression(
-      receiveBranch: everydayPairs[1].receive,
-      changeBranch: everydayPairs[1].change,
+    final delayedMobileKey = delayedMobileRecoveryKey ?? everydayKey;
+    final delayedMobilePairs = delayedMobileRecoveryKey == null
+        ? everydayPairs
+        : _branchPairsForGeneration(
+            vaultGeneration,
+            occurrencesPerGeneration: 1,
+          );
+    final everydayRecovery = delayedMobileKey.expression(
+      receiveBranch:
+          delayedMobilePairs[delayedMobileRecoveryKey == null ? 1 : 0].receive,
+      changeBranch:
+          delayedMobilePairs[delayedMobileRecoveryKey == null ? 1 : 0].change,
     );
     final coldPrimary = coldKey.expression(
       receiveBranch: coldPairs[0].receive,
@@ -471,6 +544,10 @@ final class BullVaultPolicy {
       network == other.network &&
       protection == other.protection &&
       _sameAccountKey(everydayKey, other.everydayKey) &&
+      _sameOptionalAccountKey(
+        delayedMobileRecoveryKey,
+        other.delayedMobileRecoveryKey,
+      ) &&
       _sameAccountKey(coldKey, other.coldKey) &&
       _sameOptionalAccountKey(secondColdKey, other.secondColdKey) &&
       _sameOptionalAccountKey(inheritanceKey, other.inheritanceKey);
@@ -491,6 +568,23 @@ final class BullVaultPolicy {
   ) =>
       Bip32Derivation.getBip32Xpub(first.accountKey.xpub).toBase58() ==
       Bip32Derivation.getBip32Xpub(second.accountKey.xpub).toBase58();
+
+  static bool _usesSameBip48Account(
+    BullVaultSignerKey first,
+    BullVaultSignerKey second,
+    int coinType,
+  ) {
+    final firstAccount = Bip48Derivation.account(
+      first.accountKey.derivationPath,
+      coinType: coinType,
+    );
+    return firstAccount != null &&
+        firstAccount ==
+            Bip48Derivation.account(
+              second.accountKey.derivationPath,
+              coinType: coinType,
+            );
+  }
 
   bool _hasValidScheduleMetadata() {
     final schedule = this.schedule;

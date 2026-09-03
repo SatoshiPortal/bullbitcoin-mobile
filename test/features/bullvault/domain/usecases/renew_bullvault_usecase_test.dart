@@ -176,6 +176,89 @@ final class _RenewRepository implements BullVaultRepository {
 }
 
 void main() {
+  final profiles = [
+    (
+      name: 'standard',
+      protection: BullVaultProtection.standard,
+      includesInheritance: false,
+      hardwareEveryday: false,
+      delayedMobileRecovery: true,
+      schedule: BullVaultSchedule.defaultsFor(
+        protection: BullVaultProtection.standard,
+        includesInheritance: false,
+        unit: BullVaultScheduleUnit.hours,
+      ),
+    ),
+    (
+      name: 'standard with inheritance',
+      protection: BullVaultProtection.standard,
+      includesInheritance: true,
+      hardwareEveryday: false,
+      delayedMobileRecovery: false,
+      schedule: BullVaultSchedule.standardWithInheritance,
+    ),
+    (
+      name: 'extra protection',
+      protection: BullVaultProtection.extra,
+      includesInheritance: false,
+      hardwareEveryday: true,
+      delayedMobileRecovery: false,
+      schedule: BullVaultSchedule.extraWithoutInheritance,
+    ),
+    (
+      name: 'extra protection with inheritance',
+      protection: BullVaultProtection.extra,
+      includesInheritance: true,
+      hardwareEveryday: false,
+      delayedMobileRecovery: false,
+      schedule: BullVaultSchedule.extraWithInheritance,
+    ),
+  ];
+
+  for (final profile in profiles) {
+    test('renews the ${profile.name} signer configuration', () async {
+      final fixture = _renewFixture(
+        protection: profile.protection,
+        includesInheritance: profile.includesInheritance,
+        hardwareEveryday: profile.hardwareEveryday,
+        delayedMobileRecovery: profile.delayedMobileRecovery,
+        schedule: profile.schedule,
+      );
+
+      final result = await fixture.usecase.execute(
+        BullVaultRenewRequest(
+          walletId: fixture.currentWallet.id,
+          label: 'Renewed BullVault',
+          schedule: profile.schedule,
+          timeReference: _timeReference(DateTime.utc(2028, 1, 15, 12)),
+        ),
+      );
+
+      final replacement = switch (result) {
+        Ok(:final value) => value.replacement,
+        Err(:final failure) => throw TestFailure('$failure'),
+      };
+      expect(replacement.policy.protection, profile.protection);
+      expect(
+        replacement.policy.inheritanceKey != null,
+        profile.includesInheritance,
+      );
+      expect(
+        replacement.policy.secondColdKey != null,
+        profile.protection.usesTwoColdKeys,
+      );
+      expect(
+        replacement.policy.delayedMobileRecoveryKey != null,
+        profile.delayedMobileRecovery,
+      );
+      expect(replacement.policy.schedule, same(profile.schedule));
+      expect(
+        replacement.policy.everydayKey.signer,
+        profile.hardwareEveryday ? SignerEntity.remote : SignerEntity.local,
+      );
+    });
+  }
+
   test(
     'serializes concurrent renewal and resumes its prepared successor',
     () async {
@@ -300,38 +383,78 @@ final class _RenewFixture {
   });
 }
 
-_RenewFixture _renewFixture() {
+_RenewFixture _renewFixture({
+  BullVaultProtection protection = BullVaultProtection.standard,
+  bool includesInheritance = true,
+  bool hardwareEveryday = false,
+  bool delayedMobileRecovery = false,
+  BullVaultSchedule? schedule,
+}) {
   final descriptorPort = _RenewDescriptorPort();
   final getWallet = _MockGetWalletUsecase();
   final deleteWallet = _MockDeleteWalletUsecase();
   final setWalletHidden = _MockSetWalletHiddenUsecase();
   final reference = DateTime.utc(2027, 1, 15, 12);
-  final signers = [
-    _signer(BullVaultSignerRole.everyday, 0, null),
-    _signer(BullVaultSignerRole.cold, 1, SignerDeviceEntity.ledgerNanoX),
-    _signer(BullVaultSignerRole.inheritance, 2, SignerDeviceEntity.passport),
-  ];
+  final everyday = _signer(
+    BullVaultSignerRole.everyday,
+    0,
+    hardwareEveryday ? SignerDeviceEntity.ledgerNanoX : null,
+    signer: hardwareEveryday ? SignerEntity.remote : SignerEntity.local,
+    requiresPassphrase: delayedMobileRecovery,
+  );
+  final delayedMobile = delayedMobileRecovery
+      ? _signer(
+          BullVaultSignerRole.delayedMobileRecovery,
+          3,
+          null,
+          signer: SignerEntity.local,
+        )
+      : null;
+  final cold = _signer(
+    BullVaultSignerRole.cold,
+    1,
+    SignerDeviceEntity.ledgerNanoX,
+  );
+  final secondCold = protection.usesTwoColdKeys
+      ? _signer(BullVaultSignerRole.secondCold, 2, SignerDeviceEntity.bitbox02)
+      : null;
+  final inheritance = includesInheritance
+      ? _signer(
+          BullVaultSignerRole.inheritance,
+          protection.usesTwoColdKeys ? 3 : 2,
+          SignerDeviceEntity.krux,
+        )
+      : null;
+  final resolvedSchedule =
+      schedule ??
+      BullVaultSchedule.defaultsFor(
+        protection: protection,
+        includesInheritance: includesInheritance,
+      );
+  final signers = [everyday, ?delayedMobile, cold, ?secondCold, ?inheritance];
   final currentDescriptor = BullVaultPolicy.descriptorTemplate(
     vaultGeneration: 0,
     network: Network.bitcoinTestnet,
-    protection: BullVaultProtection.standard,
-    everydayKey: signers[0].key,
-    coldKey: signers[1].key,
-    secondColdKey: null,
-    inheritanceKey: signers[2].key,
-    schedule: BullVaultSchedule.standardWithInheritance,
+    protection: protection,
+    everydayKey: everyday.key,
+    delayedMobileRecoveryKey: delayedMobile?.key,
+    coldKey: cold.key,
+    secondColdKey: secondCold?.key,
+    inheritanceKey: inheritance?.key,
+    schedule: resolvedSchedule,
     referenceTime: reference,
   );
   final currentPolicy = BullVaultPolicy.build(
     vaultGeneration: 0,
     network: Network.bitcoinTestnet,
     descriptor: currentDescriptor,
-    protection: BullVaultProtection.standard,
-    everydayKey: signers[0].key,
-    coldKey: signers[1].key,
-    secondColdKey: null,
-    inheritanceKey: signers[2].key,
-    schedule: BullVaultSchedule.standardWithInheritance,
+    protection: protection,
+    everydayKey: everyday.key,
+    delayedMobileRecoveryKey: delayedMobile?.key,
+    coldKey: cold.key,
+    secondColdKey: secondCold?.key,
+    inheritanceKey: inheritance?.key,
+    schedule: resolvedSchedule,
     timeReference: _timeReference(reference),
   );
   final currentWallet = Wallet(
@@ -348,7 +471,7 @@ _RenewFixture _renewFixture() {
     walletId: currentWallet.id,
     lineageId: currentPolicy.lineageId,
     vaultGeneration: 0,
-    mobileAccount: 0,
+    mobileAccount: hardwareEveryday ? null : 0,
     birthHeight: 3_000_000,
     recoveryPackage: recovery,
     createdAt: reference,
@@ -391,8 +514,10 @@ _RenewFixture _renewFixture() {
 ({BullVaultSignerKey key, WalletSigner walletSigner}) _signer(
   BullVaultSignerRole role,
   int mnemonicIndex,
-  SignerDeviceEntity? device,
-) {
+  SignerDeviceEntity? device, {
+  SignerEntity signer = SignerEntity.remote,
+  bool requiresPassphrase = false,
+}) {
   final derived = deriveSignerKeys(testMnemonics[mnemonicIndex]);
   final accountKey = WalletDescriptorKey(
     id: '${role.name}-account',
@@ -401,22 +526,19 @@ _RenewFixture _renewFixture() {
     xpubFingerprint: derived.fingerprint,
     xpub: derived.xpub.split(']').last,
     derivationPath: "m/48'/1'/0'/2'",
+    requiresPassphrase: requiresPassphrase,
   );
   final existingSignerId = 'existing-${role.name}';
   return (
     key: BullVaultSignerKey(
       role: role,
       accountKey: accountKey,
-      signer: role == BullVaultSignerRole.everyday
-          ? SignerEntity.local
-          : SignerEntity.remote,
+      signer: signer,
       signerDevice: device,
     ),
     walletSigner: WalletSigner(
       id: existingSignerId,
-      signer: role == BullVaultSignerRole.everyday
-          ? SignerEntity.local
-          : SignerEntity.remote,
+      signer: signer,
       signerDevice: device,
       descriptorKeys: [accountKey.copyWith(signerId: existingSignerId)],
     ),

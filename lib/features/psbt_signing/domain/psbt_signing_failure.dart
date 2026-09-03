@@ -23,6 +23,10 @@ sealed class PsbtSigningFailure extends Failure {
       const PsbtSigningUnsupportedSpendModeFailure(),
     BitcoinSigningFailureKind.incomplete =>
       const PsbtSigningNoSignatureAddedFailure(),
+    BitcoinSigningFailureKind.passphraseRequired =>
+      const PsbtSigningPassphraseRequiredFailure(),
+    BitcoinSigningFailureKind.passphraseMismatch =>
+      const PsbtSigningPassphraseMismatchFailure(),
     BitcoinSigningFailureKind.unsupportedPolicyPath ||
     BitcoinSigningFailureKind.unexpected =>
       const PsbtSigningUnexpectedFailure(),
@@ -43,6 +47,14 @@ final class PsbtSigningWalletMismatchFailure extends PsbtSigningFailure {
 
 final class PsbtSigningMissingLocalKeyFailure extends PsbtSigningFailure {
   const PsbtSigningMissingLocalKeyFailure([super.logMessage]);
+}
+
+final class PsbtSigningPassphraseRequiredFailure extends PsbtSigningFailure {
+  const PsbtSigningPassphraseRequiredFailure([super.logMessage]);
+}
+
+final class PsbtSigningPassphraseMismatchFailure extends PsbtSigningFailure {
+  const PsbtSigningPassphraseMismatchFailure([super.logMessage]);
 }
 
 final class PsbtSigningMissingUtxoFailure extends PsbtSigningFailure {

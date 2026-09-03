@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_re
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/renew_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_renewal_screen.dart';
@@ -41,6 +42,9 @@ class _MockCancelBullVaultRenewalUsecase extends Mock
 
 class _MockUpdateBullVaultSetupUsecase extends Mock
     implements UpdateBullVaultSetupUsecase {}
+
+class _MockUpdateBullVaultRegistrationNameUsecase extends Mock
+    implements UpdateBullVaultRegistrationNameUsecase {}
 
 class _MockWatchBullVaultMigrationUsecase extends Mock
     implements WatchBullVaultMigrationUsecase {}
@@ -79,6 +83,7 @@ void main() {
       _MockActivateBullVaultRenewalUsecase(),
       _MockCancelBullVaultRenewalUsecase(),
       _MockUpdateBullVaultSetupUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
       _MockWatchBullVaultMigrationUsecase(),
       _MockEncodeBullVaultRecoveryPackageUsecase(),
       walletId: details.record.walletId,
@@ -129,9 +134,7 @@ void main() {
             ),
           ],
         ),
-        policy: created.policy,
         record: created.record.copyWith(recoveryPackageConfirmed: true),
-        recoveryPackage: created.recoveryPackage,
       ),
     );
     final load = _MockLoadBullVaultRenewalUsecase();
@@ -146,6 +149,7 @@ void main() {
       _MockActivateBullVaultRenewalUsecase(),
       _MockCancelBullVaultRenewalUsecase(),
       _MockUpdateBullVaultSetupUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
       _MockWatchBullVaultMigrationUsecase(),
       encode,
       walletId: details.record.walletId,
@@ -209,6 +213,7 @@ void main() {
       _MockActivateBullVaultRenewalUsecase(),
       _MockCancelBullVaultRenewalUsecase(),
       _MockUpdateBullVaultSetupUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
       _MockWatchBullVaultMigrationUsecase(),
       _MockEncodeBullVaultRecoveryPackageUsecase(),
       walletId: details.record.walletId,
@@ -272,9 +277,7 @@ void main() {
     );
     final replacement = BullVaultCreateResult(
       wallet: created.wallet,
-      policy: created.policy,
       record: created.record.copyWith(recoveryPackageConfirmed: true),
-      recoveryPackage: created.recoveryPackage,
     );
     final renewal = BullVaultRenewResult(
       previous: details.record,
@@ -303,6 +306,7 @@ void main() {
       activate,
       _MockCancelBullVaultRenewalUsecase(),
       _MockUpdateBullVaultSetupUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
       _MockWatchBullVaultMigrationUsecase(),
       encode,
       walletId: details.record.walletId,

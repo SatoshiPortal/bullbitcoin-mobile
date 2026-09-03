@@ -33,7 +33,6 @@ void main() {
         hasLateDeposit
             ? BullVaultDetails(
                 record: created.record,
-                policy: created.policy,
                 timeUntilFirstRecovery: const Duration(days: 365),
                 showEarlyRenewalWarning: false,
                 migrationAddress: 'bc1qmigration',
@@ -92,7 +91,6 @@ void main() {
       (_) async => Ok(
         BullVaultDetails(
           record: second.record,
-          policy: second.policy,
           timeUntilFirstRecovery: const Duration(days: 365),
           showEarlyRenewalWarning: false,
           migrationAddress: 'bc1qmigration',

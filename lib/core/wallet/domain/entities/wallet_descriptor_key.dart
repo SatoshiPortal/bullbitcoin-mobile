@@ -34,14 +34,16 @@ final class WalletDescriptorKey {
   WalletDescriptorKey copyWith({
     String? id,
     String? signerId,
+    String? masterFingerprint,
+    String? derivationPath,
     bool? requiresPassphrase,
   }) => WalletDescriptorKey(
     id: id ?? this.id,
     signerId: signerId ?? this.signerId,
-    masterFingerprint: masterFingerprint,
+    masterFingerprint: masterFingerprint ?? this.masterFingerprint,
     xpubFingerprint: xpubFingerprint,
     xpub: xpub,
-    derivationPath: derivationPath,
+    derivationPath: derivationPath ?? this.derivationPath,
     descriptorPath: descriptorPath,
     requiresPassphrase: requiresPassphrase ?? this.requiresPassphrase,
   );

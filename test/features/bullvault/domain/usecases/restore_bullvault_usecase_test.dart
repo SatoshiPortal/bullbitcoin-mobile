@@ -1,9 +1,15 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -15,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usec
 import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_recovery_package_codec.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_descriptor_service.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -30,6 +37,8 @@ import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repos
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bip32_keys/bip32_keys.dart' as bip32;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 import '../../bullvault_test_fixture.dart';
 import '../../../../core_test/wallet/bdk_wallet_test_fixture.dart';
@@ -128,9 +137,12 @@ final class _TestRepository implements BullVaultRepository {
   }) => throw UnimplementedError();
 }
 
-class _MockSeedVerificationPort extends Mock implements SeedVerificationPort {}
-
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
+
+class _MockGetDefaultSeedUsecase extends Mock
+    implements GetDefaultSeedUsecase {}
+
+class _MockGetAllSeedsUsecase extends Mock implements GetAllSeedsUsecase {}
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
@@ -141,6 +153,9 @@ class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
 class _MockSetWalletHiddenUsecase extends Mock
     implements SetWalletHiddenUsecase {}
+
+class _MockWalletSignerOwnershipPort extends Mock
+    implements WalletSignerOwnershipPort {}
 
 final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
   WalletAlreadyExistsException? duplicate;
@@ -193,39 +208,44 @@ void main() {
   late BullVaultDescriptorService descriptorService;
   late _TestRepository repository;
   late _ParsingDescriptorPort descriptorPort;
-  late _MockSeedVerificationPort seedVerification;
   late _MockGetSettingsUsecase getSettings;
+  late _MockGetDefaultSeedUsecase getDefaultSeed;
+  late _MockGetAllSeedsUsecase getAllSeeds;
   late _MockGetWalletUsecase getWallet;
   late _MockReserveBip48AccountUsecase reserveAccount;
   late _MockDeleteWalletUsecase deleteWallet;
   late _MockSetWalletHiddenUsecase setWalletHidden;
+  late _MockWalletSignerOwnershipPort walletSignerOwnership;
   late RestoreBullVaultUsecase usecase;
   late List<BullVaultSignerKey> signers;
   late BullVaultPolicy policy;
 
   setUp(() {
     descriptorPort = _ParsingDescriptorPort();
-    seedVerification = _MockSeedVerificationPort();
-    descriptorService = BullVaultDescriptorService(
-      descriptorPort,
-      seedVerification,
-    );
+    descriptorService = BullVaultDescriptorService(descriptorPort);
     codec = BullVaultRecoveryPackageCodec(descriptorService);
     repository = _TestRepository(codec);
     getSettings = _MockGetSettingsUsecase();
+    getDefaultSeed = _MockGetDefaultSeedUsecase();
+    getAllSeeds = _MockGetAllSeedsUsecase();
+    when(() => getAllSeeds.execute()).thenAnswer((_) async => const Ok([]));
     getWallet = _MockGetWalletUsecase();
     reserveAccount = _MockReserveBip48AccountUsecase();
     deleteWallet = _MockDeleteWalletUsecase();
     setWalletHidden = _MockSetWalletHiddenUsecase();
+    walletSignerOwnership = _MockWalletSignerOwnershipPort();
     usecase = RestoreBullVaultUsecase(
       repository,
       descriptorPort,
       descriptorService,
       getSettings,
+      getDefaultSeed,
       getWallet,
       reserveAccount,
       deleteWallet,
       setWalletHidden,
+      walletSignerOwnership,
+      getAllSeeds,
     );
     signers = [
       _signer(BullVaultSignerRole.everyday, deriveSignerKeys(testMnemonics[0])),
@@ -276,14 +296,11 @@ void main() {
       ),
     );
     when(
-      () => seedVerification.matchesXpubs(
-        fingerprint: any(named: 'fingerprint'),
-        keys: any(named: 'keys'),
-      ),
+      () => getDefaultSeed.execute(environment: Environment.testnet),
     ).thenAnswer(
-      (invocation) async =>
-          invocation.namedArguments[#fingerprint] ==
-          signers[0].accountKey.masterFingerprint,
+      (_) async => SeedModel.mnemonic(
+        mnemonicWords: testMnemonics.first.split(' '),
+      ).toEntity(),
     );
     when(
       () => reserveAccount.execute(
@@ -316,14 +333,13 @@ void main() {
       expect(result, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
       final restored =
           (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
-      expect(restored.source, BullVaultRestoreSource.recoveryPackage);
       expect(
-        restored.record.recoveryPackage.policy.schedule?.coldYears,
-        policy.schedule?.coldYears,
+        restored.record.recoveryPackage.policy.schedule?.coldDelay,
+        policy.schedule?.coldDelay,
       );
       expect(
-        restored.record.recoveryPackage.policy.schedule?.recoveryYears,
-        policy.schedule?.recoveryYears,
+        restored.record.recoveryPackage.policy.schedule?.recoveryDelay,
+        policy.schedule?.recoveryDelay,
       );
       expect(restored.record.mobileAccount, 0);
       verify(
@@ -374,10 +390,13 @@ void main() {
       descriptorPort,
       descriptorService,
       getSettings,
+      getDefaultSeed,
       getWallet,
       reserveAccount,
       deleteWallet,
       setWalletHidden,
+      walletSignerOwnership,
+      getAllSeeds,
     );
     final package = codec.encode(BullVaultRecoveryPackage(policy: policy));
 
@@ -461,11 +480,22 @@ void main() {
     expect(result, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
     final restored =
         (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
-    expect(restored.source, BullVaultRestoreSource.descriptor);
     expect(restored.record.recoveryPackage.policy.schedule, isNull);
+    final renewalSchedule =
+        restored.record.recoveryPackage.policy.renewalSchedule;
     expect(
-      restored.record.recoveryPackage.policy.renewalSchedule,
-      same(BullVaultSchedule.standardWithoutInheritance),
+      (
+        renewalSchedule.coldDelay,
+        renewalSchedule.recoveryDelay,
+        renewalSchedule.inheritanceDelay,
+        renewalSchedule.unit,
+      ),
+      (
+        BullVaultSchedule.standardWithoutInheritance.coldDelay,
+        BullVaultSchedule.standardWithoutInheritance.recoveryDelay,
+        BullVaultSchedule.standardWithoutInheritance.inheritanceDelay,
+        BullVaultSchedule.standardWithoutInheritance.unit,
+      ),
     );
     expect(
       restored.record.recoveryPackage.policy.coldActivationTimestamp,
@@ -474,7 +504,7 @@ void main() {
   });
 
   test(
-    'upgrades a descriptor restore with recovery package metadata',
+    'restores a descriptor backup before enriching its original metadata',
     () async {
       final first = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -485,6 +515,20 @@ void main() {
           (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value.wallet;
       descriptorPort.duplicate = WalletAlreadyExistsException(wallet.id);
       when(() => getWallet.execute(wallet.id)).thenAnswer((_) async => wallet);
+
+      final descriptorBackup = await usecase.execute(
+        kind: BullVaultRestoreInputKind.recoveryPackage,
+        source: codec.encode(repository.records[wallet.id]!.recoveryPackage),
+        label: 'Descriptor vault',
+      );
+      expect(
+        (descriptorBackup as Ok<BullVaultRestoreResult, BullVaultFailure>)
+            .value
+            .record
+            .recoveryPackageConfirmed,
+        isTrue,
+      );
+      expect(repository.records[wallet.id]!.recoveryPackageConfirmed, isTrue);
 
       final second = await usecase.execute(
         kind: BullVaultRestoreInputKind.recoveryPackage,
@@ -498,16 +542,66 @@ void main() {
       expect(restored.lineageId, policy.lineageId);
       expect(restored.birthHeight, policy.birthHeight);
       expect(
-        restored.recoveryPackage.policy.schedule?.coldYears,
-        policy.schedule?.coldYears,
+        restored.recoveryPackage.policy.schedule?.coldDelay,
+        policy.schedule?.coldDelay,
       );
       expect(
-        restored.recoveryPackage.policy.schedule?.recoveryYears,
-        policy.schedule?.recoveryYears,
+        restored.recoveryPackage.policy.schedule?.recoveryDelay,
+        policy.schedule?.recoveryDelay,
       );
       expect(repository.records[wallet.id], same(restored));
     },
   );
+
+  test('preserves external signer assignments for an active vault', () async {
+    final source = codec.encode(BullVaultRecoveryPackage(policy: policy));
+    final first = await usecase.execute(
+      kind: BullVaultRestoreInputKind.recoveryPackage,
+      source: source,
+      label: 'Restored vault',
+    );
+    final wallet =
+        (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value.wallet;
+    final existingWallet = wallet.copyWith(
+      signers: [
+        for (final signer in wallet.signers)
+          signer.id == BullVaultSignerRole.cold.name
+              ? signer.copyWith(
+                  signer: SignerEntity.none,
+                  clearSignerDevice: true,
+                )
+              : signer,
+      ],
+    );
+    descriptorPort.duplicate = WalletAlreadyExistsException(wallet.id);
+    when(
+      () => getWallet.execute(wallet.id),
+    ).thenAnswer((_) async => existingWallet);
+
+    final second = await usecase.execute(
+      kind: BullVaultRestoreInputKind.recoveryPackage,
+      source: source,
+      label: 'Restored vault',
+    );
+
+    expect(second, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
+    final restored =
+        (second as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(
+      restored.wallet.signers
+          .singleWhere((signer) => signer.id == BullVaultSignerRole.cold.name)
+          .signer,
+      SignerEntity.none,
+    );
+    verifyNever(
+      () => walletSignerOwnership.markSignerLocal(
+        walletId: any(named: 'walletId'),
+        signerId: any(named: 'signerId'),
+        seedFingerprint: any(named: 'seedFingerprint'),
+        passphraseProtectedKeyIds: any(named: 'passphraseProtectedKeyIds'),
+      ),
+    );
+  });
 
   test('recognizes every supported BullVault profile exactly', () async {
     final allSigners = [
@@ -568,18 +662,108 @@ void main() {
     }
   });
 
-  test('rejects a descriptor whose mobile xpub is not held by Bull', () async {
+  test('restores an unverified mobile key as unavailable', () async {
     when(
-      () => seedVerification.matchesXpubs(
-        fingerprint: any(named: 'fingerprint'),
-        keys: any(named: 'keys'),
-      ),
-    ).thenAnswer((_) async => false);
-
+      () => getDefaultSeed.execute(environment: Environment.testnet),
+    ).thenAnswer(
+      (_) async => SeedModel.mnemonic(
+        mnemonicWords: testMnemonics[1].split(' '),
+      ).toEntity(),
+    );
     final result = await usecase.execute(
       kind: BullVaultRestoreInputKind.descriptor,
       source: policy.descriptor,
       label: 'Wrong seed',
+    );
+
+    expect(result, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(
+      restored.record.recoveryPackage.policy.everydayKey.signer,
+      SignerEntity.none,
+    );
+    expect(restored.record.mobileAccount, isNull);
+    verifyNever(
+      () => reserveAccount.execute(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+        account: any(named: 'account'),
+      ),
+    );
+  });
+
+  for (final (recovery, passphrase) in [
+    (true, null),
+    (true, 'vault passphrase'),
+    (false, 'vault passphrase'),
+  ]) {
+    test(
+      'restores a nondefault seed (recovery: $recovery, unlocked: ${passphrase != null})',
+      () async {
+        final original =
+            SeedModel.mnemonic(
+                  mnemonicWords: testMnemonics.first.split(' '),
+                ).toEntity()
+                as MnemonicSeed;
+        when(
+          () => getDefaultSeed.execute(environment: Environment.testnet),
+        ).thenAnswer(
+          (_) async => SeedModel.mnemonic(
+            mnemonicWords: testMnemonics[1].split(' '),
+          ).toEntity(),
+        );
+        when(
+          () => getAllSeeds.execute(),
+        ).thenAnswer((_) async => Ok([original]));
+        final protectedPolicy = _passphrasePolicy(
+          descriptorPort: descriptorPort,
+          passphrase: 'vault passphrase',
+          includeRecoveryKey: recovery,
+        );
+
+        final result = await usecase.execute(
+          kind: BullVaultRestoreInputKind.descriptor,
+          source: protectedPolicy.descriptor,
+          label: 'Restored vault',
+          mobilePassphrase: passphrase,
+        );
+        final restored =
+            (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+        expect(
+          restored.record.mobileSeedFingerprint,
+          original.masterFingerprint,
+        );
+        expect(
+          restored.wallet.signers
+              .where((signer) => signer.signer == SignerEntity.local)
+              .single
+              .localSeedFingerprint,
+          original.masterFingerprint,
+        );
+        verify(
+          () => reserveAccount.execute(
+            seedFingerprint: original.masterFingerprint,
+            coinType: 1,
+            account: restored.record.mobileAccount!,
+          ),
+        ).called(1);
+      },
+    );
+  }
+
+  test('rejects the wrong passphrase when a recovery key matches', () async {
+    final protectedPolicy = _passphrasePolicy(
+      descriptorPort: descriptorPort,
+      passphrase: 'correct passphrase',
+      includeRecoveryKey: true,
+    );
+
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: protectedPolicy.descriptor,
+      label: 'Protected vault',
+      mobilePassphrase: 'wrong passphrase',
     );
 
     expect(
@@ -591,6 +775,149 @@ void main() {
       ),
     );
     expect(repository.records, isEmpty);
+  });
+
+  test('does not claim a key with a mismatched origin fingerprint', () async {
+    final descriptor = policy.descriptor
+        .split('#')
+        .first
+        .replaceAll(signers[0].accountKey.masterFingerprint, 'deadbeef');
+
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: descriptor,
+      label: 'Restored vault',
+    );
+
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(
+      restored.record.recoveryPackage.policy.everydayKey.signer,
+      SignerEntity.none,
+    );
+    expect(restored.record.mobileAccount, isNull);
+    verifyNever(
+      () => reserveAccount.execute(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+        account: any(named: 'account'),
+      ),
+    );
+  });
+
+  test('does not claim a recovery key derived from another seed', () async {
+    const passphrase = 'vault passphrase';
+    final protectedPolicy = _passphrasePolicy(
+      descriptorPort: descriptorPort,
+      passphrase: passphrase,
+      includeRecoveryKey: true,
+      recoveryMnemonic: testMnemonics[2],
+    );
+
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: protectedPolicy.descriptor,
+      label: 'Unrelated recovery key',
+      mobilePassphrase: passphrase,
+    );
+
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(
+      restored.record.recoveryPackage.policy.everydayKey.signer,
+      SignerEntity.none,
+    );
+    expect(restored.record.mobileAccount, isNull);
+  });
+
+  test('connects a restored protected mobile key after verification', () async {
+    const passphrase = 'vault passphrase';
+    final protectedPolicy = _passphrasePolicy(
+      descriptorPort: descriptorPort,
+      passphrase: passphrase,
+      includeRecoveryKey: false,
+    );
+    final first = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: protectedPolicy.descriptor,
+      label: 'Protected vault',
+    );
+    final unavailable =
+        (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(unavailable.record.mobileAccount, isNull);
+    descriptorPort.duplicate = WalletAlreadyExistsException(
+      unavailable.wallet.id,
+    );
+    when(
+      () => getWallet.execute(unavailable.wallet.id),
+    ).thenAnswer((_) async => unavailable.wallet);
+    when(
+      () => walletSignerOwnership.markSignerLocal(
+        walletId: unavailable.wallet.id,
+        signerId: any(named: 'signerId'),
+        seedFingerprint: any(named: 'seedFingerprint'),
+        passphraseProtectedKeyIds: any(named: 'passphraseProtectedKeyIds'),
+      ),
+    ).thenAnswer((invocation) async {
+      final signerId = invocation.namedArguments[#signerId] as String;
+      final protectedIds =
+          invocation.namedArguments[#passphraseProtectedKeyIds] as Set<String>;
+      return unavailable.wallet.copyWith(
+        signers: [
+          for (final signer in unavailable.wallet.signers)
+            signer.id == signerId
+                ? WalletSigner(
+                    id: signer.id,
+                    signer: SignerEntity.local,
+                    signerDevice: null,
+                    localSeedFingerprint:
+                        invocation.namedArguments[#seedFingerprint] as String,
+                    descriptorKeys: [
+                      for (final key in signer.descriptorKeys)
+                        key.copyWith(
+                          requiresPassphrase: protectedIds.contains(key.id),
+                        ),
+                    ],
+                  )
+                : signer,
+        ],
+      );
+    });
+
+    final second = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: protectedPolicy.descriptor,
+      label: 'Protected vault',
+      mobilePassphrase: passphrase,
+    );
+
+    final restored =
+        (second as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(
+      restored.wallet.signers.where(
+        (signer) => signer.signer == SignerEntity.local,
+      ),
+      hasLength(1),
+    );
+    expect(restored.record.mobileAccount, 0);
+    expect(
+      restored
+          .record
+          .recoveryPackage
+          .policy
+          .everydayKey
+          .accountKey
+          .requiresPassphrase,
+      isTrue,
+    );
+    verify(
+      () => walletSignerOwnership.markSignerLocal(
+        walletId: unavailable.wallet.id,
+        signerId: any(named: 'signerId'),
+        seedFingerprint: any(named: 'seedFingerprint'),
+        passphraseProtectedKeyIds: any(named: 'passphraseProtectedKeyIds'),
+      ),
+    ).called(1);
   });
 
   test('rejects inconsistent predecessor metadata in a package', () async {
@@ -629,7 +956,7 @@ void main() {
       recoveryPackageConfirmed: true,
       createdAt: policy.createdAt!,
     );
-    final renewedPolicy = _renewedPolicy(
+    final renewedPolicy = _policyAtGeneration(
       descriptorPort: descriptorPort,
       signers: signers,
       lineageId: policy.lineageId,
@@ -670,7 +997,7 @@ void main() {
         recoveryPackageConfirmed: true,
         createdAt: policy.createdAt!,
       );
-      final renewedPolicy = _renewedPolicy(
+      final renewedPolicy = _policyAtGeneration(
         descriptorPort: descriptorPort,
         signers: signers,
         lineageId: policy.lineageId,
@@ -716,6 +1043,54 @@ void main() {
     },
   );
 
+  test('links a renewed hardware-only BullVault', () async {
+    const previousWalletId = 'hardware-previous-wallet';
+    final previousPolicy = _hardwarePolicy(descriptorPort: descriptorPort);
+    repository.records[previousWalletId] = BullVaultRecord(
+      walletId: previousWalletId,
+      lineageId: previousPolicy.lineageId,
+      vaultGeneration: previousPolicy.vaultGeneration,
+      mobileAccount: null,
+      birthHeight: previousPolicy.birthHeight,
+      recoveryPackage: BullVaultRecoveryPackage(policy: previousPolicy),
+      status: BullVaultLifecycleStatus.active,
+      recoveryPackageConfirmed: true,
+      createdAt: previousPolicy.createdAt!,
+    );
+    final renewedPolicy = _hardwarePolicy(
+      descriptorPort: descriptorPort,
+      generation: 1,
+      lineageId: previousPolicy.lineageId,
+    );
+    final first = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: renewedPolicy.descriptor,
+      label: 'Hardware renewal',
+    );
+    final wallet =
+        (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value.wallet;
+    descriptorPort.duplicate = WalletAlreadyExistsException(wallet.id);
+    when(() => getWallet.execute(wallet.id)).thenAnswer((_) async => wallet);
+
+    final second = await usecase.execute(
+      kind: BullVaultRestoreInputKind.recoveryPackage,
+      source: codec.encode(
+        BullVaultRecoveryPackage(
+          previousVaultId: previousWalletId,
+          policy: renewedPolicy,
+        ),
+      ),
+      label: 'Hardware renewal',
+    );
+
+    expect(second, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
+    expect(
+      repository.records[previousWalletId]!.status,
+      BullVaultLifecycleStatus.migrating,
+    );
+    expect(repository.records[wallet.id]!.mobileAccount, isNull);
+  });
+
   test(
     'does not link a renewed descriptor with different signer keys',
     () async {
@@ -731,7 +1106,7 @@ void main() {
         recoveryPackageConfirmed: true,
         createdAt: policy.createdAt!,
       );
-      final renewedPolicy = _renewedPolicy(
+      final renewedPolicy = _policyAtGeneration(
         descriptorPort: descriptorPort,
         signers: [
           signers[0],
@@ -991,14 +1366,15 @@ void main() {
   });
 }
 
-BullVaultPolicy _renewedPolicy({
+BullVaultPolicy _policyAtGeneration({
   required _ParsingDescriptorPort descriptorPort,
   required List<BullVaultSignerKey> signers,
   required String lineageId,
+  int generation = 1,
 }) {
-  final renewedAt = DateTime.utc(2028, 1, 15, 12);
+  final renewedAt = DateTime.utc(2027 + generation, 1, 15, 12);
   final descriptor = BullVaultPolicy.descriptorTemplate(
-    vaultGeneration: 1,
+    vaultGeneration: generation,
     network: Network.bitcoinTestnet,
     protection: BullVaultProtection.standard,
     everydayKey: signers[0],
@@ -1010,7 +1386,7 @@ BullVaultPolicy _renewedPolicy({
   );
   return BullVaultPolicy.build(
     lineageId: lineageId,
-    vaultGeneration: 1,
+    vaultGeneration: generation,
     network: Network.bitcoinTestnet,
     descriptor: descriptorPort
         .parseBitcoinDescriptor(
@@ -1026,9 +1402,126 @@ BullVaultPolicy _renewedPolicy({
     schedule: BullVaultSchedule.standardWithoutInheritance,
     timeReference: BullVaultTimeReference(
       deviceTime: renewedAt,
-      chainHeight: 3_100_000,
+      chainHeight: 3_000_000 + generation * 100_000,
       medianTimePast:
           renewedAt.subtract(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+          1000,
+    ),
+  );
+}
+
+BullVaultPolicy _hardwarePolicy({
+  required _ParsingDescriptorPort descriptorPort,
+  int generation = 0,
+  String? lineageId,
+}) {
+  final signers = [
+    _signer(
+      BullVaultSignerRole.everyday,
+      deriveSignerKeys(testMnemonics[2]),
+    ).copyWith(signer: SignerEntity.remote),
+    _signer(BullVaultSignerRole.cold, deriveSignerKeys(_fourthMnemonic)),
+  ];
+  return _policyAtGeneration(
+    descriptorPort: descriptorPort,
+    signers: signers,
+    lineageId: lineageId ?? 'hardware-lineage',
+    generation: generation,
+  );
+}
+
+BullVaultPolicy _passphrasePolicy({
+  required _ParsingDescriptorPort descriptorPort,
+  required String passphrase,
+  required bool includeRecoveryKey,
+  String? recoveryMnemonic,
+}) {
+  final words = testMnemonics.first.split(' ');
+  final canonical = bip39.Mnemonic.fromWords(words: words);
+  final protected = bip39.Mnemonic.fromWords(
+    words: words,
+    passphrase: passphrase,
+  );
+  final path = Bip48Derivation.path(coinType: 1, account: 0);
+  BullVaultSignerKey localKey({
+    required BullVaultSignerRole role,
+    required bip39.Mnemonic mnemonic,
+    required bool requiresPassphrase,
+  }) {
+    final seedBytes = Uint8List.fromList(mnemonic.seed);
+    final xpub = Bip32Derivation.deriveXpub(
+      seedBytes: seedBytes,
+      derivationPath: path,
+      network: Network.bitcoinTestnet,
+    );
+    return BullVaultSignerKey(
+      role: role,
+      accountKey: WalletDescriptorKey(
+        id: '${role.name}-account',
+        signerId: 'everyday',
+        masterFingerprint: bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex,
+        xpubFingerprint: Bip32Derivation.getBip32Xpub(xpub).fingerprintHex,
+        xpub: xpub,
+        derivationPath: path,
+        requiresPassphrase: requiresPassphrase,
+      ),
+      signer: SignerEntity.local,
+      signerDevice: null,
+    );
+  }
+
+  final everyday = localKey(
+    role: BullVaultSignerRole.everyday,
+    mnemonic: protected,
+    requiresPassphrase: true,
+  );
+  final recovery = includeRecoveryKey
+      ? localKey(
+          role: BullVaultSignerRole.delayedMobileRecovery,
+          mnemonic: recoveryMnemonic == null
+              ? canonical
+              : bip39.Mnemonic.fromWords(words: recoveryMnemonic.split(' ')),
+          requiresPassphrase: false,
+        )
+      : null;
+  final cold = _signer(
+    BullVaultSignerRole.cold,
+    deriveSignerKeys(testMnemonics[1]),
+  );
+  final createdAt = DateTime.utc(2027, 1, 15, 12);
+  final descriptor = BullVaultPolicy.descriptorTemplate(
+    vaultGeneration: 0,
+    network: Network.bitcoinTestnet,
+    protection: BullVaultProtection.standard,
+    everydayKey: everyday,
+    delayedMobileRecoveryKey: recovery,
+    coldKey: cold,
+    secondColdKey: null,
+    inheritanceKey: null,
+    schedule: BullVaultSchedule.standardWithoutInheritance,
+    referenceTime: createdAt,
+  );
+  return BullVaultPolicy.build(
+    vaultGeneration: 0,
+    network: Network.bitcoinTestnet,
+    descriptor: descriptorPort
+        .parseBitcoinDescriptor(
+          descriptor: descriptor,
+          network: Network.bitcoinTestnet,
+        )
+        .descriptor,
+    protection: BullVaultProtection.standard,
+    everydayKey: everyday,
+    delayedMobileRecoveryKey: recovery,
+    coldKey: cold,
+    secondColdKey: null,
+    inheritanceKey: null,
+    schedule: BullVaultSchedule.standardWithoutInheritance,
+    timeReference: BullVaultTimeReference(
+      deviceTime: createdAt,
+      chainHeight: 3_000_000,
+      medianTimePast:
+          createdAt.subtract(const Duration(hours: 1)).millisecondsSinceEpoch ~/
           1000,
     ),
   );

@@ -21,6 +21,7 @@ class SignBitcoinTxUsecase {
     bool requireFinalized = true,
     bool tryFinalize = true,
     String? signerId,
+    String? passphrase,
   }) async {
     final signingResult = externalPsbt == null
         ? await _bitcoinSigningPort.signPsbt(
@@ -28,6 +29,7 @@ class SignBitcoinTxUsecase {
             walletId: walletId,
             tryFinalize: tryFinalize,
             signerId: signerId,
+            passphrase: passphrase,
           )
         : await _bitcoinSigningPort.combinePsbts(
             currentPsbt: psbt,

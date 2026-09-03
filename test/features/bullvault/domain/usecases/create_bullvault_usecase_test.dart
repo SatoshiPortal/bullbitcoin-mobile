@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -20,15 +22,19 @@ import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_key.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_reference.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/resume_bullvault_onboarding_usecase.dart';
+import 'package:bip32_keys/bip32_keys.dart' as bip32;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -150,16 +156,6 @@ final class _TestBip48AccountRepository implements Bip48AccountRepository {
   }) async {
     reserved.add(account);
     return const Ok(null);
-  }
-
-  @override
-  Future<Result<int, Bip48AccountAllocationFailure>> reserveNext({
-    required String seedFingerprint,
-    required int coinType,
-  }) async {
-    final account = _next;
-    reserved.add(account);
-    return Ok(account);
   }
 }
 
@@ -556,6 +552,7 @@ void main() {
           input: inheritance.xpub,
           device: null,
           genericExternal: true,
+          requiresHardwareSetup: false,
         ),
         schedule: BullVaultSchedule.extraWithInheritance,
         timeReference: _timeReference(),
@@ -570,6 +567,7 @@ void main() {
     expect(created.policy.recoveryActivationTimestamp, isNotNull);
     expect(created.policy.inheritanceActivationTimestamp, isNotNull);
     expect(created.policy.inheritanceKey?.signerDevice, isNull);
+    expect(created.policy.inheritanceKey?.signer, SignerEntity.none);
     expect(created.wallet.signers, hasLength(4));
     expect(
       created.wallet.signers.map((signer) => signer.descriptorKeys.length),
@@ -581,6 +579,126 @@ void main() {
       BullVaultProtection.extra,
     );
   });
+
+  test(
+    'uses a hardware everyday key without reserving a Bull account',
+    () async {
+      final repository = _TestBullVaultRepository();
+      final accounts = _TestBip48AccountRepository();
+      final everyday = deriveSignerKeys(testMnemonics.first);
+      final cold = deriveSignerKeys(testMnemonics[1]);
+
+      final result =
+          await _usecase(
+            repository,
+            getSettings,
+            accountRepository: accounts,
+          ).execute(
+            BullVaultCreateRequest(
+              label: 'BullVault',
+              protection: BullVaultProtection.standard,
+              everydayKeySource: BullVaultEverydayKeySource.hardware,
+              everydayHardware: BullVaultSignerRequest(
+                input: everyday.xpub,
+                device: SignerDeviceEntity.bitbox02,
+              ),
+              cold: BullVaultSignerRequest(
+                input: cold.xpub,
+                device: SignerDeviceEntity.ledgerNanoX,
+              ),
+              secondCold: null,
+              inheritance: null,
+              schedule: BullVaultSchedule.standardWithoutInheritance,
+              timeReference: _timeReference(),
+            ),
+          );
+
+      final created =
+          (result as Ok<BullVaultCreateResult, BullVaultFailure>).value;
+      expect(created.record.mobileAccount, isNull);
+      expect(created.record.mobileSeedFingerprint, isNull);
+      expect(created.policy.everydayKey.signer, SignerEntity.remote);
+      expect(accounts.claims, isEmpty);
+      expect(accounts.reserved, isEmpty);
+    },
+  );
+
+  test(
+    'keeps passphrase-free recovery outside the immediate threshold',
+    () async {
+      final repository = _TestBullVaultRepository();
+      final getDefaultSeed = _MockGetDefaultSeedUsecase();
+      final mnemonic = bip39.Mnemonic.fromWords(
+        words: testMnemonics.first.split(' '),
+      );
+      final seedBytes = Uint8List.fromList(mnemonic.seed);
+      when(
+        () => getDefaultSeed.execute(environment: Environment.testnet),
+      ).thenAnswer(
+        (_) async => Seed.mnemonic(
+          mnemonicWords: mnemonic.words,
+          bytes: seedBytes,
+          masterFingerprint: bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex,
+        ),
+      );
+      final cold = deriveSignerKeys(testMnemonics[1]);
+
+      final result =
+          await _usecase(
+            repository,
+            getSettings,
+            getDefaultSeed: getDefaultSeed,
+          ).execute(
+            BullVaultCreateRequest(
+              label: 'BullVault',
+              protection: BullVaultProtection.standard,
+              mobilePassphrase: 'vault passphrase',
+              passphraseFreeRecovery: true,
+              cold: BullVaultSignerRequest(
+                input: cold.xpub,
+                device: SignerDeviceEntity.ledgerNanoX,
+              ),
+              secondCold: null,
+              inheritance: null,
+              schedule: BullVaultSchedule.standardWithoutInheritance,
+              timeReference: _timeReference(),
+            ),
+          );
+
+      final created =
+          (result as Ok<BullVaultCreateResult, BullVaultFailure>).value;
+      final everyday = created.policy.everydayKey;
+      final recovery = created.policy.delayedMobileRecoveryKey!;
+      final coldKey = created.policy.coldKey;
+      expect(everyday.accountKey.xpub, isNot(recovery.accountKey.xpub));
+      expect(
+        everyday.accountKey.derivationPath,
+        recovery.accountKey.derivationPath,
+      );
+      expect(everyday.accountKey.requiresPassphrase, isTrue);
+      expect(recovery.accountKey.requiresPassphrase, isFalse);
+      expect(
+        created.policy.descriptor,
+        contains(
+          'multi_a(2,${everyday.expression(receiveBranch: 0, changeBranch: 1)},${coldKey.expression(receiveBranch: 0, changeBranch: 1)})',
+        ),
+      );
+      expect(
+        created.policy.descriptor,
+        contains(
+          'pk(${recovery.expression(receiveBranch: 0, changeBranch: 1)})',
+        ),
+      );
+      final mobileSigner = created.wallet.signers.singleWhere(
+        (signer) => signer.id == BullVaultSignerRole.everyday.name,
+      );
+      expect(mobileSigner.descriptorKeys.map((key) => key.xpub).toSet(), {
+        everyday.accountKey.xpub,
+        recovery.accountKey.xpub,
+      });
+      expect(created.record.mobileAccount, 0);
+    },
+  );
 
   test('creates a mainnet policy from mainnet account keys', () async {
     final repository = _TestBullVaultRepository();
@@ -775,7 +893,7 @@ void main() {
         ),
         secondCold: null,
         inheritance: null,
-        schedule: const BullVaultSchedule(coldYears: 3, recoveryYears: 3),
+        schedule: const BullVaultSchedule(coldDelay: 3, recoveryDelay: 3),
         timeReference: _timeReference(),
       ),
     );
@@ -810,7 +928,7 @@ void main() {
     );
   });
 
-  test('rejects an external key outside the BullVault account path', () async {
+  test('accepts a nonzero external BIP48 account', () async {
     final repository = _TestBullVaultRepository();
     final wrongAccount = deriveSignerKeysAtAccount(
       testMnemonics.first,
@@ -831,10 +949,10 @@ void main() {
       ),
     );
 
-    expect(
-      (result as Err<BullVaultCreateResult, BullVaultFailure>).failure,
-      isA<BullVaultInvalidSignerFailure>(),
-    );
+    expect(result, isA<Ok<BullVaultCreateResult, BullVaultFailure>>());
+    final created =
+        (result as Ok<BullVaultCreateResult, BullVaultFailure>).value;
+    expect(created.policy.coldKey.accountKey.derivationPath, "m/48'/1'/1'/2'");
   });
 }
 

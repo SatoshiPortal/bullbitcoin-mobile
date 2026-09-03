@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -204,9 +205,6 @@ abstract class SendState with _$SendState {
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
 
-  bool get hasSignedBitcoinTransaction =>
-      signedBitcoinPsbt != null || signedBitcoinTx != null;
-
   /// Whether a payjoin is structurally possible for this send: the setting
   /// is on, the wallet is a standard local single-signature wallet that the
   /// Payjoin adapter supports, and the recipient's BIP21 advertises a pj=
@@ -243,6 +241,11 @@ abstract class SendState with _$SendState {
       bitcoinSigningPlan != null &&
       (bitcoinSigningPlan!.signersNeeded > 1 ||
           eligibleBitcoinSigners.length > 1 ||
+          eligibleBitcoinSigners.any(
+            (signer) =>
+                signer.signer == SignerEntity.local &&
+                bitcoinSigningPlan!.requiresPassphrase(signer),
+          ) ||
           _requiresExternalPsbtRoundTrip);
 
   bool get _requiresExternalPsbtRoundTrip {
@@ -265,14 +268,6 @@ abstract class SendState with _$SendState {
     final plan = bitcoinSigningPlan;
     if (plan == null || !plan.policy.requiresPath) return const [];
     return plan.policy.pathRequirements(
-      bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
-    );
-  }
-
-  List<BitcoinPolicyPathRequirement> get bitcoinPolicyPathSelectors {
-    final plan = bitcoinSigningPlan;
-    if (plan == null || !plan.policy.requiresPath) return const [];
-    return plan.policy.pathSelectors(
       bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
     );
   }
@@ -621,17 +616,6 @@ abstract class SendState with _$SendState {
   /// the amount field's own error line. Do not widen it to mean "any build
   /// failure" — the confirm screen renders whatever is left over.
   bool get hasBuildFailure => failure is SendTransactionBuildFailure;
-
-  /// Signing, confirming or broadcasting failed. Confirm screen only.
-  bool get hasConfirmFailure => failure is SendTransactionConfirmationFailure;
-
-  /// The broadcast itself failed, as opposed to an earlier confirm step. Drives
-  /// the "the payment may still have gone out" guidance.
-  bool get hasBroadcastFailure => switch (failure) {
-    SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
-      isBroadcastFailure,
-    _ => false,
-  };
 
   /// The amount is short of the spendable balance. Rendered inline under the
   /// amount field, and in the address step's error line.

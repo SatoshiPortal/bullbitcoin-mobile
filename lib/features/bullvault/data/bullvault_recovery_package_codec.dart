@@ -18,7 +18,7 @@ final class BullVaultRecoveryPackageCodec {
     'network',
     'policyVersion',
     'previousVaultId',
-    'scheduleYears',
+    'schedule',
     'schemaVersion',
   };
 
@@ -56,7 +56,7 @@ final class BullVaultRecoveryPackageCodec {
         throw const FormatException('Invalid BullVault lineage');
       }
       final schedule = _decodeSchedule(
-        decoded['scheduleYears'],
+        decoded['schedule'],
         protection: recognized.protection,
         includesInheritance: recognized.inheritanceKey != null,
       );
@@ -99,7 +99,7 @@ final class BullVaultRecoveryPackageCodec {
         if (package.previousVaultId != null)
           'previousVaultId': package.previousVaultId,
         if (schedule != null)
-          'scheduleYears': _encodeSchedule(
+          'schedule': _encodeSchedule(
             schedule,
             protection: policy.protection,
             includesInheritance: policy.inheritanceKey != null,
@@ -122,34 +122,38 @@ final class BullVaultRecoveryPackageCodec {
       protection: protection,
       includesInheritance: includesInheritance,
     );
-    if (value.keys.toSet().difference(expectedFields).isNotEmpty ||
-        expectedFields.difference(value.keys.toSet()).isNotEmpty ||
-        value.values.any((years) => years is! int)) {
+    if (value.keys.toSet().difference({...expectedFields, 'unit'}).isNotEmpty ||
+        {...expectedFields, 'unit'}.difference(value.keys.toSet()).isNotEmpty ||
+        expectedFields.any((field) => value[field] is! int) ||
+        value['unit'] is! String) {
       throw const FormatException('Invalid BullVault schedule metadata');
     }
+    final unit = BullVaultScheduleUnit.values.byName(value['unit'] as String);
     final defaults = BullVaultSchedule.defaultsFor(
       protection: protection,
       includesInheritance: includesInheritance,
+      unit: unit,
     );
     return defaults.copyWith(
-      coldYears: value['cold'] as int?,
-      recoveryYears: value['recovery'] as int?,
-      inheritanceYears: value['inheritance'] as int?,
+      coldDelay: value['cold'] as int?,
+      recoveryDelay: value['recovery'] as int?,
+      inheritanceDelay: value['inheritance'] as int?,
     );
   }
 
-  static Map<String, int> _encodeSchedule(
+  static Map<String, Object> _encodeSchedule(
     BullVaultSchedule schedule, {
     required BullVaultProtection protection,
     required bool includesInheritance,
   }) => {
+    'unit': schedule.unit.name,
     if (_scheduleFields(
       protection: protection,
       includesInheritance: includesInheritance,
     ).contains('cold'))
-      'cold': schedule.coldYears,
-    'recovery': schedule.recoveryYears,
-    if (includesInheritance) 'inheritance': schedule.inheritanceYears,
+      'cold': schedule.coldDelay,
+    'recovery': schedule.recoveryDelay,
+    if (includesInheritance) 'inheritance': schedule.inheritanceDelay,
   };
 
   static Set<String> _scheduleFields({

@@ -73,6 +73,28 @@ void main() {
     expect(review.canSign, isFalse);
   });
 
+  test('identifies a protected local key before signing', () async {
+    final wallet = psbtSigningWallet(localRequiresPassphrase: true);
+    final transaction = psbtReview();
+    when(
+      () => getWalletUsecase.execute(wallet.id),
+    ).thenAnswer((_) async => wallet);
+    when(
+      () => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id),
+    ).thenAnswer((_) async => Ok(transaction));
+    when(
+      () => signingPort.getPolicy(walletId: wallet.id),
+    ).thenAnswer((_) async => Ok(singleLocalPolicy()));
+
+    final result = await usecase.execute(
+      walletId: wallet.id,
+      psbt: testPsbtBase64,
+    );
+
+    final review = (result as Ok<PsbtSigningReview, PsbtSigningFailure>).value;
+    expect(review.requiresPassphrase, isTrue);
+  });
+
   test('rejects a wallet without a local signer', () async {
     final wallet = psbtSigningWallet(hasLocalSigner: false);
     when(

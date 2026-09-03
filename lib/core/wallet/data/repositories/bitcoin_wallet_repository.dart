@@ -185,12 +185,14 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String walletId,
     bool tryFinalize = true,
     String? signerId,
+    String? passphrase,
   }) => _guardSigning(
     () => _signPsbt(
       psbt,
       walletId: walletId,
       tryFinalize: tryFinalize,
       signerId: signerId,
+      passphrase: passphrase,
     ),
   );
 
@@ -199,6 +201,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String walletId,
     bool tryFinalize = true,
     String? signerId,
+    String? passphrase,
     String? replacingTxid,
   }) async {
     final context = await _publicWalletContext(walletId);
@@ -212,19 +215,61 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
 
     var descriptor = _withoutDescriptorChecksum(metadata.publicDescriptor);
     var injectedKey = false;
-    final localSigners = metadata.signers.where(
-      (signer) =>
-          signer.signer == Signer.local &&
-          (signerId == null || signer.id == signerId),
+    final localSigners = metadata.signers
+        .where(
+          (signer) =>
+              signer.signer == Signer.local &&
+              (signerId == null || signer.id == signerId),
+        )
+        .toList();
+    final descriptorKeys = metadata.signers
+        .expand((signer) => signer.descriptorKeys)
+        .toList();
+    final review = BitcoinPsbtReviewMapper.toEntity(
+      await _bdkWallet.inspectPsbt(
+        psbt,
+        wallet: publicWallet,
+        walletFingerprints: descriptorKeys
+            .expand((key) => [key.masterFingerprint, key.xpubFingerprint])
+            .where((fingerprint) => fingerprint.isNotEmpty)
+            .map((fingerprint) => fingerprint.toLowerCase())
+            .toSet(),
+      ),
+      descriptorKeys: descriptorKeys,
+      localSignerIds: localSigners.map((signer) => signer.id).toSet(),
     );
-    final injectedPublicKeys = <String>{};
+    final selectedLocalDescriptorKeyIds = review.inputs
+        .expand((input) => input.localDescriptorKeyIds)
+        .toSet();
+    var skippedPassphraseKey = false;
     for (final signer in localSigners) {
       for (final key in signer.descriptorKeys) {
+        if (!selectedLocalDescriptorKeyIds.contains(key.id)) continue;
         final derivationPath = key.derivationPath;
         if (derivationPath == null) {
           throw StateError('Local descriptor key has no derivation path');
         }
-        final seed = await _seed.get(key.masterFingerprint);
+        final SeedModel seed;
+        if (key.requiresPassphrase) {
+          if (passphrase == null) {
+            skippedPassphraseKey = true;
+            continue;
+          }
+          final seedFingerprint = signer.localSeedFingerprint;
+          if (seedFingerprint == null) {
+            throw const BitcoinSignerPassphraseMismatchException();
+          }
+          final storedSeed = await _seed.get(seedFingerprint);
+          if (storedSeed is! MnemonicSeedModel) {
+            throw const BitcoinSignerPassphraseMismatchException();
+          }
+          seed = SeedModel.mnemonic(
+            mnemonicWords: storedSeed.mnemonicWords,
+            passphrase: passphrase,
+          );
+        } else {
+          seed = await _seed.get(key.masterFingerprint);
+        }
         final rootKey = _descriptorSecretKey(seed, network: metadata.network);
         try {
           final path = bdk.DerivationPath(path: derivationPath);
@@ -235,10 +280,20 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
               try {
                 final publicKeyString = publicKey.toString();
                 final privateKeyString = accountKey.toString();
-                if (!injectedPublicKeys.add(publicKeyString)) continue;
-                final descriptorWithKey = descriptor.replaceAll(
-                  publicKeyString,
-                  privateKeyString,
+                if (key.requiresPassphrase &&
+                    Bip32Derivation.getBip32Xpub(
+                          _descriptorAccountXpub(publicKeyString),
+                        ).toBase58() !=
+                        Bip32Derivation.getBip32Xpub(key.xpub).toBase58()) {
+                  throw const BitcoinSignerPassphraseMismatchException();
+                }
+                final publicDescriptorKey =
+                    '$publicKeyString${key.descriptorPath}';
+                final privateDescriptorKey =
+                    '$privateKeyString${key.descriptorPath}';
+                final descriptorWithKey = descriptor.replaceFirst(
+                  publicDescriptorKey,
+                  privateDescriptorKey,
                 );
                 if (descriptorWithKey == descriptor) {
                   throw StateError(
@@ -261,6 +316,9 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         }
       }
     }
+    if (!injectedKey && skippedPassphraseKey) {
+      throw const BitcoinSignerPassphraseRequiredException();
+    }
     if (!injectedKey) throw const BitcoinPsbtMissingLocalOriginException();
 
     return _bdkWallet.signPsbtWithDescriptor(
@@ -269,6 +327,15 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       isTestnet: metadata.isTestnet,
       tryFinalize: tryFinalize,
     );
+  }
+
+  String _descriptorAccountXpub(String descriptorKey) {
+    final originEnd = descriptorKey.indexOf(']');
+    final key = originEnd == -1
+        ? descriptorKey
+        : descriptorKey.substring(originEnd + 1);
+    final suffixStart = key.indexOf('/');
+    return suffixStart == -1 ? key : key.substring(0, suffixStart);
   }
 
   @override
@@ -723,4 +790,8 @@ BitcoinSigningFailureKind _signingFailureKind(
     BitcoinSigningFailureKind.unsupportedSighash,
   BitcoinPsbtUnsupportedSpendModeException() =>
     BitcoinSigningFailureKind.unsupportedSpendMode,
+  BitcoinSignerPassphraseRequiredException() =>
+    BitcoinSigningFailureKind.passphraseRequired,
+  BitcoinSignerPassphraseMismatchException() =>
+    BitcoinSigningFailureKind.passphraseMismatch,
 };

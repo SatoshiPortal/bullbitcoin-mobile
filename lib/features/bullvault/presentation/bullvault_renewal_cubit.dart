@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_re
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/renew_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +24,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
   final ActivateBullVaultRenewalUsecase _activateUsecase;
   final CancelBullVaultRenewalUsecase _cancelUsecase;
   final UpdateBullVaultSetupUsecase _updateSetupUsecase;
+  final UpdateBullVaultRegistrationNameUsecase _updateRegistrationNameUsecase;
   final WatchBullVaultMigrationUsecase _watchMigrationUsecase;
   final EncodeBullVaultRecoveryPackageUsecase
   _encodeBullVaultRecoveryPackageUsecase;
@@ -35,6 +37,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     this._activateUsecase,
     this._cancelUsecase,
     this._updateSetupUsecase,
+    this._updateRegistrationNameUsecase,
     this._watchMigrationUsecase,
     this._encodeBullVaultRecoveryPackageUsecase, {
     required String walletId,
@@ -166,6 +169,36 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
   }
 
+  Future<bool> updateRegistrationName({
+    required String signerId,
+    required String name,
+  }) async {
+    final renewal = state.renewal;
+    if (renewal == null) return false;
+    final result = await _updateRegistrationNameUsecase.execute(
+      wallet: renewal.replacement.wallet,
+      signerId: signerId,
+      name: name,
+    );
+    if (isClosed) return false;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            renewal: BullVaultRenewResult(
+              previous: renewal.previous,
+              replacement: renewal.replacement.copyWith(wallet: value),
+            ),
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return false;
+    }
+  }
+
   void continueSetup() {
     if (!state.canContinueSetup) return;
     switch (state.step) {
@@ -258,7 +291,6 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
           state.copyWith(
             step: BullVaultRenewalStep.complete,
             isActivating: false,
-            isActivated: true,
           ),
         );
       case Err(:final failure):
@@ -331,7 +363,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
     final requiredSignerIds = {
       for (final signer in renewal.replacement.wallet.signers)
-        if (signer.signer != SignerEntity.local) signer.id,
+        if (signer.signer == SignerEntity.remote) signer.id,
     };
     return record.completedHardwareSignerIds.containsAll(requiredSignerIds)
         ? BullVaultRenewalStep.activation

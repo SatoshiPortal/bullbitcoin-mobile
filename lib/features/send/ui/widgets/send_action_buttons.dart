@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialog/signer_passphrase_dialog.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
@@ -177,7 +178,20 @@ class _BitcoinSignerTile extends StatelessWidget {
 
   Future<void> _sign(BuildContext context) async {
     if (signer.signer == SignerEntity.local) {
-      await context.read<SendCubit>().signBitcoinWithBull(signer);
+      final cubit = context.read<SendCubit>();
+      String? passphrase;
+      if (cubit.state.bitcoinSigningPlan?.requiresPassphrase(signer) == true) {
+        passphrase = await showSignerPassphraseDialog(
+          context,
+          title: context.loc.sendBullVaultPassphraseTitle,
+          description: context.loc.sendBullVaultPassphraseDescription,
+          hint: context.loc.passphraseLabel,
+          cancelLabel: context.loc.cancel,
+          confirmLabel: context.loc.confirmButton,
+        );
+        if (passphrase == null || !context.mounted) return;
+      }
+      await cubit.signBitcoinWithBull(signer, passphrase: passphrase);
       return;
     }
 

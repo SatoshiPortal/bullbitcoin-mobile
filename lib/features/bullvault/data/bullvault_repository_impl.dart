@@ -323,9 +323,9 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
       }
       if (currentPrevious.status != BullVaultLifecycleStatus.active ||
           currentSuccessor.status != BullVaultLifecycleStatus.active ||
-          (!isLinkedSuccessor && currentSuccessor.recoveryPackageConfirmed) ||
-          currentSuccessor.recoveryPackage.policy.descriptor !=
-              successor.recoveryPackage.policy.descriptor ||
+          !currentSuccessor.recoveryPackage.canBeEnrichedBy(
+            successor.recoveryPackage,
+          ) ||
           successor.status != BullVaultLifecycleStatus.active ||
           !successor.recoveryPackageConfirmed ||
           successor.previousVaultId != currentPrevious.walletId ||
@@ -451,10 +451,7 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     final completer = Completer<void>();
     final previous = _metadataLock;
     _metadataLock = completer.future;
-    return previous
-        .catchError((_) {})
-        .then((_) => action())
-        .whenComplete(completer.complete);
+    return previous.then((_) => action()).whenComplete(completer.complete);
   }
 
   @override

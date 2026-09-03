@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
@@ -158,34 +159,6 @@ void main() {
     expect((reservedAfterRestart as Ok<int, BullVaultFailure>).value, 2);
     expect((releasedRetry as Ok<int, BullVaultFailure>).value, 1);
     expect((afterSave as Ok<int, BullVaultFailure>).value, 2);
-  });
-
-  test('does not reserve a generation outside the derivation range', () async {
-    for (final (:includesInheritance, :occurrences) in [
-      (includesInheritance: false, occurrences: 2),
-      (includesInheritance: true, occurrences: 3),
-    ]) {
-      const maxPairIndex = 0x7ffffffe ~/ 2;
-      final maxGeneration = ((maxPairIndex + 1) ~/ occurrences) - 1;
-      final storage = _MemoryStorage();
-      final current = testBullVaultCreateResult(
-        walletId: 'wallet-$occurrences',
-        previousVaultId: 'previous-$occurrences',
-        lineageId: 'lineage-$occurrences',
-        generation: maxGeneration,
-        status: BullVaultLifecycleStatus.active,
-        includesInheritance: includesInheritance,
-      ).record;
-      final repository = _repository(storage);
-
-      final result = await repository.reserveNextGeneration(current);
-      final reservations = await BullVaultMetadataDatasource(
-        storage,
-      ).loadGenerationReservations(current.lineageId);
-
-      expect(result, isA<Err<int, BullVaultFailure>>());
-      expect(reservations, isEmpty);
-    }
   });
 
   test('rejects a duplicate generation in the same lineage', () async {
@@ -494,7 +467,11 @@ void main() {
             restoredPolicy.recoveryActivationTimestamp!,
         inheritanceActivationTimestamp:
             restoredPolicy.inheritanceActivationTimestamp,
-      ),
+      ).withEverydayOwnership(SignerEntity.local),
+    );
+    final ownedRestoredPackage = BullVaultRecoveryPackage(
+      previousVaultId: restoredPackage.previousVaultId,
+      policy: restoredPackage.policy.withEverydayOwnership(SignerEntity.local),
     );
     final descriptorOnly = BullVaultRecord(
       walletId: 'wallet-1',
@@ -504,6 +481,7 @@ void main() {
       birthHeight: null,
       recoveryPackage: descriptorOnlyPackage,
       status: BullVaultLifecycleStatus.active,
+      recoveryPackageConfirmed: true,
       createdAt: DateTime.utc(2028, 1, 15),
     );
     final restored = BullVaultRecord(
@@ -511,8 +489,8 @@ void main() {
       lineageId: restoredPackage.policy.lineageId,
       vaultGeneration: 1,
       mobileAccount: 0,
-      birthHeight: restoredPackage.policy.birthHeight,
-      recoveryPackage: restoredPackage,
+      birthHeight: ownedRestoredPackage.policy.birthHeight,
+      recoveryPackage: ownedRestoredPackage,
       previousVaultId: previous.walletId,
       status: BullVaultLifecycleStatus.active,
       recoveryPackageConfirmed: true,

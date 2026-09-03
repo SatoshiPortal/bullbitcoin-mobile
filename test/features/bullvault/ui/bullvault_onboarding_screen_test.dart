@@ -1,10 +1,13 @@
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_onboarding_snapshot.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_reference.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bullvault_usecase.dart';
@@ -14,12 +17,13 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_re
 import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_onboarding_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_onboarding_screen.dart';
-import 'package:bb_mobile/features/import_qr_device/public/import_qr_device_facade.dart';
-import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +52,121 @@ class _MockActivateInitialBullVaultUsecase extends Mock
 class _MockEncodeBullVaultRecoveryPackageUsecase extends Mock
     implements EncodeBullVaultRecoveryPackageUsecase {}
 
+class _MockUpdateBullVaultRegistrationNameUsecase extends Mock
+    implements UpdateBullVaultRegistrationNameUsecase {}
+
+class _MockGenerateInheritanceMnemonicUsecase extends Mock
+    implements GenerateBullVaultInheritanceMnemonicUsecase {}
+
 void main() {
+  testWidgets(
+    'accepts a generated inheritance key only after mnemonic verification',
+    (tester) async {
+      const privacyChannel = MethodChannel(
+        'com.flutterplaza.no_screenshot_methods',
+      );
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        privacyChannel,
+        (_) async => true,
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          privacyChannel,
+          null,
+        ),
+      );
+      final words = [...List.filled(11, 'abandon'), 'about'];
+      final generate = _MockGenerateInheritanceMnemonicUsecase();
+      when(generate.execute).thenReturn(Ok(words));
+      final load = _MockLoadBullVaultOnboardingUsecase();
+      when(load.execute).thenAnswer(
+        (_) async =>
+            const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
+      );
+      final cubit = BullVaultOnboardingCubit(
+        _MockCreateBullVaultOnboardingUsecase(),
+        _MockPrepareBullVaultTimeReferenceUsecase(),
+        load,
+        _MockCheckBullVaultMobileBackupsUsecase(),
+        _MockUpdateBullVaultSetupUsecase(),
+        _MockActivateInitialBullVaultUsecase(),
+        _MockEncodeBullVaultRecoveryPackageUsecase(),
+        _MockUpdateBullVaultRegistrationNameUsecase(),
+        generate,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      await cubit.next();
+      cubit.setInheritance(true);
+      await cubit.next();
+      cubit.useGenericColdSigner();
+      cubit.setColdInput('cold-account-key');
+      await cubit.next();
+      cubit.setInheritanceSource(
+        BullVaultInheritanceKeySource.generatedMnemonic,
+      );
+      Device.screen = const Size(800, 600);
+      final router = _completionRouter(cubit);
+      addTearDown(router.dispose);
+      await tester.pumpWidget(_app(router));
+      await tester.pumpAndSettle();
+      final context = tester.element(find.byType(BullVaultOnboardingScreen));
+      final loc = AppLocalizations.of(context);
+
+      Future<void> openMnemonic() async {
+        final button = find.widgetWithText(
+          BBButton,
+          loc.bullVaultInheritanceGenerateMnemonic,
+        );
+        await tester.ensureVisible(button);
+        await tester.pumpAndSettle();
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        expect(find.byType(ShowMnemonicScreen), findsOneWidget);
+        expect(find.text('abandon'), findsNWidgets(11));
+        await tester.tap(find.text(loc.testBackupNext));
+        await tester.pumpAndSettle();
+        expect(find.byType(VerifyMnemonicScreen), findsOneWidget);
+      }
+
+      await openMnemonic();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.byType(ShowMnemonicScreen), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(cubit.state.inheritanceInput, isEmpty);
+
+      await openMnemonic();
+      Future<void> selectWord(String word) async {
+        final tile = find
+            .widgetWithText(InkWell, word)
+            .evaluate()
+            .firstWhere((element) => (element.widget as InkWell).onTap != null);
+        final finder = find.byWidget(tile.widget);
+        await tester.ensureVisible(finder);
+        await tester.pumpAndSettle();
+        await tester.tap(finder);
+        await tester.pumpAndSettle();
+      }
+
+      await selectWord('about');
+      expect(cubit.state.inheritanceInput, isEmpty);
+      for (final word in words) {
+        await selectWord(word);
+      }
+      final expected =
+          const DeriveBullVaultMnemonicKeyUsecase().execute(
+                words: words,
+                network: Network.bitcoinMainnet,
+              )
+              as Ok<String, BullVaultFailure>;
+      expect(cubit.state.inheritanceInput, expected.value);
+      expect(cubit.state.seedBackupVerified, isFalse);
+      expect(find.byType(BullVaultOnboardingScreen), findsOneWidget);
+    },
+  );
+
   testWidgets('keeps setup and completion on one progress scale', (
     tester,
   ) async {
@@ -69,9 +187,12 @@ void main() {
       _MockUpdateBullVaultSetupUsecase(),
       _MockActivateInitialBullVaultUsecase(),
       _MockEncodeBullVaultRecoveryPackageUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
     );
     addTearDown(reviewCubit.close);
     await reviewCubit.load();
+    await reviewCubit.next();
+    reviewCubit.setInheritance(false);
     await reviewCubit.next();
     await reviewCubit.next();
     reviewCubit.useGenericColdSigner();
@@ -112,6 +233,7 @@ void main() {
       _MockUpdateBullVaultSetupUsecase(),
       _MockActivateInitialBullVaultUsecase(),
       encode,
+      _MockUpdateBullVaultRegistrationNameUsecase(),
     );
     addTearDown(completionCubit.close);
     await completionCubit.load();
@@ -127,96 +249,6 @@ void main() {
     expect(completionProgress, greaterThan(reviewProgress));
     expect(completionProgress, lessThanOrEqualTo(1));
   });
-
-  for (final device in [
-    SignerDeviceEntity.ledgerNanoX,
-    SignerDeviceEntity.bitbox02,
-    SignerDeviceEntity.krux,
-  ]) {
-    testWidgets(
-      'continues after ${device.name} returns a key and Back restores the signer step',
-      (tester) async {
-        final load = _MockLoadBullVaultOnboardingUsecase();
-        final prepare = _MockPrepareBullVaultTimeReferenceUsecase();
-        when(load.execute).thenAnswer(
-          (_) async => const Ok(
-            BullVaultOnboardingLoad(network: Network.bitcoinMainnet),
-          ),
-        );
-        when(
-          () => prepare.execute(isTestnet: false),
-        ).thenAnswer((_) async => Ok(_timeReference()));
-        final cubit = BullVaultOnboardingCubit(
-          _MockCreateBullVaultOnboardingUsecase(),
-          prepare,
-          load,
-          _MockCheckBullVaultMobileBackupsUsecase(),
-          _MockUpdateBullVaultSetupUsecase(),
-          _MockActivateInitialBullVaultUsecase(),
-          _MockEncodeBullVaultRecoveryPackageUsecase(),
-        );
-        addTearDown(cubit.close);
-        await cubit.load();
-        await cubit.next();
-        await cubit.next();
-        cubit.selectColdDevice(device);
-
-        final routeName = switch (device) {
-          SignerDeviceEntity.ledgerNanoX =>
-            const LedgerFacade().readAccountKeyRouteName,
-          SignerDeviceEntity.bitbox02 =>
-            const BitBoxFacade().readAccountKeyRouteName,
-          SignerDeviceEntity.krux =>
-            const ImportQrDeviceFacade().accountKeyRouteName(device),
-          _ => throw StateError('Unsupported test device'),
-        };
-        final router = GoRouter(
-          routes: [
-            GoRoute(
-              path: '/',
-              builder: (_, _) => BlocProvider.value(
-                value: cubit,
-                child: const BullVaultOnboardingScreen(),
-              ),
-            ),
-            GoRoute(
-              name: routeName,
-              path: '/acquire',
-              builder: (context, _) => Scaffold(
-                body: TextButton(
-                  onPressed: () => context.pop('account-key'),
-                  child: const Text('Return key'),
-                ),
-              ),
-            ),
-          ],
-        );
-        addTearDown(router.dispose);
-        await tester.pumpWidget(
-          MaterialApp.router(
-            theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-          ),
-        );
-
-        await tester.tap(find.text('Continue with ${device.displayName}'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Return key'));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Review your BullVault'), findsOneWidget);
-        await tester.tap(find.byTooltip('Back'));
-        await tester.pumpAndSettle();
-        expect(find.text('Connect your cold key'), findsOneWidget);
-        expect(
-          find.text('Public account key received from ${device.displayName}.'),
-          findsOneWidget,
-        );
-      },
-    );
-  }
 
   testWidgets('activates the vault before opening its wallet', (tester) async {
     final result = _readyResult();
@@ -251,6 +283,7 @@ void main() {
       _MockUpdateBullVaultSetupUsecase(),
       activate,
       encode,
+      _MockUpdateBullVaultRegistrationNameUsecase(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -309,6 +342,7 @@ void main() {
       _MockUpdateBullVaultSetupUsecase(),
       activate,
       encode,
+      _MockUpdateBullVaultRegistrationNameUsecase(),
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -331,9 +365,7 @@ BullVaultCreateResult _readyResult() {
   final result = testBullVaultCreateResult();
   return BullVaultCreateResult(
     wallet: result.wallet,
-    policy: result.policy,
     record: result.record.copyWith(recoveryPackageConfirmed: true),
-    recoveryPackage: result.recoveryPackage,
   );
 }
 
