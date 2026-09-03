@@ -92,6 +92,20 @@ class ParseWatchOnlyInputUsecase {
               signerDevice: signerDevice,
             )) {
           localGroups.add(index);
+          final origins = {
+            for (final key in keys)
+              if (key.derivationPath != null) key.xpub: key,
+          };
+          keyGroups[index] = [
+            for (final key in keys)
+              if (key.derivationPath == null)
+                key.copyWith(
+                  masterFingerprint: origins[key.xpub]!.masterFingerprint,
+                  derivationPath: origins[key.xpub]!.derivationPath,
+                )
+              else
+                key,
+          ];
         }
       }
     } on Exception catch (_, st) {

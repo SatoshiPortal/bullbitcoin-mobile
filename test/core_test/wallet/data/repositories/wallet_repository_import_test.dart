@@ -256,12 +256,21 @@ void main() {
   });
 
   test('stores each multisig signer annotation independently', () async {
+    final localKey = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.local,
+    ).descriptorKeys.single;
     final wallet = await repository.importDescriptor(
       descriptor: _multisigDescriptor,
       network: Network.bitcoinMainnet,
       label: 'Multisig wallet',
       signers: [
-        _signer(masterFingerprint: _fingerprint, signer: SignerEntity.local),
+        WalletSigner(
+          id: 'signer-0',
+          signer: SignerEntity.local,
+          signerDevice: null,
+          descriptorKeys: [localKey.copyWith(requiresPassphrase: true)],
+        ),
         _signer(
           id: 'signer-1',
           descriptorKeyId: 'key-1',
@@ -278,6 +287,10 @@ void main() {
     expect(stored.signers, hasLength(2));
     expect(stored.signers.first.signer, Signer.local);
     expect(stored.signers.first.signerDevice, isNull);
+    expect(
+      stored.signers.first.descriptorKeys.single.requiresPassphrase,
+      isTrue,
+    );
     expect(stored.signers.last.signer, Signer.remote);
     expect(stored.signers.last.signerDevice, SignerDevice.bitbox02);
     expect(wallet.isWatchOnly, isFalse);

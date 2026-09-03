@@ -24,6 +24,7 @@ abstract interface class BitcoinSigningPort {
     required String walletId,
     bool tryFinalize = true,
     String? signerId,
+    String? passphrase,
   });
 
   /// Read-only inspection can include unavailable inputs when restoring a

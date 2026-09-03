@@ -50,14 +50,16 @@ class ResumeBullVaultOnboardingUsecase {
       if (recoveryPackage.policy.network != network) {
         return const Err(BullVaultCreationFailure());
       }
-      final reserved = await _reserveBip48AccountUsecase.execute(
-        seedFingerprint:
-            recoveryPackage.policy.everydayKey.accountKey.masterFingerprint,
-        coinType: network.coinType,
-        account: record.mobileAccount,
-      );
-      if (reserved case Err()) {
-        return const Err(BullVaultCreationFailure());
+      final mobileSeedFingerprint = record.mobileSeedFingerprint;
+      if (mobileSeedFingerprint != null) {
+        final reserved = await _reserveBip48AccountUsecase.execute(
+          seedFingerprint: mobileSeedFingerprint,
+          coinType: network.coinType,
+          account: record.mobileAccount!,
+        );
+        if (reserved case Err()) {
+          return const Err(BullVaultCreationFailure());
+        }
       }
       if (record.status == BullVaultLifecycleStatus.activating) {
         await _setWalletHiddenUsecase.execute(
@@ -80,14 +82,7 @@ class ResumeBullVaultOnboardingUsecase {
             return Err(failure);
         }
       }
-      return Ok(
-        BullVaultCreateResult(
-          wallet: wallet,
-          policy: recoveryPackage.policy,
-          record: record,
-          recoveryPackage: recoveryPackage,
-        ),
-      );
+      return Ok(BullVaultCreateResult(wallet: wallet, record: record));
     } on Exception {
       return const Err(BullVaultCreationFailure());
     }

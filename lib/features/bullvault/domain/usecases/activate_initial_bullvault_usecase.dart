@@ -66,7 +66,7 @@ class ActivateInitialBullVaultUsecase {
     if (wallet == null) return const Err(BullVaultCreationFailure());
     final requiredSignerIds = {
       for (final signer in wallet.signers)
-        if (signer.signer != SignerEntity.local) signer.id,
+        if (signer.signer == SignerEntity.remote) signer.id,
     };
     final hardwareSetupComplete = record.completedHardwareSignerIds.containsAll(
       requiredSignerIds,
@@ -80,7 +80,9 @@ class ActivateInitialBullVaultUsecase {
         ? record.mobileBackupDeferred
         : mobileBackupDeferred;
     if ((!hardwareSetupComplete && !effectiveHardwareSetupDeferred) ||
-        (!hasMobileBackup && !effectiveMobileBackupDeferred)) {
+        (record.mobileAccount != null &&
+            !hasMobileBackup &&
+            !effectiveMobileBackupDeferred)) {
       return const Err(BullVaultCreationFailure());
     }
 
@@ -105,8 +107,8 @@ class ActivateInitialBullVaultUsecase {
       final active = activating.copyWith(
         status: BullVaultLifecycleStatus.active,
       );
-      if (await _repository.save(active) case Err(:final failure)) {
-        throw _ActivationPersistenceException(failure);
+      if (await _repository.save(active) case Err()) {
+        throw const _ActivationPersistenceException();
       }
       return const Ok(null);
     } on Exception {
@@ -118,8 +120,8 @@ class ActivateInitialBullVaultUsecase {
         switch (await _repository.save(record)) {
           case Ok():
             break;
-          case Err():
-            throw StateError('Could not restore BullVault setup state');
+          case Err(:final failure):
+            return Err(failure);
         }
       } on Exception {
         // The activating record remains a durable retry marker.
@@ -133,7 +135,7 @@ class ActivateInitialBullVaultUsecase {
     final previous = _activationLocks[walletId] ?? Future.value();
     final current = completer.future;
     _activationLocks[walletId] = current;
-    return previous.catchError((_) {}).then((_) => action()).whenComplete(() {
+    return previous.then((_) => action()).whenComplete(() {
       completer.complete();
       if (identical(_activationLocks[walletId], current)) {
         _activationLocks.remove(walletId);
@@ -143,7 +145,5 @@ class ActivateInitialBullVaultUsecase {
 }
 
 final class _ActivationPersistenceException implements Exception {
-  final BullVaultFailure failure;
-
-  const _ActivationPersistenceException(this.failure);
+  const _ActivationPersistenceException();
 }

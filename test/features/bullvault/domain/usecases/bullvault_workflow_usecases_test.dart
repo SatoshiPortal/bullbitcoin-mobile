@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_renew_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
@@ -40,7 +41,9 @@ void main() {
     final settings = _MockSettings();
     final resume = _MockResumeOnboarding();
     final checkBackups = _MockCheckBackups();
-    final created = testBullVaultCreateResult();
+    final created = testBullVaultCreateResult(
+      mobileSeedFingerprint: 'canonical-seed-fingerprint',
+    );
     when(settings.execute).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.mainnet,
@@ -52,9 +55,7 @@ void main() {
       () => resume.execute(created.wallet.network),
     ).thenAnswer((_) async => Ok(created));
     when(
-      () => checkBackups.execute(
-        created.policy.everydayKey.accountKey.masterFingerprint,
-      ),
+      () => checkBackups.execute(created.record.mobileSeedFingerprint!),
     ).thenAnswer((_) async => const Ok((physical: true, recoverBull: false)));
     final usecase = LoadBullVaultOnboardingUsecase(
       settings,
@@ -133,7 +134,6 @@ void main() {
       final base = testBullVaultDetails(protection: BullVaultProtection.extra);
       final details = BullVaultDetails(
         record: base.record.copyWith(hardwareSetupComplete: true),
-        policy: base.policy,
         timeUntilFirstRecovery: base.timeUntilFirstRecovery,
         showEarlyRenewalWarning: base.showEarlyRenewalWarning,
         migrationAddress: base.migrationAddress,
@@ -164,10 +164,18 @@ void main() {
     final getDetails = _MockGetDetails();
     final resume = _MockResumeRenewal();
     final checkBackups = _MockCheckBackups();
-    final base = testBullVaultDetails();
+    final baseResult = testBullVaultCreateResult(
+      status: BullVaultLifecycleStatus.active,
+      mobileSeedFingerprint: 'canonical-seed-fingerprint',
+    );
+    final base = BullVaultDetails(
+      record: baseResult.record,
+      timeUntilFirstRecovery: const Duration(days: 365),
+      showEarlyRenewalWarning: false,
+      migrationAddress: null,
+    );
     final details = BullVaultDetails(
       record: base.record.copyWith(hardwareSetupComplete: true),
-      policy: base.policy,
       timeUntilFirstRecovery: base.timeUntilFirstRecovery,
       showEarlyRenewalWarning: base.showEarlyRenewalWarning,
       migrationAddress: base.migrationAddress,
@@ -179,9 +187,7 @@ void main() {
       () => resume.execute(details.record.walletId),
     ).thenAnswer((_) async => const Ok(null));
     when(
-      () => checkBackups.execute(
-        details.policy.everydayKey.accountKey.masterFingerprint,
-      ),
+      () => checkBackups.execute(details.record.mobileSeedFingerprint!),
     ).thenAnswer((_) async => const Ok((physical: false, recoverBull: false)));
     final usecase = LoadBullVaultRenewalUsecase(
       getDetails,

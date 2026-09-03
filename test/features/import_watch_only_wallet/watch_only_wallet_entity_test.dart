@@ -31,7 +31,7 @@ void main() {
     expect(updated.scriptType, ScriptType.bip84);
   });
 
-  test('groups and updates descriptor keys by master fingerprint', () {
+  test('updates the device for every key belonging to a signer', () {
     const fingerprint = '12345678';
     final entity =
         WatchOnlyWalletEntity.descriptor(

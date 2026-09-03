@@ -14,8 +14,9 @@ class SignExternalPsbtUsecase {
 
   @useResult
   Future<Result<PsbtSigningResult, PsbtSigningFailure>> execute(
-    PsbtSigningReview review,
-  ) async {
+    PsbtSigningReview review, {
+    String? passphrase,
+  }) async {
     if (!review.canSign) {
       return const Err(PsbtSigningMissingLocalKeyFailure());
     }
@@ -25,6 +26,7 @@ class SignExternalPsbtUsecase {
         review.psbt,
         walletId: review.wallet.id,
         tryFinalize: false,
+        passphrase: passphrase,
       );
       final ({String psbt, bool isFinalized}) signed;
       switch (signedResult) {

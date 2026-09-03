@@ -20,20 +20,30 @@ const testMnemonics = [
   'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
   'legal winner thank year wave sausage worth useful legal winner thank yellow',
   'letter advice cage absurd amount doctor acoustic avoid letter advice cage above',
+  'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong',
 ];
 
-SignerDescriptorKeys deriveSignerKeys(String words, {bool isTestnet = true}) =>
-    deriveSignerKeysAtAccount(words, account: 0, isTestnet: isTestnet);
+SignerDescriptorKeys deriveSignerKeys(
+  String words, {
+  bool isTestnet = true,
+  String? password,
+}) => deriveSignerKeysAtAccount(
+  words,
+  account: 0,
+  isTestnet: isTestnet,
+  password: password,
+);
 
 SignerDescriptorKeys deriveSignerKeysAtAccount(
   String words, {
   required int account,
   bool isTestnet = true,
+  String? password,
 }) {
   final root = bdk.DescriptorSecretKey(
     networkKind: isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main,
     mnemonic: bdk.Mnemonic.fromString(mnemonic: words),
-    password: null,
+    password: password,
   );
   final accountKey = root.derive(
     path: bdk.DerivationPath(path: "m/48'/${isTestnet ? 1 : 0}'/$account'/2'"),
