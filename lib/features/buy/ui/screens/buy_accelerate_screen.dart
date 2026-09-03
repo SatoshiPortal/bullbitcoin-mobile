@@ -81,17 +81,23 @@ class BuyAccelerateScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
+                  // The fee, its fiat estimate and the rate all come from the
+                  // reads this screen performs on entry, so a failure is what
+                  // leaves them empty. The confirmation time is a constant.
                   BuyConfirmDetailRow(
                     label: context.loc.buyNetworkFees,
                     value: formattedAbsoluteFee,
+                    isUnavailable: accelerateFailure != null,
                   ),
                   BuyConfirmDetailRow(
                     label: context.loc.buyEstimatedFeeValue,
                     value: formattedFeeFiatEstimate,
+                    isUnavailable: accelerateFailure != null,
                   ),
                   BuyConfirmDetailRow(
                     label: context.loc.buyNetworkFeeRate,
                     value: formattedRelativeFee,
+                    isUnavailable: accelerateFailure != null,
                   ),
                   BuyConfirmDetailRow(
                     label: context.loc.buyConfirmationTime,

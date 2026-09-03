@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
@@ -47,7 +48,8 @@ Future<void> _pumpAccelerateScreen(WidgetTester tester, BuyState state) async {
       ),
     ),
   );
-  // Not pumpAndSettle: the unfilled fee rows shimmer forever.
+  // Not pumpAndSettle: while the fee reads are in flight the rows shimmer,
+  // and a repeating animation never settles.
   await tester.pump();
 }
 
@@ -82,5 +84,28 @@ void main() {
     await _pumpAccelerateScreen(tester, const BuyState());
 
     expect(find.text(genericMessage), findsNothing);
+  });
+
+  testWidgets('stops the fee rows shimmering once the reads have failed', (
+    tester,
+  ) async {
+    // Otherwise the rows keep asking the user to wait for a value that is
+    // never coming, directly above a message saying it failed.
+    await _pumpAccelerateScreen(
+      tester,
+      const BuyState(failure: BuyUnexpectedFailure('DioException 500')),
+    );
+
+    expect(find.byType(LoadingLineContent), findsNothing);
+    expect(find.text('—'), findsNWidgets(3));
+  });
+
+  testWidgets('still shimmers while the fee reads are in flight', (
+    tester,
+  ) async {
+    await _pumpAccelerateScreen(tester, const BuyState());
+
+    expect(find.byType(LoadingLineContent), findsNWidgets(3));
+    expect(find.text('—'), findsNothing);
   });
 }
