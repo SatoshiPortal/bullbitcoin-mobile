@@ -351,7 +351,7 @@ void main() {
             ),
           ),
         );
-        final updates = StreamController<PayjoinSession>();
+        final updates = StreamController<Result<PayjoinSession, PayFailure>>();
         addTearDown(updates.close);
         when(
           () => watchPayjoin.execute(bip21),
@@ -366,15 +366,17 @@ void main() {
         expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
 
         updates.add(
-          PayjoinSenderSession(
-            status: PayjoinStatus.expired,
-            uri: bip21,
-            network: BitcoinNetwork.mainnet,
-            walletId: 'wallet-1',
-            originalTransactionId: expectedTxid,
-            amount: Sats.fromInt(100000),
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          Ok<PayjoinSession, PayFailure>(
+            PayjoinSenderSession(
+              status: PayjoinStatus.expired,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: expectedTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            ),
           ),
         );
         await pumpEventQueue();
@@ -517,7 +519,7 @@ void main() {
           ),
         ),
       );
-      final updates = StreamController<PayjoinSession>();
+      final updates = StreamController<Result<PayjoinSession, PayFailure>>();
       addTearDown(updates.close);
       when(() => watchPayjoin.execute(bip21)).thenAnswer((_) => updates.stream);
 
@@ -766,16 +768,18 @@ void main() {
       );
       when(() => watchPayjoin.execute(bip21)).thenAnswer(
         (_) => Stream.value(
-          PayjoinSenderSession(
-            status: PayjoinStatus.completed,
-            uri: bip21,
-            network: BitcoinNetwork.mainnet,
-            walletId: 'wallet-1',
-            originalTransactionId: 'original-txid',
-            transactionId: expectedTxid,
-            amount: Sats.fromInt(100000),
-            createdAt: DateTime(2026),
-            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          Ok<PayjoinSession, PayFailure>(
+            PayjoinSenderSession(
+              status: PayjoinStatus.completed,
+              uri: bip21,
+              network: BitcoinNetwork.mainnet,
+              walletId: 'wallet-1',
+              originalTransactionId: 'original-txid',
+              transactionId: expectedTxid,
+              amount: Sats.fromInt(100000),
+              createdAt: DateTime(2026),
+              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+            ),
           ),
         ),
       );

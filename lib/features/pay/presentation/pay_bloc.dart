@@ -113,7 +113,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   Timer? _pollingTimer;
   bool _isOrderRequestInFlight = false;
   String? _pendingOrderStatusUpdateId;
-  StreamSubscription<PayjoinSession>? _payjoinSubscription;
+  StreamSubscription<Result<PayjoinSession, PayFailure>>? _payjoinSubscription;
   String? _activePayjoinSessionId;
 
   /// The order the active payjoin session pays for. A session resolution is
@@ -685,19 +685,23 @@ class PayBloc extends Bloc<PayEvent, PayState>
     _activePayjoinSessionId = sessionId;
     _activePayjoinOrderId = orderId;
     unawaited(_payjoinSubscription?.cancel());
-    _payjoinSubscription = _watchPayjoinUsecase
-        .execute(sessionId)
-        .listen(
-          (session) => add(PayEvent.payjoinSessionUpdated(session)),
-          onError: (Object error, StackTrace stackTrace) {
-            log.warning('Payjoin session watch failed');
-            Future<void>.delayed(const Duration(seconds: 5), () {
-              if (!isClosed && _activePayjoinSessionId == sessionId) {
-                _watchPayjoin(sessionId, orderId: orderId);
-              }
-            });
-          },
-        );
+    _payjoinSubscription = _watchPayjoinUsecase.execute(sessionId).listen((
+      result,
+    ) {
+      switch (result) {
+        case Ok(:final value):
+          add(PayEvent.payjoinSessionUpdated(value));
+        case Err(:final failure):
+          // Not surfaced: the session is still live on the directory, so the
+          // cure is to watch again rather than to tell the user anything.
+          log.warning('Payjoin session watch failed', error: failure);
+          Future<void>.delayed(const Duration(seconds: 5), () {
+            if (!isClosed && _activePayjoinSessionId == sessionId) {
+              _watchPayjoin(sessionId, orderId: orderId);
+            }
+          });
+      }
+    });
   }
 
   Future<void> _onPayjoinSessionUpdated(
