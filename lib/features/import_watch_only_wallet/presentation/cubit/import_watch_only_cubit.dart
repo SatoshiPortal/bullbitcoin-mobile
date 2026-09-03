@@ -72,6 +72,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   Future<void> parseInput(
     String input, {
     SignerDeviceEntity? signerDevice,
+    bool showFailure = true,
   }) async {
     final requestId = ++_parseRequestId;
     final trimmed = input.trim();
@@ -87,7 +88,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
       case Ok(:final value):
         emit(state.copyWith(watchOnlyWallet: value, failure: null));
       case Err(:final failure):
-        emit(state.copyWith(failure: failure));
+        if (showFailure) emit(state.copyWith(failure: failure));
     }
   }
 

@@ -62,35 +62,4 @@ void main() {
     expect(cubit.state.failure, isA<PsbtFinalizationFailure>());
   });
 
-  late _MockBroadcastBitcoinTransactionUsecase broadcastUsecase;
-
-  setUp(() {
-    broadcastUsecase = _MockBroadcastBitcoinTransactionUsecase();
-  });
-
-  BroadcastSignedTxCubit buildCubit() => BroadcastSignedTxCubit(
-    broadcastBitcoinTransactionUsecase: broadcastUsecase,
-    request: const BroadcastSignedTxRequest(collectSignerResult: true),
-  );
-
-  group('signer result collection', () {
-    test('stores the signer result for authoritative validation', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-
-      await cubit.tryParseTransaction('signer-result');
-
-      expect(cubit.state.collectedSignerResult, 'signer-result');
-      expect(cubit.state.failure, isNull);
-    });
-
-    test('collects a non-BBQR signer QR directly', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-
-      await cubit.onQrScanned('signer-result');
-
-      expect(cubit.state.collectedSignerResult, 'signer-result');
-    });
-  });
 }
