@@ -40,8 +40,9 @@ class _MockReserveBip48AccountUsecase extends Mock
 
 final class _RenewalRepository implements BullVaultRepository {
   final Map<String, BullVaultRecord> records;
-  final bool failActivation;
-  final int? failSaveAt;
+  bool failActivation;
+  int? failSaveAt;
+  bool keepFailingSaves;
   BullVaultRecord? activatedReplacement;
   var _saveCount = 0;
 
@@ -49,6 +50,7 @@ final class _RenewalRepository implements BullVaultRepository {
     required this.records,
     this.failActivation = false,
     this.failSaveAt,
+    this.keepFailingSaves = false,
   });
 
   @override
@@ -66,9 +68,15 @@ final class _RenewalRepository implements BullVaultRepository {
     required BullVaultRecord replacement,
   }) async {
     activatedReplacement = replacement;
-    return failActivation
-        ? const Err(BullVaultRenewalFailure())
-        : const Ok(null);
+    if (failActivation) return const Err(BullVaultRenewalFailure());
+    records[previous.walletId] = previous.copyWith(
+      status: BullVaultLifecycleStatus.migrating,
+      successorWalletId: replacement.walletId,
+    );
+    records[replacement.walletId] = replacement.copyWith(
+      status: BullVaultLifecycleStatus.active,
+    );
+    return const Ok(null);
   }
 
   @override
@@ -126,7 +134,9 @@ final class _RenewalRepository implements BullVaultRepository {
   @override
   Future<Result<void, BullVaultFailure>> save(BullVaultRecord record) async {
     _saveCount++;
-    if (_saveCount == failSaveAt) {
+    if (failSaveAt != null &&
+        (_saveCount == failSaveAt ||
+            keepFailingSaves && _saveCount >= failSaveAt!)) {
       return const Err(BullVaultCreationFailure());
     }
     records[record.walletId] = record;
@@ -421,46 +431,133 @@ void main() {
     ]);
   });
 
-  test('restores wallet visibility when activation fails', () async {
-    final previous = _previous();
-    final replacement = _replacement(
-      completedHardwareSignerIds: const {'cold'},
-      recoveryPackageConfirmed: true,
-    );
-    final repository = _RenewalRepository(
-      records: {previous.walletId: previous, replacement.walletId: replacement},
-      failActivation: true,
-    );
-    final getWallet = _MockGetWalletUsecase();
-    final setHidden = _MockSetWalletHiddenUsecase();
-    when(
-      () => getWallet.execute(replacement.walletId),
-    ).thenAnswer((_) async => _replacementWallet());
-    when(
-      () => setHidden.execute(
-        walletId: any(named: 'walletId'),
-        isHidden: any(named: 'isHidden'),
-      ),
-    ).thenAnswer((_) async {});
-    final usecase = ActivateBullVaultRenewalUsecase(
-      repository,
-      getWallet,
-      setHidden,
-    );
+  test(
+    'resumes a second renewal from either the active or prepared wallet',
+    () async {
+      final first = testBullVaultCreateResult(
+        walletId: 'first',
+        status: BullVaultLifecycleStatus.active,
+      );
+      final second = testBullVaultCreateResult(
+        walletId: 'second',
+        generation: 1,
+        lineageId: first.policy.lineageId,
+        previousVaultId: first.wallet.id,
+        status: BullVaultLifecycleStatus.active,
+      );
+      final third = testBullVaultCreateResult(
+        walletId: 'third',
+        generation: 2,
+        lineageId: first.policy.lineageId,
+        previousVaultId: second.wallet.id,
+      );
+      final repository = _RenewalRepository(
+        records: {
+          first.wallet.id: first.record.copyWith(
+            status: BullVaultLifecycleStatus.migrating,
+            successorWalletId: second.wallet.id,
+          ),
+          second.wallet.id: second.record.copyWith(
+            recoveryPackageConfirmed: true,
+          ),
+          third.wallet.id: third.record,
+        },
+      );
+      final wallets = {
+        first.wallet.id: first.wallet.copyWith(isHidden: true),
+        second.wallet.id: second.wallet,
+        third.wallet.id: third.wallet,
+      };
+      final getWallet = _MockGetWalletUsecase();
+      when(() => getWallet.execute(any())).thenAnswer(
+        (invocation) async => wallets[invocation.positionalArguments.single],
+      );
+      final resume = ResumeBullVaultRenewalUsecase(
+        repository,
+        getWallet,
+        _MockSetWalletHiddenUsecase(),
+      );
+      for (final walletId in [second.wallet.id, third.wallet.id]) {
+        final result = await resume.execute(walletId);
+        expect((result as Ok).value.replacement.wallet.id, third.wallet.id);
+      }
+      expect(repository.records.keys, unorderedEquals(wallets.keys));
+    },
+  );
 
-    final result = await usecase.execute(
-      previousWalletId: previous.walletId,
-      replacementWalletId: replacement.walletId,
-    );
+  for (final sustained in [false, true]) {
+    test(
+      'recovers renewal activation after storage failure (sustained: $sustained)',
+      () async {
+        final previous = _previous();
+        final replacement = _replacement(
+          completedHardwareSignerIds: const {'cold'},
+          recoveryPackageConfirmed: true,
+        );
+        final repository = _RenewalRepository(
+          records: {
+            previous.walletId: previous,
+            replacement.walletId: replacement,
+          },
+          failActivation: true,
+          failSaveAt: sustained ? 2 : null,
+          keepFailingSaves: sustained,
+        );
+        final getWallet = _MockGetWalletUsecase();
+        final setHidden = _MockSetWalletHiddenUsecase();
+        when(
+          () => getWallet.execute(replacement.walletId),
+        ).thenAnswer((_) async => _replacementWallet());
+        when(
+          () => setHidden.execute(
+            walletId: any(named: 'walletId'),
+            isHidden: any(named: 'isHidden'),
+          ),
+        ).thenAnswer((_) async {});
+        final usecase = ActivateBullVaultRenewalUsecase(
+          repository,
+          getWallet,
+          setHidden,
+        );
 
-    expect(result, isA<Err<void, BullVaultFailure>>());
-    verifyInOrder([
-      () => setHidden.execute(walletId: replacement.walletId, isHidden: false),
-      () => setHidden.execute(walletId: previous.walletId, isHidden: true),
-      () => setHidden.execute(walletId: previous.walletId, isHidden: false),
-      () => setHidden.execute(walletId: replacement.walletId, isHidden: true),
-    ]);
-  });
+        final result = await usecase.execute(
+          previousWalletId: previous.walletId,
+          replacementWalletId: replacement.walletId,
+        );
+
+        expect(result, isA<Err<void, BullVaultFailure>>());
+        expect(
+          repository.records[replacement.walletId]!.status,
+          sustained
+              ? BullVaultLifecycleStatus.activating
+              : BullVaultLifecycleStatus.pending,
+        );
+        verifyInOrder([
+          () => setHidden.execute(
+            walletId: replacement.walletId,
+            isHidden: false,
+          ),
+          () => setHidden.execute(walletId: previous.walletId, isHidden: true),
+          () => setHidden.execute(walletId: previous.walletId, isHidden: false),
+          () =>
+              setHidden.execute(walletId: replacement.walletId, isHidden: true),
+        ]);
+        repository.failActivation = false;
+        repository.failSaveAt = null;
+        expect(
+          await usecase.execute(
+            previousWalletId: previous.walletId,
+            replacementWalletId: replacement.walletId,
+          ),
+          isA<Ok>(),
+        );
+        expect(
+          repository.records[replacement.walletId]!.status,
+          BullVaultLifecycleStatus.active,
+        );
+      },
+    );
+  }
 
   test('restores replacement visibility when renewal resume fails', () async {
     final previous = _previous();
@@ -687,6 +784,68 @@ void main() {
     },
   );
 
+  test('activates a hardware-only vault without a mobile backup', () async {
+    final created = testBullVaultCreateResult(
+      walletId: 'hardware-initial',
+      usesBullMobile: false,
+    );
+    final initial = created.record.copyWith(
+      recoveryPackageConfirmed: true,
+      completedHardwareSignerIds: const {'everyday', 'cold'},
+    );
+    final wallet = created.wallet.copyWith(
+      signers: [
+        WalletSigner.single(
+          id: 'everyday',
+          signer: SignerEntity.remote,
+          signerDevice: null,
+          masterFingerprint: '11111111',
+          xpubFingerprint: '11111111',
+          xpub: 'xpub-everyday',
+          derivationPath: "m/48'/0'/0'/2'",
+          descriptorPath: '/<0;1>/*',
+        ),
+        WalletSigner.single(
+          id: 'cold',
+          signer: SignerEntity.remote,
+          signerDevice: null,
+          masterFingerprint: '22222222',
+          xpubFingerprint: '22222222',
+          xpub: 'xpub-cold',
+          derivationPath: "m/48'/0'/0'/2'",
+          descriptorPath: '/<0;1>/*',
+        ),
+      ],
+    );
+    final repository = _RenewalRepository(records: {initial.walletId: initial});
+    final getWallet = _MockGetWalletUsecase();
+    final setHidden = _MockSetWalletHiddenUsecase();
+    when(
+      () => getWallet.execute(initial.walletId),
+    ).thenAnswer((_) async => wallet);
+    when(
+      () => setHidden.execute(walletId: initial.walletId, isHidden: false),
+    ).thenAnswer((_) async {});
+
+    final result =
+        await ActivateInitialBullVaultUsecase(
+          repository,
+          getWallet,
+          setHidden,
+        ).execute(
+          walletId: initial.walletId,
+          hardwareSetupDeferred: false,
+          hasMobileBackup: false,
+          mobileBackupDeferred: false,
+        );
+
+    expect(result, isA<Ok<void, BullVaultFailure>>());
+    expect(
+      repository.records[initial.walletId]?.status,
+      BullVaultLifecycleStatus.active,
+    );
+  });
+
   test(
     'serializes duplicate initial activation and treats active as success',
     () async {
@@ -744,49 +903,71 @@ void main() {
     },
   );
 
-  test(
-    'restores initial visibility and state when active save fails',
-    () async {
-      final initial = _initial().copyWith(
-        recoveryPackageConfirmed: true,
-        completedHardwareSignerIds: const {'cold'},
-      );
-      final repository = _RenewalRepository(
-        records: {initial.walletId: initial},
-        failSaveAt: 2,
-      );
-      final getWallet = _MockGetWalletUsecase();
-      final setHidden = _MockSetWalletHiddenUsecase();
-      when(
-        () => getWallet.execute(initial.walletId),
-      ).thenAnswer((_) async => _initialWallet());
-      when(
-        () => setHidden.execute(
+  for (final sustained in [false, true]) {
+    test(
+      'recovers initial activation after storage failure (sustained: $sustained)',
+      () async {
+        final initial = _initial().copyWith(
+          recoveryPackageConfirmed: true,
+          completedHardwareSignerIds: const {'cold'},
+        );
+        final repository = _RenewalRepository(
+          records: {initial.walletId: initial},
+          failSaveAt: 2,
+          keepFailingSaves: sustained,
+        );
+        final getWallet = _MockGetWalletUsecase();
+        final setHidden = _MockSetWalletHiddenUsecase();
+        when(
+          () => getWallet.execute(initial.walletId),
+        ).thenAnswer((_) async => _initialWallet());
+        when(
+          () => setHidden.execute(
+            walletId: initial.walletId,
+            isHidden: any(named: 'isHidden'),
+          ),
+        ).thenAnswer((_) async {});
+        final usecase = ActivateInitialBullVaultUsecase(
+          repository,
+          getWallet,
+          setHidden,
+        );
+
+        final result = await usecase.execute(
           walletId: initial.walletId,
-          isHidden: any(named: 'isHidden'),
-        ),
-      ).thenAnswer((_) async {});
-      final usecase = ActivateInitialBullVaultUsecase(
-        repository,
-        getWallet,
-        setHidden,
-      );
+          hardwareSetupDeferred: false,
+          hasMobileBackup: true,
+          mobileBackupDeferred: false,
+        );
 
-      final result = await usecase.execute(
-        walletId: initial.walletId,
-        hardwareSetupDeferred: false,
-        hasMobileBackup: true,
-        mobileBackupDeferred: false,
-      );
-
-      expect(result, isA<Err<void, BullVaultFailure>>());
-      expect(repository.records[initial.walletId], initial);
-      verifyInOrder([
-        () => setHidden.execute(walletId: initial.walletId, isHidden: false),
-        () => setHidden.execute(walletId: initial.walletId, isHidden: true),
-      ]);
-    },
-  );
+        expect(result, isA<Err<void, BullVaultFailure>>());
+        expect(
+          repository.records[initial.walletId]!.status,
+          sustained
+              ? BullVaultLifecycleStatus.activating
+              : BullVaultLifecycleStatus.pending,
+        );
+        verifyInOrder([
+          () => setHidden.execute(walletId: initial.walletId, isHidden: false),
+          () => setHidden.execute(walletId: initial.walletId, isHidden: true),
+        ]);
+        repository.failSaveAt = null;
+        expect(
+          await usecase.execute(
+            walletId: initial.walletId,
+            hardwareSetupDeferred: false,
+            hasMobileBackup: true,
+            mobileBackupDeferred: false,
+          ),
+          isA<Ok>(),
+        );
+        expect(
+          repository.records[initial.walletId]!.status,
+          BullVaultLifecycleStatus.active,
+        );
+      },
+    );
+  }
 
   test(
     'retries an activating initial vault with persisted deferrals',
@@ -832,10 +1013,13 @@ void main() {
   test(
     're-hides an activating initial vault when resume cannot persist',
     () async {
-      final activating = _initial().copyWith(
-        status: BullVaultLifecycleStatus.activating,
-        recoveryPackageConfirmed: true,
-      );
+      final activating =
+          _initial(
+            mobileSeedFingerprint: 'canonical-seed-fingerprint',
+          ).copyWith(
+            status: BullVaultLifecycleStatus.activating,
+            recoveryPackageConfirmed: true,
+          );
       final repository = _RenewalRepository(
         records: {activating.walletId: activating},
         failSaveAt: 1,
@@ -872,6 +1056,13 @@ void main() {
       );
 
       expect(result, isA<Err>());
+      verify(
+        () => reserveAccount.execute(
+          seedFingerprint: 'canonical-seed-fingerprint',
+          coinType: 0,
+          account: 0,
+        ),
+      ).called(1);
       verifyInOrder([
         () => setHidden.execute(walletId: activating.walletId, isHidden: false),
         () => setHidden.execute(walletId: activating.walletId, isHidden: true),
@@ -911,11 +1102,12 @@ BullVaultRecord _replacement({
   createdAt: DateTime.utc(2028),
 );
 
-BullVaultRecord _initial() => BullVaultRecord(
+BullVaultRecord _initial({String? mobileSeedFingerprint}) => BullVaultRecord(
   walletId: 'wallet-initial',
   lineageId: 'initial-lineage',
   vaultGeneration: 0,
   mobileAccount: 0,
+  mobileSeedFingerprint: mobileSeedFingerprint,
   birthHeight: 3_000_000,
   recoveryPackage: testBullVaultRecoveryPackage(lineageId: 'initial-lineage'),
   status: BullVaultLifecycleStatus.pending,

@@ -26,11 +26,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => Ok(
-        BullVaultRestoreResult(
-          wallet: created.wallet,
-          record: created.record,
-          source: BullVaultRestoreSource.recoveryPackage,
-        ),
+        BullVaultRestoreResult(wallet: created.wallet, record: created.record),
       ),
     );
     final cubit = BullVaultRestoreCubit(usecase);

@@ -34,9 +34,11 @@ class LoadBullVaultOnboardingUsecase {
             network: network,
             snapshot: BullVaultOnboardingSnapshot(
               result: result,
-              mobileBackupStatus: await _checkMobileBackupsUsecase.execute(
-                result.policy.everydayKey.accountKey.masterFingerprint,
-              ),
+              mobileBackupStatus: result.record.mobileSeedFingerprint == null
+                  ? null
+                  : await _checkMobileBackupsUsecase.execute(
+                      result.record.mobileSeedFingerprint!,
+                    ),
             ),
           ),
         ),

@@ -25,11 +25,19 @@ void main() {
     );
     final review = psbtSigningReview(
       policy: singleLocalPolicy(),
-      wallet: psbtSigningWallet(includeRemoteSigner: false),
+      wallet: psbtSigningWallet(
+        includeRemoteSigner: false,
+        localRequiresPassphrase: true,
+      ),
       transaction: unsigned,
     );
     when(
-      () => port.signPsbt('unsigned', walletId: 'wallet', tryFinalize: false),
+      () => port.signPsbt(
+        'unsigned',
+        walletId: 'wallet',
+        tryFinalize: false,
+        passphrase: 'vault passphrase',
+      ),
     ).thenAnswer((_) async => const Ok((psbt: 'signed', isFinalized: false)));
     when(
       () => port.reviewPsbt('signed', walletId: 'wallet'),
@@ -38,7 +46,9 @@ void main() {
       () => port.finalizePsbt('signed'),
     ).thenAnswer((_) async => const Ok((psbt: 'finalized', isFinalized: true)));
 
-    final result = await SignExternalPsbtUsecase(port).execute(review);
+    final result = await SignExternalPsbtUsecase(
+      port,
+    ).execute(review, passphrase: 'vault passphrase');
 
     expect(result, isA<Ok<PsbtSigningResult, PsbtSigningFailure>>());
     final value = (result as Ok<PsbtSigningResult, PsbtSigningFailure>).value;

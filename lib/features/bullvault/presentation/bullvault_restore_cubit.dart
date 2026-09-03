@@ -13,6 +13,7 @@ final class BullVaultRestoreCubit extends Cubit<BullVaultRestoreState> {
     required BullVaultRestoreInputKind kind,
     required String source,
     required String label,
+    String? mobilePassphrase,
   }) async {
     if (state.isRestoring) return;
     emit(state.copyWith(isRestoring: true, clearFailure: true));
@@ -20,6 +21,7 @@ final class BullVaultRestoreCubit extends Cubit<BullVaultRestoreState> {
       kind: kind,
       source: source,
       label: label,
+      mobilePassphrase: mobilePassphrase,
     );
     if (isClosed) return;
     switch (result) {

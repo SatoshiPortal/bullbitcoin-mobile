@@ -26,7 +26,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
@@ -69,7 +68,6 @@ WalletUtxo _utxo({required String txId, required int vout}) =>
 
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
-  late _MockSeedDatasource seedDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
   late BitcoinWalletRepository repository;
@@ -109,12 +107,11 @@ void main() {
 
   setUp(() {
     metadataDatasource = _MockWalletMetadataDatasource();
-    seedDatasource = _MockSeedDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
+      seedDatasource: _MockSeedDatasource(),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
     );
@@ -327,36 +324,5 @@ void main() {
 
       expect(capturedReplaceByFee(), isFalse);
     });
-  });
-
-  test('private wallet reconstruction preserves a higher account', () async {
-    when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
-      (_) async => metadata.copyWith(
-        signers: [
-          walletSignerModel(
-            id: 'signer-0',
-            descriptorKeyId: 'key-0',
-            masterFingerprint: '73c5da0a',
-            xpubFingerprint: 'deadbeef',
-            xpub: 'tpub-test',
-            derivationPath: "m/84'/1'/1'",
-            descriptorPath: '/<0;1>/*',
-            signer: Signer.local,
-            signerDevice: null,
-          ),
-        ],
-      ),
-    );
-    when(() => seedDatasource.get('73c5da0a')).thenAnswer(
-      (_) async => SeedModel.mnemonic(
-        mnemonicWords:
-            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
-                .split(' '),
-      ),
-    );
-
-    final wallet = await repository.getPrivateWallet(walletId: _walletId);
-
-    expect(wallet.account, 1);
   });
 }

@@ -793,7 +793,8 @@ class WalletRepository
   }) {
     final annotationsByKey = {
       for (final signer in annotations)
-        for (final key in signer.descriptorKeys) key.id: signer,
+        for (final key in signer.descriptorKeys)
+          key.id: (signer: signer, key: key),
     };
     final annotationsById = {
       for (final signer in annotations) signer.id: signer,
@@ -801,10 +802,20 @@ class WalletRepository
     final grouped = <String, List<WalletDescriptorKey>>{};
     for (final key in keys) {
       final annotation = annotationsByKey[key.id];
-      final signerId = annotation?.id ?? key.signerId;
+      final signerId = annotation?.signer.id ?? key.signerId;
       grouped
           .putIfAbsent(signerId, () => [])
-          .add(key.copyWith(signerId: signerId));
+          .add(
+            key.copyWith(
+              signerId: signerId,
+              requiresPassphrase: annotation?.key.requiresPassphrase,
+              derivationPath:
+                  key.derivationPath ?? annotation?.key.derivationPath,
+              masterFingerprint: key.masterFingerprint.isEmpty
+                  ? annotation?.key.masterFingerprint
+                  : key.masterFingerprint,
+            ),
+          );
     }
     return [
       for (final entry in grouped.entries)

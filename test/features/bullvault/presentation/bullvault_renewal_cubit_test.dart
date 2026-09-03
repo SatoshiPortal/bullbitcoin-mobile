@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_details_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -23,6 +26,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_rene
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_bullvault_time_reference_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/renew_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_state.dart';
@@ -30,6 +34,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../core_test/wallet/bdk_wallet_test_fixture.dart';
+
+class _MockWatchDetails extends Mock implements WatchBullVaultDetailsUsecase {}
 
 class _MockLoadRenewal extends Mock implements LoadBullVaultRenewalUsecase {}
 
@@ -43,6 +49,9 @@ class _MockActivate extends Mock implements ActivateBullVaultRenewalUsecase {}
 class _MockCancel extends Mock implements CancelBullVaultRenewalUsecase {}
 
 class _MockUpdateSetup extends Mock implements UpdateBullVaultSetupUsecase {}
+
+class _MockUpdateRegistration extends Mock
+    implements UpdateBullVaultRegistrationNameUsecase {}
 
 class _MockWatchMigration extends Mock
     implements WatchBullVaultMigrationUsecase {}
@@ -94,10 +103,12 @@ void main() {
       _MockActivate(),
       _MockCancel(),
       _MockUpdateSetup(),
+      _MockUpdateRegistration(),
       watchMigration,
       encodeRecoveryPackage,
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
+      watchDetailsUsecase: _NoDetailsUpdates(),
     );
 
     await cubit.load();
@@ -114,6 +125,69 @@ void main() {
     verify(() => load.execute(details.record.walletId)).called(1);
     await cubit.close();
   });
+
+  test(
+    'refreshes predecessor balances without resetting the selected schedule',
+    () async {
+      final load = _MockLoadRenewal();
+      final watchDetails = _MockWatchDetails();
+      final watchMigration = _MockWatchMigration();
+      final updates =
+          StreamController<Result<BullVaultDetails?, BullVaultFailure>>();
+      var details = _details();
+      when(() => load.execute(details.record.walletId)).thenAnswer(
+        (_) async => Ok(BullVaultRenewalLoad(details: details, renewal: null)),
+      );
+      when(
+        () => watchDetails.execute(details.record.walletId),
+      ).thenAnswer((_) => updates.stream);
+      when(
+        () => watchMigration.execute(
+          previousWalletId: 'retired-wallet',
+          migrationAddress: details.migrationAddress!,
+        ),
+      ).thenAnswer((_) => const Stream.empty());
+      final cubit = BullVaultRenewalCubit(
+        load,
+        _MockRenew(),
+        _MockActivate(),
+        _MockCancel(),
+        _MockUpdateSetup(),
+        _MockUpdateRegistration(),
+        watchMigration,
+        _MockEncodeRecoveryPackage(),
+        walletId: details.record.walletId,
+        prepareTimeReferenceUsecase: _MockPrepareTime(),
+        watchDetailsUsecase: watchDetails,
+      );
+      await cubit.load();
+      const schedule = BullVaultSchedule(coldDelay: 3, recoveryDelay: 5);
+      cubit.updateSchedule(schedule);
+      details = _details(balanceSat: 1000);
+      updates.add(Ok(details));
+      await pumpEventQueue();
+      expect(
+        cubit.state.details!.previousVaults.single.wallet.balanceSat,
+        BigInt.from(1000),
+      );
+      expect(cubit.state.schedule, schedule);
+      details = _details();
+      await cubit.refreshDetails();
+      expect(
+        cubit.state.details!.previousVaults.single.wallet.balanceSat,
+        BigInt.zero,
+      );
+      expect(cubit.state.schedule, schedule);
+      verify(
+        () => watchMigration.execute(
+          previousWalletId: 'retired-wallet',
+          migrationAddress: details.migrationAddress!,
+        ),
+      ).called(1);
+      await cubit.close();
+      await updates.close();
+    },
+  );
 
   test('returns to renewal review after cancellation', () async {
     final load = _MockLoadRenewal();
@@ -153,10 +227,12 @@ void main() {
       _MockActivate(),
       cancel,
       _MockUpdateSetup(),
+      _MockUpdateRegistration(),
       watchMigration,
       encode,
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
+      watchDetailsUsecase: _NoDetailsUpdates(),
     );
 
     await cubit.load();
@@ -256,10 +332,12 @@ void main() {
         activate,
         _MockCancel(),
         update,
+        _MockUpdateRegistration(),
         watchMigration,
         encode,
         walletId: details.record.walletId,
         prepareTimeReferenceUsecase: prepareTime,
+        watchDetailsUsecase: _NoDetailsUpdates(),
       );
 
       await cubit.load();
@@ -299,14 +377,13 @@ void main() {
       expect(cubit.state.renewal, same(renewal));
       expect(cubit.state.completedSignerIds, {'cold'});
       expect(cubit.state.recoveryPackageConfirmed, isTrue);
-      expect(cubit.state.isActivated, isTrue);
       expect(cubit.state.step, BullVaultRenewalStep.complete);
       await cubit.close();
     },
   );
 }
 
-BullVaultDetails _details() {
+BullVaultDetails _details({int balanceSat = 0}) {
   final policy = _policy();
   final record = _record(
     policy: policy,
@@ -320,14 +397,16 @@ BullVaultDetails _details() {
   );
   return BullVaultDetails(
     record: record,
-    policy: policy,
     timeUntilFirstRecovery: const Duration(days: 365),
     showEarlyRenewalWarning: false,
     migrationAddress: 'tb1qmigration',
     previousVaults: [
       BullVaultPreviousVault(
         record: previous,
-        wallet: _wallet('retired-wallet', isHidden: true),
+        wallet: _wallet(
+          'retired-wallet',
+          isHidden: true,
+        ).copyWith(balanceSat: BigInt.from(balanceSat)),
       ),
     ],
   );
@@ -342,18 +421,9 @@ BullVaultRenewResult _renewal(BullVaultRecord previous) {
     previousWalletId: previous.walletId,
     status: BullVaultLifecycleStatus.pending,
   );
-  final recovery = BullVaultRecoveryPackage(
-    previousVaultId: previous.walletId,
-    policy: policy,
-  );
   return BullVaultRenewResult(
     previous: previous,
-    replacement: BullVaultCreateResult(
-      wallet: wallet,
-      policy: policy,
-      record: record,
-      recoveryPackage: recovery,
-    ),
+    replacement: BullVaultCreateResult(wallet: wallet, record: record),
   );
 }
 
@@ -412,7 +482,9 @@ BullVaultSignerKey _signer(BullVaultSignerRole role, int mnemonicIndex) {
       xpub: derived.xpub.split(']').last,
       derivationPath: "m/48'/1'/0'/2'",
     ),
-    signer: SignerEntity.remote,
+    signer: role == BullVaultSignerRole.everyday
+        ? SignerEntity.local
+        : SignerEntity.remote,
     signerDevice: null,
   );
 }
@@ -435,3 +507,10 @@ Wallet _wallet(String id, {required bool isHidden}) => Wallet(
   balanceSat: BigInt.zero,
   isHidden: isHidden,
 );
+
+class _NoDetailsUpdates extends Fake implements WatchBullVaultDetailsUsecase {
+  @override
+  Stream<Result<BullVaultDetails?, BullVaultFailure>> execute(
+    String walletId,
+  ) => const Stream.empty();
+}

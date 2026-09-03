@@ -1272,12 +1272,12 @@ String _privateTaprootConditionalDescriptor(
   externalKeys: [
     signers[0].externalPublic,
     signers[1].externalPublic,
-    signers[2].externalPrivate,
+    signers.last.externalPrivate,
   ],
   internalKeys: [
     signers[0].internalPublic,
     signers[1].internalPublic,
-    signers[2].internalPrivate,
+    signers.last.internalPrivate,
   ],
 );
 

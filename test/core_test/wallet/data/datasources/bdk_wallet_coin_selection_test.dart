@@ -441,7 +441,7 @@ void main() {
             descriptorKeyId: 'local-key',
             masterFingerprint: descriptors.fingerprint,
             xpubFingerprint: descriptors.fingerprint,
-            xpub: descriptors.xpub,
+            xpub: descriptors.xpub.split(']').last,
             derivationPath: "m/84'/1'/0'",
             descriptorPath: standardSingleSignatureDescriptorPath,
             signer: Signer.local,

@@ -107,6 +107,10 @@ final class SendTransactionSigningFailure extends SendFailure {
   const SendTransactionSigningFailure([super.logMessage]);
 }
 
+final class SendSignerPassphraseMismatchFailure extends SendFailure {
+  const SendSignerPassphraseMismatchFailure([super.logMessage]);
+}
+
 final class SendUnsupportedPolicyPathFailure extends SendFailure {
   const SendUnsupportedPolicyPathFailure([super.logMessage]);
 }

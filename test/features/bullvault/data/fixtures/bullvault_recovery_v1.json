@@ -5,7 +5,8 @@
   "lineageId": "95d4c18378c97c3c5f7802ebee8f4f27afa7cee0ba9a9f5f016ea5032302d0a6",
   "network": "bitcoinTestnet",
   "policyVersion": 1,
-  "scheduleYears": {
+  "schedule": {
+    "unit": "years",
     "cold": 3,
     "recovery": 2,
     "inheritance": 5

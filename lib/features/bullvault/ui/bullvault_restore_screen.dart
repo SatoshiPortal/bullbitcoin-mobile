@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -11,11 +12,12 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, BullPasteInput, Gap;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 
 class BullVaultRestoreScreen extends StatefulWidget {
   const BullVaultRestoreScreen({super.key});
@@ -24,24 +26,31 @@ class BullVaultRestoreScreen extends StatefulWidget {
   State<BullVaultRestoreScreen> createState() => _BullVaultRestoreScreenState();
 }
 
-class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
+class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
+    with PrivacyScreen {
   static const _maxPackageBytes = 1024 * 1024;
 
-  final _labelController = TextEditingController();
-  final _descriptorController = TextEditingController();
+  var _label = '';
+  var _mobilePassphrase = '';
+  var _descriptor = '';
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(enableScreenPrivacy());
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_labelController.text.isEmpty) {
-      _labelController.text = context.loc.bullVaultWalletLabel;
+    if (_label.isEmpty) {
+      _label = context.loc.bullVaultWalletLabel;
     }
   }
 
   @override
   void dispose() {
-    _labelController.dispose();
-    _descriptorController.dispose();
+    unawaited(disableScreenPrivacy());
     super.dispose();
   }
 
@@ -93,11 +102,40 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
                   ),
                 ),
                 const Gap(24),
-                TextField(
-                  controller: _labelController,
-                  enabled: !state.isRestoring,
-                  decoration: InputDecoration(
-                    labelText: context.loc.labelInputLabel,
+                Text(
+                  context.loc.labelInputLabel,
+                  style: context.font.bodyMedium,
+                ),
+                const Gap(8),
+                BullInputText(
+                  value: _label,
+                  onChanged: (value) => setState(() => _label = value),
+                  disabled: state.isRestoring,
+                  maxLines: 1,
+                ),
+                const Gap(16),
+                Text(
+                  context.loc.bullVaultRestoreMobilePassphraseLabel,
+                  style: context.font.bodyMedium,
+                ),
+                const Gap(8),
+                BullInputText(
+                  value: _mobilePassphrase,
+                  onChanged: (value) =>
+                      setState(() => _mobilePassphrase = value),
+                  disabled: state.isRestoring,
+                  obscure: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  smartQuotesType: SmartQuotesType.disabled,
+                  smartDashesType: SmartDashesType.disabled,
+                  maxLines: 1,
+                ),
+                const Gap(8),
+                Text(
+                  context.loc.bullVaultRestoreMobilePassphraseDescription,
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.textMuted,
                   ),
                 ),
                 const Gap(28),
@@ -151,27 +189,18 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
                   ),
                 ),
                 const Gap(16),
-                TextField(
-                  controller: _descriptorController,
+                BullPasteInput(
+                  text: _descriptor,
+                  hint: context.loc.bullVaultDescriptorHint,
+                  onChanged: (value) => setState(() => _descriptor = value),
+                  onScan: _scanDescriptor,
+                  onPasteError: (_) => SnackBarUtils.showSnackBar(
+                    context,
+                    context.loc.bullVaultFailureInvalidRecovery,
+                  ),
                   enabled: !state.isRestoring,
                   minLines: 4,
                   maxLines: 8,
-                  autocorrect: false,
-                  decoration: InputDecoration(
-                    hintText: context.loc.bullVaultDescriptorHint,
-                  ),
-                ),
-                const Gap(16),
-                BBButton.big(
-                  label: context.loc.bullVaultScanQr,
-                  onPressed: _scanDescriptor,
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
-                  iconData: Icons.qr_code_scanner,
-                  iconFirst: true,
-                  outlined: true,
-                  borderColor: context.appColors.secondary,
-                  disabled: state.isRestoring,
                 ),
                 const Gap(12),
                 BBButton.big(
@@ -217,7 +246,8 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
       await context.read<BullVaultRestoreCubit>().restore(
         kind: BullVaultRestoreInputKind.recoveryPackage,
         source: content,
-        label: _labelController.text,
+        label: _label,
+        mobilePassphrase: _mobilePassphrase,
       );
     } on FileSystemException {
       if (!mounted) return;
@@ -231,8 +261,9 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
   Future<void> _restoreDescriptor() =>
       context.read<BullVaultRestoreCubit>().restore(
         kind: BullVaultRestoreInputKind.descriptor,
-        source: _descriptorController.text,
-        label: _labelController.text,
+        source: _descriptor,
+        label: _label,
+        mobilePassphrase: _mobilePassphrase,
       );
 
   Future<void> _scanDescriptor() async {
@@ -241,6 +272,6 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen> {
       extra: BullVaultScannerPurpose.descriptor,
     );
     if (!mounted || descriptor == null || descriptor.trim().isEmpty) return;
-    _descriptorController.text = descriptor;
+    setState(() => _descriptor = descriptor);
   }
 }

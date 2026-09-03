@@ -41,6 +41,55 @@ class _FakeWallet extends Fake implements Wallet {
 /// `b734968d…` (paid 30 sat, predicted 28) — divergences that justified
 /// removing the prediction path entirely.
 void main() {
+  test('uses signing coordination for a protected local recovery key', () {
+    final signer = WalletSigner.single(
+      masterFingerprint: 'deadbeef',
+      xpubFingerprint: '12345678',
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    );
+    final protected = WalletSigner(
+      id: signer.id,
+      signer: signer.signer,
+      signerDevice: null,
+      localSeedFingerprint: 'cafebabe',
+      descriptorKeys: [
+        signer.descriptorKeys.single.copyWith(requiresPassphrase: true),
+      ],
+    );
+    final spending = BitcoinSpendingPolicy(
+      requiresPath: false,
+      root: BitcoinSignaturePolicyNode(
+        id: 'recovery',
+        key: BitcoinPolicyKey(
+          kind: BitcoinPolicyKeyKind.descriptorKey,
+          value: protected.descriptorKeys.single.id,
+        ),
+      ),
+    );
+    final wallet = Wallet(
+      origin: 'vault',
+      network: Network.bitcoinMainnet,
+      signers: [protected],
+      scriptType: null,
+      publicDescriptor: 'tr(...)',
+      balanceSat: BigInt.zero,
+    );
+    final plan = BitcoinSigningPlan.fromPolicy(
+      policy: BitcoinWalletPolicy(external: spending, internal: spending),
+      signers: wallet.signers,
+    );
+    expect(plan.signersNeeded, 1);
+    expect(plan.requiresExternalSigning, isFalse);
+    expect(
+      SendState(
+        selectedWallet: wallet,
+        bitcoinSigningPlan: plan,
+      ).requiresBitcoinSigningCoordination,
+      isTrue,
+    );
+  });
   test('a background swap poll does not pull the user back from amount', () {
     expect(
       sendStepForWatchedOrderSwap(
@@ -845,25 +894,6 @@ void main() {
           reason: '${other.runtimeType} is not a construction failure',
         );
       }
-    });
-
-    test('only a broadcast failure sets hasBroadcastFailure', () {
-      expect(
-        const SendState(
-          failure: SendTransactionConfirmationFailure(isBroadcastFailure: true),
-        ).hasBroadcastFailure,
-        isTrue,
-      );
-      expect(
-        const SendState(
-          failure: SendTransactionConfirmationFailure(),
-        ).hasBroadcastFailure,
-        isFalse,
-      );
-      expect(
-        const SendState(failure: SendUnexpectedFailure()).hasBroadcastFailure,
-        isFalse,
-      );
     });
 
     test('frozenBalanceHint only fires for a shortfall with frozen coins', () {

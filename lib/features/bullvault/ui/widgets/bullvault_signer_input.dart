@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
-import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPasteInput, Gap;
 import 'package:flutter/material.dart';
 
 final class BullVaultSignerInput extends StatelessWidget {
@@ -89,25 +88,17 @@ final class BullVaultSignerInput extends StatelessWidget {
             bgColor: context.appColors.errorContainer,
           ),
           const Gap(12),
-          LabeledTextInput(
-            label: context.loc.bullVaultPublicKeyLabel,
-            value: value,
+          Text(
+            context.loc.bullVaultPublicKeyLabel,
+            style: context.font.titleMedium,
+          ),
+          const Gap(8),
+          BullPasteInput(
+            text: value,
             hint: context.loc.bullVaultPublicKeyHint,
             onChanged: onChanged,
+            onScan: onScan,
             maxLines: 4,
-            enableSuggestions: false,
-            autocorrect: false,
-            smartQuotesType: SmartQuotesType.disabled,
-            smartDashesType: SmartDashesType.disabled,
-          ),
-          const Gap(12),
-          BBButton.big(
-            label: context.loc.bullVaultScanQr,
-            onPressed: onScan!,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
-            outlined: true,
-            borderColor: context.appColors.secondary,
           ),
         ] else if (device case final selectedDevice?) ...[
           if (value.isNotEmpty) ...[
