@@ -11,8 +11,6 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 class WalletHomeScreen extends StatefulWidget {
   const WalletHomeScreen({super.key});
@@ -132,7 +130,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const PinnedHeaderSliver(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: _RecoverBullWarnings()),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),
                 SliverToBoxAdapter(
                   child: WalletCards(
@@ -166,20 +163,4 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       ),
     );
   }
-}
-
-final class _RecoverBullWarnings extends StatelessWidget {
-  const _RecoverBullWarnings();
-
-  @override
-  Widget build(BuildContext context) =>
-      FutureBuilder<RecoverBullAttemptMonitoringController>(
-        future: Future.value(locator<RecoverBullFeature>().attemptMonitoring),
-        builder: (context, snapshot) {
-          final controller = snapshot.data;
-          return controller == null
-              ? const SizedBox.shrink()
-              : RecoverBullAttemptAlertWarnings(controller: controller);
-        },
-      );
 }

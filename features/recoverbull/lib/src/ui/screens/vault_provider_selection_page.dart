@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
 import '../support.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class VaultProviderSelectionPage extends StatelessWidget {
@@ -22,9 +22,9 @@ class VaultProviderSelectionPage extends StatelessWidget {
           onPressed: () {
             final bloc = context.read<RecoverBullBloc>();
             if (bloc.hasPendingProviderSave) {
-              SnackBarUtils.showSnackBar(
+              BullSnackBar.show(
                 context,
-                context.loc.recoverbullProviderSaveFailed,
+                message: context.loc.recoverbullProviderSaveFailed,
               );
               return;
             }
@@ -51,9 +51,9 @@ class VaultProviderSelectionPage extends StatelessWidget {
             current.vault != null && previous.vault == null,
         listener: (context, state) {
           if (state.failure != null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              state.failure!.toTranslated(context),
+              message: state.failure!.toTranslated(context),
             );
             return;
           }
@@ -61,9 +61,9 @@ class VaultProviderSelectionPage extends StatelessWidget {
           if (state.vault != null && state.vaultProvider != null) {
             switch (state.flow) {
               case RecoverBullFlow.secureVault:
-                SnackBarUtils.showSnackBar(
+                BullSnackBar.show(
                   context,
-                  context.loc.recoverbullVaultCreatedSuccess,
+                  message: context.loc.recoverbullVaultCreatedSuccess,
                 );
                 Navigator.of(context).push(
                   MaterialPageRoute(

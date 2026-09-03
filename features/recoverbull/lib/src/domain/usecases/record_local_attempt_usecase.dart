@@ -107,6 +107,24 @@ final class RecordLocalAttemptUsecase {
     );
   }
 
+  /// Records a server lockout without treating the current counter as a
+  /// baseline. The digest is the only identifier emitted in the alert.
+  Future<TargetedLockoutAlert> recordTargetedLockout({
+    required String backupIdHex,
+  }) async {
+    final identifier = convert.hex.decode(
+      backupIdHex.replaceAll(RegExp(r'\s'), ''),
+    );
+    final digest = store.digestFor(identifier);
+    if (!await store.isMonitored(identifier)) {
+      await store.registerBackup(
+        identifier,
+        origin: MonitoredBackupOrigin.adopted,
+      );
+    }
+    return TargetedLockoutAlert(backupIdHash: _hex(digest));
+  }
+
   static String _hex(List<int> bytes) =>
       bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 

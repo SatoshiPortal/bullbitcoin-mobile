@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 
@@ -272,13 +273,36 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
           ),
   );
 
-  /// Health probe: completes normally when the server is reachable, throws
-  /// otherwise. Kept throwing (not Result) on purpose so the shared status
-  /// checker — `CheckServerConnectionUsecase`, which turns the throw/return
-  /// into the bool — is unaffected by the Result migration.
+  /// Health probe boundary: preserve temporary 503s separately from timeouts
+  /// and other unavailable responses.
   @override
-  Future<void> checkConnection(RecoverBullTorRoute route) async {
-    await _remoteDatasource.checkConnection(route);
+  Future<Result<Null, RecoverBullFailure>> checkConnection(
+    RecoverBullTorRoute route,
+  ) async {
+    try {
+      await _remoteDatasource.checkConnection(route);
+      return const Ok(null);
+    } on TimeoutException {
+      return const Err(KeyServerHealthCheckTimeoutFailure());
+    } on recoverbull.KeyServerException catch (error, trace) {
+      log.error(
+        'checkConnection failed',
+        error: 'RecoverBull health check failed',
+        trace: trace,
+      );
+      return Err(
+        error.code == 503
+            ? const RecoverBullTemporarilyUnavailableFailure()
+            : const KeyServerUnavailableFailure(),
+      );
+    } catch (error, trace) {
+      log.error(
+        'checkConnection failed',
+        error: 'RecoverBull health check failed',
+        trace: trace,
+      );
+      return const Err(KeyServerUnavailableFailure());
+    }
   }
 
   @override
@@ -310,13 +334,17 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
     }
     if (code == 429) {
-      final requestedAt = e.requestedAt;
-      final cooldown = e.cooldownInMinutes;
-      final retryIn = (requestedAt != null && cooldown != null)
-          ? requestedAt
-                .add(Duration(minutes: cooldown))
-                .difference(DateTime.now())
-          : null;
+      final retryIn =
+          e.retryAfter ??
+          (() {
+            final requestedAt = e.requestedAt;
+            final cooldown = e.cooldownInMinutes;
+            return (requestedAt != null && cooldown != null)
+                ? requestedAt
+                      .add(Duration(minutes: cooldown))
+                      .difference(DateTime.now())
+                : null;
+          })();
       return KeyServerRateLimitedFailure(
         retryIn: retryIn,
         logMessage: 'Key server rate limit reached',

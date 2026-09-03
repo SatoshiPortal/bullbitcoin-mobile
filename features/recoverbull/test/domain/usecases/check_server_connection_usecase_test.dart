@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/log_sink.dart';
 import 'package:mocktail/mocktail.dart';
 import 'dart:io';
-
 import 'package:bull_tor/tor.dart';
 
 class _MockRepository extends Mock implements RecoverBullRepository {}
@@ -65,11 +64,27 @@ void main() {
 
   test('reachable server over the embedded route -> true', () async {
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
-    when(() => repository.checkConnection(any())).thenAnswer((_) async {});
+    when(
+      () => repository.checkConnection(any()),
+    ).thenAnswer((_) async => const Ok(null));
 
     expect(await usecase.execute(), isA<Ok<bool, RecoverBullFailure>>());
     verify(() => repository.checkConnection(session)).called(1);
     expect(sessionClosed, isTrue);
+  });
+
+  test('health timeout has a dedicated internal failure', () async {
+    when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
+    when(
+      () => repository.checkConnection(any()),
+    ).thenAnswer((_) async => const Err(KeyServerHealthCheckTimeoutFailure()));
+
+    final result = await usecase.execute();
+
+    expect(
+      (result as Err<bool, RecoverBullFailure>).failure,
+      isA<KeyServerHealthCheckTimeoutFailure>(),
+    );
   });
 
   test('no Tor route -> false, server never contacted', () async {
@@ -137,7 +152,9 @@ void main() {
   });
 
   test('provided route is used without acquiring or closing it', () async {
-    when(() => repository.checkConnection(session)).thenAnswer((_) async {});
+    when(
+      () => repository.checkConnection(session),
+    ).thenAnswer((_) async => const Ok(null));
 
     final result = await usecase.execute(route: session);
 
@@ -165,7 +182,9 @@ void main() {
       HttpClient(),
     );
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(session));
-    when(() => repository.checkConnection(session)).thenAnswer((_) async {});
+    when(
+      () => repository.checkConnection(session),
+    ).thenAnswer((_) async => const Ok(null));
 
     expect(await usecase.execute(), isA<Ok<bool, RecoverBullFailure>>());
   });

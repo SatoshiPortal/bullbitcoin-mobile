@@ -25,6 +25,7 @@ class AnnouncementCard extends StatelessWidget {
     final tone = switch (announcement.tone) {
       AnnouncementTone.info => colors.info,
       AnnouncementTone.warning => colors.warning,
+      AnnouncementTone.error => colors.error,
       AnnouncementTone.success => colors.success,
     };
 

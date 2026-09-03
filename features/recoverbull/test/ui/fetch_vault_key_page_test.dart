@@ -15,6 +15,8 @@ import 'package:bull_recoverbull/src/domain/entities/decrypted_vault.dart';
 import 'package:bull_recoverbull/src/ui/screens/view_vault_key_page.dart';
 import 'package:bull_recoverbull/src/ui/screens/test_completed_page.dart';
 import 'package:bull_recoverbull/src/ui/screens/vault_provider_selection_page.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/testing.dart';
 
 class _MutableRecoverBullBloc extends Fake implements RecoverBullBloc {
   RecoverBullState _state;
@@ -300,6 +302,7 @@ void main() {
     final navigatorKey = GlobalKey<NavigatorState>();
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: Navigator(
@@ -325,5 +328,7 @@ void main() {
 
     expect(find.text('previous'), findsNothing);
     expect(find.text('Select Vault Provider'), findsOneWidget);
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
   });
 }

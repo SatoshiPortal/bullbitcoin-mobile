@@ -7,6 +7,8 @@ import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
 import 'package:bull_recoverbull/src/domain/repositories/recoverbull_repository.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
+import 'package:bull_recoverbull/src/domain/recoverbull_attempt_alert_port.dart';
 import 'package:bull_recoverbull/src/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import '../../support/log_sink.dart';
 import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -25,6 +27,13 @@ import 'package:recoverbull/recoverbull.dart' as sdk;
 class _Repository extends Mock implements RecoverBullRepository {}
 
 class _Ensure extends Mock implements EnsureRecoverBullTorSessionUsecase {}
+
+final class _Alerts implements RecoverBullAttemptAlertPort {
+  final alerts = <AttemptAlert>[];
+
+  @override
+  void publish(AttemptAlert alert) => alerts.add(alert);
+}
 
 final class _ServiceBusyRemote
     implements RecoverBullAttemptMonitoringRemotePort {
@@ -147,6 +156,78 @@ void main() {
     expect(await monitoring.alerts.first, isEmpty);
     await database.close();
   });
+
+  test('fetch rate limit publishes a targeted lockout and stays Err', () async {
+    final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    await database.ensureState();
+    final store = RecoverBullAttemptMonitoringStore(database);
+    final repository = _Repository();
+    final alerts = _Alerts();
+    when(
+      () => repository.fetchVaultKeyWithStatus(any(), any(), any(), any()),
+    ).thenAnswer(
+      (_) async => const Err(KeyServerRateLimitedFailure(retryIn: null)),
+    );
+    final backup = sdk.RecoverBull.createBackup(
+      secret: [1, 2, 3],
+      backupKey: List<int>.filled(32, 9),
+    );
+    final vault = EncryptedVault(file: backup.toJson());
+    final result = await FetchVaultKeyFromServerUsecase(
+      repository: repository,
+      ensureTor: _Ensure(),
+      recordAttempt: RecordLocalAttemptUsecase(store),
+      alertPort: alerts,
+      log: const TestLogSink(),
+    ).execute(vault: vault, password: 'password', route: _route());
+
+    expect(result, isA<Err<String, RecoverBullFailure>>());
+    final alert = alerts.alerts.single as TargetedLockoutAlert;
+    expect(alert.backupIdHash, hasLength(64));
+    expect(alert.backupIdHash, isNot(vault.id));
+    expect(
+      (await store.monitoredBackups())
+          .single
+          .expectedServerDistinctCandidateTotal,
+      0,
+    );
+    await database.close();
+  });
+
+  test(
+    'status fetch rate limit publishes a targeted lockout and stays Err',
+    () async {
+      final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+      await database.ensureState();
+      final store = RecoverBullAttemptMonitoringStore(database);
+      final repository = _Repository();
+      final ensure = _Ensure();
+      final alerts = _Alerts();
+      when(
+        () => repository.fetchVaultKeyWithStatus(any(), any(), any(), any()),
+      ).thenAnswer(
+        (_) async => const Err(KeyServerRateLimitedFailure(retryIn: null)),
+      );
+      final route = _route();
+      when(() => ensure.execute()).thenAnswer((_) async => Ok(route));
+      final backup = sdk.RecoverBull.createBackup(
+        secret: [1, 2, 3],
+        backupKey: List<int>.filled(32, 9),
+      );
+      final vault = EncryptedVault(file: backup.toJson());
+      final result = await FetchVaultKeyWithStatusFromServerUsecase(
+        repository: repository,
+        ensureSession: ensure,
+        recordAttempt: RecordLocalAttemptUsecase(store),
+        alertPort: alerts,
+        log: const TestLogSink(),
+      ).execute(vault: vault, password: 'password');
+
+      expect(result, isA<Err<VaultKeyFetchResult, RecoverBullFailure>>());
+      expect(alerts.alerts.single, isA<TargetedLockoutAlert>());
+      await database.close();
+    },
+  );
 
   test(
     'successful fetch enrolls a pending adoption when attempts are unavailable',

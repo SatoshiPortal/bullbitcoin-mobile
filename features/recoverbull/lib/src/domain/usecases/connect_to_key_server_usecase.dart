@@ -68,6 +68,9 @@ class ConnectToKeyServerUsecase {
           case Err(:final failure)
               when failure is ExternalTorProxyUnavailableFailure:
             return Err(failure);
+          case Err(:final failure)
+              when failure is KeyServerHealthCheckTimeoutFailure:
+            return Err(failure);
           case Err():
             break;
         }

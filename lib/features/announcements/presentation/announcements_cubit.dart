@@ -5,6 +5,8 @@ import 'package:bb_mobile/features/announcements/domain/usecases/dismiss_announc
 import 'package:bb_mobile/features/announcements/domain/entities/announcement.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/get_visible_announcements_usecase.dart';
 import 'package:bb_mobile/features/announcements/domain/usecases/watch_app_update_announcement_usecase.dart';
+import 'package:bb_mobile/features/announcements/domain/entities/recoverbull_announcement.dart';
+import 'package:bb_mobile/features/announcements/domain/usecases/watch_recoverbull_announcements_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -21,6 +23,9 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   final GetVisibleAnnouncementsUsecase _getVisibleAnnouncementsUsecase;
   final DismissAnnouncementUsecase _dismissAnnouncementUsecase;
   late final StreamSubscription<bool> _appUpdateRequiredSubscription;
+  late final StreamSubscription<List<RecoverBullAnnouncement>>
+  _recoverBullSubscription;
+  List<RecoverBullAnnouncement> _recoverBullAnnouncements = const [];
 
   bool _refreshing = false;
   bool _refreshQueued = false;
@@ -30,11 +35,19 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
     required this._dismissAnnouncementUsecase,
     required WatchAppUpdateAnnouncementUsecase
     watchAppUpdateAnnouncementUsecase,
+    WatchRecoverBullAnnouncementsUsecase? watchRecoverBullAnnouncementsUsecase,
   }) : super(const AnnouncementsState()) {
     _appUpdateRequiredSubscription = watchAppUpdateAnnouncementUsecase
         .execute()
         .where((isRequired) => isRequired)
         .listen((_) => unawaited(refresh()));
+    _recoverBullSubscription =
+        (watchRecoverBullAnnouncementsUsecase?.execute() ??
+                const Stream<List<RecoverBullAnnouncement>>.empty())
+            .listen((announcements) {
+              _recoverBullAnnouncements = announcements;
+              unawaited(refresh());
+            });
   }
 
   /// (Re)loads the visible announcements. Called on mount and whenever a
@@ -55,8 +68,14 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
         final result = await _getVisibleAnnouncementsUsecase.execute();
         if (isClosed) return;
         result.fold(
-          (announcements) =>
-              emit(AnnouncementsState(announcements: announcements)),
+          (announcements) => emit(
+            AnnouncementsState(
+              announcements: _sorted([
+                ...announcements,
+                ..._recoverBullAnnouncements,
+              ]),
+            ),
+          ),
           (failure) => emit(state.copyWith(failure: failure)),
         );
       } while (_refreshQueued);
@@ -65,10 +84,17 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
     }
   }
 
+  List<Announcement> _sorted(List<Announcement> announcements) =>
+      announcements..sort((a, b) {
+        final priority = a.priority.compareTo(b.priority);
+        if (priority != 0) return priority;
+        return (a.stableKey ?? a.id.name).compareTo(b.stableKey ?? b.id.name);
+      });
+
   /// Records a dismissal and refreshes the list (which collapses the section
   /// when the last card is dismissed).
-  Future<void> dismiss(AnnouncementId id) async {
-    final result = await _dismissAnnouncementUsecase.execute(id);
+  Future<void> dismiss(Announcement announcement) async {
+    final result = await _dismissAnnouncementUsecase.execute(announcement);
     if (isClosed) return;
     await result.fold(
       (_) => refresh(),
@@ -79,6 +105,7 @@ class AnnouncementsCubit extends Cubit<AnnouncementsState> {
   @override
   Future<void> close() async {
     await _appUpdateRequiredSubscription.cancel();
+    await _recoverBullSubscription.cancel();
     return super.close();
   }
 }

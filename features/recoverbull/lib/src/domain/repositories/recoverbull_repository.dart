@@ -63,7 +63,10 @@ abstract interface class RecoverBullRepository {
     RecoverBullTorRoute route,
   );
 
-  Future<void> checkConnection(RecoverBullTorRoute route);
+  @useResult
+  Future<Result<Null, RecoverBullFailure>> checkConnection(
+    RecoverBullTorRoute route,
+  );
 
   Future<Uri> fetchUrl();
 

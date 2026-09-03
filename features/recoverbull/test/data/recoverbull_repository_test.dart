@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'dart:async';
 
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bull_recoverbull/src/data/datasources/recoverbull_settings_datasource.dart';
@@ -110,6 +111,26 @@ void main() {
       final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerRateLimitedFailure>());
       expect((failure as KeyServerRateLimitedFailure).retryIn, isNull);
+    });
+
+    test('429 prefers the server Retry-After value', () async {
+      const retryAfter = Duration(seconds: 47);
+      stubFetchThrows(
+        recoverbull.KeyServerException(
+          code: 429,
+          retryAfter: retryAfter,
+          requestedAt: DateTime.utc(2020),
+          cooldownInMinutes: 5,
+        ),
+      );
+
+      final result = await fetch();
+      final failure =
+          (result as Err<String, RecoverBullFailure>).failure
+              as KeyServerRateLimitedFailure;
+
+      expect(failure, isA<KeyServerRateLimitedFailure>());
+      expect(failure.retryIn, retryAfter);
     });
 
     test('other 4xx -> KeyServerRejectedFailure', () async {
@@ -240,6 +261,48 @@ void main() {
 
     expect(result, isA<Ok<String, RecoverBullFailure>>());
     expect((result as Ok<String, RecoverBullFailure>).value, 'abcd');
+  });
+
+  group('RecoverBullRepository.checkConnection', () {
+    test('maps HTTP 503 to temporary unavailability', () async {
+      when(
+        () => remote.checkConnection(any()),
+      ).thenThrow(recoverbull.KeyServerException(code: 503));
+
+      final result = await repository.checkConnection(route);
+
+      expect(result, isA<Err<Null, RecoverBullFailure>>());
+      expect(
+        (result as Err<Null, RecoverBullFailure>).failure,
+        isA<RecoverBullTemporarilyUnavailableFailure>(),
+      );
+    });
+
+    test('maps timeout to health check timeout', () async {
+      when(
+        () => remote.checkConnection(any()),
+      ).thenThrow(TimeoutException('health check timed out'));
+
+      final result = await repository.checkConnection(route);
+
+      expect(
+        (result as Err<Null, RecoverBullFailure>).failure,
+        isA<KeyServerHealthCheckTimeoutFailure>(),
+      );
+    });
+
+    test('maps other errors to unavailable', () async {
+      when(
+        () => remote.checkConnection(any()),
+      ).thenThrow(Exception('network unavailable'));
+
+      final result = await repository.checkConnection(route);
+
+      expect(
+        (result as Err<Null, RecoverBullFailure>).failure,
+        isA<KeyServerUnavailableFailure>(),
+      );
+    });
   });
 
   // Guards the package:hex -> package:convert codec swap and the

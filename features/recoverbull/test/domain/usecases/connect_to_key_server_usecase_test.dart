@@ -149,6 +149,19 @@ void main() {
     expect(closeCount, 1);
   });
 
+  test('does not retry a health timeout on the same client', () async {
+    when(
+      () => checkConnection.execute(route: route),
+    ).thenAnswer((_) async => const Err(KeyServerHealthCheckTimeoutFailure()));
+
+    final result = await run();
+
+    expect(result, isA<Err<bool, RecoverBullFailure>>());
+    expect(attempts, [1]);
+    verify(() => checkConnection.execute(route: route)).called(1);
+    expect(waited, isEmpty);
+  });
+
   test('retries checker failures, then closes the route', () async {
     when(() => checkConnection.execute(route: route)).thenAnswer(
       (_) async => const Err(KeyServerUnavailableFailure('timeout')),

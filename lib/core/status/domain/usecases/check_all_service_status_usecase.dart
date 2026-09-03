@@ -312,8 +312,12 @@ class CheckAllServiceStatusUsecase {
     return status.copyWith(
       status: switch (health) {
         RecoverBullHealth.online => ServiceStatus.online,
+        RecoverBullHealth.temporarilyUnavailable => ServiceStatus.degraded,
         _ => ServiceStatus.offline,
       },
+      reason: health == RecoverBullHealth.temporarilyUnavailable
+          ? ServiceStatusReason.temporarilyUnavailable
+          : null,
     );
   }
 

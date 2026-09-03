@@ -24,6 +24,7 @@ class RecoverBullRemoteDatasource {
   fetchRequest;
   final RecoverBullTiming? timing;
   final Duration operationTimeout;
+  final Duration healthCheckTimeout;
 
   RecoverBullRemoteDatasource({
     required this._recoverbullSettingsDatasource,
@@ -32,12 +33,17 @@ class RecoverBullRemoteDatasource {
     this.infoRequest,
     this.fetchRequest,
     this.operationTimeout = const Duration(seconds: 20),
+    this.healthCheckTimeout = const Duration(seconds: 30),
   });
 
-  Future<T> _timed<T>(String phase, Future<T> Function() operation) async {
+  Future<T> _timed<T>(
+    String phase,
+    Future<T> Function() operation, {
+    Duration? timeout,
+  }) async {
     final stopwatch = Stopwatch()..start();
     try {
-      final value = await operation().timeout(operationTimeout);
+      final value = await operation().timeout(timeout ?? operationTimeout);
       timing?.call(phase, stopwatch.elapsedMilliseconds, 'success');
       return value;
     } on TimeoutException {
@@ -190,6 +196,7 @@ class RecoverBullRemoteDatasource {
         () => request != null
             ? request(url, route.client)
             : KeyServer(address: url, client: route.client).infos(),
+        timeout: healthCheckTimeout,
       );
     } catch (e) {
       log.error('checkConnection error', error: e, trace: StackTrace.current);
@@ -286,9 +293,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
             isUtc: true,
           ),
           totalAttempts: const {},
-          targetedLockouts: [
-            for (final digest in backupDigests) _decodeDigest(digest),
-          ],
+          serviceBusy: true,
         );
       }
       rethrow;

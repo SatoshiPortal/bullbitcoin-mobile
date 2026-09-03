@@ -135,6 +135,35 @@ void main() {
     },
   );
 
+  test('uses the dedicated health-check deadline', () async {
+    final settings = _Settings();
+    final stalled = Completer<void>();
+    final datasource = RecoverBullRemoteDatasource(
+      log: const TestLogSink(),
+      recoverbullSettingsDatasource: settings,
+      infoRequest: (_, _) => stalled.future,
+      operationTimeout: const Duration(hours: 1),
+      healthCheckTimeout: Duration.zero,
+    );
+    when(
+      () => settings.fetch(),
+    ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+    final route = RecoverBullTorRoute(
+      TorRoute(
+        source: TorSource.embedded,
+        endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 19050),
+        evidence: TorReadinessEvidence.embeddedBootstrap,
+      ),
+      () async {},
+      _Client(),
+    );
+
+    await expectLater(
+      datasource.checkConnection(route),
+      throwsA(isA<TimeoutException>()),
+    );
+  });
+
   test('polling keeps a successful result when route close fails', () async {
     final route = RecoverBullTorRoute(
       TorRoute(

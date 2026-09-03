@@ -53,7 +53,7 @@ class FetchVaultKeyFromServerUsecase {
       );
       return switch (result) {
         Ok(:final value) => _recordAndReturn(vault, value),
-        Err(:final failure) => Err(failure),
+        Err(:final failure) => _recordFailure(vault, failure),
       };
     } finally {
       // Closing forwards to a native session stop, which can throw. Letting it
@@ -69,6 +69,27 @@ class FetchVaultKeyFromServerUsecase {
         );
       }
     }
+  }
+
+  Future<Result<String, RecoverBullFailure>> _recordFailure(
+    EncryptedVault vault,
+    RecoverBullFailure failure,
+  ) async {
+    if (failure is KeyServerRateLimitedFailure) {
+      try {
+        final alert = await _recordAttempt?.recordTargetedLockout(
+          backupIdHex: vault.id,
+        );
+        if (alert != null) _alertPort?.publish(alert);
+      } catch (error, stackTrace) {
+        log.warning(
+          'attempt monitoring update failed',
+          error: error,
+          trace: stackTrace,
+        );
+      }
+    }
+    return Err(failure);
   }
 
   Future<Result<String, RecoverBullFailure>> _recordAndReturn(

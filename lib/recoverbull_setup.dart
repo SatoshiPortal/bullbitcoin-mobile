@@ -52,7 +52,7 @@ final class RecoverBullSetup {
     // background composition passes false and therefore does not open this DB.
     if (startAttemptMonitoring) {
       unawaited(
-        composed.attemptMonitoring.checkOnColdLaunch().catchError(
+        composed.attemptMonitoring.checkOnForeground().catchError(
           (_) => const <RecoverBullAttemptAlert>[],
         ),
       );

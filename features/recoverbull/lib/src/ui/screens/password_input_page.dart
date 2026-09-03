@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
 import '../support.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
 import 'package:go_router/go_router.dart';
 
 enum InputType { pin, password, vaultKey }
@@ -272,9 +272,9 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                         if (context
                             .read<RecoverBullBloc>()
                             .hasPendingProviderSave) {
-                          SnackBarUtils.showSnackBar(
+                          BullSnackBar.show(
                             context,
-                            context.loc.recoverbullProviderSaveFailed,
+                            message: context.loc.recoverbullProviderSaveFailed,
                           );
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(

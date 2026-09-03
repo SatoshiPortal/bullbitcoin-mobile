@@ -41,34 +41,6 @@ final class _Lifecycle implements RecoverBullLifecyclePort {
   Future<void> markVerified() async {}
 }
 
-final class _Monitoring implements RecoverBullAttemptMonitoringController {
-  @override
-  Stream<List<RecoverBullAttemptAlert>> get alerts => const Stream.empty();
-
-  @override
-  bool get enabled => false;
-
-  @override
-  Future<void> acknowledge(RecoverBullAttemptAlert alert) async {}
-
-  @override
-  Future<List<RecoverBullAttemptAlert>> check() async => const [];
-
-  @override
-  Future<List<RecoverBullAttemptAlert>> checkOnColdLaunch() async => const [];
-
-  @override
-  Future<void> setEnabled(bool enabled) async {}
-
-  @override
-  Future<RecoverBullMonitoringStatus> status() async =>
-      const RecoverBullMonitoringStatus(
-        enabled: false,
-        monitoredCount: 0,
-        lastSuccessfulCheck: null,
-      );
-}
-
 void main() {
   test('barrel exposes the supported semantic API', () {
     _compilePublicApi();
@@ -90,14 +62,13 @@ void _compilePublicApi() {
   final alerts = RecoverBullAttemptAlertKind.values
       .map(RecoverBullAttemptAlert.new)
       .toList();
-  final controller = _Monitoring();
-  final warningWidget = RecoverBullAttemptAlertWarnings(controller: controller);
 
   final networks = [RecoverBullNetwork.mainnet, RecoverBullNetwork.testnet];
   final health = [
     RecoverBullHealth.online,
     RecoverBullHealth.offline,
     RecoverBullHealth.timeout,
+    RecoverBullHealth.temporarilyUnavailable,
   ];
   final flows = [
     RecoverBullFlow.secureVault,
@@ -191,7 +162,6 @@ void _compilePublicApi() {
   serverSettings;
   result;
   alerts;
-  warningWidget;
   networks;
   health;
   flows;

@@ -31,6 +31,10 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     KeyServerRateLimitedFailure() => context.loc.recoverbullErrorUnexpected,
     KeyServerRejectedFailure() => context.loc.recoverbullErrorUnexpected,
     KeyServerUnavailableFailure() => context.loc.recoverbullErrorUnexpected,
+    KeyServerHealthCheckTimeoutFailure() =>
+      context.loc.recoverbullErrorUnexpected,
+    RecoverBullTemporarilyUnavailableFailure() =>
+      context.loc.recoverbullErrorUnexpected,
     InvalidVaultFileFailure() => context.loc.recoverbullErrorUnexpected,
     RecoverBullGoogleDriveFetchFailure() =>
       context.loc.recoverbullGoogleDriveErrorFetchFailed,

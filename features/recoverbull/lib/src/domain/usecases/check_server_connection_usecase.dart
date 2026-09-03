@@ -39,8 +39,10 @@ class CheckServerConnectionUsecase {
       }
       final routeToCheck = route;
       try {
-        await _recoverBullRepository.checkConnection(routeToCheck);
-        return const Ok(true);
+        final connection = await _recoverBullRepository.checkConnection(
+          routeToCheck,
+        );
+        return connection.map((_) => true);
       } finally {
         if (acquired) {
           // Without this the outer catch would turn a *successful* check into
