@@ -37,6 +37,50 @@ class RefundRescuedSwapUsecase {
     required this._feesRepository,
   });
 
+  /// Drives the refund of every locally-stored refundable swap that has no
+  /// refund recorded yet. This is the Boltz-independent entry point: it
+  /// reads only local storage, so a wedged swap reopened by the startup
+  /// verification gets its refund attempted even when the Boltz API (and
+  /// with it the whole restore/rescue flow) is unreachable. Never throws —
+  /// per-swap failures are logged and the swap stays refundable for the
+  /// next launch.
+  Future<void> executeAllRefundable() async {
+    try {
+      final swaps = await _swapRepository.getAllSwaps();
+      final refundable = [
+        for (final swap in swaps)
+          if (swap.status == SwapStatus.refundable)
+            if (switch (swap) {
+              ChainSwap() => swap.refundTxid == null,
+              LnSendSwap() => swap.refundTxid == null,
+              LnReceiveSwap() => false,
+            })
+              swap,
+      ];
+      if (refundable.isEmpty) {
+        log.fine('SWAP_RESCUE: no locally refundable swaps to drive');
+        return;
+      }
+      log.fine(
+        'SWAP_RESCUE: driving ${refundable.length} locally refundable '
+        'swap(s): ${refundable.map((s) => s.id).join(',')}',
+      );
+      for (final swap in refundable) {
+        try {
+          await execute(swap);
+        } catch (e) {
+          log.warning(
+            'SWAP_RESCUE: local refund drive failed for ${swap.id} '
+            '(stays refundable, retried next launch): $e',
+          );
+        }
+      }
+      await log.flush();
+    } catch (e) {
+      log.warning('SWAP_RESCUE: local refund sweep failed: $e');
+    }
+  }
+
   /// Returns the refund txid (freshly broadcast, or recovered from an
   /// already-spent lockup verified as ours). Throws [RefundRescuedSwapException]
   /// when no refund could be made; the swap then stays `refundable` so the
@@ -74,26 +118,24 @@ class RefundRescuedSwapUsecase {
       final refundAddress = await _resolveRefundAddress(swap);
       log.fine('SWAP_RESCUE: ${swap.id} refund address $refundAddress');
 
-      final networkFee = await _feesRepository.getNetworkFees(
-        network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
-      );
-      final txSize = await _swapRepository.getSwapRefundTxSize(
-        swapId: swap.id,
-        swapType: swap.type,
-        refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
-      );
-      var absoluteFees = _absoluteWithFloor(
-        networkFee.toAbsolute(txSize).fastest.value.toInt(),
-        txSize: txSize,
-        isLiquid: isLiquid,
-      );
-      log.fine(
-        'SWAP_RESCUE: ${swap.id} cooperative refund txSize=$txSize '
-        'fees=$absoluteFees',
-      );
-
       String txid;
+      var absoluteFees = 0;
+      // The whole cooperative attempt — sizing included — must be allowed to
+      // fail without failing the refund: cooperation needs the Boltz API,
+      // and this path has to work with Boltz down. The script path below is
+      // Boltz-free end to end (lockup UTXO from our electrum, local
+      // signature, electrum broadcast).
       try {
+        final txSize = await _swapRepository.getSwapRefundTxSize(
+          swapId: swap.id,
+          swapType: swap.type,
+          refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
+        );
+        absoluteFees = await _refundFees(txSize: txSize, isLiquid: isLiquid);
+        log.fine(
+          'SWAP_RESCUE: ${swap.id} cooperative refund txSize=$txSize '
+          'fees=$absoluteFees',
+        );
         txid = await _broadcastRefund(
           swap,
           refundAddress: refundAddress,
@@ -104,7 +146,7 @@ class RefundRescuedSwapUsecase {
         log.severe(
           message:
               'SWAP_RESCUE: cooperative refund failed for ${swap.id} '
-              '(${_errorMessage(e)}); trying script path',
+              '(${_errorMessage(e)}); trying script path (Boltz-free)',
           error: e,
           trace: st,
         );
@@ -114,8 +156,7 @@ class RefundRescuedSwapUsecase {
           isCooperative: false,
           refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
         );
-        absoluteFees = _absoluteWithFloor(
-          networkFee.toAbsolute(scriptPathTxSize).fastest.value.toInt(),
+        absoluteFees = await _refundFees(
           txSize: scriptPathTxSize,
           isLiquid: isLiquid,
         );
@@ -324,6 +365,31 @@ class RefundRescuedSwapUsecase {
     return address.address;
   }
 
+  /// Live network fee for [txSize], floored at the relay minimum. When the
+  /// fee API is unreachable (this path must work with every Bull/Boltz
+  /// service down, electrum alone standing), falls back to the relay-floor
+  /// fee itself: always broadcastable, and on Liquid the floor is the normal
+  /// rate anyway.
+  Future<int> _refundFees({required int txSize, required bool isLiquid}) async {
+    try {
+      final networkFee = await _feesRepository.getNetworkFees(
+        network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
+      );
+      return _absoluteWithFloor(
+        networkFee.toAbsolute(txSize).fastest.value.toInt(),
+        txSize: txSize,
+        isLiquid: isLiquid,
+      );
+    } catch (e) {
+      final floor = _relayFloor(txSize: txSize, isLiquid: isLiquid);
+      log.warning(
+        'SWAP_RESCUE: fee estimation unavailable ($e) — falling back to the '
+        'relay-floor fee of $floor sats for txSize=$txSize',
+      );
+      return floor;
+    }
+  }
+
   /// Floors an absolute fee at the network's relay minimum so a low estimate
   /// can never produce an unbroadcastable transaction. Liquid floors at
   /// 0.1 sat/vb (plus discount-CT padding), Bitcoin at 1 sat/vb.
@@ -331,10 +397,10 @@ class RefundRescuedSwapUsecase {
     int absolute, {
     required int txSize,
     required bool isLiquid,
-  }) {
-    final floor = isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
-    return max(absolute, floor);
-  }
+  }) => max(absolute, _relayFloor(txSize: txSize, isLiquid: isLiquid));
+
+  int _relayFloor({required int txSize, required bool isLiquid}) =>
+      isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
 
   bool _isNonFinalError(Object error) {
     final message = _errorMessage(error).toLowerCase();

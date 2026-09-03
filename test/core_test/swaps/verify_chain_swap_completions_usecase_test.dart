@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 class FakeBoltzSwapRepository implements BoltzSwapRepository {
   List<Swap> swaps;
   final List<String> clearedSwapIds = [];
+  final Map<String, SwapStatus?> updatedStatuses = {};
 
   FakeBoltzSwapRepository(this.swaps);
 
@@ -31,6 +32,7 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
     bool clearReceiveTxid = false,
   }) async {
     if (clearReceiveTxid) clearedSwapIds.add(swapId);
+    updatedStatuses[swapId] = status;
     final swap = swaps.firstWhere((s) => s.id == swapId);
     return swap;
   }
@@ -123,8 +125,23 @@ void main() {
       }).execute();
 
       expect(repo.clearedSwapIds, ['chn123456789']);
+      // Reopened straight to refundable so the local (Boltz-independent)
+      // refund drive picks it up.
+      expect(repo.updatedStatuses['chn123456789'], SwapStatus.refundable);
     },
   );
+
+  test('reopens an already-retracted completed swap as refundable', () async {
+    // The state the 6.13.2 build leaves behind (user log 7HJNCXPK):
+    // completed, receiveTxid already cleared, funds still locked. No
+    // wallet lookup is possible or needed — reopen directly.
+    final repo = FakeBoltzSwapRepository([chainSwap(receiveTxid: null)]);
+
+    await usecase(repo, {}).execute();
+
+    expect(repo.clearedSwapIds, isEmpty);
+    expect(repo.updatedStatuses['chn123456789'], SwapStatus.refundable);
+  });
 
   test(
     'keeps a completed swap whose claim is in the receiving wallet',

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/refund_rescued_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
@@ -38,6 +39,9 @@ class _MockLogSwapCensusUsecase extends Mock implements LogSwapCensusUsecase {}
 class _MockVerifyChainSwapCompletionsUsecase extends Mock
     implements VerifyChainSwapCompletionsUsecase {}
 
+class _MockRefundRescuedSwapUsecase extends Mock
+    implements RefundRescuedSwapUsecase {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
@@ -55,6 +59,7 @@ void main() {
   late _MockIsTorRequiredUsecase isTorRequired;
   late _MockLogSwapCensusUsecase logSwapCensus;
   late _MockVerifyChainSwapCompletionsUsecase verifyChainSwapCompletions;
+  late _MockRefundRescuedSwapUsecase refundRescuedSwap;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -66,6 +71,7 @@ void main() {
     initTorUsecase: _MockInitTorUsecase(),
     logSwapCensusUsecase: logSwapCensus,
     verifyChainSwapCompletionsUsecase: verifyChainSwapCompletions,
+    refundRescuedSwapUsecase: refundRescuedSwap,
   );
 
   setUp(() {
@@ -76,11 +82,15 @@ void main() {
     isTorRequired = _MockIsTorRequiredUsecase();
     logSwapCensus = _MockLogSwapCensusUsecase();
     verifyChainSwapCompletions = _MockVerifyChainSwapCompletionsUsecase();
+    refundRescuedSwap = _MockRefundRescuedSwapUsecase();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
     when(() => isTorRequired.execute()).thenAnswer((_) async => false);
     when(() => logSwapCensus.execute()).thenAnswer((_) async {});
     when(() => verifyChainSwapCompletions.execute()).thenAnswer((_) async {});
+    when(
+      () => refundRescuedSwap.executeAllRefundable(),
+    ).thenAnswer((_) async {});
   });
 
   test(

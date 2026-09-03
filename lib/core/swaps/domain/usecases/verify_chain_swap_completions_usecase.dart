@@ -40,9 +40,25 @@ class VerifyChainSwapCompletionsUsecase {
       for (final swap in swaps) {
         if (swap is! ChainSwap) continue;
         if (swap.status != SwapStatus.completed) continue;
-        final receiveTxid = swap.receiveTxid;
-        if (receiveTxid == null || swap.refundTxid != null) continue;
+        if (swap.refundTxid != null) continue;
         if (swap.sendTxid == null) continue;
+        final receiveTxid = swap.receiveTxid;
+        if (receiveTxid == null) {
+          // Completed with funds locked and NO txid recorded at all — either
+          // an earlier build already retracted a bogus claim (6.13.2 cleared
+          // the txid without reopening) or the completion was never proven.
+          // Nothing to verify against a wallet; reopen as refundable so the
+          // local refund drive picks it up.
+          log.warning(
+            '[SwapVerify] ${swap.id} is marked completed with no recorded '
+            'claim or refund but funds are locked — reopening as refundable',
+          );
+          await _swapRepository.updateSwapFields(
+            swap.id,
+            status: SwapStatus.refundable,
+          );
+          continue;
+        }
         final walletId = swap.receiveWalletId;
         if (walletId == null) {
           log.fine(
@@ -73,10 +89,18 @@ class VerifyChainSwapCompletionsUsecase {
           log.warning(
             '[SwapVerify] ${swap.id} is marked completed but its recorded '
             'claim $receiveTxid is not in wallet $walletId — retracting the '
-            'txid so the swap reads as unresolved and can be rescued',
+            'txid and reopening as refundable (funds locked, no refund '
+            'recorded)',
           );
+          // Straight to refundable, not just unresolved: with funds locked
+          // (sendTxid) and no refund recorded, the refund is the only action
+          // left, and deciding this locally keeps the rescue working when
+          // the Boltz API is unreachable (a refundable swap is driven from
+          // local state; the on-chain broadcast is the safety net — it fails
+          // harmlessly if the lockup is in fact already spent).
           await _swapRepository.updateSwapFields(
             swap.id,
+            status: SwapStatus.refundable,
             clearReceiveTxid: true,
           );
         } catch (e) {

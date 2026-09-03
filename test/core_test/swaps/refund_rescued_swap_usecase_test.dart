@@ -124,6 +124,133 @@ void main() {
   });
 
   test(
+    'Boltz down: cooperative refund fails, script path settles via electrum',
+    () async {
+      // Cooperation needs the Boltz API; with it down the coop broadcast
+      // throws a connection error. The script path is Boltz-free (electrum
+      // UTXO + local signature + electrum broadcast) and must finish the
+      // refund on its own.
+      when(
+        () => swapRepo.refundLiquidToBitcoinSwap(
+          swapId: any(named: 'swapId'),
+          liquidRefundAddress: any(named: 'liquidRefundAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          cooperate: true,
+        ),
+      ).thenThrow(Exception('Connection refused (boltz api unreachable)'));
+      when(
+        () => swapRepo.refundLiquidToBitcoinSwap(
+          swapId: any(named: 'swapId'),
+          liquidRefundAddress: any(named: 'liquidRefundAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          cooperate: false,
+        ),
+      ).thenAnswer((_) async => 'script-refund-txid');
+
+      final txid = await usecase().execute(chainSwap());
+
+      expect(txid, 'script-refund-txid');
+      verify(
+        () => swapRepo.updateSwapFields(
+          'D5gdAL9UI29W',
+          status: SwapStatus.refunded,
+          refundTxid: 'script-refund-txid',
+          refundAddress: 'lq1refund',
+          refundFee: any(named: 'refundFee'),
+          completionTime: any(named: 'completionTime'),
+        ),
+      ).called(1);
+    },
+  );
+
+  test('fee API down: falls back to the relay-floor fee', () async {
+    when(
+      () => feesRepo.getNetworkFees(network: any(named: 'network')),
+    ).thenThrow(Exception('mempool api unreachable'));
+    when(
+      () => swapRepo.refundLiquidToBitcoinSwap(
+        swapId: any(named: 'swapId'),
+        liquidRefundAddress: any(named: 'liquidRefundAddress'),
+        absoluteFees: any(named: 'absoluteFees'),
+        cooperate: any(named: 'cooperate'),
+      ),
+    ).thenAnswer((_) async => 'refund-txid');
+
+    await usecase().execute(chainSwap());
+
+    // Liquid floor for txSize=200: ceil(200 * 0.11) + 1 = 23 sats.
+    verify(
+      () => swapRepo.refundLiquidToBitcoinSwap(
+        swapId: 'D5gdAL9UI29W',
+        liquidRefundAddress: 'lq1refund',
+        absoluteFees: 23,
+        cooperate: true,
+      ),
+    ).called(1);
+  });
+
+  test('executeAllRefundable drives local refundable swaps and survives '
+      'per-swap failure (Boltz fully down)', () async {
+    ChainSwap swapWithId(String id) =>
+        (chainSwap() as Swap).copyWith(id: id) as ChainSwap;
+    final failing = swapWithId('failingSwap1');
+    final succeeding = swapWithId('workingSwap1');
+    when(
+      () => swapRepo.getAllSwaps(),
+    ).thenAnswer((_) async => [failing, succeeding]);
+    // First swap: everything Boltz-adjacent throws, outspend check too.
+    when(
+      () => swapRepo.refundLiquidToBitcoinSwap(
+        swapId: 'failingSwap1',
+        liquidRefundAddress: any(named: 'liquidRefundAddress'),
+        absoluteFees: any(named: 'absoluteFees'),
+        cooperate: any(named: 'cooperate'),
+      ),
+    ).thenThrow(Exception('boltz api down'));
+    when(
+      () => swapRepo.checkLockupOutspends(
+        swapId: any(named: 'swapId'),
+        swapType: any(named: 'swapType'),
+        network: any(named: 'network'),
+        swapDirection: any(named: 'swapDirection'),
+        isClaim: any(named: 'isClaim'),
+      ),
+    ).thenThrow(Exception('boltz api down'));
+    // Second swap: script path lands.
+    when(
+      () => swapRepo.refundLiquidToBitcoinSwap(
+        swapId: 'workingSwap1',
+        liquidRefundAddress: any(named: 'liquidRefundAddress'),
+        absoluteFees: any(named: 'absoluteFees'),
+        cooperate: any(named: 'cooperate'),
+      ),
+    ).thenAnswer((_) async => 'refund-b');
+
+    await usecase().executeAllRefundable();
+
+    verify(
+      () => swapRepo.updateSwapFields(
+        'workingSwap1',
+        status: SwapStatus.refunded,
+        refundTxid: 'refund-b',
+        refundAddress: 'lq1refund',
+        refundFee: any(named: 'refundFee'),
+        completionTime: any(named: 'completionTime'),
+      ),
+    ).called(1);
+    verifyNever(
+      () => swapRepo.updateSwapFields(
+        'failingSwap1',
+        status: any(named: 'status'),
+        refundTxid: any(named: 'refundTxid'),
+        refundAddress: any(named: 'refundAddress'),
+        refundFee: any(named: 'refundFee'),
+        completionTime: any(named: 'completionTime'),
+      ),
+    );
+  });
+
+  test(
     'does NOT settle on an outspend whose spender is not in our wallet',
     () async {
       // The D5gdAL9UI29W failure shape: broadcast fails, the lockup reads as
