@@ -83,18 +83,40 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
               retry: null,
               validateDomain: configuration.validateDomain,
             );
-            update = discover
-                ? client.fullScan(
-                    request: wallet.startFullScan().build(),
+            if (discover) {
+              final requestBuilder = wallet.startFullScan();
+              try {
+                final request = requestBuilder.build();
+                try {
+                  update = client.fullScan(
+                    request: request,
                     stopGap: configuration.stopGap,
                     batchSize: configuration.stopGap.clamp(50, 1000),
                     fetchPrevTxouts: true,
-                  )
-                : client.sync_(
-                    request: wallet.startSyncWithRevealedSpks().build(),
+                  );
+                } finally {
+                  request.dispose();
+                }
+              } finally {
+                requestBuilder.dispose();
+              }
+            } else {
+              final requestBuilder = wallet.startSyncWithRevealedSpks();
+              try {
+                final request = requestBuilder.build();
+                try {
+                  update = client.sync_(
+                    request: request,
                     batchSize: configuration.stopGap.clamp(50, 1000),
                     fetchPrevTxouts: true,
                   );
+                } finally {
+                  request.dispose();
+                }
+              } finally {
+                requestBuilder.dispose();
+              }
+            }
             break;
           } catch (_) {
             // Connection-level failure: try the next configured server.
@@ -128,6 +150,8 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
               safeMessage: 'applying or persisting the source update failed',
             ),
           );
+        } finally {
+          update.dispose();
         }
       } finally {
         open.dispose();
@@ -181,14 +205,16 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     // The persister must outlive the wallet: the uniffi Wallet object keeps
     // using it, so both handles are owned and released together.
     final persister = bdk.Persister.newSqlite(path: file.path);
+    bdk.Descriptor? external;
+    bdk.Descriptor? internal;
     try {
-      final external = bdk.Descriptor(
+      external = bdk.Descriptor(
         descriptor: configuration.externalPublicDescriptor,
         networkKind: configuration.isTestnet
             ? bdk.NetworkKind.test
             : bdk.NetworkKind.main,
       );
-      final internal = bdk.Descriptor(
+      internal = bdk.Descriptor(
         descriptor: configuration.internalPublicDescriptor,
         networkKind: configuration.isTestnet
             ? bdk.NetworkKind.test
@@ -214,6 +240,9 @@ final class BdkWalletTransactionSource implements WalletTransactionSourcePort {
     } catch (_) {
       persister.dispose();
       rethrow;
+    } finally {
+      internal?.dispose();
+      external?.dispose();
     }
   }
 

@@ -953,14 +953,27 @@ Future<void> _performFullScan(_SyncParams params) async {
       validateDomain: params.electrumValidateDomain,
     );
     try {
-      final scanRequest = bdkWallet.startFullScan().build();
-      final update = blockchain.fullScan(
-        request: scanRequest,
-        stopGap: params.electrumStopGap,
-        batchSize: _batchSizeFor(params.electrumStopGap),
-        fetchPrevTxouts: true,
-      );
-      bdkWallet.applyUpdate(update: update);
+      final requestBuilder = bdkWallet.startFullScan();
+      try {
+        final request = requestBuilder.build();
+        try {
+          final update = blockchain.fullScan(
+            request: request,
+            stopGap: params.electrumStopGap,
+            batchSize: _batchSizeFor(params.electrumStopGap),
+            fetchPrevTxouts: true,
+          );
+          try {
+            bdkWallet.applyUpdate(update: update);
+          } finally {
+            update.dispose();
+          }
+        } finally {
+          request.dispose();
+        }
+      } finally {
+        requestBuilder.dispose();
+      }
     } catch (e, st) {
       log.warning(
         'full_scan failed for wallet ${params.walletId}',
@@ -968,6 +981,8 @@ Future<void> _performFullScan(_SyncParams params) async {
         trace: st,
       );
       rethrow;
+    } finally {
+      blockchain.dispose();
     }
     await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
   });

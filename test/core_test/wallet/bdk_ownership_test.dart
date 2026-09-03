@@ -76,4 +76,40 @@ void main() {
     }
     expect(violations, isEmpty);
   });
+
+  test(
+    'legacy full scan scopes every owned BDK handle for failure cleanup',
+    () {
+      final source = File(
+        'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart',
+      ).readAsStringSync();
+      final scanStart = source.indexOf('Future<void> _performFullScan');
+      final scanEnd = source.indexOf(
+        'class FailedToSignPsbtException',
+        scanStart,
+      );
+      final scan = source.substring(scanStart, scanEnd);
+
+      expect(scan, contains('final blockchain = _createElectrumClient'));
+      expect(
+        scan,
+        contains(
+          'try {\n      final requestBuilder = bdkWallet.startFullScan()',
+        ),
+      );
+      expect(scan, contains('final request = requestBuilder.build()'));
+      expect(scan, contains('final update = blockchain.fullScan('));
+      _expectFinallyDisposes(scan, 'update');
+      _expectFinallyDisposes(scan, 'request');
+      _expectFinallyDisposes(scan, 'requestBuilder');
+      _expectFinallyDisposes(scan, 'blockchain');
+    },
+  );
+}
+
+void _expectFinallyDisposes(String source, String handle) {
+  expect(
+    source,
+    matches(RegExp('finally \\{\\s+$handle\\.dispose\\(\\);', dotAll: true)),
+  );
 }
