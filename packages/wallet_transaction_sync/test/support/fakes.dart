@@ -34,6 +34,7 @@ WalletTransactionSyncFailure? errFailureOrNull<T>(
 class RecordingSource implements WalletTransactionSourcePort {
   WalletSourceObservation Function(WalletSourceRegistration registration)?
   observationBuilder;
+  List<WalletTransaction> baselineTransactions = const [];
   WalletTransactionSyncFailure? failure;
   int refreshCalls = 0;
   int syncCalls = 0;
@@ -58,8 +59,20 @@ class RecordingSource implements WalletTransactionSourcePort {
     ],
   );
 
-  WalletSourceObservation _observation(WalletSourceRegistration registration) =>
-      (observationBuilder ?? defaultObservation)(registration);
+  WalletSourceObservation _observation(WalletSourceRegistration registration) {
+    final observation = (observationBuilder ?? defaultObservation)(
+      registration,
+    );
+    return WalletSourceObservation(
+      key: observation.key,
+      registration: observation.registration,
+      transactions: observation.transactions,
+      capabilities: observation.capabilities,
+      sourceTip: observation.sourceTip,
+      complete: observation.complete,
+      evidenceLevel: observation.evidenceLevel,
+    );
+  }
 
   @override
   Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
@@ -83,7 +96,7 @@ class RecordingSource implements WalletTransactionSourcePort {
   }
 
   @override
-  Future<Result<WalletSourceObservation, WalletTransactionSyncFailure>>
+  Future<Result<WalletSourceSyncObservation, WalletTransactionSyncFailure>>
   synchronize(
     WalletSourceRegistration registration,
     WalletSourceSession session, {
@@ -100,7 +113,14 @@ class RecordingSource implements WalletTransactionSourcePort {
     }
     final currentFailure = failure;
     return currentFailure == null
-        ? Ok(_observation(registration))
+        ? Ok(
+            WalletSourceSyncObservation(
+              observation: _observation(registration),
+              baselineTxids: baselineTransactions
+                  .map((transaction) => transaction.txid)
+                  .toSet(),
+            ),
+          )
         : Err(currentFailure);
   }
 
@@ -124,10 +144,22 @@ class RecordingMetadata implements WalletSyncMetadataPort {
   final Map<WalletNetworkKey, WalletSyncMetadata> values = {};
   final Map<WalletNetworkKey, WalletSyncReceipt> receipts = {};
   bool failSuccess = false;
+  bool failRead = false;
   int clearFailuresRemaining = 0;
 
   @override
-  Future<WalletSyncMetadata?> read(WalletNetworkKey key) async => values[key];
+  Future<WalletSyncMetadata?> read(WalletNetworkKey key) async {
+    if (failRead) throw StateError('metadata store unavailable');
+    return values[key];
+  }
+
+  @override
+  Future<void> writeRegistration(WalletSourceRegistration registration) async {
+    values.putIfAbsent(
+      registration.key,
+      () => WalletSyncMetadata(registration: registration),
+    );
+  }
 
   @override
   Future<void> writeAttempt(WalletNetworkKey key, DateTime at) async {}

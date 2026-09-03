@@ -27,8 +27,10 @@ class _TrackingCoordinator implements WalletSourceOperationCoordinator {
   Future<T> runExclusive<T>(
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
-    Duration timeout = const Duration(seconds: 30),
+    Duration? timeout = const Duration(seconds: 30),
     bool allowRetired = false,
+    WalletOperationKind kind = WalletOperationKind.refresh,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
   }) async {
     acquisitions++;
     inOperation = true;

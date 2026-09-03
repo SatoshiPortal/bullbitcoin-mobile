@@ -64,8 +64,10 @@ class _CountingCoordinator implements WalletSourceOperationCoordinator {
   Future<T> runExclusive<T>(
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
-    Duration timeout = const Duration(seconds: 30),
+    Duration? timeout = const Duration(seconds: 30),
     bool allowRetired = false,
+    WalletOperationKind kind = WalletOperationKind.refresh,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
   }) {
     acquisitions++;
     return _delegate.runExclusive(
@@ -73,6 +75,8 @@ class _CountingCoordinator implements WalletSourceOperationCoordinator {
       operation,
       timeout: timeout,
       allowRetired: allowRetired,
+      kind: kind,
+      priority: priority,
     );
   }
 }

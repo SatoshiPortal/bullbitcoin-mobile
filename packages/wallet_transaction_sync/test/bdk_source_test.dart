@@ -149,10 +149,13 @@ void main() {
       externalPublicDescriptor: external,
       internalPublicDescriptor: internal,
       isTestnet: true,
-      electrumUrls: const [],
+      electrumUrls: const ['ssl://electrum.example:50002'],
       stopGap: 20,
       validateDomain: true,
       databaseFilePath: databaseFilePath,
+      socks5: 'socks5://proxy.example:9050',
+      timeout: 15,
+      retry: 4,
     );
     registration = WalletSourceRegistration.withFingerprint(
       key: key,
@@ -184,6 +187,8 @@ void main() {
       expect(transaction.txid, fundingTxid);
       expect(transaction.position, isA<UnconfirmedPosition>());
       expect(transaction.amountSats, _fundingLargeSat + _fundingSmallSat);
+      expect(transaction.direction, TransactionDirection.incoming);
+      expect(transaction.selfTransfer, isFalse);
       expect(transaction.outputs, hasLength(2));
       expect(
         transaction.outputs.map((output) => output.valueSats),
@@ -296,16 +301,40 @@ void main() {
   test(
     'backend and storage settings do not affect the identity fingerprint',
     () {
-      final movedConfiguration = BdkElectrumConfiguration(
+      BdkElectrumConfiguration variant({
+        List<String>? urls,
+        String? socks5,
+        int? timeout,
+        int? retry,
+        int? stopGap,
+        bool? validateDomain,
+        String? path,
+      }) => BdkElectrumConfiguration(
         externalPublicDescriptor: configuration.externalPublicDescriptor,
         internalPublicDescriptor: configuration.internalPublicDescriptor,
-        isTestnet: true,
-        electrumUrls: const ['ssl://other.example:50002'],
-        stopGap: 50,
-        validateDomain: false,
-        databaseFilePath: '/somewhere/else/bdk-wallet.sqlite',
+        isTestnet: configuration.isTestnet,
+        electrumUrls: urls ?? configuration.electrumUrls,
+        stopGap: stopGap ?? configuration.stopGap,
+        validateDomain: validateDomain ?? configuration.validateDomain,
+        databaseFilePath: path ?? configuration.databaseFilePath,
+        socks5: socks5 ?? configuration.socks5,
+        timeout: timeout ?? configuration.timeout,
+        retry: retry ?? configuration.retry,
       );
-      expect(movedConfiguration.fingerprint, configuration.fingerprint);
+      for (final changed in [
+        variant(urls: const ['ssl://other.example:50002']),
+        variant(socks5: 'socks5://other-proxy.example:9050'),
+        variant(timeout: 30),
+        variant(retry: 8),
+        variant(stopGap: 50),
+        variant(validateDomain: false),
+        variant(path: '/somewhere/else/bdk-wallet.sqlite'),
+      ]) {
+        expect(changed.fingerprint, configuration.fingerprint);
+      }
+      final movedConfiguration = variant(
+        path: '/somewhere/else/bdk-wallet.sqlite',
+      );
       expect(
         movedConfiguration.toMap()['databaseFilePath'],
         '/somewhere/else/bdk-wallet.sqlite',
@@ -314,6 +343,21 @@ void main() {
         movedConfiguration.toMap().containsKey('databaseRootPath'),
         isFalse,
       );
+      expect(movedConfiguration.toMap()['socks5'], configuration.socks5);
+      expect(movedConfiguration.toMap()['timeout'], configuration.timeout);
+      expect(movedConfiguration.toMap()['retry'], configuration.retry);
+      expect(movedConfiguration.identityMap(), isNot(contains('socks5')));
+      expect(movedConfiguration.identityMap(), isNot(contains('timeout')));
+      expect(movedConfiguration.identityMap(), isNot(contains('retry')));
+      expect(
+        movedConfiguration.toString(),
+        isNot(contains('electrum.example')),
+      );
+      expect(movedConfiguration.toString(), isNot(contains('proxy.example')));
+      expect(movedConfiguration.toString(), isNot(contains('socks5')));
+      expect(movedConfiguration.toString(), isNot(contains('timeout')));
+      expect(movedConfiguration.toString(), isNot(contains('retry')));
+      expect(movedConfiguration.toString(), isNot(contains('/somewhere')));
     },
   );
 

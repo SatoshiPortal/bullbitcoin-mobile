@@ -19,6 +19,7 @@ dependencies:
   crypto: ^3.0.7
   meta: ^1.17.0
   primitives:
+  sqlite3: ^2.9.4
 
 dev_dependencies:
   flutter_test:

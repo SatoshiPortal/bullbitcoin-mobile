@@ -11,6 +11,8 @@ import '../domain/entities/wallet_transaction_observation.dart';
 import '../domain/entities/wallet_transaction_page.dart';
 import '../domain/entities/wallet_transaction_snapshot.dart';
 import '../domain/entities/wallet_transaction_sync_outcome.dart';
+import '../domain/entities/wallet_source_sync_observation.dart';
+import '../domain/entities/wallet_source_observation.dart';
 import '../domain/ports/wallet_sync_metadata_port.dart';
 import '../domain/ports/wallet_transaction_source_port.dart';
 import '../domain/repositories/wallet_transaction_repository.dart';
@@ -61,6 +63,20 @@ final class WalletTransactionRepositoryImpl
     (_controllers[key] ??=
             StreamController<WalletTransactionSyncState>.broadcast(sync: true))
         .add(state);
+  }
+
+  void _emitSourceFailure(
+    WalletNetworkKey key,
+    WalletTransactionSyncFailure failure,
+  ) {
+    _emit(
+      key,
+      WalletStateFailed(
+        _revision(key),
+        failure,
+        store.read(key)?.lastSuccessfulSyncAt,
+      ),
+    );
   }
 
   @override
@@ -138,8 +154,12 @@ final class WalletTransactionRepositoryImpl
 
   @override
   Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
-  synchronize(SynchronizeWalletRequest request) =>
-      _run(request.registration, local: false, discover: false);
+  synchronize(SynchronizeWalletRequest request) => _run(
+    request.registration,
+    local: false,
+    discover: false,
+    priority: request.priority,
+  );
 
   @override
   Future<Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>>
@@ -151,61 +171,82 @@ final class WalletTransactionRepositoryImpl
     WalletSourceRegistration registration, {
     required bool local,
     required bool discover,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
   }) async {
     final key = registration.key;
-    var existing = await metadata.read(key);
-    if (existing?.deletionPending == true) {
-      final resumed = await _delete(key, registration: registration);
-      if (resumed case Err(:final failure)) return Err(failure);
-      // The resumed deletion cleared the stored registration; re-read so a
-      // revival with a replacement registration is not judged against it.
-      existing = await metadata.read(key);
-    }
-    if (_state(key) is WalletStateDeleted && !discover) {
-      return Err(const DeletedWalletFailure());
-    }
-    if (!_registrationMatches(registration, existing)) {
-      _emit(key, WalletStateRegistrationMismatch(_revision(key)));
-      return Err(const WalletRegistrationMismatchFailure());
-    }
-
-    _emit(
-      key,
-      local
-          ? WalletStateLoadingLocal(_revision(key))
-          : WalletStateSyncing(_revision(key)),
-    );
     try {
-      if (!local) await metadata.writeAttempt(key, now());
-      final result = await coordinator.runExclusive(
-        WalletSourceKey(key.walletId, key.chain, key.network),
-        (session) async {
-          final result = local
-              ? await source.refreshLocal(registration, session)
-              : await source.synchronize(
-                  registration,
-                  session,
-                  discover: discover,
-                );
-          return result;
-        },
-        allowRetired: discover,
-      );
-      if (result case Err(:final failure)) {
-        _emit(
-          key,
-          WalletStateFailed(
-            _revision(key),
-            failure,
-            store.read(key)?.lastSuccessfulSyncAt,
-          ),
-        );
-        return Err(failure);
+      var existing = await metadata.read(key);
+      if (existing == null) {
+        await metadata.writeRegistration(registration);
+        existing = await metadata.read(key);
+      }
+      if (existing?.deletionPending == true) {
+        final resumed = await _delete(key, registration: registration);
+        if (resumed case Err(:final failure)) return Err(failure);
+        // The resumed deletion cleared the stored registration; re-read so a
+        // revival with a replacement registration is not judged against it.
+        existing = await metadata.read(key);
+      }
+      if (_state(key) is WalletStateDeleted && !discover) {
+        return Err(const DeletedWalletFailure());
+      }
+      if (!_registrationMatches(registration, existing)) {
+        _emit(key, WalletStateRegistrationMismatch(_revision(key)));
+        return Err(const WalletRegistrationMismatchFailure());
       }
 
-      final observation =
-          (result as Ok<WalletSourceObservation, WalletTransactionSyncFailure>)
-              .value;
+      _emit(
+        key,
+        local
+            ? WalletStateLoadingLocal(_revision(key))
+            : WalletStateSyncing(_revision(key)),
+      );
+      if (!local) await metadata.writeAttempt(key, now());
+      late WalletSourceObservation observation;
+      late Set<String> baselineTxids;
+      final sourceKey = WalletSourceKey(key.walletId, key.chain, key.network);
+      if (local) {
+        final result = await coordinator
+            .runExclusive<
+              Result<WalletSourceObservation, WalletTransactionSyncFailure>
+            >(
+              sourceKey,
+              (session) => source.refreshLocal(registration, session),
+              allowRetired: discover,
+              kind: WalletOperationKind.refresh,
+            );
+        switch (result) {
+          case Ok(:final value):
+            observation = value;
+            baselineTxids = const {};
+          case Err(:final failure):
+            _emitSourceFailure(key, failure);
+            return Err(failure);
+        }
+      } else {
+        final result = await coordinator
+            .runExclusive<
+              Result<WalletSourceSyncObservation, WalletTransactionSyncFailure>
+            >(
+              sourceKey,
+              (session) =>
+                  source.synchronize(registration, session, discover: discover),
+              allowRetired: discover,
+              kind: discover
+                  ? WalletOperationKind.discover
+                  : WalletOperationKind.synchronize,
+              priority: priority,
+              timeout: null,
+            );
+        switch (result) {
+          case Ok(:final value):
+            observation = value.observation;
+            baselineTxids = value.baselineTxids;
+          case Err(:final failure):
+            _emitSourceFailure(key, failure);
+            return Err(failure);
+        }
+      }
       if (observation.key != key ||
           observation.registration.key != registration.key ||
           observation.registration.sourceKind != registration.sourceKind ||
@@ -265,6 +306,22 @@ final class WalletTransactionRepositoryImpl
         evidenceLevel: observation.evidenceLevel,
       );
       store.publish(snapshot);
+      final List<WalletTransaction> newIncomingTransactions =
+          List<WalletTransaction>.from(
+            !local && !discover
+                ? [
+                    for (final transaction in observation.transactions)
+                      if (!baselineTxids.contains(transaction.txid) &&
+                          transaction.direction ==
+                              TransactionDirection.incoming &&
+                          transaction.selfTransfer != true)
+                        transaction,
+                  ]
+                : const <WalletTransaction>[],
+          );
+      newIncomingTransactions.sort(
+        (left, right) => left.txid.compareTo(right.txid),
+      );
       _emit(
         key,
         warning == null
@@ -276,9 +333,17 @@ final class WalletTransactionRepositoryImpl
           WalletSourceKey(key.walletId, key.chain, key.network),
           (session) async => session.reactivate(),
           allowRetired: true,
+          kind: WalletOperationKind.reactivate,
+          timeout: null,
         );
       }
-      return Ok(WalletTransactionSyncOutcome(snapshot, warning: warning));
+      return Ok(
+        WalletTransactionSyncOutcome(
+          snapshot,
+          newIncomingTransactions: newIncomingTransactions,
+          warning: warning,
+        ),
+      );
     } catch (error) {
       final failure = _map(error);
       _emit(
@@ -399,6 +464,7 @@ final class WalletTransactionRepositoryImpl
               await _controllers.remove(key)?.close();
               return const Ok(null);
             },
+            kind: WalletOperationKind.delete,
           );
     } catch (error) {
       final failure = error is TimeoutException

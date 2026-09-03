@@ -96,9 +96,20 @@ void main() {
     );
     release.complete();
     okValue(await first);
-    okValue(await second);
+    expect(errFailure(await second), isA<WalletRegistrationMismatchFailure>());
 
-    expect(source.refreshCalls, 2);
+    expect(source.refreshCalls, 1);
+  });
+
+  test('metadata read failures stay inside the Result contract', () async {
+    final metadata = RecordingMetadata()..failRead = true;
+    final facade = buildFacade(RecordingSource(), metadata);
+
+    final result = await facade.refreshLocalSnapshot(
+      const RefreshLocalSnapshotRequest(testRegistration),
+    );
+
+    expect(errFailure(result), isA<SourceFailure>());
   });
 
   test(
@@ -357,6 +368,111 @@ void main() {
       isNull,
     );
   });
+
+  test('sync publishes only newly discovered incoming transactions', () async {
+    final source = RecordingSource();
+    final existing = WalletTransaction(
+      txid: 'existing',
+      amountSats: 10,
+      direction: TransactionDirection.incoming,
+      position: const UnknownPosition(),
+    );
+    source
+      ..baselineTransactions = [existing]
+      ..observationBuilder = (registration) => WalletSourceObservation(
+        key: registration.key,
+        registration: registration,
+        transactions: [
+          WalletTransaction(
+            txid: 'existing',
+            amountSats: 10,
+            direction: TransactionDirection.incoming,
+            position: const SourceReportedConfirmedPosition(100, null),
+          ),
+          WalletTransaction(
+            txid: 'z-incoming',
+            amountSats: 20,
+            direction: TransactionDirection.incoming,
+            position: const UnknownPosition(),
+          ),
+          WalletTransaction(
+            txid: 'a-incoming',
+            amountSats: 21,
+            direction: TransactionDirection.incoming,
+            position: const UnknownPosition(),
+          ),
+          WalletTransaction(
+            txid: 'outgoing',
+            amountSats: -5,
+            direction: TransactionDirection.outgoing,
+            position: const UnknownPosition(),
+          ),
+          WalletTransaction(
+            txid: 'self',
+            amountSats: 0,
+            direction: TransactionDirection.incoming,
+            selfTransfer: true,
+            position: const UnknownPosition(),
+          ),
+          WalletTransaction(
+            txid: 'unknown',
+            amountSats: 1,
+            position: const UnknownPosition(),
+          ),
+        ],
+      );
+    final facade = buildFacade(source, RecordingMetadata());
+
+    final outcome = okValue(
+      await facade.synchronizeWallet(
+        const SynchronizeWalletRequest(testRegistration),
+      ),
+    );
+
+    expect(
+      outcome.newIncomingTransactions.map((transaction) => transaction.txid),
+      ['a-incoming', 'z-incoming'],
+    );
+    expect(
+      () => outcome.newIncomingTransactions.add(existing),
+      throwsUnsupportedError,
+    );
+  });
+
+  test(
+    'discovery and local refresh publish no new transaction candidates',
+    () async {
+      final source = RecordingSource()
+        ..baselineTransactions = const []
+        ..observationBuilder = (registration) => WalletSourceObservation(
+          key: registration.key,
+          registration: registration,
+          transactions: [
+            WalletTransaction(
+              txid: 'incoming',
+              amountSats: 20,
+              direction: TransactionDirection.incoming,
+              position: const UnknownPosition(),
+            ),
+          ],
+        );
+      final facade = buildFacade(source, RecordingMetadata());
+
+      final discovered = okValue(
+        await facade.discoverWalletHistory(
+          const DiscoverWalletHistoryRequest(testRegistration),
+        ),
+      );
+      final refreshed = okValue(
+        await facade.refreshLocalSnapshot(
+          const RefreshLocalSnapshotRequest(testRegistration),
+        ),
+      );
+
+      expect(discovered.newIncomingTransactions, isEmpty);
+      expect(refreshed.newIncomingTransactions, isEmpty);
+    },
+  );
 
   test('published snapshots are deeply immutable', () async {
     final nestedEvidence = <String, Object?>{

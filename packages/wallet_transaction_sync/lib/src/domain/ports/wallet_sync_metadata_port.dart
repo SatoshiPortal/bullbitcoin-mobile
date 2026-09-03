@@ -23,6 +23,7 @@ class WalletSyncMetadata {
 
 abstract interface class WalletSyncMetadataPort {
   Future<WalletSyncMetadata?> read(WalletNetworkKey key);
+  Future<void> writeRegistration(WalletSourceRegistration registration);
   Future<void> writeAttempt(WalletNetworkKey key, DateTime at);
   Future<void> writeSuccess(
     WalletNetworkKey key,

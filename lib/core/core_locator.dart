@@ -91,7 +91,7 @@ class CoreLocator {
     SeedLocator.registerRepositories(locator);
     RecoverbullLocator.registerRepositories(locator);
     SwapsLocator.registerRepositories(locator);
-    WalletLocator.registerRepositories(locator);
+    await WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories(locator);
     BitBoxCoreLocator.registerRepositories(locator);

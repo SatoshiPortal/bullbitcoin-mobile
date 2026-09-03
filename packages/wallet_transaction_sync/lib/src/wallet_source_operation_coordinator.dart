@@ -1,16 +1,10 @@
 import 'dart:async';
+
 import 'wallet_source_session.dart';
 
-/// Serializes source access per key. Timeout is cooperative: it reports to the
-/// caller, but the tail remains held until the underlying operation completes.
-abstract interface class WalletSourceOperationCoordinator {
-  Future<T> runExclusive<T>(
-    WalletSourceKey key,
-    Future<T> Function(WalletSourceSession session) operation, {
-    Duration timeout = const Duration(seconds: 30),
-    bool allowRetired = false,
-  });
-}
+enum WalletOperationPriority { foreground, background }
+
+enum WalletOperationKind { refresh, synchronize, discover, delete, reactivate }
 
 final class WalletSourceKey {
   final String walletId;
@@ -27,6 +21,39 @@ final class WalletSourceKey {
   int get hashCode => Object.hash(walletId, chain, network);
 }
 
+final class WalletSourceClaim {
+  final String key;
+  final int generation;
+  final String ownerToken;
+  final WalletOperationKind kind;
+  final WalletOperationPriority priority;
+  const WalletSourceClaim({
+    required this.key,
+    required this.generation,
+    required this.ownerToken,
+    required this.kind,
+    required this.priority,
+  });
+}
+
+/// Session capability exposed only by durable coordination.
+abstract interface class WalletSourceClaimedSession
+    implements WalletSourceSession {
+  WalletSourceClaim get claim;
+}
+
+abstract interface class WalletSourceOperationCoordinator {
+  Future<T> runExclusive<T>(
+    WalletSourceKey key,
+    Future<T> Function(WalletSourceSession session) operation, {
+    Duration? timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
+    WalletOperationKind kind = WalletOperationKind.refresh,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
+  });
+}
+
+/// The compatibility coordinator intentionally remains process-local.
 final class InMemoryWalletSourceOperationCoordinator
     implements WalletSourceOperationCoordinator {
   final Map<WalletSourceKey, Future<void>> _tails = {};
@@ -40,12 +67,14 @@ final class InMemoryWalletSourceOperationCoordinator
   Future<T> runExclusive<T>(
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
-    Duration timeout = const Duration(seconds: 30),
+    Duration? timeout = const Duration(seconds: 30),
     bool allowRetired = false,
+    WalletOperationKind kind = WalletOperationKind.refresh,
+    WalletOperationPriority priority = WalletOperationPriority.foreground,
   }) async {
     final previous = _tails[key] ?? Future<void>.value();
-    final completer = Completer<void>();
-    _tails[key] = completer.future;
+    final done = Completer<void>();
+    _tails[key] = done.future;
     final result = Completer<T>();
     final duration = timeout == const Duration(seconds: 30)
         ? defaultTimeout
@@ -53,8 +82,8 @@ final class InMemoryWalletSourceOperationCoordinator
     Timer? timer;
     Future<void> finish() async {
       timer?.cancel();
-      if (!completer.isCompleted) completer.complete();
-      if (identical(_tails[key], completer.future)) _tails.remove(key);
+      if (!done.isCompleted) done.complete();
+      if (identical(_tails[key], done.future)) _tails.remove(key);
     }
 
     Future<void>(() async {
@@ -63,40 +92,40 @@ final class InMemoryWalletSourceOperationCoordinator
         if (_retired.contains(key) && !allowRetired) {
           throw StateError('wallet source is retired');
         }
-        final session = _CoordinatorSession(
+        final session = _MemorySession(
           onRetire: () => _retired.add(key),
           onReactivate: () => _retired.remove(key),
         );
-        late Future<T> operationFuture;
+        late Future<T> future;
         try {
-          operationFuture = operation(session);
-        } catch (error, stackTrace) {
-          operationFuture = Future<T>.error(error, stackTrace);
+          future = operation(session);
+        } catch (error, stack) {
+          future = Future<T>.error(error, stack);
         }
-        timer = Timer(duration, () {
-          if (!result.isCompleted) {
-            result.completeError(
-              TimeoutException('Wallet source operation timed out'),
-            );
-          }
-        });
-        operationFuture
+        if (duration != null) {
+          timer = Timer(duration, () {
+            if (!result.isCompleted) {
+              result.completeError(
+                TimeoutException('Wallet source operation timed out'),
+              );
+            }
+          });
+        }
+        future
             .then(
               (value) {
                 if (!result.isCompleted) result.complete(value);
               },
-              onError: (Object error, StackTrace stackTrace) {
-                if (!result.isCompleted) {
-                  result.completeError(error, stackTrace);
-                }
+              onError: (Object e, StackTrace s) {
+                if (!result.isCompleted) result.completeError(e, s);
               },
             )
             .whenComplete(() async {
               await session.close();
               await finish();
             });
-      } catch (error, stackTrace) {
-        if (!result.isCompleted) result.completeError(error, stackTrace);
+      } catch (error, stack) {
+        if (!result.isCompleted) result.completeError(error, stack);
         await finish();
       }
     });
@@ -104,12 +133,10 @@ final class InMemoryWalletSourceOperationCoordinator
   }
 }
 
-final class _CoordinatorSession implements WalletSourceSession {
-  final void Function() _onRetire;
-  final void Function() _onReactivate;
+final class _MemorySession implements WalletSourceSession {
+  final void Function() onRetire, onReactivate;
   bool _closed = false;
-
-  _CoordinatorSession({required this._onRetire, required this._onReactivate});
+  _MemorySession({required this.onRetire, required this.onReactivate});
   @override
   bool get isClosed => _closed;
   @override
@@ -120,13 +147,13 @@ final class _CoordinatorSession implements WalletSourceSession {
   @override
   void retire() {
     ensureOpen();
-    _onRetire();
+    onRetire();
   }
 
   @override
   void reactivate() {
     ensureOpen();
-    _onReactivate();
+    onReactivate();
   }
 
   @override
