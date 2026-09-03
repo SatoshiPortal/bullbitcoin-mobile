@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -34,6 +35,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
+import 'package:primitives/primitives.dart' show Sats;
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -548,10 +550,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
       final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
         walletId: bitcoinWalletId,
-        address: receiveAddress,
-        amountSat: isMaxSend ? null : inputAmountSat,
+        recipients: [
+          if (isMaxSend)
+            BitcoinTransactionRecipient.remainder(address: receiveAddress)
+          else
+            BitcoinTransactionRecipient.fixed(
+              address: receiveAddress,
+              amountSat: Sats.fromInt(inputAmountSat),
+            ),
+        ],
         networkFee: selectedFee,
-        drain: isMaxSend,
         selectedInputs: state.selectedUtxos.isNotEmpty
             ? state.selectedUtxos
             : null,
@@ -749,10 +757,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           state.selectedFee ?? state.bitcoinNetworkFees!.fastest;
       final unsigned = await _prepareBitcoinSendUsecase.execute(
         walletId: fromWallet.id,
-        address: order.payinAddress,
-        amountSat: isMaxSend ? null : order.payinAmountSat.toInt(),
+        recipients: [
+          if (isMaxSend)
+            BitcoinTransactionRecipient.remainder(address: order.payinAddress)
+          else
+            BitcoinTransactionRecipient.fixed(
+              address: order.payinAddress,
+              amountSat: Sats(order.payinAmountSat),
+            ),
+        ],
         networkFee: selectedFee,
-        drain: isMaxSend,
         selectedInputs: state.selectedUtxos.isEmpty
             ? null
             : state.selectedUtxos,
@@ -1241,12 +1255,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final epoch = _bitcoinPreviewEpoch;
     final slot = await _previewBitcoinFeeUsecase.execute(
       walletId: state.fromWallet!.id,
-      address: shape.address,
+      recipients: [
+        if (state.isMaxSelected)
+          BitcoinTransactionRecipient.remainder(address: shape.address)
+        else
+          BitcoinTransactionRecipient.fixed(
+            address: shape.address,
+            amountSat: Sats.fromInt(shape.amountSat),
+          ),
+      ],
       networkFee: event.fee,
-      amountSat: shape.amountSat,
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      drain: state.isMaxSelected,
     );
     // Discard if an input-shape change emptied the cache mid-build.
     if (epoch != _bitcoinPreviewEpoch) return;
@@ -1282,11 +1302,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final slots = await _previewBitcoinFeePresetsUsecase.execute(
       presets: presets,
       walletId: state.fromWallet!.id,
-      address: shape.address,
-      amountSat: shape.amountSat,
+      recipients: [
+        if (state.isMaxSelected)
+          BitcoinTransactionRecipient.remainder(address: shape.address)
+        else
+          BitcoinTransactionRecipient.fixed(
+            address: shape.address,
+            amountSat: Sats.fromInt(shape.amountSat),
+          ),
+      ],
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      drain: state.isMaxSelected,
     );
     // Discard if an input-shape change emptied the cache mid-build.
     if (epoch != _bitcoinPreviewEpoch) return;
@@ -1420,14 +1446,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             ? (
                 unsignedPsbt: cachedSlot.unsignedPsbt!,
                 txSize: cachedSlot.txSize!,
+                recipientAmountsSat: cachedSlot.recipientAmountsSat,
                 isToSelf: true,
               )
             : await _prepareBitcoinSendUsecase.execute(
                 walletId: fromWallet.id,
-                address: receiveAddress,
-                amountSat: isMaxSend ? null : inputAmountSat,
+                recipients: [
+                  if (isMaxSend)
+                    BitcoinTransactionRecipient.remainder(
+                      address: receiveAddress,
+                    )
+                  else
+                    BitcoinTransactionRecipient.fixed(
+                      address: receiveAddress,
+                      amountSat: Sats.fromInt(inputAmountSat),
+                    ),
+                ],
                 networkFee: selectedFee,
-                drain: isMaxSend,
                 selectedInputs: stateToUse.selectedUtxos.isNotEmpty
                     ? stateToUse.selectedUtxos
                     : null,
@@ -1489,14 +1524,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
             ? (
                 unsignedPsbt: cachedSlot.unsignedPsbt!,
                 txSize: cachedSlot.txSize!,
+                recipientAmountsSat: cachedSlot.recipientAmountsSat,
                 isToSelf: false,
               )
             : await _prepareBitcoinSendUsecase.execute(
                 walletId: fromWallet.id,
-                address: swap.paymentAddress,
-                amountSat: isMaxSend ? null : swap.paymentAmount,
+                recipients: [
+                  if (isMaxSend)
+                    BitcoinTransactionRecipient.remainder(
+                      address: swap.paymentAddress,
+                    )
+                  else
+                    BitcoinTransactionRecipient.fixed(
+                      address: swap.paymentAddress,
+                      amountSat: Sats.fromInt(swap.paymentAmount),
+                    ),
+                ],
                 networkFee: selectedFee,
-                drain: isMaxSend,
                 selectedInputs: stateToUse.selectedUtxos.isNotEmpty
                     ? stateToUse.selectedUtxos
                     : null,
@@ -1769,9 +1813,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       if (!fromWallet.isLiquid) {
         final dummyDrainTxInfo = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
-          address: receiveAddress.address,
+          recipients: [
+            BitcoinTransactionRecipient.remainder(
+              address: receiveAddress.address,
+            ),
+          ],
           networkFee: networkFee,
-          drain: true,
           selectedInputs: state.selectedUtxos,
         );
 
