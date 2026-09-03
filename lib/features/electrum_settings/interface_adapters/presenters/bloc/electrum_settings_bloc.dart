@@ -185,20 +185,15 @@ class ElectrumSettingsBloc
           status: value,
           priority: priority,
         );
-        // Custom servers (self-hosted, Tailscale, etc.) commonly present a
-        // certificate that fails strict domain validation, so switching to
-        // one disables it automatically.
-        final updatedAdvancedOptions = await _setValidateDomain(
-          network: network,
-          validateDomain: false,
-        );
         final hasActiveCustomBitcoinOnionServer =
             await _hasActiveCustomBitcoinOnionServerUsecase.execute();
         emit(
           state.copyWith(
             customServers: [...state.customServers, newServer],
             isAddingCustomServer: false,
-            advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
+            advancedOptions: state.advancedOptions?.copyWith(
+              validateDomain: false,
+            ),
             hasActiveCustomBitcoinOnionServer:
                 hasActiveCustomBitcoinOnionServer,
           ),
@@ -443,10 +438,9 @@ class ElectrumSettingsBloc
     _loadGeneration++;
   }
 
-  // Auto-toggles validateDomain to match the active server tier (off for
-  // custom, on for defaults). Best-effort: the server list change already
-  // succeeded, so a failure here is logged rather than surfaced as an
-  // add/delete-server error. Returns null when nothing changed.
+  // Restores strict validation when deleting the last custom server returns
+  // the active tier to the defaults. The deletion has already succeeded, so a
+  // settings failure is logged instead of reported as a deletion failure.
   Future<ElectrumAdvancedOptionsViewModel?> _setValidateDomain({
     required ElectrumServerNetwork network,
     required bool validateDomain,

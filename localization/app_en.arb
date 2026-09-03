@@ -14693,5 +14693,9 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "mempoolCustomServerValidateDomain": "Validate Domain",
+  "@mempoolCustomServerValidateDomain": {
+    "description": "Certificate validation switch for a custom mempool server."
   }
 }
