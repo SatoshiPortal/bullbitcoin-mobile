@@ -1,11 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
@@ -15,9 +11,14 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
+import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
@@ -26,15 +27,12 @@ import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
+import 'package:primitives/primitives.dart';
 
 class _MockGetUserSummary extends Mock
     implements GetExchangeUserSummaryUsecase {}
@@ -43,20 +41,15 @@ class _MockPlacePayOrder extends Mock implements PlacePayOrderUsecase {}
 
 class _MockRefreshPayOrder extends Mock implements RefreshPayOrderUsecase {}
 
-class _MockPrepareBitcoinSend extends Mock
-    implements PrepareBitcoinSendUsecase {}
+class _MockPreparePayBitcoinPayin extends Mock
+    implements PreparePayBitcoinPayinUsecase {}
 
-class _MockPrepareLiquidSend extends Mock implements PrepareLiquidSendUsecase {}
+class _MockPreparePayLiquidPayin extends Mock
+    implements PreparePayLiquidPayinUsecase {}
 
-class _MockSignBitcoinTx extends Mock implements SignBitcoinTxUsecase {}
+class _MockSignPayPayin extends Mock implements SignPayPayinUsecase {}
 
-class _MockSignLiquidTx extends Mock implements SignLiquidTxUsecase {}
-
-class _MockBroadcastBitcoin extends Mock
-    implements BroadcastBitcoinTransactionUsecase {}
-
-class _MockBroadcastLiquid extends Mock
-    implements BroadcastLiquidTransactionUsecase {}
+class _MockBroadcastPayPayin extends Mock implements BroadcastPayPayinUsecase {}
 
 class _MockGetNetworkFees extends Mock implements GetNetworkFeesUsecase {}
 
@@ -66,12 +59,13 @@ class _MockCalculateLiquidFees extends Mock
 class _MockCalculateBitcoinFees extends Mock
     implements CalculateBitcoinAbsoluteFeesUsecase {}
 
-class _MockConvertSatsToCurrency extends Mock
-    implements ConvertSatsToCurrencyAmountUsecase {}
+class _MockEstimatePayPayinFees extends Mock
+    implements EstimatePayPayinFeesUsecase {}
 
 class _MockGetAddressAtIndex extends Mock implements GetAddressAtIndexUsecase {}
 
-class _MockGetWalletUtxos extends Mock implements GetWalletUtxosUsecase {}
+class _MockLoadPayWalletUtxos extends Mock
+    implements LoadPayWalletUtxosUsecase {}
 
 class _MockGetOrder extends Mock implements GetOrderUsecase {}
 
@@ -98,21 +92,19 @@ class _SeedablePayBloc extends PayBloc {
     required super.getExchangeUserSummaryUsecase,
     required super.placePayOrderUsecase,
     required super.refreshPayOrderUsecase,
-    required super.prepareBitcoinSendUsecase,
-    required super.prepareLiquidSendUsecase,
-    required super.signBitcoinTxUsecase,
-    required super.signLiquidTxUsecase,
-    required super.broadcastBitcoinTransactionUsecase,
-    required super.broadcastLiquidTransactionUsecase,
+    required super.estimatePayPayinFeesUsecase,
+    required super.preparePayBitcoinPayinUsecase,
+    required super.preparePayLiquidPayinUsecase,
+    required super.signPayPayinUsecase,
+    required super.broadcastPayPayinUsecase,
+    required super.loadPayWalletUtxosUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
     required super.getNetworkFeesUsecase,
     required super.calculateLiquidAbsoluteFeesUsecase,
     required super.calculateBitcoinAbsoluteFeesUsecase,
-    required super.convertSatsToCurrencyAmountUsecase,
     required super.getAddressAtIndexUsecase,
-    required super.getWalletUtxosUsecase,
     required super.getOrderUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -155,10 +147,10 @@ void main() {
     minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
   );
 
-  late _MockPrepareBitcoinSend prepareBitcoinSend;
-  late _MockSignBitcoinTx signBitcoinTx;
-  late _MockConvertSatsToCurrency convertSats;
-  late _MockBroadcastBitcoin broadcastBitcoin;
+  late _MockPreparePayBitcoinPayin preparePayBitcoinPayin;
+  late _MockSignPayPayin signPayPayin;
+  late _MockEstimatePayPayinFees estimatePayPayinFees;
+  late _MockBroadcastPayPayin broadcastPayPayin;
   late _MockCalculateBitcoinFees calculateBitcoinFees;
   late _MockGetNetworkFees getNetworkFees;
   late _MockGetOrder getOrder;
@@ -173,7 +165,7 @@ void main() {
 
   /// Every `networkFee` the bloc handed to a PSBT build, in call order.
   List<NetworkFee> capturedBuildFees() => verify(
-    () => prepareBitcoinSend.execute(
+    () => preparePayBitcoinPayin.execute(
       walletId: any(named: 'walletId'),
       address: any(named: 'address'),
       amountSat: any(named: 'amountSat'),
@@ -186,7 +178,7 @@ void main() {
   /// Asserts the bloc never asked for a PSBT build. Separate from
   /// [capturedBuildFees] because `verify` needs at least one matching call.
   void verifyNoBuilds() => verifyNever(
-    () => prepareBitcoinSend.execute(
+    () => preparePayBitcoinPayin.execute(
       walletId: any(named: 'walletId'),
       address: any(named: 'address'),
       amountSat: any(named: 'amountSat'),
@@ -214,6 +206,9 @@ void main() {
   setUpAll(() {
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
+    // The fee estimate takes the wallet itself, so `any(named: 'wallet')`
+    // needs something to stand in for it.
+    registerFallbackValue(_MockWallet());
     registerFallbackValue(
       FeeOptions(
         fastest: NetworkFee.relativeFromSatPerVbyte(1),
@@ -225,16 +220,16 @@ void main() {
   });
 
   setUp(() {
-    prepareBitcoinSend = _MockPrepareBitcoinSend();
-    signBitcoinTx = _MockSignBitcoinTx();
-    broadcastBitcoin = _MockBroadcastBitcoin();
+    preparePayBitcoinPayin = _MockPreparePayBitcoinPayin();
+    signPayPayin = _MockSignPayPayin();
+    broadcastPayPayin = _MockBroadcastPayPayin();
     calculateBitcoinFees = _MockCalculateBitcoinFees();
     getNetworkFees = _MockGetNetworkFees();
     getOrder = _MockGetOrder();
     refreshPayOrder = _MockRefreshPayOrder();
     sendWithPayjoin = _MockSendWithPayjoin();
     watchPayjoin = _MockWatchPayjoin();
-    convertSats = _MockConvertSatsToCurrency();
+    estimatePayPayinFees = _MockEstimatePayPayinFees();
     previewBitcoinFeePresets = _MockPreviewBitcoinFeePresets();
     payOrder = _MockPayOrder();
     wallet = _MockWallet();
@@ -254,7 +249,7 @@ void main() {
     when(() => payOrder.payinStatus).thenReturn(OrderPayinStatus.inProgress);
 
     when(
-      () => prepareBitcoinSend.execute(
+      () => preparePayBitcoinPayin.execute(
         walletId: any(named: 'walletId'),
         address: any(named: 'address'),
         amountSat: any(named: 'amountSat'),
@@ -263,20 +258,29 @@ void main() {
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer(
-      (_) async => (unsignedPsbt: unsignedPsbt, txSize: 110, isToSelf: false),
+      (_) async => Ok<PreparedPayBitcoinPayin, PayFailure>((
+        unsignedPsbt: unsignedPsbt,
+        txSize: 110,
+        isToSelf: false,
+      )),
     );
     when(
       () => calculateBitcoinFees.execute(psbt: any(named: 'psbt')),
     ).thenAnswer((_) async => 200);
     when(
-      () => signBitcoinTx.execute(
+      () => signPayPayin.bitcoin(
         psbt: any(named: 'psbt'),
         walletId: any(named: 'walletId'),
       ),
-    ).thenAnswer((_) async => (signedPsbt: unsignedPsbt, txSize: 110));
+    ).thenAnswer(
+      (_) async => Ok<({String signedPsbt, int txSize}), PayFailure>((
+        signedPsbt: unsignedPsbt,
+        txSize: 110,
+      )),
+    );
     when(
-      () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
-    ).thenAnswer((_) async => expectedTxid);
+      () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+    ).thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
     ).thenAnswer((_) async => feeOptions);
@@ -293,21 +297,19 @@ void main() {
       getExchangeUserSummaryUsecase: _MockGetUserSummary(),
       placePayOrderUsecase: _MockPlacePayOrder(),
       refreshPayOrderUsecase: refreshPayOrder,
-      prepareBitcoinSendUsecase: prepareBitcoinSend,
-      prepareLiquidSendUsecase: _MockPrepareLiquidSend(),
-      signBitcoinTxUsecase: signBitcoinTx,
-      signLiquidTxUsecase: _MockSignLiquidTx(),
-      broadcastBitcoinTransactionUsecase: broadcastBitcoin,
-      broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
+      estimatePayPayinFeesUsecase: estimatePayPayinFees,
+      preparePayBitcoinPayinUsecase: preparePayBitcoinPayin,
+      preparePayLiquidPayinUsecase: _MockPreparePayLiquidPayin(),
+      signPayPayinUsecase: signPayPayin,
+      broadcastPayPayinUsecase: broadcastPayPayin,
+      loadPayWalletUtxosUsecase: _MockLoadPayWalletUtxos(),
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
       getPayjoinUsecase: getPayjoin,
       getNetworkFeesUsecase: getNetworkFees,
       calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquidFees(),
       calculateBitcoinAbsoluteFeesUsecase: calculateBitcoinFees,
-      convertSatsToCurrencyAmountUsecase: convertSats,
       getAddressAtIndexUsecase: _MockGetAddressAtIndex(),
-      getWalletUtxosUsecase: _MockGetWalletUtxos(),
       getOrderUsecase: getOrder,
       previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
@@ -440,7 +442,7 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
       );
     });
 
@@ -531,7 +533,7 @@ void main() {
         ),
       ).called(1);
       verify(
-        () => prepareBitcoinSend.execute(
+        () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
@@ -564,10 +566,10 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         verify(
-          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
         ).called(1);
         verify(
-          () => prepareBitcoinSend.execute(
+          () => preparePayBitcoinPayin.execute(
             walletId: any(named: 'walletId'),
             address: any(named: 'address'),
             amountSat: any(named: 'amountSat'),
@@ -581,10 +583,9 @@ void main() {
     );
 
     test('simultaneous confirmations start one send only', () async {
-      final build =
-          Completer<({String unsignedPsbt, int txSize, bool isToSelf})>();
+      final build = Completer<Result<PreparedPayBitcoinPayin, PayFailure>>();
       when(
-        () => prepareBitcoinSend.execute(
+        () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
@@ -599,7 +600,7 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
       verify(
-        () => prepareBitcoinSend.execute(
+        () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
           address: any(named: 'address'),
           amountSat: any(named: 'amountSat'),
@@ -609,18 +610,20 @@ void main() {
         ),
       ).called(1);
 
-      build.complete((
-        unsignedPsbt: unsignedPsbt,
-        txSize: 110,
-        isToSelf: false,
-      ));
+      build.complete(
+        Ok<PreparedPayBitcoinPayin, PayFailure>((
+          unsignedPsbt: unsignedPsbt,
+          txSize: 110,
+          isToSelf: false,
+        )),
+      );
       await bloc.stream.firstWhere(
         (state) => state is PayPaymentState && state.isPayinBroadcast,
       );
     });
 
     test('a price refresh cannot overwrite a confirmation in flight', () async {
-      final refresh = Completer<FiatPaymentOrder>();
+      final refresh = Completer<Result<FiatPaymentOrder, PayFailure>>();
       when(
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
@@ -631,7 +634,7 @@ void main() {
       bloc.add(const PayEvent.orderRefreshTimePassed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       bloc.seed(paymentState(isConfirmingPayment: true));
-      refresh.complete(payOrder);
+      refresh.complete(Ok<FiatPaymentOrder, PayFailure>(payOrder));
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
       expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
@@ -923,7 +926,7 @@ void main() {
         // hardcoded Fastest rate must appear nowhere.
         expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
         verify(
-          () => broadcastBitcoin.execute(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
         ).called(1);
       },
       timeout: const Timeout(Duration(seconds: 60)),
@@ -1040,8 +1043,20 @@ void main() {
     test('a wallet selection during confirmation is ignored (H6)', () async {
       bloc.seed(paymentState(isConfirmingPayment: true));
       when(
-        () => convertSats.execute(currencyCode: any(named: 'currencyCode')),
-      ).thenAnswer((_) async => 100000.0);
+        () => estimatePayPayinFees.execute(
+          wallet: any(named: 'wallet'),
+          fiatAmount: any(named: 'fiatAmount'),
+          currencyCode: any(named: 'currencyCode'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok<PayPayinFeeEstimate, PayFailure>((
+          exchangeRateEstimate: 100000.0,
+          requiredAmountSat: 50000,
+          absoluteFees: 200,
+          bitcoinFees: null,
+          bitcoinTxSize: 110,
+        )),
+      );
 
       bloc.add(PayEvent.walletSelected(wallet: wallet));
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1068,8 +1083,16 @@ void main() {
           ),
         );
         when(
-          () => convertSats.execute(currencyCode: any(named: 'currencyCode')),
-        ).thenThrow(StateError('price API unavailable'));
+          () => estimatePayPayinFees.execute(
+            wallet: any(named: 'wallet'),
+            fiatAmount: any(named: 'fiatAmount'),
+            currencyCode: any(named: 'currencyCode'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err<PayPayinFeeEstimate, PayFailure>(
+            PayUnexpectedFailure('price API unavailable'),
+          ),
+        );
 
         final states = <PayState>[];
         final subscription = bloc.stream.listen(states.add);
@@ -1122,7 +1145,11 @@ void main() {
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
         ),
-      ).thenThrow(const PayError.depositAddressChanged());
+      ).thenAnswer(
+        (_) async => const Err<FiatPaymentOrder, PayFailure>(
+          PayDepositAddressChangedFailure(),
+        ),
+      );
 
       bloc.add(const PayEvent.orderRefreshTimePassed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1135,7 +1162,7 @@ void main() {
             'a refreshed order with a different deposit address must never '
             'replace the order the payin is built from',
       );
-      expect(state.error, isA<DepositAddressChangedPayError>());
+      expect(state.error, isA<PayDepositAddressChangedFailure>());
     });
 
     test(
@@ -1153,7 +1180,9 @@ void main() {
             orderId: any(named: 'orderId'),
             expectedDepositAddress: any(named: 'expectedDepositAddress'),
           ),
-        ).thenAnswer((_) async => refreshedOrder);
+        ).thenAnswer(
+          (_) async => Ok<FiatPaymentOrder, PayFailure>(refreshedOrder),
+        );
 
         bloc.add(const PayEvent.orderRefreshTimePassed());
         await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1181,7 +1210,7 @@ void main() {
 
       final state = bloc.state as PayPaymentState;
       expect(state.payOrder, same(payOrder));
-      expect(state.error, isA<DepositAddressChangedPayError>());
+      expect(state.error, isA<PayDepositAddressChangedFailure>());
     });
 
     test(
@@ -1201,7 +1230,7 @@ void main() {
         expect(bloc.state, isA<PayPaymentState>());
         expect(
           (bloc.state as PayPaymentState).error,
-          isA<DepositAddressChangedPayError>(),
+          isA<PayDepositAddressChangedFailure>(),
         );
       },
     );
@@ -1213,20 +1242,24 @@ void main() {
           orderId: any(named: 'orderId'),
           expectedDepositAddress: any(named: 'expectedDepositAddress'),
         ),
-      ).thenThrow(const PayError.depositAddressChanged());
+      ).thenAnswer(
+        (_) async => const Err<FiatPaymentOrder, PayFailure>(
+          PayDepositAddressChangedFailure(),
+        ),
+      );
 
       bloc.add(const PayEvent.orderRefreshTimePassed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       expect(
         (bloc.state as PayPaymentState).error,
-        isA<DepositAddressChangedPayError>(),
+        isA<PayDepositAddressChangedFailure>(),
       );
 
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 200));
 
       final builtAddresses = verify(
-        () => prepareBitcoinSend.execute(
+        () => preparePayBitcoinPayin.execute(
           walletId: any(named: 'walletId'),
           address: captureAny(named: 'address'),
           amountSat: any(named: 'amountSat'),
