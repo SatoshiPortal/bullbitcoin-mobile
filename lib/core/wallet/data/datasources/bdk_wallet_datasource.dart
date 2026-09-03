@@ -100,7 +100,7 @@ class BdkWalletDatasource {
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
 
         await compute(
-          _performFullScan,
+          _performSync,
           _SyncParams(
             walletId: wallet.id,
             externalDescriptor:
@@ -869,6 +869,12 @@ String _scriptKey(List<int> bytes) => bytes.join(',');
 
 void _disposeBdkDescriptor(bdk.Descriptor? descriptor) => descriptor?.dispose();
 
+enum BdkSyncMode { fullScan, sync }
+
+@visibleForTesting
+BdkSyncMode bdkSyncModeForCheckpointHeight(int height) =>
+    height <= 0 ? BdkSyncMode.fullScan : BdkSyncMode.sync;
+
 final class _ActiveSignerScope {
   bool _active = true;
 
@@ -930,7 +936,7 @@ class _SyncParams {
   });
 }
 
-Future<void> _performFullScan(_SyncParams params) async {
+Future<void> _performSync(_SyncParams params) async {
   // Initialize the binary messenger for platform channel access in isolate
   // Needed for things like getting the database path from BdkFacade which
   // uses path_provider under the hood
@@ -945,6 +951,9 @@ Future<void> _performFullScan(_SyncParams params) async {
   );
 
   await BdkFacade.withWallet(wallet, (bdkWallet) async {
+    final mode = bdkSyncModeForCheckpointHeight(
+      bdkWallet.latestCheckpoint().height,
+    );
     final blockchain = _createElectrumClient(
       url: params.electrumUrl,
       socks5: params.electrumSocks5,
@@ -953,30 +962,50 @@ Future<void> _performFullScan(_SyncParams params) async {
       validateDomain: params.electrumValidateDomain,
     );
     try {
-      final requestBuilder = bdkWallet.startFullScan();
-      try {
-        final request = requestBuilder.build();
-        try {
-          final update = blockchain.fullScan(
-            request: request,
-            stopGap: params.electrumStopGap,
-            batchSize: _batchSizeFor(params.electrumStopGap),
-            fetchPrevTxouts: true,
-          );
+      late final bdk.Update update;
+      switch (mode) {
+        case BdkSyncMode.fullScan:
+          final requestBuilder = bdkWallet.startFullScan();
           try {
-            bdkWallet.applyUpdate(update: update);
+            final request = requestBuilder.build();
+            try {
+              update = blockchain.fullScan(
+                request: request,
+                stopGap: params.electrumStopGap,
+                batchSize: _batchSizeFor(params.electrumStopGap),
+                fetchPrevTxouts: true,
+              );
+            } finally {
+              request.dispose();
+            }
           } finally {
-            update.dispose();
+            requestBuilder.dispose();
           }
-        } finally {
-          request.dispose();
-        }
+        case BdkSyncMode.sync:
+          final requestBuilder = bdkWallet.startSyncWithRevealedSpks();
+          try {
+            final request = requestBuilder.build();
+            try {
+              update = blockchain.sync_(
+                request: request,
+                batchSize: _batchSizeFor(params.electrumStopGap),
+                fetchPrevTxouts: true,
+              );
+            } finally {
+              request.dispose();
+            }
+          } finally {
+            requestBuilder.dispose();
+          }
+      }
+      try {
+        bdkWallet.applyUpdate(update: update);
       } finally {
-        requestBuilder.dispose();
+        update.dispose();
       }
     } catch (e, st) {
       log.warning(
-        'full_scan failed for wallet ${params.walletId}',
+        'sync failed for wallet ${params.walletId}',
         error: e,
         trace: st,
       );

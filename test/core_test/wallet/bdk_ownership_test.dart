@@ -77,34 +77,44 @@ void main() {
     expect(violations, isEmpty);
   });
 
-  test(
-    'legacy full scan scopes every owned BDK handle for failure cleanup',
-    () {
-      final source = File(
-        'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart',
-      ).readAsStringSync();
-      final scanStart = source.indexOf('Future<void> _performFullScan');
-      final scanEnd = source.indexOf(
-        'class FailedToSignPsbtException',
-        scanStart,
-      );
-      final scan = source.substring(scanStart, scanEnd);
+  test('legacy sync scopes every owned BDK handle for failure cleanup', () {
+    final source = File(
+      'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart',
+    ).readAsStringSync();
+    final scanStart = source.indexOf('Future<void> _performSync');
+    final scanEnd = source.indexOf(
+      'class FailedToSignPsbtException',
+      scanStart,
+    );
+    final scan = source.substring(scanStart, scanEnd);
 
-      expect(scan, contains('final blockchain = _createElectrumClient'));
-      expect(
-        scan,
-        contains(
-          'try {\n      final requestBuilder = bdkWallet.startFullScan()',
-        ),
-      );
-      expect(scan, contains('final request = requestBuilder.build()'));
-      expect(scan, contains('final update = blockchain.fullScan('));
-      _expectFinallyDisposes(scan, 'update');
-      _expectFinallyDisposes(scan, 'request');
-      _expectFinallyDisposes(scan, 'requestBuilder');
-      _expectFinallyDisposes(scan, 'blockchain');
-    },
-  );
+    expect(scan, contains('final blockchain = _createElectrumClient'));
+    expect(
+      scan,
+      contains(
+        'case BdkSyncMode.fullScan:\n'
+        '          final requestBuilder = bdkWallet.startFullScan()',
+      ),
+    );
+    expect(scan, contains('final request = requestBuilder.build()'));
+    expect(scan, contains('update = blockchain.fullScan('));
+    expect(
+      scan,
+      contains('final requestBuilder = bdkWallet.startSyncWithRevealedSpks()'),
+    );
+    expect(scan, contains('update = blockchain.sync_('));
+    expect(RegExp(r'applyUpdate\(').allMatches(scan), hasLength(1));
+    expect(RegExp(r'BdkFacade\.saveWallet\(').allMatches(scan), hasLength(1));
+    expect(scan, contains('await BdkFacade.withWallet(wallet'));
+    final syncStart = scan.indexOf('case BdkSyncMode.sync:');
+    final syncPath = scan.substring(syncStart);
+    _expectFinallyDisposes(syncPath, 'request');
+    _expectFinallyDisposes(syncPath, 'requestBuilder');
+    _expectFinallyDisposes(scan, 'update');
+    _expectFinallyDisposes(scan, 'request');
+    _expectFinallyDisposes(scan, 'requestBuilder');
+    _expectFinallyDisposes(scan, 'blockchain');
+  });
 }
 
 void _expectFinallyDisposes(String source, String handle) {

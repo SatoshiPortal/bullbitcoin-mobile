@@ -421,4 +421,10 @@ void main() {
     expect(lookups, ['requested', 'prevout', 'missing', 'unknown']);
     expect(missingTransactions, isEmpty);
   });
+
+  test('selects discovery only for an unsynchronized persisted chain', () {
+    expect(bdkSyncModeForCheckpointHeight(0), BdkSyncMode.fullScan);
+    expect(bdkSyncModeForCheckpointHeight(1), BdkSyncMode.sync);
+    expect(bdkSyncModeForCheckpointHeight(849999), BdkSyncMode.sync);
+  });
 }
