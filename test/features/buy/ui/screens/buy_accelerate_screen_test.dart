@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -15,7 +16,19 @@ class _MockBuyBloc extends Mock implements BuyBloc {}
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
-Future<void> _pumpAccelerateScreen(WidgetTester tester, BuyState state) async {
+class _MockBuyOrder extends Mock implements BuyOrder {}
+
+/// A loaded order, stubbed only with what the screen reads off it.
+BuyOrder _loadedOrder() {
+  final order = _MockBuyOrder();
+  when(() => order.payinCurrency).thenReturn('CAD');
+  return order;
+}
+
+Future<BuyBloc> _pumpAccelerateScreen(
+  WidgetTester tester,
+  BuyState state,
+) async {
   final buyBloc = _MockBuyBloc();
   final settingsCubit = _MockSettingsCubit();
 
@@ -51,6 +64,8 @@ Future<void> _pumpAccelerateScreen(WidgetTester tester, BuyState state) async {
   // Not pumpAndSettle: while the fee reads are in flight the rows shimmer,
   // and a repeating animation never settles.
   await tester.pump();
+
+  return buyBloc;
 }
 
 void main() {
@@ -107,5 +122,48 @@ void main() {
 
     expect(find.byType(LoadingLineContent), findsNWidgets(3));
     expect(find.text('—'), findsNothing);
+  });
+
+  group('the express confirm button', () {
+    const confirmExpress = 'Confirm express';
+
+    testWidgets('does nothing while there is no order to accelerate', (
+      tester,
+    ) async {
+      // The handler bails out on a null order id with a severe log, so an
+      // enabled button here is a tap that looks accepted and does nothing.
+      final buyBloc = await _pumpAccelerateScreen(
+        tester,
+        const BuyState(failure: BuyUnexpectedFailure('DioException 500')),
+      );
+
+      await tester.tap(find.text(confirmExpress));
+      await tester.pump();
+
+      verifyNever(
+        () => buyBloc.add(const BuyEvent.accelerateTransactionConfirmed()),
+      );
+    });
+
+    testWidgets('stays usable after a failure that left the order loaded', (
+      tester,
+    ) async {
+      // A failed confirm attempt is a legitimate retry, so the gate is the
+      // missing order rather than the failure.
+      final buyBloc = await _pumpAccelerateScreen(
+        tester,
+        BuyState(
+          buyOrder: _loadedOrder(),
+          failure: const BuyUnexpectedFailure('DioException 500'),
+        ),
+      );
+
+      await tester.tap(find.text(confirmExpress));
+      await tester.pump();
+
+      verify(
+        () => buyBloc.add(const BuyEvent.accelerateTransactionConfirmed()),
+      ).called(1);
+    });
   });
 }

@@ -25,6 +25,12 @@ class BuyAccelerateScreen extends StatelessWidget {
     final isAcceleratingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isAcceleratingOrder,
     );
+    // Deliberately not `accelerateFailure == null`: a failed confirm attempt
+    // leaves the order loaded and retrying is legitimate. Only the absence of
+    // an order makes the confirm below dispatch into a no-op.
+    final hasOrder = context.select(
+      (BuyBloc bloc) => bloc.state.buyOrder != null,
+    );
     final fees = context.select(
       (BuyBloc bloc) => bloc.state.accelerationNetworkFees,
     );
@@ -139,7 +145,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                 const Gap(16),
                 BBButton.big(
                   label: context.loc.buyConfirmExpress,
-                  disabled: isAcceleratingOrder,
+                  disabled: isAcceleratingOrder || !hasOrder,
                   onPressed: () {
                     context.read<BuyBloc>().add(
                       const BuyEvent.accelerateTransactionConfirmed(),
