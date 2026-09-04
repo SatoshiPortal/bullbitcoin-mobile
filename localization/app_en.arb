@@ -14693,5 +14693,9 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
+  "@withdrawUnexpectedError": {
+    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
   }
 }

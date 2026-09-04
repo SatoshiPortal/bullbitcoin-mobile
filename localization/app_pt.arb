@@ -4960,5 +4960,6 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "withdrawUnexpectedError": "O seu levantamento não pôde ser concluído neste momento. Tente novamente ou contacte o suporte."
 }

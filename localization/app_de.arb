@@ -4899,5 +4899,6 @@
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
   "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
-  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support."
 }

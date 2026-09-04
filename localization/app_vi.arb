@@ -3596,5 +3596,6 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "withdrawUnexpectedError": "Lệnh rút tiền của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ."
 }

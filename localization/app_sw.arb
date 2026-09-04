@@ -3608,5 +3608,6 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "withdrawUnexpectedError": "Uondoaji wako haukuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada."
 }
