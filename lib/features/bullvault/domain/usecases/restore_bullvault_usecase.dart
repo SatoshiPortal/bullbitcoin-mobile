@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_ke
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 
 enum BullVaultRestoreInputKind { recoveryPackage, descriptor }
 
@@ -142,9 +143,15 @@ class RestoreBullVaultUsecase {
         }
         decodedPackage = BullVaultRecoveryPackage(policy: policy);
       }
-      final seed = await _getDefaultSeedUsecase.execute(
+      final Seed seed;
+      switch (await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
-      );
+      )) {
+        case Ok(:final value):
+          seed = value;
+        case Err():
+          return const Err(BullVaultInvalidRecoveryFailure());
+      }
       Seed? verifiedSeed;
       var policy = decodedPackage.policy.withEverydayOwnership(
         SignerEntity.none,

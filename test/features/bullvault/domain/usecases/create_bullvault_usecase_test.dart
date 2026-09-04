@@ -622,10 +622,14 @@ void main() {
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Seed.mnemonic(
-          mnemonicWords: mnemonic.words,
-          bytes: seedBytes,
-          masterFingerprint: bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex,
+        (_) async => Ok(
+          Seed.mnemonic(
+            mnemonicWords: mnemonic.words,
+            bytes: seedBytes,
+            masterFingerprint: bip32.Bip32Keys.fromSeed(
+              seedBytes,
+            ).fingerprintHex,
+          ),
         ),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);

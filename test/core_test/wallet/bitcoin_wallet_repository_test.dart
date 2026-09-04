@@ -46,6 +46,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'wallet_signer_test_fixture.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -75,6 +76,7 @@ void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
+  late _MockSeedDatasource seedDatasource;
   late WalletSigningMaterialResolver signingMaterial;
   late BitcoinWalletRepository repository;
 
