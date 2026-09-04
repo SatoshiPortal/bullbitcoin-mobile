@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -38,7 +37,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -50,6 +49,7 @@ import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_u
 import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:get_it/get_it.dart';
@@ -179,8 +179,8 @@ class SendLocator {
     locator.registerFactory<VerifySendSignedTxUsecase>(
       () => VerifySendSignedTxUsecase(locator<VerifySignedTxUsecase>()),
     );
-    locator.registerFactory<ResolveSweepInputsUsecase>(
-      () => ResolveSweepInputsUsecase(locator<PayjoinSessions>()),
+    locator.registerFactory<ResolveSelectedInputsUsecase>(
+      () => ResolveSelectedInputsUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<ValidateSweepPaymentRequestUsecase>(
       ValidateSweepPaymentRequestUsecase.new,
@@ -188,10 +188,15 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<SendCubit, Wallet?, Set<Outpoint>?>(
-      (wallet, sweepOutpoints) => SendCubit(
+    locator.registerFactoryParam<SendCubit, Wallet?, SendRouteArgs?>(
+      (wallet, args) => SendCubit(
         wallet: wallet,
-        initialSweepOutpoints: sweepOutpoints ?? const {},
+        initialSweepOutpoints: args?.isSweep == true
+            ? args!.selectedOutpoints
+            : const {},
+        initialSelectedOutpoints: args?.isSweep == false
+            ? args!.selectedOutpoints
+            : const {},
         labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
@@ -244,7 +249,7 @@ class SendLocator {
             locator<CheckLiquidConsolidationUsecase>(),
         getSendPayjoinEnabledUsecase: locator<GetSendPayjoinEnabledUsecase>(),
         verifySignedTxUsecase: locator<VerifySendSignedTxUsecase>(),
-        resolveSweepInputsUsecase: locator<ResolveSweepInputsUsecase>(),
+        resolveSelectedInputsUsecase: locator<ResolveSelectedInputsUsecase>(),
         validateSweepPaymentRequestUsecase:
             locator<ValidateSweepPaymentRequestUsecase>(),
       ),

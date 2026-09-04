@@ -14759,5 +14759,9 @@
   "sendRemoveRecipient": "Remove Recipient",
   "@sendRemoveRecipient": {
     "description": "Tooltip for removing an on-chain send recipient"
+  },
+  "sendSelectedCoinsLabel": "Selected coins",
+  "@sendSelectedCoinsLabel": {
+    "description": "Label for the amount available from manually selected transaction inputs"
   }
 }

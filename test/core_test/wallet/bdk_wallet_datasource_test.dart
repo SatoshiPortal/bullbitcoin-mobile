@@ -377,6 +377,62 @@ void main() {
     },
   );
 
+  test('buildPsbt spends only the selected input and returns change', () async {
+    const sendAmountSat = 50000;
+    const feeSat = 1000;
+    final datasource = BdkWalletDatasource();
+
+    final psbt = await datasource.buildPsbt(
+      wallet: walletModel,
+      recipients: _fixedRecipients(sendAmountSat),
+      networkFee: const NetworkFee.absolute(feeSat),
+      selectedOnly: true,
+      selected: [
+        WalletUtxoModel.bitcoin(
+          txId: utxoLargeTxId,
+          vout: utxoLargeVout,
+          amountSat: BigInt.from(utxoLargeAmountSat),
+          scriptPubkey: Uint8List(0),
+          address: '',
+          isExternalKeyChain: true,
+        ),
+      ],
+    );
+
+    final parsed = bdk.Psbt(psbtBase64: psbt);
+    final tx = parsed.extractTx();
+    final inputs = tx.input();
+    final outputs = tx.output();
+    final recipientScript = bdk.Address(
+      address: _externalTestnetAddress,
+      network: bdk.Network.testnet,
+    ).scriptPubkey();
+
+    expect(inputs, hasLength(1));
+    expect(inputs.single.previousOutput.txid.toString(), utxoLargeTxId);
+    expect(inputs.single.previousOutput.vout, utxoLargeVout);
+    expect(outputs, hasLength(2));
+    expect(
+      outputs
+          .singleWhere(
+            (output) => listEquals(
+              output.scriptPubkey.toBytes(),
+              recipientScript.toBytes(),
+            ),
+          )
+          .value
+          .toSat(),
+      sendAmountSat,
+    );
+    expect(
+      outputs.fold(0, (total, output) => total + output.value.toSat()),
+      utxoLargeAmountSat - feeSat,
+    );
+
+    tx.dispose();
+    parsed.dispose();
+  });
+
   // BDK has two exception types for a shortfall and doesn't say which it uses
   // when, so these pin it against the real builder: either must arrive as
   // InsufficientFundsException.

@@ -37,6 +37,7 @@ void main() {
     WidgetTester tester, {
     required bool selected,
     required VoidCallback onTap,
+    WalletUtxo? coin,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -45,7 +46,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: CoinSelectTile(
-            utxo: utxo,
+            utxo: coin ?? utxo,
             selected: selected,
             onTap: onTap,
             bitcoinUnit: BitcoinUnit.sats,
@@ -94,5 +95,16 @@ void main() {
     await tester.pump();
 
     expect(taps, 1);
+  });
+
+  testWidgets('shows the coin confirmation count', (tester) async {
+    await pumpTile(
+      tester,
+      selected: false,
+      onTap: () {},
+      coin: utxo.copyWith(confirmations: 6),
+    );
+
+    expect(find.text('6 confirmations'), findsOneWidget);
   });
 }
