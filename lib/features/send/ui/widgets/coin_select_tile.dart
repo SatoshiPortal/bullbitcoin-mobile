@@ -45,6 +45,9 @@ class CoinSelectTile extends StatelessWidget {
         ? context.loc.sendReceive
         : context.loc.sendChange;
     final label = utxo.labels.join(', ');
+    final confirmations = utxo.confirmations == 0
+        ? context.loc.sendUnconfirmed
+        : context.loc.sendCoinConfirmations(utxo.confirmations);
 
     return GestureDetector(
       onTap: onTap,
@@ -96,6 +99,13 @@ class CoinSelectTile extends StatelessWidget {
                   // const SizedBox(height: 4),
                   BBText(
                     '~$fiatEquivalent',
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  BBText(
+                    confirmations,
                     style: context.font.labelSmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),

@@ -23,7 +23,7 @@ class SendRouter {
           (state.extra is Wallet ? state.extra! as Wallet : null);
       return BlocProvider(
         create: (_) =>
-            locator<SendCubit>(param1: wallet, param2: args?.sweepOutpoints)
+            locator<SendCubit>(param1: wallet, param2: args)
               ..loadWalletWithRatesAndFees(),
         child: const SendScreen(),
       );

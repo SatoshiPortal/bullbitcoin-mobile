@@ -197,6 +197,7 @@ class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
     super.wallet,
     super.initialSweepOutpoints,
+    super.initialSelectedOutpoints,
     required super.labelsFacade,
     required super.bestWalletUsecase,
     required super.detectBitcoinStringUsecase,
@@ -413,10 +414,12 @@ void main() {
   _TestableSendCubit buildCubit({
     Wallet? wallet,
     Set<Outpoint> initialSweepOutpoints = const {},
+    Set<Outpoint> initialSelectedOutpoints = const {},
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) => _TestableSendCubit(
     wallet: wallet,
     initialSweepOutpoints: initialSweepOutpoints,
+    initialSelectedOutpoints: initialSelectedOutpoints,
     labelsFacade: labelsFacade,
     bestWalletUsecase: bestWalletUsecase,
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
@@ -639,6 +642,239 @@ void main() {
     ).thenAnswer((_) async => _sweepFeeOptions);
   }
 
+  group('SendCubit initial selected coins', () {
+    for (final isSweep in [false, true]) {
+      final flow = isSweep ? 'sweep' : 'send';
+
+      test(
+        'makes selected $flow usable before currency data finishes',
+        () async {
+          final wallet = _bitcoinLocalWallet();
+          final selected = walletUtxoFixture(
+            walletId: wallet.id,
+            txId: 'selected',
+            sats: 75000,
+          );
+          stubSweepLoad(wallet: wallet, utxos: [selected]);
+          final currencies = Completer<List<String>>();
+          when(
+            () => getAvailableCurrenciesUsecase.execute(),
+          ).thenAnswer((_) => currencies.future);
+          final cubit = buildCubit(
+            wallet: wallet,
+            initialSelectedOutpoints: isSweep
+                ? const {}
+                : const {(txId: 'selected', vout: 0)},
+            initialSweepOutpoints: isSweep
+                ? const {(txId: 'selected', vout: 0)}
+                : const {},
+          );
+          addTearDown(cubit.close);
+          final initialized = cubit.stream.firstWhere(
+            (state) =>
+                !state.loadingBestWallet && state.selectedUtxos.isNotEmpty,
+          );
+          var loadCompleted = false;
+
+          final load = cubit.loadWalletWithRatesAndFees().then(
+            (_) => loadCompleted = true,
+          );
+          await initialized;
+
+          expect(cubit.state.selectedUtxos, [selected]);
+          expect(cubit.state.loadingBestWallet, isFalse);
+          expect(loadCompleted, isFalse);
+
+          currencies.complete(['USD']);
+          await load;
+        },
+      );
+    }
+
+    test(
+      'opens a normal Bitcoin send with the requested coins selected',
+      () async {
+        final wallet = _bitcoinLocalWallet();
+        final otherWallet = _bitcoinWallet(balanceSat: 500000);
+        final selected = walletUtxoFixture(
+          walletId: wallet.id,
+          txId: 'selected',
+          sats: 75000,
+        );
+        final other = walletUtxoFixture(
+          walletId: wallet.id,
+          txId: 'other',
+          sats: 225000,
+        );
+        stubSweepLoad(wallet: wallet, utxos: [selected, other]);
+        final cubit = buildCubit(
+          wallet: wallet,
+          initialSelectedOutpoints: const {(txId: 'selected', vout: 0)},
+        );
+        addTearDown(cubit.close);
+
+        await cubit.loadWalletWithRatesAndFees();
+
+        expect(cubit.state.isSweep, isFalse);
+        expect(cubit.state.sendType, SendType.bitcoin);
+        expect(cubit.state.sendMax, isFalse);
+        expect(cubit.state.amount, isEmpty);
+        expect(cubit.state.selectedWallet, wallet);
+        expect(cubit.state.selectedUtxos, [selected]);
+        expect(cubit.state.maxAvailableBalanceSat, 75000);
+        expect(cubit.state.isPayjoinAvailable, isFalse);
+        expect(cubit.state.failure, isNull);
+
+        cubit.setStateForTest(
+          cubit.state.copyWith(wallets: [wallet, otherWallet]),
+        );
+        await cubit.updateSelectedWallet(otherWallet);
+
+        expect(cubit.state.selectedWallet, wallet);
+        expect(cubit.state.selectedUtxos, [selected]);
+        expect(cubit.state.selectableWallets, [wallet]);
+      },
+    );
+
+    test('keeps selected-input BIP21 sends on chain', () async {
+      final wallet = _bitcoinLocalWallet();
+      final liquidWallet = _liquidWallet(balanceSat: 1000000);
+      final selected = walletUtxoFixture(
+        walletId: wallet.id,
+        txId: 'selected',
+        sats: 75000,
+      );
+      const request = PaymentRequest.bip21(
+        network: Network.bitcoinMainnet,
+        uri: 'bitcoin:bc1qfirst?lightning=lnbc1invoice',
+        address: 'bc1qfirst',
+        lightning: 'lnbc1invoice',
+      );
+      const invoice = PaymentRequest.bolt11(
+        invoice: 'lnbc1invoice',
+        amountSat: 0,
+        paymentHash: 'hash',
+        expiresAt: 2000000000,
+        isTestnet: false,
+      );
+      var parsedLightning = false;
+      stubSweepLoad(wallet: wallet, utxos: [selected]);
+      when(
+        () => getWalletsUsecase.execute(),
+      ).thenAnswer((_) async => [wallet, liquidWallet]);
+      when(
+        () => bestWalletUsecase.execute(
+          wallets: [wallet, liquidWallet],
+          request: invoice,
+          amountSat: 0,
+        ),
+      ).thenReturn(Ok(liquidWallet));
+      final cubit = buildCubit(
+        wallet: wallet,
+        initialSelectedOutpoints: const {(txId: 'selected', vout: 0)},
+        parsePaymentRequest: (_) async {
+          parsedLightning = true;
+          return invoice;
+        },
+      );
+      addTearDown(cubit.close);
+      await cubit.loadWalletWithRatesAndFees();
+      cubit.setStateForTest(cubit.state.copyWith(paymentRequest: request));
+
+      await cubit.continueOnAddressConfirmed();
+
+      expect(parsedLightning, isFalse);
+      expect(cubit.state.paymentRequest, request);
+      expect(cubit.state.sendType, SendType.bitcoin);
+      expect(cubit.state.selectedWallet, wallet);
+      expect(cubit.state.selectedUtxos, [selected]);
+      expect(cubit.state.selectedInputOutpoints, {(txId: 'selected', vout: 0)});
+      expect(cubit.state.step, SendStep.amount);
+    });
+
+    test('keeps an unavailable launch selection in exact-input mode', () async {
+      final wallet = _bitcoinLocalWallet();
+      stubSweepLoad(wallet: wallet, utxos: const []);
+      final cubit = buildCubit(
+        wallet: wallet,
+        initialSelectedOutpoints: const {(txId: 'missing', vout: 0)},
+      );
+      addTearDown(cubit.close);
+
+      await cubit.loadWalletWithRatesAndFees();
+
+      expect(cubit.state.selectedInputOutpoints, {(txId: 'missing', vout: 0)});
+      expect(cubit.state.selectedUtxos, isEmpty);
+      expect(cubit.state.selectedInputsUnavailable, isTrue);
+      expect(cubit.state.maxAvailableBalanceSat, 0);
+      expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+
+      cubit.clearFailure();
+      expect(await cubit.createTransaction(), isFalse);
+      expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+      verifyNever(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: any(named: 'selectedOnly'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
+    });
+
+    test('does not fall back to surviving coins after a refresh', () async {
+      final wallet = _bitcoinLocalWallet();
+      final first = walletUtxoFixture(
+        walletId: wallet.id,
+        txId: 'first',
+        sats: 75000,
+      );
+      final second = walletUtxoFixture(
+        walletId: wallet.id,
+        txId: 'second',
+        sats: 50000,
+      );
+      stubSweepLoad(wallet: wallet, utxos: [first, second]);
+      final cubit = buildCubit(
+        wallet: wallet,
+        initialSelectedOutpoints: const {
+          (txId: 'first', vout: 0),
+          (txId: 'second', vout: 0),
+        },
+      );
+      addTearDown(cubit.close);
+      await cubit.loadWalletWithRatesAndFees();
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
+      ).thenAnswer((_) async => [first]);
+
+      await cubit.loadUtxos();
+
+      expect(cubit.state.selectedInputOutpoints, {
+        (txId: 'first', vout: 0),
+        (txId: 'second', vout: 0),
+      });
+      expect(cubit.state.selectedUtxos, isEmpty);
+      expect(cubit.state.selectedInputsUnavailable, isTrue);
+      expect(cubit.state.failure, isA<SendSelectedCoinsUnavailableFailure>());
+
+      cubit.clearFailure();
+      expect(await cubit.createTransaction(), isFalse);
+      verifyNever(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: any(named: 'selectedOnly'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
+    });
+  });
+
   group('SendCubit selected-coin sweep', () {
     test('sets sweep intent before wallet loading completes', () async {
       final wallet = _bitcoinLocalWallet();
@@ -661,7 +897,7 @@ void main() {
       final load = cubit.loadWalletWithRatesAndFees();
 
       expect(cubit.state.isSweep, isTrue);
-      expect(cubit.state.sweepDestinationBlocked, isTrue);
+      expect(cubit.state.selectedInputsUnavailable, isTrue);
       await cubit.onScannedPaymentRequest(
         'bitcoin:bc1qrecipient?amount=0.0005',
         const PaymentRequest.bip21(
@@ -685,7 +921,7 @@ void main() {
 
       walletsCompleter.complete([wallet]);
       await load;
-      expect(cubit.state.sweepDestinationBlocked, isFalse);
+      expect(cubit.state.selectedInputsUnavailable, isFalse);
       expect(cubit.state.selectedUtxos, [selected]);
     });
 
@@ -4427,6 +4663,7 @@ void main() {
             recipients: any(named: 'recipients'),
             networkFee: any(named: 'networkFee'),
             selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: true,
             replaceByFee: any(named: 'replaceByFee'),
           ),
         ).thenThrow(NoSpendableUtxoException('selected coin disappeared'));
@@ -4535,6 +4772,7 @@ void main() {
             recipients: any(named: 'recipients'),
             networkFee: any(named: 'networkFee'),
             selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: true,
             replaceByFee: any(named: 'replaceByFee'),
           ),
         ).thenThrow(InsufficientFundsException('needed 5000, available 1000'));
@@ -4578,6 +4816,7 @@ void main() {
             recipients: captureAny(named: 'recipients'),
             networkFee: any(named: 'networkFee'),
             selectedInputs: captureAny(named: 'selectedInputs'),
+            selectedOnly: true,
             replaceByFee: any(named: 'replaceByFee'),
           ),
         ).captured;
