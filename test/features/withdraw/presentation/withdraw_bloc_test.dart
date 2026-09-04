@@ -104,6 +104,42 @@ void main() {
     });
   });
 
+  group('WithdrawStarted, re-dispatched as a retry', () {
+    test('clears the previous failure and can then succeed', () async {
+      // The amount screen's Retry button re-dispatches WithdrawStarted, so a
+      // second attempt must not leave the old failure on the state.
+      var attempt = 0;
+      when(loadContext.userSummary).thenAnswer((_) async {
+        attempt++;
+        return attempt == 1
+            ? const Err<UserSummary, WithdrawFailure>(
+                WithdrawUnexpectedFailure('first attempt'),
+              )
+            : const Ok<UserSummary, WithdrawFailure>(_userSummary);
+      });
+      final bloc = build();
+
+      bloc.add(const WithdrawEvent.started());
+      await expectLater(
+        bloc.stream,
+        emitsThrough(
+          isA<WithdrawInitialState>().having(
+            (s) => s.failure,
+            'failure',
+            isNotNull,
+          ),
+        ),
+      );
+
+      bloc.add(const WithdrawEvent.started());
+      await expectLater(
+        bloc.stream,
+        emitsThrough(isA<WithdrawAmountInputState>()),
+      );
+      expect(attempt, 2);
+    });
+  });
+
   group('WithdrawRecipientSelected', () {
     setUp(() {
       when(
