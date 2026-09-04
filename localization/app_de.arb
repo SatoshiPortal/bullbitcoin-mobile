@@ -635,7 +635,6 @@
   },
   "mempoolCustomServerUrl": "Server-URL",
   "buyUnexpectedError": "Ihre Order konnte derzeit nicht erstellt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
-  "buyOrderAlreadyConfirmedError": "Diese Kauforder wurde bereits bestätigt.",
   "fundExchangeArsBankTransferTitle": "Banküberweisung",
   "transactionLabelReceiveAmount": "Empfangsbetrag",
   "sendServerNetworkFees": "Server-Netzwerkgebühren",
@@ -717,7 +716,6 @@
     }
   },
   "sellOrderPlaced": "Verkaufsbestellung erfolgreich platziert",
-  "buyInsufficientFundsError": "Unzureichende Mittel auf Ihrem Bull Bitcoin-Konto, um diesen Kaufauftrag auszuführen.",
   "ledgerHelpStep4": "Stellen Sie sicher, dass Sie die neueste Version der Bitcoin-App von Ledger Live installiert haben.",
   "recoverbullPleaseWait": "Bitte warten Sie, während eine sichere Verbindung aufgebaut wird…",
   "broadcastSignedTxBroadcast": "Übertragen",
@@ -848,7 +846,6 @@
   "buyCompleteKyc": "KYC-Prüfung abschließen",
   "vaultSuccessfullyImported": "Ihr Tresor wurde erfolgreich importiert",
   "payAccountNumberHint": "Kontonummer eingeben",
-  "buyOrderNotFoundError": "Die Kauforder wurde nicht gefunden. Bitte versuchen Sie es erneut.",
   "backupWalletGoogleDrivePrivacyMessage2": "nicht ",
   "payAddressRequired": "Adresse erforderlich",
   "payTotalAmount": "Gesamtbetrag",

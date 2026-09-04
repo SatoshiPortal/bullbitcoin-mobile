@@ -649,7 +649,6 @@
   },
   "mempoolCustomServerUrl": "服务器 URL",
   "buyUnexpectedError": "当前无法创建您的订单。请重试或联系客服。",
-  "buyOrderAlreadyConfirmedError": "这项购买令已经确认.",
   "fundExchangeArsBankTransferTitle": "银行转账",
   "transactionLabelReceiveAmount": "收款情况",
   "sendServerNetworkFees": "服务器网",
@@ -735,7 +734,6 @@
     }
   },
   "sellOrderPlaced": "成功签发的Sell订单",
-  "buyInsufficientFundsError": "页: 1.",
   "ledgerHelpStep4": "确保你安装了Ledger Live的最新版本.",
   "recoverbullPleaseWait": "请等待我们建立安全联系......",
   "broadcastSignedTxBroadcast": "广播",
@@ -871,7 +869,6 @@
   "buyCompleteKyc": "页: 1",
   "vaultSuccessfullyImported": "成功进口",
   "payAccountNumberHint": "账面编号",
-  "buyOrderNotFoundError": "买单没有发现。 请再次审判.",
   "backupWalletGoogleDrivePrivacyMessage2": "不 ",
   "payAddressRequired": "地址要求",
   "payTotalAmount": "总额",

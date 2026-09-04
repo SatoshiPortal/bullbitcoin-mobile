@@ -1656,10 +1656,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "Η εντολή σας δεν μπόρεσε να δημιουργηθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
-  "buyOrderAlreadyConfirmedError": "Αυτή η παραγγελία αγοράς έχει ήδη επιβεβαιωθεί.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "Τράπεζα Μεταφοράς",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -1878,10 +1874,6 @@
   "sellOrderPlaced": "Η παραγγελία πώλησης τοποθετείται με επιτυχία",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "Ανεπαρκή κεφάλαια στο λογαριασμό Bitcoin της Bull για να ολοκληρώσει αυτή την παραγγελία αγοράς.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "Βεβαιωθείτε ότι έχετε εγκαταστήσει την τελευταία έκδοση της εφαρμογής Bitcoin από το Ledger Live.",
   "@ledgerHelpStep4": {
@@ -2213,10 +2205,6 @@
   "payAccountNumberHint": "Εισαγάγετε τον αριθμό λογαριασμού",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "Η παραγγελία αγοράς δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "payAddressRequired": "Η διεύθυνση απαιτείται",
   "@payAddressRequired": {
