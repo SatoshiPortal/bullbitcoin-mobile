@@ -149,6 +149,39 @@ void main() {
     await sync;
   });
 
+  test('delivers a start ID while the same source key is held', () async {
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final metadata = _MockWalletMetadataDatasource();
+    final coordinator = InMemoryWalletSourceOperationCoordinator();
+    final starts = StreamController<String>.broadcast();
+    addTearDown(starts.close);
+    when(() => bdk.walletSyncStartedStream).thenAnswer((_) => starts.stream);
+    when(() => bdk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+    when(() => lwk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+    when(() => lwk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+    final repository = WalletRepository(
+      walletMetadataDatasource: metadata,
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: coordinator,
+    );
+    final held = Completer<void>();
+    final holder = coordinator.runExclusive<void>(
+      const WalletSourceKey(_walletId, 'bitcoin', 'testnet'),
+      (_) => held.future,
+    );
+
+    final observed = repository.walletSyncStartedIdsStream.first;
+    starts.add(_walletId);
+
+    expect(await observed, _walletId);
+    verifyNever(() => metadata.fetch(any()));
+    held.complete();
+    await holder;
+  });
+
   test('does not block a BDK wallet with a different source key', () async {
     final bdk = _MockBdkWalletDatasource();
     final lwk = _MockLwkWalletDatasource();

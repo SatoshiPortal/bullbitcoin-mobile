@@ -53,6 +53,8 @@ class WalletRepository {
       .where((event) => event != null)
       .map((event) => event!);
 
+  Stream<String> get walletSyncStartedIdsStream => _walletSyncStartedStream;
+
   Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
       .asyncMap((walletId) async => await getWallet(walletId))
       .where((event) => event != null)

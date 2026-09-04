@@ -171,4 +171,30 @@ void main() {
       expect(bloc.state.warnings, isEmpty);
     },
   );
+
+  test('started sync updates status without reloading wallets', () async {
+    final status = _MockExternalTorStatusUsecase();
+    final getWallets = _MockGetWalletsUsecase();
+    final bloc = WalletBloc(
+      getWalletsUsecase: getWallets,
+      checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
+      watchStartedWalletSyncsUsecase: _MockWatchStartedWalletSyncsUsecase(),
+      watchFinishedWalletSyncsUsecase: _MockWatchFinishedWalletSyncsUsecase(),
+      watchElectrumSyncResultsUsecase: _MockWatchElectrumSyncResultsUsecase(),
+      syncCoordinator: _MockSyncCoordinator(),
+      getUnconfirmedIncomingBalanceUsecase:
+          _MockGetUnconfirmedIncomingBalanceUsecase(),
+      deleteWalletUsecase: _MockDeleteWalletUsecase(),
+      seedStoreTypeDatasource: _MockSeedStoreTypeDatasource(),
+      checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+      getExternalTorProxyStatusUsecase: status,
+    );
+    addTearDown(bloc.close);
+
+    bloc.add(const WalletSyncStarted('wallet-1'));
+
+    final state = await bloc.stream.first;
+    expect(state.syncStatus['wallet-1'], isTrue);
+    verifyNever(() => getWallets.execute());
+  });
 }
