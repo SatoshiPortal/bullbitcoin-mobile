@@ -49,6 +49,7 @@ class Bip32Derivation {
     );
     return root.derivePath(_normalizePath(derivationPath)).neutered.toBase58();
   }
+
   /// BIP85 is seed-bound rather than Bitcoin-network-bound. Always serialize
   /// its root with canonical xprv bytes, including for testnet wallets.
   static String getCanonicalRootXprvFromSeed(Uint8List seedBytes) =>

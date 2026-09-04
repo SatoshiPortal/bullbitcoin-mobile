@@ -97,7 +97,7 @@ void main() {
                 ),
               ).captured.single
               as PrivateBdkWalletModel;
-      final expected = privateWallet as PrivateBdkWalletModel;
+      final expected = privateWallet;
       expect(signedWith.id, expected.id);
       expect(signedWith.scriptType, expected.scriptType);
       expect(signedWith.mnemonic, expected.mnemonic);

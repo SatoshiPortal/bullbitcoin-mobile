@@ -58,9 +58,3 @@ extension WalletMetadataModelExtension on WalletMetadataModel {
   Signer get signer => primarySigner?.signer ?? Signer.none;
   SignerDevice? get signerDevice => primarySigner?.signerDevice;
 }
-
-WalletProvenance _parseProvenance(String value) =>
-    WalletProvenance.values.firstWhere(
-      (candidate) => candidate.name == value,
-      orElse: () => throw FormatException('Unknown wallet provenance'),
-    );

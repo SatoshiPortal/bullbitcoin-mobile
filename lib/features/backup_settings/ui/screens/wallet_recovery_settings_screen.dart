@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/wallet_rec
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_routes.dart';
-import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;

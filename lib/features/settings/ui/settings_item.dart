@@ -214,9 +214,13 @@ List<SettingsItem> buildSettingsItems({
       id: SettingsItemId.dataBackup,
       section: SettingsItemSection.root,
       title: localization.dataBackupSettingsTitle,
-      path: path(SettingsItemSection.root, localization.dataBackupSettingsTitle),
+      path: path(
+        SettingsItemSection.root,
+        localization.dataBackupSettingsTitle,
+      ),
       icon: Icons.cloud_sync_outlined,
-      open: (context) => context.pushNamed(SettingsRoute.dataBackupSettings.name),
+      open: (context) =>
+          context.pushNamed(SettingsRoute.dataBackupSettings.name),
       keywords: [english.dataBackupSettingsTitle, 'backup', 'cloud', 'labels'],
     ),
     SettingsItem(

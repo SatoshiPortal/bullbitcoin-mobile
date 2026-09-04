@@ -169,13 +169,9 @@ void main() {
       final schema = await verifier.schemaAt(16);
       final oldDb = v16.DatabaseAtV16(schema.newConnection());
       await oldDb
-
           .into(oldDb.walletMetadatas)
-
           .insert(
-
             v16.WalletMetadatasCompanion.insert(
-
               id: 'wallet-1',
 
               network: 'bitcoinMainnet',
@@ -187,19 +183,13 @@ void main() {
               publicDescriptor: 'external',
 
               isDefault: 1,
-
             ),
-
           );
 
       await oldDb
-
           .into(oldDb.walletSigners)
-
           .insert(
-
             v16.WalletSignersCompanion.insert(
-
               walletId: 'wallet-1',
 
               id: 'signer-0',
@@ -207,19 +197,13 @@ void main() {
               position: 0,
 
               signer: 'local',
-
             ),
-
           );
 
       await oldDb
-
           .into(oldDb.walletDescriptorKeys)
-
           .insert(
-
             v16.WalletDescriptorKeysCompanion.insert(
-
               walletId: 'wallet-1',
 
               id: 'key-0',
@@ -233,18 +217,12 @@ void main() {
               xpubFingerprint: '11223344',
 
               xpub: 'xpub',
-
             ),
-
           );
       await oldDb
-
           .into(oldDb.walletMetadatas)
-
           .insert(
-
             v16.WalletMetadatasCompanion.insert(
-
               id: 'wallet-2',
 
               network: 'bitcoinMainnet',
@@ -256,19 +234,13 @@ void main() {
               publicDescriptor: 'external-2',
 
               isDefault: 0,
-
             ),
-
           );
 
       await oldDb
-
           .into(oldDb.walletSigners)
-
           .insert(
-
             v16.WalletSignersCompanion.insert(
-
               walletId: 'wallet-2',
 
               id: 'signer-0',
@@ -276,19 +248,13 @@ void main() {
               position: 0,
 
               signer: 'remote',
-
             ),
-
           );
 
       await oldDb
-
           .into(oldDb.walletDescriptorKeys)
-
           .insert(
-
             v16.WalletDescriptorKeysCompanion.insert(
-
               walletId: 'wallet-2',
 
               id: 'key-0',
@@ -302,9 +268,7 @@ void main() {
               xpubFingerprint: '55443322',
 
               xpub: 'xpub-2',
-
             ),
-
           );
       await oldDb.close();
 
@@ -467,13 +431,9 @@ void main() {
       final schema = await verifier.schemaAt(16);
       final oldDb = v16.DatabaseAtV16(schema.newConnection());
       await oldDb
-
           .into(oldDb.walletMetadatas)
-
           .insert(
-
             v16.WalletMetadatasCompanion.insert(
-
               id: 'wallet-1',
 
               network: 'bitcoinMainnet',
@@ -485,19 +445,13 @@ void main() {
               publicDescriptor: 'external',
 
               isDefault: 0,
-
             ),
-
           );
 
       await oldDb
-
           .into(oldDb.walletSigners)
-
           .insert(
-
             v16.WalletSignersCompanion.insert(
-
               walletId: 'wallet-1',
 
               id: 'signer-0',
@@ -505,19 +459,13 @@ void main() {
               position: 0,
 
               signer: 'local',
-
             ),
-
           );
 
       await oldDb
-
           .into(oldDb.walletDescriptorKeys)
-
           .insert(
-
             v16.WalletDescriptorKeysCompanion.insert(
-
               walletId: 'wallet-1',
 
               id: 'key-0',
@@ -531,9 +479,7 @@ void main() {
               xpubFingerprint: '11223344',
 
               xpub: 'xpub',
-
             ),
-
           );
       await oldDb.close();
 

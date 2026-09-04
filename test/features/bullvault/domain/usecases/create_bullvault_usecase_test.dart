@@ -698,10 +698,12 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.mainnet),
     ).thenAnswer(
-      (_) async => Ok(Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
-      )),
+      (_) async => Ok(
+        Seed.bytes(
+          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+          masterFingerprint: 'deadbeef',
+        ),
+      ),
     );
     final result =
         await _usecase(
@@ -750,10 +752,12 @@ void main() {
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Ok(Seed.bytes(
-          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-          masterFingerprint: 'deadbeef',
-        )),
+        (_) async => Ok(
+          Seed.bytes(
+            bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+            masterFingerprint: 'deadbeef',
+          ),
+        ),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);
 
@@ -953,10 +957,12 @@ CreateBullVaultUsecase _usecase(
     when(
       () => seedUsecase.execute(environment: any(named: 'environment')),
     ).thenAnswer(
-      (_) async => Ok(Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
-      )),
+      (_) async => Ok(
+        Seed.bytes(
+          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+          masterFingerprint: 'deadbeef',
+        ),
+      ),
     );
   }
   final prepareTimeReference =

@@ -17,7 +17,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
-import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
