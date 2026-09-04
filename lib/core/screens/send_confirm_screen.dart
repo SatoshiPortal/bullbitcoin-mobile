@@ -117,6 +117,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
     this._isToSelf = false,
     this._payjoinToggleValue,
     this._onPayjoinToggleChanged,
+    this._selectedCoinsDetails,
     this._note = '',
   });
   final String _sendWalletLabel;
@@ -134,6 +135,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   /// switch and the sign path can never disagree.
   final bool? _payjoinToggleValue;
   final ValueChanged<bool>? _onPayjoinToggleChanged;
+  final Widget? _selectedCoinsDetails;
   final String _note;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
@@ -203,6 +205,13 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
                 ),
                 textAlign: .end,
               ),
+            ),
+          ],
+          if (_selectedCoinsDetails != null) ...[
+            _divider(context),
+            CommonInfoRow(
+              title: context.loc.sendCoinControl,
+              details: _selectedCoinsDetails,
             ),
           ],
           _divider(context),

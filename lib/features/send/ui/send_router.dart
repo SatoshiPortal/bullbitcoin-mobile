@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -26,12 +25,7 @@ class SendRouter {
       return BlocProvider(
         create: (_) => locator<SendCubit>(
           param1: wallet,
-          param2: (
-            sweepOutpoints: args?.sweepOutpoints ?? <Outpoint>{},
-            spWalletLabel: args?.isSpMode == true
-                ? context.loc.walletSpTitle
-                : null,
-          ),
+          param2: (args: args, spWalletLabel: args?.isSpMode == true ? context.loc.walletSpTitle : null),
         )..loadWalletWithRatesAndFees(),
         child: const SendScreen(),
       );
