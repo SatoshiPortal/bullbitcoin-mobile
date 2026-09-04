@@ -15,20 +15,11 @@ sealed class WithdrawState with _$WithdrawState {
     WithdrawError? newRecipientError,
     WithdrawError? selectedRecipientError,
   }) = WithdrawRecipientInputState;
-  /*onst factory WithdrawState.descriptionInput({
-    required UserSummary userSummary,
-    required RecipientViewModel recipient,
-    required FiatAmount fiatOrderAmount,
-    required FiatCurrency fiatCurrency,
-    @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? error,
-  }) = WithdrawDescriptionInputState;*/
   const factory WithdrawState.confirmation({
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
     required RecipientViewModel recipient,
-    //required String description,
     required WithdrawOrder order,
     @Default(false) bool isConfirmingWithdrawal,
     WithdrawError? error,
@@ -169,40 +160,7 @@ extension WithdrawRecipientInputStateX on WithdrawRecipientInputState {
   }
 }
 
-/*extension WithdrawDescriptionInputStateX on WithdrawDescriptionInputState {
-  WithdrawAmountInputState toAmountInputState() {
-    return WithdrawAmountInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-    );
-  }
-
-  WithdrawConfirmationState toConfirmationState({
-    required WithdrawOrder order,
-  }) {
-    return WithdrawConfirmationState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-      fiatOrderAmount: fiatOrderAmount,
-      fiatCurrency: fiatCurrency,
-      order: order,
-    );
-  }
-}*/
-
 extension WithdrawConfirmationStateX on WithdrawConfirmationState {
-  /*WithdrawDescriptionInputState toDescriptionInputState() {
-    return WithdrawDescriptionInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-      fiatOrderAmount: fiatOrderAmount,
-      fiatCurrency: fiatCurrency,
-    );
-  }*/
-
   WithdrawSuccessState toSuccessState({required WithdrawOrder order}) {
     return WithdrawSuccessState(order: order);
   }
