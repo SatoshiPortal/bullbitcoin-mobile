@@ -44,7 +44,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
     show
         DurableWalletSourceOperationCoordinator,
-        WalletSourceOperationCoordinator;
+        SqliteWalletSyncMetadataStore,
+        WalletSourceOperationCoordinator,
+        WalletSyncMetadataPort;
 
 class WalletLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -66,6 +68,13 @@ class WalletLocator {
 
   static Future<void> registerRepositories(GetIt locator) async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
+    final syncMetadata = await SqliteWalletSyncMetadataStore.open(
+      databasePath: syncMetadataDatabasePath(documentsDirectory.path),
+    );
+    locator.registerSingleton<WalletSyncMetadataPort>(
+      syncMetadata,
+      dispose: (_) => syncMetadata.close(),
+    );
     locator.registerLazySingleton<WalletSourceOperationCoordinator>(
       () => DurableWalletSourceOperationCoordinator(
         databasePath: coordinationDatabasePath(documentsDirectory.path),
@@ -98,6 +107,7 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         serversPort: locator<ElectrumServersPort>(),
         coordinator: locator<WalletSourceOperationCoordinator>(),
+        syncMetadata: locator<WalletSyncMetadataPort>(),
       ),
     );
 
@@ -139,6 +149,9 @@ class WalletLocator {
         documentsDirectoryPath,
         'wallet_transaction_sync_coordination.sqlite',
       );
+
+  static String syncMetadataDatabasePath(String documentsDirectoryPath) =>
+      path.join(documentsDirectoryPath, 'wallet_sync_metadata.sqlite');
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<CreateDefaultWalletsUsecase>(

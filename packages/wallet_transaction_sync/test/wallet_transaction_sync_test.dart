@@ -87,27 +87,32 @@ class FakeMetadata implements WalletSyncMetadataPort {
 
   @override
   Future<void> writeAttempt(WalletNetworkKey key, DateTime at) async {}
+
   @override
-  Future<void> writeSuccess(
+  Future<void> recordLegacyForegroundSuccess(
     WalletNetworkKey key,
     DateTime at,
-    String fingerprint,
-  ) async {
+  ) async {}
+
+  @override
+  Future<void> writeSuccessfulObservation(WalletSyncReceipt receipt) async {
     if (failSuccess) throw StateError('offline');
-    final old = values[key];
+    final old = values[receipt.key];
     if (old != null) {
-      values[key] = WalletSyncMetadata(
+      values[receipt.key] = WalletSyncMetadata(
         registration: old.registration,
-        lastSuccessfulSyncAt: at,
-        contentFingerprint: fingerprint,
+        lastSuccessfulSyncAt: receipt.successfulAt,
+        contentFingerprint: receipt.contentFingerprint,
       );
     }
   }
 
   @override
   Future<WalletSyncReceipt?> readReceipt(WalletNetworkKey key) async => null;
+
   @override
-  Future<void> writeReceipt(WalletSyncReceipt receipt) async {}
+  Future<DateTime?> readLastSuccessfulSyncAt(WalletNetworkKey key) async =>
+      values[key]?.lastSuccessfulSyncAt;
   @override
   Future<void> writeDeletionMarker(
     WalletNetworkKey key,

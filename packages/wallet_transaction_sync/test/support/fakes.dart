@@ -165,19 +165,22 @@ class RecordingMetadata implements WalletSyncMetadataPort {
   Future<void> writeAttempt(WalletNetworkKey key, DateTime at) async {}
 
   @override
-  Future<void> writeSuccess(
+  Future<void> recordLegacyForegroundSuccess(
     WalletNetworkKey key,
     DateTime at,
-    String fingerprint,
-  ) async {
+  ) async {}
+
+  @override
+  Future<void> writeSuccessfulObservation(WalletSyncReceipt receipt) async {
     if (failSuccess) throw StateError('metadata store unavailable');
-    final old = values[key];
+    final old = values[receipt.key];
     if (old != null) {
-      values[key] = WalletSyncMetadata(
+      values[receipt.key] = WalletSyncMetadata(
         registration: old.registration,
-        lastSuccessfulSyncAt: at,
-        contentFingerprint: fingerprint,
+        lastSuccessfulSyncAt: receipt.successfulAt,
+        contentFingerprint: receipt.contentFingerprint,
       );
+      receipts[receipt.key] = receipt;
     }
   }
 
@@ -186,10 +189,8 @@ class RecordingMetadata implements WalletSyncMetadataPort {
       receipts[key];
 
   @override
-  Future<void> writeReceipt(WalletSyncReceipt receipt) async {
-    if (failSuccess) throw StateError('metadata store unavailable');
-    receipts[receipt.key] = receipt;
-  }
+  Future<DateTime?> readLastSuccessfulSyncAt(WalletNetworkKey key) async =>
+      values[key]?.lastSuccessfulSyncAt;
 
   @override
   Future<void> writeDeletionMarker(
