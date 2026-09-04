@@ -1,8 +1,11 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 
 class ConfirmWithdrawOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -15,7 +18,10 @@ class ConfirmWithdrawOrderUsecase {
     required this._settingsRepository,
   });
 
-  Future<WithdrawOrder> execute({required String orderId}) async {
+  @useResult
+  Future<Result<WithdrawOrder, WithdrawFailure>> execute({
+    required String orderId,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -23,12 +29,22 @@ class ConfirmWithdrawOrderUsecase {
           ? _testnetExchangeOrderRepository
           : _mainnetExchangeOrderRepository;
       final order = await repo.confirmWithdrawOrder(orderId);
-      return order;
-    } on WithdrawError {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw WithdrawError.unexpected(message: '$e');
+
+      return Ok(order);
+    } on ApiKeyException catch (e, st) {
+      log.severe(
+        message: 'Cannot confirm the withdrawal order: not authenticated',
+        error: e,
+        trace: st,
+      );
+      return Err(WithdrawUnauthenticatedFailure(e.message));
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to confirm the withdrawal order',
+        error: e,
+        trace: st,
+      );
+      return Err(WithdrawUnexpectedFailure('$e'));
     }
   }
 }
