@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
@@ -321,18 +322,21 @@ class BoltzSwapRepository
     required String bitcoinRefundAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
       swapId: swapId,
       refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -341,18 +345,21 @@ class BoltzSwapRepository
     required String liquidRefundAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -577,6 +584,9 @@ class BoltzSwapRepository
     int? claimFee,
     int? refundFee,
     DateTime? completionTime,
+    // Null means "keep" for every field above, so retracting a recorded
+    // claim tx (un-wedging a mis-settled swap) needs an explicit flag.
+    bool clearReceiveTxid = false,
   }) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
@@ -591,7 +601,7 @@ class BoltzSwapRepository
     final updated = switch (swap) {
       LnReceiveSwap() => swap.copyWith(
         status: status ?? swap.status,
-        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveTxid: clearReceiveTxid ? null : receiveTxid ?? swap.receiveTxid,
         receiveAddress: receiveAddress ?? swap.receiveAddress,
         completionTime: completionTime ?? swap.completionTime,
         fees: fees,
@@ -606,7 +616,7 @@ class BoltzSwapRepository
       ),
       ChainSwap() => swap.copyWith(
         status: status ?? swap.status,
-        receiveTxid: receiveTxid ?? swap.receiveTxid,
+        receiveTxid: clearReceiveTxid ? null : receiveTxid ?? swap.receiveTxid,
         refundTxid: refundTxid ?? swap.refundTxid,
         receiveAddress: receiveAddress ?? swap.receiveAddress,
         refundAddress: refundAddress ?? swap.refundAddress,
@@ -614,6 +624,20 @@ class BoltzSwapRepository
         fees: fees,
       ),
     };
+
+    log.fine(
+      '[SwapStore] $swapId'
+      '${status != null ? ' status=${swap.status.name}->${status.name}' : ''}'
+      '${receiveTxid != null ? ' receiveTxid=$receiveTxid' : ''}'
+      '${clearReceiveTxid ? ' receiveTxid=CLEARED(was ${swap is ChainSwap
+                ? swap.receiveTxid
+                : swap is LnReceiveSwap
+                ? swap.receiveTxid
+                : null})' : ''}'
+      '${refundTxid != null ? ' refundTxid=$refundTxid' : ''}'
+      '${refundFee != null ? ' refundFee=$refundFee' : ''}'
+      '${completionTime != null ? ' completed' : ''}',
+    );
 
     await _boltz.storage.store(SwapModel.fromEntity(updated));
     return updated;
@@ -766,21 +790,21 @@ class BoltzSwapRepository
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
     final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
-    log.info(
+    log.fine(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
     );
     final summaries = await _boltz.restoreSwapSummaries(
       swapMasterKey: swapMasterKey,
     );
-    log.info('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
+    log.fine('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
     return [
       for (final s in summaries)
         RestoredSwap(
           id: s.id,
           kind: _restoredKind(s.kind),
           status: _restoreStatusToSwapStatus(s.status),
-          recoverable: s.recoverable,
+          recoverable: _restoredRecoverable(s),
           amountSat: s.amount.toInt(),
           createdAt: DateTime.fromMillisecondsSinceEpoch(
             s.createdAt.toInt() * 1000,
@@ -789,6 +813,27 @@ class BoltzSwapRepository
           toAsset: s.to,
         ),
     ];
+  }
+
+  /// boltz-dart derives `recoverable` from the raw Boltz status via
+  /// `is_resolved()`, which counts `transaction.refunded` as "nothing left
+  /// on-chain". That is wrong for CHAIN swaps: there it means Boltz refunded
+  /// its OWN lockup — a signal for us to refund OURS, which may still sit
+  /// unspent on the sending chain. Override so such swaps stay rescuable;
+  /// if the user lockup turns out spent, the refund attempt learns that
+  /// on-chain instead of the swap being hidden from rescue.
+  bool _restoredRecoverable(boltz.RestoredSwapSummary s) {
+    final overridden =
+        !s.recoverable &&
+        s.kind == boltz.SwapType.chain &&
+        s.status == 'transaction.refunded';
+    log.fine(
+      'SWAP_RESTORE: summary ${s.id} kind=${s.kind.name} '
+      'boltzStatus=${s.status} recoverable=${s.recoverable} '
+      '${overridden ? 'OVERRIDDEN->true (chain swap: boltz refunded its own lockup; ours may be unspent) ' : ''}'
+      'amount=${s.amount} from=${s.from} to=${s.to} createdAt=${s.createdAt}',
+    );
+    return overridden || s.recoverable;
   }
 
   // Submarine = on-chain → Lightning (Lightning Send); Reverse = Lightning →
@@ -870,14 +915,14 @@ class BoltzSwapRepository
     switch (restored.kind) {
       case RestoredSwapKind.lightningReceive:
         if (isLiquid) {
-          final swaps = await _boltz.restoreLbtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreLbtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: lbtcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeLbtcLnSwap(obj);
           model = SwapModel.lnReceive(
@@ -896,14 +941,14 @@ class BoltzSwapRepository
             invoice: obj.invoice,
           );
         } else {
-          final swaps = await _boltz.restoreBtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreBtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: btcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeBtcLnSwap(obj);
           model = SwapModel.lnReceive(
@@ -924,14 +969,14 @@ class BoltzSwapRepository
         }
       case RestoredSwapKind.lightningSend:
         if (isLiquid) {
-          final swaps = await _boltz.restoreLbtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreLbtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: lbtcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeLbtcLnSwap(obj);
           model = SwapModel.lnSend(
@@ -952,14 +997,14 @@ class BoltzSwapRepository
             paymentAmount: obj.outAmount.toInt(),
           );
         } else {
-          final swaps = await _boltz.restoreBtcLnSwaps(
+          final restoredSwaps = await _boltz.restoreBtcLnSwaps(
             swapMasterKey: swapMasterKey,
             electrumUrl: btcElectrumUrl,
           );
-          final obj = swaps.firstWhere(
+          _logSkippedRestores(restoredSwaps.skipped);
+          final obj = restoredSwaps.swaps.firstWhere(
             (s) => s.id == id,
-            orElse: () =>
-                throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+            orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
           );
           await _boltz.storage.storeBtcLnSwap(obj);
           model = SwapModel.lnSend(
@@ -981,15 +1026,15 @@ class BoltzSwapRepository
           );
         }
       case RestoredSwapKind.crossChain:
-        final swaps = await _boltz.restoreChainSwaps(
+        final restoredSwaps = await _boltz.restoreChainSwaps(
           swapMasterKey: swapMasterKey,
           btcElectrumUrl: btcElectrumUrl,
           lbtcElectrumUrl: lbtcElectrumUrl,
         );
-        final obj = swaps.firstWhere(
+        _logSkippedRestores(restoredSwaps.skipped);
+        final obj = restoredSwaps.swaps.firstWhere(
           (s) => s.id == id,
-          orElse: () =>
-              throw 'swap $id not returned by boltz restore (possibly beyond gap limit)',
+          orElse: () => _missingFromRestore(id, restoredSwaps.skipped),
         );
         await _boltz.storage.storeChainSwap(obj);
         final lockupTxid = await _boltz.chainSwapUserLockupTxid(obj);
@@ -1020,8 +1065,26 @@ class BoltzSwapRepository
     await _boltz.storage.store(model);
     subscribeToSwaps([id]);
     await reconcileSwaps([id]);
-    log.info('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
+    log.fine('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
     return model.toEntity();
+  }
+
+  void _logSkippedRestores(List<boltz.SkippedRestoreSwap> skipped) {
+    for (final s in skipped) {
+      log.warning(
+        'SWAP_RESTORE: swap ${s.id} returned by scan but not rebuildable: '
+        '${s.error}',
+      );
+    }
+  }
+
+  Never _missingFromRestore(String id, List<boltz.SkippedRestoreSwap> skipped) {
+    for (final s in skipped) {
+      if (s.id == id) {
+        throw 'swap $id could not be rebuilt from restore: ${s.error}';
+      }
+    }
+    throw 'swap $id not returned by boltz restore (possibly beyond gap limit)';
   }
 
   /// Boltz's percentage service fee is stable, so for a recovered swap we
@@ -1123,6 +1186,7 @@ class BoltzSwapRepository
     required SwapType swapType,
     bool isCooperative = true,
     String? refundAddressForChainSwaps,
+    ElectrumConnection? electrum,
   }) async {
     switch (swapType) {
       case SwapType.lightningToBitcoin:
@@ -1145,6 +1209,7 @@ class BoltzSwapRepository
           swapId: swapId,
           isCooperative: isCooperative,
           refundAddress: refundAddressForChainSwaps!,
+          electrum: electrum,
         );
     }
   }
@@ -1264,21 +1329,24 @@ class BoltzSwapRepository
   @override
   Stream<AutoSwap> watchAutoSwapParams() => _autoSwapSettingsController.stream;
 
-  /// Checks the outspend status of a swap's lockup transaction
-  Future<SwapTxOutspend> checkSwapLockupOutspend({
+  /// Lists the spends of the swap's lockup tx outputs, one per spent vout.
+  /// An entry proves only that an output was spent — never that we were
+  /// paid; callers must verify a spender against their own wallet before
+  /// settling the swap on it.
+  Future<List<SwapTxOutspend>> checkLockupOutspends({
     required String swapId,
     required SwapType swapType,
     required Network network,
     outspend.SwapDirection? swapDirection,
     bool isClaim = true,
   }) async {
-    final model = await _boltz.checkSwapLockupOutspend(
+    final models = await _boltz.checkLockupOutspends(
       swapId: swapId,
       swapType: swapType,
       network: network,
       swapDirection: swapDirection,
       isClaim: isClaim,
     );
-    return model.toEntity();
+    return models.map((model) => model.toEntity()).toList();
   }
 }

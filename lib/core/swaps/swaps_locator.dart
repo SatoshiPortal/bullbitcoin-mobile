@@ -15,9 +15,18 @@ import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/refund_rescued_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:get_it/get_it.dart';
 
 class SwapsLocator {
@@ -121,6 +130,59 @@ class SwapsLocator {
     locator.registerFactory<DisableAutoswapUsecase>(
       () => DisableAutoswapUsecase(
         repository: locator<AutoSwapSettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RestoreSwapsUsecase>(
+      () => RestoreSwapsUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RescueSwapUsecase>(
+      () => RescueSwapUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RefundRescuedSwapUsecase>(
+      () => RefundRescuedSwapUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        walletAddressRepository: locator<WalletAddressRepository>(),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        feesRepository: locator<FeesRepository>(),
+        electrumServersPort: locator<ElectrumServersPort>(),
+      ),
+    );
+
+    locator.registerFactory<LogSwapCensusUsecase>(
+      () => LogSwapCensusUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+
+    locator.registerFactory<VerifyChainSwapCompletionsUsecase>(
+      () => VerifyChainSwapCompletionsUsecase(
+        swapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
       ),
     );
   }

@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/refund_rescued_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,10 +43,14 @@ class SwapRescueState {
 
 class SwapRescueCubit extends Cubit<SwapRescueState> {
   final RescueSwapUsecase _rescueSwapUsecase;
+  final RefundRescuedSwapUsecase _refundRescuedSwapUsecase;
   final RestoredSwap _restored;
 
-  SwapRescueCubit({required this._rescueSwapUsecase, required this._restored})
-    : super(const SwapRescueState()) {
+  SwapRescueCubit({
+    required this._rescueSwapUsecase,
+    required this._refundRescuedSwapUsecase,
+    required this._restored,
+  }) : super(const SwapRescueState()) {
     _loadWallets();
   }
 
@@ -74,10 +81,26 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
     if (walletId == null) return;
     emit(state.copyWith(status: SwapRescueStatus.rescuing));
     try {
-      await _rescueSwapUsecase.execute(
+      final swap = await _rescueSwapUsecase.execute(
         restored: _restored,
         selectedWalletId: walletId,
       );
+      // The rescue only imports the swap; a refundable swap still needs its
+      // refund broadcast — there is no background watcher to do it, so it is
+      // driven here. On failure the swap stays refundable and the rescue can
+      // simply be retried.
+      if (swap.status == SwapStatus.refundable) {
+        final refundTxid = await _refundRescuedSwapUsecase.execute(swap);
+        log.fine(
+          'SWAP_RESCUE: ${swap.id} rescue complete, refund txid=$refundTxid',
+        );
+      } else {
+        log.warning(
+          'SWAP_RESCUE: ${swap.id} imported with status '
+          '${swap.status.name} — no refund action driven (claim-side '
+          'rescues are not supported in this build)',
+        );
+      }
       if (isClosed) return;
       emit(state.copyWith(status: SwapRescueStatus.success));
     } catch (e) {
