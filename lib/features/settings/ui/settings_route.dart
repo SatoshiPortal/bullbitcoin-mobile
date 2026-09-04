@@ -5,6 +5,7 @@ enum SettingsRoute {
   language('language'),
   currency('currency'),
   walletRecoverySettings('wallet-recovery'),
+  legacyBackupSettings('backup-settings'),
   dataBackupSettings('data-backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
   walletRegistration('wallet-details/:walletId/registration'),

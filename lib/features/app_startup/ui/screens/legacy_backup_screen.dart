@@ -9,6 +9,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
 
 /// Blocking gate for pre-v5 (2023–2024 "BULL") installs: those builds are no
 /// longer migrated. The user writes down their recovery phrase(s), deletes
@@ -36,12 +37,10 @@ class _LegacyBackupScreenState extends State<LegacyBackupScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _privacyFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: PrivacyGate(
+        protection: _privacyFuture,
+        unprotected: const PrivacyUnavailableNotice(standalone: false),
+        builder: (context) {
           return SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(16),

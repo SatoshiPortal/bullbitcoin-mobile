@@ -36,6 +36,20 @@ void main() {
         .setMockMethodCallHandler(_channel, null);
   });
 
+  test('refuses to report protection the OS did not confirm', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, (call) async {
+          throw PlatformException(code: 'unavailable');
+        });
+
+    await expectLater(
+      controller.acquire(),
+      throwsA(isA<ScreenCaptureProtectionException>()),
+    );
+    // The screen still holds its reference and releases normally.
+    await controller.release();
+  });
+
   test('protects while at least one screen is mounted', () async {
     await controller.acquire();
     expect(lastCall, 'screenshotOff');

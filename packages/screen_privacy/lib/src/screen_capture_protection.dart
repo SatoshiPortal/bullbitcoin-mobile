@@ -33,9 +33,16 @@ class ScreenCaptureProtection {
   }
 
   /// Registers one more mounted protected screen.
+  ///
+  /// Throws [ScreenCaptureProtectionException] when the OS refused to block
+  /// capture, so a secret-bearing screen can refuse to render instead of
+  /// failing open. The screen still counts as mounted and must [release].
   Future<void> acquire() async {
     _activeCount++;
-    await _sync();
+    final protected = await _sync();
+    if (_enabledByUser && !protected) {
+      throw const ScreenCaptureProtectionException();
+    }
   }
 
   /// Unregisters one previously [acquire]d protected screen.
@@ -44,7 +51,8 @@ class ScreenCaptureProtection {
     await _sync();
   }
 
-  Future<void> _sync() async {
+  /// Applies the current decision to the OS flag. Returns whether it took.
+  Future<bool> _sync() async {
     final shouldProtect = _enabledByUser && _activeCount > 0;
     try {
       if (shouldProtect) {
@@ -52,6 +60,7 @@ class ScreenCaptureProtection {
       } else {
         await _noScreenshot.screenshotOn();
       }
+      return true;
     } catch (e, st) {
       // Callers fire-and-forget this, so a platform-channel failure would
       // otherwise vanish as an unhandled async error. On a secret screen a
@@ -62,6 +71,15 @@ class ScreenCaptureProtection {
         e,
         st,
       );
+      return false;
     }
   }
+}
+
+/// The OS did not confirm that screen capture is blocked.
+class ScreenCaptureProtectionException implements Exception {
+  const ScreenCaptureProtectionException();
+
+  @override
+  String toString() => 'ScreenCaptureProtectionException';
 }

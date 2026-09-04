@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -82,12 +84,11 @@ final class _GeneratedInheritanceMnemonicScreenState
   }
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<void>(
-    future: _privacyFuture,
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.done &&
-          !snapshot.hasError &&
-          _cubit.state == null) {
+  Widget build(BuildContext context) => PrivacyGate(
+    protection: _privacyFuture,
+    unprotected: const PrivacyUnavailableNotice(),
+    builder: (context) {
+      if (_cubit.state == null) {
         return ShowMnemonicScreen.forMnemonic(
           mnemonic: _cubit._words,
           title: context.loc.bullVaultInheritanceMnemonicShowTitle,
@@ -99,14 +100,7 @@ final class _GeneratedInheritanceMnemonicScreenState
         appBar: AppBar(
           title: Text(context.loc.bullVaultInheritanceMnemonicShowTitle),
         ),
-        body: Center(
-          child: snapshot.connectionState != ConnectionState.done
-              ? const CircularProgressIndicator()
-              : Text(
-                  _cubit.state?.toTranslated(context) ??
-                      context.loc.oopsSomethingWentWrong,
-                ),
-        ),
+        body: Center(child: Text(_cubit.state!.toTranslated(context))),
       );
     },
   );

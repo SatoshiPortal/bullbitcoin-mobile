@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
+
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -50,20 +52,10 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _privacyFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done ||
-            snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: snapshot.hasError
-                  ? Text(context.loc.oopsSomethingWentWrong)
-                  : const CircularProgressIndicator(),
-            ),
-          );
-        }
+    return PrivacyGate(
+      protection: _privacyFuture,
+      unprotected: const PrivacyUnavailableNotice(),
+      builder: (context) {
         if (widget._mnemonic != null) {
           return _buildScreen(
             AppBar(title: Text(widget._title!)),

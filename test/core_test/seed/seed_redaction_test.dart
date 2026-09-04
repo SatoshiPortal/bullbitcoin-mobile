@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +46,30 @@ void main() {
     // start with the first few elements of `seedBytes()`.
     isNot(contains('0, 1, 2, 3')),
   );
+
+  group('seed persistence model', () {
+    test('toString redacts the words and the passphrase', () {
+      final model = SeedModel.mnemonic(
+        mnemonicWords: _mnemonicWords,
+        passphrase: _passphrase,
+      );
+      expect(model.toString(), redacted());
+      expect('$model', contains('passphrase: <redacted>'));
+      expect([model].toString(), redacted());
+    });
+
+    test('toString redacts raw seed bytes', () {
+      final model = SeedModel.bytes(bytes: seedBytes());
+      expect(model.toString(), redacted());
+      expect(model.toString(), contains('bytes: <redacted>'));
+    });
+
+    test('a null passphrase is redacted the same way as a real one', () {
+      final model = SeedModel.mnemonic(mnemonicWords: _mnemonicWords);
+      expect(model.toString(), contains('passphrase: <redacted>'));
+      expect(model.toString(), isNot(contains('null')));
+    });
+  });
 
   group('mnemonic seed', () {
     test('toString redacts the words, the passphrase and the bytes', () {

@@ -53,6 +53,19 @@ void main() {
       expect(results.single.id, SettingsItemId.mempool);
     });
 
+    test('Nostr keys sit at the root, and their breadcrumb says so', () {
+      final english = AppLocalizationsEn();
+      final item = _englishItems().singleWhere(
+        (item) => item.id == SettingsItemId.nostrKeys,
+      );
+
+      expect(item.section, SettingsItemSection.root);
+      expect(item.path, [
+        english.settingsScreenTitle,
+        english.settingsNostrKeysTitle,
+      ]);
+    });
+
     test('does not index user-facing descriptions', () {
       expect(searchSettings(_englishItems(), 'different networks'), isEmpty);
     });

@@ -7,5 +7,6 @@
 /// gates the flag on the user's preference.
 library;
 
+export 'src/privacy_gate.dart';
 export 'src/privacy_screen.dart';
 export 'src/screen_capture_protection.dart';

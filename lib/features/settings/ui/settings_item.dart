@@ -264,10 +264,7 @@ List<SettingsItem> buildSettingsItems({
       // wallet-wide concern, and the stack deliberately surfaces them there.
       section: SettingsItemSection.root,
       title: localization.settingsNostrKeysTitle,
-      path: path(
-        SettingsItemSection.backup,
-        localization.settingsNostrKeysTitle,
-      ),
+      path: path(SettingsItemSection.root, localization.settingsNostrKeysTitle),
       icon: Icons.key,
       open: (context) => context.pushNamed(KeychainManifestRoutes.listName),
       keywords: [english.settingsNostrKeysTitle, 'nostr', 'nsec', 'npub'],

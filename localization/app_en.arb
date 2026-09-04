@@ -17215,5 +17215,9 @@
   "walletBackupSettingsStorageFailure": "The app could not save recovered data",
   "@walletBackupSettingsStorageFailure": {
     "description": "Shown when local storage refused a read or write during a Bull backup operation."
+  },
+  "screenPrivacyUnavailable": "Screen capture protection could not be turned on, so this screen stays hidden. Go back and try again.",
+  "@screenPrivacyUnavailable": {
+    "description": "Shown in place of a recovery phrase or seed when the OS refused to block screenshots."
   }
 }

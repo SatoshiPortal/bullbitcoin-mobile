@@ -202,6 +202,14 @@ class SettingsRouter {
         name: SettingsRoute.pinCode.name,
         builder: (context, state) => const PinCodeSettingFlow(),
       ),
+      // Wallet Recovery took over the old backup-settings screen; links to
+      // the old path still land there.
+      GoRoute(
+        path: SettingsRoute.legacyBackupSettings.path,
+        redirect: (_, _) =>
+            '${SettingsRoute.settings.path}/'
+            '${SettingsRoute.walletRecoverySettings.path}',
+      ),
       GoRoute(
         path: SettingsRoute.walletRecoverySettings.path,
         name: SettingsRoute.walletRecoverySettings.name,

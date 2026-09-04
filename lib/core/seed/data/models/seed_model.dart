@@ -8,9 +8,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'seed_model.freezed.dart';
 part 'seed_model.g.dart';
 
-@freezed
+/// `toString` is written by hand and redacts everything: a Freezed dump of
+/// this model would print the mnemonic, the passphrase or the raw seed bytes
+/// into whatever log, test failure or exception picked it up. See [Seed].
+@Freezed(toStringOverride: false)
 sealed class SeedModel with _$SeedModel {
   const SeedModel._();
+
+  @override
+  String toString() => switch (this) {
+    BytesSeedModel() => 'SeedModel.bytes(bytes: <redacted>)',
+    MnemonicSeedModel() =>
+      'SeedModel.mnemonic(mnemonicWords: <redacted>, passphrase: <redacted>)',
+  };
 
   const factory SeedModel.bytes({required List<int> bytes}) = BytesSeedModel;
 
