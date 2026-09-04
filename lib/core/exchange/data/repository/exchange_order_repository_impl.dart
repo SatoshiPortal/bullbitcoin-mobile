@@ -368,8 +368,14 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       return order;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
-      throw Exception('Failed to confirm withdraw order: $e');
+    } catch (e, st) {
+      // Keep the original trace: the use-case logs the trace it catches, so
+      // wrapping without it would point every report at this line instead of
+      // at the call that actually failed.
+      Error.throwWithStackTrace(
+        Exception('Failed to confirm withdraw order: $e'),
+        st,
+      );
     }
   }
 
@@ -559,8 +565,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
-      throw Exception('Failed to create withdrawal order: $e');
+    } catch (e, st) {
+      // Keep the original trace: see confirmWithdrawOrder.
+      Error.throwWithStackTrace(
+        Exception('Failed to create withdrawal order: $e'),
+        st,
+      );
     }
   }
 
