@@ -6812,10 +6812,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "인출 주문은 찾을 수 없습니다. 다시 시도하십시오.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "\"Export Xpub\" 선택",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -10849,15 +10845,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "오류: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "수수료 범 실패",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11239,10 +11226,6 @@
   "payViewDetails": "더 보기",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "이 인출 순서는 이미 확인되었습니다.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "Bitcoin 지갑 선택",
   "@autoswapSelectWallet": {

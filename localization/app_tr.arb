@@ -6771,10 +6771,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "Çekilme emri bulunamadı. Lütfen tekrar deneyin.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "\"Export Xpub\" seçin",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -10744,15 +10740,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "Hata: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Fee bump başarısız oldu",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11130,10 +11117,6 @@
   "payViewDetails": "View details",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Bu geri çekilme emri zaten doğrulandı.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "Bir Bitcoin cüzdanı seçin",
   "@autoswapSelectWallet": {

@@ -6776,15 +6776,6 @@
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
   },
-  "withdrawConfirmError": "ত্ৰুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
@@ -8358,14 +8349,6 @@
   "withdrawAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি উলিওৱাৰ চেষ্টা কৰিছে।",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "উত্তোলন অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলন অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "পৃষ্ঠা পোৱা নগ'ল",
   "@coreScreensPageNotFound": {

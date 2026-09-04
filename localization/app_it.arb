@@ -2191,7 +2191,6 @@
   "appStartupErrorTitle": "Errore di avvio",
   "transactionLabelTransferId": "ID trasferimento",
   "sendTitle": "Invia",
-  "withdrawOrderNotFoundError": "L'ordine di ritiro non è stato trovato. Per favore riprovate.",
   "importQrDeviceSeedsignerStep4": "Selezionare \"Export Xpub\"",
   "seedsignerStep6": "   - Spostare il laser rosso su e giù sul codice QR",
   "ledgerHelpStep5": "Assicurarsi che il Il dispositivo Ledger utilizza il firmware più recente, è possibile aggiornare il firmware utilizzando l'app desktop Ledger Live.",
@@ -3568,14 +3567,6 @@
   "buyConfirmExpress": "Conferma espresso",
   "fundExchangeBankTransferWireTimeframe": "Tutti i fondi che invii verranno aggiunti al tuo Bull Bitcoin entro 1-2 giorni lavorativi.",
   "sendDeviceDisconnected": "Dispositivo staccato",
-  "withdrawConfirmError": "Errore: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Fee urto fallito",
   "payUnsupportedInvoiceType": "Tipo di fattura non supportato",
   "seedsignerStep13": "La transazione verrà importata nel portafoglio Bull Bitcoin.",
@@ -3693,7 +3684,6 @@
   "payPaymentHistory": "Storia del pagamento",
   "exchangeFeatureUnifiedHistory": "• Storia delle transazioni unificata",
   "payViewDetails": "Visualizza dettagli",
-  "withdrawOrderAlreadyConfirmedError": "Questo ordine di recesso è già stato confermato.",
   "autoswapSelectWallet": "Seleziona un portafoglio Bitcoin",
   "walletAutoTransferBlockButton": "Blocco",
   "recoverbullGoogleDriveErrorSelectFailed": "Non selezionare la volta da Google Drive",

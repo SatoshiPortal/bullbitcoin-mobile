@@ -3088,14 +3088,6 @@
   "withdrawConfirmPhone": "Téléphone",
   "withdrawConfirmCard": "Carte",
   "withdrawConfirmButton": "Confirmer le retrait",
-  "withdrawConfirmError": "Erreur : {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Financer votre compte",
   "fundExchangeSelectCountry": "Sélectionnez votre pays et votre méthode de paiement",
   "fundExchangeSpeiTransfer": "Virement SPEI",
@@ -3660,8 +3652,6 @@
   "withdrawUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
   "withdrawBelowMinAmountError": "Vous essayez de retirer en dessous du montant minimum.",
   "withdrawAboveMaxAmountError": "Vous essayez de retirer au-dessus du montant maximum.",
-  "withdrawOrderNotFoundError": "L'ordre de retrait n'a pas été trouvé. Veuillez réessayer.",
-  "withdrawOrderAlreadyConfirmedError": "Cet ordre de retrait a déjà été confirmé.",
   "coreScreensPageNotFound": "Page non trouvée",
   "coreScreensLogsTitle": "Journaux",
   "coreScreensConfirmSend": "Confirmer l'envoi",

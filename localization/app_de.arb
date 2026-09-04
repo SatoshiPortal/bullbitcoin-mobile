@@ -2140,7 +2140,6 @@
   "appStartupErrorTitle": "Startupspeicherfehler",
   "transactionLabelTransferId": "Transfer-ID",
   "sendTitle": "Senden",
-  "withdrawOrderNotFoundError": "Die Auszahlung wurde nicht gefunden. Bitte versuchen Sie es erneut.",
   "importQrDeviceSeedsignerStep4": "Wählen Sie „Export Xpub“",
   "seedsignerStep6": "Bewegen Sie den roten Laser über den QR-Code",
   "ledgerHelpStep5": "Stellen Sie sicher, dass Ihr Ledger-Gerät die neueste Firmware verwendet. Sie können die Firmware mit der Ledger Live Desktop-App aktualisieren",
@@ -3502,14 +3501,6 @@
   "buyConfirmExpress": "Schnellzahlung bestätigen",
   "fundExchangeBankTransferWireTimeframe": "Alle Gelder, die Sie senden, werden innerhalb von 1–2 Werktagen zu Ihrem Bull Bitcoin-Guthaben hinzugefügt",
   "sendDeviceDisconnected": "Geräte getrennt",
-  "withdrawConfirmError": "Fehler: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Gebührenerhöhung fehlgeschlagen",
   "payUnsupportedInvoiceType": "Nicht unterstützter Rechnungstyp",
   "seedsignerStep13": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert",
@@ -3625,7 +3616,6 @@
   "payPaymentHistory": "Zahlungsverlauf",
   "exchangeFeatureUnifiedHistory": "Einheitliche Transaktionshistorie",
   "payViewDetails": "Details anzeigen",
-  "withdrawOrderAlreadyConfirmedError": "Diese Auszahlung wurde bereits bestätigt.",
   "autoswapSelectWallet": "Wählen Sie eine Bitcoin-Wallet",
   "walletAutoTransferBlockButton": "Blockieren",
   "recoverbullGoogleDriveErrorSelectFailed": "Tresor wurde nicht aus Google Drive ausgewählt.",

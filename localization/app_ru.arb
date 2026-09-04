@@ -2190,7 +2190,6 @@
   "appStartupErrorTitle": "Ошибка запуска",
   "transactionLabelTransferId": "ID передачи",
   "sendTitle": "Отправить",
-  "withdrawOrderNotFoundError": "Приказ о снятии не был найден. Попробуй еще раз.",
   "importQrDeviceSeedsignerStep4": "Выберите \"Export Xpub\"",
   "seedsignerStep6": "   - Переместить красный лазер вверх и вниз по QR-коду",
   "ledgerHelpStep5": "Убедитесь, что вы Устройство Ledger использует новейшую прошивку, вы можете обновить прошивку с помощью настольного приложения Ledger Live.",
@@ -3567,14 +3566,6 @@
   "buyConfirmExpress": "Подтверждение",
   "fundExchangeBankTransferWireTimeframe": "Любые средства, которые вы отправляете, будут добавлены в ваш Bull Bitcoin в течение 1-2 рабочих дней.",
   "sendDeviceDisconnected": "Устройство отключено",
-  "withdrawConfirmError": "Ошибка: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Потерпеть неудачу",
   "payUnsupportedInvoiceType": "Неподдерживаемый тип счета-фактуры",
   "seedsignerStep13": "Сделка будет импортирована в кошельке Bull Bitcoin.",
@@ -3692,7 +3683,6 @@
   "payPaymentHistory": "История платежей",
   "exchangeFeatureUnifiedHistory": "• Единая история транзакций",
   "payViewDetails": "Дополнительные сведения",
-  "withdrawOrderAlreadyConfirmedError": "Этот приказ о выводе уже подтвержден.",
   "autoswapSelectWallet": "Выберите биткойн-кошелек",
   "walletAutoTransferBlockButton": "Блок",
   "recoverbullGoogleDriveErrorSelectFailed": "Не удалось выбрать хранилище из Google Drive",

@@ -3033,14 +3033,6 @@
   "withdrawConfirmPhone": "Puhelin",
   "withdrawConfirmCard": "Kortti",
   "withdrawConfirmButton": "Vahvista nosto",
-  "withdrawConfirmError": "Virhe: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Talletus",
   "fundExchangeSelectCountry": "Valitse maa ja maksutapa",
   "fundExchangeSpeiTransfer": "SPEI-siirto",
@@ -3608,8 +3600,6 @@
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "withdrawBelowMinAmountError": "Yrität nostaa alle vähimmäismäärän.",
   "withdrawAboveMaxAmountError": "Yrität nostaa yli enimmäismäärän.",
-  "withdrawOrderNotFoundError": "Nostopyyntöä ei löytynyt. Yritä uudelleen.",
-  "withdrawOrderAlreadyConfirmedError": "Tämä nostopyyntö on jo vahvistettu.",
   "coreScreensPageNotFound": "Sivua ei löytynyt",
   "coreScreensLogsTitle": "Lokitiedot",
   "coreScreensConfirmSend": "Vahvista lähetys",

@@ -6339,10 +6339,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "ولم يعثر على أمر الانسحاب. أرجوك حاول مرة أخرى.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "\"اختار \"إكسبورت",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -10133,15 +10129,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "الخطأ: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "مطب الأطعمة فشلت",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -10491,10 +10478,6 @@
   "payViewDetails": "تفاصيل الرؤية",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الانسحاب هذا.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "اختيار محفظة بيتكوين",
   "@autoswapSelectWallet": {

@@ -868,14 +868,6 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "withdrawOrderNotFoundError": "دستور خروج پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "این دستور خروج قبلا تایید شده است.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
-  },
   "coreScreensPageNotFound": "صفحه پیدا نشد",
   "@coreScreensPageNotFound": {
     "description": "Error message shown when a page/route is not found"
@@ -10117,15 +10109,6 @@
   "sendDeviceDisconnected": "دستگاه قطع شده",
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
-  },
-  "withdrawConfirmError": "خطای: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payFeeBumpFailed": "هزینه های شکست خورده",
   "@payFeeBumpFailed": {

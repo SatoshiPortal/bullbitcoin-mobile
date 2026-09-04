@@ -10377,15 +10377,6 @@
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
   },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Fund your account",
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
@@ -12066,14 +12057,6 @@
   "withdrawAboveMaxAmountError": "You are trying to withdraw above the maximum amount.",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "The withdrawal order was not found. Please try again.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "Page not found",
   "@coreScreensPageNotFound": {

@@ -2603,7 +2603,6 @@
   "importColdcardInstructionsStep3": "Navigate до \"Advanced/Tools\"",
   "buyPhotoID": "Фото ID",
   "appStartupErrorTitle": "Помилка старту",
-  "withdrawOrderNotFoundError": "Порядок виведення не знайдено. Будь ласка, спробуйте знову.",
   "importQrDeviceSeedsignerStep4": "Виберіть \"Експорт Xpub\"",
   "seedsignerStep6": "   - Перемістити червоному лазеру вгору і вниз по QR-коду",
   "ledgerHelpStep5": "Зареєструватися Пристрої Ledger використовують останню прошивку, можна оновити прошивку за допомогою додатку Ledger Live.",
@@ -3595,14 +3594,6 @@
   "payCustomFee": "Спеціальний Fee",
   "fundExchangeBankTransferWireTimeframe": "Будь-які кошти, які ви надішлемо, будуть додані до Біткойн протягом 1-2 робочих днів.",
   "sendDeviceDisconnected": "Відключення пристроїв",
-  "withdrawConfirmError": "{error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Бампер не вдалося",
   "payUnsupportedInvoiceType": "Непідтриманий тип рахунку",
   "seedsignerStep13": "Операція буде імпортована в гаманці Bull Bitcoin.",
@@ -3697,7 +3688,6 @@
   "swapProgressRefunded": "Повернення коштів",
   "payPaymentHistory": "Історія оплати",
   "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
-  "withdrawOrderAlreadyConfirmedError": "Цей порядок виведення вже було підтверджено.",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
   "walletAutoTransferBlockButton": "Блоки",
   "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",

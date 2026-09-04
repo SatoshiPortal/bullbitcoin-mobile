@@ -5765,10 +5765,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "Η διαταγή απόσυρσης δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "Επιλέξτε \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -9130,15 +9126,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Το χτύπημα του Fee",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -9439,10 +9426,6 @@
   "payViewDetails": "Δείτε λεπτομέρειες",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Αυτή η σειρά απόσυρσης έχει ήδη επιβεβαιωθεί.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "Επιλέξτε ένα πορτοφόλι Bitcoin",
   "@autoswapSelectWallet": {

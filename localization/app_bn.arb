@@ -6632,10 +6632,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "উত্তোলনের অনুরোধটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "\"Export Xpub\" বেছে নিন",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -10549,15 +10545,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "ত্রুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "ফি বাড়ানো ব্যর্থ হয়েছে",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -10935,10 +10922,6 @@
   "payViewDetails": "বিস্তারিত দেখুন",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলনের অনুরোধটি ইতিমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@autoswapSelectWallet": {

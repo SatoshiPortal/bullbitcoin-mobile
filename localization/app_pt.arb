@@ -2174,7 +2174,6 @@
   "appStartupErrorTitle": "Erro de inicialização",
   "transactionLabelTransferId": "ID de transferência",
   "sendTitle": "Enviar",
-  "withdrawOrderNotFoundError": "A ordem de retirada não foi encontrada. Por favor, tente novamente.",
   "importQrDeviceSeedsignerStep4": "Selecione \"Export Xpub\"",
   "seedsignerStep6": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
   "ledgerHelpStep5": "Certifique-se de que O dispositivo Ledger está usando o firmware mais recente, você pode atualizar o firmware usando o aplicativo de desktop Ledger Live.",
@@ -3543,14 +3542,6 @@
   "buyConfirmExpress": "Confirmação",
   "fundExchangeBankTransferWireTimeframe": "Qualquer dinheiro que você enviar será adicionado ao seu Bitcoin Bull dentro de 1-2 dias úteis.",
   "sendDeviceDisconnected": "Dispositivo desligado",
-  "withdrawConfirmError": "Erro: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Esboço de taxas falhou",
   "payUnsupportedInvoiceType": "Tipo de fatura não suportado",
   "seedsignerStep13": "A transação será importada na carteira Bull Bitcoin.",
@@ -3666,7 +3657,6 @@
   "payPaymentHistory": "Histórico do pagamento",
   "exchangeFeatureUnifiedHistory": "• Histórico de transações unificadas",
   "payViewDetails": "Ver detalhes",
-  "withdrawOrderAlreadyConfirmedError": "Esta ordem de retirada já foi confirmada.",
   "autoswapSelectWallet": "Selecione uma carteira Bitcoin",
   "recoverbullGoogleDriveErrorSelectFailed": "Falhado para selecionar o vault do Google Drive",
   "autoswapRecipientWalletRequired": "*",

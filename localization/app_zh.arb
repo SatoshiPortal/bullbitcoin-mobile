@@ -2193,7 +2193,6 @@
   "appStartupErrorTitle": "1. 启动",
   "transactionLabelTransferId": "转账证明",
   "sendTitle": "修正",
-  "withdrawOrderNotFoundError": "没有发现撤回令。 请再次审判.",
   "importQrDeviceSeedsignerStep4": "选择“Export Xpub”",
   "seedsignerStep6": "   - 完成红色激光器,并在QR代码上下",
   "ledgerHelpStep5": "保证你能 电气化装置正在使用最新的公司软件,你可以使用Ledger式实况台更新公司软件.",
@@ -3567,14 +3566,6 @@
   "buyConfirmExpress": "1. 确认",
   "fundExchangeBankTransferWireTimeframe": "您寄出的任何资金都将在1-2个工作日内添加到您的布莱特.",
   "sendDeviceDisconnected": "装置",
-  "withdrawConfirmError": "Rror: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "胎儿 failed折",
   "payUnsupportedInvoiceType": "未证明的发票类型",
   "seedsignerStep13": "该交易将被导入到 Bull Bitcoin 钱包中",
@@ -3692,7 +3683,6 @@
   "payPaymentHistory": "支付史",
   "exchangeFeatureUnifiedHistory": "• 统一交易史",
   "payViewDetails": "观点细节",
-  "withdrawOrderAlreadyConfirmedError": "这一撤销令已经得到确认.",
   "autoswapSelectWallet": "选择一个比特币钱包",
   "walletAutoTransferBlockButton": "路障",
   "recoverbullGoogleDriveErrorSelectFailed": "未能从谷歌风暴中选取ault",

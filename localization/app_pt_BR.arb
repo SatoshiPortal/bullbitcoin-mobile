@@ -6093,10 +6093,6 @@
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
   },
-  "withdrawOrderNotFoundError": "A ordem de retirada não foi encontrada. Por favor, tente novamente.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
   "@bitboxActionVerifyAddressProcessing": {
     "description": "Processing text for verify address"
@@ -9112,15 +9108,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "withdrawConfirmError": "Erro: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
@@ -10349,10 +10336,6 @@
   "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Esta ordem de retirada já foi confirmada.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "backupSettingsStartBackup": "Iniciar backup",
   "@backupSettingsStartBackup": {

@@ -6779,10 +6779,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "Odstoupení nebyla nalezena. Prosím, zkuste to znovu.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "Zvolte \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -10631,15 +10627,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "Chyba: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Pohotovostní náraz selhal",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11013,10 +11000,6 @@
   "payViewDetails": "Zobrazit podrobnosti",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Tato objednávka výběru byla již potvrzena.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "Vyberte peněženku Bitcoin",
   "@autoswapSelectWallet": {
