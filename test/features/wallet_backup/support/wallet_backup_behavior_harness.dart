@@ -76,6 +76,7 @@ import 'package:primitives/primitives.dart';
 import '../metadata/support/portable_settings_fixture.dart';
 import 'fake_bullvault_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 
 /// BIP39 test vector whose root is the default wallet in every backup suite.
 const defaultSeedMnemonic =
@@ -526,6 +527,12 @@ final class WalletBackupBehaviorHarness {
           state,
           () => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
         ).execute,
+      ),
+
+      GetRemoteWalletBackupContentsUsecase(
+        fetchRemote: fetchRemote.execute,
+        fetchImport: fetchImport.execute,
+        inspectVault: fakeVaultInspector,
       ),
     );
 

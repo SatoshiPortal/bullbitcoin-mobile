@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dar
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/fetch_remote_wallet_backup_contents_usecase.dart';
 
 class _MockWalletBackupFacade extends Mock implements WalletBackupFacade {}
 
@@ -55,6 +56,7 @@ void main() {
       backupWalletNow: BackupWalletNowUsecase(backup),
       deleteWalletBackup: DeleteWalletBackupUsecase(backup),
       getContents: GetWalletBackupContentsUsecase(backup),
+      fetchRemoteContents: FetchRemoteWalletBackupContentsUsecase(backup),
       retryRecovery: RetryWalletBackupRecoveryUsecase(backup),
       exportFile: ExportWalletBackupFileUsecase(backup, files),
       importFile: ImportWalletBackupFileUsecase(backup, files),
@@ -346,6 +348,41 @@ void main() {
       verifyNever(() => backup.backupNow());
     },
   );
+
+  test('reads the backup the server holds without applying it', () async {
+    when(() => backup.fetchRemoteContents()).thenAnswer(
+      (_) async => const Ok(
+        WalletBackupContents(
+          labelCount: 4,
+          frozenCoinCount: 0,
+          walletPreferenceCount: 1,
+        ),
+      ),
+    );
+
+    await cubit.loadRemoteContents();
+
+    expect(cubit.state.remoteContentsLoaded, isTrue);
+    expect(cubit.state.remoteContents?.labelCount, 4);
+    expect(cubit.state.remoteContentsLoading, isFalse);
+    verifyNever(() => backup.recover());
+  });
+
+  test('an empty server is loaded as null, a failure is surfaced', () async {
+    when(
+      () => backup.fetchRemoteContents(),
+    ).thenAnswer((_) async => const Ok(null));
+    await cubit.loadRemoteContents();
+    expect(cubit.state.remoteContentsLoaded, isTrue);
+    expect(cubit.state.remoteContents, isNull);
+
+    when(() => backup.fetchRemoteContents()).thenAnswer(
+      (_) async => const Err(WalletBackupRemoteUnavailableFailure()),
+    );
+    await cubit.loadRemoteContents();
+    expect(cubit.state.failure, isNotNull);
+    expect(cubit.state.remoteContentsLoading, isFalse);
+  });
 }
 
 WalletBackupState _state({

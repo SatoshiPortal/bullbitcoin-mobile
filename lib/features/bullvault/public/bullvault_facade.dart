@@ -16,6 +16,8 @@ export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.da
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
 export 'package:bb_mobile/features/bullvault/public/bullvault_contributions.dart';
+export 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart'
+    show shareBullVaultRecoveryPackage;
 export 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart'
     show BullVaultRouter;
 

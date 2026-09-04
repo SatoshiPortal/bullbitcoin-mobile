@@ -9,6 +9,9 @@ sealed class BackupSettingsState with _$BackupSettingsState {
     @Default(false) bool fileExportReady,
     WalletBackupContents? contents,
     @Default(false) bool contentsLoading,
+    WalletBackupContents? remoteContents,
+    @Default(false) bool remoteContentsLoaded,
+    @Default(false) bool remoteContentsLoading,
     @Default(false) bool walletBackupBusy,
     BackupSettingsFailure? failure,
   }) = _BackupSettingsState;

@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failur
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/export_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/fetch_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/import_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
@@ -27,6 +28,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final BackupWalletNowUsecase _backupWalletNow;
   final DeleteWalletBackupUsecase _deleteWalletBackup;
   final GetWalletBackupContentsUsecase _getContents;
+  final FetchRemoteWalletBackupContentsUsecase _fetchRemoteContents;
   final RetryWalletBackupRecoveryUsecase _retryRecovery;
   final ExportWalletBackupFileUsecase _exportFile;
   final ImportWalletBackupFileUsecase _importFile;
@@ -43,6 +45,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     required this._backupWalletNow,
     required this._deleteWalletBackup,
     required this._getContents,
+    required this._fetchRemoteContents,
     required this._retryRecovery,
     required this._exportFile,
     required this._importFile,
@@ -68,6 +71,28 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         if (!isClosed) {
           emit(state.copyWith(contentsLoading: false, failure: failure));
         }
+    }
+  }
+
+  /// Reads the backup the server holds without applying it. A null result
+  /// with [BackupSettingsState.remoteContentsLoaded] set means the server has
+  /// no backup for this seed.
+  Future<void> loadRemoteContents() async {
+    if (state.remoteContentsLoading) return;
+    emit(state.copyWith(remoteContentsLoading: true, failure: null));
+    final result = await _fetchRemoteContents.execute();
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            remoteContents: value,
+            remoteContentsLoaded: true,
+            remoteContentsLoading: false,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(remoteContentsLoading: false, failure: failure));
     }
   }
 

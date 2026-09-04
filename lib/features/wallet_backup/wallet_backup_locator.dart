@@ -40,6 +40,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/decode_wallet_b
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_snapshot_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
@@ -353,6 +354,11 @@ final class _WalletBackupGraph {
           state,
           _nowSecs,
         ).execute,
+      ),
+      GetRemoteWalletBackupContentsUsecase(
+        fetchRemote: fetchRemote.execute,
+        fetchImport: fetchImport.execute,
+        inspectVault: inspectVault,
       ),
     );
     return _WalletBackupGraph(

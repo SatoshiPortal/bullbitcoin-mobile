@@ -17,6 +17,7 @@ import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class WalletRecoverySettingsScreen extends StatelessWidget {
   const WalletRecoverySettingsScreen({super.key});
@@ -119,6 +120,15 @@ class _WalletRecoveryView extends StatelessWidget {
                                   .loc
                                   .backupSettingsEncryptedVaultSettings,
                               onTap: () => _openRecoverBull(context),
+                            ),
+                            // Recovering a vault needs the seed and its
+                            // descriptor; the descriptor lives one screen over.
+                            SettingsEntryItem(
+                              icon: Icons.security,
+                              title: context.loc.walletRecoveryVaultsPointer,
+                              onTap: () => context.pushNamed(
+                                SettingsRoute.dataBackupSettings.name,
+                              ),
                             ),
                             const Divider(),
                             const _BackupReminderSetting(),

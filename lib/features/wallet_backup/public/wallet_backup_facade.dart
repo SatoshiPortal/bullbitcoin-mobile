@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_export_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
@@ -57,6 +58,7 @@ class WalletBackupFacade {
   final BuildWalletBackupExportUsecase _buildExport;
   final CompareWalletBackupFileUsecase _compareFile;
   final RecoverWalletBackupFileUsecase _recoverFile;
+  final GetRemoteWalletBackupContentsUsecase _getRemoteContents;
 
   const WalletBackupFacade(
     this._getContents,
@@ -70,11 +72,18 @@ class WalletBackupFacade {
     this._buildExport,
     this._compareFile,
     this._recoverFile,
+    this._getRemoteContents,
   );
 
   @useResult
   Future<Result<WalletBackupContents, WalletBackupFailure>> getContents() =>
       _getContents.execute();
+
+  /// What the server holds for this seed, read without applying anything.
+  /// Null when the server has no backup for this seed.
+  @useResult
+  Future<Result<WalletBackupContents?, WalletBackupFailure>>
+  fetchRemoteContents() => _runner.run(_getRemoteContents.execute);
 
   @useResult
   Stream<Result<WalletBackupState, WalletBackupFailure>> watchState() =>

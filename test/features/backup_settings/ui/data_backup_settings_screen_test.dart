@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/fetch_remote_wallet_backup_contents_usecase.dart';
 
 class _MockWalletBackupFacade extends Mock implements WalletBackupFacade {}
 
@@ -57,6 +58,7 @@ void main() {
         backupWalletNow: BackupWalletNowUsecase(backup),
         deleteWalletBackup: DeleteWalletBackupUsecase(backup),
         getContents: GetWalletBackupContentsUsecase(backup),
+        fetchRemoteContents: FetchRemoteWalletBackupContentsUsecase(backup),
         retryRecovery: RetryWalletBackupRecoveryUsecase(backup),
         exportFile: ExportWalletBackupFileUsecase(backup, files),
         importFile: ImportWalletBackupFileUsecase(backup, files),
@@ -99,6 +101,11 @@ void main() {
     expect(find.textContaining('never contains seed phrases'), findsOneWidget);
     expect(find.text('Physical backup'), findsNothing);
     expect(find.text('Encrypted vault'), findsNothing);
+    expect(
+      find.text('BullVault (0)'),
+      findsOneWidget,
+      reason: 'a vault is just another thing the backup protects',
+    );
   });
 
   testWidgets('shows exact file and server counts before whole-backup choice', (

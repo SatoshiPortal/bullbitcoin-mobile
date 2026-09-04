@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/backup_settings/data/file_picker_wallet_backu
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/delete_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/export_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/fetch_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_recovery_status_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/import_wallet_backup_file_usecase.dart';
@@ -44,6 +45,9 @@ class BackupSettingsLocator {
         backupWalletNow: BackupWalletNowUsecase(walletBackup),
         deleteWalletBackup: DeleteWalletBackupUsecase(walletBackup),
         getContents: GetWalletBackupContentsUsecase(walletBackup),
+        fetchRemoteContents: FetchRemoteWalletBackupContentsUsecase(
+          walletBackup,
+        ),
         retryRecovery: RetryWalletBackupRecoveryUsecase(walletBackup),
         exportFile: ExportWalletBackupFileUsecase(walletBackup, files),
         importFile: ImportWalletBackupFileUsecase(walletBackup, files),

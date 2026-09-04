@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_options_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_metadata_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_manifest_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_vaults_screen.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,7 +22,8 @@ final class BackupOptionsArgs {
 enum BackupSettingsSubroute {
   backupOptions('backup-options'),
   walletManifest('wallet-manifest'),
-  walletMetadata('wallet-metadata');
+  walletMetadata('wallet-metadata'),
+  walletVaults('wallet-vaults');
 
   final String path;
 
@@ -73,6 +75,12 @@ class BackupSettingsSettingsRouter {
               walletPreferenceCount: 0,
             ),
       ),
+    ),
+    GoRoute(
+      name: BackupSettingsSubroute.walletVaults.name,
+      path: BackupSettingsSubroute.walletVaults.path,
+      builder: (_, state) =>
+          WalletVaultsScreen(contents: state.extra as WalletBackupContents?),
     ),
   ];
 }

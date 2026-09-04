@@ -229,6 +229,8 @@ List<String> _differenceLabels(
     context.loc.walletBackupManifestTitle,
   if (differences.contains(WalletBackupDifference.externalWallets))
     context.loc.walletBackupFileExternalWallets,
+  if (differences.contains(WalletBackupDifference.vaults))
+    context.loc.walletBackupVaultsTitle,
   if (differences.contains(WalletBackupDifference.protectedData))
     context.loc.walletBackupContentsTitle,
 ];
@@ -291,6 +293,16 @@ class _ProtectedDataSection extends StatelessWidget {
                 title: context.loc.walletBackupMetadataRow,
                 onTap: () => context.pushNamed(
                   BackupSettingsSubroute.walletMetadata.name,
+                  extra: contents,
+                ),
+              ),
+              SettingsEntryItem(
+                icon: Icons.security,
+                title: context.loc.walletBackupVaultsRow(
+                  contents.vaults.length,
+                ),
+                onTap: () => context.pushNamed(
+                  BackupSettingsSubroute.walletVaults.name,
                   extra: contents,
                 ),
               ),

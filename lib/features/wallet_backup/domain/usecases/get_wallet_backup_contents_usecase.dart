@@ -48,12 +48,7 @@ final class GetWalletBackupContentsUsecase {
         case Err(:final failure):
           return Err(failure);
       }
-      final vaultWalletRefs = {for (final vault in vaults) vault.walletRef};
-      final definitions = (await _definitions())
-          .where(
-            (definition) => !vaultWalletRefs.contains(definition.walletRef),
-          )
-          .toList(growable: false);
+      final definitions = await _definitions();
       final locallyKeyedWalletIds = await _locallyKeyedWalletIds();
       final metadata = await _metadata();
       switch (metadata) {
@@ -62,75 +57,14 @@ final class GetWalletBackupContentsUsecase {
             WalletBackupManifestFailure(failure.runtimeType.toString()),
           );
         case Ok(:final value):
-          final labels = {
-            for (final preference in value.walletPreferences)
-              if (preference.label != null)
-                preference.walletRef: preference.label!,
-          };
-          final wallets = <String, WalletBackupWalletSummary>{};
-          for (final entry in manifest.entries) {
-            for (final wallet
-                in entry.materializations.whereType<KeychainManifestWallet>()) {
-              if (wallets.containsKey(wallet.walletId)) {
-                throw StateError('Duplicate wallet recovery inventory');
-              }
-              wallets[wallet.walletId] = WalletBackupWalletSummary(
-                label: labels[wallet.walletId] ?? wallet.label,
-                network: wallet.network,
-                provenance: wallet.provenance,
-                keysOnDevice: locallyKeyedWalletIds.contains(wallet.walletId),
-                derivationPath: entry.derivationPath,
-                descriptor: wallet.descriptor,
-                seedPassphraseUsed: wallet.seedPassphraseUsed,
-              );
-            }
-          }
-          for (final definition in definitions.where(
-            (definition) => definition.network.isBitcoin,
-          )) {
-            if (wallets.containsKey(definition.walletRef) ||
-                !definition.provenance.backedUpAsDefinition) {
-              throw StateError('Conflicting wallet recovery inventory');
-            }
-            wallets[definition.walletRef] = WalletBackupWalletSummary(
-              label: labels[definition.walletRef],
-              network: definition.network,
-              provenance: definition.provenance,
-              keysOnDevice: false,
-              descriptor: definition.descriptor,
-              signerDevice: definition.signerDevice,
-            );
-          }
-          final summaries = wallets.values.toList(growable: false)
-            ..sort(_compareWallets);
-          final vaultSummaries = <WalletBackupVaultSummary>[];
-          for (final vault in vaults) {
-            final facts = _inspectVault(vault.recoveryPackage);
-            if (facts == null) {
-              throw StateError('Unreadable BullVault recovery package');
-            }
-            vaultSummaries.add(
-              WalletBackupVaultSummary(
-                walletRef: vault.walletRef,
-                label: labels[vault.walletRef] ?? vault.label,
-                status: vault.status,
-                network: vault.network,
-                lineageId: vault.lineageId,
-                vaultGeneration: vault.vaultGeneration,
-                descriptor: facts.descriptor,
-                birthHeight: facts.birthHeight,
-                recoveryPackage: vault.recoveryPackage,
-              ),
-            );
-          }
           return Ok(
-            WalletBackupContents(
-              wallets: summaries,
-              vaults: vaultSummaries,
-              labelCount: value.labels.length,
-              frozenCoinCount: value.frozenOutpoints.length,
-              walletPreferenceCount: value.walletPreferences.length,
-              settings: value.settings,
+            buildWalletBackupContents(
+              manifest: manifest,
+              definitions: definitions,
+              locallyKeyedWalletIds: locallyKeyedWalletIds,
+              metadata: value,
+              vaults: vaults,
+              inspectVault: _inspectVault,
             ),
           );
       }
@@ -143,6 +77,94 @@ final class GetWalletBackupContentsUsecase {
       return Err(WalletBackupStorageFailure(error.runtimeType.toString()));
     }
   }
+}
+
+/// The user-facing inventory of one backup, from its typed sections.
+///
+/// Shared by the local read and the read of what the server holds, so both
+/// describe a backup the same way. Throws [StateError] on an inventory that
+/// contradicts itself.
+WalletBackupContents buildWalletBackupContents({
+  required KeychainManifest manifest,
+  required List<WalletDefinition> definitions,
+  required Set<String> locallyKeyedWalletIds,
+  required WalletMetadataSnapshot? metadata,
+  required List<WalletBackupVaultEntry> vaults,
+  required InspectVaultRecoveryPackage inspectVault,
+}) {
+  final labels = {
+    for (final preference in metadata?.walletPreferences ?? const [])
+      if (preference.label != null) preference.walletRef: preference.label!,
+  };
+  final vaultWalletRefs = {for (final vault in vaults) vault.walletRef};
+  final wallets = <String, WalletBackupWalletSummary>{};
+  for (final entry in manifest.entries) {
+    for (final wallet
+        in entry.materializations.whereType<KeychainManifestWallet>()) {
+      if (wallets.containsKey(wallet.walletId)) {
+        throw StateError('Duplicate wallet recovery inventory');
+      }
+      wallets[wallet.walletId] = WalletBackupWalletSummary(
+        label: labels[wallet.walletId] ?? wallet.label,
+        network: wallet.network,
+        provenance: wallet.provenance,
+        keysOnDevice: locallyKeyedWalletIds.contains(wallet.walletId),
+        derivationPath: entry.derivationPath,
+        descriptor: wallet.descriptor,
+        seedPassphraseUsed: wallet.seedPassphraseUsed,
+      );
+    }
+  }
+  for (final definition in definitions.where(
+    (definition) =>
+        definition.network.isBitcoin &&
+        !vaultWalletRefs.contains(definition.walletRef),
+  )) {
+    if (wallets.containsKey(definition.walletRef) ||
+        !definition.provenance.backedUpAsDefinition) {
+      throw StateError('Conflicting wallet recovery inventory');
+    }
+    wallets[definition.walletRef] = WalletBackupWalletSummary(
+      label: labels[definition.walletRef],
+      network: definition.network,
+      provenance: definition.provenance,
+      keysOnDevice: false,
+      descriptor: definition.descriptor,
+      signerDevice: definition.signerDevice,
+    );
+  }
+  final summaries = wallets.values.toList(growable: false)
+    ..sort(_compareWallets);
+  // Lineage then generation, whatever order the snapshot held them in, so the
+  // inventory reads the same from this device and from the server.
+  final vaultSummaries = <WalletBackupVaultSummary>[];
+  for (final vault in [...vaults]..sort(WalletBackupVaultEntry.compare)) {
+    final facts = inspectVault(vault.recoveryPackage);
+    if (facts == null) {
+      throw StateError('Unreadable BullVault recovery package');
+    }
+    vaultSummaries.add(
+      WalletBackupVaultSummary(
+        walletRef: vault.walletRef,
+        label: labels[vault.walletRef] ?? vault.label,
+        status: vault.status,
+        network: vault.network,
+        lineageId: vault.lineageId,
+        vaultGeneration: vault.vaultGeneration,
+        descriptor: facts.descriptor,
+        birthHeight: facts.birthHeight,
+        recoveryPackage: vault.recoveryPackage,
+      ),
+    );
+  }
+  return WalletBackupContents(
+    wallets: summaries,
+    vaults: vaultSummaries,
+    labelCount: metadata?.labels.length ?? 0,
+    frozenCoinCount: metadata?.frozenOutpoints.length ?? 0,
+    walletPreferenceCount: metadata?.walletPreferences.length ?? 0,
+    settings: metadata?.settings,
+  );
 }
 
 int _compareWallets(
