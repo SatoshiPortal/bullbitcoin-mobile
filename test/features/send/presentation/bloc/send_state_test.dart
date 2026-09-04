@@ -409,6 +409,52 @@ void main() {
     });
   });
 
+  group('SendState selected-coin sweep', () {
+    test('blocks destination input until the selected coins resolve', () {
+      const unresolved = SendState(
+        sweepOutpoints: {(txId: 'selected', vout: 0)},
+      );
+      final resolved = unresolved.copyWith(
+        selectedUtxos: [walletUtxoFixture(sats: 75000, txId: 'selected')],
+      );
+
+      expect(unresolved.sweepDestinationBlocked, isTrue);
+      expect(resolved.sweepDestinationBlocked, isFalse);
+    });
+
+    test('uses only the selected spendable value as the available balance', () {
+      final selected = walletUtxoFixture(sats: 75000, txId: 'selected');
+      final state = SendState(
+        sweepOutpoints: const {(txId: 'selected', vout: 0)},
+        selectedWallet: _FakeWallet(300000),
+        selectedUtxos: [selected],
+        utxos: [
+          selected,
+          walletUtxoFixture(sats: 225000, txId: 'other'),
+        ],
+      );
+
+      expect(state.spendableBalanceSat, 75000);
+    });
+
+    test('never offers Payjoin even when the recipient advertises it', () {
+      final state = SendState(
+        sweepOutpoints: const {(txId: 'selected', vout: 0)},
+        selectedWallet: bitcoinWallet(),
+        paymentRequest: const PaymentRequest.bip21(
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:bc1qtest?pj=https://payjo.in',
+          address: 'bc1qtest',
+          pj: 'https://payjo.in',
+        ),
+        payjoinGloballyEnabled: true,
+      );
+
+      expect(state.isPayjoinAvailable, isFalse);
+      expect(state.willAttemptPayjoin, isFalse);
+    });
+  });
+
   group(
     'SendState.walletHasBalance validates against spendable, not total',
     () {
