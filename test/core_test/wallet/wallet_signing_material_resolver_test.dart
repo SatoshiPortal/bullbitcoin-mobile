@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
@@ -323,6 +322,54 @@ void main() {
       );
       expect(identical(material, same) || material != same, isTrue);
       expect(material == other, isFalse);
+    });
+  });
+
+  group('seedForKey', () {
+    test('a passphrase wallet answers from the session for any key', () async {
+      resolver.loadPrivateCapabilityIfCurrent(
+        generation: resolver.beginPrivateCapabilityMount(),
+        walletId: 'passphrase',
+        seed: _seed(_passphrase),
+      );
+
+      final seed = await resolver.seedForKey(
+        _metadata(
+          id: 'passphrase',
+          provenance: WalletProvenance.defaultSeedPassphrase,
+        ),
+        masterFingerprint: 'not-consulted',
+      );
+
+      expect(seed, isA<MnemonicSeedModel>());
+      expect((seed as MnemonicSeedModel).passphrase, _passphrase);
+      verifyNever(() => seeds.get(any()));
+    });
+
+    test('a locked passphrase wallet throws before any store read', () async {
+      await expectLater(
+        resolver.seedForKey(
+          _metadata(
+            id: 'passphrase',
+            provenance: WalletProvenance.defaultSeedPassphrase,
+          ),
+          masterFingerprint: 'not-consulted',
+        ),
+        throwsA(isA<PassphraseWalletLockedException>()),
+      );
+      verifyNever(() => seeds.get(any()));
+    });
+
+    test('any other wallet reads the persistent seed for that key', () async {
+      const stored = SeedModel.mnemonic(mnemonicWords: _mnemonic);
+      when(() => seeds.get('aabbccdd')).thenAnswer((_) async => stored);
+
+      final seed = await resolver.seedForKey(
+        _metadata(id: 'default', provenance: WalletProvenance.defaultSeed),
+        masterFingerprint: 'aabbccdd',
+      );
+
+      expect(seed, same(stored));
     });
   });
 }

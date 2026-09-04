@@ -124,4 +124,25 @@ final class WalletSigningMaterialResolver {
       passphrase: seed.passphrase,
     );
   }
+
+  /// The seed behind one descriptor key of [metadata].
+  ///
+  /// A passphrase wallet answers from the volatile session no matter which key
+  /// is asked for — its seed is never in the persistent store — and throws
+  /// [PassphraseWalletLockedException] when locked. Every other wallet reads
+  /// the persistent seed for that key's [masterFingerprint], which is what a
+  /// multi-signer wallet with several local keys needs.
+  Future<SeedModel> seedForKey(
+    WalletMetadataModel metadata, {
+    required String masterFingerprint,
+  }) async {
+    if (metadata.provenance == WalletProvenance.defaultSeedPassphrase) {
+      final seed = _session.seedFor(metadata.id);
+      return SeedModel.mnemonic(
+        mnemonicWords: seed.mnemonicWords,
+        passphrase: seed.passphrase,
+      );
+    }
+    return _seedDatasource.get(masterFingerprint);
+  }
 }

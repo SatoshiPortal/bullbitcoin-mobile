@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -31,6 +30,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
@@ -41,21 +41,18 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
   final FrozenWalletUtxoDatasource _frozenUtxos;
   final ElectrumServersPort? electrumServers;
 
-  /// Per-descriptor-key seeds for multi-signer descriptor wallets. Standard
-  /// single-signature signing goes through [_signingMaterial] instead, so a
-  /// passphrase wallet's mnemonic is never read from the persistent store.
-  final SeedDatasource _seed;
+  /// The one source of private signing material, for every key of every
+  /// wallet: the volatile session for a passphrase wallet, the persistent seed
+  /// store for everything else. Nothing here reads seeds directly.
   final WalletSigningMaterialResolver _signingMaterial;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-    required SeedDatasource seedDatasource,
     required WalletSigningMaterialResolver signingMaterialResolver,
     this.electrumServers,
-  }) : _seed = seedDatasource,
-       _bdkWallet = bdkWalletDatasource,
+  }) : _bdkWallet = bdkWalletDatasource,
        _frozenUtxos = frozenWalletUtxoDatasource,
        _signingMaterial = signingMaterialResolver;
 
@@ -205,6 +202,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
     final publicWallet = context.wallet;
+    // A locked passphrase wallet fails here, before the PSBT is touched.
+    _signingMaterial.requirePrivateCapability(
+      provenance: metadata.provenance,
+      walletId: walletId,
+    );
     await _validateWalletPsbtInputs(
       psbt: psbt,
       wallet: publicWallet,
@@ -247,6 +249,8 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         if (derivationPath == null) {
           throw StateError('Local descriptor key has no derivation path');
         }
+        // A vault's mobile key may carry its own BIP39 passphrase; the stored
+        // seed is still read through the resolver, never from disk directly.
         final SeedModel seed;
         if (key.requiresPassphrase) {
           if (passphrase == null) {
@@ -257,7 +261,10 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
           if (seedFingerprint == null) {
             throw const BitcoinSignerPassphraseMismatchException();
           }
-          final storedSeed = await _seed.get(seedFingerprint);
+          final storedSeed = await _signingMaterial.seedForKey(
+            metadata,
+            masterFingerprint: seedFingerprint,
+          );
           if (storedSeed is! MnemonicSeedModel) {
             throw const BitcoinSignerPassphraseMismatchException();
           }
@@ -266,7 +273,10 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             passphrase: passphrase,
           );
         } else {
-          seed = await _seed.get(key.masterFingerprint);
+          seed = await _signingMaterial.seedForKey(
+            metadata,
+            masterFingerprint: key.masterFingerprint,
+          );
         }
         final rootKey = _descriptorSecretKey(seed, network: metadata.network);
         try {
@@ -774,6 +784,10 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     } on UnsupportedBitcoinPolicyPathException {
       return const Err(
         BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
+      );
+    } on PassphraseWalletLockedException {
+      return const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.walletLocked),
       );
     } on Exception catch (error, stackTrace) {
       log.severe(

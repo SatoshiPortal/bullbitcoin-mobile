@@ -468,7 +468,6 @@ void main() {
       when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async => []);
       final repository = BitcoinWalletRepository(
         walletMetadataDatasource: metadataDatasource,
-        seedDatasource: seedDatasource,
         signingMaterialResolver: WalletSigningMaterialResolver(
           seedDatasource: seedDatasource,
           session: WalletUnlockSession(),

@@ -123,7 +123,6 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
         electrumServers: locator<ElectrumServersPort>(),
-        seedDatasource: locator<SeedDatasource>(),
         signingMaterialResolver: locator<WalletSigningMaterialResolver>(),
       ),
     );

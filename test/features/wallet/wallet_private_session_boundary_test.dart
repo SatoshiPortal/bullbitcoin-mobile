@@ -13,7 +13,6 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -40,6 +39,8 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:drift/native.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../core_test/wallet/wallet_signer_test_fixture.dart';
@@ -151,7 +152,6 @@ void main() {
       walletMetadataDatasource: metadataDatasource,
       bdkWalletDatasource: bdk,
       frozenWalletUtxoDatasource: _Frozen(),
-      seedDatasource: seeds,
       signingMaterialResolver: signingMaterial,
     );
     addresses = WalletAddressRepository(
@@ -193,9 +193,8 @@ void main() {
     });
 
     test('bitcoin signing', () async {
-      // The private wallet is what signing resolves before it touches a PSBT,
-      // so it is the boundary this asserts; PSBT parsing itself needs real
-      // transaction bytes and is covered elsewhere.
+      // Material resolves while the session is loaded (a real signature needs
+      // real transaction bytes and is covered by the repository tests) ...
       expect(
         (await bitcoin.getPrivateWallet(walletId: _walletId)).mnemonic,
         _mnemonic.join(' '),
@@ -203,6 +202,17 @@ void main() {
 
       signingMaterial.clearPrivateCapabilityForBackground();
 
+      // ... and once locked, the production signing entry point itself refuses
+      // before it touches the PSBT or any seed store.
+      final signed = await bitcoin.signPsbt('unsigned', walletId: _walletId);
+      expect(
+        signed,
+        isA<Err<Object?, BitcoinSigningFailure>>().having(
+          (result) => result.failure.kind,
+          'kind',
+          BitcoinSigningFailureKind.walletLocked,
+        ),
+      );
       await expectLater(
         bitcoin.getPrivateWallet(walletId: _walletId),
         throwsA(isA<PassphraseWalletLockedException>()),

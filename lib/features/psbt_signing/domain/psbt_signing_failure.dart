@@ -27,6 +27,8 @@ sealed class PsbtSigningFailure extends Failure {
       const PsbtSigningPassphraseRequiredFailure(),
     BitcoinSigningFailureKind.passphraseMismatch =>
       const PsbtSigningPassphraseMismatchFailure(),
+    BitcoinSigningFailureKind.walletLocked =>
+      const PsbtSigningWalletUnavailableFailure(),
     BitcoinSigningFailureKind.unsupportedPolicyPath ||
     BitcoinSigningFailureKind.unexpected =>
       const PsbtSigningUnexpectedFailure(),

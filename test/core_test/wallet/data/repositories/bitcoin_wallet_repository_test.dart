@@ -117,7 +117,6 @@ void main() {
     ).thenAnswer((_) async => const []);
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
         session: WalletUnlockSession(),
@@ -653,7 +652,6 @@ void main() {
     ).thenThrow(const InvalidBitcoinPsbtException());
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
         session: WalletUnlockSession(),
@@ -730,7 +728,6 @@ void main() {
     ).thenThrow(Exception('wallet database unavailable'));
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
         session: WalletUnlockSession(),
@@ -783,7 +780,6 @@ void main() {
     ).thenThrow(bdk.IoTransactionException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
         session: WalletUnlockSession(),
@@ -848,7 +844,6 @@ void main() {
     ).thenThrow(const BitcoinPsbtFrozenUtxoException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
         session: WalletUnlockSession(),
@@ -905,7 +900,6 @@ void main() {
     ).thenThrow(const BitcoinPsbtFrozenUtxoException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
         session: WalletUnlockSession(),

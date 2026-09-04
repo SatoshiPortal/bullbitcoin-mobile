@@ -28,7 +28,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -125,7 +124,6 @@ void main() {
       walletMetadataDatasource: metadataDatasource,
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenDatasource,
-      seedDatasource: seedDatasource,
       signingMaterialResolver: signingMaterial,
     );
 

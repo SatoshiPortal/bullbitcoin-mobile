@@ -24,6 +24,10 @@ enum BitcoinSigningFailureKind {
   passphraseRequired,
   passphraseMismatch,
   incomplete,
+
+  /// A passphrase wallet whose private session is not loaded. Not a defect in
+  /// the transaction: the caller should route to the unlock screen.
+  walletLocked,
   unexpected,
 }
 
