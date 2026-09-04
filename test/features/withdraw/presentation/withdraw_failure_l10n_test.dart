@@ -69,5 +69,51 @@ void main() {
       // string: a user who sent too little needs different advice.
       expect(messages.length, greaterThanOrEqualTo(3));
     });
+
+    testWidgets('an amount bound names the number and its currency', (
+      tester,
+    ) async {
+      // A limit the user cannot act on is barely better than no message, so
+      // the bound carried by the failure has to reach the string.
+      expect(
+        await _translate(
+          tester,
+          const WithdrawBelowMinAmountFailure(
+            minAmount: 25,
+            currency: 'CAD',
+            logMessage: _rawReason,
+          ),
+        ),
+        allOf(contains('25'), contains('CAD')),
+      );
+      expect(
+        await _translate(
+          tester,
+          const WithdrawAboveMaxAmountFailure(
+            maxAmount: 5000,
+            currency: 'CAD',
+            logMessage: _rawReason,
+          ),
+        ),
+        allOf(contains('5,000'), contains('CAD')),
+      );
+    });
+
+    testWidgets('a bitcoin-denominated bound keeps its precision', (
+      tester,
+    ) async {
+      // The api picks the denomination, so a bound can arrive in BTC. It must
+      // not be rounded away to "0" by fiat-style formatting.
+      expect(
+        await _translate(
+          tester,
+          const WithdrawBelowMinAmountFailure(
+            minAmount: 0.0001,
+            currency: 'BTC',
+          ),
+        ),
+        allOf(contains('0.0001'), contains('BTC')),
+      );
+    });
   });
 }

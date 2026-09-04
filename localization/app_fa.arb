@@ -860,11 +860,11 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "شما سعی می کنید از حداقل مقدار عقب نشینی کنید.",
+  "withdrawBelowMinAmountError": "حداقل مقدار {amount} {currency} است",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "شما سعی می کنید از حداکثر مقدار عقب نشینی کنید.",
+  "withdrawAboveMaxAmountError": "حداکثر مقدار {amount} {currency} است",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
