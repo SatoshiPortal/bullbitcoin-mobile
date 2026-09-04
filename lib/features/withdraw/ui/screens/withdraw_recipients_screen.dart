@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_typ
 import 'package:bb_mobile/features/recipients/frameworks/ui/screens/recipients_screen.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,10 +28,10 @@ class WithdrawRecipientsScreen extends StatelessWidget {
               ? state.isCreatingWithdrawOrder
               : false,
           onRecipientAddedHookError: state is WithdrawRecipientInputState
-              ? state.newRecipientError?.toString()
+              ? state.newRecipientFailure?.toTranslated(context)
               : null,
           onRecipientSelectedHookError: state is WithdrawRecipientInputState
-              ? state.selectedRecipientError?.toString()
+              ? state.selectedRecipientFailure?.toTranslated(context)
               : null,
         );
       },

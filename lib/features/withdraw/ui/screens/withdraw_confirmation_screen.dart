@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
+import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -232,17 +233,17 @@ class _ConfirmButton extends StatelessWidget {
           bloc.state is WithdrawConfirmationState &&
           (bloc.state as WithdrawConfirmationState).isConfirmingWithdrawal,
     );
-    final withdrawError = context.select(
+    final withdrawFailure = context.select(
       (WithdrawBloc bloc) => bloc.state is WithdrawConfirmationState
-          ? (bloc.state as WithdrawConfirmationState).error
+          ? (bloc.state as WithdrawConfirmationState).failure
           : null,
     );
 
     return Column(
       children: [
-        if (withdrawError != null) ...[
+        if (withdrawFailure != null) ...[
           Text(
-            context.loc.withdrawConfirmError(withdrawError.toString()),
+            withdrawFailure.toTranslated(context),
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
             ),
