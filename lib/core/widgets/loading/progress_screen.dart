@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAssets, Gap;
 import 'package:gif/gif.dart' show Autostart, Gif;
 
 class ProgressScreen extends StatelessWidget {
@@ -29,7 +28,7 @@ class ProgressScreen extends StatelessWidget {
                 autostart: Autostart.loop,
                 width: 200,
                 height: 200,
-                image: AssetImage(Assets.animations.cubesLoading.path),
+                image: BullAssets.animations.cubesLoading,
               ),
             ),
           if (title != null) ...[

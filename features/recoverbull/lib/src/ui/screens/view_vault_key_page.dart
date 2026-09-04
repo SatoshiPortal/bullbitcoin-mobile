@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import '../../l10n/context_localizations.dart';
+import '../support.dart';
+
+class ViewVaultKeyPage extends StatelessWidget {
+  final String vaultKey;
+
+  const ViewVaultKeyPage({super.key, required this.vaultKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: .center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: CopyInput(
+                text: vaultKey.length >= 6
+                    ? vaultKey.substring(0, 6) + '*' * (vaultKey.length - 6)
+                    : '',
+                canShowValueModal: true,
+                maxLines: 1,
+
+                clipboardText: vaultKey,
+                overflow: .clip,
+                modalContent: vaultKey
+                    .replaceAllMapped(
+                      RegExp('.{1,4}'),
+                      (match) => '${match.group(0)} ',
+                    )
+                    .trim(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

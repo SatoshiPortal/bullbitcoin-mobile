@@ -1160,7 +1160,6 @@
   "takeYourTimeTag": "Prenez votre temps",
   "customLocationTitle": "Emplacement personnalisé",
   "recoverWalletScreenTitle": "Récupérer le portefeuille",
-  "recoverbullVaultRecoveryTitle": "Récupération du coffre-fort Recoverbull",
   "chooseAccessPinTitle": "Choisir le {pinOrPassword} d'accès",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2378,195 +2377,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveCancelButton": "Annuler",
-  "recoverbullGoogleDriveDeleteButton": "Supprimer",
-  "recoverbullGoogleDriveDeleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette sauvegarde de coffre-fort ? Cette action ne peut pas être annulée.",
-  "recoverbullGoogleDriveDeleteVaultTitle": "Supprimer le coffre-fort",
-  "recoverbullGoogleDriveErrorDisplay": "Erreur : {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullCheckingConnection": "Vérification de la connexion pour RecoverBull",
-  "recoverbullConfirm": "Confirmer",
-  "recoverbullConfirmInput": "Confirmer {inputType}",
-  "@recoverbullConfirmInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullConnected": "Connecté",
-  "recoverbullConnecting": "Connexion en cours",
-  "recoverbullConnectingTor": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
-  "recoverbullConnectionFailed": "Échec de la connexion",
-  "recoverbullContinue": "Continuer",
-  "recoverbullCreatingVault": "Création du coffre-fort chiffré",
-  "recoverbullDecryptVault": "Déchiffrer le coffre-fort",
-  "recoverbullEncryptedVaultCreated": "Coffre-fort chiffré créé !",
-  "recoverbullEnterInput": "Entrez votre {inputType}",
-  "@recoverbullEnterInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterToDecrypt": "Veuillez entrer votre {inputType} pour déchiffrer votre coffre-fort.",
-  "@recoverbullEnterToDecrypt": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterToTest": "Veuillez entrer votre {inputType} pour tester votre coffre-fort.",
-  "@recoverbullEnterToTest": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterToView": "Veuillez entrer votre {inputType} pour voir votre clé de coffre-fort.",
-  "@recoverbullEnterToView": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterVaultKeyInstead": "Entrer une clé de coffre-fort",
-  "recoverbullErrorConnectionFailed": "Échec de la connexion au serveur de clés cible. Veuillez réessayer plus tard !",
-  "recoverbullErrorDecryptFailed": "Échec du déchiffrement du coffre-fort",
-  "recoverbullErrorFetchKeyFailed": "Échec de la récupération de la clé du coffre-fort depuis le serveur",
-  "recoverbullErrorInvalidCredentials": "Mot de passe incorrect pour ce fichier de sauvegarde",
-  "recoverbullErrorMissingBytes": "Octets manquants dans la réponse Tor. Réessayez, mais si le problème persiste, il s'agit d'un problème connu pour certains appareils avec Tor.",
-  "recoverbullErrorPasswordNotSet": "Le mot de passe n'est pas défini",
-  "recoverbullTorNotStarted": "Tor n'est pas démarré",
-  "recoverbullErrorRateLimited": "Limite de taux atteinte. Veuillez réessayer dans {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullErrorUnexpected": "Erreur inattendue, voir les logs",
-  "recoverbullUnexpectedError": "Erreur inattendue",
-  "recoverbullErrorSelectVault": "Échec de la sélection du coffre-fort",
-  "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
-  "recoverbullErrorVaultCreationFailed": "Échec de la création du coffre-fort, cela peut être le fichier ou la clé",
-  "recoverbullErrorVaultNotSet": "Le coffre-fort n'est pas défini",
-  "recoverbullFailed": "Échec",
-  "recoverbullFetchingVaultKey": "Récupération de la clé de coffre-fort",
-  "recoverbullFetchVaultKey": "Récupérer la clé de coffre-fort",
-  "recoverbullGoBackEdit": "<< Retour pour modifier",
-  "recoverbullGotIt": "Compris",
-  "recoverbullKeyServer": "Serveur de clés ",
-  "recoverbullMemorizeWarning": "Vous devez mémoriser ce {inputType} pour récupérer l'accès à votre portefeuille. Il doit contenir au moins 6 chiffres. Si vous perdez ce {inputType}, vous ne pourrez pas récupérer votre sauvegarde.",
-  "@recoverbullMemorizeWarning": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullPassword": "Mot de passe",
-  "recoverbullPasswordMismatch": "Les mots de passe ne correspondent pas",
-  "recoverbullPasswordRequired": "Le mot de passe est requis",
-  "recoverbullPasswordTooCommon": "Ce mot de passe est trop courant. Veuillez en choisir un autre",
-  "recoverbullPasswordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
-  "recoverbullPIN": "NIP",
-  "recoverbullPleaseWait": "Veuillez patienter pendant que nous établissons une connexion sécurisée...",
-  "recoverbullReenterConfirm": "Veuillez re-saisir votre {inputType} pour confirmer.",
-  "@recoverbullReenterConfirm": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullReenterRequired": "Re-saisir votre {inputType}",
-  "@recoverbullReenterRequired": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Échec de la suppression du coffre-fort de Google Drive",
-  "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation du coffre-fort de Google Drive",
-  "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération des coffres-forts de Google Drive",
-  "recoverbullGoogleDriveErrorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
-  "recoverbullGoogleDriveErrorSelectFailed": "Échec de la sélection du coffre-fort de Google Drive",
-  "recoverbullGoogleDriveExportButton": "Exporter",
-  "recoverbullGoogleDriveNoBackupsFound": "Aucune sauvegarde trouvée",
-  "recoverbullGoogleDriveScreenTitle": "Coffres-forts Google Drive",
-  "recoverbullRecoverBullServer": "Serveur RecoverBull",
-  "recoverbullRetry": "Réessayer",
-  "recoverbullSecureBackup": "Sécurisez votre sauvegarde",
-  "recoverbullSeeMoreVaults": "Voir plus de coffres-forts",
-  "recoverbullSelectRecoverWallet": "Récupérer le portefeuille",
-  "recoverbullSelectVaultSelected": "Coffre-fort sélectionné",
-  "recoverbullSelectCustomLocation": "Emplacement personnalisé",
-  "recoverbullSelectDriveBackups": "Sauvegardes Drive",
-  "recoverbullSelectGoogleDrive": "Google Drive",
-  "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "recoverbullSelectCustomLocationProvider": "Emplacement personnalisé",
-  "recoverbullSelectQuickAndEasy": "Rapide et facile",
-  "recoverbullSelectTakeYourTime": "Prenez votre temps",
-  "recoverbullSelectVaultImportSuccess": "Votre coffre-fort a été importé avec succès",
-  "recoverbullSelectEnterBackupKeyManually": "Entrer la clé de sauvegarde manuellement >>",
-  "recoverbullSelectDecryptVault": "Déchiffrer le coffre-fort",
-  "recoverbullSelectNoBackupsFound": "Aucune sauvegarde trouvée",
-  "recoverbullSelectErrorPrefix": "Erreur :",
-  "recoverbullSelectFetchDriveFilesError": "Échec de la récupération de toutes les sauvegardes Drive",
-  "recoverbullSelectFileNotSelectedError": "Fichier non sélectionné",
-  "recoverbullSelectCustomLocationError": "Échec de la sélection du fichier depuis l'emplacement personnalisé",
-  "recoverbullSelectBackupFileNotValidError": "Le fichier de sauvegarde RecoverBull n'est pas valide",
-  "recoverbullSelectVaultProvider": "Sélectionnez le fournisseur de coffre-fort",
-  "recoverbullSwitchToPassword": "Choisir un mot de passe",
-  "recoverbullSwitchToPIN": "Choisir un NIP plutôt",
-  "recoverbullTestBackupDescription": "Maintenant, testons votre sauvegarde pour nous assurer que tout a été fait correctement.",
-  "recoverbullTestCompletedTitle": "Test réussi !",
-  "recoverbullTestRecovery": "Tester la récupération",
-  "recoverbullTestSuccessDescription": "Vous pouvez récupérer l'accès à un portefeuille Bitcoin perdu",
-  "recoverbullTorNetwork": "Réseau Tor",
-  "recoverbullVaultCreatedSuccess": "Coffre-fort créé avec succès",
-  "recoverbullVaultImportedSuccess": "Votre coffre-fort a été importé avec succès",
-  "recoverbullVaultKey": "Clé de coffre-fort",
-  "recoverbullVaultKeyInput": "Clé de coffre-fort",
-  "recoverbullVaultSelected": "Coffre-fort sélectionné",
-  "recoverbullWaiting": "En attente",
-  "recoverbullRecoveryTitle": "Récupération du coffre-fort RecoverBull",
-  "recoverbullRecoveryLoadingMessage": "Recherche du solde et des transactions…",
-  "recoverbullRecoveryBalanceLabel": "Solde : {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullRecoveryTransactionsLabel": "Transactions : {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "recoverbullRecoveryContinueButton": "Continuer",
-  "recoverbullRecoveryErrorWalletExists": "Ce portefeuille existe déjà.",
-  "recoverbullRecoveryErrorWalletMismatch": "Un portefeuille par défaut différent existe déjà. Vous ne pouvez avoir qu'un seul portefeuille par défaut.",
-  "recoverbullRecoveryErrorKeyDerivationFailed": "Échec de la dérivation de la clé de sauvegarde locale.",
-  "recoverbullRecoveryErrorVaultCorrupted": "Le fichier de sauvegarde sélectionné est corrompu.",
-  "recoverbullRecoveryErrorMissingDerivationPath": "Chemin de dérivation manquant dans le fichier de sauvegarde.",
   "rbfTitle": "Remplacer par frais",
   "rbfOriginalTransaction": "Transaction originale",
   "rbfBroadcast": "Diffuser",
@@ -3683,9 +3493,6 @@
   "coreScreensReceiveAmountLabel": "Montant reçu",
   "coreScreensSendNetworkFeeLabel": "Frais de réseau d'envoi",
   "coreScreensConfirmButton": "Confirmer",
-  "recoverbullErrorRejected": "Rejeté par le serveur de clés",
-  "recoverbullErrorServiceUnavailable": "Service indisponible. Veuillez vérifier votre connexion.",
-  "recoverbullErrorInvalidVaultFile": "Fichier de coffre invalide.",
   "systemLabelSwaps": "Swaps",
   "systemLabelAutoSwap": "Auto Swap",
   "systemLabelPayjoin": "Payjoin",
@@ -4308,22 +4115,6 @@
   "mempoolCustomServerNoSsl": "Sans SSL",
   "autoswapTargetBalanceLabel": "Solde cible du portefeuille instantané",
   "autoswapMaximumBalanceLabel": "Solde maximal du portefeuille instantané",
-  "recoverbullServerConfirmTitle": "Serveur de récupération du coffre",
-  "recoverbullServerUsingDefault": "Serveur par défaut utilisé",
-  "recoverbullServerUsingCustom": "Serveur personnalisé utilisé",
-  "recoverbullServerUrlLabel": "URL du serveur :",
-  "recoverbullServerCustomWarning": "Vous utilisez un serveur Recoverbull personnalisé. Assurez-vous de faire confiance à ce serveur.",
-  "recoverbullServerTorNotice": "Nous nous connecterons à ce serveur via Tor",
-  "recoverbullLearnMore": "En savoir plus sur Recoverbull",
-  "recoverbullSettingsTitle": "Paramètres Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL du serveur de clés",
-  "recoverbullSettingsEdit": "Modifier",
-  "recoverbullSettingsCancel": "Annuler",
-  "recoverbullSettingsSave": "Enregistrer",
-  "recoverbullSettingsUrlRequired": "L'URL est requise",
-  "recoverbullSettingsUrlInvalid": "L'URL n'est pas valide",
-  "recoverbullSettingsUrlMustBeHttp": "L'URL doit être en HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "L'URL doit se terminer par .onion",
   "onboardingAdvancedOptionsTitle": "Options avancées",
   "onboardingAdvancedOptionsDescription": "Configurez les paramètres avancés avant de créer ou de récupérer votre portefeuille",
   "onboardingAdvancedOptionsCustomElectrum": "Serveur Electrum personnalisé",
@@ -4771,7 +4562,6 @@
   "viewerPaymentUriTab": "URI de paiement",
   "transactionSwapOpenWithin24h": "Ouvrez l'application dans les 24 heures pour finaliser votre swap.",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://exemple.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "Les transactions à moins de 1 sat/vo peuvent prendre plus de temps à se confirmer et ne pas se propager à tous les nœuds.",
   "sendBelowMinFeeRateError": "Les frais doivent être d'au moins 0,1 sat/vo.",
@@ -4892,12 +4682,8 @@
   "torSettingsStatusCensored": "Connexion semble filtrée",
   "torSettingsDescCensored": "Tor n'a pas pu joindre le réseau. Cela indique souvent une connexion filtrée.",
   "torSettingsBootstrapProgress": "Connexion… {percent} %",
-  "recoverbullPhaseNetworkInfo": "Récupération des informations du réseau",
-  "recoverbullLongestStep": "C'est l'étape la plus longue. Un premier démarrage peut dépasser une minute.",
   "recoverbullTorOffline": "Il semble n'y avoir aucune connexion Internet.",
   "recoverbullTorClockSkewed": "L'horloge de l'appareil est décalée, Tor ne peut donc pas vérifier les certificats des relais. Vérifiez vos réglages de date et d'heure.",
-  "recoverbullTorCantStart": "Tor n'a pas réussi à se connecter pour le moment. Veuillez réessayer.",
-  "recoverbullServerUnreachableTorOk": "Tor fonctionne, mais le serveur de sauvegarde n'a pas répondu. Cela peut prendre un moment juste après un premier démarrage.",
   "torSettingsEmbeddedTitle": "Tor intégré",
   "torSettingsEmbeddedDescription": "Le Tor intégré est utilisé par RecoverBull et les serveurs Bitcoin Electrum en .onion. Le reste du trafic de l'application reste direct.",
   "torSettingsTransportMode": "Méthode de connexion",

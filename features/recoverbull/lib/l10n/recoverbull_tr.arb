@@ -1,0 +1,642 @@
+{
+  "@@locale": "tr",
+  "recoverbullGoogleDriveNoBackupsFound": "Hiçbir yedek bulunamadı",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Backup file eksik toplama yolu.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
+  },
+  "recoverbullVaultKeyInput": "Pencere",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullSwitchToPassword": "Bunun yerine bir şifre seçin",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullErrorInvalidVaultFile": "Invalidob dosyası.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullLongestStep": "Bu en uzun adımdır. İlk başlatma bir dakikadan uzun sürebilir.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Seçilmiş yedekleme dosyası bozulmuştur.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullVaultImportedSuccess": "Torununuz başarıyla ithal edildi",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullPasswordTooShort": "Şifre en az 6 karakter uzunluğunda olmalıdır",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullFetchingVaultKey": "Fetching Vault Anahtar Anahtar Anahtar Anahtar",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullSecureBackup": "Backup your backup",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "backupWalletHowToDecideVaultCloudRecommendationText": "cihazlarınızı kaybederseniz bile asla tonluk dosyanıza erişimi kaybetmediğinizden emin olmak istersiniz.",
+  "@backupWalletHowToDecideVaultCloudRecommendationText": {
+    "description": "Recommendation text for when to use cloud storage"
+  },
+  "walletSetupErrorTryAgain": "Cüzdanınızı ayarlarken bir şeyler ters gitti. Lütfen tekrar deneyin.",
+  "recoverbullRecoveryLoadingMessage": "Denge ve işlemlere bakmak..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullErrorMissingBytes": "Tor yanıtından gelen gecikmeler. Retry ama konu devam ederse, Tor ile bazı cihazlar için bilinen bir konudur.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "torSettingsTitle": "Tor Ayarları",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "recoverbullSelectRecoverWallet": "Recover Cüzdan",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullErrorServiceUnavailable": "Hizmet mevcut değildir. Lütfen bağlantınızı kontrol edin.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullPassword": "Şifre",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullReenterRequired": "Re-enter your {inputType}",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "laf dosyasını kaybetmeyeceksiniz ve telefonunuzu kaybederseniz hala erişilebilir olacaktır.",
+  "@backupWalletHowToDecideVaultCustomRecommendationText": {
+    "description": "Recommendation text for when to use custom location"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "Google Drive",
+  "@recoverbullSelectGoogleDrive": {
+    "description": "Name label for Google Drive backup provider option"
+  },
+  "recoverbullEnterInput": "{inputType}",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "URL gereklidir",
+  "recoverbullServerUsingCustom": "Özel Sunucu Kullanılıyor",
+  "recoverbullErrorRejected": "Anahtar Server tarafından reddedilen",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSettingsKeyServerUrl": "Anahtar Sunucu URL'si",
+  "recoverbullKeyServer": "Key Server ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Delete",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveCancelButton": "Cancel",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullSelectVaultSelected": "Pencere Seçilmiş",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullRecoveryErrorWalletExists": "Bu cüzdan zaten var.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullSelectCustomLocationProvider": "Özel konum",
+  "@recoverbullSelectCustomLocationProvider": {
+    "description": "Name label for custom location backup provider option"
+  },
+  "recoverbullTorNotStarted": "Tor başlamadı",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullFailed": "Başarısızlık",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullConnectionFailed": "Bağlantı başarısız oldu",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Tüm sürücü yedeklerini getirmek için başarısız oldu",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectFileNotSelectedError": "Dosyayı seçmedi",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "backupWalletHowToDecideVaultCustomRecommendation": "Özel yer: ",
+  "@backupWalletHowToDecideVaultCustomRecommendation": {
+    "description": "Bold label for custom location recommendation"
+  },
+  "recoverbullSwitchToPIN": "Bunun yerine bir PIN alın",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullSelectDecryptVault": "Decryptob",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullPleaseWait": "Lütfen güvenli bir bağlantı kurdukken bekleyin...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullPhaseNetworkInfo": "Ağ bilgileri alınıyor",
+  "recoverbullReenterConfirm": "Lütfen teyit etmek için {inputType}'inizi yeniden girin.",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "Etkin taşıyıcı: {transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "Şifreler eşleşmez",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullErrorDecryptFailed": "Çarpıcıyı bozmak için",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullSelectCustomLocation": "Özel Konum",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Hata: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Google Drive'dan uzaklaşmak için başarısız oldu",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullTestSuccessDescription": "Kayıp bir Bitcoin cüzdanına erişmek mümkün",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullPasswordRequired": "Şifre gereklidir",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds} saniyeler",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "Vault oluşturma başarısız oldu, dosya veya anahtar",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Yerel yedekleme anahtarı çıkarma başarısız oldu.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectBackupFileNotValidError": "Recoverbull yedekleme dosyası geçerli değildir",
+  "@recoverbullSelectBackupFileNotValidError": {
+    "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullErrorFetchKeyFailed": "Sunucu anahtarını sunucudan getiremedi",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullEnterToView": "Lütfen {inputType} to view yourob key.",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "Hızlı ve kolay",
+  "@recoverbullSelectQuickAndEasy": {
+    "description": "Description tag for Google Drive and iCloud provider options"
+  },
+  "recoverbullTorClockSkewed": "Cihazınızın saati yanlış, bu yüzden Tor aktarıcı sertifikalarını doğrulayamıyor. Tarih ve saat ayarlarını kontrol edin.",
+  "recoverbullGoogleDriveDeleteConfirmation": "Bu küçük yedeklemeyi silmek istediğinizden emin misiniz? Bu eylem geri alınamaz.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullSelectVaultProvider": "Pencere Sağlayıcısı Seç",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullRecoveryBalanceLabel": "Denge: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "Devam etmeye devam et",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullSettingsSave": "Kaydet",
+  "recoverbullEnterToTest": "Lütfen {inputType} to test etmek için girin.",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Google veya Apple gibi bulut depolama sağlayıcıları Bitcoin'e erişimi olmayacak çünkü şifreleme şifresi çok güçlü. Sadece Bitcoin'e anahtar sunucu ile birlikte çalıştıkları olası bir durumda erişebilirler ( Şifre parolanızı depolayan online hizmet). Anahtar sunucu hiç hackleniyorsa, Bitcoin'iniz Google veya Apple bulut ile risk altında olabilir.",
+  "@backupWalletHowToDecideVaultCloudSecurity": {
+    "description": "Explanation of cloud storage security in vault location decision help modal"
+  },
+  "torSettingsModeAutomaticDescription": "Önce doğrudan Tor bağlantısını dener; ağ Tor'u engelliyor görünüyorsa Snowflake kullanır.",
+  "recoverbullSelectVaultImportSuccess": "Torununuz başarıyla ithal edildi",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullErrorVaultNotSet": "Vault ayarlanmamış değildir",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullVaultRecoveryTitle": "Recoverbullob kurtarma",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "recoverbullCreatingVault": "Encrypted Oluşturma Pencere",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullTorCantStart": "Tor şu anda bağlanamadı. Lütfen tekrar deneyin.",
+  "recoverbullDecryptVault": "Decryptob",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullErrorSelectVault": "Kaçını seçmek için başarısız oldu",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "torSettingsStatusCensored": "Bağlantı filtreleniyor görünüyor",
+  "torSettingsModeSnowflakeDescription": "Filtrelenen bir ağdan Tor'a ulaşmak için gönüllü Snowflake vekillerini kullanır.",
+  "backupWalletHowToDecideBackupModalTitle": "Nasıl karar verilir",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "recoverbullSettingsUrlMustBeOnion": "URL, .onion ile bitmelidir",
+  "recoverbullServerConfirmTitle": "Kasa Kurtarma Sunucusu",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "Test başarıyla tamamlandı!",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Google Drive'dan toplayamadı",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullSettingsEdit": "Düzenle",
+  "recoverbullPIN": "PIN",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "torSettingsModeDirectDescription": "Takılabilir taşıyıcı kullanmadan doğrudan Tor ağına bağlanır.",
+  "recoverbullUnexpectedError": "Beklenmeyen hata",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryTransactionsLabel": "İşlemler: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "URL geçerli değil",
+  "recoverbullSelectDriveBackups": "Drive Backups",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorUnexpected": "Beklenmeyen hata, logları görmek",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullCheckingConnection": "RecoverBull için bağlantı kontrol etmek",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullErrorInvalidCredentials": "Bu yedekleme dosyası için yanlış şifre",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
+  "recoverbullGoBackEdit": "<< Go back and edit",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGoogleDriveExportButton": "İhracat İhracatı",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullSeeMoreVaults": "Daha fazla ton gör",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
+  },
+  "recoverbullServerCustomWarning": "Özel bir Recoverbull sunucusu kullanıyorsunuz. Bu sunucuya güvendiğinizden emin olun.",
+  "recoverbullTestRecovery": "Test Kurtarma Test",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullRecoveryContinueButton": "Devam etmeye devam et",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullServerUrlLabel": "Sunucu URL'si:",
+  "recoverbullTorNetwork": "Tor Ağı",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "torSettingsDescConnected": "Tor proxy sürüyor ve hazır",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "recoverbullSettingsTitle": "Recoverbull Ayarları",
+  "recoverbullSelectErrorPrefix": "Hata:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "RecoverBull Server",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullTorOffline": "İnternet bağlantısı yok gibi görünüyor.",
+  "recoverbullServerUsingDefault": "Varsayılan Sunucu Kullanılıyor",
+  "recoverbullTestBackupDescription": "Şimdi her şeyin düzgün yapıldığından emin olmak için yedeklemenizi test edelim.",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullErrorPasswordNotSet": "Şifre ayarlanmamış",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullEncryptedVaultCreated": "Şifreli Vault oluşturuldu!",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullErrorRateLimited": "Oran sınırlı. Lütfen tekrar deneyin {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "Bunun yerine biraz anahtar girin",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Recoverbull hakkında daha fazla bilgi edinin",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "Tor ağa ulaşamadı. Bu genellikle bağlantının filtrelendiği anlamına gelir.",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Google Drive'dan uzaklaşmak için başarısız oldu",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullVaultCreatedSuccess": "Vault başarıyla oluşturuldu",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullConfirm": "Onay Onay Onay Onaylandı",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullWaiting": "Bekle",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
+  },
+  "backupWalletHowToDecideVaultMoreInfo": "Daha fazla bilgi için kurtarmabull.com ziyaret edin.",
+  "@backupWalletHowToDecideVaultMoreInfo": {
+    "description": "Link text to external resource about vault locations"
+  },
+  "recoverbullVaultSelected": "Pencere Seçilmiş",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullSettingsCancel": "İptal",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Google veya Google Apple cloud: ",
+  "@backupWalletHowToDecideVaultCloudRecommendation": {
+    "description": "Bold label for cloud storage recommendation"
+  },
+  "backupWalletHowToDecide": "Nasıl karar verilir?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "durationMinute": "{minutes} dakika",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "Bir hata oluştu. Lütfen tekrar deneyin.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullRecoveryTitle": "Recoverbullob kurtarma",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullConnected": "Connected",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "Delete",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Pencere",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Backup key manuel >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "Hedef anahtar sunucuya bağlanmak için başarısız oldu. Lütfen daha sonra tekrar deneyin!",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullFetchVaultKey": "Fetch Vault Anahtar Anahtar Anahtar Anahtar",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Google Drive'dan uzaklaşmak için başarısız oldu",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullSelectTakeYourTime": "Zamanınızı alın",
+  "@recoverbullSelectTakeYourTime": {
+    "description": "Description tag for custom location provider option"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "Farklı bir varsayılan cüzdan zaten var. Sadece tek bir varsayılan cüzdana sahip olabilirsiniz.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullConfirmInput": "{inputType}",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "Cüzdanınıza erişimi geri kazanmak için bu {inputType}'i ezberlemeniz gerekir. En az 6 basamak olmalıdır. Bu {inputType}'i kaybederseniz yedeklemenizi kurtaramazsınız.",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL, HTTP olmalıdır",
+  "recoverbullGotIt": "Got it Got it",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullPasswordTooCommon": "Bu şifre çok yaygındır. Lütfen farklı birini seçin",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullServerTorNotice": "Bu sunucuya Tor üzerinden bağlanacağız",
+  "backupWalletHowToDecideVaultCustomLocation": "Özel bir yer, seçtiğiniz yere bağlı olarak çok daha güvenli olabilir. Ayrıca yedekleme dosyasını kaybetmemek veya yedekleme dosyasınınızın depolandığı cihazı kaybetmekten emin olmalısınız.",
+  "@backupWalletHowToDecideVaultCustomLocation": {
+    "description": "Explanation of custom location benefits and risks"
+  },
+  "recoverbullEnterToDecrypt": "Lütfen {inputType} tonunuzu şifrelemek için girin.",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "Hiçbir yedek bulunamadı",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullSelectAppleIcloud": "Apple",
+  "@recoverbullSelectAppleIcloud": {
+    "description": "Name label for Apple iCloud backup provider option"
+  },
+  "recoverbullServerUnreachableTorOk": "Tor çalışıyor ancak yedek sunucusu yanıt vermedi. İlk başlatmanın hemen ardından bu biraz zaman alabilir.",
+  "durationMinutes": "{minutes} dakika",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "Connecting",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Başarısız: Kamera dosyası oluşturuldu ancak sunucuda depolanmadı",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRetry": "Retry",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullConnectingTor": "Tor üzerinde Key Server'a bağlanın.\nBu bir dakikaya kadar sürebilir.",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullSelectCustomLocationError": "Özel yerden dosya seçmek için başarısız oldu",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "torSettingsDescDisconnected": "Tor proxy çalışmıyor",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "oopsSomethingWentWrong": "Oops! Bir şey ters gitti yanlış bir şey gitti",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "Tekrar Dene",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "Devam Et",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "Kopya kopya",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "Close",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

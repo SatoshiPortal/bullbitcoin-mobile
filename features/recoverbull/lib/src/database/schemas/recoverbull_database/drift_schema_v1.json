@@ -1,0 +1,390 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": true
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_state",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_url_override",
+            "getter_name": "serverUrlOverride",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "permission_granted",
+            "getter_name": "permissionGranted",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"permission_granted\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"permission_granted\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "attempt_monitoring_enabled",
+            "getter_name": "attemptMonitoringEnabled",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"attempt_monitoring_enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"attempt_monitoring_enabled\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_encrypted_backup_at",
+            "getter_name": "lastEncryptedBackupAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_verified_encrypted_backup_at",
+            "getter_name": "lastVerifiedEncryptedBackupAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "etag",
+            "getter_name": "etag",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_successful_check_at",
+            "getter_name": "lastSuccessfulCheckAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "collection_started_at",
+            "getter_name": "collectionStartedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "consecutive_failures",
+            "getter_name": "consecutiveFailures",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_unavailability_warning_at",
+            "getter_name": "lastUnavailabilityWarningAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "revision",
+            "getter_name": "revision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (id = 1)",
+          "CHECK (generation >= 0)",
+          "CHECK (revision >= 0)",
+          "CHECK (consecutive_failures >= 0)"
+        ],
+        "explicit_pk": [
+          "id"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_monitored_backup",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "digest",
+            "getter_name": "digest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (length(digest) = 32)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "expected_server_distinct_candidate_total",
+            "getter_name": "expectedServerDistinctCandidateTotal",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "current_window",
+            "getter_name": "currentWindow",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_warning_window",
+            "getter_name": "lastWarningWindow",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_revision",
+            "getter_name": "rowRevision",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "origin",
+            "getter_name": "origin",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'created\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_account",
+            "getter_name": "driveAccount",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_id",
+            "getter_name": "driveFileId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_created_at",
+            "getter_name": "driveFileCreatedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_modified_at",
+            "getter_name": "driveFileModifiedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (expected_server_distinct_candidate_total >= 0)",
+          "CHECK (current_window >= 0)",
+          "CHECK (last_warning_window IS NULL OR last_warning_window >= 0)",
+          "CHECK (row_revision >= 0)"
+        ],
+        "explicit_pk": [
+          "digest"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "recoverbull_drive_backup_cache",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "account",
+            "getter_name": "account",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_id",
+            "getter_name": "driveFileId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "backup_digest",
+            "getter_name": "backupDigest",
+            "moor_type": "blob",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_created_at",
+            "getter_name": "driveFileCreatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "drive_file_modified_at",
+            "getter_name": "driveFileModifiedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "account",
+          "drive_file_id"
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "recoverbull_state",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_state\" (\"id\" INTEGER NOT NULL DEFAULT 1, \"server_url_override\" TEXT NULL, \"permission_granted\" INTEGER NOT NULL DEFAULT 0 CHECK (\"permission_granted\" IN (0, 1)), \"attempt_monitoring_enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"attempt_monitoring_enabled\" IN (0, 1)), \"last_encrypted_backup_at\" TEXT NULL, \"last_verified_encrypted_backup_at\" TEXT NULL, \"etag\" TEXT NULL, \"last_successful_check_at\" TEXT NULL, \"collection_started_at\" TEXT NULL, \"consecutive_failures\" INTEGER NOT NULL DEFAULT 0, \"last_unavailability_warning_at\" TEXT NULL, \"generation\" INTEGER NOT NULL DEFAULT 0, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), CHECK (id = 1), CHECK (generation >= 0), CHECK (revision >= 0), CHECK (consecutive_failures >= 0));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_monitored_backup",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_monitored_backup\" (\"digest\" BLOB NOT NULL CHECK (length(digest) = 32), \"expected_server_distinct_candidate_total\" INTEGER NOT NULL DEFAULT 0, \"current_window\" INTEGER NOT NULL DEFAULT 0, \"last_warning_window\" INTEGER NULL, \"row_revision\" INTEGER NOT NULL DEFAULT 0, \"origin\" TEXT NOT NULL DEFAULT 'created', \"drive_account\" TEXT NULL, \"drive_file_id\" TEXT NULL, \"drive_file_created_at\" TEXT NULL, \"drive_file_modified_at\" TEXT NULL, PRIMARY KEY (\"digest\"), CHECK (expected_server_distinct_candidate_total >= 0), CHECK (current_window >= 0), CHECK (last_warning_window IS NULL OR last_warning_window >= 0), CHECK (row_revision >= 0));"
+        }
+      ]
+    },
+    {
+      "name": "recoverbull_drive_backup_cache",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"recoverbull_drive_backup_cache\" (\"account\" TEXT NOT NULL, \"drive_file_id\" TEXT NOT NULL, \"backup_digest\" BLOB NOT NULL, \"drive_file_created_at\" TEXT NOT NULL, \"drive_file_modified_at\" TEXT NULL, PRIMARY KEY (\"account\", \"drive_file_id\"));"
+        }
+      ]
+    }
+  ]
+}

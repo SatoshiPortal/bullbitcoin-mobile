@@ -1122,7 +1122,6 @@
   "takeYourTimeTag": "Ota aikaa",
   "customLocationTitle": "Mukautettu sijainti",
   "recoverWalletScreenTitle": "Palauta lompakko",
-  "recoverbullVaultRecoveryTitle": "Recoverbull-holvin palautus",
   "chooseAccessPinTitle": "Valitse käyttö {pinOrPassword}",
   "@chooseAccessPinTitle": {
     "placeholders": {
@@ -2330,195 +2329,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveCancelButton": "Peruuta",
-  "recoverbullGoogleDriveDeleteButton": "Poista",
-  "recoverbullGoogleDriveDeleteConfirmation": "Haluatko varmasti poistaa tämän holvin varmuuskopion? Tätä toimintoa ei voi peruuttaa.",
-  "recoverbullGoogleDriveDeleteVaultTitle": "Poista holvi",
-  "recoverbullGoogleDriveErrorDisplay": "Virhe: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
-  "recoverbullConfirm": "Vahvista",
-  "recoverbullConfirmInput": "Vahvista {inputType}",
-  "@recoverbullConfirmInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullConnected": "Yhdistetty",
-  "recoverbullConnecting": "Yhdistetään",
-  "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
-  "recoverbullConnectionFailed": "Yhteys epäonnistui",
-  "recoverbullContinue": "Jatka",
-  "recoverbullCreatingVault": "Luodaan salattua holvia",
-  "recoverbullDecryptVault": "Pura holvi",
-  "recoverbullEncryptedVaultCreated": "Salattu holvi luotu!",
-  "recoverbullEnterInput": "Syötä {inputType}",
-  "@recoverbullEnterInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterToDecrypt": "Syötä {inputType} purkaaksesi holvisi.",
-  "@recoverbullEnterToDecrypt": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterToTest": "Syötä {inputType} testataksesi holviasi.",
-  "@recoverbullEnterToTest": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterToView": "Syötä {inputType} nähdäksesi holviavaimesi.",
-  "@recoverbullEnterToView": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullEnterVaultKeyInstead": "Syötä sen sijaan holviavain",
-  "recoverbullErrorConnectionFailed": "Yhteyden muodostaminen kohdeavainpalvelimeen epäonnistui. Yritä myöhemmin uudelleen!",
-  "recoverbullErrorDecryptFailed": "Holvin purku epäonnistui",
-  "recoverbullErrorFetchKeyFailed": "Holviavaimen hakeminen palvelimelta epäonnistui",
-  "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
-  "recoverbullErrorMissingBytes": "Puuttuvia bittejä Tor-vastauksesta. Yritä uudelleen, mutta jos ongelma jatkuu, se on joillain laitteilla tunnettu Tor-ongelma.",
-  "recoverbullErrorPasswordNotSet": "Salasanaa ei ole asetettu",
-  "recoverbullTorNotStarted": "Tor ei ole käynnissä",
-  "recoverbullErrorRateLimited": "Kutsuja rajoitettu. Yritä uudelleen {retryIn} kuluttua",
-  "@recoverbullErrorRateLimited": {
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullErrorUnexpected": "Odottamaton virhe, katso lokit",
-  "recoverbullUnexpectedError": "Odottamaton virhe",
-  "recoverbullErrorSelectVault": "Holvin valinta epäonnistui",
-  "recoverbullErrorVaultCreatedKeyNotStored": "Epäonnistui: Holvitiedosto luotu mutta avainta ei tallennettu palvelimelle",
-  "recoverbullErrorVaultCreationFailed": "Holvin luominen epäonnistui, ongelma voi olla tiedostossa tai avaimessa",
-  "recoverbullErrorVaultNotSet": "Holvi ei ole asetettu",
-  "recoverbullFailed": "Epäonnistui",
-  "recoverbullFetchingVaultKey": "Haetaan holviavainta",
-  "recoverbullFetchVaultKey": "Hae holviavain",
-  "recoverbullGoBackEdit": "<< Palaa takaisin ja muokkaa",
-  "recoverbullGotIt": "Selvä",
-  "recoverbullKeyServer": "Avainpalvelin ",
-  "recoverbullMemorizeWarning": "Sinun on muistettava tämä {inputType} palauttaaksesi pääsyn lompakkoosi. Sen on oltava vähintään 6 numeroa. Jos menetät tämän {inputType}, et voi palauttaa varmuuskopioasi.",
-  "@recoverbullMemorizeWarning": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullPassword": "Salasana",
-  "recoverbullPasswordMismatch": "Salasanat eivät täsmää",
-  "recoverbullPasswordRequired": "Salasana on pakollinen",
-  "recoverbullPasswordTooCommon": "Tämä salasana on liian yleinen. Valitse toinen.",
-  "recoverbullPasswordTooShort": "Salasanan on oltava vähintään 6 merkkiä pitkä",
-  "recoverbullPIN": "PIN",
-  "recoverbullPleaseWait": "Odota hetki, kun luomme suojattua yhteyttä...",
-  "recoverbullReenterConfirm": "Syötä {inputType} uudelleen vahvistaaksesi.",
-  "@recoverbullReenterConfirm": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullReenterRequired": "Syötä {inputType} uudelleen",
-  "@recoverbullReenterRequired": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Holvin poistaminen Google Drivesta epäonnistui",
-  "recoverbullGoogleDriveErrorExportFailed": "Holvin vienti Google Drivesta epäonnistui",
-  "recoverbullGoogleDriveErrorFetchFailed": "Holvien hakeminen Google Drivesta epäonnistui",
-  "recoverbullGoogleDriveErrorGeneric": "Tapahtui virhe. Yritä uudelleen.",
-  "recoverbullGoogleDriveErrorSelectFailed": "Holvin valinta Google Drivesta epäonnistui",
-  "recoverbullGoogleDriveExportButton": "Vie",
-  "recoverbullGoogleDriveNoBackupsFound": "Varmuuskopioita ei löytynyt",
-  "recoverbullGoogleDriveScreenTitle": "Google Drive -holvit",
-  "recoverbullRecoverBullServer": "RecoverBull-palvelin",
-  "recoverbullRetry": "Yritä uudelleen",
-  "recoverbullSecureBackup": "Suojaa varmuuskopio",
-  "recoverbullSeeMoreVaults": "Näytä lisää holveja",
-  "recoverbullSelectRecoverWallet": "Palauta lompakko",
-  "recoverbullSelectVaultSelected": "Holvi valittu",
-  "recoverbullSelectCustomLocation": "Mukautettu sijainti",
-  "recoverbullSelectDriveBackups": "Drive-varmuuskopiot",
-  "recoverbullSelectGoogleDrive": "Google Drive",
-  "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "recoverbullSelectCustomLocationProvider": "Mukautettu sijainti",
-  "recoverbullSelectQuickAndEasy": "Nopea ja helppo",
-  "recoverbullSelectTakeYourTime": "Varaa aikaa",
-  "recoverbullSelectVaultImportSuccess": "Holvisi tuotiin onnistuneesti",
-  "recoverbullSelectEnterBackupKeyManually": "Syötä varmuuskopioavain manuaalisesti >>",
-  "recoverbullSelectDecryptVault": "Pura holvi",
-  "recoverbullSelectNoBackupsFound": "Varmuuskopioita ei löytynyt",
-  "recoverbullSelectErrorPrefix": "Virhe:",
-  "recoverbullSelectFetchDriveFilesError": "Kaikkien Drive-varmuuskopioiden haku epäonnistui",
-  "recoverbullSelectFileNotSelectedError": "Tiedostoa ei valittu",
-  "recoverbullSelectCustomLocationError": "Tiedoston valinta mukautetusta sijainnista epäonnistui",
-  "recoverbullSelectBackupFileNotValidError": "RecoverBull-varmuuskopiotiedosto ei ole kelvollinen",
-  "recoverbullSelectVaultProvider": "Valitse holvin tarjoaja",
-  "recoverbullSwitchToPassword": "Valitse salasana sen sijaan",
-  "recoverbullSwitchToPIN": "Valitse PIN sen sijaan",
-  "recoverbullTestBackupDescription": "Testataan nyt varmuuskopiosi varmistaaksemme, että kaikki tehtiin oikein.",
-  "recoverbullTestCompletedTitle": "Testi suoritettu onnistuneesti!",
-  "recoverbullTestRecovery": "Palautuksen testaus",
-  "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
-  "recoverbullTorNetwork": "Tor-verkko",
-  "recoverbullVaultCreatedSuccess": "Holvi luotu onnistuneesti",
-  "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
-  "recoverbullVaultKey": "Holviavain",
-  "recoverbullVaultKeyInput": "Holviavain",
-  "recoverbullVaultSelected": "Holvi valittu",
-  "recoverbullWaiting": "Odotetaan",
-  "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
-  "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
-  "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullRecoveryTransactionsLabel": "Transaktioita: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "recoverbullRecoveryContinueButton": "Jatka",
-  "recoverbullRecoveryErrorWalletExists": "Tämä lompakko on jo olemassa.",
-  "recoverbullRecoveryErrorWalletMismatch": "Toinen oletuslompakko on jo olemassa. Voit asettaa vain yhden oletuslompakon.",
-  "recoverbullRecoveryErrorKeyDerivationFailed": "Paikallisen varmuuskopioavaimen johtaminen epäonnistui.",
-  "recoverbullRecoveryErrorVaultCorrupted": "Valittu varmuuskopiotiedosto on vioittunut.",
-  "recoverbullRecoveryErrorMissingDerivationPath": "Varmuuskopiotiedostosta puuttuu derivointipolku.",
   "rbfTitle": "Replace-by-Fee",
   "rbfOriginalTransaction": "Alkuperäinen transaktio",
   "rbfBroadcast": "Lähetä",
@@ -3631,9 +3441,6 @@
   "coreScreensReceiveAmountLabel": "Vastaanotettava määrä",
   "coreScreensSendNetworkFeeLabel": "Lähetyksen verkkokulut",
   "coreScreensConfirmButton": "Vahvista",
-  "recoverbullErrorRejected": "Avainpalvelin hylkäsi pyynnön",
-  "recoverbullErrorServiceUnavailable": "Palvelu ei ole käytettävissä. Tarkista yhteytesi.",
-  "recoverbullErrorInvalidVaultFile": "Virheellinen holvitiedosto.",
   "systemLabelSwaps": "Swapit",
   "systemLabelAutoSwap": "Automaattinen swap",
   "systemLabelPayjoin": "Payjoin",
@@ -4311,22 +4118,6 @@
   "mempoolCustomServerNoSsl": "Ei SSL:ää",
   "autoswapTargetBalanceLabel": "Instant Wallet -tavoitesaldo",
   "autoswapMaximumBalanceLabel": "Instant Wallet -enimmäissaldo",
-  "recoverbullServerConfirmTitle": "Holvin palautuspalvelin",
-  "recoverbullServerUsingDefault": "Käytetään oletuspalvelinta",
-  "recoverbullServerUsingCustom": "Käytetään mukautettua palvelinta",
-  "recoverbullServerUrlLabel": "Palvelimen URL:",
-  "recoverbullServerCustomWarning": "Käytät mukautettua Recoverbull-palvelinta. Varmista, että luotat tähän palvelimeen.",
-  "recoverbullServerTorNotice": "Yhdistämme tähän palvelimeen Tor-verkon kautta",
-  "recoverbullLearnMore": "Lue lisää Recoverbullista",
-  "recoverbullSettingsTitle": "Recoverbull-asetukset",
-  "recoverbullSettingsKeyServerUrl": "Avainpalvelimen URL",
-  "recoverbullSettingsEdit": "Muokkaa",
-  "recoverbullSettingsCancel": "Peruuta",
-  "recoverbullSettingsSave": "Tallenna",
-  "recoverbullSettingsUrlRequired": "URL on pakollinen",
-  "recoverbullSettingsUrlInvalid": "URL ei ole kelvollinen",
-  "recoverbullSettingsUrlMustBeHttp": "URL-osoitteen on oltava HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "URL-osoitteen on päätyttävä .onion",
   "onboardingAdvancedOptionsTitle": "Lisäasetukset",
   "onboardingAdvancedOptionsDescription": "Määritä lisäasetukset ennen lompakon luomista tai palauttamista",
   "onboardingAdvancedOptionsCustomElectrum": "Mukautettu Electrum-palvelin",
@@ -4774,7 +4565,6 @@
   "viewerPaymentUriTab": "Maksu-URI",
   "transactionSwapOpenWithin24h": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapisi.",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "Alle 1 sat/vB -transaktioiden vahvistuminen voi kestää kauemmin, eivätkä ne välttämättä leviä kaikkiin solmuihin.",
   "sendBelowMinFeeRateError": "Kulutason on oltava vähintään 0.1 sat/vB.",
@@ -4841,12 +4631,8 @@
   "torSettingsStatusCensored": "Yhteys vaikuttaa suodatetulta",
   "torSettingsDescCensored": "Tor ei saanut yhteyttä verkkoon. Tämä tarkoittaa usein, että yhteyttä suodatetaan.",
   "torSettingsBootstrapProgress": "Yhdistetään… {percent} %",
-  "recoverbullPhaseNetworkInfo": "Haetaan verkon tietoja",
-  "recoverbullLongestStep": "Tämä on pisin vaihe. Ensimmäinen käynnistys voi kestää yli minuutin.",
   "recoverbullTorOffline": "Internet-yhteyttä ei näytä olevan.",
   "recoverbullTorClockSkewed": "Laitteen kello on väärässä, joten Tor ei voi varmentaa välityspalvelinten varmenteita. Tarkista päivämäärä ja kellonaika.",
-  "recoverbullTorCantStart": "Tor ei saanut yhteyttä juuri nyt. Yritä uudelleen.",
-  "recoverbullServerUnreachableTorOk": "Tor toimii, mutta varmuuskopiopalvelin ei vastannut. Heti ensimmäisen käynnistyksen jälkeen tämä voi kestää hetken.",
   "torSettingsEmbeddedTitle": "Sisäänrakennettu Tor",
   "torSettingsEmbeddedDescription": "Sisäänrakennettua Toria käyttävät RecoverBull ja Bitcoin Electrumin .onion-palvelimet. Sovelluksen muu liikenne pysyy suorana.",
   "torSettingsTransportMode": "Yhteystapa",

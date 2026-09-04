@@ -1,0 +1,151 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:bull_logger/bull_logger.dart';
+import '../models/drive_file_metadata_model.dart';
+import '../../domain/entities/encrypted_vault.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/drive/v3.dart' as drive;
+
+class GoogleDriveAppDatasource {
+  static const metadataFields =
+      'nextPageToken,files(id, name, createdTime, modifiedTime)';
+  static const metadataPageSize = 1000;
+  final LogSink log;
+  final Future<GoogleDriveMetadataPage> Function(String? pageToken)? pageLister;
+  static final _google = GoogleSignIn(
+    scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+  );
+
+  drive.DriveApi? _driveApi;
+
+  GoogleDriveAppDatasource({required this.log, this.pageLister});
+
+  void _checkConnection() {
+    if (_driveApi == null) throw 'unauthenticated';
+  }
+
+  Future<void> connect() async {
+    try {
+      final account = await _google.signIn();
+      if (account == null) throw 'Sign-in failed';
+
+      final client = await _google.authenticatedClient();
+      if (client == null) throw 'Failed to get authenticated client';
+
+      _driveApi = drive.DriveApi(client);
+    } catch (e) {
+      log.error('Google Sign-in error', error: e, trace: StackTrace.current);
+      await disconnect();
+      rethrow;
+    }
+  }
+
+  Future<String?> connectSilently() async {
+    try {
+      final account = await _google.signInSilently();
+      if (account == null) return null;
+      final client = await _google.authenticatedClient();
+      if (client == null) return null;
+      _driveApi = drive.DriveApi(client);
+      return account.email;
+    } catch (error, stackTrace) {
+      log.warning(
+        'Google silent sign-in unavailable',
+        error: error,
+        trace: stackTrace,
+      );
+      await disconnect();
+      return null;
+    }
+  }
+
+  Future<void> disconnect() async {
+    await _google.disconnect();
+    _driveApi = null;
+  }
+
+  Future<List<DriveFileMetadataModel>> fetchAllMetadata() async {
+    if (pageLister == null) _checkConnection();
+    final result = <DriveFileMetadataModel>[];
+    final seenTokens = <String>{};
+    String? token;
+    while (true) {
+      final page = pageLister == null
+          ? await _listPageFromApi(token)
+          : await pageLister!(token);
+      result.addAll(page.files);
+      final next = page.nextPageToken;
+      if (next == null || next.isEmpty) return result;
+      if (!seenTokens.add(next)) {
+        throw StateError('Drive pagination repeated a page token');
+      }
+      token = next;
+    }
+  }
+
+  Future<GoogleDriveMetadataPage> _listPageFromApi(String? pageToken) async {
+    final response = await _driveApi!.files.list(
+      spaces: 'appDataFolder',
+      q: "mimeType='application/json' and trashed=false",
+      $fields: metadataFields,
+      orderBy: 'createdTime desc',
+      pageToken: pageToken,
+      pageSize: metadataPageSize,
+    );
+    return GoogleDriveMetadataPage(
+      files:
+          response.files?.map(DriveFileMetadataModel.fromDriveFile).toList() ??
+          const [],
+      nextPageToken: response.nextPageToken,
+    );
+  }
+
+  Future<List<int>> fetchFileContent(String fileId) async {
+    _checkConnection();
+    final media =
+        await _driveApi!.files.get(
+              fileId,
+              downloadOptions: drive.DownloadOptions.fullMedia,
+            )
+            as drive.Media;
+
+    final bytes = await media.stream.fold<List<int>>(
+      <int>[],
+      (previous, element) => previous..addAll(element),
+    );
+    return bytes;
+  }
+
+  Future<void> trash(String fileId) async {
+    _checkConnection();
+    await _driveApi!.files.delete(fileId);
+  }
+
+  Future<void> store(String content) async {
+    _checkConnection();
+    final vault = EncryptedVault(file: content);
+    final filename = vault.filename;
+    final jsonVault = vault.toFile();
+
+    final file = drive.File()
+      ..name = filename
+      ..mimeType = 'application/json'
+      ..parents = ['appDataFolder'];
+
+    await _driveApi!.files.create(
+      file,
+      uploadMedia: drive.Media(
+        Stream.value(utf8.encode(jsonVault)),
+        jsonVault.length,
+      ),
+    );
+  }
+}
+
+final class GoogleDriveMetadataPage {
+  final List<DriveFileMetadataModel> files;
+  final String? nextPageToken;
+
+  const GoogleDriveMetadataPage({required this.files, this.nextPageToken});
+}

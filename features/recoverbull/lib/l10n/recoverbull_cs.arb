@@ -1,0 +1,642 @@
+{
+  "@@locale": "cs",
+  "recoverbullGoogleDriveNoBackupsFound": "Žádné zálohy nalezeno",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullRecoveryErrorMissingDerivationPath": "Záložní soubor chybějící derivační cestu.",
+  "@recoverbullRecoveryErrorMissingDerivationPath": {
+    "description": "Error when vault backup file is missing required derivation path"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
+  },
+  "recoverbullVaultKeyInput": "Vault klíč",
+  "@recoverbullVaultKeyInput": {
+    "description": "Input field label for vault key entry"
+  },
+  "recoverbullSwitchToPassword": "Vyberte heslo místo",
+  "@recoverbullSwitchToPassword": {
+    "description": "Button text to switch from PIN to password input"
+  },
+  "recoverbullErrorInvalidVaultFile": "Neplatný klenba soubor.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "recoverbullLongestStep": "Toto je nejdelší krok. První spuštění může trvat déle než minutu.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Vybrané záložní soubor je poškozen.",
+  "@recoverbullRecoveryErrorVaultCorrupted": {
+    "description": "Error when vault backup file cannot be decrypted or is invalid"
+  },
+  "recoverbullVaultImportedSuccess": "Vaše klenba byla úspěšně dovážena",
+  "@recoverbullVaultImportedSuccess": {
+    "description": "Success message after vault import"
+  },
+  "recoverbullPasswordTooShort": "Heslo musí být nejméně 6 znaků dlouhé",
+  "@recoverbullPasswordTooShort": {
+    "description": "Validation error for passwords under minimum length"
+  },
+  "recoverbullFetchingVaultKey": "Čeština Čeština",
+  "@recoverbullFetchingVaultKey": {
+    "description": "Screen title while fetching vault key from server"
+  },
+  "recoverbullSecureBackup": "Bezpečné zálohování",
+  "@recoverbullSecureBackup": {
+    "description": "Screen title for backup security setup"
+  },
+  "backupWalletHowToDecideVaultCloudRecommendationText": "chcete se ujistit, že nikdy neztratíte přístup k souboru klenby, i když ztratíte zařízení.",
+  "@backupWalletHowToDecideVaultCloudRecommendationText": {
+    "description": "Recommendation text for when to use cloud storage"
+  },
+  "walletSetupErrorTryAgain": "Při nastavování peněženky se něco pokazilo. Zkuste to prosím znovu.",
+  "recoverbullRecoveryLoadingMessage": "Hledáte rovnováhu a transakce..",
+  "@recoverbullRecoveryLoadingMessage": {
+    "description": "Loading message while checking wallet balance and transactions"
+  },
+  "recoverbullErrorMissingBytes": "Chybí bajtů z Tor odpovědi. Retry, ale pokud problém přetrvává, je známý problém pro některé zařízení s Torem.",
+  "@recoverbullErrorMissingBytes": {
+    "description": "Error message when Tor response is incomplete"
+  },
+  "torSettingsTitle": "Nastavení Toru",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "recoverbullSelectRecoverWallet": "Obnovit peněženku",
+  "@recoverbullSelectRecoverWallet": {
+    "description": "AppBar title for initial provider selection screen"
+  },
+  "recoverbullErrorServiceUnavailable": "Služba není k dispozici. Prosím zkontrolujte, zda je vaše připojení.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullPassword": "Heslo",
+  "@recoverbullPassword": {
+    "description": "Label for password input type"
+  },
+  "recoverbullReenterRequired": "Znovu zadejte {inputType}",
+  "@recoverbullReenterRequired": {
+    "description": "Label for confirmation input field",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "jste přesvědčeni, že neztratíte soubor klenby a bude stále přístupná, pokud ztratíte telefon.",
+  "@backupWalletHowToDecideVaultCustomRecommendationText": {
+    "description": "Recommendation text for when to use custom location"
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "Disk Google",
+  "@recoverbullSelectGoogleDrive": {
+    "description": "Name label for Google Drive backup provider option"
+  },
+  "recoverbullEnterInput": "Zadejte {inputType}",
+  "@recoverbullEnterInput": {
+    "description": "Input field label prompting for PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "URL je povinná",
+  "recoverbullServerUsingCustom": "Používá se vlastní server",
+  "recoverbullErrorRejected": "Omlčený Key Server",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullSettingsKeyServerUrl": "URL serveru klíčů",
+  "recoverbullKeyServer": "Key Server ",
+  "@recoverbullKeyServer": {
+    "description": "Label for key server connection status"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Odstranit Vault",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveCancelButton": "Hledat",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullSelectVaultSelected": "Vault Vybrané",
+  "@recoverbullSelectVaultSelected": {
+    "description": "AppBar title shown after vault has been selected"
+  },
+  "recoverbullRecoveryErrorWalletExists": "Tato peněženka již existuje.",
+  "@recoverbullRecoveryErrorWalletExists": {
+    "description": "Error when attempting to restore vault that already exists"
+  },
+  "recoverbullSelectCustomLocationProvider": "Vlastní umístění",
+  "@recoverbullSelectCustomLocationProvider": {
+    "description": "Name label for custom location backup provider option"
+  },
+  "recoverbullTorNotStarted": "Tor není spuštěn",
+  "@recoverbullTorNotStarted": {
+    "description": "Error message when Tor is not started"
+  },
+  "recoverbullFailed": "Selhalo",
+  "@recoverbullFailed": {
+    "description": "Status label indicating operation failure"
+  },
+  "recoverbullConnectionFailed": "Spojení selhalo",
+  "@recoverbullConnectionFailed": {
+    "description": "Status label indicating connection failure"
+  },
+  "recoverbullSelectFetchDriveFilesError": "Vypnuto načíst všechny zálohy",
+  "@recoverbullSelectFetchDriveFilesError": {
+    "description": "Error when unable to retrieve backup list from Google Drive"
+  },
+  "recoverbullSelectFileNotSelectedError": "Soubor není vybrán",
+  "@recoverbullSelectFileNotSelectedError": {
+    "description": "Error when user cancels file selection"
+  },
+  "backupWalletHowToDecideVaultCustomRecommendation": "Vlastní umístění: ",
+  "@backupWalletHowToDecideVaultCustomRecommendation": {
+    "description": "Bold label for custom location recommendation"
+  },
+  "recoverbullSwitchToPIN": "Vyberte PIN místo",
+  "@recoverbullSwitchToPIN": {
+    "description": "Button text to switch from password to PIN input"
+  },
+  "recoverbullSelectDecryptVault": "Decrypt klenba",
+  "@recoverbullSelectDecryptVault": {
+    "description": "Primary button text to proceed with vault decryption"
+  },
+  "recoverbullPleaseWait": "Prosím, počkejte, když nastavíme bezpečné spojení...",
+  "@recoverbullPleaseWait": {
+    "description": "Message shown during connection establishment"
+  },
+  "recoverbullPhaseNetworkInfo": "Načítání informací o síti",
+  "recoverbullReenterConfirm": "Prosím, znovu zadejte {inputType} pro potvrzení.",
+  "@recoverbullReenterConfirm": {
+    "description": "Instruction to re-enter PIN or password for confirmation",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "Aktivní transport: {transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "Heslo neodpovídají",
+  "@recoverbullPasswordMismatch": {
+    "description": "Validation error when passwords don't match"
+  },
+  "recoverbullErrorDecryptFailed": "Zlobil se dešifrovat klenbu",
+  "@recoverbullErrorDecryptFailed": {
+    "description": "Error message when vault decryption fails"
+  },
+  "recoverbullSelectCustomLocation": "Vlastní poloha",
+  "@recoverbullSelectCustomLocation": {
+    "description": "AppBar title for custom location file picker screen"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Chyba: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Zvýšil se exportovat klenbu z Disku Google",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullTestSuccessDescription": "Jste schopni obnovit přístup k ztracené Bitcoin peněženku",
+  "@recoverbullTestSuccessDescription": {
+    "description": "Description shown after successful recovery test"
+  },
+  "recoverbullPasswordRequired": "Heslo je vyžadováno",
+  "@recoverbullPasswordRequired": {
+    "description": "Validation error when password field is empty"
+  },
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds} vteřin(y)",
+  "@durationSeconds": {
+    "description": "Duration format for seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "Vault tvorba selhala, může to být soubor nebo klíč",
+  "@recoverbullErrorVaultCreationFailed": {
+    "description": "Error message when overall vault creation fails"
+  },
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Místní záložní klíč derivation selhal.",
+  "@recoverbullRecoveryErrorKeyDerivationFailed": {
+    "description": "Error when app fails to derive backup encryption key"
+  },
+  "recoverbullSelectBackupFileNotValidError": "Obnoveníbull záložní soubor není platný",
+  "@recoverbullSelectBackupFileNotValidError": {
+    "description": "Error when selected file is not a valid RecoverBull backup format"
+  },
+  "recoverbullErrorFetchKeyFailed": "Vypnuto na načtení klíče klenby z serveru",
+  "@recoverbullErrorFetchKeyFailed": {
+    "description": "Error message when server key fetch fails"
+  },
+  "recoverbullEnterToView": "Zadejte prosím svůj {inputType} pro zobrazení klíče klenby.",
+  "@recoverbullEnterToView": {
+    "description": "Instruction to enter PIN or password to view vault key",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "Rychlé a jednoduché",
+  "@recoverbullSelectQuickAndEasy": {
+    "description": "Description tag for Google Drive and iCloud provider options"
+  },
+  "recoverbullTorClockSkewed": "Hodiny zařízení jdou špatně, takže Tor nemůže ověřit certifikáty uzlů. Zkontrolujte nastavení data a času.",
+  "recoverbullGoogleDriveDeleteConfirmation": "Přejete-li si odstranit tuto zálohu klenby? Tato akce nelze zrušit.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullSelectVaultProvider": "Vyberte poskytovatele Vault",
+  "@recoverbullSelectVaultProvider": {
+    "description": "Screen title for vault provider selection"
+  },
+  "recoverbullRecoveryBalanceLabel": "Zůstatek: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "description": "Label showing total wallet balance found",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "Pokračovat",
+  "@recoverbullContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "recoverbullSettingsSave": "Uložit",
+  "recoverbullEnterToTest": "Zadejte prosím {inputType} pro testování klenby.",
+  "@recoverbullEnterToTest": {
+    "description": "Instruction to enter PIN or password to test vault recovery",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Poskytovatelé cloudových úložišť jako Google nebo Apple nebude mít přístup k vaší Bitcoin, protože šifrovací heslo je příliš silná. Mohou mít přístup k Bitcoinu v nepravděpodobném případě, že srazí s klíčovým serverem (online služba, která ukládá vaše šifrovací heslo). Pokud se klíčovým serverem někdy dostane hacknut, váš Bitcoin by mohl být ohrožen s Google nebo Apple cloud.",
+  "@backupWalletHowToDecideVaultCloudSecurity": {
+    "description": "Explanation of cloud storage security in vault location decision help modal"
+  },
+  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
+  "recoverbullSelectVaultImportSuccess": "Vaše klenba byla úspěšně dovážena",
+  "@recoverbullSelectVaultImportSuccess": {
+    "description": "Success message shown on vault selected page"
+  },
+  "recoverbullErrorVaultNotSet": "Vault není nastaven",
+  "@recoverbullErrorVaultNotSet": {
+    "description": "Error when attempting operation without selected vault"
+  },
+  "recoverbullVaultRecoveryTitle": "Obnovení obnovit obnovení klenby",
+  "@recoverbullVaultRecoveryTitle": {
+    "description": "Title for recoverbull vault recovery screen"
+  },
+  "recoverbullCreatingVault": "Vytvoření šifrování Čeština",
+  "@recoverbullCreatingVault": {
+    "description": "Screen title while vault is being created"
+  },
+  "recoverbullTorCantStart": "Tor se nyní nedokázal připojit. Zkuste to prosím znovu.",
+  "recoverbullDecryptVault": "Decrypt klenba",
+  "@recoverbullDecryptVault": {
+    "description": "Button text to decrypt the selected vault"
+  },
+  "recoverbullErrorSelectVault": "Vypnuto vybrat klenbu",
+  "@recoverbullErrorSelectVault": {
+    "description": "Error message when vault selection fails"
+  },
+  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
+  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
+  "backupWalletHowToDecideBackupModalTitle": "Jak se rozhodnout",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "recoverbullSettingsUrlMustBeOnion": "URL musí končit na .onion",
+  "recoverbullServerConfirmTitle": "Server pro obnovu trezoru",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "Test úspěšně dokončil!",
+  "@recoverbullTestCompletedTitle": {
+    "description": "Success title after completing backup test"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Získané k načtení klenby z Disku Google",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullSettingsEdit": "Upravit",
+  "recoverbullPIN": "ČEŠTINA",
+  "@recoverbullPIN": {
+    "description": "Label for PIN input type"
+  },
+  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
+  "recoverbullUnexpectedError": "Neočekávaná chyba",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
+  "recoverbullRecoveryTransactionsLabel": "Transakce: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "description": "Label showing total number of transactions found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "URL není platná",
+  "recoverbullSelectDriveBackups": "Zálohování disků",
+  "@recoverbullSelectDriveBackups": {
+    "description": "AppBar title for screen showing list of Google Drive backups"
+  },
+  "recoverbullErrorUnexpected": "Neočekávaná chyba, viz protokoly",
+  "@recoverbullErrorUnexpected": {
+    "description": "Error message for unexpected errors"
+  },
+  "recoverbullCheckingConnection": "Kontrola spojení pro obnoveníBull",
+  "@recoverbullCheckingConnection": {
+    "description": "Screen title while checking connection status"
+  },
+  "recoverbullErrorInvalidCredentials": "Špatné heslo pro tento záložní soubor",
+  "@recoverbullErrorInvalidCredentials": {
+    "description": "Error message when wrong password is entered for vault"
+  },
+  "recoverbullGoBackEdit": "<< Přejděte zpět a upravte",
+  "@recoverbullGoBackEdit": {
+    "description": "Button text to return to previous screen for editing"
+  },
+  "recoverbullGoogleDriveExportButton": "Čeština",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullSeeMoreVaults": "Zobrazit více klenbami",
+  "@recoverbullSeeMoreVaults": {
+    "description": "Button text to view additional vault options"
+  },
+  "recoverbullServerCustomWarning": "Používáte vlastní server Recoverbull. Ujistěte se, že tomuto serveru důvěřujete.",
+  "recoverbullTestRecovery": "Test zotavení",
+  "@recoverbullTestRecovery": {
+    "description": "Button text to initiate recovery test"
+  },
+  "recoverbullRecoveryContinueButton": "Pokračovat",
+  "@recoverbullRecoveryContinueButton": {
+    "description": "Button text to proceed with importing the wallet"
+  },
+  "recoverbullServerUrlLabel": "URL serveru:",
+  "recoverbullTorNetwork": "Tor síť",
+  "@recoverbullTorNetwork": {
+    "description": "Label for Tor network connection status"
+  },
+  "torSettingsDescConnected": "Tor proxy je spuštěn a připraven",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "recoverbullSettingsTitle": "Nastavení Recoverbull",
+  "recoverbullSelectErrorPrefix": "Chyba:",
+  "@recoverbullSelectErrorPrefix": {
+    "description": "Prefix text shown before error messages"
+  },
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "ObnoveníBull Serveru",
+  "@recoverbullRecoverBullServer": {
+    "description": "Label for RecoverBull server connection status"
+  },
+  "recoverbullTorOffline": "Zdá se, že není k dispozici připojení k internetu.",
+  "recoverbullServerUsingDefault": "Používá se výchozí server",
+  "recoverbullTestBackupDescription": "Nyní testujte zálohu, abyste se ujistili, že všechno bylo provedeno správně.",
+  "@recoverbullTestBackupDescription": {
+    "description": "Description message before testing backup"
+  },
+  "recoverbullErrorPasswordNotSet": "Heslo není nastavena",
+  "@recoverbullErrorPasswordNotSet": {
+    "description": "Error when attempting operation without setting password"
+  },
+  "recoverbullEncryptedVaultCreated": "Šifrovaný Vault vytvořen!",
+  "@recoverbullEncryptedVaultCreated": {
+    "description": "Success message title after vault creation"
+  },
+  "recoverbullErrorRateLimited": "Hodnotit omezený. Prosím, zkuste to znovu {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "description": "Error message when rate limited by the server",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "Zadejte klíč klenby místo",
+  "@recoverbullEnterVaultKeyInstead": {
+    "description": "Button text to switch to manual vault key entry"
+  },
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Více informací o Recoverbull",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Vymazat klenbu z Disku Google",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullVaultCreatedSuccess": "Vault vytvořil úspěšně",
+  "@recoverbullVaultCreatedSuccess": {
+    "description": "Success message after vault creation"
+  },
+  "recoverbullConfirm": "Potvrdit",
+  "@recoverbullConfirm": {
+    "description": "Button text to confirm an action"
+  },
+  "recoverbullWaiting": "Počátky",
+  "@recoverbullWaiting": {
+    "description": "Status label indicating waiting state"
+  },
+  "backupWalletHowToDecideVaultMoreInfo": "Navštivte obnovitbull.com pro více informací.",
+  "@backupWalletHowToDecideVaultMoreInfo": {
+    "description": "Link text to external resource about vault locations"
+  },
+  "recoverbullVaultSelected": "Vault Vybrané",
+  "@recoverbullVaultSelected": {
+    "description": "Screen title after vault has been selected"
+  },
+  "recoverbullSettingsCancel": "Zrušit",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Google nebo Apple cloud: ",
+  "@backupWalletHowToDecideVaultCloudRecommendation": {
+    "description": "Bold label for cloud storage recommendation"
+  },
+  "backupWalletHowToDecide": "Jak se rozhodnout?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "durationMinute": "{minutes} minuta",
+  "@durationMinute": {
+    "description": "Duration format for singular minute",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "Došlo k chybě. Prosím, zkuste to znovu.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullRecoveryTitle": "Obnovení obnovit obnovení klenby",
+  "@recoverbullRecoveryTitle": {
+    "description": "AppBar title for vault recovery screen"
+  },
+  "recoverbullConnected": "Připojeno",
+  "@recoverbullConnected": {
+    "description": "Status label indicating successful connection"
+  },
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "Čeština",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Vault klíč",
+  "@recoverbullVaultKey": {
+    "description": "Screen title and label for vault key"
+  },
+  "recoverbullSelectEnterBackupKeyManually": "Zadejte klávesu Backup ručně >>",
+  "@recoverbullSelectEnterBackupKeyManually": {
+    "description": "Button text to manually enter backup key"
+  },
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "Spojení k cílovému serveru. Prosím, zkuste to znovu!",
+  "@recoverbullErrorConnectionFailed": {
+    "description": "Error message when server connection fails"
+  },
+  "recoverbullFetchVaultKey": "Čeština Čeština",
+  "@recoverbullFetchVaultKey": {
+    "description": "Screen title for vault key fetch screen"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Zvolil vybrat klenbu z Disku Google",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullSelectTakeYourTime": "Udělejte si čas",
+  "@recoverbullSelectTakeYourTime": {
+    "description": "Description tag for custom location provider option"
+  },
+  "recoverbullRecoveryErrorWalletMismatch": "Existuje celá výchozí peněženka. Můžete mít pouze jednu výchozí peněženku.",
+  "@recoverbullRecoveryErrorWalletMismatch": {
+    "description": "Error when different default wallet already exists"
+  },
+  "recoverbullConfirmInput": "Potvrďte {inputType}",
+  "@recoverbullConfirmInput": {
+    "description": "Label to confirm input (PIN or password)",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "Musíte zapamatovat tento {inputType} obnovit přístup k vaší peněžence. Musí být nejméně 6 číslic. Pokud ztratíte tuto {inputType} nemůžete obnovit zálohu.",
+  "@recoverbullMemorizeWarning": {
+    "description": "Warning message about memorizing PIN or password",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL musí být HTTP",
+  "recoverbullGotIt": "Chci to",
+  "@recoverbullGotIt": {
+    "description": "Button text to acknowledge and dismiss message"
+  },
+  "recoverbullPasswordTooCommon": "Toto heslo je příliš časté. Vyberte si jiný",
+  "@recoverbullPasswordTooCommon": {
+    "description": "Validation error for commonly used passwords"
+  },
+  "recoverbullServerTorNotice": "K tomuto serveru se připojíme přes Tor",
+  "backupWalletHowToDecideVaultCustomLocation": "Vlastní umístění může být mnohem bezpečnější, v závislosti na tom, kde si vyberete místo. Musíte se také ujistit, že neztrácejí záložní soubor nebo ztratíte zařízení, na kterém je uložen váš záložní soubor.",
+  "@backupWalletHowToDecideVaultCustomLocation": {
+    "description": "Explanation of custom location benefits and risks"
+  },
+  "recoverbullEnterToDecrypt": "Zadejte prosím {inputType} pro dešifrování klenby.",
+  "@recoverbullEnterToDecrypt": {
+    "description": "Instruction to enter PIN or password for vault decryption",
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "Žádné zálohy nalezeno",
+  "@recoverbullSelectNoBackupsFound": {
+    "description": "Empty state message when no backup files found in Google Drive"
+  },
+  "recoverbullSelectAppleIcloud": "Apple iCloud",
+  "@recoverbullSelectAppleIcloud": {
+    "description": "Name label for Apple iCloud backup provider option"
+  },
+  "recoverbullServerUnreachableTorOk": "Tor funguje, ale zálohovací server neodpověděl. Hned po prvním spuštění to může chvíli trvat.",
+  "durationMinutes": "{minutes} minut(y)",
+  "@durationMinutes": {
+    "description": "Duration format for plural minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "Připojení",
+  "@recoverbullConnecting": {
+    "description": "Status label indicating connection in progress"
+  },
+  "recoverbullErrorVaultCreatedKeyNotStored": "Vypnuto: Vault soubor vytvořený, ale klíč není uložen v serveru",
+  "@recoverbullErrorVaultCreatedKeyNotStored": {
+    "description": "Error when vault file created but server key storage failed"
+  },
+  "recoverbullRetry": "Hledat",
+  "@recoverbullRetry": {
+    "description": "Button text to retry failed operation"
+  },
+  "recoverbullConnectingTor": "Připojení k Key Serveru přes Tor.\nTo může trvat až minutu.",
+  "@recoverbullConnectingTor": {
+    "description": "Message shown while establishing Tor connection"
+  },
+  "recoverbullSelectCustomLocationError": "Vypnuto vybrat soubor z vlastní polohy",
+  "@recoverbullSelectCustomLocationError": {
+    "description": "Error when file selection from custom location fails"
+  },
+  "torSettingsDescDisconnected": "Tor proxy není spuštěn",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "oopsSomethingWentWrong": "Oops! Něco šlo špatně",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "Zkusit znovu",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "Pokračovat",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "Čeština",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "Zavřít",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

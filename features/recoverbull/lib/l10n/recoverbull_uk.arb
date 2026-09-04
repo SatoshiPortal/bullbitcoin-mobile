@@ -1,0 +1,300 @@
+{
+  "@@locale": "uk",
+  "recoverbullGoogleDriveNoBackupsFound": "Не знайдено резервних копій",
+  "recoverbullRecoveryErrorMissingDerivationPath": "Файл резервного копіювання відсутній шлях видалення.",
+  "recoverbullGoogleDriveScreenTitle": "Google Диски",
+  "recoverbullVaultKeyInput": "Vault ключ",
+  "recoverbullSwitchToPassword": "Підберіть пароль замість",
+  "recoverbullErrorInvalidVaultFile": "Недійсний файл схову.",
+  "recoverbullLongestStep": "Це найдовший крок. Перший запуск може тривати понад хвилину.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Вибраний файл резервного копіювання пошкоджений.",
+  "recoverbullVaultImportedSuccess": "Ви успішно імпортували",
+  "recoverbullPasswordTooShort": "Пароль має бути принаймні 6 символів",
+  "recoverbullFetchingVaultKey": "Fetching Вейф Головна",
+  "recoverbullSecureBackup": "Забезпечити резервну копію",
+  "backupWalletHowToDecideVaultCloudRecommendationText": "ви хочете переконатися, що ви ніколи не втратите доступ до файлу за замовчуванням, навіть якщо ви втратите ваші пристрої.",
+  "walletSetupErrorTryAgain": "Щось пішло не так під час налаштування вашого гаманця. Будь ласка, спробуйте ще раз.",
+  "recoverbullRecoveryLoadingMessage": "Шукаємо баланс і операції..",
+  "recoverbullErrorMissingBytes": "Пропускання байтів від реагування тор. Ретри, але якщо питання зберігається, це відомий питання для деяких пристроїв з Tor.",
+  "torSettingsTitle": "Налаштування Tor",
+  "recoverbullSelectRecoverWallet": "Відновлення гаманця",
+  "recoverbullErrorServiceUnavailable": "Сервіс 0 Будь ласка, перевірте підключення.",
+  "recoverbullPassword": "Логін",
+  "recoverbullReenterRequired": "Завантажити {inputType}",
+  "@recoverbullReenterRequired": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "ви впевнені, що ви не втратите файл за замовчуванням і він все ще буде доступний, якщо ви втратите свій телефон.",
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "Українська",
+  "recoverbullEnterInput": "{inputType}",
+  "@recoverbullEnterInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "URL обовʼязковий",
+  "recoverbullServerUsingCustom": "Використовується власний сервер",
+  "recoverbullErrorRejected": "Відхилено Key Server",
+  "recoverbullSettingsKeyServerUrl": "URL сервера ключів",
+  "recoverbullKeyServer": "Статус на сервери ",
+  "recoverbullGoogleDriveDeleteVaultTitle": "Видалити Vault",
+  "recoverbullGoogleDriveCancelButton": "Зареєструватися",
+  "recoverbullSelectVaultSelected": "Вибрані",
+  "recoverbullRecoveryErrorWalletExists": "Цей гаманець вже існує.",
+  "recoverbullSelectCustomLocationProvider": "Місцезнаходження",
+  "recoverbullTorNotStarted": "Не розпочато",
+  "recoverbullFailed": "В'язниця",
+  "recoverbullConnectionFailed": "Підключення не вдалося",
+  "recoverbullSelectFetchDriveFilesError": "Заборонено фіксувати всі резервні копії приводу",
+  "recoverbullSelectFileNotSelectedError": "Файл не вибрано",
+  "backupWalletHowToDecideVaultCustomRecommendation": "Місцезнаходження: ",
+  "recoverbullSwitchToPIN": "Підібрати PIN замість",
+  "recoverbullSelectDecryptVault": "Розшифрування за замовчуванням",
+  "recoverbullPleaseWait": "Будь ласка, почекайте, коли ми встановлюємо безпечне підключення...",
+  "recoverbullPhaseNetworkInfo": "Отримання відомостей про мережу",
+  "recoverbullReenterConfirm": "Будь ласка, перейменуйте свій {inputType}, щоб підтвердити.",
+  "@recoverbullReenterConfirm": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "Активний транспорт: {transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "Пароль не відповідає",
+  "recoverbullErrorDecryptFailed": "Не вдалося розшифрувати запобіжник",
+  "recoverbullSelectCustomLocation": "Місцезнаходження",
+  "recoverbullGoogleDriveErrorDisplay": "{error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Заборонено експортувати сховище з Google Drive",
+  "recoverbullTestSuccessDescription": "Ви можете відновити доступ до втраченого біткойн-гаманця",
+  "recoverbullPasswordRequired": "Необхідний пароль",
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds} секунд",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "Створення Vault не вдалося, це може бути файл або ключ",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Не вдалося відхилити локальну резервну копію ключа.",
+  "recoverbullSelectBackupFileNotValidError": "Recoverbull резервний файл не діє",
+  "recoverbullErrorFetchKeyFailed": "Вимкнено до ключа за замовчуванням від сервера",
+  "recoverbullEnterToView": "Будь ласка, введіть {inputType}, щоб переглянути свій ключ за замовчуванням.",
+  "@recoverbullEnterToView": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "Швидкий і простий",
+  "recoverbullTorClockSkewed": "Годинник пристрою збився, тому Tor не може перевірити сертифікати вузлів. Перевірте дату й час.",
+  "recoverbullGoogleDriveDeleteConfirmation": "Ви впевнені, що ви хочете видалити цю резервну копію? Ця дія не може бути неоновою.",
+  "recoverbullSelectVaultProvider": "Виберіть постачальник Vault",
+  "recoverbullRecoveryBalanceLabel": "Баланс: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "Продовжити",
+  "recoverbullSettingsSave": "Зберегти",
+  "recoverbullEnterToTest": "Будь ласка, введіть своє {inputType}, щоб перевірити вашу скриньку.",
+  "@recoverbullEnterToTest": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
+  "torSettingsModeAutomaticDescription": "Спершу пробує пряме підключення до Tor, а якщо мережа, схоже, блокує Tor, використовує Snowflake.",
+  "recoverbullSelectVaultImportSuccess": "Ви успішно імпортували",
+  "recoverbullErrorVaultNotSet": "Не встановлено",
+  "recoverbullVaultRecoveryTitle": "Recoverbull відновлення",
+  "recoverbullCreatingVault": "Створення шифрування Виноград",
+  "recoverbullTorCantStart": "Наразі Tor не зміг підключитися. Спробуйте ще раз.",
+  "recoverbullDecryptVault": "Розшифрування за замовчуванням",
+  "recoverbullErrorSelectVault": "Ввімкнено до вибору за замовчуванням",
+  "torSettingsStatusCensored": "Схоже, з'єднання фільтрується",
+  "torSettingsModeSnowflakeDescription": "Використовує волонтерські проксі Snowflake, щоб дістатися Tor із фільтрованої мережі.",
+  "backupWalletHowToDecideBackupModalTitle": "Як вирішити",
+  "recoverbullSettingsUrlMustBeOnion": "URL має закінчуватися на .onion",
+  "recoverbullServerConfirmTitle": "Сервер відновлення сховища",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "Випробувано успішно!",
+  "recoverbullGoogleDriveErrorFetchFailed": "Заборонено фіксувати помилки з Google Диску",
+  "recoverbullSettingsEdit": "Редагувати",
+  "recoverbullPIN": "ПІН",
+  "torSettingsModeDirectDescription": "Підключається до мережі Tor напряму, без підключуваного транспорту.",
+  "recoverbullUnexpectedError": "Несподівана помилка",
+  "recoverbullRecoveryTransactionsLabel": "{count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "URL недійсний",
+  "recoverbullSelectDriveBackups": "Приводні резервні копії",
+  "recoverbullErrorUnexpected": "Несподівана помилка, див. журнали",
+  "recoverbullCheckingConnection": "Перевірка підключення до RecoverBull",
+  "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
+  "recoverbullGoBackEdit": "<< Повернутися і редагувати",
+  "recoverbullGoogleDriveExportButton": "Експорт",
+  "recoverbullSeeMoreVaults": "Більше снів",
+  "recoverbullServerCustomWarning": "Ви використовуєте власний сервер Recoverbull. Переконайтеся, що ви довіряєте цьому серверу.",
+  "recoverbullTestRecovery": "Відновлення даних",
+  "recoverbullRecoveryContinueButton": "Продовжити",
+  "recoverbullServerUrlLabel": "URL сервера:",
+  "recoverbullTorNetwork": "Веб-сайт",
+  "torSettingsDescConnected": "Tor proxy працює і готовий",
+  "recoverbullSettingsTitle": "Налаштування Recoverbull",
+  "recoverbullSelectErrorPrefix": "Помилка:",
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "Статус на сервери",
+  "recoverbullTorOffline": "Схоже, інтернет-з'єднання відсутнє.",
+  "recoverbullServerUsingDefault": "Використовується сервер за замовчуванням",
+  "recoverbullTestBackupDescription": "Тепер перевірте вашу резервну копію, щоб переконатися, що все було зроблено належним чином.",
+  "recoverbullErrorPasswordNotSet": "Пароль не встановлюється",
+  "recoverbullEncryptedVaultCreated": "Зашифрований Vault створений!",
+  "recoverbullErrorRateLimited": "Тарифи обмежені. Будь ласка, спробуйте знову в {retryIn}",
+  "@recoverbullErrorRateLimited": {
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "Введіть ключ vault замість",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Дізнатися більше про Recoverbull",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "Tor не зміг дістатися до мережі. Зазвичай це означає, що з'єднання фільтрують.",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Заборонено видалити сховище з Google Диску",
+  "recoverbullVaultCreatedSuccess": "Vault створений успішно",
+  "recoverbullConfirm": "Підтвердження",
+  "recoverbullWaiting": "Чекати",
+  "backupWalletHowToDecideVaultMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
+  "recoverbullVaultSelected": "Вибрані",
+  "recoverbullSettingsCancel": "Скасувати",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Українська Хмара яблука: ",
+  "backupWalletHowToDecide": "Як вирішити?",
+  "durationMinute": "{minutes} хвилин",
+  "@durationMinute": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "Помилки. Будь ласка, спробуйте знову.",
+  "recoverbullRecoveryTitle": "Recoverbull відновлення",
+  "recoverbullConnected": "Зв'язатися",
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "Видалення",
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Vault ключ",
+  "recoverbullSelectEnterBackupKeyManually": "Введіть ключ Backup вручну >>",
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "Заборонено підключення до цільового сервера ключа. Будь ласка, спробуйте ще раз!",
+  "recoverbullFetchVaultKey": "Фетиш Vault Головна",
+  "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
+  "recoverbullSelectTakeYourTime": "Зробіть свій час",
+  "recoverbullRecoveryErrorWalletMismatch": "За замовчуванням гаманець вже існує. Ви можете мати один гаманець за замовчуванням.",
+  "recoverbullConfirmInput": "Підтвердження {inputType}",
+  "@recoverbullConfirmInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "Ви повинні запам'ятати цей {inputType} для відновлення доступу до вашого гаманця. Потрібно не менше 6 цифр. Якщо ви втратите це {inputType} ви не можете відновити резервну копію.",
+  "@recoverbullMemorizeWarning": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL має бути HTTP",
+  "recoverbullGotIt": "Про нас",
+  "recoverbullPasswordTooCommon": "Цей пароль занадто поширений. Будь ласка, оберіть інший",
+  "recoverbullServerTorNotice": "Ми підключимося до цього сервера через Tor",
+  "backupWalletHowToDecideVaultCustomLocation": "Зручне розташування може бути набагато більш безпечною, в залежності від місця розташування, яку ви обираєте. Ви також повинні переконатися, що не втратити файл резервного копіювання або втратити пристрій, на якому зберігаються файли резервного копіювання.",
+  "recoverbullEnterToDecrypt": "Будь ласка, введіть своє {inputType}, щоб розшифрувати вашу скриньку.",
+  "@recoverbullEnterToDecrypt": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "Не знайдено резервних копій",
+  "recoverbullSelectAppleIcloud": "Яблуко iCloud",
+  "recoverbullServerUnreachableTorOk": "Tor працює, але сервер резервних копій не відповів. Одразу після першого запуску це може зайняти трохи часу.",
+  "durationMinutes": "{minutes} хвилин",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "Підключення",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Переміщений файл Vault створений, але ключ не зберігається в сервері",
+  "recoverbullRetry": "Птиця",
+  "recoverbullConnectingTor": "Підключення до Key Server над Tor.\nЦе може прийняти до хвилини.",
+  "recoverbullSelectCustomLocationError": "Вимкнено вибрати файл з індивідуального розташування",
+  "torSettingsDescDisconnected": "Тор проксі не працює",
+  "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "Спробувати ще раз",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "Продовжити",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "Партнерство",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "Закрити",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

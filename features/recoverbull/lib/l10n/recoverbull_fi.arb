@@ -1,0 +1,300 @@
+{
+  "@@locale": "fi",
+  "recoverbullGoogleDriveNoBackupsFound": "Varmuuskopioita ei löytynyt",
+  "recoverbullRecoveryErrorMissingDerivationPath": "Varmuuskopiotiedostosta puuttuu derivointipolku.",
+  "recoverbullGoogleDriveScreenTitle": "Google Drive -holvit",
+  "recoverbullVaultKeyInput": "Holviavain",
+  "recoverbullSwitchToPassword": "Valitse salasana sen sijaan",
+  "recoverbullErrorInvalidVaultFile": "Virheellinen holvitiedosto.",
+  "recoverbullLongestStep": "Tämä on pisin vaihe. Ensimmäinen käynnistys voi kestää yli minuutin.",
+  "recoverbullRecoveryErrorVaultCorrupted": "Valittu varmuuskopiotiedosto on vioittunut.",
+  "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
+  "recoverbullPasswordTooShort": "Salasanan on oltava vähintään 6 merkkiä pitkä",
+  "recoverbullFetchingVaultKey": "Haetaan holviavainta",
+  "recoverbullSecureBackup": "Suojaa varmuuskopio",
+  "backupWalletHowToDecideVaultCloudRecommendationText": "Haluat varmistaa, ettet koskaan menetä pääsyä holvitiedostoosi, vaikka menettäisit laitteesi.",
+  "walletSetupErrorTryAgain": "Jotain meni pieleen lompakkoasi määritettäessä. Yritä uudelleen.",
+  "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
+  "recoverbullErrorMissingBytes": "Puuttuvia bittejä Tor-vastauksesta. Yritä uudelleen, mutta jos ongelma jatkuu, se on joillain laitteilla tunnettu Tor-ongelma.",
+  "torSettingsTitle": "Tor-asetukset",
+  "recoverbullSelectRecoverWallet": "Palauta lompakko",
+  "recoverbullErrorServiceUnavailable": "Palvelu ei ole käytettävissä. Tarkista yhteytesi.",
+  "recoverbullPassword": "Salasana",
+  "recoverbullReenterRequired": "Syötä {inputType} uudelleen",
+  "@recoverbullReenterRequired": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCustomRecommendationText": "Olet varma, ettet menetä holvitiedostoa ja että se on edelleen saatavilla, jos menetät puhelimesi.",
+  "torSettingsModeSnowflake": "Snowflake",
+  "recoverbullSelectGoogleDrive": "Google Drive",
+  "recoverbullEnterInput": "Syötä {inputType}",
+  "@recoverbullEnterInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlRequired": "URL on pakollinen",
+  "recoverbullServerUsingCustom": "Käytetään mukautettua palvelinta",
+  "recoverbullErrorRejected": "Avainpalvelin hylkäsi pyynnön",
+  "recoverbullSettingsKeyServerUrl": "Avainpalvelimen URL",
+  "recoverbullKeyServer": "Avainpalvelin ",
+  "recoverbullGoogleDriveDeleteVaultTitle": "Poista holvi",
+  "recoverbullGoogleDriveCancelButton": "Peruuta",
+  "recoverbullSelectVaultSelected": "Holvi valittu",
+  "recoverbullRecoveryErrorWalletExists": "Tämä lompakko on jo olemassa.",
+  "recoverbullSelectCustomLocationProvider": "Mukautettu sijainti",
+  "recoverbullTorNotStarted": "Tor ei ole käynnissä",
+  "recoverbullFailed": "Epäonnistui",
+  "recoverbullConnectionFailed": "Yhteys epäonnistui",
+  "recoverbullSelectFetchDriveFilesError": "Kaikkien Drive-varmuuskopioiden haku epäonnistui",
+  "recoverbullSelectFileNotSelectedError": "Tiedostoa ei valittu",
+  "backupWalletHowToDecideVaultCustomRecommendation": "Mukautettu sijainti: ",
+  "recoverbullSwitchToPIN": "Valitse PIN sen sijaan",
+  "recoverbullSelectDecryptVault": "Pura holvi",
+  "recoverbullPleaseWait": "Odota hetki, kun luomme suojattua yhteyttä...",
+  "recoverbullPhaseNetworkInfo": "Haetaan verkon tietoja",
+  "recoverbullReenterConfirm": "Syötä {inputType} uudelleen vahvistaaksesi.",
+  "@recoverbullReenterConfirm": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsActiveTransport": "Aktiivinen siirtotapa: {transport}",
+  "recoverbullAttemptMonitoringServicePressure": "Backup service is under pressure. Please try again later.",
+  "recoverbullPasswordMismatch": "Salasanat eivät täsmää",
+  "recoverbullErrorDecryptFailed": "Holvin purku epäonnistui",
+  "recoverbullSelectCustomLocation": "Mukautettu sijainti",
+  "recoverbullGoogleDriveErrorDisplay": "Virhe: {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Holvin vienti Google Drivesta epäonnistui",
+  "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
+  "recoverbullPasswordRequired": "Salasana on pakollinen",
+  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "durationSeconds": "{seconds} sekuntia",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullErrorVaultCreationFailed": "Holvin luominen epäonnistui, ongelma voi olla tiedostossa tai avaimessa",
+  "recoverbullRecoveryErrorKeyDerivationFailed": "Paikallisen varmuuskopioavaimen johtaminen epäonnistui.",
+  "recoverbullSelectBackupFileNotValidError": "RecoverBull-varmuuskopiotiedosto ei ole kelvollinen",
+  "recoverbullErrorFetchKeyFailed": "Holviavaimen hakeminen palvelimelta epäonnistui",
+  "recoverbullEnterToView": "Syötä {inputType} nähdäksesi holviavaimesi.",
+  "@recoverbullEnterToView": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectQuickAndEasy": "Nopea ja helppo",
+  "recoverbullTorClockSkewed": "Laitteen kello on väärässä, joten Tor ei voi varmentaa välityspalvelinten varmenteita. Tarkista päivämäärä ja kellonaika.",
+  "recoverbullGoogleDriveDeleteConfirmation": "Haluatko varmasti poistaa tämän holvin varmuuskopion? Tätä toimintoa ei voi peruuttaa.",
+  "recoverbullSelectVaultProvider": "Valitse holvin tarjoaja",
+  "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
+  "@recoverbullRecoveryBalanceLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullContinue": "Jatka",
+  "recoverbullSettingsSave": "Tallenna",
+  "recoverbullEnterToTest": "Syötä {inputType} testataksesi holviasi.",
+  "@recoverbullEnterToTest": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWalletHowToDecideVaultCloudSecurity": "Pilvipalveluntarjoajilla, kuten Googlella tai Applella, ei ole pääsyä Bitcoineihisi, koska salausavain on liian vahva. He voivat saada pääsyn vain epätodennäköisessä tilanteessa, jossa he tekevät yhteistyötä avainpalvelimen kanssa (verkkopalvelu, joka tallentaa salausavaimen). Jos avainpalvelin koskaan hakkeroidaan, Bitcoinesi voivat olla vaarassa Google- tai Apple-pilvessä.",
+  "torSettingsModeAutomaticDescription": "Kokeilee ensin suoraa Tor-yhteyttä ja käyttää Snowflakea, jos verkko näyttää estävän Torin.",
+  "recoverbullSelectVaultImportSuccess": "Holvisi tuotiin onnistuneesti",
+  "recoverbullErrorVaultNotSet": "Holvi ei ole asetettu",
+  "recoverbullVaultRecoveryTitle": "Recoverbull-holvin palautus",
+  "recoverbullCreatingVault": "Luodaan salattua holvia",
+  "recoverbullTorCantStart": "Tor ei saanut yhteyttä juuri nyt. Yritä uudelleen.",
+  "recoverbullDecryptVault": "Pura holvi",
+  "recoverbullErrorSelectVault": "Holvin valinta epäonnistui",
+  "torSettingsStatusCensored": "Yhteys vaikuttaa suodatetulta",
+  "torSettingsModeSnowflakeDescription": "Käyttää vapaaehtoisten Snowflake-välityspalvelimia Torin tavoittamiseen suodatetusta verkosta.",
+  "backupWalletHowToDecideBackupModalTitle": "Miten valita",
+  "recoverbullSettingsUrlMustBeOnion": "URL-osoitteen on päätyttävä .onion",
+  "recoverbullServerConfirmTitle": "Holvin palautuspalvelin",
+  "recoverbullAttemptMonitoringLockoutTitle": "Backup access temporarily limited",
+  "recoverbullTestCompletedTitle": "Testi suoritettu onnistuneesti!",
+  "recoverbullGoogleDriveErrorFetchFailed": "Holvien hakeminen Google Drivesta epäonnistui",
+  "recoverbullSettingsEdit": "Muokkaa",
+  "recoverbullPIN": "PIN",
+  "torSettingsModeDirectDescription": "Yhdistää suoraan Tor-verkkoon ilman liitettävää siirtotapaa.",
+  "recoverbullUnexpectedError": "Odottamaton virhe",
+  "recoverbullRecoveryTransactionsLabel": "Transaktioita: {count}",
+  "@recoverbullRecoveryTransactionsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullSettingsUrlInvalid": "URL ei ole kelvollinen",
+  "recoverbullSelectDriveBackups": "Drive-varmuuskopiot",
+  "recoverbullErrorUnexpected": "Odottamaton virhe, katso lokit",
+  "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
+  "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
+  "recoverbullGoBackEdit": "<< Palaa takaisin ja muokkaa",
+  "recoverbullGoogleDriveExportButton": "Vie",
+  "recoverbullSeeMoreVaults": "Näytä lisää holveja",
+  "recoverbullServerCustomWarning": "Käytät mukautettua Recoverbull-palvelinta. Varmista, että luotat tähän palvelimeen.",
+  "recoverbullTestRecovery": "Palautuksen testaus",
+  "recoverbullRecoveryContinueButton": "Jatka",
+  "recoverbullServerUrlLabel": "Palvelimen URL:",
+  "recoverbullTorNetwork": "Tor-verkko",
+  "torSettingsDescConnected": "Tor-välityspalvelin on käynnissä ja valmiina",
+  "recoverbullSettingsTitle": "Recoverbull-asetukset",
+  "recoverbullSelectErrorPrefix": "Virhe:",
+  "recoverbullAttemptMonitoringUnavailableUnknownDuration": "Backup monitoring is temporarily unavailable.",
+  "recoverbullRecoverBullServer": "RecoverBull-palvelin",
+  "recoverbullTorOffline": "Internet-yhteyttä ei näytä olevan.",
+  "recoverbullServerUsingDefault": "Käytetään oletuspalvelinta",
+  "recoverbullTestBackupDescription": "Testataan nyt varmuuskopiosi varmistaaksemme, että kaikki tehtiin oikein.",
+  "recoverbullErrorPasswordNotSet": "Salasanaa ei ole asetettu",
+  "recoverbullEncryptedVaultCreated": "Salattu holvi luotu!",
+  "recoverbullErrorRateLimited": "Kutsuja rajoitettu. Yritä uudelleen {retryIn} kuluttua",
+  "@recoverbullErrorRateLimited": {
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullEnterVaultKeyInstead": "Syötä sen sijaan holviavain",
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "recoverbullLearnMore": "Lue lisää Recoverbullista",
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "torSettingsDescCensored": "Tor ei saanut yhteyttä verkkoon. Tämä tarkoittaa usein, että yhteyttä suodatetaan.",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Holvin poistaminen Google Drivesta epäonnistui",
+  "recoverbullVaultCreatedSuccess": "Holvi luotu onnistuneesti",
+  "recoverbullConfirm": "Vahvista",
+  "recoverbullWaiting": "Odotetaan",
+  "backupWalletHowToDecideVaultMoreInfo": "Lisätietoja osoitteessa recoverbull.com.",
+  "recoverbullVaultSelected": "Holvi valittu",
+  "recoverbullSettingsCancel": "Peruuta",
+  "backupWalletHowToDecideVaultCloudRecommendation": "Google tai Apple -pilvi: ",
+  "backupWalletHowToDecide": "Miten valita?",
+  "durationMinute": "{minutes} minuutti",
+  "@durationMinute": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullAttemptMonitoringCountersWiped": "Backup monitoring counters were reset.",
+  "recoverbullGoogleDriveErrorGeneric": "Tapahtui virhe. Yritä uudelleen.",
+  "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
+  "recoverbullConnected": "Yhdistetty",
+  "recoverbullAttemptMonitoringUnavailable": "Backup monitoring has been unavailable for {days} days.",
+  "@recoverbullAttemptMonitoringUnavailable": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "recoverbullGoogleDriveDeleteButton": "Poista",
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullVaultKey": "Holviavain",
+  "recoverbullSelectEnterBackupKeyManually": "Syötä varmuuskopioavain manuaalisesti >>",
+  "recoverbullAttemptMonitoringDismiss": "Dismiss",
+  "recoverbullErrorConnectionFailed": "Yhteyden muodostaminen kohdeavainpalvelimeen epäonnistui. Yritä myöhemmin uudelleen!",
+  "recoverbullFetchVaultKey": "Hae holviavain",
+  "recoverbullGoogleDriveErrorSelectFailed": "Holvin valinta Google Drivesta epäonnistui",
+  "recoverbullSelectTakeYourTime": "Varaa aikaa",
+  "recoverbullRecoveryErrorWalletMismatch": "Toinen oletuslompakko on jo olemassa. Voit asettaa vain yhden oletuslompakon.",
+  "recoverbullConfirmInput": "Vahvista {inputType}",
+  "@recoverbullConfirmInput": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullMemorizeWarning": "Sinun on muistettava tämä {inputType} palauttaaksesi pääsyn lompakkoosi. Sen on oltava vähintään 6 numeroa. Jos menetät tämän {inputType}, et voi palauttaa varmuuskopioasi.",
+  "@recoverbullMemorizeWarning": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL-osoitteen on oltava HTTP",
+  "recoverbullGotIt": "Selvä",
+  "recoverbullPasswordTooCommon": "Tämä salasana on liian yleinen. Valitse toinen.",
+  "recoverbullServerTorNotice": "Yhdistämme tähän palvelimeen Tor-verkon kautta",
+  "backupWalletHowToDecideVaultCustomLocation": "Mukautettu sijainti voi olla paljon turvallisempi valinnasta riippuen. Sinun on myös varmistettava, ettet menetä varmuuskopiotiedostoa tai laitetta, johon se on tallennettu.",
+  "recoverbullEnterToDecrypt": "Syötä {inputType} purkaaksesi holvisi.",
+  "@recoverbullEnterToDecrypt": {
+    "placeholders": {
+      "inputType": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullSelectNoBackupsFound": "Varmuuskopioita ei löytynyt",
+  "recoverbullSelectAppleIcloud": "Apple iCloud",
+  "recoverbullServerUnreachableTorOk": "Tor toimii, mutta varmuuskopiopalvelin ei vastannut. Heti ensimmäisen käynnistyksen jälkeen tämä voi kestää hetken.",
+  "durationMinutes": "{minutes} minuuttia",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "recoverbullConnecting": "Yhdistetään",
+  "recoverbullErrorVaultCreatedKeyNotStored": "Epäonnistui: Holvitiedosto luotu mutta avainta ei tallennettu palvelimelle",
+  "recoverbullRetry": "Yritä uudelleen",
+  "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
+  "recoverbullSelectCustomLocationError": "Tiedoston valinta mukautetusta sijainnista epäonnistui",
+  "torSettingsDescDisconnected": "Tor-välityspalvelin ei ole käynnissä",
+  "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
+  "@oopsSomethingWentWrong": {
+    "description": "Generic error title shown by shared status screens."
+  },
+  "statusScreenTryAgain": "Yritä uudelleen",
+  "@statusScreenTryAgain": {
+    "description": "Action button to retry a failed status screen."
+  },
+  "statusScreenContinue": "Jatka",
+  "@statusScreenContinue": {
+    "description": "Action button to continue from a status screen."
+  },
+  "copyDialogButton": "Kopioi",
+  "@copyDialogButton": {
+    "description": "Button to copy a value from the value dialog."
+  },
+  "closeDialogButton": "Sulje",
+  "@closeDialogButton": {
+    "description": "Button to close the value dialog."
+  }
+}

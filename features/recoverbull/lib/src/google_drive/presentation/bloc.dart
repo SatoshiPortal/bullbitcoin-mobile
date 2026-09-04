@@ -1,0 +1,131 @@
+import '../../domain/usecases/google_drive/delete_drive_file_usecase.dart';
+import '../../domain/usecases/google_drive/export_drive_file_usecase.dart';
+import '../../domain/usecases/google_drive/fetch_all_drive_file_metadata_usecase.dart';
+import '../../domain/usecases/google_drive/fetch_vault_from_drive_usecase.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:primitives/primitives.dart';
+import '../../domain/recoverbull_failure.dart';
+import './event.dart';
+import './state.dart';
+import '../../router/flow_type.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class RecoverBullGoogleDriveBloc
+    extends Bloc<RecoverBullGoogleDriveEvent, RecoverBullGoogleDriveState> {
+  final LogSink log;
+  final RecoverBullFlow flow;
+  final FetchAllDriveFileMetadataUsecase _fetchAllDriveFileMetadataUsecase;
+  final FetchVaultFromDriveUsecase _fetchDriveVaultUsecase;
+  final DeleteDriveFileUsecase _deleteDriveFileUsecase;
+  final ExportDriveFileUsecase _exportDriveFileUsecase;
+
+  RecoverBullGoogleDriveBloc({
+    required this.log,
+    required this.flow,
+    required this._fetchAllDriveFileMetadataUsecase,
+    required FetchVaultFromDriveUsecase fetchDriveBackupUsecase,
+    required this._deleteDriveFileUsecase,
+    required this._exportDriveFileUsecase,
+  }) : _fetchDriveVaultUsecase = fetchDriveBackupUsecase,
+       super(const RecoverBullGoogleDriveState()) {
+    on<OnFetchDriveVaults>(_onFetchDriveVaults, transformer: droppable());
+    on<OnSelectDriveFileMetadata>(
+      _onSelectDriveFileMetadata,
+      transformer: droppable(),
+    );
+    on<OnDeleteDriveFile>(_onDeleteDriveFile);
+    on<OnExportDriveFile>(_onExportDriveFile);
+
+    add(const OnFetchDriveVaults());
+  }
+
+  Future<void> _onFetchDriveVaults(
+    OnFetchDriveVaults event,
+    Emitter<RecoverBullGoogleDriveState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isLoading: true, failure: null));
+      switch (await _fetchAllDriveFileMetadataUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(driveMetadata: value));
+          log.fine('$OnFetchDriveVaults ${value.length} metadata found');
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              failure: RecoverBullGoogleDriveFetchFailure(failure.logMessage),
+            ),
+          );
+      }
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onSelectDriveFileMetadata(
+    OnSelectDriveFileMetadata event,
+    Emitter<RecoverBullGoogleDriveState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(failure: null, selectedVault: null, isLoading: true));
+      switch (await _fetchDriveVaultUsecase.execute(event.fileMetadata)) {
+        case Ok(:final value):
+          emit(state.copyWith(selectedVault: value));
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              failure: RecoverBullGoogleDriveFetchFailure(failure.logMessage),
+            ),
+          );
+      }
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onDeleteDriveFile(
+    OnDeleteDriveFile event,
+    Emitter<RecoverBullGoogleDriveState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      switch (await _deleteDriveFileUsecase.execute(event.fileMetadata.id)) {
+        case Ok():
+          final updatedMetadata = state.driveMetadata
+              .where((file) => file.id != event.fileMetadata.id)
+              .toList();
+          emit(state.copyWith(driveMetadata: updatedMetadata));
+          log.fine('$OnDeleteDriveFile succeed');
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              failure: RecoverBullGoogleDriveDeleteFailure(failure.logMessage),
+            ),
+          );
+      }
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onExportDriveFile(
+    OnExportDriveFile event,
+    Emitter<RecoverBullGoogleDriveState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isLoading: true));
+      switch (await _exportDriveFileUsecase.execute(event.fileMetadata)) {
+        case Ok():
+          log.fine('$OnExportDriveFile succeed');
+        case Err(:final failure):
+          emit(
+            state.copyWith(
+              failure: RecoverBullGoogleDriveExportFailure(failure.logMessage),
+            ),
+          );
+      }
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+}

@@ -1,13 +1,16 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 class CheckBackupUsecase {
   final WalletRepository _walletRepository;
   final SettingsRepository _settingsRepository;
+  final RecoverBullFeature _recoverBull;
 
   CheckBackupUsecase({
     required this._walletRepository,
     required this._settingsRepository,
+    required this._recoverBull,
   });
 
   Future<bool> execute() async {
@@ -21,11 +24,10 @@ class CheckBackupUsecase {
         return false; // No default wallets found, so also no backup possible
       }
 
-      bool hasBackup = false;
+      final recoverBullStatus = await _recoverBull.status();
+      bool hasBackup = recoverBullStatus.hasVerifiedEncryptedBackup;
       for (final defaultWallet in defaultWallets) {
-        hasBackup =
-            defaultWallet.isPhysicalBackupTested ||
-            defaultWallet.isEncryptedVaultTested;
+        hasBackup = defaultWallet.isPhysicalBackupTested || hasBackup;
 
         if (hasBackup) {
           // Exit early if we found a backup, since the default

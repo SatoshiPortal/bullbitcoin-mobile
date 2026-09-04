@@ -454,15 +454,6 @@
   "@broadcastSignedTxFee": {
     "description": "Label for transaction fee"
   },
-  "recoverbullRecoveryBalanceLabel": "Balance: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyFundYourAccount": "Χρηματοδότηση του λογαριασμού σας",
   "@buyFundYourAccount": {
     "description": "Button to fund exchange account"
@@ -610,10 +601,6 @@
   "payPhone": "Phone",
   "@payPhone": {
     "description": "Label for phone details"
-  },
-  "recoverbullTorNetwork": "Tor Network",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
   },
   "transactionDetailLabelTransferStatus": "Κατάσταση μεταφοράς",
   "@transactionDetailLabelTransferStatus": {
@@ -929,10 +916,6 @@
   "ledgerVerifyTitle": "Verify Address on Ledger",
   "@ledgerVerifyTitle": {
     "description": "Title for verifying an address on Ledger device"
-  },
-  "recoverbullSwitchToPassword": "Επιλέξτε έναν κωδικό αντ 'αυτού",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
   },
   "exchangeDcaNetworkBitcoin": "Bitcoin Network",
   "@exchangeDcaNetworkBitcoin": {
@@ -1761,10 +1744,6 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "Υπάρχει ήδη ένα διαφορετικό προεπιλεγμένο πορτοφόλι. Μπορείτε να έχετε μόνο ένα προεπιλεγμένο πορτοφόλι.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "Κανένας παραλήπτης δεν βρέθηκε να πληρώσει.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1907,10 +1886,6 @@
   "transactionLabelAmountReceived": "Ποσό που λαμβάνεται",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "broadcastSignedTxScanQR": "Βάλτε τον κωδικό QR από το πορτοφόλι υλικού σας",
   "@broadcastSignedTxScanQR": {
@@ -2104,10 +2079,6 @@
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
-  "recoverbullVaultCreatedSuccess": "Η Vault δημιούργησε με επιτυχία",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "Ποσο Ποσό Ποσο",
   "@payAmount": {
     "description": "Label for amount"
@@ -2250,10 +2221,6 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "Η τοπική εφεδρική βασική προέλευση απέτυχε.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "Ανεπαρκή ισορροπία",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2321,10 +2288,6 @@
   "importQrDeviceJadeFirmwareWarning": "Βεβαιωθείτε ότι η συσκευή σας ενημερώνεται στο τελευταίο firmware",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
-  },
-  "recoverbullSelectFileNotSelectedError": "Αρχείο που δεν έχει επιλεγεί",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "buyInputContinue": "Συνεχίστε να συνεχίζετε",
   "@buyInputContinue": {
@@ -2651,10 +2614,6 @@
   "kruxStep16": "Είναι τώρα έτοιμο να μεταδοθεί! Μόλις κάνετε κλικ στην εκπομπή, η συναλλαγή θα δημοσιευθεί στο δίκτυο Bitcoin και τα κεφάλαια θα σταλούν.",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "Το επιλεγμένο αρχείο ασφαλείας διαφθείρεται.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "buyVerifyIdentity": "Ενισχύστε την ταυτότητα",
   "@buyVerifyIdentity": {
@@ -3054,10 +3013,6 @@
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
   },
-  "recoverbullErrorInvalidVaultFile": "Ακυρωμένο αρχείο.",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
-  },
   "sellProcessingOrder": "Παραγγελία επεξεργασίας...",
   "@sellProcessingOrder": {
     "description": "Loading message during order submission"
@@ -3121,10 +3076,6 @@
   "sellBitcoinAmount": "Bitcoin ποσό Bitcoin",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "recoverbullTestCompletedTitle": "Το Test ολοκληρώθηκε με επιτυχία!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
   },
   "transactionFilterReceive": "Παραλαβή",
   "@transactionFilterReceive": {
@@ -3210,10 +3161,6 @@
   "fundExchangeWarningConfirmation": "Επιβεβαιώνω ότι δεν μου ζητείται να αγοράσω Bitcoin από κάποιον άλλο.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "Επιθυμήθηκε να επιλέξει αρχείο από την προσαρμοσμένη τοποθεσία",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "Διαγράψτε Custom Server?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3424,10 +3371,6 @@
   "payTransitNumberHint": "Εισάγετε τον αριθμό διαμετακόμισης",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "Επιλέξτε ένα PIN αντ 'αυτού",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "QR Code",
   "@payQrCode": {
@@ -4005,10 +3948,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "Το θύλακα σας εισήχθη με επιτυχία",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "Είναι εξαιρετικά σημαντικό να μην αποθηκεύσετε το κλειδί ασφαλείας στο ίδιο μέρος όπου εξοικονομείτε το αρχείο αντιγράφων ασφαλείας σας. Πάντα να τα αποθηκεύει σε ξεχωριστές συσκευές ή ξεχωριστά παρόχους cloud.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -4474,10 +4413,6 @@
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
   },
-  "recoverbullErrorServiceUnavailable": "Η υπηρεσία δεν είναι διαθέσιμη. Παρακαλούμε ελέγξτε τη σύνδεσή σας.",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
-  },
   "sendErrorInsufficientBalanceForSwap": "Όχι αρκετή ισορροπία για να πληρώσει αυτή την ανταλλαγή μέσω της Liquid και όχι εντός ορίων ανταλλαγής για να πληρώσει μέσω Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
     "description": "Error when balance insufficient for swap through either network"
@@ -4831,10 +4766,6 @@
   "transactionNetworkBitcoin": "Bitcoin",
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
-  },
-  "recoverbullSelectVaultProvider": "Επιλέξτε Vault Provider",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
   },
   "replaceByFeeOriginalTransactionTitle": "Original συναλλαγή",
   "@replaceByFeeOriginalTransactionTitle": {
@@ -5379,10 +5310,6 @@
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
   },
-  "recoverbullRecoveryContinueButton": "Συνεχίστε να συνεχίζετε",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
-  },
   "payTimeoutError": "Εποχή πληρωμής. Παρακαλούμε ελέγξτε το status",
   "@payTimeoutError": {
     "description": "Error when payment takes too long to complete"
@@ -5522,10 +5449,6 @@
   "sellCopBalance": "COP COP COP COP COP ισορροπία ισορροπία",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "Vault Selected",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "Μεταφορά",
   "@receiveTransferFee": {
@@ -6227,10 +6150,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "Τώρα ας δοκιμάσουμε το εφεδρικό σας για να βεβαιωθείτε ότι όλα έγιναν σωστά.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "Κάντε μια κατάθεση χρησιμοποιώντας τη μεταφορά SPEI (σταθερή).",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -6628,10 +6547,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "Αναζητώντας ισορροπία και συναλλαγές..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "sellExchangeRate": "Συναλλαγματική ισοτιμία",
   "@sellExchangeRate": {
     "description": "Label for exchange rate"
@@ -6647,10 +6562,6 @@
   "sellTitle": "Πουλά Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "Vault Key",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "keystoneStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Keystone. Βάλτε το.",
   "@keystoneStep12": {
@@ -6804,10 +6715,6 @@
   "buyInputInsufficientBalanceMessage": "Δεν έχετε αρκετή ισορροπία για να δημιουργήσετε αυτή την παραγγελία.",
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
-  },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull εφεδρικό αρχείο δεν ισχύει",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "swapErrorInsufficientFunds": "Δεν θα μπορούσε να χτίσει συναλλαγές. Ακριβώς λόγω ανεπαρκών κεφαλαίων για την κάλυψη των τελών και του ποσού.",
   "@swapErrorInsufficientFunds": {
@@ -6975,10 +6882,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "Περιμένοντας",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "Δεν Tested",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -7091,10 +6994,6 @@
   "coreScreensLogsTitle": "Logs",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "recoverbullVaultKeyInput": "Vault Key",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "bip329LabelsHeading": "Εισαγωγή/Εξαγωγή Ετικετών BIP329",
   "@bip329LabelsHeading": {
@@ -7284,10 +7183,6 @@
   "@autoswapDefaultWalletLabel": {
     "description": "Default label for unnamed Bitcoin wallet"
   },
-  "recoverbullTestSuccessDescription": "Μπορείτε να ανακτήσετε την πρόσβαση σε ένα χαμένο πορτοφόλι Bitcoin",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
-  },
   "autoswapRecipientWallet": "Recipient Bitcoin Wallet",
   "@autoswapRecipientWallet": {
     "description": "Field label for recipient wallet dropdown"
@@ -7459,10 +7354,6 @@
   "jadeStep4": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@jadeStep4": {
     "description": "Jade instruction step 4"
-  },
-  "recoverbullRecoveryErrorWalletExists": "Αυτό το πορτοφόλι υπάρχει ήδη.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
   },
   "payBillerNameValue": "Επιλέξτε όνομα Biller",
   "@payBillerNameValue": {
@@ -7998,15 +7889,6 @@
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
   },
-  "recoverbullRecoveryTransactionsLabel": "Συναλλαγές: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "buyViewDetails": "Δείτε λεπτομέρειες",
   "@buyViewDetails": {
     "description": "Button to view order details"
@@ -8427,10 +8309,6 @@
   "importQrDeviceKruxStep6": "Αυτό είναι!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "Backup αρχείο που λείπει μονοπάτι στέρησης.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
   "@payUnauthenticatedError": {
@@ -8979,10 +8857,6 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "recoverbullErrorRejected": "Απορρίπτεται από τον Key Server",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
-  },
   "sellEstimatedArrival": "Εκτιμάται η άφιξη: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -9303,10 +9177,6 @@
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
   },
-  "recoverbullTestRecovery": "Ανάκτηση",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
-  },
   "sellNetAmount": "Καθαρό ποσό",
   "@sellNetAmount": {
     "description": "Label for amount after fees"
@@ -9492,22 +9362,9 @@
   "@exchangeDcaUnableToGetConfig": {
     "description": "Error message when DCA configuration cannot be retrieved"
   },
-  "recoverbullGoogleDriveErrorDisplay": "Error: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionLabelPreimage": "Προεπισκόπηση",
   "@transactionLabelPreimage": {
     "description": "Label for preimage in Lightning swap details"
-  },
-  "recoverbullErrorPasswordNotSet": "Το Password δεν είναι set",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "transactionDetailLabelConfirmationTime": "Επιβεβαίωση χρόνου επιβεβαίωσης",
   "@transactionDetailLabelConfirmationTime": {
@@ -9525,30 +9382,9 @@
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
-  "recoverbullReenterConfirm": "Σας παρακαλούμε να ξαναμπείτε στο {inputType} για να επιβεβαιώσετε.",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullSelectVaultImportSuccess": "Το θύλακα σας εισήχθη με επιτυχία",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
-  "recoverbullSelectErrorPrefix": "Σφάλμα:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "Επισκεφθείτε το ανάκτησηbull.com για περισσότερες πληροφορίες.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
-  },
-  "recoverbullGoBackEdit": "«Πηγαίνετε και επεξεργαστείτε",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "testBackupWriteDownPhrase": "Γράψτε τη φράση ανάκτησης\nστη σωστή τάξη",
   "@testBackupWriteDownPhrase": {
@@ -9566,10 +9402,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorConnectionFailed": "Απέτυχε να συνδεθεί με τον βασικό διακομιστή-στόχο. Παρακαλώ δοκιμάστε ξανά αργότερα!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "Ψηφιακό αντίγραφο",
   "@testBackupDigitalCopy": {
@@ -9605,17 +9437,9 @@
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
   },
-  "recoverbullErrorMissingBytes": "Αποσπώντας bytes από την απάντηση Tor. Προσπαθήστε αλλά αν το θέμα συνεχιστεί, είναι ένα γνωστό θέμα για ορισμένες συσκευές με Tor.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
-  },
   "physicalBackupRecommendationText": "Είστε σίγουροι για τις δικές σας δυνατότητες επιχειρησιακής ασφάλειας για να κρύψετε και να διατηρήσετε τα λόγια σας για σπόρους Bitcoin.",
   "@physicalBackupRecommendationText": {
     "description": "Text explaining when to use physical backup"
-  },
-  "recoverbullFailed": "Φθάνατο",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "fundExchangeETransferLabelEmail": "Στείλτε την μεταφορά E σε αυτό το email",
   "@fundExchangeETransferLabelEmail": {
@@ -9694,22 +9518,9 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "recoverbullEnterToDecrypt": "Παρακαλώ μπείτε στο {inputType} για να αποκρυπτογραφήσετε το θύλακα σας.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupSuccessTitle": "Το Test ολοκληρώθηκε με επιτυχία!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "Πάρτε το χρόνο σας",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "dcaSuccessMessageHourly": "Θα αγοράζετε {amount} κάθε ώρα",
   "@dcaSuccessMessageHourly": {
@@ -9723,10 +9534,6 @@
   "testBackupChooseVaultLocation": "Επιλέξτε χώρο θύλακα",
   "@testBackupChooseVaultLocation": {
     "description": "AppBar title for encrypted vault provider selection screen"
-  },
-  "recoverbullGoogleDriveErrorFetchFailed": "Επιθυμήθηκε να σπάσει τα θησαυροφυλάκια από το Google Drive",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
   },
   "psbtFlowReviewTransaction": "Μόλις η συναλλαγή εισάγεται στο {device}, επανεξετάζετε τη διεύθυνση προορισμού και το ποσό.",
   "@psbtFlowReviewTransaction": {
@@ -9761,14 +9568,6 @@
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
   },
-  "recoverbullErrorVaultCreationFailed": "Η δημιουργία Vault απέτυχε, μπορεί να είναι το αρχείο ή το κλειδί",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "Δεν βρέθηκαν αντίγραφα ασφαλείας",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
-  },
   "backupWalletErrorGoogleDriveConnection": "Επιθυμήθηκε να συνδεθεί με το Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
     "description": "Error when Google Drive connection fails"
@@ -9776,10 +9575,6 @@
   "testBackupPassphrase": "Passphrase",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
-  },
-  "recoverbullErrorInvalidCredentials": "Λάθος κωδικό πρόσβασης για αυτό το αρχείο αντιγράφων ασφαλείας",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "transactionDetailAccelerate": "Accelerate",
   "@transactionDetailAccelerate": {
@@ -9798,10 +9593,6 @@
   "transactionSwapDescLnSendCompleted": "Η πληρωμή Lightning έχει αποσταλεί με επιτυχία! Η ανταλλαγή σας είναι τώρα πλήρης.",
   "@transactionSwapDescLnSendCompleted": {
     "description": "Description for completed Lightning send swap"
-  },
-  "recoverbullPleaseWait": "Παρακαλώ περιμένετε ενώ θα καθιερώσουμε μια ασφαλή σύνδεση...",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
   },
   "lastKnownEncryptedVault": "Τελευταία Γνωστή κρυπτογράφηση Vault: {date}",
   "@lastKnownEncryptedVault": {
@@ -9863,24 +9654,6 @@
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
   },
-  "recoverbullErrorRateLimited": "Περιορισμός επιτοκίου. Παρακαλώ δοκιμάστε ξανά στο {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullMemorizeWarning": "Πρέπει να απομνημονεύσετε αυτό {inputType} για να ανακτήσετε την πρόσβαση στο πορτοφόλι σας. Πρέπει να είναι τουλάχιστον 6 ψηφία. Αν χάσετε αυτό {inputType} δεν μπορείτε να ανακτήσετε το αντίγραφο ασφαλείας σας.",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeETransferLabelSecretQuestion": "Μυστική ερώτηση",
   "@fundExchangeETransferLabelSecretQuestion": {
     "description": "Label for E-transfer security question"
@@ -9888,19 +9661,6 @@
   "transactionSwapInfoClaimableTransfer": "Η μεταφορά θα ολοκληρωθεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική αξίωση κάνοντας κλικ στο κουμπί \"Retry Transfer Claim\".",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
-  },
-  "recoverbullEnterToTest": "Παρακαλώ μπείτε στο {inputType} για να δοκιμάσετε το θύλακα σας.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullSelectVaultSelected": "Vault Selected",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "exchangeDcaActivateTitle": "Ενεργοποίηση Recuring Buy",
   "@exchangeDcaActivateTitle": {
@@ -9910,17 +9670,9 @@
   "@encryptedVaultRecommendation": {
     "description": "Bold label for encrypted vault recommendation"
   },
-  "recoverbullSelectEnterBackupKeyManually": "Εισάγετε το Backup key χειροκίνητα >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
-  },
   "testBackupAllWordsSelected": "Έχετε επιλέξει όλες τις λέξεις",
   "@testBackupAllWordsSelected": {
     "description": "Message shown when user has selected all 12 words"
-  },
-  "recoverbullSelectCustomLocationProvider": "Προσαρμοσμένη τοποθεσία",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "informationWillNotLeave": "Αυτές οι πληροφορίες ",
   "@informationWillNotLeave": {
@@ -9937,10 +9689,6 @@
   "testCompletedSuccessMessage": "Μπορείτε να ανακτήσετε την πρόσβαση σε ένα χαμένο πορτοφόλι Bitcoin",
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
-  },
-  "recoverbullSelectDriveBackups": "Drive Backups",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
   },
   "testBackupErrorFailedToFetch": "Απέτυχε να σπάσει αντίγραφα ασφαλείας: {error}",
   "@testBackupErrorFailedToFetch": {
@@ -9959,14 +9707,6 @@
   "@fundExchangeCanadaPostStep1": {
     "description": "Step 1 for Canada Post payment process"
   },
-  "recoverbullKeyServer": "Key Server ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "Αυτός ο κωδικός πρόσβασης είναι πολύ κοινός. Επιλέξτε ένα διαφορετικό",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
-  },
   "testBackupVerify": "Verify",
   "@testBackupVerify": {
     "description": "Button text to verify the selected word order"
@@ -9983,10 +9723,6 @@
   "@transactionLabelReceiveNetworkFee": {
     "description": "Label for receive network fee in swap details"
   },
-  "recoverbullSeeMoreVaults": "Δείτε περισσότερα θησαυροφυλάκια",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "transactionSwapDescChainExpired": "Αυτή η μεταφορά έχει λήξει. Τα χρήματά σας θα επιστραφούν αυτόματα στο πορτοφόλι σας.",
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
@@ -9998,10 +9734,6 @@
   "backupWalletGoogleDrivePrivacyMessage5": "μοιράζονται με το Bull Bitcoin.",
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
-  },
-  "recoverbullSelectQuickAndEasy": "Γρήγορη και εύκολη",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
   },
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Είστε σίγουροι για τις δικές σας δυνατότητες επιχειρησιακής ασφάλειας για να κρύψετε και να διατηρήσετε τα λόγια σας για σπόρους Bitcoin.",
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
@@ -10052,10 +9784,6 @@
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
     "description": "Label for backup ID"
-  },
-  "recoverbullPasswordTooShort": "Το Password πρέπει να είναι τουλάχιστον 6 χαρακτήρες",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
   },
   "backupWalletVaultProviderTakeYourTime": "Πάρτε το χρόνο σας",
   "@backupWalletVaultProviderTakeYourTime": {
@@ -10113,10 +9841,6 @@
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
   },
-  "recoverbullSelectNoBackupsFound": "Δεν βρέθηκαν αντίγραφα ασφαλείας",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "exchangeLandingDisclaimerLegal": "Η πρόσβαση σε υπηρεσίες ανταλλαγής θα περιορίζεται σε χώρες όπου το Bull Bitcoin μπορεί να λειτουργήσει νόμιμα και μπορεί να απαιτήσει KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -10124,15 +9848,6 @@
   "automaticallyFetchKeyButton": "Αυτόματα Fetch key»",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "recoverbullReenterRequired": "Εισεγάγετε το {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "testBackupErrorWriteFailed": "Γράψτε στην αποθήκευση απέτυχε: {error}",
   "@testBackupErrorWriteFailed": {
@@ -10150,10 +9865,6 @@
   "transactionListOngoingTransfersTitle": "Συνεχές Μεταφορές",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull θυελλώδη ανάκτηση",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "transactionSwapDescChainClaimable": "Η συναλλαγή κλειδώματος έχει επιβεβαιωθεί. Υποστηρίζετε τώρα τα κεφάλαια για να ολοκληρώσετε τη μεταφορά σας.",
   "@transactionSwapDescChainClaimable": {
@@ -10194,15 +9905,6 @@
   "@testBackupErrorUnexpectedSuccess": {
     "description": "Error for unexpected successful vault restoration"
   },
-  "recoverbullEnterToView": "Παρακαλώ μπείτε στο {inputType} για να δείτε το κλειδί σας.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "connectingToKeyServer": "Συνδέοντας με τον Key Server πάνω από το Tor.\nΑυτό μπορεί να διαρκέσει μέχρι ένα λεπτό.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
@@ -10210,10 +9912,6 @@
   "testBackupGoogleDrivePrivacyPart1": "Αυτές οι πληροφορίες ",
   "@testBackupGoogleDrivePrivacyPart1": {
     "description": "First part of privacy message"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "Εμπορία για εξαγωγή θησαυρών από το Google Drive",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "transactionDetailLabelFromWallet": "Από το πορτοφόλι",
   "@transactionDetailLabelFromWallet": {
@@ -10260,17 +9958,9 @@
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
-  "recoverbullConnectingTor": "Συνδέοντας με τον Key Server πάνω από το Tor.\nΑυτό μπορεί να διαρκέσει έως και ένα λεπτό.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
   "fundExchangeCanadaPostStep2": "2. 2. 2. 2. Ζητήστε από τα ταμειακά ταμεία να σαρώσουν τον κωδικό \"Loadhub\" QR",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "recoverbullEnterVaultKeyInstead": "Εισάγετε ένα κλειδί θησαυρού αντί",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
   },
   "fundExchangeETransferLabelBeneficiaryName": "Χρησιμοποιήστε αυτό ως δικαιούχο όνομα ηλεκτρονικού ταχυδρομείου",
   "@fundExchangeETransferLabelBeneficiaryName": {
@@ -10292,10 +9982,6 @@
   "@exchangeSupportChatEmptyState": {
     "description": "Message shown when there are no chat messages"
   },
-  "recoverbullConnecting": "Συνδέοντας",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
-  },
   "appleICloudProvider": "Apple iCloud",
   "@appleICloudProvider": {
     "description": "Name of Apple iCloud provider"
@@ -10316,10 +10002,6 @@
   "@dcaWalletSelectionDescription": {
     "description": "Explanation text at the top of wallet selection screen"
   },
-  "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "enterBackupKeyManuallyDescription": "Αν έχετε εξάγει το πλήκτρο αντιγράφων ασφαλείας σας και το έχετε αποθηκεύσει σε μια θέση seperate από τον εαυτό σας, μπορείτε να το εισάγετε χειροκίνητα εδώ. Διαφορετικά, πηγαίνετε πίσω στην προηγούμενη οθόνη.",
   "@enterBackupKeyManuallyDescription": {
     "description": "Description for entering backup key manually"
@@ -10327,14 +10009,6 @@
   "testBackupPhysicalBackupTag": "Εμπιστοσύνη (πάρτε το χρόνο σας)",
   "@testBackupPhysicalBackupTag": {
     "description": "Tag indicating physical backup is trustless but takes longer"
-  },
-  "recoverbullErrorDecryptFailed": "Απειλήθηκε να αποκρυπτογραφήσει το θύλακα",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
-  },
-  "recoverbullDecryptVault": "Decrypt Monkey",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "transactionFeesTotalDeducted": "Αυτό είναι το συνολικό ποσό που αφαιρείται από το ποσό που αποστέλλεται",
   "@transactionFeesTotalDeducted": {
@@ -10350,25 +10024,9 @@
       }
     }
   },
-  "recoverbullFetchingVaultKey": "Fetching Vault Key Key Key",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "Διαγράψτε Vault",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Επιθυμήθηκε να διαγράψει το θησαυροφυλάκιο από το Google Drive",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
-  },
   "nextButton": "Next",
   "@nextButton": {
     "description": "Button label to go to next step"
-  },
-  "recoverbullPassword": "Password",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "googleAppleCloudRecommendationText": "θέλετε να βεβαιωθείτε ότι ποτέ δεν χάνετε την πρόσβαση στο αρχείο σας, ακόμη και αν χάσετε τις συσκευές σας.",
   "@googleAppleCloudRecommendationText": {
@@ -10403,15 +10061,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "Επιβεβαίωση {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "Η ανταλλαγή σας έχει ολοκληρωθεί με επιτυχία! Τα κεφάλαια θα πρέπει τώρα να είναι διαθέσιμα στο πορτοφόλι σας.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
@@ -10444,10 +10093,6 @@
   "@fundExchangeOnlineBillPaymentDescription": {
     "description": "Description of how online bill payment works and timeframe"
   },
-  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "psbtFlowTransactionImported": "Η συναλλαγή θα εισαχθεί στο πορτοφόλι Bitcoin Bull.",
   "@psbtFlowTransactionImported": {
     "description": "Confirmation that transaction was imported successfully"
@@ -10459,10 +10104,6 @@
   "testBackupErrorNoMnemonic": "No mnemonic φορτωμένο",
   "@testBackupErrorNoMnemonic": {
     "description": "Error when mnemonic is not loaded"
-  },
-  "recoverbullConnectionFailed": "Η σύνδεση απέτυχε",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
   },
   "exchangeAuthLoginFailedOkButton": "ΕΝΤΆΞΕΙ",
   "@exchangeAuthLoginFailedOkButton": {
@@ -10514,10 +10155,6 @@
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
     "description": "Recommendation text for when to use cloud storage"
   },
-  "recoverbullEncryptedVaultCreated": "Η κρυπτογράφηση Vault δημιουργήθηκε!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
-  },
   "psbtFlowScanQrShown": "Βάλτε τον κωδικό QR που εμφανίζεται στο πορτοφόλι Bull",
   "@psbtFlowScanQrShown": {
     "description": "Instruction to scan QR code displayed in app"
@@ -10546,10 +10183,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "recoverbullSelectDecryptVault": "Decrypt Monkey",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "transactionSwapInfoRefundableSwap": "Αυτή η ανταλλαγή θα επιστραφεί αυτόματα μέσα σε λίγα δευτερόλεπτα. Εάν όχι, μπορείτε να επιχειρήσετε μια χειρωνακτική επιστροφή κάνοντας κλικ στο κουμπί \"Retry Swap Refund\".",
   "@transactionSwapInfoRefundableSwap": {
     "description": "Additional info for refundable swaps"
@@ -10557,10 +10190,6 @@
   "leaveYourPhone": "αφήστε το τηλέφωνό σας και είναι ",
   "@leaveYourPhone": {
     "description": "Middle part of privacy assurance message"
-  },
-  "recoverbullPasswordMismatch": "Οι κωδικοί δεν ταιριάζουν",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
   },
   "psbtFlowClickDone": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
   "@psbtFlowClickDone": {
@@ -10582,25 +10211,13 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "recoverbullContinue": "Συνεχίστε να συνεχίζετε",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
-  },
   "transactionDetailLabelStatus": "Κατάσταση status status",
   "@transactionDetailLabelStatus": {
     "description": "Label for status"
   },
-  "recoverbullErrorVaultNotSet": "Η Vault δεν είναι καθορισμένη",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "transactionFeesDeductedFrom": "Αυτά τα τέλη θα αφαιρεθούν από το ποσό που αποστέλλεται",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
-  },
-  "recoverbullTorNotStarted": "Το Tor δεν ξεκινά",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "testBackupCreatedAt": "Δημιουργήθηκε στο:",
   "@testBackupCreatedAt": {
@@ -10631,10 +10248,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveDeleteButton": "Διαγράψτε",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "exchangeDcaDeactivateTitle": "Απενεργοποιήστε το Recuring Buy",
   "@exchangeDcaDeactivateTitle": {
@@ -10674,10 +10287,6 @@
   "@testCompletedSuccessTitle": {
     "description": "Title shown when backup test is successful"
   },
-  "recoverbullUnexpectedError": "Ανεπιθύμητο λάθος",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "testBackupFetchingFromDevice": "Κερδίζοντας από τη συσκευή σας.",
   "@testBackupFetchingFromDevice": {
     "description": "Progress screen title when fetching from local device"
@@ -10710,17 +10319,9 @@
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
   },
-  "recoverbullGoogleDriveErrorGeneric": "Ένα λάθος συνέβη. Παρακαλώ δοκιμάστε ξανά.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
-  },
   "transactionDetailLabelAmountSent": "Ποσό που αποστέλλεται",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
-  },
-  "recoverbullPIN": "PIN",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "dcaSuccessMessageWeekly": "Θα αγοράζετε {amount} κάθε εβδομάδα",
   "@dcaSuccessMessageWeekly": {
@@ -10745,10 +10346,6 @@
       }
     }
   },
-  "recoverbullPasswordRequired": "Το Password απαιτείται",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
-  },
   "recoverViaCloudDescription": "Ανακαλύψτε το εφεδρικό σας μέσω cloud χρησιμοποιώντας το PIN σας.",
   "@recoverViaCloudDescription": {
     "description": "Description for recovering via cloud"
@@ -10772,10 +10369,6 @@
   "backupWalletHowToDecideBackupModalTitle": "Πώς να αποφασίσετε",
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
-  },
-  "recoverbullErrorVaultCreatedKeyNotStored": "Failed: Το αρχείο Vault δημιουργήθηκε αλλά το κλειδί δεν αποθηκεύεται στο διακομιστή",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
   },
   "exchangeSupportChatWalletIssuesInfo": "Αυτή η συνομιλία είναι μόνο για θέματα που σχετίζονται με την ανταλλαγή στη χρηματοδότηση/Buy/Sell/Withdraw/Pay.\nΓια θέματα που σχετίζονται με το πορτοφόλι, συμμετάσχετε στην ομάδα τηλεγράφου κάνοντας κλικ εδώ.",
   "@exchangeSupportChatWalletIssuesInfo": {
@@ -10885,10 +10478,6 @@
   "@enterBackupKeyManuallyButton": {
     "description": "Button label to enter backup key manually"
   },
-  "recoverbullGotIt": "Got it Got it Got it",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
-  },
   "usePasswordInsteadButton": "Χρησιμοποιήστε {pinOrPassword} αντ 'αυτού >>",
   "@usePasswordInsteadButton": {
     "description": "Button to use password/PIN instead",
@@ -10918,10 +10507,6 @@
   "transactionDetailLabelAddress": "Διεύθυνση",
   "@transactionDetailLabelAddress": {
     "description": "Label for address"
-  },
-  "recoverbullCheckingConnection": "Έλεγχος σύνδεσης για RecoverBull",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "backupWalletBestPracticesTitle": "Backup βέλτιστες πρακτικές",
   "@backupWalletBestPracticesTitle": {
@@ -10991,17 +10576,9 @@
       }
     }
   },
-  "recoverbullErrorUnexpected": "Ανεπιθύμητο λάθος, δείτε αρχεία καταγραφής",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "fundExchangeOnlineBillPaymentLabelBillerName": "Αναζητήστε τον κατάλογο των τιμητών της τράπεζάς σας για αυτό το όνομα",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
     "description": "Label for biller name in online bill payment"
-  },
-  "recoverbullSelectFetchDriveFilesError": "Επιθυμήθηκε να σπάσει όλα τα αντίγραφα ασφαλείας οδήγησης",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "transactionDetailLabelOrderNumber": "Αριθμός αριθμών",
   "transactionDetailLabelPaymentDescription": "Περιγραφή πληρωμής",
@@ -11011,10 +10588,6 @@
   "pickPasswordInsteadButton": "Επιλέξτε κωδικό πρόσβασης αντ 'αυτού >>",
   "@pickPasswordInsteadButton": {
     "description": "Button label to switch to password input"
-  },
-  "recoverbullConfirm": "Επιβεβαίωση",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "pickPinInsteadButton": "Επιλέξτε PIN αντ 'αυτού >>",
   "@pickPinInsteadButton": {
@@ -11052,10 +10625,6 @@
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
   },
-  "recoverbullConnected": "Connected",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
-  },
   "backupWalletErrorGoogleDriveSave": "Απέτυχε να σώσει την οδήγηση Google",
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
@@ -11072,23 +10641,6 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "recoverbullSelectGoogleDrive": "Google Drive",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "Εισάγετε το {inputType}",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullGoogleDriveExportButton": "Εξαγωγή εξαγωγών",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Δεν είστε σίγουροι και χρειάζεστε περισσότερο χρόνο για να μάθετε σχετικά με τις πρακτικές ασφαλείας.",
   "@backupWalletHowToDecideBackupEncryptedRecommendationText": {
     "description": "Recommendation text for when to use encrypted vault"
@@ -11096,10 +10648,6 @@
   "autoswapMaxFeeInfoText": "Εάν η συνολική χρέωση μεταφοράς είναι πάνω από το καθορισμένο ποσοστό, η αυτόματη μεταφορά θα μπλοκαριστεί",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "recoverbullGoogleDriveCancelButton": "Ακύρωση",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "Τώρα ας δοκιμάσουμε το εφεδρικό σας για να βεβαιωθείτε ότι όλα έγιναν σωστά.",
   "@backupWalletSuccessDescription": {
@@ -11121,10 +10669,6 @@
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"
   },
-  "recoverbullSecureBackup": "Εξασφαλίστε το εφεδρικό σας",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "testBackupLastKnownVault": "Τελευταία Γνωστή κρυπτογράφηση Vault: {timestamp}",
   "@testBackupLastKnownVault": {
     "description": "Shows timestamp of last encrypted vault backup",
@@ -11133,10 +10677,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "Απειλήθηκε να σπάσει το κλειδί του θησαυρού από τον server",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "fundExchangeOnlineBillPaymentLabelAccountNumber": "Προσθέστε αυτό ως τον αριθμό λογαριασμού",
   "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
@@ -11150,21 +10690,9 @@
   "@autoswapRecipientWalletLabel": {
     "description": "Label for wallet selection dropdown"
   },
-  "recoverbullRetry": "Retry",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το backup; Αυτή η δράση δεν μπορεί να ακυρωθεί.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
-  },
   "googleDriveSignInMessage": "Θα πρέπει να εγγραφείτε στο Google Drive",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "recoverbullFetchVaultKey": "Fetch Vault Key Key Key",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "testBackupEnterKeyManually": "Εισάγετε το Backup key χειροκίνητα >>",
   "@testBackupEnterKeyManually": {
@@ -11194,10 +10722,6 @@
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "recoverbullSelectRecoverWallet": "Ανακαλύψτε το Wallet",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "psbtFlowMoveLaser": "Μετακινήστε το κόκκινο λέιζερ πάνω και κάτω από τον κωδικό QR",
   "@psbtFlowMoveLaser": {
     "description": "Troubleshooting tip for devices with laser scanners"
@@ -11219,10 +10743,6 @@
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
   },
-  "recoverbullSelectCustomLocation": "Προσαρμοσμένη τοποθεσία",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
-  },
   "autoswapAlwaysBlockInfoDisabled": "Όταν απενεργοποιηθεί, θα σας δοθεί η επιλογή να επιτρέψετε μια αυτόματη μεταφορά που μπλοκάρεται λόγω υψηλών τελών",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
@@ -11239,10 +10759,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "Δημιουργία κρυπτογράφησης Vault",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "willNot": "δεν θα ",
   "@willNot": {
     "description": "Bold part of privacy assurance (will not)"
@@ -11251,10 +10767,6 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "recoverbullRecoverBullServer": "RecoverBull Server",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "exchangeSupportChatTitle": "Υποστήριξη Chat",
   "@exchangeSupportChatTitle": {
     "description": "Title for the support chat screen"
@@ -11262,14 +10774,6 @@
   "customLocationRecommendation": "Προσαρμοσμένη τοποθεσία: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "recoverbullErrorSelectVault": "Απέτυχε να επιλέξει το θύλακα",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "Επιθυμήθηκε να επιλέξει το θύλακα από το Google Drive",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
@@ -11594,22 +11098,6 @@
   "mempoolCustomServerNoSsl": "Χωρίς SSL",
   "autoswapTargetBalanceLabel": "Στόχος υπολοίπου άμεσου πορτοφολιού",
   "autoswapMaximumBalanceLabel": "Μέγιστο υπόλοιπο άμεσου πορτοφολιού",
-  "recoverbullServerConfirmTitle": "Διακομιστής ανάκτησης θησαυροφυλακίου",
-  "recoverbullServerUsingDefault": "Χρήση προεπιλεγμένου διακομιστή",
-  "recoverbullServerUsingCustom": "Χρήση προσαρμοσμένου διακομιστή",
-  "recoverbullServerUrlLabel": "URL διακομιστή:",
-  "recoverbullServerCustomWarning": "Χρησιμοποιείτε έναν προσαρμοσμένο διακομιστή Recoverbull. Βεβαιωθείτε ότι εμπιστεύεστε αυτόν τον διακομιστή.",
-  "recoverbullServerTorNotice": "Θα συνδεθούμε σε αυτόν τον διακομιστή μέσω Tor",
-  "recoverbullLearnMore": "Μάθετε περισσότερα για το Recoverbull",
-  "recoverbullSettingsTitle": "Ρυθμίσεις Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL διακομιστή κλειδιών",
-  "recoverbullSettingsEdit": "Επεξεργασία",
-  "recoverbullSettingsCancel": "Ακύρωση",
-  "recoverbullSettingsSave": "Αποθήκευση",
-  "recoverbullSettingsUrlRequired": "Απαιτείται URL",
-  "recoverbullSettingsUrlInvalid": "Μη έγκυρο URL",
-  "recoverbullSettingsUrlMustBeHttp": "Το URL πρέπει να είναι HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "Το URL πρέπει να τελειώνει σε .onion",
   "onboardingAdvancedOptionsTitle": "Σύνθετες επιλογές",
   "onboardingAdvancedOptionsDescription": "Διαμορφώστε τις σύνθετες ρυθμίσεις πριν δημιουργήσετε ή ανακτήσετε το πορτοφόλι σας",
   "onboardingAdvancedOptionsCustomElectrum": "Προσαρμοσμένος διακομιστής Electrum",
@@ -12102,7 +11590,6 @@
   "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
   "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
   "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
@@ -12171,12 +11658,8 @@
   "torSettingsStatusCensored": "Η σύνδεση φαίνεται φιλτραρισμένη",
   "torSettingsDescCensored": "Το Tor δεν μπόρεσε να φτάσει στο δίκτυο. Αυτό συνήθως σημαίνει ότι η σύνδεση φιλτράρεται.",
   "torSettingsBootstrapProgress": "Σύνδεση… {percent}%",
-  "recoverbullPhaseNetworkInfo": "Λήψη πληροφοριών δικτύου",
-  "recoverbullLongestStep": "Αυτό είναι το πιο χρονοβόρο βήμα. Η πρώτη εκκίνηση μπορεί να ξεπεράσει το ένα λεπτό.",
   "recoverbullTorOffline": "Φαίνεται ότι δεν υπάρχει σύνδεση στο διαδίκτυο.",
   "recoverbullTorClockSkewed": "Το ρολόι της συσκευής είναι λάθος, οπότε το Tor δεν μπορεί να επαληθεύσει τα πιστοποιητικά των κόμβων. Ελέγξτε την ημερομηνία και την ώρα.",
-  "recoverbullTorCantStart": "Το Tor δεν μπόρεσε να συνδεθεί αυτή τη στιγμή. Δοκιμάστε ξανά.",
-  "recoverbullServerUnreachableTorOk": "Το Tor λειτουργεί, αλλά ο διακομιστής αντιγράφων δεν απάντησε. Αμέσως μετά την πρώτη εκκίνηση μπορεί να χρειαστεί λίγη ώρα.",
   "torSettingsEmbeddedTitle": "Ενσωματωμένο Tor",
   "torSettingsEmbeddedDescription": "Το ενσωματωμένο Tor χρησιμοποιείται από το RecoverBull και τους διακομιστές Bitcoin Electrum με διεύθυνση .onion. Η υπόλοιπη κίνηση της εφαρμογής παραμένει άμεση.",
   "torSettingsTransportMode": "Μέθοδος σύνδεσης",
