@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -51,6 +50,7 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_r
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/send_mode.dart';
+import 'package:bb_mobile/features/send/public/send_route_args.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_sp_payment_for_send_usecase.dart';
@@ -217,17 +217,16 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<
-      SendCubit,
-      Wallet?,
-      ({Set<Outpoint> sweepOutpoints, String? spWalletLabel})?
-    >(
+    locator.registerFactoryParam<SendCubit, Wallet?, ({SendRouteArgs? args, String? spWalletLabel})?>(
       (wallet, options) => SendCubit(
         wallet: wallet,
-        mode: options?.spWalletLabel == null
-            ? const SendModeBitcoin()
-            : SendModeSp(walletLabel: options!.spWalletLabel!),
-        initialSweepOutpoints: options?.sweepOutpoints ?? const {},
+        mode: options?.spWalletLabel == null ? const SendModeBitcoin() : SendModeSp(walletLabel: options!.spWalletLabel!),
+        initialSweepOutpoints: options?.args?.isSweep == true
+            ? options!.args!.selectedOutpoints
+            : const {},
+        initialSelectedOutpoints: options?.args?.isSweep == false
+            ? options!.args!.selectedOutpoints
+            : const {},
         labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
