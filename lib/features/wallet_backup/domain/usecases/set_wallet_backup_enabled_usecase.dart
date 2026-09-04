@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 final class SetWalletBackupEnabledUsecase {
   final WalletBackupStateRepository _repository;
@@ -26,16 +27,39 @@ final class SetWalletBackupEnabledUsecase {
     // snapshot from it, because reading no longer writes it. Registering ahead
     // of recovery also keeps it clear of the publication the recovery fence
     // releases when it finishes.
-    if (await _register() case Err(:final failure)) return Err(failure);
+    if (await _register() case Err(:final failure)) {
+      _logRefusal('registering recovery material', failure);
+      return Err(failure);
+    }
 
     final recovery = await _recover();
     final recoveryFailure = _recoveryFailure(recovery.status);
-    if (recoveryFailure != null) return Err(recoveryFailure);
+    if (recoveryFailure != null) {
+      log.warning(
+        'Data Backup not enabled: server recovery ended with '
+        '${recovery.status.name}',
+        error: recoveryFailure.runtimeType,
+      );
+      return Err(recoveryFailure);
+    }
 
     final enabledResult = await _repository.setEnabled(true);
-    if (enabledResult case Err()) return enabledResult;
-    return _publish();
+    if (enabledResult case Err(:final failure)) {
+      _logRefusal('persisting the flag', failure);
+      return enabledResult;
+    }
+    final published = await _publish();
+    if (published case Err(:final failure)) {
+      _logRefusal('the first publication', failure);
+    }
+    return published;
   }
+
+  // Enabling used to fail with no trace at all; the toggle just stayed off.
+  void _logRefusal(String step, WalletBackupFailure failure) => log.warning(
+    'Data Backup not enabled: $step failed',
+    error: failure.runtimeType,
+  );
 }
 
 WalletBackupFailure? _recoveryFailure(WalletBackupRecoveryStatus status) =>
