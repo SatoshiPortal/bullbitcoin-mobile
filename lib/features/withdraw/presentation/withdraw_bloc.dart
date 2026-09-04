@@ -23,9 +23,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
-    /*on<WithdrawDescriptionInputContinuePressed>(
-      _onDescriptionInputContinuePressed,
-    );*/
     on<WithdrawConfirmed>(_onConfirmed);
   }
 
@@ -134,49 +131,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       }
     }
   }
-
-  /*Future<void> _onDescriptionInputContinuePressed(
-    WithdrawDescriptionInputContinuePressed event,
-    Emitter<WithdrawState> emit,
-  ) async {
-    // We should be on a WithdrawDescriptionInputState or WithdrawConfirmationState and
-    //  return to a clean WithdrawDescriptionInputState state to change the description
-    WithdrawDescriptionInputState descriptionInputState;
-    switch (state) {
-      case WithdrawDescriptionInputState _:
-        descriptionInputState = state as WithdrawDescriptionInputState;
-      case final WithdrawConfirmationState confirmationState:
-        descriptionInputState = confirmationState.toDescriptionInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
-    }
-    emit(
-      descriptionInputState.copyWith(
-        error: null,
-        isCreatingWithdrawOrder: true,
-      ),
-    );
-
-    try {
-      final order = await _createWithdrawOrderUsecase.execute(
-        fiatAmount: descriptionInputState.fiatOrderAmount.amount,
-        recipientId: descriptionInputState.recipient.recipientId,
-      );
-      emit(descriptionInputState.toConfirmationState(order: order));
-    } on WithdrawError catch (e) {
-      emit(descriptionInputState.copyWith(error: e));
-    } finally {
-      // Reset the isCreatingWithdrawOrder flag if any error occured
-      if (state is WithdrawDescriptionInputState) {
-        emit(
-          (state as WithdrawDescriptionInputState).copyWith(
-            isCreatingWithdrawOrder: false,
-          ),
-        );
-      }
-    }
-  }*/
 
   Future<void> _onConfirmed(
     WithdrawConfirmed event,
