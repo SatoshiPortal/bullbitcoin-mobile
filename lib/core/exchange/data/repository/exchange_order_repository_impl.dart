@@ -296,8 +296,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       rethrow;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
-      throw Exception('Failed to place pay order: $e');
+    } catch (e, st) {
+      // Keep the original trace: see refreshPayOrder.
+      Error.throwWithStackTrace(Exception('Failed to place pay order: $e'), st);
     }
   }
 
@@ -479,16 +480,20 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! FiatPaymentOrder) {
-        throw Exception(
-          'Expected FiatPaymentOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('FiatPaymentOrder');
       }
 
       return order;
     } on ApiKeyException {
       rethrow;
-    } catch (e) {
-      throw Exception('Failed to refresh pay order: $e');
+    } catch (e, st) {
+      // Keep the original trace: the use-case logs the trace it catches, so
+      // wrapping without it would point every report at this line instead of
+      // at the call that actually failed.
+      Error.throwWithStackTrace(
+        Exception('Failed to refresh pay order: $e'),
+        st,
+      );
     }
   }
 
