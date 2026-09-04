@@ -25,13 +25,10 @@ abstract interface class WalletSyncMetadataPort {
   Future<WalletSyncMetadata?> read(WalletNetworkKey key);
   Future<void> writeRegistration(WalletSourceRegistration registration);
   Future<void> writeAttempt(WalletNetworkKey key, DateTime at);
-  Future<void> writeSuccess(
-    WalletNetworkKey key,
-    DateTime at,
-    String fingerprint,
-  );
+  Future<void> recordLegacyForegroundSuccess(WalletNetworkKey key, DateTime at);
+  Future<void> writeSuccessfulObservation(WalletSyncReceipt receipt);
+  Future<DateTime?> readLastSuccessfulSyncAt(WalletNetworkKey key);
   Future<WalletSyncReceipt?> readReceipt(WalletNetworkKey key);
-  Future<void> writeReceipt(WalletSyncReceipt receipt);
   Future<void> writeDeletionMarker(
     WalletNetworkKey key,
     WalletDeletionPhase phase,

@@ -284,8 +284,7 @@ final class WalletTransactionRepositoryImpl
           contentFingerprint: fingerprint,
         );
         try {
-          await metadata.writeSuccess(key, observed, fingerprint);
-          await metadata.writeReceipt(receipt);
+          await metadata.writeSuccessfulObservation(receipt);
           durable = observed;
         } catch (_) {
           warning = const MetadataPersistenceWarning();

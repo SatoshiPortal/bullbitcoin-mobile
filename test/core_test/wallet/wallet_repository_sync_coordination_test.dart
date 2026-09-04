@@ -20,7 +20,11 @@ import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
-    show InMemoryWalletSourceOperationCoordinator, WalletSourceKey;
+    show
+        InMemoryWalletSourceOperationCoordinator,
+        WalletNetworkKey,
+        WalletSourceKey,
+        WalletSyncMetadataPort;
 
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
@@ -28,6 +32,17 @@ class _MockWalletMetadataDatasource extends Mock
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+
+class _MockWalletSyncMetadataPort extends Mock
+    implements WalletSyncMetadataPort {}
+
+WalletSyncMetadataPort _metadataPort() {
+  final port = _MockWalletSyncMetadataPort();
+  when(
+    () => port.recordLegacyForegroundSuccess(any(), any()),
+  ).thenAnswer((_) async {});
+  return port;
+}
 
 class _ImmediateElectrumPort implements ElectrumServersPort {
   @override
@@ -96,6 +111,9 @@ void main() {
     );
     registerFallbackValue(_metadata);
     registerFallbackValue(
+      const WalletNetworkKey('fallback', 'bitcoin', 'testnet'),
+    );
+    registerFallbackValue(
       const ElectrumConnection(
         url: 'electrum.example',
         retry: 0,
@@ -132,6 +150,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     final key = const WalletSourceKey(_walletId, 'bitcoin', 'testnet');
     final holderRelease = Completer<void>();
@@ -166,6 +185,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     final held = Completer<void>();
     final holder = coordinator.runExclusive<void>(
@@ -203,6 +223,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     final held = Completer<void>();
     final holder = coordinator.runExclusive<void>(
@@ -244,6 +265,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     final failedResult = repository.electrumSyncResultStream.first;
     await expectLater(
@@ -289,6 +311,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     final holderRelease = Completer<void>();
     final holder = coordinator.runExclusive<void>(
@@ -330,6 +353,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     final holderRelease = Completer<void>();
     final holder = coordinator.runExclusive<void>(
@@ -377,6 +401,7 @@ void main() {
         lwkWalletDatasource: lwk,
         serversPort: _ImmediateElectrumPort(),
         coordinator: coordinator,
+        syncMetadata: _metadataPort(),
       );
 
       await expectLater(
@@ -451,6 +476,7 @@ void main() {
         lwkWalletDatasource: lwk,
         serversPort: _ImmediateElectrumPort(),
         coordinator: coordinator,
+        syncMetadata: _metadataPort(),
       );
 
       await expectLater(
@@ -500,6 +526,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
     await coordinator.runExclusive(
       const WalletSourceKey(_liquidWalletId, 'liquid', 'testnet'),
@@ -578,6 +605,7 @@ void main() {
         lwkWalletDatasource: lwk,
         serversPort: _ImmediateElectrumPort(),
         coordinator: coordinator,
+        syncMetadata: _metadataPort(),
       );
 
       final operation = repository.getWallet(_walletId);
@@ -624,6 +652,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
 
     final first = repository.sync(
@@ -678,6 +707,7 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: coordinator,
+      syncMetadata: _metadataPort(),
     );
 
     await repository.getWallet(_liquidWalletId, sync: true);
@@ -708,9 +738,157 @@ void main() {
       lwkWalletDatasource: lwk,
       serversPort: _ImmediateElectrumPort(),
       coordinator: InMemoryWalletSourceOperationCoordinator(),
+      syncMetadata: _metadataPort(),
     );
 
     await repository.deleteWallet(walletId: _liquidWalletId);
     expect(events, ['source', 'metadata']);
   });
+
+  test('records a successful Bitcoin foreground sync in metadata', () async {
+    final metadata = _MockWalletMetadataDatasource();
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final syncMetadata = _MockWalletSyncMetadataPort();
+    _stubSyncStreams(bdk, lwk);
+    when(
+      () => bdk.sync(
+        wallet: any(named: 'wallet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => syncMetadata.recordLegacyForegroundSuccess(any(), any()),
+    ).thenAnswer((_) async {});
+    final repository = WalletRepository(
+      walletMetadataDatasource: metadata,
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: InMemoryWalletSourceOperationCoordinator(),
+      syncMetadata: syncMetadata,
+    );
+    final before = DateTime.now().toUtc();
+
+    await repository.sync(_wallet(_walletId));
+
+    final invocation = verify(
+      () => syncMetadata.recordLegacyForegroundSuccess(
+        captureAny(),
+        captureAny(),
+      ),
+    ).captured;
+    expect(
+      invocation[0],
+      const WalletNetworkKey(_walletId, 'bitcoin', 'testnet'),
+    );
+    final recordedAt = invocation[1] as DateTime;
+    expect(recordedAt.isUtc, isTrue);
+    expect(recordedAt.isAfter(before) || recordedAt == before, isTrue);
+    verifyNever(() => metadata.store(any()));
+  });
+
+  test('records a successful Liquid foreground sync in metadata', () async {
+    final metadata = _MockWalletMetadataDatasource();
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final syncMetadata = _MockWalletSyncMetadataPort();
+    _stubSyncStreams(bdk, lwk);
+    when(
+      () => lwk.sync(
+        wallet: any(named: 'wallet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => syncMetadata.recordLegacyForegroundSuccess(any(), any()),
+    ).thenAnswer((_) async {});
+    final repository = WalletRepository(
+      walletMetadataDatasource: metadata,
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: InMemoryWalletSourceOperationCoordinator(),
+      syncMetadata: syncMetadata,
+    );
+
+    await repository.sync(
+      _wallet(_liquidWalletId, network: Network.liquidTestnet),
+    );
+
+    final invocation = verify(
+      () => syncMetadata.recordLegacyForegroundSuccess(
+        const WalletNetworkKey(_liquidWalletId, 'liquid', 'testnet'),
+        captureAny(),
+      ),
+    ).captured;
+    expect((invocation[0] as DateTime).isUtc, isTrue);
+  });
+
+  test('does not record metadata after a failed sync', () async {
+    final bdk = _MockBdkWalletDatasource();
+    final lwk = _MockLwkWalletDatasource();
+    final syncMetadata = _MockWalletSyncMetadataPort();
+    _stubSyncStreams(bdk, lwk);
+    when(
+      () => bdk.sync(
+        wallet: any(named: 'wallet'),
+        electrumServer: any(named: 'electrumServer'),
+      ),
+    ).thenThrow(
+      NoElectrumServersConfiguredException(
+        ElectrumServerNetwork.bitcoinTestnet,
+      ),
+    );
+    final repository = WalletRepository(
+      walletMetadataDatasource: _MockWalletMetadataDatasource(),
+      bdkWalletDatasource: bdk,
+      lwkWalletDatasource: lwk,
+      serversPort: _ImmediateElectrumPort(),
+      coordinator: InMemoryWalletSourceOperationCoordinator(),
+      syncMetadata: syncMetadata,
+    );
+
+    await expectLater(
+      repository.sync(_wallet(_walletId)),
+      throwsA(isA<NoElectrumServersConfiguredException>()),
+    );
+    verifyNever(() => syncMetadata.recordLegacyForegroundSuccess(any(), any()));
+  });
+
+  test(
+    'metadata persistence failure does not fail a successful sync',
+    () async {
+      final bdk = _MockBdkWalletDatasource();
+      final lwk = _MockLwkWalletDatasource();
+      final syncMetadata = _MockWalletSyncMetadataPort();
+      _stubSyncStreams(bdk, lwk);
+      when(
+        () => bdk.sync(
+          wallet: any(named: 'wallet'),
+          electrumServer: any(named: 'electrumServer'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => syncMetadata.recordLegacyForegroundSuccess(any(), any()),
+      ).thenThrow(StateError('metadata failure'));
+      final repository = WalletRepository(
+        walletMetadataDatasource: _MockWalletMetadataDatasource(),
+        bdkWalletDatasource: bdk,
+        lwkWalletDatasource: lwk,
+        serversPort: _ImmediateElectrumPort(),
+        coordinator: InMemoryWalletSourceOperationCoordinator(),
+        syncMetadata: syncMetadata,
+      );
+
+      await repository.sync(_wallet(_walletId));
+    },
+  );
+}
+
+void _stubSyncStreams(BdkWalletDatasource bdk, LwkWalletDatasource lwk) {
+  when(() => bdk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+  when(() => bdk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
+  when(() => lwk.walletSyncStartedStream).thenAnswer((_) => Stream.empty());
+  when(() => lwk.walletSyncFinishedStream).thenAnswer((_) => Stream.empty());
 }

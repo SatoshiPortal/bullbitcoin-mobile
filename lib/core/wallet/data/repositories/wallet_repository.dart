@@ -21,7 +21,11 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
-    show WalletSourceKey, WalletSourceOperationCoordinator;
+    show
+        WalletNetworkKey,
+        WalletSourceKey,
+        WalletSourceOperationCoordinator,
+        WalletSyncMetadataPort;
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -29,6 +33,7 @@ class WalletRepository {
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServersPort _serversPort;
   final WalletSourceOperationCoordinator _coordinator;
+  final WalletSyncMetadataPort _syncMetadata;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -39,14 +44,11 @@ class WalletRepository {
     required LwkWalletDatasource lwkWalletDatasource,
     required this._serversPort,
     required WalletSourceOperationCoordinator coordinator,
+    required this._syncMetadata,
   }) : _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
        // ignore: prefer_initializing_formals
-       _coordinator = coordinator {
-    // Keep track of the last sync time in the wallet metadata
-    _walletSyncFinishedStream.listen(_updateWalletSyncTime);
-    // Start auto syncing wallets
-  }
+       _coordinator = coordinator;
 
   Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
       .asyncMap((walletId) async => await getWallet(walletId))
@@ -460,18 +462,6 @@ class WalletRepository {
     _lwkWallet.walletSyncFinishedStream,
   ]);
 
-  Future<void> _updateWalletSyncTime(String walletId) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      return;
-    }
-
-    final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
-
-    await _walletMetadataDatasource.store(updatedWalletMetadata);
-  }
-
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
@@ -596,6 +586,14 @@ class WalletRepository {
       _electrumSyncResultController.add(
         ElectrumSyncResult(isLiquid: isLiquid, success: true),
       );
+      try {
+        await _syncMetadata.recordLegacyForegroundSuccess(
+          _networkKey(wallet),
+          DateTime.now().toUtc(),
+        );
+      } catch (_) {
+        log.warning('Unable to persist foreground sync metadata');
+      }
     } on ElectrumFallbackException catch (e, stackTrace) {
       // Both NoElectrumServersConfigured and AllElectrumServersFailed land
       // here. Emit the failed result, log the rich `e.message` (per-server
@@ -611,6 +609,12 @@ class WalletRepository {
   }
 
   WalletSourceKey _sourceKey(WalletModel wallet) => WalletSourceKey(
+    wallet.id,
+    wallet is PublicLwkWalletModel ? 'liquid' : 'bitcoin',
+    wallet.isTestnet ? 'testnet' : 'mainnet',
+  );
+
+  WalletNetworkKey _networkKey(WalletModel wallet) => WalletNetworkKey(
     wallet.id,
     wallet is PublicLwkWalletModel ? 'liquid' : 'bitcoin',
     wallet.isTestnet ? 'testnet' : 'mainnet',
