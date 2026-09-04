@@ -23,20 +23,11 @@ sealed class WithdrawState with _$WithdrawState {
     @Default(false) bool isCreatingWithdrawOrder,
     WithdrawError? error,
   }) = WithdrawPaymentDetailsInputState;
-  /*onst factory WithdrawState.descriptionInput({
-    required UserSummary userSummary,
-    required RecipientSelection recipient,
-    required FiatAmount fiatOrderAmount,
-    required FiatCurrency fiatCurrency,
-    @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? error,
-  }) = WithdrawDescriptionInputState;*/
   const factory WithdrawState.confirmation({
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
     required RecipientSelection recipient,
-    //required String description,
     required WithdrawOrder order,
     InteracSecurityDetails? interacSecurityDetails,
     @Default(false) bool saveSecurityDetailsAsDefault,
@@ -258,40 +249,7 @@ extension WithdrawPaymentDetailsInputStateX
   }
 }
 
-/*extension WithdrawDescriptionInputStateX on WithdrawDescriptionInputState {
-  WithdrawAmountInputState toAmountInputState() {
-    return WithdrawAmountInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-    );
-  }
-
-  WithdrawConfirmationState toConfirmationState({
-    required WithdrawOrder order,
-  }) {
-    return WithdrawConfirmationState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-      fiatOrderAmount: fiatOrderAmount,
-      fiatCurrency: fiatCurrency,
-      order: order,
-    );
-  }
-}*/
-
 extension WithdrawConfirmationStateX on WithdrawConfirmationState {
-  /*WithdrawDescriptionInputState toDescriptionInputState() {
-    return WithdrawDescriptionInputState(
-      userSummary: userSummary,
-      recipients: recipients,
-      recipient: recipient,
-      fiatOrderAmount: fiatOrderAmount,
-      fiatCurrency: fiatCurrency,
-    );
-  }*/
-
   WithdrawSuccessState toSuccessState({required WithdrawOrder order}) {
     return WithdrawSuccessState(order: order);
   }
