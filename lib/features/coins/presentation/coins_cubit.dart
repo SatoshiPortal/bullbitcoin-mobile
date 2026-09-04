@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_state.dart';
@@ -25,6 +26,7 @@ class CoinsCubit extends Cubit<CoinsState> {
     required this._getUtxosUsecase,
     required this._freezeUtxosUsecase,
     required this._unfreezeUtxosUsecase,
+    required this._refreshCoinsUsecase,
     required this._labelsFacade,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
@@ -42,6 +44,7 @@ class CoinsCubit extends Cubit<CoinsState> {
   final GetUtxosUsecase _getUtxosUsecase;
   final FreezeUtxosUsecase _freezeUtxosUsecase;
   final UnfreezeUtxosUsecase _unfreezeUtxosUsecase;
+  final RefreshCoinsUsecase _refreshCoinsUsecase;
   final LabelsFacade _labelsFacade;
 
   StreamSubscription? _startedSub;
@@ -96,7 +99,10 @@ class CoinsCubit extends Cubit<CoinsState> {
     }
   }
 
-  Future<void> refresh() => load();
+  Future<void> refresh() async {
+    await _refreshCoinsUsecase.execute();
+    await load();
+  }
 
   Future<void> _onSyncFinished() async {
     _debounceTimer?.cancel();

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_failure_l10n.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/coins/ui/widgets/coins_summary_bar.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/coins_sort_filter_sheet.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/freeze_confirm_dialog.dart';
 import 'package:bb_mobile/features/coins/ui/widgets/utxo_tile.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +16,10 @@ import 'package:go_router/go_router.dart';
 /// The Coins (UTXO) screen — list view with summary, sort/filter, multi-select
 /// and freeze/unfreeze. Built entirely on `package:bull_ui/bull_ui.dart`.
 class CoinsScreen extends StatelessWidget {
-  const CoinsScreen({super.key});
+  const CoinsScreen({super.key, required this.onSend, required this.onSweep});
+
+  final Future<void> Function(Set<Outpoint> outpoints) onSend;
+  final Future<void> Function(Set<Outpoint> outpoints) onSweep;
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +67,9 @@ class CoinsScreen extends StatelessWidget {
                   ),
                   anyUnfrozen: state.anySelectedUnfrozen,
                   anyFrozen: state.anySelectedFrozen,
-                  onSweep: () => context.pop({
-                    for (final utxo in state.selectedUtxos)
-                      (txId: utxo.txId, vout: utxo.vout),
-                  }),
+                  onSend: () => _openTransaction(context, state, open: onSend),
+                  onSweep: () =>
+                      _openTransaction(context, state, open: onSweep),
                   onFreeze: () => _confirmFreeze(context, state),
                   onUnfreeze: () => _unfreeze(
                     context,
@@ -81,6 +83,19 @@ class CoinsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _openTransaction(
+    BuildContext context,
+    CoinsState state, {
+    required Future<void> Function(Set<Outpoint> outpoints) open,
+  }) async {
+    final outpoints = {
+      for (final utxo in state.selectedUtxos)
+        (txId: utxo.txId, vout: utxo.vout),
+    };
+    await open(outpoints);
+    if (context.mounted) await context.read<CoinsCubit>().load();
   }
 
   Future<void> _confirmFreeze(BuildContext context, CoinsState state) async {
@@ -415,13 +430,7 @@ class _UtxoList extends StatelessWidget {
     final visible = state.visible;
 
     return BullRefreshIndicator(
-      onRefresh: () async {
-        // Wait for the chain sync (bitcoin + liquid + swaps) to actually
-        // finish before reloading local UTXOs, so the spinner reflects the
-        // real sync rather than the near-instant local reload.
-        await context.read<WalletBloc>().refresh();
-        await cubit.refresh();
-      },
+      onRefresh: cubit.refresh,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: visible.length,
