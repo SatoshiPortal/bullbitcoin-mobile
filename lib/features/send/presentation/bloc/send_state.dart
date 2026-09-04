@@ -110,9 +110,8 @@ abstract class SendState with _$SendState {
     Wallet? selectedWallet,
     @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
-    // Fail-closed default: until getCurrencies()/onCurrencyChanged() have
-    // fetched settings at least once, no payjoin is attempted. Mirrors
-    // SettingsEntity.isPayjoinEnabled.
+    // Payjoin remains disabled until send settings/onCurrencyChanged() have
+    // fetched settings at least once. Mirrors SettingsEntity.isPayjoinEnabled.
     @Default(false) bool payjoinGloballyEnabled,
     // The sender's per-send opt-out: payjoin can be available for this send
     // (see [isPayjoinAvailable]) and still deliberately not attempted. Reset
@@ -130,6 +129,7 @@ abstract class SendState with _$SendState {
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
+    @Default({}) Set<Outpoint> selectedInputOutpoints,
     @Default({}) Set<Outpoint> sweepOutpoints,
     @Default(true) bool replaceByFee,
     FeeOptions? bitcoinFeesList,
@@ -206,7 +206,20 @@ abstract class SendState with _$SendState {
 
   bool get isSweep => sweepOutpoints.isNotEmpty;
 
-  bool get sweepDestinationBlocked => isSweep && selectedUtxos.isEmpty;
+  Set<Outpoint> get requiredInputOutpoints {
+    if (isSweep) return sweepOutpoints;
+    if (selectedInputOutpoints.isNotEmpty) return selectedInputOutpoints;
+    return {for (final utxo in selectedUtxos) utxo.outpoint};
+  }
+
+  bool get usesSelectedInputsOnly => requiredInputOutpoints.isNotEmpty;
+
+  bool get selectedInputsUnavailable {
+    if (!usesSelectedInputsOnly) return false;
+    final resolved = {for (final utxo in selectedUtxos) utxo.outpoint};
+    return resolved.length != requiredInputOutpoints.length ||
+        !resolved.containsAll(requiredInputOutpoints);
+  }
 
   bool get hasMultipleRecipients => recipientDrafts.length > 1;
 
@@ -229,7 +242,7 @@ abstract class SendState with _$SendState {
   }
 
   List<Wallet> get selectableWallets {
-    if (isSweep) {
+    if (usesSelectedInputsOnly) {
       return [?selectedWallet];
     }
     return hasMultipleRecipients ? bitcoinRecipientWallets : wallets;
@@ -266,7 +279,7 @@ abstract class SendState with _$SendState {
       recipientDrafts.skip(1).any((recipient) => !recipient.isValid);
 
   bool get canAddRecipient =>
-      !sweepDestinationBlocked &&
+      !selectedInputsUnavailable &&
       (supportsRecipientList ||
           (paymentRequest == null &&
               copiedRawPaymentRequest.trim().isNotEmpty));
@@ -284,7 +297,7 @@ abstract class SendState with _$SendState {
   bool get isPayjoinAvailable =>
       !isSweep &&
       !hasMultipleRecipients &&
-      selectedUtxos.isEmpty &&
+      !usesSelectedInputsOnly &&
       payjoinGloballyEnabled &&
       (selectedWallet?.signsLocally ?? false) &&
       isToSelf != true &&
@@ -461,19 +474,15 @@ abstract class SendState with _$SendState {
 
   String formattedWalletBalance() {
     if (selectedWallet == null) return '0';
+    final balanceSat = maxAvailableBalanceSat;
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
-      return FormatAmount.btc(
-        ConvertAmount.satsToBtc(selectedWallet!.balanceSat.toInt()),
-      );
+      return FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
     } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
+      return FormatAmount.sats(balanceSat);
     } else {
       return FormatAmount.fiat(
-        ConvertAmount.satsToFiat(
-          selectedWallet!.balanceSat.toInt(),
-          exchangeRate,
-        ),
+        ConvertAmount.satsToFiat(balanceSat, exchangeRate),
         inputAmountCurrencyCode,
       );
     }
@@ -482,7 +491,7 @@ abstract class SendState with _$SendState {
   String formattedApproximateBalance() {
     if (selectedWallet == null) return '0';
 
-    final satsBalance = selectedWallet!.balanceSat.toInt();
+    final satsBalance = maxAvailableBalanceSat;
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
         inputAmountCurrencyCode == BitcoinUnit.sats.code) {
@@ -543,13 +552,9 @@ abstract class SendState with _$SendState {
       ? selectedSpendableBalanceSat
       : (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
 
-  int get maxAvailableBalanceSat {
-    final selectedBalance = selectedUtxos.fold(
-      0,
-      (sum, utxo) => sum + utxo.amountSat.toInt(),
-    );
-    return selectedUtxos.isEmpty ? spendableBalanceSat : selectedBalance;
-  }
+  int get maxAvailableBalanceSat => usesSelectedInputsOnly
+      ? selectedSpendableBalanceSat
+      : spendableBalanceSat;
 
   int get maxSpendableBalanceSat {
     final maxAmount = maxAvailableBalanceSat - (absoluteFees ?? 0);
@@ -559,15 +564,15 @@ abstract class SendState with _$SendState {
   bool get walletHasBalance {
     if (selectedWallet == null) return false;
     if (!usesRecipientList) {
-      return inputAmountSat > 0 && inputAmountSat <= spendableBalanceSat;
+      return inputAmountSat > 0 && inputAmountSat <= maxAvailableBalanceSat;
     }
     final fixedAmountSat = totalFixedRecipientAmountSat;
     if (hasRemainderRecipient) {
       final fixedAmountsAreValid =
           recipientDrafts.length == 1 || fixedAmountSat > 0;
-      return fixedAmountsAreValid && fixedAmountSat < spendableBalanceSat;
+      return fixedAmountsAreValid && fixedAmountSat < maxAvailableBalanceSat;
     }
-    return fixedAmountSat > 0 && fixedAmountSat <= spendableBalanceSat;
+    return fixedAmountSat > 0 && fixedAmountSat <= maxAvailableBalanceSat;
   }
 
   /// Specifically "the wallet could not construct the transaction".

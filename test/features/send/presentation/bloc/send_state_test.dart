@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -222,6 +223,35 @@ void main() {
     expect(state.maxAvailableBalanceSat, 30000);
   });
 
+  test('selected coins limit normal sends and the displayed balance', () {
+    final state = SendState(
+      selectedWallet: _FakeWallet(130000),
+      selectedUtxos: [walletUtxoFixture(sats: 30000)],
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      amount: '40000',
+    );
+
+    expect(state.formattedWalletBalance(), FormatAmount.sats(30000));
+    expect(state.walletHasBalance, isFalse);
+    expect(state.usesSelectedInputsOnly, isTrue);
+  });
+
+  test('an unresolved selected-input intent has no spendable balance', () {
+    final state = SendState(
+      selectedWallet: _FakeWallet(130000),
+      selectedInputOutpoints: const {(txId: 'missing', vout: 0)},
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      amount: '40000',
+    );
+
+    expect(state.usesSelectedInputsOnly, isTrue);
+    expect(state.selectedInputsUnavailable, isTrue);
+    expect(state.maxAvailableBalanceSat, 0);
+    expect(state.formattedWalletBalance(), FormatAmount.sats(0));
+    expect(state.walletHasBalance, isFalse);
+    expect(state.isPayjoinAvailable, isFalse);
+  });
+
   test('MAX clamps a selected balance that cannot cover its fee', () {
     final state = SendState(
       selectedWallet: _FakeWallet(10000),
@@ -419,8 +449,8 @@ void main() {
         selectedUtxos: [walletUtxoFixture(sats: 75000, txId: 'selected')],
       );
 
-      expect(unresolved.sweepDestinationBlocked, isTrue);
-      expect(resolved.sweepDestinationBlocked, isFalse);
+      expect(unresolved.selectedInputsUnavailable, isTrue);
+      expect(resolved.selectedInputsUnavailable, isFalse);
     });
 
     test('uses only the selected spendable value as the available balance', () {

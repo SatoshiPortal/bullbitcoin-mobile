@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -19,6 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../coins/wallet_utxo_fixture.dart';
 
 class _MockSendCubit extends Mock implements SendCubit {}
 
@@ -103,6 +106,7 @@ void main() {
       fiatCurrencyCodes: const ['USD'],
       fiatCurrencyCode: 'USD',
       exchangeRate: 50000,
+      selectedUtxos: [walletUtxoFixture(walletId: wallet.id, sats: 75000)],
       recipientDrafts: const [
         (
           id: 0,
@@ -139,9 +143,66 @@ void main() {
     expect(find.text('MAX'), findsOneWidget);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('Send remaining balance'), findsNothing);
+    expect(
+      tester.widget<BalanceRow>(find.byType(BalanceRow)).title,
+      'Selected coins',
+    );
+    expect(find.byType(DropdownButtonFormField<String>), findsNothing);
 
     await tester.tap(find.byType(Switch));
     verify(() => cubit.amountChanged(amount: null, isMax: true)).called(1);
+  });
+
+  testWidgets('matches a refreshed wallet option by id', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    Device.screen = const Size(800, 1200);
+    final selectedWallet = _wallet();
+    final refreshedWallet = selectedWallet.copyWith(
+      balanceSat: BigInt.from(900000),
+    );
+    final state = SendState(
+      step: SendStep.amount,
+      sendType: SendType.bitcoin,
+      wallets: [refreshedWallet],
+      selectedWallet: selectedWallet,
+      paymentRequest: const PaymentRequest.bitcoin(
+        address: 'bc1qfirst',
+        isTestnet: false,
+      ),
+      bitcoinUnit: BitcoinUnit.sats,
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      fiatCurrencyCodes: const ['USD'],
+      fiatCurrencyCode: 'USD',
+    );
+    final cubit = _MockSendCubit();
+    when(() => cubit.state).thenReturn(state);
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider<SendCubit>.value(
+          value: cubit,
+          child: const SendAmountScreen(),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester
+          .widget<DropdownButtonFormField<String>>(
+            find.byType(DropdownButtonFormField<String>),
+          )
+          .initialValue,
+      selectedWallet.id,
+    );
+    expect(tester.widget<BalanceRow>(find.byType(BalanceRow)).title, 'Balance');
   });
 
   testWidgets('renders a single remainder recipient with the MAX UI', (
@@ -272,6 +333,71 @@ void main() {
     expect(find.byType(Radio<int>), findsNothing);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('MAX'), findsNothing);
+  });
+
+  testWidgets('confirmation shows the selected coin count and total', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    Device.screen = const Size(800, 1600);
+    final wallet = _wallet();
+    final state = SendState(
+      step: SendStep.confirm,
+      sendType: SendType.bitcoin,
+      wallets: [wallet],
+      selectedWallet: wallet,
+      selectedUtxos: [walletUtxoFixture(walletId: wallet.id, sats: 75000)],
+      paymentRequest: const PaymentRequest.bitcoin(
+        address: 'bc1qrecipient',
+        isTestnet: false,
+      ),
+      bitcoinUnit: BitcoinUnit.sats,
+      inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      fiatCurrencyCodes: const ['USD'],
+      fiatCurrencyCode: 'USD',
+      exchangeRate: 50000,
+      confirmedAmountSat: 50000,
+      bitcoinAbsoluteFeesSat: 1000,
+      unsignedPsbt: 'unsigned',
+      signedBitcoinPsbt: 'signed',
+    );
+    final cubit = _MockSendCubit();
+    when(() => cubit.state).thenReturn(state);
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+    final settingsCubit = _MockSettingsCubit();
+    when(() => settingsCubit.state).thenReturn(
+      const SettingsState(
+        storedSettings: SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+          hideAmounts: false,
+        ),
+      ),
+    );
+    when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<SendCubit>.value(value: cubit),
+            BlocProvider<SettingsCubit>.value(value: settingsCubit),
+          ],
+          child: const SendConfirmScreen(),
+        ),
+      ),
+    );
+
+    expect(find.text('Coin Control'), findsOneWidget);
+    expect(find.text('1 selected'), findsOneWidget);
+    expect(find.text(FormatAmount.sats(75000)), findsOneWidget);
   });
 
   testWidgets(
