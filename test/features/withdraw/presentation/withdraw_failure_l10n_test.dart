@@ -23,10 +23,15 @@ final _everyFailure = <WithdrawFailure>[
   const WithdrawUnexpectedFailure(_rawReason),
 ];
 
-Future<String> _translate(WidgetTester tester, WithdrawFailure failure) async {
+Future<String> _translate(
+  WidgetTester tester,
+  WithdrawFailure failure, {
+  Locale? locale,
+}) async {
   late String message;
   await tester.pumpWidget(
     MaterialApp(
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
@@ -114,6 +119,61 @@ void main() {
         ),
         allOf(contains('0.0001'), contains('BTC')),
       );
+    });
+
+    testWidgets('the bound is formatted in the app locale, not en_US', (
+      tester,
+    ) async {
+      // The number is embedded in a translated sentence, so formatting it as
+      // en_US would put "5,000" in a French string, where a comma is the
+      // decimal separator and it reads as five.
+      const fractional = WithdrawBelowMinAmountFailure(
+        minAmount: 0.0001,
+        currency: 'BTC',
+      );
+      const thousands = WithdrawAboveMaxAmountFailure(
+        maxAmount: 5000,
+        currency: 'CAD',
+      );
+
+      expect(
+        await _translate(tester, fractional, locale: const Locale('fr')),
+        contains('0,0001'),
+      );
+      expect(
+        await _translate(tester, fractional, locale: const Locale('en')),
+        contains('0.0001'),
+      );
+
+      final fr = await _translate(
+        tester,
+        thousands,
+        locale: const Locale('fr'),
+      );
+      expect(fr, isNot(contains('5,000')), reason: 'that reads as five in fr');
+      expect(fr.replaceAll(RegExp(r'[\s\u00a0\u202f]'), ''), contains('5000'));
+    });
+
+    testWidgets('every supported locale can format a bound', (tester) async {
+      // Guards the locales intl may not have number symbols for, such as
+      // hi_Latn and ka: they must fall back, not throw.
+      for (final locale in AppLocalizations.supportedLocales) {
+        final message = await _translate(
+          tester,
+          const WithdrawBelowMinAmountFailure(
+            minAmount: 1234.5,
+            currency: 'CAD',
+          ),
+          locale: locale,
+        );
+
+        expect(
+          message,
+          isNotEmpty,
+          reason: 'failed to format a bound for $locale',
+        );
+        expect(message, contains('CAD'), reason: 'currency lost for $locale');
+      }
     });
   });
 }
