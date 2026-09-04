@@ -4929,5 +4929,6 @@
   "autoBuyInfoMessage": "存入您账户的任何金额都将按当前汇率兑换为 Bitcoin，并发送到您的钱包。",
   "autoBuyAccountUnavailableError": "您的 Bull Bitcoin 账户不可用。请稍后重试。",
   "autoBuyWalletRequiredError": "请至少添加一个默认的 Bitcoin、Lightning 或 Liquid 地址。",
-  "autoBuyUpdateError": "无法更新自动买入。请稍后重试。"
+  "autoBuyUpdateError": "无法更新自动买入。请稍后重试。",
+  "withdrawUnexpectedError": "您的提现当前无法完成。请重试或联系客服。"
 }

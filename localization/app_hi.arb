@@ -12413,5 +12413,6 @@
   "autoBuyInfoMessage": "आपके खाते में जोड़ी गई कोई भी राशि मौजूदा विनिमय दर पर Bitcoin में बदल दी जाएगी और आपके वॉलेट में भेज दी जाएगी।",
   "autoBuyAccountUnavailableError": "आपका Bull Bitcoin खाता उपलब्ध नहीं है। बाद में फिर कोशिश करें।",
   "autoBuyWalletRequiredError": "कम से कम एक डिफ़ॉल्ट Bitcoin, Lightning या Liquid पता जोड़ें।",
-  "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।"
+  "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।",
+  "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।"
 }

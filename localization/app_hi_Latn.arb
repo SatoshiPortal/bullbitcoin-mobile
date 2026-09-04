@@ -12611,5 +12611,6 @@
   "autoBuyInfoMessage": "Aapke account mein jodi gayi koi bhi raashi maujooda exchange rate par Bitcoin mein badal kar aapke wallet mein bhej di jayegi.",
   "autoBuyAccountUnavailableError": "Aapka Bull Bitcoin account uplabdh nahi hai. Baad mein phir koshish karein.",
   "autoBuyWalletRequiredError": "Kam se kam ek default Bitcoin, Lightning ya Liquid address add karein.",
-  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein."
+  "autoBuyUpdateError": "Auto-buy update nahi ho saki. Baad mein phir koshish karein.",
+  "withdrawUnexpectedError": "Aapki withdrawal abhi complete nahi ho saki. Kripya phir koshish karein ya support se sampark karein."
 }

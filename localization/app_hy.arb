@@ -3611,5 +3611,6 @@
   "autoBuyInfoMessage": "Ձեր հաշվին ավելացված ցանկացած գումար կփոխարկվի Bitcoin-ի՝ ընթացիկ փոխարժեքով, և կուղարկվի ձեր դրամապանակ։",
   "autoBuyAccountUnavailableError": "Ձեր Bull Bitcoin հաշիվը հասանելի չէ։ Փորձեք ավելի ուշ։",
   "autoBuyWalletRequiredError": "Ավելացրեք առնվազն մեկ լռելյայն Bitcoin, Lightning կամ Liquid հասցե։",
-  "autoBuyUpdateError": "Չհաջողվեց թարմացնել ավտոմատ գնումը։ Փորձեք ավելի ուշ։"
+  "autoBuyUpdateError": "Չհաջողվեց թարմացնել ավտոմատ գնումը։ Փորձեք ավելի ուշ։",
+  "withdrawUnexpectedError": "Ձեր հանումը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։"
 }

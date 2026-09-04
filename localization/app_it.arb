@@ -4929,5 +4929,6 @@
   "autoBuyInfoMessage": "Qualsiasi importo aggiunto al tuo account verrà convertito in Bitcoin al tasso di cambio corrente e inviato al tuo portafoglio.",
   "autoBuyAccountUnavailableError": "Il tuo account Bull Bitcoin non è disponibile. Riprova più tardi.",
   "autoBuyWalletRequiredError": "Aggiungi almeno un indirizzo predefinito Bitcoin, Lightning o Liquid.",
-  "autoBuyUpdateError": "Non è stato possibile aggiornare l'acquisto automatico. Riprova più tardi."
+  "autoBuyUpdateError": "Non è stato possibile aggiornare l'acquisto automatico. Riprova più tardi.",
+  "withdrawUnexpectedError": "Il suo prelievo non è stato completato al momento. Riprovi o contatti l'assistenza."
 }

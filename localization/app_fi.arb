@@ -4917,5 +4917,6 @@
   "autoBuyInfoMessage": "Kaikki tilillesi lisätyt summat muunnetaan Bitcoiniksi nykyisellä vaihtokurssilla ja lähetetään lompakkoosi.",
   "autoBuyAccountUnavailableError": "Bull Bitcoin -tilisi ei ole käytettävissä. Yritä myöhemmin uudelleen.",
   "autoBuyWalletRequiredError": "Lisää vähintään yksi Bitcoin-, Lightning- tai Liquid-oletusosoite.",
-  "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen."
+  "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.",
+  "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen."
 }

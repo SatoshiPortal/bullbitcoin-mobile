@@ -3623,5 +3623,6 @@
   "autoBuyInfoMessage": "Kiasi chochote kinachoongezwa kwenye akaunti yako kitabadilishwa kuwa Bitcoin kwa kiwango cha ubadilishaji cha sasa na kutumwa kwenye pochi yako.",
   "autoBuyAccountUnavailableError": "Akaunti yako ya Bull Bitcoin haipatikani. Jaribu tena baadaye.",
   "autoBuyWalletRequiredError": "Ongeza angalau anwani moja chaguo-msingi ya Bitcoin, Lightning au Liquid.",
-  "autoBuyUpdateError": "Ununuzi wa kiotomatiki haukuweza kusasishwa. Jaribu tena baadaye."
+  "autoBuyUpdateError": "Ununuzi wa kiotomatiki haukuweza kusasishwa. Jaribu tena baadaye.",
+  "withdrawUnexpectedError": "Uondoaji wako haukuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada."
 }

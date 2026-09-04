@@ -12223,5 +12223,6 @@
   "autoBuyInfoMessage": "هر مبلغی که به حساب شما اضافه شود با نرخ ارز فعلی به Bitcoin تبدیل و به کیف پول شما ارسال می‌شود.",
   "autoBuyAccountUnavailableError": "حساب Bull Bitcoin شما در دسترس نیست. بعداً دوباره تلاش کنید.",
   "autoBuyWalletRequiredError": "حداقل یک آدرس پیش‌فرض Bitcoin، Lightning یا Liquid اضافه کنید.",
-  "autoBuyUpdateError": "به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید."
+  "autoBuyUpdateError": "به‌روزرسانی خرید خودکار امکان‌پذیر نبود. بعداً دوباره تلاش کنید.",
+  "withdrawUnexpectedError": "برداشت شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید."
 }
