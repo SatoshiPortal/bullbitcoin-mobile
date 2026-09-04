@@ -6804,10 +6804,6 @@
   "@sendTitle": {
     "description": "Title for the send screen"
   },
-  "withdrawOrderNotFoundError": "การถอนเงินไม่ได้พบ กรุณาลองอีกครั้ง.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
   "importQrDeviceSeedsignerStep4": "เลือก \"ส่งออก Xasa\"",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
@@ -10817,15 +10813,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "ข้อผิดพลาด: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "ค่าธรรมเนียม",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11207,10 +11194,6 @@
   "payViewDetails": "ดูรายละเอียด",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "การถอนเงินนี้ได้รับการยืนยัน.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "เลือกกระเป๋าสตางค์ Bitcoin",
   "@autoswapSelectWallet": {
