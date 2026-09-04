@@ -2,9 +2,8 @@ part of 'withdraw_bloc.dart';
 
 @freezed
 sealed class WithdrawState with _$WithdrawState {
-  const factory WithdrawState.initial({
-    GetExchangeUserSummaryException? getUserSummaryException,
-  }) = WithdrawInitialState;
+  const factory WithdrawState.initial({WithdrawFailure? failure}) =
+      WithdrawInitialState;
   const factory WithdrawState.amountInput({required UserSummary userSummary}) =
       WithdrawAmountInputState;
   const factory WithdrawState.recipientInput({
@@ -12,8 +11,8 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatAmount amount,
     required FiatCurrency currency,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? newRecipientError,
-    WithdrawError? selectedRecipientError,
+    WithdrawFailure? newRecipientFailure,
+    WithdrawFailure? selectedRecipientFailure,
   }) = WithdrawRecipientInputState;
   const factory WithdrawState.paymentDetailsInput({
     required UserSummary userSummary,
@@ -21,7 +20,7 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatCurrency currency,
     required RecipientSelection recipient,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? error,
+    WithdrawFailure? failure,
   }) = WithdrawPaymentDetailsInputState;
   const factory WithdrawState.confirmation({
     required UserSummary userSummary,
@@ -32,7 +31,7 @@ sealed class WithdrawState with _$WithdrawState {
     InteracSecurityDetails? interacSecurityDetails,
     @Default(false) bool saveSecurityDetailsAsDefault,
     @Default(false) bool isConfirmingWithdrawal,
-    WithdrawError? error,
+    WithdrawFailure? failure,
   }) = WithdrawConfirmationState;
   const factory WithdrawState.success({required WithdrawOrder order}) =
       WithdrawSuccessState;
@@ -61,11 +60,11 @@ sealed class WithdrawState with _$WithdrawState {
             amount,
             currency,
             isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
+            newRecipientFailure,
+            selectedRecipientFailure,
           ) => WithdrawAmountInputState(userSummary: userSummary),
       paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, error) =>
+          (userSummary, amount, currency, recipient, isCreating, failure) =>
               WithdrawAmountInputState(userSummary: userSummary),
       confirmation:
           (
@@ -77,7 +76,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawAmountInputState(userSummary: userSummary),
     );
   }
@@ -90,18 +89,18 @@ sealed class WithdrawState with _$WithdrawState {
             amount,
             currency,
             isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
+            newRecipientFailure,
+            selectedRecipientFailure,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
             isCreatingWithdrawOrder: false,
-            newRecipientError: null,
-            selectedRecipientError: null,
+            newRecipientFailure: null,
+            selectedRecipientFailure: null,
           ),
       paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, error) =>
+          (userSummary, amount, currency, recipient, isCreating, failure) =>
               WithdrawRecipientInputState(
                 userSummary: userSummary,
                 amount: amount,
@@ -117,7 +116,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
@@ -138,7 +137,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawConfirmationState(
             userSummary: userSummary,
             amount: amount,
@@ -147,7 +146,7 @@ sealed class WithdrawState with _$WithdrawState {
             order: order,
             interacSecurityDetails: interacSecurityDetails,
             saveSecurityDetailsAsDefault: saveSecurityDetailsAsDefault,
-            error: null,
+            failure: null,
           ),
     );
   }
@@ -155,7 +154,7 @@ sealed class WithdrawState with _$WithdrawState {
   WithdrawPaymentDetailsInputState? get cleanPaymentDetailsInputState {
     return whenOrNull(
       paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, error) =>
+          (userSummary, amount, currency, recipient, isCreating, failure) =>
               WithdrawPaymentDetailsInputState(
                 userSummary: userSummary,
                 amount: amount,
@@ -172,7 +171,7 @@ sealed class WithdrawState with _$WithdrawState {
             interacSecurityDetails,
             saveSecurityDetailsAsDefault,
             isConfirmingWithdrawal,
-            error,
+            failure,
           ) => WithdrawPaymentDetailsInputState(
             userSummary: userSummary,
             amount: amount,
