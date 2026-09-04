@@ -1,4 +1,7 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -21,6 +24,24 @@ class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
 class _MockFeesRepository extends Mock implements FeesRepository {}
+
+class _FakeElectrumServersPort implements ElectrumServersPort {
+  static const connection = ElectrumConnection(
+    url: 'ssl://working.electrum:50002',
+    retry: 1,
+    timeout: 10,
+    stopGap: 20,
+    validateDomain: true,
+    isCustom: false,
+  );
+
+  @override
+  Future<T> runWithFallback<T>({
+    required ElectrumServerNetwork network,
+    required Future<T> Function(ElectrumConnection connection) operation,
+    bool Function(Object error)? isTransient,
+  }) => operation(connection);
+}
 
 void main() {
   late _MockBoltzSwapRepository swapRepo;
@@ -53,6 +74,7 @@ void main() {
     walletAddressRepository: addressRepo,
     walletTransactionRepository: txRepo,
     feesRepository: feesRepo,
+    electrumServersPort: _FakeElectrumServersPort(),
   );
 
   setUpAll(() {
@@ -60,6 +82,7 @@ void main() {
     registerFallbackValue(Network.liquidMainnet);
     registerFallbackValue(SwapStatus.refunded);
     registerFallbackValue(SwapDirection.liquidToBitcoin);
+    registerFallbackValue(_FakeElectrumServersPort.connection);
   });
 
   setUp(() {
@@ -84,6 +107,7 @@ void main() {
         swapType: any(named: 'swapType'),
         isCooperative: any(named: 'isCooperative'),
         refundAddressForChainSwaps: any(named: 'refundAddressForChainSwaps'),
+        electrum: any(named: 'electrum'),
       ),
     ).thenAnswer((_) async => 200);
     when(
@@ -105,6 +129,7 @@ void main() {
         liquidRefundAddress: any(named: 'liquidRefundAddress'),
         absoluteFees: any(named: 'absoluteFees'),
         cooperate: any(named: 'cooperate'),
+        electrum: any(named: 'electrum'),
       ),
     ).thenAnswer((_) async => 'refund-txid');
 
@@ -136,6 +161,7 @@ void main() {
           liquidRefundAddress: any(named: 'liquidRefundAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           cooperate: true,
+          electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('Connection refused (boltz api unreachable)'));
       when(
@@ -144,6 +170,7 @@ void main() {
           liquidRefundAddress: any(named: 'liquidRefundAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           cooperate: false,
+          electrum: any(named: 'electrum'),
         ),
       ).thenAnswer((_) async => 'script-refund-txid');
 
@@ -173,6 +200,7 @@ void main() {
         liquidRefundAddress: any(named: 'liquidRefundAddress'),
         absoluteFees: any(named: 'absoluteFees'),
         cooperate: any(named: 'cooperate'),
+        electrum: any(named: 'electrum'),
       ),
     ).thenAnswer((_) async => 'refund-txid');
 
@@ -185,6 +213,7 @@ void main() {
         liquidRefundAddress: 'lq1refund',
         absoluteFees: 23,
         cooperate: true,
+        electrum: any(named: 'electrum'),
       ),
     ).called(1);
   });
@@ -205,6 +234,7 @@ void main() {
         liquidRefundAddress: any(named: 'liquidRefundAddress'),
         absoluteFees: any(named: 'absoluteFees'),
         cooperate: any(named: 'cooperate'),
+        electrum: any(named: 'electrum'),
       ),
     ).thenThrow(Exception('boltz api down'));
     when(
@@ -223,6 +253,7 @@ void main() {
         liquidRefundAddress: any(named: 'liquidRefundAddress'),
         absoluteFees: any(named: 'absoluteFees'),
         cooperate: any(named: 'cooperate'),
+        electrum: any(named: 'electrum'),
       ),
     ).thenAnswer((_) async => 'refund-b');
 
@@ -262,6 +293,7 @@ void main() {
           liquidRefundAddress: any(named: 'liquidRefundAddress'),
           absoluteFees: any(named: 'absoluteFees'),
           cooperate: any(named: 'cooperate'),
+          electrum: any(named: 'electrum'),
         ),
       ).thenThrow(Exception('broadcast failed'));
       when(
@@ -297,6 +329,98 @@ void main() {
     },
   );
 
+  test('does NOT settle on a spend of the lockup change output '
+      '(in-wallet but outgoing)', () async {
+    // The outspend report covers every vout of the lockup tx, so the
+    // wallet's own change output spent by an ordinary consolidation shows
+    // up too — and that tx IS in our wallet. It is outgoing, not a refund;
+    // settling on it would hide the still-locked covenant funds forever.
+    when(
+      () => swapRepo.refundLiquidToBitcoinSwap(
+        swapId: any(named: 'swapId'),
+        liquidRefundAddress: any(named: 'liquidRefundAddress'),
+        absoluteFees: any(named: 'absoluteFees'),
+        cooperate: any(named: 'cooperate'),
+        electrum: any(named: 'electrum'),
+      ),
+    ).thenThrow(Exception('broadcast failed'));
+    when(
+      () => swapRepo.checkLockupOutspends(
+        swapId: any(named: 'swapId'),
+        swapType: any(named: 'swapType'),
+        network: any(named: 'network'),
+        swapDirection: any(named: 'swapDirection'),
+        isClaim: any(named: 'isClaim'),
+      ),
+    ).thenAnswer(
+      (_) async => const [SwapTxOutspend(txid: 'change-consolidation')],
+    );
+    when(
+      () => txRepo.getWalletTransaction(
+        'change-consolidation',
+        walletId: 'w-liquid',
+      ),
+    ).thenAnswer(
+      (_) async => const WalletTransaction(
+        walletId: 'w-liquid',
+        network: Network.liquidMainnet,
+        direction: WalletTransactionDirection.outgoing,
+        status: WalletTransactionStatus.confirmed,
+        txId: 'change-consolidation',
+        amountSat: 50000,
+        feeSat: 100,
+        vsize: 300,
+        inputs: [],
+        outputs: [],
+        isRbf: false,
+      ),
+    );
+
+    await expectLater(
+      usecase().execute(chainSwap()),
+      throwsA(isA<RefundRescuedSwapException>()),
+    );
+    verifyNever(
+      () => swapRepo.updateSwapFields(
+        any(),
+        status: any(named: 'status'),
+        refundTxid: any(named: 'refundTxid'),
+        completionTime: any(named: 'completionTime'),
+      ),
+    );
+  });
+
+  test(
+    'non-final (timelock) failure skips outspend recovery entirely',
+    () async {
+      when(
+        () => swapRepo.refundLiquidToBitcoinSwap(
+          swapId: any(named: 'swapId'),
+          liquidRefundAddress: any(named: 'liquidRefundAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          cooperate: any(named: 'cooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenThrow(Exception('non-BIP68-final'));
+
+      await expectLater(
+        usecase().execute(chainSwap()),
+        throwsA(isA<RefundRescuedSwapException>()),
+      );
+      // Before the timelock nothing of ours can be on-chain: the recovery must
+      // not even look, or it could only ever match an unrelated spend.
+      verifyNever(
+        () => swapRepo.checkLockupOutspends(
+          swapId: any(named: 'swapId'),
+          swapType: any(named: 'swapType'),
+          network: any(named: 'network'),
+          swapDirection: any(named: 'swapDirection'),
+          isClaim: any(named: 'isClaim'),
+        ),
+      );
+    },
+  );
+
   test('settles on an already-spent lockup when the spender is ours', () async {
     when(
       () => swapRepo.refundLiquidToBitcoinSwap(
@@ -304,6 +428,7 @@ void main() {
         liquidRefundAddress: any(named: 'liquidRefundAddress'),
         absoluteFees: any(named: 'absoluteFees'),
         cooperate: any(named: 'cooperate'),
+        electrum: any(named: 'electrum'),
       ),
     ).thenThrow(Exception('bad-txns-inputs-missingorspent'));
     when(

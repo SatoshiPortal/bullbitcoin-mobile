@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -162,6 +163,7 @@ class SwapsLocator {
         walletAddressRepository: locator<WalletAddressRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         feesRepository: locator<FeesRepository>(),
+        electrumServersPort: locator<ElectrumServersPort>(),
       ),
     );
 

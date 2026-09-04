@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -29,12 +32,14 @@ class RefundRescuedSwapUsecase {
   final WalletAddressRepository _walletAddressRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final FeesRepository _feesRepository;
+  final ElectrumServersPort _electrumServersPort;
 
   RefundRescuedSwapUsecase({
     required this._swapRepository,
     required this._walletAddressRepository,
     required this._walletTransactionRepository,
     required this._feesRepository,
+    required this._electrumServersPort,
   });
 
   /// Drives the refund of every locally-stored refundable swap that has no
@@ -118,59 +123,32 @@ class RefundRescuedSwapUsecase {
       final refundAddress = await _resolveRefundAddress(swap);
       log.fine('SWAP_RESCUE: ${swap.id} refund address $refundAddress');
 
-      String txid;
-      var absoluteFees = 0;
-      // The whole cooperative attempt — sizing included — must be allowed to
-      // fail without failing the refund: cooperation needs the Boltz API,
-      // and this path has to work with Boltz down. The script path below is
-      // Boltz-free end to end (lockup UTXO from our electrum, local
-      // signature, electrum broadcast).
-      try {
-        final txSize = await _swapRepository.getSwapRefundTxSize(
-          swapId: swap.id,
-          swapType: swap.type,
-          refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
-        );
-        absoluteFees = await _refundFees(txSize: txSize, isLiquid: isLiquid);
-        log.fine(
-          'SWAP_RESCUE: ${swap.id} cooperative refund txSize=$txSize '
-          'fees=$absoluteFees',
-        );
-        txid = await _broadcastRefund(
-          swap,
-          refundAddress: refundAddress,
-          absoluteFees: absoluteFees,
-          cooperate: true,
-        );
-      } catch (e, st) {
-        log.severe(
-          message:
-              'SWAP_RESCUE: cooperative refund failed for ${swap.id} '
-              '(${_errorMessage(e)}); trying script path (Boltz-free)',
-          error: e,
-          trace: st,
-        );
-        final scriptPathTxSize = await _swapRepository.getSwapRefundTxSize(
-          swapId: swap.id,
-          swapType: swap.type,
-          isCooperative: false,
-          refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
-        );
-        absoluteFees = await _refundFees(
-          txSize: scriptPathTxSize,
-          isLiquid: isLiquid,
-        );
-        log.fine(
-          'SWAP_RESCUE: ${swap.id} script-path refund '
-          'txSize=$scriptPathTxSize fees=$absoluteFees',
-        );
-        txid = await _broadcastRefund(
-          swap,
-          refundAddress: refundAddress,
-          absoluteFees: absoluteFees,
-          cooperate: false,
-        );
-      }
+      // The swap object carries the electrum URL it was created with, which
+      // can be long dead by rescue time (the target user's stored server
+      // times out while another configured server answers). For chain swaps
+      // run the attempt through the electrum fallback port so every
+      // configured server is tried — the port also owns the privacy rule
+      // that a custom server never silently falls back to defaults.
+      final (txid, absoluteFees) = swap is ChainSwap
+          ? await _electrumServersPort.runWithFallback(
+              network: ElectrumServerNetwork.fromEnvironment(
+                isTestnet: swap.environment.isTestnet,
+                isLiquid: isLiquid,
+              ),
+              operation: (connection) => _attemptRefund(
+                swap,
+                refundAddress: refundAddress,
+                isLiquid: isLiquid,
+                electrum: connection,
+              ),
+              isTransient: _isServerFailure,
+            )
+          : await _attemptRefund(
+              swap,
+              refundAddress: refundAddress,
+              isLiquid: isLiquid,
+              electrum: null,
+            );
 
       await _swapRepository.updateSwapFields(
         swap.id,
@@ -194,19 +172,114 @@ class RefundRescuedSwapUsecase {
         error: e,
         trace: st,
       );
-      final recovered = await _recoverFromVerifiedOutspend(swap);
-      await log.flush();
-      if (recovered != null) return recovered;
+      // A non-final rejection means the timelock has not passed — no refund
+      // of ours can possibly be on-chain, so skip the outspend recovery: it
+      // could only ever match an unrelated spend (e.g. of the lockup tx's
+      // change output) and must not get the chance to mis-settle.
       if (_isNonFinalError(e)) {
+        await log.flush();
         throw RefundRescuedSwapException(
           'refund for ${swap.id} is not yet final (timelock has not passed); '
           'try again later',
         );
       }
+      final recovered = await _recoverFromVerifiedOutspend(swap);
+      await log.flush();
+      if (recovered != null) return recovered;
       throw RefundRescuedSwapException(
         'refund failed for ${swap.id}: ${_errorMessage(e)}',
       );
     }
+  }
+
+  /// One full refund attempt against one electrum server (or the swap's
+  /// stored server when [electrum] is null): cooperative first, script path
+  /// on any failure. The cooperative leg — sizing included — must be allowed
+  /// to fail without failing the attempt: cooperation needs the Boltz API,
+  /// and this path has to work with Boltz down. The script path is
+  /// Boltz-free end to end (lockup UTXO from electrum, local signature,
+  /// electrum broadcast).
+  Future<(String, int)> _attemptRefund(
+    Swap swap, {
+    required String refundAddress,
+    required bool isLiquid,
+    required ElectrumConnection? electrum,
+  }) async {
+    var absoluteFees = 0;
+    try {
+      final txSize = await _swapRepository.getSwapRefundTxSize(
+        swapId: swap.id,
+        swapType: swap.type,
+        refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
+        electrum: electrum,
+      );
+      absoluteFees = await _refundFees(
+        txSize: txSize,
+        isLiquid: isLiquid,
+        isTestnet: swap.environment.isTestnet,
+      );
+      log.fine(
+        'SWAP_RESCUE: ${swap.id} cooperative refund txSize=$txSize '
+        'fees=$absoluteFees server=${electrum?.url ?? 'swap-stored'}',
+      );
+      final txid = await _broadcastRefund(
+        swap,
+        refundAddress: refundAddress,
+        absoluteFees: absoluteFees,
+        cooperate: true,
+        electrum: electrum,
+      );
+      return (txid, absoluteFees);
+    } catch (e, st) {
+      log.severe(
+        message:
+            'SWAP_RESCUE: cooperative refund failed for ${swap.id} '
+            '(${_errorMessage(e)}); trying script path (Boltz-free)',
+        error: e,
+        trace: st,
+      );
+      final scriptPathTxSize = await _swapRepository.getSwapRefundTxSize(
+        swapId: swap.id,
+        swapType: swap.type,
+        isCooperative: false,
+        refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
+        electrum: electrum,
+      );
+      absoluteFees = await _refundFees(
+        txSize: scriptPathTxSize,
+        isLiquid: isLiquid,
+        isTestnet: swap.environment.isTestnet,
+      );
+      log.fine(
+        'SWAP_RESCUE: ${swap.id} script-path refund '
+        'txSize=$scriptPathTxSize fees=$absoluteFees '
+        'server=${electrum?.url ?? 'swap-stored'}',
+      );
+      final txid = await _broadcastRefund(
+        swap,
+        refundAddress: refundAddress,
+        absoluteFees: absoluteFees,
+        cooperate: false,
+        electrum: electrum,
+      );
+      return (txid, absoluteFees);
+    }
+  }
+
+  /// Whether an attempt failed because the SERVER was unreachable (worth
+  /// trying the next configured server) as opposed to the refund itself
+  /// being invalid (timelock, already spent — no server can change that).
+  bool _isServerFailure(Object error) {
+    final message = _errorMessage(error).toLowerCase();
+    if (_isNonFinalError(error)) return false;
+    if (message.contains('missingorspent')) return false;
+    return message.contains('timed out') ||
+        message.contains('timeout') ||
+        message.contains('connection') ||
+        message.contains('refused') ||
+        message.contains('lookup') ||
+        message.contains('electrum') ||
+        message.contains('socket');
   }
 
   Future<String> _broadcastRefund(
@@ -214,6 +287,7 @@ class RefundRescuedSwapUsecase {
     required String refundAddress,
     required int absoluteFees,
     required bool cooperate,
+    required ElectrumConnection? electrum,
   }) {
     switch (swap.type) {
       case SwapType.liquidToBitcoin:
@@ -222,6 +296,7 @@ class RefundRescuedSwapUsecase {
           liquidRefundAddress: refundAddress,
           absoluteFees: absoluteFees,
           cooperate: cooperate,
+          electrum: electrum,
         );
       case SwapType.bitcoinToLiquid:
         return _swapRepository.refundBitcoinToLiquidSwap(
@@ -229,6 +304,7 @@ class RefundRescuedSwapUsecase {
           bitcoinRefundAddress: refundAddress,
           absoluteFees: absoluteFees,
           cooperate: cooperate,
+          electrum: electrum,
         );
       case SwapType.liquidToLightning:
         return _swapRepository.refundLiquidToLightningSwap(
@@ -263,7 +339,7 @@ class RefundRescuedSwapUsecase {
       switch (swap) {
         case ChainSwap():
           network = Network.fromEnvironment(
-            isTestnet: false,
+            isTestnet: swap.environment.isTestnet,
             isLiquid: swap.type == SwapType.liquidToBitcoin,
           );
           swapDirection = swap.type == SwapType.liquidToBitcoin
@@ -271,7 +347,7 @@ class RefundRescuedSwapUsecase {
               : SwapDirection.bitcoinToLiquid;
         case LnSendSwap():
           network = Network.fromEnvironment(
-            isTestnet: false,
+            isTestnet: swap.environment.isTestnet,
             isLiquid: swap.type == SwapType.liquidToLightning,
           );
         case LnReceiveSwap():
@@ -298,6 +374,12 @@ class RefundRescuedSwapUsecase {
         LnSendSwap() => swap.sendWalletId,
         LnReceiveSwap() => null,
       };
+      // The outspend report covers EVERY vout of the lockup tx — including
+      // the wallet's own change output, whose later spend (an ordinary send
+      // or consolidation) is also "in our wallet". Only an INCOMING wallet
+      // tx can be our refund (it spends the external covenant and pays the
+      // wallet); an outgoing/self spend is the change moving and must never
+      // settle the swap. Fail closed on anything else.
       SwapTxOutspend? ours;
       for (final candidate in outspends) {
         final txid = candidate.txid;
@@ -306,17 +388,25 @@ class RefundRescuedSwapUsecase {
           txid,
           walletId: sendWalletId,
         );
-        if (tx != null) {
-          ours = candidate;
-          break;
+        if (tx == null) continue;
+        if (!tx.isIncoming) {
+          log.fine(
+            'SWAP_RESCUE: ${swap.id} lockup output spent by $txid which is '
+            'in our wallet but not incoming (change/self spend, not a '
+            'refund) — ignoring',
+          );
+          continue;
         }
+        ours = candidate;
+        break;
       }
       if (ours == null) {
         log.warning(
           'SWAP_RESCUE: ${swap.id} lockup outputs spent by '
           '${outspends.map((o) => o.txid).whereType<String>().join(',')} '
-          'but none is in our wallet — NOT settling (spender is likely '
-          'Boltz, not our refund); swap stays refundable',
+          'but none is an incoming tx of our wallet — NOT settling (spender '
+          'is Boltz or our own change moving, not our refund); swap stays '
+          'refundable',
         );
         return null;
       }
@@ -370,10 +460,17 @@ class RefundRescuedSwapUsecase {
   /// service down, electrum alone standing), falls back to the relay-floor
   /// fee itself: always broadcastable, and on Liquid the floor is the normal
   /// rate anyway.
-  Future<int> _refundFees({required int txSize, required bool isLiquid}) async {
+  Future<int> _refundFees({
+    required int txSize,
+    required bool isLiquid,
+    required bool isTestnet,
+  }) async {
     try {
       final networkFee = await _feesRepository.getNetworkFees(
-        network: Network.fromEnvironment(isTestnet: false, isLiquid: isLiquid),
+        network: Network.fromEnvironment(
+          isTestnet: isTestnet,
+          isLiquid: isLiquid,
+        ),
       );
       return _absoluteWithFloor(
         networkFee.toAbsolute(txSize).fastest.value.toInt(),

@@ -69,8 +69,13 @@ class VerifyChainSwapCompletionsUsecase {
         }
 
         try {
+          // Sync the receiving wallet first: a stale cache that predates the
+          // claim would otherwise read as "claim missing" and falsely
+          // retract a genuine completion. If the sync fails (offline), the
+          // per-swap catch below skips this swap — never retract on a cache
+          // we could not freshen.
           final walletTxs = await _walletTransactionRepository
-              .getWalletTransactions(walletId: walletId);
+              .getWalletTransactions(walletId: walletId, sync: true);
           if (walletTxs.isEmpty) {
             log.fine(
               '[SwapVerify] ${swap.id}: wallet $walletId has no cached txs '

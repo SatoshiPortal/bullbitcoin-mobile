@@ -44,6 +44,7 @@ class FakeBoltzSwapRepository implements BoltzSwapRepository {
 
 class FakeWalletTransactionRepository implements WalletTransactionRepository {
   final Map<String, Set<String>> txidsByWallet;
+  bool? lastSyncFlag;
 
   FakeWalletTransactionRepository(this.txidsByWallet);
 
@@ -55,6 +56,7 @@ class FakeWalletTransactionRepository implements WalletTransactionRepository {
     Environment? environment,
     bool sync = false,
   }) async {
+    lastSyncFlag = sync;
     final txids = txidsByWallet[walletId] ?? const <String>{};
     return [
       for (final txid in txids)
@@ -130,6 +132,22 @@ void main() {
       expect(repo.updatedStatuses['chn123456789'], SwapStatus.refundable);
     },
   );
+
+  test('freshens the receive wallet before judging a recorded claim', () async {
+    final repo = FakeBoltzSwapRepository([chainSwap()]);
+    final wallets = FakeWalletTransactionRepository({
+      'w-receive': {'some-other-tx'},
+    });
+
+    await VerifyChainSwapCompletionsUsecase(
+      swapRepository: repo,
+      walletTransactionRepository: wallets,
+    ).execute();
+
+    // A stale cache that predates the claim must never cause a retraction:
+    // the lookup has to request a sync first.
+    expect(wallets.lastSyncFlag, isTrue);
+  });
 
   test('reopens an already-retracted completed swap as refundable', () async {
     // The state the 6.13.2 build leaves behind (user log 7HJNCXPK):

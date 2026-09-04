@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
@@ -321,18 +322,21 @@ class BoltzSwapRepository
     required String bitcoinRefundAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
       swapId: swapId,
       refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -341,18 +345,21 @@ class BoltzSwapRepository
     required String liquidRefundAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -1179,6 +1186,7 @@ class BoltzSwapRepository
     required SwapType swapType,
     bool isCooperative = true,
     String? refundAddressForChainSwaps,
+    ElectrumConnection? electrum,
   }) async {
     switch (swapType) {
       case SwapType.lightningToBitcoin:
@@ -1201,6 +1209,7 @@ class BoltzSwapRepository
           swapId: swapId,
           isCooperative: isCooperative,
           refundAddress: refundAddressForChainSwaps!,
+          electrum: electrum,
         );
     }
   }

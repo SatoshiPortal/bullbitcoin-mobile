@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
@@ -851,10 +852,24 @@ class BoltzDatasource {
     }
   }
 
+  /// The swap object carries the electrum URLs baked in at creation time;
+  /// [electrum] overrides them with a currently-working server so refunds
+  /// are not pinned to a host that has since become unreachable.
+  ElectrumSettings? _electrumOverride(ElectrumConnection? electrum) =>
+      electrum == null
+      ? null
+      : ElectrumSettings(
+          url: electrum.url,
+          validateDomain: electrum.validateDomain,
+          tls: !electrum.url.startsWith('tcp://'),
+          timeout: electrum.timeout.clamp(1, 255),
+        );
+
   Future<String> broadcastChainSwapRefund({
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -866,6 +881,7 @@ class BoltzDatasource {
           : chainSwap.broadcastLocal(
               signedHex: signedTxHex,
               kind: SwapTxKind.refund,
+              electrumSettings: _electrumOverride(electrum),
             ));
       return txId;
     } catch (e) {
@@ -951,13 +967,16 @@ class BoltzDatasource {
     required String refundBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      // BtcToLbtc refunds spend the user's BITCOIN lockup.
       return await chainSwap.refund(
         refundAddress: refundBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -973,14 +992,17 @@ class BoltzDatasource {
     required String refundLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
 
+      // LbtcToBtc refunds spend the user's LIQUID lockup.
       final signedTxHex = await chainSwap.refund(
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        lbtcElectrumSettings: _electrumOverride(electrum),
       );
       return signedTxHex;
     } catch (e) {
@@ -1111,11 +1133,17 @@ class BoltzDatasource {
     required String swapId,
     required String refundAddress,
     bool isCooperative = true,
+    ElectrumConnection? electrum,
   }) async {
     final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+    final override = _electrumOverride(electrum);
+    // The refund tx is built from the lockup on the SENDING chain.
+    final refundOnLiquid = chainSwap.direction == ChainSwapDirection.lbtcToBtc;
     final size = await chainSwap.refundTxSize(
       refundAddress: refundAddress,
       tryCooperate: isCooperative,
+      btcElectrumSettings: refundOnLiquid ? null : override,
+      lbtcElectrumSettings: refundOnLiquid ? override : null,
     );
     return size.toInt();
   }
