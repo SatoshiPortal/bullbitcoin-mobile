@@ -44,7 +44,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
@@ -236,7 +236,7 @@ class _TestableSendCubit extends SendCubit {
     required super.checkLiquidConsolidationUsecase,
     required super.getSendPayjoinEnabledUsecase,
     required super.verifySignedTxUsecase,
-    required super.resolveSweepInputsUsecase,
+    required super.resolveSelectedInputsUsecase,
     required super.validateSweepPaymentRequestUsecase,
     super.parsePaymentRequest,
   });
@@ -456,7 +456,7 @@ void main() {
     checkLiquidConsolidationUsecase: checkLiquidConsolidationUsecase,
     getSendPayjoinEnabledUsecase: getSendPayjoinEnabledUsecase,
     verifySignedTxUsecase: verifySignedTxUsecase,
-    resolveSweepInputsUsecase: ResolveSweepInputsUsecase(payjoinSessions),
+    resolveSelectedInputsUsecase: ResolveSelectedInputsUsecase(payjoinSessions),
     validateSweepPaymentRequestUsecase: ValidateSweepPaymentRequestUsecase(),
     parsePaymentRequest: parsePaymentRequest,
   );

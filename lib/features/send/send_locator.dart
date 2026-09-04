@@ -38,7 +38,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -179,8 +179,8 @@ class SendLocator {
     locator.registerFactory<VerifySendSignedTxUsecase>(
       () => VerifySendSignedTxUsecase(locator<VerifySignedTxUsecase>()),
     );
-    locator.registerFactory<ResolveSweepInputsUsecase>(
-      () => ResolveSweepInputsUsecase(locator<PayjoinSessions>()),
+    locator.registerFactory<ResolveSelectedInputsUsecase>(
+      () => ResolveSelectedInputsUsecase(locator<PayjoinSessions>()),
     );
     locator.registerFactory<ValidateSweepPaymentRequestUsecase>(
       ValidateSweepPaymentRequestUsecase.new,
@@ -244,7 +244,7 @@ class SendLocator {
             locator<CheckLiquidConsolidationUsecase>(),
         getSendPayjoinEnabledUsecase: locator<GetSendPayjoinEnabledUsecase>(),
         verifySignedTxUsecase: locator<VerifySendSignedTxUsecase>(),
-        resolveSweepInputsUsecase: locator<ResolveSweepInputsUsecase>(),
+        resolveSelectedInputsUsecase: locator<ResolveSelectedInputsUsecase>(),
         validateSweepPaymentRequestUsecase:
             locator<ValidateSweepPaymentRequestUsecase>(),
       ),

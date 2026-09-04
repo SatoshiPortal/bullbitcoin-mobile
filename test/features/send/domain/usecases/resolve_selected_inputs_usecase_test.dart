@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -13,11 +13,11 @@ class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
 void main() {
   late _MockPayjoinSessions payjoinSessions;
-  late ResolveSweepInputsUsecase usecase;
+  late ResolveSelectedInputsUsecase usecase;
 
   setUp(() {
     payjoinSessions = _MockPayjoinSessions();
-    usecase = ResolveSweepInputsUsecase(payjoinSessions);
+    usecase = ResolveSelectedInputsUsecase(payjoinSessions);
     when(
       () => payjoinSessions.reservedOutpoints(),
     ).thenAnswer((_) async => const Ok(<Outpoint>{}));
