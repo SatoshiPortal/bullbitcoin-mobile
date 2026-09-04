@@ -17219,5 +17219,9 @@
   "screenPrivacyUnavailable": "Screen capture protection could not be turned on, so this screen stays hidden. Go back and try again.",
   "@screenPrivacyUnavailable": {
     "description": "Shown in place of a recovery phrase or seed when the OS refused to block screenshots."
+  },
+  "bullVaultShowDescriptorQr": "Show QR code",
+  "@bullVaultShowDescriptorQr": {
+    "description": "Button that shows the BullVault descriptor as a QR code for an air-gapped signer to scan."
   }
 }
