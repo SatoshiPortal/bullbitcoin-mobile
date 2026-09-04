@@ -14683,5 +14683,9 @@
   "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@payErrorFeesUnavailable": {
     "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
+  "@withdrawUnexpectedError": {
+    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
   }
 }
