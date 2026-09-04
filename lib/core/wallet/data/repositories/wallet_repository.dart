@@ -30,7 +30,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/seed_derived_wallet_recovery_fact.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
-import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_definition_repository.dart';
@@ -257,6 +256,32 @@ class WalletRepository
     List<WalletSigner> signers = const [],
     bool isHidden = false,
     bool sync = false,
+  }) => _importDescriptor(
+    descriptor: descriptor,
+    network: network,
+    label: label,
+    signers: signers,
+    isHidden: isHidden,
+    sync: sync,
+  );
+
+  /// One import path for interactive imports and backup restores.
+  ///
+  /// An interactive import derives the wallet id from the descriptor's script
+  /// identity. A restore passes the [walletId] the backup recorded instead, so
+  /// wallets that predate the derived scheme (seed-origin ids, passphrase
+  /// wallets) keep the reference every dependent record points at. Duplicate
+  /// detection stays on script identity either way.
+  Future<Wallet> _importDescriptor({
+    required String descriptor,
+    required Network network,
+    required String? label,
+    List<WalletSigner> signers = const [],
+    bool isHidden = false,
+    bool sync = false,
+    String? walletId,
+    WalletProvenance provenance = WalletProvenance.watchOnly,
+    DateTime? birthday,
   }) async {
     _requireBitcoinNetwork(network);
     final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
@@ -265,9 +290,11 @@ class WalletRepository
     );
     final parsedKeys = _descriptorKeys(parsed.keys);
     final metadata = WalletMetadataModel(
-      id: sha256
-          .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
-          .toString(),
+      id:
+          walletId ??
+          sha256
+              .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
+              .toString(),
       network: network,
       signers: _applySignerAnnotations(
         parsedKeys,
@@ -279,6 +306,8 @@ class WalletRepository
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: label,
+      birthday: birthday,
+      provenance: provenance,
     );
 
     await _ensureUniqueBitcoinDescriptor(
@@ -562,13 +591,19 @@ class WalletRepository
         ),
     ];
 
+    // Labels are wallet preferences and are restored by the metadata section;
+    // the definition itself carries the recorded reference, birthday and
+    // provenance, and is written once.
     final Wallet imported;
     try {
-      imported = await importDescriptor(
+      imported = await _importDescriptor(
         descriptor: parsed.descriptor,
         network: definition.network,
-        label: '',
+        label: null,
         signers: annotations,
+        walletId: definition.walletRef,
+        provenance: definition.provenance,
+        birthday: definition.birthday,
       );
     } on WalletAlreadyExistsException {
       // The same script identity already exists under another wallet ref.
@@ -581,22 +616,13 @@ class WalletRepository
     if (stored == null) {
       throw const FormatException('Wallet definition import did not persist');
     }
-    // Labels are wallet preferences and are restored by the metadata section;
-    // the definition itself carries birthday and provenance.
-    final metadata = stored.copyWith(
-      label: null,
-      birthday: definition.birthday,
-      provenance: definition.provenance,
-    );
-    final restored = _canonicalDefinition(_definitionFromMetadata(metadata));
-    if (metadata.id != definition.walletRef ||
-        !restored.hasSameDescriptor(expected)) {
-      await _walletMetadataDatasource.delete(metadata.id);
+    final restored = _canonicalDefinition(_definitionFromMetadata(stored));
+    if (!restored.hasSameDescriptor(expected)) {
+      await _walletMetadataDatasource.delete(stored.id);
       throw const FormatException('Wallet definition round trip changed');
     }
-    await _walletMetadataDatasource.store(metadata);
     return WalletDefinitionRestoreResult(
-      walletRef: metadata.id,
+      walletRef: stored.id,
       status: WalletDefinitionRestoreStatus.created,
     );
   }
