@@ -3070,13 +3070,6 @@
   "exchangeAuthOk": "OK",
   "withdrawAmountTitle": "Retirar fiat",
   "withdrawAmountContinue": "Continuar",
-  "withdrawRecipientsTitle": "Seleccionar destinatario",
-  "withdrawRecipientsPrompt": "¿Dónde y cómo debemos enviar el dinero?",
-  "withdrawRecipientsNewTab": "Nuevo destinatario",
-  "withdrawRecipientsMyTab": "Mis destinatarios fiat",
-  "withdrawRecipientsFilterAll": "Todos los tipos",
-  "withdrawRecipientsNoRecipients": "No se encontraron destinatarios para retirar.",
-  "withdrawRecipientsContinue": "Continuar",
   "withdrawConfirmTitle": "Confirmar retiro",
   "withdrawConfirmRecipientName": "Nombre del destinatario",
   "withdrawConfirmAmount": "Monto",
@@ -3088,14 +3081,6 @@
   "withdrawConfirmPhone": "Teléfono",
   "withdrawConfirmCard": "Tarjeta",
   "withdrawConfirmButton": "Confirmar retiro",
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Financiar su cuenta",
   "fundExchangeSelectCountry": "Seleccione su país y método de pago",
   "fundExchangeSpeiTransfer": "Transferencia SPEI",
@@ -3672,10 +3657,8 @@
   "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
   "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
-  "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",
-  "withdrawAboveMaxAmountError": "Está intentando retirar por encima del monto máximo.",
-  "withdrawOrderNotFoundError": "No se encontró la orden de retiro. Por favor, inténtelo de nuevo.",
-  "withdrawOrderAlreadyConfirmedError": "Esta orden de retiro ya ha sido confirmada.",
+  "withdrawBelowMinAmountError": "La cantidad mínima es {amount} {currency}",
+  "withdrawAboveMaxAmountError": "La cantidad máxima es {amount} {currency}",
   "coreScreensPageNotFound": "Página no encontrada",
   "coreScreensLogsTitle": "Registros",
   "coreScreensConfirmSend": "Confirmar envío",
@@ -4911,5 +4894,6 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "withdrawUnexpectedError": "Su retiro no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte."
 }

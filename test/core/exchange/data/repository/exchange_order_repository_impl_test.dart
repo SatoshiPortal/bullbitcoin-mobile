@@ -101,4 +101,62 @@ void main() {
       expect(await repository.getOrderByTxId('txid-absent'), isNull);
     });
   });
+
+  group('the withdraw paths keep the original stack trace', () {
+    // The use-case logs the trace it catches. If the repository wrapped the
+    // failure with a bare `throw`, every report would point at the catch block
+    // instead of the call that actually failed.
+    void expectTraceReachesTheFailingCall(StackTrace? trace, String frame) {
+      expect(trace, isNotNull);
+      expect(
+        trace.toString(),
+        contains(frame),
+        reason: 'the trace no longer reaches the throwing call',
+      );
+    }
+
+    test('placeWithdrawalOrder', () async {
+      when(
+        () => api.createWithdrawalOrder(
+          apiKey: any(named: 'apiKey'),
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          isETransfer: any(named: 'isETransfer'),
+        ),
+      ).thenAnswer((_) async => throw StateError('datasource blew up'));
+
+      StackTrace? trace;
+      try {
+        await repository.placeWithdrawalOrder(
+          fiatAmount: 100,
+          recipientId: 'recipient-1',
+          isETransfer: true,
+        );
+        fail('expected the wrapped exception');
+      } catch (_, st) {
+        trace = st;
+      }
+
+      expectTraceReachesTheFailingCall(trace, 'createWithdrawalOrder');
+    });
+
+    test('confirmWithdrawOrder', () async {
+      when(
+        () => api.confirmOrder(
+          apiKey: any(named: 'apiKey'),
+          orderId: any(named: 'orderId'),
+        ),
+      ).thenAnswer((_) async => throw StateError('datasource blew up'));
+
+      StackTrace? trace;
+      try {
+        await repository.confirmWithdrawOrder('order-1');
+        fail('expected the wrapped exception');
+      } catch (_, st) {
+        trace = st;
+      }
+
+      expectTraceReachesTheFailingCall(trace, 'confirmOrder');
+    });
+  });
 }

@@ -1446,7 +1446,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "คุณพยายามที่จะถอนเงินข้างต้น.",
+  "withdrawAboveMaxAmountError": "จำนวนสูงสุดคือ {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2103,7 +2103,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "คุณพยายามที่จะถอนขั้นต่ํา.",
+  "withdrawBelowMinAmountError": "จำนวนขั้นต่ำคือ {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3077,10 +3077,6 @@
   "autoswapInfoSettingsButton": "การตั้งค่าการตั้งค่า",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "ผู้รับใหม่",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "แจ็คของคุณตอนนี้เชื่อมต่อและพร้อมที่จะใช้งานด้วยชิป.",
   "@importQrDeviceKeystoneStep10": {
@@ -4226,10 +4222,6 @@
   "receiveInsufficientInboundLiquidity": "ไม่เพียงพอ",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "จดหมายของฉัน",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "ค่าธรรมเนียมค่าธรรมเนียมต่ํา",
   "@sendFeeRateTooLow": {
@@ -5604,10 +5596,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "ไม่มีผู้รับที่จะถอน.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "การชําระเงิน\nผลิตจาก",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6718,10 +6706,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "อ่านต่อ",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "รายการ",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6815,10 +6799,6 @@
   "sendTitle": "ส่ง",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "การถอนเงินไม่ได้พบ กรุณาลองอีกครั้ง.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "เลือก \"ส่งออก Xasa\"",
   "@importQrDeviceSeedsignerStep4": {
@@ -8168,10 +8148,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "ประเภททุกประเภท",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "ข้อควรระวัง - แนะนํา",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8506,14 +8482,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "และวิธีการควรส่งเงิน?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "เลือกผู้รับ",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "ผู้รับชําระเงิน",
   "@sellPayoutRecipient": {
@@ -10849,15 +10817,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "ข้อผิดพลาด: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "ค่าธรรมเนียม",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11239,10 +11198,6 @@
   "payViewDetails": "ดูรายละเอียด",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "การถอนเงินนี้ได้รับการยืนยัน.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "เลือกกระเป๋าสตางค์ Bitcoin",
   "@autoswapSelectWallet": {
@@ -12236,5 +12191,6 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน"
 }

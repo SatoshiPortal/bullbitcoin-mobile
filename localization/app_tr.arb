@@ -1442,7 +1442,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "Maksimum miktarın üzerinde çekilmeye çalışıyorsunuz.",
+  "withdrawAboveMaxAmountError": "En fazla miktarı {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2095,7 +2095,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Asgari miktarın altına çekilmeye çalışıyorsunuz.",
+  "withdrawBelowMinAmountError": "Minimum miktar {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3069,10 +3069,6 @@
   "autoswapInfoSettingsButton": "Configure ayarları",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "Yeni alıcı",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "Keystone artık BULL Wallet ile kullanıma hazır.",
   "@importQrDeviceKeystoneStep10": {
@@ -4206,10 +4202,6 @@
   "receiveInsufficientInboundLiquidity": "Yetersiz Lightning kapasiteye sahip",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "Benim fiat alıcılarım",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "Ücret oranı çok düşük",
   "@sendFeeRateTooLow": {
@@ -5576,10 +5568,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "Hiçbir alıcı geri çekilmeyi bulamadı.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "Ödeme",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6677,10 +6665,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "Devam etmeye devam et",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "Satış İstatistikleri",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6770,10 +6754,6 @@
   "sendTitle": "Send Send Send Gönder",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "Çekilme emri bulunamadı. Lütfen tekrar deneyin.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "\"Export Xpub\" seçin",
   "@importQrDeviceSeedsignerStep4": {
@@ -8097,10 +8077,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Tüm türleri",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Yerli SegWit - Önerilen",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8431,14 +8407,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "Nerede ve nasıl para göndermeliyiz?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Alıcıyı seçin",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Payout alıcı",
   "@sellPayoutRecipient": {
@@ -10744,15 +10712,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "Hata: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Fee bump başarısız oldu",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11130,10 +11089,6 @@
   "payViewDetails": "View details",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Bu geri çekilme emri zaten doğrulandı.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "Bir Bitcoin cüzdanı seçin",
   "@autoswapSelectWallet": {
@@ -12232,5 +12187,6 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "withdrawUnexpectedError": "Para çekme işleminiz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin."
 }

@@ -3070,13 +3070,6 @@
   "exchangeAuthOk": "OK",
   "withdrawAmountTitle": "Retirer des fonds fiat",
   "withdrawAmountContinue": "Continuer",
-  "withdrawRecipientsTitle": "Sélectionner un destinataire",
-  "withdrawRecipientsPrompt": "Où et comment devons-nous envoyer l'argent ?",
-  "withdrawRecipientsNewTab": "Nouveau destinataire",
-  "withdrawRecipientsMyTab": "Mes destinataires fiat",
-  "withdrawRecipientsFilterAll": "Tous les types",
-  "withdrawRecipientsNoRecipients": "Aucun destinataire trouvé pour le retrait.",
-  "withdrawRecipientsContinue": "Continuer",
   "withdrawConfirmTitle": "Confirmer le retrait",
   "withdrawConfirmRecipientName": "Nom du destinataire",
   "withdrawConfirmAmount": "Montant",
@@ -3088,14 +3081,6 @@
   "withdrawConfirmPhone": "Téléphone",
   "withdrawConfirmCard": "Carte",
   "withdrawConfirmButton": "Confirmer le retrait",
-  "withdrawConfirmError": "Erreur : {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Financer votre compte",
   "fundExchangeSelectCountry": "Sélectionnez votre pays et votre méthode de paiement",
   "fundExchangeSpeiTransfer": "Virement SPEI",
@@ -3658,10 +3643,8 @@
   "buyAboveMaxAmountError": "Vous essayez d'acheter au-dessus du montant maximum.",
   "buyUnexpectedError": "Votre ordre n'a pas pu être créé pour le moment. Veuillez réessayer ou contacter le support.",
   "withdrawUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
-  "withdrawBelowMinAmountError": "Vous essayez de retirer en dessous du montant minimum.",
-  "withdrawAboveMaxAmountError": "Vous essayez de retirer au-dessus du montant maximum.",
-  "withdrawOrderNotFoundError": "L'ordre de retrait n'a pas été trouvé. Veuillez réessayer.",
-  "withdrawOrderAlreadyConfirmedError": "Cet ordre de retrait a déjà été confirmé.",
+  "withdrawBelowMinAmountError": "Le montant minimum est {amount} {currency}",
+  "withdrawAboveMaxAmountError": "Le montant maximum est {amount} {currency}",
   "coreScreensPageNotFound": "Page non trouvée",
   "coreScreensLogsTitle": "Journaux",
   "coreScreensConfirmSend": "Confirmer l'envoi",
@@ -4960,5 +4943,6 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "withdrawUnexpectedError": "Votre retrait n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support."
 }

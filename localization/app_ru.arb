@@ -489,7 +489,7 @@
   "testBackupDefaultWallets": "По умолчанию",
   "receiveSendNetworkFee": "Отправить Сеть",
   "autoswapRecipientWalletInfoText": "Выберите, какой биткойн-кошелек получит переведенные средства (требуется)",
-  "withdrawAboveMaxAmountError": "Вы пытаетесь выйти выше максимальной суммы.",
+  "withdrawAboveMaxAmountError": "Максимальная сумма {amount} {currency}",
   "psbtFlowScanDeviceQr": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на {device}. Сканируйте.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -693,7 +693,7 @@
   "transactionDetailAccelerate": "Ускорение",
   "importQrDevicePassportStep11": "Введите этикетку для вашего паспортного кошелька и нажмите «Import»",
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
-  "withdrawBelowMinAmountError": "Вы пытаетесь уйти ниже минимальной суммы.",
+  "withdrawBelowMinAmountError": "Минимальная сумма {amount} {currency}",
   "swapYouPay": "Вы платите",
   "encryptedVaultTitle": "Зашифрованное хранилище",
   "fundExchangeCrIbanUsdLabelIban": "Номер счета IBAN (только доллары США)",
@@ -1005,7 +1005,6 @@
   "bitboxScreenTroubleshootingStep1": "Убедитесь, что на вашем BitBox установлена последняя прошивка.",
   "backupSettingsExportVault": "Экспортное хранилище",
   "bitboxActionUnlockDeviceTitle": "Устройство BitBox",
-  "withdrawRecipientsNewTab": "Новый получатель",
   "autoswapRecipientRequired": "*",
   "exchangeLandingFeature4": "Отправить банковские переводы и оплатить счета",
   "sellSendPaymentPayFromWallet": "Платить за кошелек",
@@ -1356,7 +1355,6 @@
   "transactionLabelTotalSwapFees": "Итого, сборы за суспение",
   "errorLabel": "Ошибка",
   "receiveInsufficientInboundLiquidity": "Недостаточная пропускная способность",
-  "withdrawRecipientsMyTab": "Мои получатели фиат",
   "sendFeeRateTooLow": "Слишком низкий уровень",
   "payLastNameHint": "Введите имя",
   "exchangeLandingRestriction": "Доступ к услугам обмена будет ограничен странами, где Bull Bitcoin может легально работать и может потребовать KYC.",
@@ -1814,7 +1812,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "Свап завершится мгновенно.",
   "addressViewAddressesTitle": "Адреса",
-  "withdrawRecipientsNoRecipients": "Ни один из получателей не нашел выхода.",
   "transactionSwapProgressPaymentMade": "Оплата\nСделано",
   "importQrDeviceSpecterStep4": "Следуйте подсказкам в соответствии с выбранным вами методом",
   "coreSwapsChainPending": "Передача еще не инициализирована.",
@@ -2161,7 +2158,6 @@
   "coreSwapsChainPaid": "Ожидание платежа провайдера трансфера для получения подтверждения. Это может занять некоторое время, чтобы закончить.",
   "importQrDevicePassportStep6": "Выберите \"Single-sig\"",
   "sendSatsPerVB": "sats/vB",
-  "withdrawRecipientsContinue": "Продолжить",
   "enterPinAgainMessage": "Введите свой {pinOrPassword} снова, чтобы продолжить.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2190,7 +2186,6 @@
   "appStartupErrorTitle": "Ошибка запуска",
   "transactionLabelTransferId": "ID передачи",
   "sendTitle": "Отправить",
-  "withdrawOrderNotFoundError": "Приказ о снятии не был найден. Попробуй еще раз.",
   "importQrDeviceSeedsignerStep4": "Выберите \"Export Xpub\"",
   "seedsignerStep6": "   - Переместить красный лазер вверх и вниз по QR-коду",
   "ledgerHelpStep5": "Убедитесь, что вы Устройство Ledger использует новейшую прошивку, вы можете обновить прошивку с помощью настольного приложения Ledger Live.",
@@ -2658,7 +2653,6 @@
   "payRemoveRecipient": "Удалить получателя",
   "pasteInputDefaultHint": "Вставить адрес платежа или счет-фактуру",
   "sellKycPendingTitle": "Проверка идентификации KYC",
-  "withdrawRecipientsFilterAll": "Все типы",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - рекомендуемый",
   "fundExchangeSpeiSubtitle": "Перенос средств с помощью вашего CLABE",
   "encryptedVaultRecommendationText": "Вы не уверены, и вам нужно больше времени, чтобы узнать о практике резервного копирования безопасности.",
@@ -2777,8 +2771,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Где и как мы должны отправить деньги?",
-  "withdrawRecipientsTitle": "Выберите получателя",
   "sellPayoutRecipient": "Получатель выплат",
   "backupWalletLastBackupTest": "Последний тест резервного копирования: ",
   "whatIsWordNumberPrompt": "Что такое число слов {number}?",
@@ -3567,14 +3559,6 @@
   "buyConfirmExpress": "Подтверждение",
   "fundExchangeBankTransferWireTimeframe": "Любые средства, которые вы отправляете, будут добавлены в ваш Bull Bitcoin в течение 1-2 рабочих дней.",
   "sendDeviceDisconnected": "Устройство отключено",
-  "withdrawConfirmError": "Ошибка: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Потерпеть неудачу",
   "payUnsupportedInvoiceType": "Неподдерживаемый тип счета-фактуры",
   "seedsignerStep13": "Сделка будет импортирована в кошельке Bull Bitcoin.",
@@ -3692,7 +3676,6 @@
   "payPaymentHistory": "История платежей",
   "exchangeFeatureUnifiedHistory": "• Единая история транзакций",
   "payViewDetails": "Дополнительные сведения",
-  "withdrawOrderAlreadyConfirmedError": "Этот приказ о выводе уже подтвержден.",
   "autoswapSelectWallet": "Выберите биткойн-кошелек",
   "walletAutoTransferBlockButton": "Блок",
   "recoverbullGoogleDriveErrorSelectFailed": "Не удалось выбрать хранилище из Google Drive",
@@ -4920,5 +4903,6 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "withdrawUnexpectedError": "Ваш вывод средств сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку."
 }

@@ -6704,34 +6704,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "প্ৰাপক বাছনি কৰক",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "ক'ত আৰু কেনেকৈ টকা পঠাব লাগে?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "নতুন প্ৰাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "মোৰ fiat প্ৰাপকসকল",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "সকলো ধৰণ",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "উঠাবলৈ কোনো প্ৰাপক পোৱা নগ'ল।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "অব্যাহত ৰাখক",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -6775,15 +6747,6 @@
   "withdrawConfirmButton": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "ত্ৰুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
   "@fundExchangeFundAccount": {
@@ -8351,21 +8314,13 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawAboveMaxAmountError": "সৰ্বোচ্চ পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "উত্তোলন অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলন অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "coreScreensPageNotFound": "পৃষ্ঠা পোৱা নগ'ল",
   "@coreScreensPageNotFound": {
@@ -9344,5 +9299,6 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "withdrawUnexpectedError": "এই মুহূৰ্তত আপোনাৰ উঠোৱা সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।"
 }

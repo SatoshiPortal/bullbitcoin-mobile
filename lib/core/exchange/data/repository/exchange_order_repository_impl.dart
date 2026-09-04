@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -348,11 +347,11 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw const WithdrawError.unauthenticated();
+        throw ApiKeyNotFoundException();
       }
 
       if (!apiKeyModel.isActive) {
-        throw const WithdrawError.unauthenticated();
+        throw ApiKeyInactiveException();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.confirmOrder(
@@ -363,18 +362,19 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! WithdrawOrder) {
-        throw const WithdrawError.unexpected(
-          message: 'Expected WithdrawOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('WithdrawOrder');
       }
 
       return order;
-    } catch (e) {
-      if (e is WithdrawError) {
-        rethrow;
-      }
-      throw const WithdrawError.unexpected(
-        message: 'Failed to confirm withdraw order',
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      // Keep the original trace: the use-case logs the trace it catches, so
+      // wrapping without it would point every report at this line instead of
+      // at the call that actually failed.
+      Error.throwWithStackTrace(
+        Exception('Failed to confirm withdraw order: $e'),
+        st,
       );
     }
   }
@@ -541,8 +541,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const WithdrawError.unauthenticated();
+      if (apiKeyModel == null) {
+        throw ApiKeyNotFoundException();
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyInactiveException();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createWithdrawalOrder(
@@ -555,18 +559,18 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet) as WithdrawOrder;
 
       return order;
-    } on BullBitcoinApiMinAmountException catch (e) {
-      throw WithdrawError.belowMinAmount(
-        minAmount: e.minAmount,
-        currency: e.currency,
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      // Keep the original trace: see confirmWithdrawOrder.
+      Error.throwWithStackTrace(
+        Exception('Failed to create withdrawal order: $e'),
+        st,
       );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      throw WithdrawError.aboveMaxAmount(
-        maxAmount: e.maxAmount,
-        currency: e.currency,
-      );
-    } catch (e) {
-      throw Exception('Failed to create withdrawal order: $e');
     }
   }
 

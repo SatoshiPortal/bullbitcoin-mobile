@@ -1672,7 +1672,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "Pokuste se odstoupit nad maximálním množstvím.",
+  "withdrawAboveMaxAmountError": "Maximální částka je {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2309,7 +2309,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Pokuste se odstoupit nad minimálním množstvím.",
+  "withdrawBelowMinAmountError": "Minimální částka je {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3242,10 +3242,6 @@
   "autoswapInfoSettingsButton": "Konfigurace nastavení",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "Nový příjemce",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "Váš Keystone je nyní připojen a připraven k použití s BULL Peněženka.",
   "@importQrDeviceKeystoneStep10": {
@@ -4314,10 +4310,6 @@
   "receiveInsufficientInboundLiquidity": "Nedostatečná kapacita blesku",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "Moje příjemci fiatu",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "Poplatek za poplatek",
   "@sendFeeRateTooLow": {
@@ -5624,10 +5616,6 @@
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
   },
-  "withdrawRecipientsNoRecipients": "Žádné příjemce, které nejsou k dispozici.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "Platba\nČeština",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6778,10 +6766,6 @@
   "sendTitle": "Odeslat",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "Odstoupení nebyla nalezena. Prosím, zkuste to znovu.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "Zvolte \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
@@ -8074,10 +8058,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Všechny typy",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Nativní SegWit - Doporučené",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8392,14 +8372,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "Kde a jak bychom měli poslat peníze?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Vyberte příjemce",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Výplatní příjemce",
   "@sellPayoutRecipient": {
@@ -10631,15 +10603,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "Chyba: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Pohotovostní náraz selhal",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11014,10 +10977,6 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
-  "withdrawOrderAlreadyConfirmedError": "Tato objednávka výběru byla již potvrzena.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
-  },
   "autoswapSelectWallet": "Vyberte peněženku Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
@@ -11182,10 +11141,6 @@
   "confirmButtonLabel": "Potvrdit",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
-  },
-  "withdrawRecipientsContinue": "Pokračovat",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "pinConfirmHeadline": "Potvrdit nový PIN",
   "@pinConfirmHeadline": {
@@ -12232,5 +12187,6 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu."
 }

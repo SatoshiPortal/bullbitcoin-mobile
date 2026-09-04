@@ -1259,7 +1259,7 @@
   "@fundExchangeWarningTactic1": {
     "description": "First scammer tactic warning"
   },
-  "withdrawAboveMaxAmountError": "Você está tentando retirar acima da quantidade máxima.",
+  "withdrawAboveMaxAmountError": "A quantidade máxima é {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2104,7 +2104,7 @@
   "@payBillerName": {
     "description": "Label for biller name field"
   },
-  "withdrawBelowMinAmountError": "Você está tentando retirar abaixo do valor mínimo.",
+  "withdrawBelowMinAmountError": "Quantidade mínima é {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3007,10 +3007,6 @@
   "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
-  },
-  "withdrawRecipientsNewTab": "Novo destinatário",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "sellPayFromWallet": "Pagar da carteira",
   "@sellPayFromWallet": {
@@ -3973,10 +3969,6 @@
   "hwPassport": "Passaporte da Fundação",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
-  },
-  "withdrawRecipientsMyTab": "Os meus destinatários fiat",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transferir fundos em dólares americanos (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -5042,10 +5034,6 @@
       }
     }
   },
-  "withdrawRecipientsNoRecipients": "Nenhum destinatário encontrado para se retirar.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "buyInputCompleteKyc": "KYC completo",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
@@ -5854,10 +5842,6 @@
   "@importColdcardError": {
     "description": "Error message"
   },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
@@ -6092,10 +6076,6 @@
   "payDecodeFailed": "Falhado para decodificar fatura",
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
-  },
-  "withdrawOrderNotFoundError": "A ordem de retirada não foi encontrada. Por favor, tente novamente.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "bitboxActionVerifyAddressProcessing": "Mostrando endereço no BitBox...",
   "@bitboxActionVerifyAddressProcessing": {
@@ -7309,10 +7289,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "withdrawRecipientsFilterAll": "Todos os tipos",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
@@ -8298,10 +8274,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "withdrawRecipientsTitle": "Selecione o destinatário",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
   "testBackupWalletTitle": "Teste {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
@@ -8372,10 +8344,6 @@
   "pinSecurityTitle": "PIN de segurança",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "withdrawRecipientsPrompt": "Onde e como devemos enviar o dinheiro?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
   },
   "fundExchangeLabelIbanUsdOnly": "Número da conta IBAN (apenas para dólares americanos)",
   "@fundExchangeLabelIbanUsdOnly": {
@@ -9111,15 +9079,6 @@
   "kruxInstructionsTitle": "Instruções de Krux",
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
-  },
-  "withdrawConfirmError": "Erro: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaAddressLabelLightning": "Endereço de iluminação",
   "@exchangeDcaAddressLabelLightning": {
@@ -10349,10 +10308,6 @@
   "transactionDetailLabelRecipientAddress": "Endereço de destinatário",
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Esta ordem de retirada já foi confirmada.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "backupSettingsStartBackup": "Iniciar backup",
   "@backupSettingsStartBackup": {
@@ -12244,5 +12199,6 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "withdrawUnexpectedError": "Seu saque não pôde ser concluído no momento. Tente novamente ou entre em contato com o suporte."
 }

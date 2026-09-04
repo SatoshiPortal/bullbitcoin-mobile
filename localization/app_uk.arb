@@ -1438,7 +1438,7 @@
   "electrumServerOnline": "Інтернет",
   "testBackupDefaultWallets": "Гаманець за замовчуванням",
   "autoswapRecipientWalletInfoText": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
-  "withdrawAboveMaxAmountError": "Ви намагаєтеся виводити над максимальною кількістю.",
+  "withdrawAboveMaxAmountError": "Максимальна сума {amount} {currency}",
   "psbtFlowScanDeviceQr": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на {device}. Сканування.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -1582,7 +1582,7 @@
   "recoverbullRecoveryErrorWalletMismatch": "За замовчуванням гаманець вже існує. Ви можете мати один гаманець за замовчуванням.",
   "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
   "importQrDevicePassportStep11": "Введіть мітку для вашого паспорта гаманця і натисніть \"Імпорт\"",
-  "withdrawBelowMinAmountError": "Ви намагаєтеся виводити нижче мінімальної суми.",
+  "withdrawBelowMinAmountError": "Мінімальна сума {amount} {currency}",
   "swapYouPay": "Оплатити",
   "chooseAccessPinTitle": "Виберіть доступ {pinOrPassword}",
   "@chooseAccessPinTitle": {
@@ -1791,7 +1791,6 @@
   "bitboxScreenTroubleshootingStep1": "Переконайтеся, що у вас є остання прошивка, встановлена на вашому BitBox.",
   "backupSettingsExportVault": "Експорт Vault",
   "bitboxActionUnlockDeviceTitle": "Розблокування пристрою BitBox",
-  "withdrawRecipientsNewTab": "Новий одержувач",
   "autoswapRecipientRequired": "Ім'я *",
   "exchangeLandingFeature4": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "labelDeleteFailed": "Неможливо видалити \"{label}. Будь ласка, спробуйте знову.",
@@ -2016,7 +2015,6 @@
   "sendCustomFeeRate": "Спеціальна ціна",
   "swapErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "receiveInsufficientInboundLiquidity": "Недостатня вантажопідйомність",
-  "withdrawRecipientsMyTab": "Мій одержувачів",
   "sendFeeRateTooLow": "Платна швидкість занадто низька",
   "exchangeLandingRestriction": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "payFailedPayments": "В'язниця",
@@ -2347,7 +2345,6 @@
       }
     }
   },
-  "withdrawRecipientsNoRecipients": "Не знайдено одержувачів для виведення.",
   "importQrDeviceSpecterStep4": "Дотримуйтесь запитань щодо обраного способу",
   "importWalletImportWatchOnly": "Імпорт годинник",
   "coldcardStep9": "Після того, як угода була імпортована в холодильнику, перевірте адресу призначення і суму.",
@@ -2584,7 +2581,6 @@
   "payInvalidAddress": "Неоплатна адреса",
   "appUnlockAttemptPlural": "невдалих спроб",
   "importQrDevicePassportStep6": "Виберіть \"Single-sig\"",
-  "withdrawRecipientsContinue": "Продовжити",
   "enterPinAgainMessage": "Введіть своє {pinOrPassword} знову, щоб продовжити.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2603,7 +2599,6 @@
   "importColdcardInstructionsStep3": "Navigate до \"Advanced/Tools\"",
   "buyPhotoID": "Фото ID",
   "appStartupErrorTitle": "Помилка старту",
-  "withdrawOrderNotFoundError": "Порядок виведення не знайдено. Будь ласка, спробуйте знову.",
   "importQrDeviceSeedsignerStep4": "Виберіть \"Експорт Xpub\"",
   "seedsignerStep6": "   - Перемістити червоному лазеру вгору і вниз по QR-коду",
   "ledgerHelpStep5": "Зареєструватися Пристрої Ledger використовують останню прошивку, можна оновити прошивку за допомогою додатку Ledger Live.",
@@ -2933,7 +2928,6 @@
   "payRemoveRecipient": "Видалити одержувача",
   "pasteInputDefaultHint": "Введіть адресу платежу або рахунок-фактуру",
   "sellKycPendingTitle": "Перевірка ID KYC",
-  "withdrawRecipientsFilterAll": "Всі види",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Рекомендований",
   "fundExchangeSpeiSubtitle": "Перерахування коштів за допомогою CLABE",
   "urDecodingFailedMessage": "Ур декодування не вдалося",
@@ -3029,8 +3023,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Де і як ми надішлемо гроші?",
-  "withdrawRecipientsTitle": "Оберіть одержувач",
   "backupWalletLastBackupTest": "Останній тест резервного копіювання: ",
   "keystoneStep1": "Увійти на пристрій Keystone",
   "keystoneStep3": "Сканування QR-коду, показаного в булл-гаманці",
@@ -3595,14 +3587,6 @@
   "payCustomFee": "Спеціальний Fee",
   "fundExchangeBankTransferWireTimeframe": "Будь-які кошти, які ви надішлемо, будуть додані до Біткойн протягом 1-2 робочих днів.",
   "sendDeviceDisconnected": "Відключення пристроїв",
-  "withdrawConfirmError": "{error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Бампер не вдалося",
   "payUnsupportedInvoiceType": "Непідтриманий тип рахунку",
   "seedsignerStep13": "Операція буде імпортована в гаманці Bull Bitcoin.",
@@ -3697,7 +3681,6 @@
   "swapProgressRefunded": "Повернення коштів",
   "payPaymentHistory": "Історія оплати",
   "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
-  "withdrawOrderAlreadyConfirmedError": "Цей порядок виведення вже було підтверджено.",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
   "walletAutoTransferBlockButton": "Блоки",
   "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
@@ -4911,5 +4894,6 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "withdrawUnexpectedError": "Ваше виведення коштів наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки."
 }

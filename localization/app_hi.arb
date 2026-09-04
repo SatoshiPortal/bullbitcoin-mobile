@@ -1446,7 +1446,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "आप अधिकतम राशि के ऊपर वापस लेने की कोशिश कर रहे हैं।।",
+  "withdrawAboveMaxAmountError": "अधिकतम राशि है {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2103,7 +2103,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "आप न्यूनतम राशि के नीचे वापस लेने की कोशिश कर रहे हैं।।",
+  "withdrawBelowMinAmountError": "न्यूनतम राशि है {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3077,10 +3077,6 @@
   "autoswapInfoSettingsButton": "सेटिंग्स को कॉन्फ़िगर करें",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "नया प्राप्तकर्ता",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "आपका कीस्टोन अब जुड़ा हुआ है और BULL वॉलेट के साथ उपयोग करने के लिए तैयार है।।",
   "@importQrDeviceKeystoneStep10": {
@@ -4226,10 +4222,6 @@
   "receiveInsufficientInboundLiquidity": "अपर्याप्त बिजली प्राप्त करने की क्षमता",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "My fiat प्राप्तकर्ता",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "शुल्क दर बहुत कम",
   "@sendFeeRateTooLow": {
@@ -5604,10 +5596,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "कोई प्राप्तकर्ता को वापस लेने के लिए नहीं मिला।।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "भुगतान\nकिया गया",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6714,10 +6702,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "जारी",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "बिक्री आँकड़े",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6811,10 +6795,6 @@
   "sendTitle": "भेजें",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "वापसी आदेश नहीं मिला था। फिर से प्रयास करें।।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "\"Export Xpub\" चुनें",
   "@importQrDeviceSeedsignerStep4": {
@@ -8168,10 +8148,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "सभी प्रकार",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "मूल SegWit - अनुशंसित",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8506,14 +8482,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "हम कहाँ और कैसे पैसे भेजने चाहिए?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "प्राप्तकर्ता चुनें",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "भुगतान प्राप्तकर्ता",
   "@sellPayoutRecipient": {
@@ -10849,15 +10817,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "त्रुटि: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "शुल्क टक्कर विफल",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -11239,10 +11198,6 @@
   "payViewDetails": "विवरण देखें",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "यह वापसी आदेश पहले ही पुष्टि की गई है।।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "बिटकॉइन वॉलेट चुनें",
   "@autoswapSelectWallet": {
@@ -12422,5 +12377,6 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।"
 }

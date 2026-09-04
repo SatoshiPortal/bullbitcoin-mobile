@@ -1356,7 +1356,7 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "withdrawAboveMaxAmountError": "أنت تحاول الانسحاب فوق الحد الأقصى للمبلغ.",
+  "withdrawAboveMaxAmountError": "المبلغ الأقصى هو {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -1973,7 +1973,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "أنت تحاول أن تنسحب دون الحد الأدنى.",
+  "withdrawBelowMinAmountError": "الحد الأدنى للمبلغ {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -2883,10 +2883,6 @@
   "bitboxActionUnlockDeviceTitle": "Unlock BitBox Device",
   "@bitboxActionUnlockDeviceTitle": {
     "description": "Title for unlock device action"
-  },
-  "withdrawRecipientsNewTab": "مستفيد جديد",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "autoswapRecipientRequired": "♪",
   "@autoswapRecipientRequired": {
@@ -3964,10 +3960,6 @@
   "receiveInsufficientInboundLiquidity": "عدم كفاية القدرة على استقبال البرق",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "متلقيي المخلص",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "انخفاض معدل الرسوم",
   "@sendFeeRateTooLow": {
@@ -5231,10 +5223,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "لم يعثر على متلقين لسحبهم.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "المدفوعات\nمصنوعة",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6267,10 +6255,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "استمر",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "إحصاءات البيع",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6338,10 +6322,6 @@
   "sendTitle": "إرسال",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "ولم يعثر على أمر الانسحاب. أرجوك حاول مرة أخرى.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "\"اختار \"إكسبورت",
   "@importQrDeviceSeedsignerStep4": {
@@ -7630,10 +7610,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "جميع الأنواع",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommended",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -7939,14 +7915,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "أين وكيف نرسل المال؟?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "مستفيد مختار",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "مستفيد من مدفوعات",
   "@sellPayoutRecipient": {
@@ -10133,15 +10101,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "الخطأ: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "مطب الأطعمة فشلت",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -10491,10 +10450,6 @@
   "payViewDetails": "تفاصيل الرؤية",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الانسحاب هذا.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "اختيار محفظة بيتكوين",
   "@autoswapSelectWallet": {
@@ -12235,5 +12190,6 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "withdrawUnexpectedError": "تعذّر إتمام عملية السحب في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم."
 }

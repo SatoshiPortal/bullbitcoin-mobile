@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/load_withdraw_context_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,43 +16,36 @@ part 'withdraw_state.dart';
 
 class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   WithdrawBloc({
-    required this._getExchangeUserSummaryUsecase,
-    required CreateWithdrawOrderUsecase createWithdrawUsecase,
-    required this._confirmWithdrawUsecase,
-  }) : _createWithdrawOrderUsecase = createWithdrawUsecase,
-       super(const WithdrawInitialState()) {
+    required this._loadWithdrawContextUsecase,
+    required this._createWithdrawOrderUsecase,
+    required this._confirmWithdrawOrderUsecase,
+  }) : super(const WithdrawInitialState()) {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
-    /*on<WithdrawDescriptionInputContinuePressed>(
-      _onDescriptionInputContinuePressed,
-    );*/
     on<WithdrawConfirmed>(_onConfirmed);
   }
 
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final LoadWithdrawContextUsecase _loadWithdrawContextUsecase;
   final CreateWithdrawOrderUsecase _createWithdrawOrderUsecase;
-  final ConfirmWithdrawOrderUsecase _confirmWithdrawUsecase;
+  final ConfirmWithdrawOrderUsecase _confirmWithdrawOrderUsecase;
 
   Future<void> _onStarted(
     WithdrawStarted event,
     Emitter<WithdrawState> emit,
   ) async {
-    try {
-      // Reset the initial state to clear any previous exceptions
-      WithdrawInitialState initialState;
-      if (state is WithdrawInitialState) {
-        initialState = state as WithdrawInitialState;
-      } else {
-        initialState = const WithdrawInitialState();
-      }
-      emit(initialState.copyWith(getUserSummaryException: null));
+    // Reset the initial state to clear any previous failure
+    final initialState = switch (state) {
+      final WithdrawInitialState initial => initial,
+      _ => const WithdrawInitialState(),
+    };
+    emit(initialState.copyWith(failure: null));
 
-      final userSummary = await _getExchangeUserSummaryUsecase.execute();
-
-      emit(initialState.toAmountInputState(userSummary: userSummary));
-    } on GetExchangeUserSummaryException catch (e) {
-      emit(WithdrawState.initial(getUserSummaryException: e));
+    switch (await _loadWithdrawContextUsecase.userSummary()) {
+      case Ok(:final value):
+        emit(initialState.toAmountInputState(userSummary: value));
+      case Err(:final failure):
+        emit(WithdrawState.initial(failure: failure));
     }
   }
 
@@ -95,88 +89,34 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     }
     emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
 
-    try {
-      final recipient = event.recipient;
+    final recipient = event.recipient;
 
-      final order = await _createWithdrawOrderUsecase.execute(
-        fiatAmount: recipientInputState.amount.amount,
-        recipientId: recipient.id,
-        recipientType: recipient.type,
-      );
-      emit(
-        recipientInputState.toConfirmationState(
-          recipient: recipient,
-          order: order,
-        ),
-      );
-    } on WithdrawError catch (e) {
-      emit(
-        event.isNew
-            ? recipientInputState.copyWith(newRecipientError: e)
-            : recipientInputState.copyWith(selectedRecipientError: e),
-      );
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      final error = WithdrawError.unexpected(message: '$e');
-      emit(
-        event.isNew
-            ? recipientInputState.copyWith(newRecipientError: error)
-            : recipientInputState.copyWith(selectedRecipientError: error),
-      );
-    } finally {
-      // Reset the isCreatingWithdrawOrder flag if any error occured
-      if (state is WithdrawRecipientInputState) {
+    switch (await _createWithdrawOrderUsecase.execute(
+      fiatAmount: recipientInputState.amount.amount,
+      recipientId: recipient.id,
+      recipientType: recipient.type,
+    )) {
+      case Ok(:final value):
         emit(
-          (state as WithdrawRecipientInputState).copyWith(
-            isCreatingWithdrawOrder: false,
+          recipientInputState.toConfirmationState(
+            recipient: recipient,
+            order: value,
           ),
         );
-      }
+      case Err(:final failure):
+        emit(
+          event.isNew
+              ? recipientInputState.copyWith(
+                  isCreatingWithdrawOrder: false,
+                  newRecipientFailure: failure,
+                )
+              : recipientInputState.copyWith(
+                  isCreatingWithdrawOrder: false,
+                  selectedRecipientFailure: failure,
+                ),
+        );
     }
   }
-
-  /*Future<void> _onDescriptionInputContinuePressed(
-    WithdrawDescriptionInputContinuePressed event,
-    Emitter<WithdrawState> emit,
-  ) async {
-    // We should be on a WithdrawDescriptionInputState or WithdrawConfirmationState and
-    //  return to a clean WithdrawDescriptionInputState state to change the description
-    WithdrawDescriptionInputState descriptionInputState;
-    switch (state) {
-      case WithdrawDescriptionInputState _:
-        descriptionInputState = state as WithdrawDescriptionInputState;
-      case final WithdrawConfirmationState confirmationState:
-        descriptionInputState = confirmationState.toDescriptionInputState();
-      default:
-        // Unexpected state, do nothing
-        return;
-    }
-    emit(
-      descriptionInputState.copyWith(
-        error: null,
-        isCreatingWithdrawOrder: true,
-      ),
-    );
-
-    try {
-      final order = await _createWithdrawOrderUsecase.execute(
-        fiatAmount: descriptionInputState.fiatOrderAmount.amount,
-        recipientId: descriptionInputState.recipient.recipientId,
-      );
-      emit(descriptionInputState.toConfirmationState(order: order));
-    } on WithdrawError catch (e) {
-      emit(descriptionInputState.copyWith(error: e));
-    } finally {
-      // Reset the isCreatingWithdrawOrder flag if any error occured
-      if (state is WithdrawDescriptionInputState) {
-        emit(
-          (state as WithdrawDescriptionInputState).copyWith(
-            isCreatingWithdrawOrder: false,
-          ),
-        );
-      }
-    }
-  }*/
 
   Future<void> _onConfirmed(
     WithdrawConfirmed event,
@@ -191,24 +131,22 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       );
       return;
     }
-    emit(confirmationState.copyWith(isConfirmingWithdrawal: true, error: null));
+    emit(
+      confirmationState.copyWith(isConfirmingWithdrawal: true, failure: null),
+    );
 
-    try {
-      final order = await _confirmWithdrawUsecase.execute(
-        orderId: confirmationState.order.orderId,
-      );
-      emit(confirmationState.toSuccessState(order: order));
-    } on WithdrawError catch (e) {
-      emit(confirmationState.copyWith(error: e));
-    } finally {
-      // Reset the isConfirmingWithdraw flag if any error occured
-      if (state is WithdrawConfirmationState) {
+    switch (await _confirmWithdrawOrderUsecase.execute(
+      orderId: confirmationState.order.orderId,
+    )) {
+      case Ok(:final value):
+        emit(confirmationState.toSuccessState(order: value));
+      case Err(:final failure):
         emit(
-          (state as WithdrawConfirmationState).copyWith(
+          confirmationState.copyWith(
             isConfirmingWithdrawal: false,
+            failure: failure,
           ),
         );
-      }
     }
   }
 }

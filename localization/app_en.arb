@@ -10305,34 +10305,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "Select recipient",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "Where and how should we send the money?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "New recipient",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "My fiat recipients",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "All types",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "No recipients found to withdraw to.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "Confirm withdrawal",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"
@@ -10376,15 +10348,6 @@
   "withdrawConfirmButton": "Confirm withdrawal",
   "@withdrawConfirmButton": {
     "description": "Button to confirm withdrawal"
-  },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeFundAccount": "Fund your account",
   "@fundExchangeFundAccount": {
@@ -12059,21 +12022,29 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "You are trying to withdraw below the minimum amount.",
+  "withdrawBelowMinAmountError": "Minimum amount is {amount} {currency}",
   "@withdrawBelowMinAmountError": {
-    "description": "Error message for amount below minimum during withdraw"
+    "description": "Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
   },
-  "withdrawAboveMaxAmountError": "You are trying to withdraw above the maximum amount.",
+  "withdrawAboveMaxAmountError": "Maximum amount is {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during withdraw"
-  },
-  "withdrawOrderNotFoundError": "The withdrawal order was not found. Please try again.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
-  },
-  "withdrawOrderAlreadyConfirmedError": "This withdrawal order has already been confirmed.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
+    "description": "Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
   },
   "coreScreensPageNotFound": "Page not found",
   "@coreScreensPageNotFound": {
@@ -14693,5 +14664,9 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "withdrawUnexpectedError": "Your withdrawal could not be completed right now. Please try again or contact support.",
+  "@withdrawUnexpectedError": {
+    "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
   }
 }

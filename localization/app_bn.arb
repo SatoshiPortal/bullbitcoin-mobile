@@ -1432,7 +1432,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "==WEBLATE_PART==\nআপনি সর্বোচ্চ সীমা ছাড়িয়ে উত্তোলনের চেষ্টা করছেন।",
+  "withdrawAboveMaxAmountError": "সর্বোচ্চ পরিমাণ হলো {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2068,7 +2068,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "আপনি ন্যূনতম পরিমাণের নিচে উত্তোলন করার চেষ্টা করছেন।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পরিমাণ হলো {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -3000,10 +3000,6 @@
   "autoswapInfoSettingsButton": "সেটিংস কনফিগার করুন",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "নতুন প্রাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "আপনার Keystone এখন সংযুক্ত এবং BULL Wallet-এ ব্যবহার করতে প্রস্তুত",
   "@importQrDeviceKeystoneStep10": {
@@ -4114,10 +4110,6 @@
   "receiveInsufficientInboundLiquidity": "লাইটনিং গ্রহণক্ষমতা পর্যাপ্ত নয়",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "আমার ফিয়াট প্রাপকগণ",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "ফি হার খুব কম",
   "@sendFeeRateTooLow": {
@@ -5442,10 +5434,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "উত্তোলনের জন্য কোনো প্রাপক পাওয়া যায়নি",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "importQrDeviceSpecterStep4": "আপনার নির্বাচিত পদ্ধতির অনুযায়ী নির্দেশনা অনুসরণ করুন",
   "@importQrDeviceSpecterStep4": {
     "description": "Specter instruction step 4"
@@ -6534,10 +6522,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "চালিয়ে যান",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "বিক্রয় পরিসংখ্যান",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -6631,10 +6615,6 @@
   "sendTitle": "পাঠান",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "উত্তোলনের অনুরোধটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "\"Export Xpub\" বেছে নিন",
   "@importQrDeviceSeedsignerStep4": {
@@ -7941,10 +7921,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "সব ধরন",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - সুপারিশ করা হয়েছে",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8275,14 +8251,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "টাকা কোথায় এবং কীভাবে পাঠাব?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "প্রাপক নির্বাচন করুন",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "পেআউট প্রাপক",
   "@sellPayoutRecipient": {
@@ -10549,15 +10517,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "ত্রুটি: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "ফি বাড়ানো ব্যর্থ হয়েছে",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -10935,10 +10894,6 @@
   "payViewDetails": "বিস্তারিত দেখুন",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "এই উত্তোলনের অনুরোধটি ইতিমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@autoswapSelectWallet": {
@@ -12442,5 +12397,6 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "withdrawUnexpectedError": "আপনার উত্তোলনটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।"
 }

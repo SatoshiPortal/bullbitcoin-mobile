@@ -1260,7 +1260,7 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "withdrawAboveMaxAmountError": "Προσπαθείτε να αποσύρετε πάνω από το μέγιστο ποσό.",
+  "withdrawAboveMaxAmountError": "Μέγιστη ποσότητα είναι {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -1785,7 +1785,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Προσπαθείτε να αποσύρετε κάτω από το ελάχιστο ποσό.",
+  "withdrawBelowMinAmountError": "Ελάχιστη ποσότητα είναι {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
@@ -2610,10 +2610,6 @@
   "autoswapInfoSettingsButton": "Ρυθμίσεις Configure",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
-  },
-  "withdrawRecipientsNewTab": "Νέο παραλήπτη",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
   },
   "importQrDeviceKeystoneStep10": "Το Keystone σας είναι τώρα συνδεδεμένο και έτοιμο να χρησιμοποιήσει με το BULL Wallet.",
   "@importQrDeviceKeystoneStep10": {
@@ -3596,10 +3592,6 @@
   "receiveInsufficientInboundLiquidity": "Ανεπαρκή Lightning που λαμβάνει χωρητικότητα",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "Οι παραλήπτες μου",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "Το ποσοστό Fee πολύ χαμηλό",
   "@sendFeeRateTooLow": {
@@ -4751,10 +4743,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "Κανένας παραλήπτης δεν βρέθηκε να αποσυρθεί.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "Πληρωμή πληρωμής\nMade Made",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -5693,10 +5681,6 @@
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "withdrawRecipientsContinue": "Συνεχίστε να συνεχίζετε",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "exchangeStatisticsSellStats": "Sell Statistics",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
@@ -5764,10 +5748,6 @@
   "sendTitle": "Αποστολή αποστολής",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "withdrawOrderNotFoundError": "Η διαταγή απόσυρσης δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@withdrawOrderNotFoundError": {
-    "description": "Error message for order not found during withdraw"
   },
   "importQrDeviceSeedsignerStep4": "Επιλέξτε \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
@@ -6882,10 +6862,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Όλα τα είδη",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Προτεινόμενη",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -7175,14 +7151,6 @@
   "addressLabel": "Διεύθυνση: ",
   "@addressLabel": {
     "description": "Label for UTXO address in coin selection tile"
-  },
-  "withdrawRecipientsPrompt": "Πού και πώς πρέπει να στείλουμε τα χρήματα?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Επιλέξτε παραλήπτη παραλήπτη",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Payout παραλήπτη παραλήπτη",
   "@sellPayoutRecipient": {
@@ -9130,15 +9098,6 @@
   "@sendDeviceDisconnected": {
     "description": "Error when hardware wallet unplugged"
   },
-  "withdrawConfirmError": "Error: {error}",
-  "@withdrawConfirmError": {
-    "description": "Error message on confirmation screen",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Το χτύπημα του Fee",
   "@payFeeBumpFailed": {
     "description": "Error when fee bump fails"
@@ -9439,10 +9398,6 @@
   "payViewDetails": "Δείτε λεπτομέρειες",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "withdrawOrderAlreadyConfirmedError": "Αυτή η σειρά απόσυρσης έχει ήδη επιβεβαιωθεί.",
-  "@withdrawOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed withdrawal order"
   },
   "autoswapSelectWallet": "Επιλέξτε ένα πορτοφόλι Bitcoin",
   "@autoswapSelectWallet": {
@@ -12232,5 +12187,6 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "withdrawUnexpectedError": "Η ανάληψή σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη."
 }

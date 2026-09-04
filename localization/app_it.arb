@@ -490,7 +490,7 @@
   "testBackupDefaultWallets": "Portafogli di default",
   "receiveSendNetworkFee": "Inviare i costi di rete",
   "autoswapRecipientWalletInfoText": "Scegliere quale portafoglio Bitcoin riceverà i fondi trasferiti (richiesto)",
-  "withdrawAboveMaxAmountError": "Stai cercando di prelevare al di sopra dell'importo massimo.",
+  "withdrawAboveMaxAmountError": "Importo massimo è {amount} {currency}",
   "psbtFlowScanDeviceQr": "Il portafoglio Bull Bitcoin ti chiederà di scansionare il codice QR sul {device}. Scansione.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -695,7 +695,7 @@
   "transactionDetailAccelerate": "Accelerare",
   "importQrDevicePassportStep11": "Inserisci un'etichetta per il tuo portafoglio Passport e tocca \"Import\"",
   "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
-  "withdrawBelowMinAmountError": "Stai cercando di ritirarti sotto l'importo minimo.",
+  "withdrawBelowMinAmountError": "Importo minimo è {amount} {currency}",
   "swapYouPay": "Paga",
   "encryptedVaultTitle": "Criptato",
   "fundExchangeCrIbanUsdLabelIban": "Numero conto IBAN (solo dollari USA)",
@@ -1007,7 +1007,6 @@
   "bitboxScreenTroubleshootingStep1": "Assicurati di avere l'ultimo firmware installato sul BitBox.",
   "backupSettingsExportVault": "Vaso di esportazione",
   "bitboxActionUnlockDeviceTitle": "Sblocca il dispositivo BitBox",
-  "withdrawRecipientsNewTab": "Nuovo destinatario",
   "autoswapRecipientRequired": "#",
   "exchangeLandingFeature4": "Trasferimenti bancari e bollette di pagamento",
   "sellSendPaymentPayFromWallet": "Paga dal portafoglio",
@@ -1358,7 +1357,6 @@
   "transactionLabelTotalSwapFees": "Totale spese di swap",
   "errorLabel": "Errore",
   "receiveInsufficientInboundLiquidity": "Capacità di ricezione di fulmini insufficienti",
-  "withdrawRecipientsMyTab": "I miei destinatari fiat",
   "sendFeeRateTooLow": "Tassi di tariffa troppo bassi",
   "payLastNameHint": "Inserisci il cognome",
   "exchangeLandingRestriction": "L'accesso ai servizi di scambio sarà limitato ai paesi in cui Bull Bitcoin può operare legalmente e può richiedere KYC.",
@@ -1816,7 +1814,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "Swap completerà momentaneamente.",
   "addressViewAddressesTitle": "Indirizzo",
-  "withdrawRecipientsNoRecipients": "Nessun destinatario ha trovato di ritirarsi.",
   "transactionSwapProgressPaymentMade": "Pagamento\nFatto",
   "importQrDeviceSpecterStep4": "Seguire le istruzioni secondo il metodo scelto",
   "coreSwapsChainPending": "Il trasferimento non è ancora inizializzato.",
@@ -2162,7 +2159,6 @@
   "coreSwapsChainPaid": "In attesa del pagamento del fornitore di trasferimento per ricevere la conferma. Potrebbe volerci un po' per completare.",
   "importQrDevicePassportStep6": "Selezionare \"Single-sig\"",
   "sendSatsPerVB": "sats/vB",
-  "withdrawRecipientsContinue": "Continua",
   "enterPinAgainMessage": "Inserisci nuovamente il tuo {pinOrPassword} per continuare.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2191,7 +2187,6 @@
   "appStartupErrorTitle": "Errore di avvio",
   "transactionLabelTransferId": "ID trasferimento",
   "sendTitle": "Invia",
-  "withdrawOrderNotFoundError": "L'ordine di ritiro non è stato trovato. Per favore riprovate.",
   "importQrDeviceSeedsignerStep4": "Selezionare \"Export Xpub\"",
   "seedsignerStep6": "   - Spostare il laser rosso su e giù sul codice QR",
   "ledgerHelpStep5": "Assicurarsi che il Il dispositivo Ledger utilizza il firmware più recente, è possibile aggiornare il firmware utilizzando l'app desktop Ledger Live.",
@@ -2659,7 +2654,6 @@
   "payRemoveRecipient": "Rimuovere Recipiente",
   "pasteInputDefaultHint": "Incolla un indirizzo di pagamento o una fattura",
   "sellKycPendingTitle": "Verifica dell'identità KYC in sospeso",
-  "withdrawRecipientsFilterAll": "Tutti i tipi",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Consigliato",
   "fundExchangeSpeiSubtitle": "Trasferire fondi utilizzando il CLABE",
   "encryptedVaultRecommendationText": "Non sei sicuro e hai bisogno di più tempo per conoscere le pratiche di sicurezza di backup.",
@@ -2778,8 +2772,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Dove e come dovremmo inviare i soldi?",
-  "withdrawRecipientsTitle": "Seleziona il destinatario",
   "sellPayoutRecipient": "Prestito",
   "backupWalletLastBackupTest": "Ultimo test di backup: ",
   "whatIsWordNumberPrompt": "Qual è il numero di parola {number}?",
@@ -3568,14 +3560,6 @@
   "buyConfirmExpress": "Conferma espresso",
   "fundExchangeBankTransferWireTimeframe": "Tutti i fondi che invii verranno aggiunti al tuo Bull Bitcoin entro 1-2 giorni lavorativi.",
   "sendDeviceDisconnected": "Dispositivo staccato",
-  "withdrawConfirmError": "Errore: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Fee urto fallito",
   "payUnsupportedInvoiceType": "Tipo di fattura non supportato",
   "seedsignerStep13": "La transazione verrà importata nel portafoglio Bull Bitcoin.",
@@ -3693,7 +3677,6 @@
   "payPaymentHistory": "Storia del pagamento",
   "exchangeFeatureUnifiedHistory": "• Storia delle transazioni unificata",
   "payViewDetails": "Visualizza dettagli",
-  "withdrawOrderAlreadyConfirmedError": "Questo ordine di recesso è già stato confermato.",
   "autoswapSelectWallet": "Seleziona un portafoglio Bitcoin",
   "walletAutoTransferBlockButton": "Blocco",
   "recoverbullGoogleDriveErrorSelectFailed": "Non selezionare la volta da Google Drive",
@@ -4914,5 +4897,6 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "withdrawUnexpectedError": "Il suo prelievo non è stato completato al momento. Riprovi o contatti l'assistenza."
 }

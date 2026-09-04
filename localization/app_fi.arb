@@ -3015,13 +3015,6 @@
   "exchangeAuthOk": "OK",
   "withdrawAmountTitle": "Nosta varoja tililtäsi",
   "withdrawAmountContinue": "Jatka",
-  "withdrawRecipientsTitle": "Valitse vastaanottaja",
-  "withdrawRecipientsPrompt": "Minne ja miten haluat meidän lähettävän rahat?",
-  "withdrawRecipientsNewTab": "Uusi vastaanottaja",
-  "withdrawRecipientsMyTab": "Omat fiat-vastaanottajat",
-  "withdrawRecipientsFilterAll": "Kaikki tyypit",
-  "withdrawRecipientsNoRecipients": "Ei vastaanottajia nostoa varten.",
-  "withdrawRecipientsContinue": "Jatka",
   "withdrawConfirmTitle": "Vahvista nosto",
   "withdrawConfirmRecipientName": "Vastaanottajan nimi",
   "withdrawConfirmAmount": "Määrä",
@@ -3033,14 +3026,6 @@
   "withdrawConfirmPhone": "Puhelin",
   "withdrawConfirmCard": "Kortti",
   "withdrawConfirmButton": "Vahvista nosto",
-  "withdrawConfirmError": "Virhe: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Talletus",
   "fundExchangeSelectCountry": "Valitse maa ja maksutapa",
   "fundExchangeSpeiTransfer": "SPEI-siirto",
@@ -3606,10 +3591,8 @@
   "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
   "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
-  "withdrawBelowMinAmountError": "Yrität nostaa alle vähimmäismäärän.",
-  "withdrawAboveMaxAmountError": "Yrität nostaa yli enimmäismäärän.",
-  "withdrawOrderNotFoundError": "Nostopyyntöä ei löytynyt. Yritä uudelleen.",
-  "withdrawOrderAlreadyConfirmedError": "Tämä nostopyyntö on jo vahvistettu.",
+  "withdrawBelowMinAmountError": "Minimimäärä on {amount} {currency}",
+  "withdrawAboveMaxAmountError": "Maksimimäärä on {amount} {currency}",
   "coreScreensPageNotFound": "Sivua ei löytynyt",
   "coreScreensLogsTitle": "Lokitiedot",
   "coreScreensConfirmSend": "Vahvista lähetys",
@@ -4902,5 +4885,6 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen."
 }

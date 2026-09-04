@@ -479,7 +479,7 @@
   "testBackupDefaultWallets": "Standard-Wallets",
   "receiveSendNetworkFee": "Netzwerkgebühr senden",
   "autoswapRecipientWalletInfoText": "Wählen Sie aus, welche Bitcoin-Wallet die überwiesenen Gelder erhalten soll (erforderlich).",
-  "withdrawAboveMaxAmountError": "Sie versuchen, einen Betrag abzuheben, der über dem Höchstbetrag liegt.",
+  "withdrawAboveMaxAmountError": "Maximaler Betrag ist {amount} {currency}",
   "psbtFlowScanDeviceQr": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf dem {device} zu scannen. Scannen Sie ihn.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -680,7 +680,7 @@
   "transactionDetailAccelerate": "Beschleunigen",
   "importQrDevicePassportStep11": "Geben Sie eine Bezeichnung für Ihre Foundation Passport-Wallet ein und tippen Sie auf „Importieren“.",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
-  "withdrawBelowMinAmountError": "Sie versuchen, einen Betrag unterhalb des Mindestbetrags abzuheben.",
+  "withdrawBelowMinAmountError": "Mindestbetrag ist {amount} {currency}",
   "swapYouPay": "Sie zahlen",
   "encryptedVaultTitle": "Verschlüsselter Tresor",
   "fundExchangeCrIbanUsdLabelIban": "IBAN-Kontonummer (nur US-Dollar)",
@@ -984,7 +984,6 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Starten Sie Ihre BitBox02 Nova neu und versuchen Sie die Verbindung erneut.",
   "backupSettingsExportVault": "Tresor exportieren",
   "bitboxActionUnlockDeviceTitle": "BitBox-Gerät entsperren",
-  "withdrawRecipientsNewTab": "Neuer Empfänger",
   "autoswapRecipientRequired": "*",
   "exchangeLandingFeature4": "Banküberweisungen senden und Rechnungen bezahlen",
   "sellSendPaymentPayFromWallet": "Zahlung von Ihrer Wallet",
@@ -1326,7 +1325,6 @@
   "transactionLabelTotalSwapFees": "Gesamt-Swap-Gebühren",
   "errorLabel": "Fehler",
   "receiveInsufficientInboundLiquidity": "Unzureichende Lightning-Kapazität",
-  "withdrawRecipientsMyTab": "Meine Fiat-Empfänger",
   "sendFeeRateTooLow": "Gebührensatz zu niedrig",
   "payLastNameHint": "Nachname eingeben",
   "exchangeLandingRestriction": "Der Zugang zu den Austauschdiensten ist auf Länder beschränkt, in denen Bull Bitcoin legal arbeitet und KYC erforderlich sein kann",
@@ -1775,7 +1773,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "Der Swap wird in Kürze abgeschlossen",
   "addressViewAddressesTitle": "Adressen",
-  "withdrawRecipientsNoRecipients": "Keine Empfänger zum Abheben gefunden",
   "transactionSwapProgressPaymentMade": "Zahlung\nErfolgt",
   "importQrDeviceSpecterStep4": "Folgen Sie den Anweisungen für Ihre gewählte Methode",
   "coreSwapsChainPending": "Die Überweisung ist noch nicht eingeleitet",
@@ -2112,7 +2109,6 @@
   "coreSwapsChainPaid": "Wir warten auf die Zahlungsbestätigung unseres Zahlungsanbieters. Dies kann einige Zeit dauern",
   "importQrDevicePassportStep6": "Wählen Sie „Single-Sig“",
   "sendSatsPerVB": "sats/vB",
-  "withdrawRecipientsContinue": "Fortfahren",
   "enterPinAgainMessage": "Geben Sie Ihre {pinOrPassword} erneut ein, um fortzufahren.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2140,7 +2136,6 @@
   "appStartupErrorTitle": "Startupspeicherfehler",
   "transactionLabelTransferId": "Transfer-ID",
   "sendTitle": "Senden",
-  "withdrawOrderNotFoundError": "Die Auszahlung wurde nicht gefunden. Bitte versuchen Sie es erneut.",
   "importQrDeviceSeedsignerStep4": "Wählen Sie „Export Xpub“",
   "seedsignerStep6": "Bewegen Sie den roten Laser über den QR-Code",
   "ledgerHelpStep5": "Stellen Sie sicher, dass Ihr Ledger-Gerät die neueste Firmware verwendet. Sie können die Firmware mit der Ledger Live Desktop-App aktualisieren",
@@ -2599,7 +2594,6 @@
   "payRemoveRecipient": "Empfänger entfernen",
   "pasteInputDefaultHint": "Zahlungsadresse oder Rechnung einfügen.",
   "sellKycPendingTitle": "KYC-Identitätsprüfung ausstehend",
-  "withdrawRecipientsFilterAll": "Alle Arten",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit – Empfohlen",
   "fundExchangeSpeiSubtitle": "Überweisung mit CLABE",
   "encryptedVaultRecommendationText": "Sie sind sich nicht sicher und benötigen mehr Zeit, um sich über Sicherheitsmaßnahmen für Backups zu informieren.",
@@ -2716,8 +2710,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Wo und wie sollen wir das Geld schicken?",
-  "withdrawRecipientsTitle": "Empfänger auswählen",
   "sellPayoutRecipient": "Empfänger der Auszahlung",
   "backupWalletLastBackupTest": "Letzter Backup-Test:",
   "whatIsWordNumberPrompt": "Was ist Wort Nummer {number}?",
@@ -3502,14 +3494,6 @@
   "buyConfirmExpress": "Schnellzahlung bestätigen",
   "fundExchangeBankTransferWireTimeframe": "Alle Gelder, die Sie senden, werden innerhalb von 1–2 Werktagen zu Ihrem Bull Bitcoin-Guthaben hinzugefügt",
   "sendDeviceDisconnected": "Geräte getrennt",
-  "withdrawConfirmError": "Fehler: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "Gebührenerhöhung fehlgeschlagen",
   "payUnsupportedInvoiceType": "Nicht unterstützter Rechnungstyp",
   "seedsignerStep13": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert",
@@ -3625,7 +3609,6 @@
   "payPaymentHistory": "Zahlungsverlauf",
   "exchangeFeatureUnifiedHistory": "Einheitliche Transaktionshistorie",
   "payViewDetails": "Details anzeigen",
-  "withdrawOrderAlreadyConfirmedError": "Diese Auszahlung wurde bereits bestätigt.",
   "autoswapSelectWallet": "Wählen Sie eine Bitcoin-Wallet",
   "walletAutoTransferBlockButton": "Blockieren",
   "recoverbullGoogleDriveErrorSelectFailed": "Tresor wurde nicht aus Google Drive ausgewählt.",
@@ -4899,5 +4882,6 @@
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
   "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
-  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "withdrawUnexpectedError": "Ihre Auszahlung konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support."
 }
