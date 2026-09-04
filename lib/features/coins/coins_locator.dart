@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -27,6 +29,9 @@ class CoinsLocator {
         walletUtxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
+    locator.registerFactory<RefreshCoinsUsecase>(
+      () => RefreshCoinsUsecase(locator<SyncCoordinator>()),
+    );
 
     // Cubit — built per route with the target wallet id.
     locator.registerFactoryParam<CoinsCubit, String, void>(
@@ -35,6 +40,7 @@ class CoinsLocator {
         getUtxosUsecase: locator<GetUtxosUsecase>(),
         freezeUtxosUsecase: locator<FreezeUtxosUsecase>(),
         unfreezeUtxosUsecase: locator<UnfreezeUtxosUsecase>(),
+        refreshCoinsUsecase: locator<RefreshCoinsUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),

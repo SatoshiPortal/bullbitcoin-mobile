@@ -453,7 +453,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0,
                                       ),
-                                      child: state.usesSelectedInputsOnly || pickableWallet == null
+                                      child:
+                                          state.usesSelectedInputsOnly ||
+                                              pickableWallet == null
                                           ? SizedBox(
                                               height: 48,
                                               child: Align(

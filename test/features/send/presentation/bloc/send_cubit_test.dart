@@ -798,7 +798,7 @@ void main() {
         expect(cubit.state.sendType, SendType.bitcoin);
         expect(cubit.state.sendMax, isFalse);
         expect(cubit.state.amount, isEmpty);
-        expect(cubit.state.selectedWallet, wallet);
+        expect(cubit.state.selectedBitcoinWallet, wallet);
         expect(cubit.state.selectedUtxos, [selected]);
         expect(cubit.state.maxAvailableBalanceSat, 75000);
         expect(cubit.state.isPayjoinAvailable, isFalse);
@@ -809,7 +809,7 @@ void main() {
         );
         await cubit.updateSelectedWallet(otherWallet);
 
-        expect(cubit.state.selectedWallet, wallet);
+        expect(cubit.state.selectedBitcoinWallet, wallet);
         expect(cubit.state.selectedUtxos, [selected]);
         expect(cubit.state.selectableWallets, [wallet]);
       },
@@ -840,7 +840,7 @@ void main() {
       stubSweepLoad(wallet: wallet, utxos: [selected]);
       when(
         () => getWalletsUsecase.execute(),
-      ).thenAnswer((_) async => [wallet, liquidWallet]);
+      ).thenAnswer((_) async => Ok([wallet, liquidWallet]));
       when(
         () => bestWalletUsecase.execute(
           wallets: [wallet, liquidWallet],
@@ -865,7 +865,7 @@ void main() {
       expect(parsedLightning, isFalse);
       expect(cubit.state.paymentRequest, request);
       expect(cubit.state.sendType, SendType.bitcoin);
-      expect(cubit.state.selectedWallet, wallet);
+      expect(cubit.state.selectedBitcoinWallet, wallet);
       expect(cubit.state.selectedUtxos, [selected]);
       expect(cubit.state.selectedInputOutpoints, {(txId: 'selected', vout: 0)});
       expect(cubit.state.step, SendStep.amount);

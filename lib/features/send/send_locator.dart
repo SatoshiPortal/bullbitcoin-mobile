@@ -217,10 +217,16 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<SendCubit, Wallet?, ({SendRouteArgs? args, String? spWalletLabel})?>(
+    locator.registerFactoryParam<
+      SendCubit,
+      Wallet?,
+      ({SendRouteArgs? args, String? spWalletLabel})?
+    >(
       (wallet, options) => SendCubit(
         wallet: wallet,
-        mode: options?.spWalletLabel == null ? const SendModeBitcoin() : SendModeSp(walletLabel: options!.spWalletLabel!),
+        mode: options?.spWalletLabel == null
+            ? const SendModeBitcoin()
+            : SendModeSp(walletLabel: options!.spWalletLabel!),
         initialSweepOutpoints: options?.args?.isSweep == true
             ? options!.args!.selectedOutpoints
             : const {},

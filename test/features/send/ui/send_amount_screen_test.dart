@@ -170,7 +170,7 @@ void main() {
       step: SendStep.amount,
       sendType: SendType.bitcoin,
       wallets: [refreshedWallet],
-      selectedWallet: selectedWallet,
+      selectedWallet: SendWalletBitcoin(selectedWallet),
       paymentRequest: const PaymentRequest.bitcoin(
         address: 'bc1qfirst',
         isTestnet: false,
@@ -181,6 +181,7 @@ void main() {
       fiatCurrencyCode: 'USD',
     );
     final cubit = _MockSendCubit();
+    when(() => cubit.isSpMode).thenReturn(false);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
 
@@ -353,7 +354,7 @@ void main() {
       step: SendStep.confirm,
       sendType: SendType.bitcoin,
       wallets: [wallet],
-      selectedWallet: wallet,
+      selectedWallet: SendWalletBitcoin(wallet),
       selectedUtxos: [walletUtxoFixture(walletId: wallet.id, sats: 75000)],
       paymentRequest: const PaymentRequest.bitcoin(
         address: 'bc1qrecipient',
@@ -370,6 +371,7 @@ void main() {
       signedBitcoinPsbt: 'signed',
     );
     final cubit = _MockSendCubit();
+    when(() => cubit.isSpMode).thenReturn(false);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     final settingsCubit = _MockSettingsCubit();
