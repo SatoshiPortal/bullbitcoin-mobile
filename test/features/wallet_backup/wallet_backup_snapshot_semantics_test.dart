@@ -12,6 +12,7 @@ import 'package:primitives/primitives.dart' hide ScriptType;
 import 'package:recoverbull/recoverbull.dart';
 
 import 'support/wallet_backup_behavior_harness.dart';
+import 'support/fake_bullvault_backup.dart';
 
 /// Bull backup is an authoritative snapshot: a publication replaces the whole
 /// remote object and nothing is merged into it, so deletion is by omission.
@@ -57,7 +58,7 @@ void main() {
           walletRef: 'external-wallet',
           network: Network.bitcoinMainnet,
           descriptor: _externalDescriptor,
-          signerDevice: SignerDeviceEntity.ledgerNanoX,
+          signers: [singleRemoteSigner(SignerDeviceEntity.ledgerNanoX)],
           birthday: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
           provenance: WalletProvenance.externalSigner,
         ),

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 
@@ -16,6 +17,7 @@ final class WalletBackupSnapshot {
   final int createdAt;
   final KeychainManifest recoveryManifest;
   final List<WalletDefinition> externalWalletDefinitions;
+  final List<WalletBackupVaultEntry> vaults;
   final WalletMetadataSnapshot? metadata;
 
   WalletBackupSnapshot({
@@ -23,10 +25,10 @@ final class WalletBackupSnapshot {
     required this.createdAt,
     required this.recoveryManifest,
     Iterable<WalletDefinition> externalWalletDefinitions = const [],
+    Iterable<WalletBackupVaultEntry> vaults = const [],
     this.metadata,
-  }) : externalWalletDefinitions = List.unmodifiable(
-         externalWalletDefinitions,
-       ) {
+  }) : externalWalletDefinitions = List.unmodifiable(externalWalletDefinitions),
+       vaults = List.unmodifiable(vaults) {
     if (createdAt < 0 ||
         createdAt > maximumTimestampSeconds ||
         recoveryManifest.parentFingerprint != parentFingerprint) {

@@ -10,7 +10,12 @@ enum WalletBackupImportSituation {
 
 enum WalletBackupImportSource { file, server }
 
-enum WalletBackupDifference { walletManifest, externalWallets, protectedData }
+enum WalletBackupDifference {
+  walletManifest,
+  externalWallets,
+  protectedData,
+  vaults,
+}
 
 final class WalletBackupSnapshotSummary {
   final int createdAt;

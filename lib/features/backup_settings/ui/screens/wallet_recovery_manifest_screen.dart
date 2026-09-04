@@ -186,6 +186,8 @@ String _walletType(BuildContext context, WalletProvenance provenance) =>
       WalletProvenance.watchOnly => context.loc.walletBackupManifestWatchOnly,
       WalletProvenance.externalSigner =>
         context.loc.walletBackupManifestExternalSigner,
+      WalletProvenance.descriptor =>
+        context.loc.walletBackupManifestDescriptorWallet,
     };
 
 String _networkName(BuildContext context, Network network) => switch (network) {
@@ -201,8 +203,8 @@ String _keyLocation(BuildContext context, WalletBackupWalletSummary wallet) {
   }
   if (wallet.keysOnDevice) return context.loc.walletBackupManifestKeysOnDevice;
   return switch (wallet.provenance) {
-    WalletProvenance.externalSigner =>
-      context.loc.walletBackupManifestKeysExternal,
+    WalletProvenance.externalSigner ||
+    WalletProvenance.descriptor => context.loc.walletBackupManifestKeysExternal,
     WalletProvenance.watchOnly => context.loc.walletBackupManifestKeysAbsent,
     _ => context.loc.walletBackupManifestKeysRequired,
   };
@@ -210,7 +212,9 @@ String _keyLocation(BuildContext context, WalletBackupWalletSummary wallet) {
 
 String? _passphrase(BuildContext context, WalletBackupWalletSummary wallet) =>
     switch (wallet.provenance) {
-      WalletProvenance.watchOnly || WalletProvenance.externalSigner => null,
+      WalletProvenance.watchOnly ||
+      WalletProvenance.externalSigner ||
+      WalletProvenance.descriptor => null,
       _ => switch (wallet.seedPassphraseUsed) {
         true => context.loc.walletBackupManifestPassphraseUsed,
         false => context.loc.walletBackupManifestPassphraseNotUsed,

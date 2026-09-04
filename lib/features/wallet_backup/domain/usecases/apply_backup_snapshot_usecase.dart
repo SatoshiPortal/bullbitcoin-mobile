@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/restore_wallet_backup_manifest_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_vaults_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_backup_failure.dart';
 import 'package:primitives/primitives.dart';
@@ -40,6 +41,7 @@ final class ApplyBackupSnapshotUsecase {
 
   final WalletBackupStateRepository _state;
   final WalletDefinitionsBackup _definitions;
+  final BullVaultBackupSection _vaults;
   final RestoreWalletBackupManifestUsecase _restoreManifest;
   final ValidateWalletMetadataSnapshot _validateMetadata;
   final RestoreWalletMetadataSnapshot _restoreMetadata;
@@ -48,7 +50,8 @@ final class ApplyBackupSnapshotUsecase {
 
   const ApplyBackupSnapshotUsecase(
     this._state,
-    this._definitions, {
+    this._definitions,
+    this._vaults, {
     required this._restoreManifest,
     required this._validateMetadata,
     required this._restoreMetadata,
@@ -169,6 +172,30 @@ final class ApplyBackupSnapshotUsecase {
       );
     }
 
+    // Vaults come after definitions and before metadata: a vault's wallet must
+    // exist before labels and preferences keyed by it are applied.
+    WalletVaultsRecoveryResult? vaultsRestored;
+    if (snapshot.vaults.isNotEmpty) {
+      switch (await _vaults.recover(snapshot.vaults, deadline: deadline)) {
+        case Ok(:final value):
+          vaultsRestored = value;
+        case Err():
+          return _result(
+            WalletBackupRecoveryStatus.invalid,
+            restored: restored,
+            definitions: definitionsRestored,
+          );
+      }
+    }
+    if (_expired(deadline)) {
+      return _result(
+        WalletBackupRecoveryStatus.timedOut,
+        restored: restored,
+        definitions: definitionsRestored,
+        vaults: vaultsRestored,
+      );
+    }
+
     var metadataComplete = true;
     if (snapshot.metadata case final metadata?) {
       final metadataResult = await _restoreMetadata(
@@ -176,6 +203,7 @@ final class ApplyBackupSnapshotUsecase {
         createdWalletRefs: {
           ...defaultCreatedWalletIds,
           ...?definitionsRestored?.createdWalletRefs,
+          ...?vaultsRestored?.createdWalletRefs,
         },
         deadline: deadline,
       );
@@ -214,6 +242,7 @@ final class ApplyBackupSnapshotUsecase {
     final complete =
         restored.failedCount == 0 &&
         (definitionsRestored?.failedCount ?? 0) == 0 &&
+        (vaultsRestored?.failedCount ?? 0) == 0 &&
         metadataComplete;
     final result = _result(
       complete
@@ -221,6 +250,7 @@ final class ApplyBackupSnapshotUsecase {
           : WalletBackupRecoveryStatus.partiallyRestored,
       restored: restored,
       definitions: definitionsRestored,
+      vaults: vaultsRestored,
     );
     return complete && settleFence ? _lower(result) : result;
   }
@@ -274,11 +304,17 @@ final class ApplyBackupSnapshotUsecase {
     WalletBackupRecoveryStatus status, {
     WalletBackupManifestRestoreResult? restored,
     WalletDefinitionsRecoveryResult? definitions,
+    WalletVaultsRecoveryResult? vaults,
   }) => WalletBackupRecoveryResult(
     status: status,
     restoredCount:
-        (restored?.restoredCount ?? 0) + (definitions?.restoredCount ?? 0),
-    failedCount: (restored?.failedCount ?? 0) + (definitions?.failedCount ?? 0),
+        (restored?.restoredCount ?? 0) +
+        (definitions?.restoredCount ?? 0) +
+        (vaults?.restoredCount ?? 0),
+    failedCount:
+        (restored?.failedCount ?? 0) +
+        (definitions?.failedCount ?? 0) +
+        (vaults?.failedCount ?? 0),
   );
 
   bool _expired(DateTime deadline) => !_nowUtc().isBefore(deadline);

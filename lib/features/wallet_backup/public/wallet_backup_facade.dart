@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart'
-    show WalletBackupContents, WalletBackupWalletSummary;
+    show
+        WalletBackupContents,
+        WalletBackupVaultSummary,
+        WalletBackupWalletSummary;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart'
     show WalletBackupExport, WalletBackupFileProtection;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart'

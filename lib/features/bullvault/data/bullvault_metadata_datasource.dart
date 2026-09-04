@@ -6,6 +6,9 @@ final class BullVaultMetadataDatasource {
 
   const BullVaultMetadataDatasource(this._database);
 
+  Future<List<BullVaultRecordModel>> loadAll() =>
+      _database.select(_database.bullVaultRecords).get();
+
   Future<T> transaction<T>(Future<T> Function() action) =>
       _database.transaction(action);
 

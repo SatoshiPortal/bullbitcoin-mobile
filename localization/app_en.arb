@@ -16972,6 +16972,10 @@
   "walletBackupManifestBip85": "Deterministic product wallet",
   "walletBackupManifestImportedMnemonic": "Imported mnemonic wallet",
   "walletBackupManifestWatchOnly": "External watch-only wallet",
+  "walletBackupManifestDescriptorWallet": "Descriptor wallet",
+  "@walletBackupManifestDescriptorWallet": {
+    "description": "Wallet type label for a wallet imported from a descriptor with its own signers"
+  },
   "walletBackupManifestExternalSigner": "External signer wallet",
   "walletBackupManifestKeys": "Keys",
   "@walletBackupManifestKeys": {},

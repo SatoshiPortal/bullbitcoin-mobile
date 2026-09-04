@@ -74,6 +74,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 import '../metadata/support/portable_settings_fixture.dart';
+import 'fake_bullvault_backup.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
 
 /// BIP39 test vector whose root is the default wallet in every backup suite.
 const defaultSeedMnemonic =
@@ -299,6 +301,7 @@ final class WalletBackupBehaviorHarness {
   final WalletBackupFacade facade;
   final FakeWalletBackupRemote remote;
   final FakeWalletDefinitionsSection definitions;
+  final FakeBullVaultBackupSection vaults;
   final FakeWalletMetadataSection metadata;
   final RecoverBullWalletBackupEncryptionRepository encryption;
   final String parentFingerprint;
@@ -317,6 +320,7 @@ final class WalletBackupBehaviorHarness {
     required this.facade,
     required this.remote,
     required this.definitions,
+    required this.vaults,
     required this.metadata,
     required this.encryption,
     required this.parentFingerprint,
@@ -359,11 +363,13 @@ final class WalletBackupBehaviorHarness {
     final codec = WalletBackupSnapshotCodec(
       encodeManifest: keychainManifest.encodeManifestFilePayload,
       decodeManifest: keychainManifest.parseManifestFilePayload,
+      vaults: const WalletBackupVaultsCodec(inspect: fakeVaultInspector),
     );
     final encryption = RecoverBullWalletBackupEncryptionRepository(codec);
     final state = DriftWalletBackupStateRepository(walletDatabase);
     final backupRemote = remote ?? FakeWalletBackupRemote();
     final definitions = FakeWalletDefinitionsSection();
+    final vaults = FakeBullVaultBackupSection();
     final metadata = FakeWalletMetadataSection();
 
     final nostrIdentity = _nostrIdentity(settings, defaultSeed);
@@ -389,6 +395,7 @@ final class WalletBackupBehaviorHarness {
     final buildSnapshot = BuildWalletBackupSnapshotUsecase(
       keychainManifest,
       definitions,
+      vaults,
       metadata.localSnapshot,
     );
     final registerRecoveryMaterial =
@@ -431,6 +438,7 @@ final class WalletBackupBehaviorHarness {
     final applySnapshot = ApplyBackupSnapshotUsecase(
       state,
       definitions,
+      vaults,
       restoreManifest: RestoreWalletBackupManifestUsecase(
         ({
           required walletId,
@@ -466,6 +474,8 @@ final class WalletBackupBehaviorHarness {
         () async => const <WalletDefinition>[],
         () async => const <String>{},
         metadata.localSnapshot,
+        vaults: vaults,
+        inspectVault: fakeVaultInspector,
       ),
       WatchWalletBackupStateUsecase(state),
       SetWalletBackupEnabledUsecase(
@@ -533,6 +543,7 @@ final class WalletBackupBehaviorHarness {
       facade: facade,
       remote: backupRemote,
       definitions: definitions,
+      vaults: vaults,
       metadata: metadata,
       encryption: encryption,
       parentFingerprint: key.parentFingerprint,

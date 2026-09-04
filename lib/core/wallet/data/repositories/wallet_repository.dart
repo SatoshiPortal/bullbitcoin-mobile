@@ -280,7 +280,7 @@ class WalletRepository
     bool isHidden = false,
     bool sync = false,
     String? walletId,
-    WalletProvenance provenance = WalletProvenance.watchOnly,
+    WalletProvenance provenance = WalletProvenance.descriptor,
     DateTime? birthday,
   }) async {
     _requireBitcoinNetwork(network);
@@ -488,9 +488,7 @@ class WalletRepository
       (await _walletMetadataDatasource.fetchAll())
           .where(
             (metadata) =>
-                metadata.isBitcoin &&
-                (metadata.provenance == WalletProvenance.watchOnly ||
-                    metadata.provenance == WalletProvenance.externalSigner),
+                metadata.isBitcoin && metadata.provenance.backedUpAsDefinition,
           )
           .map(_definitionFromMetadata)
           .toList(growable: false);
@@ -552,9 +550,10 @@ class WalletRepository
       );
     }
 
-    // A definition carries one signer device for the whole descriptor, so
-    // every parsed key is annotated with it. Multi-signer definitions are
-    // widened in the backup schema separately (per-key signers).
+    // A definition normally carries its full signer roster, whose key ids
+    // follow descriptor order and re-attach to the freshly parsed keys. A
+    // definition without one (a passphrase wallet mount) gets one signer per
+    // key derived from its provenance.
     final ({
       String descriptor,
       ScriptType? scriptType,
@@ -570,26 +569,28 @@ class WalletRepository
     } on Exception {
       throw const FormatException('Wallet descriptor is not importable');
     }
-    final device = definition.signerDevice;
-    final signer =
-        definition.provenance == WalletProvenance.defaultSeedPassphrase
-        ? SignerEntity.local
-        : device == null
-        ? SignerEntity.none
-        : SignerEntity.remote;
-    final keysBySigner = <String, List<WalletDescriptorKey>>{};
-    for (final key in parsed.descriptorKeys) {
-      keysBySigner.putIfAbsent(key.signerId, () => []).add(key);
+    final List<WalletSigner> annotations;
+    if (definition.signers.isNotEmpty) {
+      annotations = definition.signers;
+    } else {
+      final signer =
+          definition.provenance == WalletProvenance.defaultSeedPassphrase
+          ? SignerEntity.local
+          : SignerEntity.none;
+      final keysBySigner = <String, List<WalletDescriptorKey>>{};
+      for (final key in parsed.descriptorKeys) {
+        keysBySigner.putIfAbsent(key.signerId, () => []).add(key);
+      }
+      annotations = [
+        for (final entry in keysBySigner.entries)
+          WalletSigner(
+            id: entry.key,
+            signer: signer,
+            signerDevice: null,
+            descriptorKeys: entry.value,
+          ),
+      ];
     }
-    final annotations = [
-      for (final entry in keysBySigner.entries)
-        WalletSigner(
-          id: entry.key,
-          signer: signer,
-          signerDevice: device,
-          descriptorKeys: entry.value,
-        ),
-    ];
 
     // Labels are wallet preferences and are restored by the metadata section;
     // the definition itself carries the recorded reference, birthday and
@@ -638,7 +639,7 @@ class WalletRepository
           descriptor: definition.descriptor,
           network: definition.network,
         ).descriptor,
-        signerDevice: definition.signerDevice,
+        signers: definition.signers,
         birthday: definition.birthday,
         provenance: definition.provenance,
       );
@@ -1156,7 +1157,7 @@ WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
       walletRef: metadata.id,
       network: metadata.network,
       descriptor: metadata.publicDescriptor,
-      signerDevice: metadata.signerDevice?.toEntity(),
+      signers: [for (final signer in metadata.signers) signer.toEntity()],
       birthday: metadata.birthday,
       provenance: metadata.provenance,
     );

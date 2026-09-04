@@ -237,6 +237,10 @@ final class _TestBullVaultRepository extends Fake
   ) async => Ok(savedRecord?.walletId == walletId ? savedRecord : null);
 
   @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() async =>
+      const Ok([]);
+
+  @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
     Network network,
   ) async => Ok(savedRecord);

@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:drift/drift.dart';
 
 class WalletMetadataDatasource {
@@ -157,6 +156,9 @@ class WalletMetadataDatasource {
     required Signer signer,
     required SignerDevice? signerDevice,
   }) async {
+    // Signer facts are part of a backed-up definition, so a change here has
+    // to reach the catalog stream like any other definition change.
+    final previous = await fetch(walletId);
     final updatedRows =
         await (_sqlite.update(_sqlite.walletSigners)..where(
               (row) => row.walletId.equals(walletId) & row.id.equals(signerId),
@@ -167,6 +169,12 @@ class WalletMetadataDatasource {
                 signerDevice: Value(signerDevice),
               ),
             );
+    if (updatedRows == 1 && previous != null) {
+      final current = await fetch(walletId);
+      if (current != null && _definitionsDiffer(previous, current)) {
+        _catalogChanges.add(null);
+      }
+    }
     return updatedRows == 1;
   }
 
@@ -279,9 +287,7 @@ bool _definitionsDiffer(
 }
 
 bool _isBackedUpDefinition(WalletMetadataModel metadata) =>
-    metadata.isBitcoin &&
-    (metadata.provenance == WalletProvenance.watchOnly ||
-        metadata.provenance == WalletProvenance.externalSigner);
+    metadata.isBitcoin && metadata.provenance.backedUpAsDefinition;
 
 /// Signer rows are plain lists, so `!=` would compare identity and report every
 /// re-store as a change. Compare the facts a definition backs up instead.

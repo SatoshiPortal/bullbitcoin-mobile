@@ -15,6 +15,8 @@ import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet
 import 'package:primitives/primitives.dart' show Fingerprint;
 
 import '../metadata/support/portable_settings_fixture.dart';
+import 'fake_bullvault_backup.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
 
 /// The seed the golden fixtures belong to.
 final canonicalParentFingerprint = Fingerprint('deadbeef');
@@ -36,6 +38,7 @@ WalletBackupSnapshotCodec canonicalCodec() {
   return WalletBackupSnapshotCodec(
     encodeManifest: manifest.encode,
     decodeManifest: parse.execute,
+    vaults: const WalletBackupVaultsCodec(inspect: fakeVaultInspector),
   );
 }
 
@@ -77,12 +80,27 @@ WalletBackupSnapshot canonicalFullSnapshot() => WalletBackupSnapshot(
       walletRef: 'external-cold-wallet',
       network: Network.bitcoinMainnet,
       descriptor: canonicalExternalDescriptor,
-      signerDevice: SignerDeviceEntity.coldcardQ,
+      signers: [singleRemoteSigner(SignerDeviceEntity.coldcardQ)],
       birthday: DateTime.fromMillisecondsSinceEpoch(
         1788000000 * 1000,
         isUtc: true,
       ),
       provenance: WalletProvenance.externalSigner,
+    ),
+  ],
+  vaults: [
+    fakeVaultEntry(
+      walletRef: 'vault-generation-1',
+      label: 'Everyday Vault',
+      lineageId: 'lineage-a',
+      vaultGeneration: 1,
+    ),
+    fakeVaultEntry(
+      walletRef: 'vault-generation-0',
+      label: 'Everyday Vault',
+      status: 'migrating',
+      lineageId: 'lineage-a',
+      vaultGeneration: 0,
     ),
   ],
   metadata: WalletMetadataSnapshot(

@@ -192,7 +192,13 @@ abstract final class BullVaultLocator {
     locator.registerFactory<CanDeleteBullVaultWalletUsecase>(
       () => CanDeleteBullVaultWalletUsecase(locator()),
     );
-    locator.registerFactory<BullVaultFacade>(() => BullVaultFacade(locator()));
+    locator.registerFactory<BullVaultFacade>(
+      () => BullVaultFacade(
+        locator(),
+        locator<BullVaultRepository>(),
+        locator<RestoreBullVaultUsecase>(),
+      ),
+    );
     locator.registerFactory<BullVaultOnboardingCubit>(
       () => BullVaultOnboardingCubit(
         locator(),

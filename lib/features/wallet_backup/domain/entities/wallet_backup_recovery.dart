@@ -41,7 +41,8 @@ final class WalletBackupRecoveryResult {
     WalletBackupEncryptionFailure() ||
     WalletBackupInvalidRemoteFailure() ||
     WalletBackupManifestFailure() ||
-    WalletBackupDefinitionsFailure() => WalletBackupRecoveryStatus.invalid,
+    WalletBackupDefinitionsFailure() ||
+    WalletBackupVaultsFailure() => WalletBackupRecoveryStatus.invalid,
     _ => WalletBackupRecoveryStatus.localFailure,
   };
 }

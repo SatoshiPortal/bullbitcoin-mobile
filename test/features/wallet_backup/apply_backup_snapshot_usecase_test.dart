@@ -17,6 +17,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 import 'metadata/support/portable_settings_fixture.dart';
+import 'support/fake_bullvault_backup.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_vaults_section.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 
 class _RestoreManifest extends Mock
     implements RestoreWalletBackupManifestUsecase {}
@@ -24,6 +27,8 @@ class _RestoreManifest extends Mock
 class _State extends Mock implements WalletBackupStateRepository {}
 
 class _Definitions extends Mock implements WalletDefinitionsBackup {}
+
+class _Vaults extends Mock implements BullVaultBackupSection {}
 
 /// The protected-data section is a pair of plain functions now, so this is the
 /// surface the test mocks and hands to the use case.
@@ -72,6 +77,7 @@ void main() {
     registerFallbackValue(manifest);
     registerFallbackValue(metadataSnapshot);
     registerFallbackValue(const <WalletDefinition>[]);
+    registerFallbackValue(const <WalletBackupVaultEntry>[]);
     registerFallbackValue(WalletBackupRecoveryStatus.noBackup);
     registerFallbackValue(WalletBackupRecoveryState.idle);
   });
@@ -83,6 +89,7 @@ void main() {
   late List<String> calls;
   late WalletBackupRecoveryState fence;
   late ApplyBackupSnapshotUsecase usecase;
+  late FakeBullVaultBackupSection vaults;
 
   setUp(() {
     restore = _RestoreManifest();
@@ -153,9 +160,11 @@ void main() {
       return const Ok(null);
     });
 
+    vaults = FakeBullVaultBackupSection();
     usecase = ApplyBackupSnapshotUsecase(
       state,
       definitions,
+      vaults,
       restoreManifest: restore,
       validateMetadata: metadata.validate,
       restoreMetadata: metadata.recover,
@@ -279,5 +288,97 @@ void main() {
 
     expect(fence, WalletBackupRecoveryState.idle);
     expect(calls.last, 'outcome');
+  });
+
+  group('vaults', () {
+    late _Vaults vaultsMock;
+    late WalletBackupSnapshot withVault;
+
+    setUp(() {
+      vaultsMock = _Vaults();
+      withVault = WalletBackupSnapshot(
+        parentFingerprint: import.parentFingerprint,
+        createdAt: import.createdAt,
+        recoveryManifest: import.recoveryManifest,
+        externalWalletDefinitions: import.externalWalletDefinitions,
+        vaults: [fakeVaultEntry(walletRef: 'vault-wallet', label: 'Vault')],
+        metadata: import.metadata,
+      );
+      when(
+        () => vaultsMock.recover(any(), deadline: any(named: 'deadline')),
+      ).thenAnswer((_) async {
+        calls.add('vaults');
+        return Ok(
+          WalletVaultsRecoveryResult(
+            restoredCount: 1,
+            skippedCount: 0,
+            failedCount: 0,
+            createdWalletRefs: ['vault-wallet'],
+          ),
+        );
+      });
+      usecase = ApplyBackupSnapshotUsecase(
+        state,
+        definitions,
+        vaultsMock,
+        restoreManifest: restore,
+        validateMetadata: metadata.validate,
+        restoreMetadata: metadata.recover,
+        nowUtc: () => DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
+      );
+    });
+
+    test('are replayed after definitions and before metadata', () async {
+      final result = await usecase.execute(snapshot: Ok(withVault));
+
+      expect(result.status, WalletBackupRecoveryStatus.restored);
+      expect(result.restoredCount, 3);
+      expect(
+        calls.where((call) => !['applying', 'idle', 'outcome'].contains(call)),
+        ['manifest', 'definitions', 'vaults', 'metadata'],
+      );
+      final created =
+          verify(
+                () => metadata.recover(
+                  snapshot: any(named: 'snapshot'),
+                  createdWalletRefs: captureAny(named: 'createdWalletRefs'),
+                  deadline: any(named: 'deadline'),
+                ),
+              ).captured.single
+              as Set<String>;
+      expect(created, containsAll(['external', 'vault-wallet']));
+    });
+
+    test('are not touched when the document has none', () async {
+      await usecase.execute(snapshot: Ok(import));
+
+      verifyNever(
+        () => vaultsMock.recover(any(), deadline: any(named: 'deadline')),
+      );
+    });
+
+    test(
+      'a vault that fails to restore leaves recovery needing attention',
+      () async {
+        when(
+          () => vaultsMock.recover(any(), deadline: any(named: 'deadline')),
+        ).thenAnswer(
+          (_) async => Ok(
+            WalletVaultsRecoveryResult(
+              restoredCount: 0,
+              skippedCount: 0,
+              failedCount: 1,
+              createdWalletRefs: const [],
+            ),
+          ),
+        );
+
+        final result = await usecase.execute(snapshot: Ok(withVault));
+
+        expect(result.status, WalletBackupRecoveryStatus.partiallyRestored);
+        expect(result.failedCount, 1);
+        expect(fence, WalletBackupRecoveryState.needsAttention);
+      },
+    );
   });
 }

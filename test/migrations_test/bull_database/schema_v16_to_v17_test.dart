@@ -163,267 +163,319 @@ void main() {
     }
   });
 
-  test(
-    'v16 to v17 preserves wallets and adds the six locked capabilities',
-    () async {
-      final schema = await verifier.schemaAt(16);
-      final oldDb = v16.DatabaseAtV16(schema.newConnection());
-      await oldDb
-          .into(oldDb.walletMetadatas)
-          .insert(
-            v16.WalletMetadatasCompanion.insert(
-              id: 'wallet-1',
+  test('v16 to v17 preserves wallets and adds the six locked capabilities', () async {
+    final schema = await verifier.schemaAt(16);
+    final oldDb = v16.DatabaseAtV16(schema.newConnection());
+    await oldDb
+        .into(oldDb.walletMetadatas)
+        .insert(
+          v16.WalletMetadatasCompanion.insert(
+            id: 'wpkh([aabbccdd/84h/0h/0h])',
 
-              network: 'bitcoinMainnet',
+            network: 'bitcoinMainnet',
 
-              isEncryptedVaultTested: 0,
+            isEncryptedVaultTested: 0,
 
-              isPhysicalBackupTested: 0,
+            isPhysicalBackupTested: 0,
 
-              publicDescriptor: 'external',
+            publicDescriptor: 'external',
 
-              isDefault: 1,
-            ),
-          );
+            isDefault: 1,
+          ),
+        );
 
+    await oldDb
+        .into(oldDb.walletSigners)
+        .insert(
+          v16.WalletSignersCompanion.insert(
+            walletId: 'wpkh([aabbccdd/84h/0h/0h])',
+
+            id: 'signer-0',
+
+            position: 0,
+
+            signer: 'local',
+          ),
+        );
+
+    await oldDb
+        .into(oldDb.walletDescriptorKeys)
+        .insert(
+          v16.WalletDescriptorKeysCompanion.insert(
+            walletId: 'wpkh([aabbccdd/84h/0h/0h])',
+
+            id: 'key-0',
+
+            position: 0,
+
+            signerId: 'signer-0',
+
+            masterFingerprint: 'aabbccdd',
+
+            xpubFingerprint: '11223344',
+
+            xpub: 'xpub',
+          ),
+        );
+    await oldDb
+        .into(oldDb.walletMetadatas)
+        .insert(
+          v16.WalletMetadatasCompanion.insert(
+            id: 'wpkh([99887766/84h/0h/0h])',
+
+            network: 'bitcoinMainnet',
+
+            isEncryptedVaultTested: 0,
+
+            isPhysicalBackupTested: 0,
+
+            publicDescriptor: 'external-2',
+
+            isDefault: 0,
+          ),
+        );
+
+    await oldDb
+        .into(oldDb.walletSigners)
+        .insert(
+          v16.WalletSignersCompanion.insert(
+            walletId: 'wpkh([99887766/84h/0h/0h])',
+
+            id: 'signer-0',
+
+            position: 0,
+
+            signer: 'remote',
+          ),
+        );
+
+    await oldDb
+        .into(oldDb.walletDescriptorKeys)
+        .insert(
+          v16.WalletDescriptorKeysCompanion.insert(
+            walletId: 'wpkh([99887766/84h/0h/0h])',
+
+            id: 'key-0',
+
+            position: 0,
+
+            signerId: 'signer-0',
+
+            masterFingerprint: '99887766',
+
+            xpubFingerprint: '55443322',
+
+            xpub: 'xpub-2',
+          ),
+        );
+    // A descriptor import (hashed id, two signers): never seed-recoverable,
+    // whatever its first signer says.
+    await oldDb
+        .into(oldDb.walletMetadatas)
+        .insert(
+          v16.WalletMetadatasCompanion.insert(
+            id: 'f94905db6cbb0dc8c4adc48308571ea01387313e49c3a30c80b28ccfd539431d',
+            network: 'bitcoinMainnet',
+            isEncryptedVaultTested: 0,
+            isPhysicalBackupTested: 0,
+            publicDescriptor: 'tr(vault)',
+            isDefault: 0,
+          ),
+        );
+    for (final (position, signer) in ['local', 'remote'].indexed) {
       await oldDb
           .into(oldDb.walletSigners)
           .insert(
             v16.WalletSignersCompanion.insert(
-              walletId: 'wallet-1',
-
-              id: 'signer-0',
-
-              position: 0,
-
-              signer: 'local',
+              walletId:
+                  'f94905db6cbb0dc8c4adc48308571ea01387313e49c3a30c80b28ccfd539431d',
+              id: 'signer-$position',
+              position: position,
+              signer: signer,
             ),
           );
-
       await oldDb
           .into(oldDb.walletDescriptorKeys)
           .insert(
             v16.WalletDescriptorKeysCompanion.insert(
-              walletId: 'wallet-1',
-
-              id: 'key-0',
-
-              position: 0,
-
-              signerId: 'signer-0',
-
-              masterFingerprint: 'aabbccdd',
-
-              xpubFingerprint: '11223344',
-
-              xpub: 'xpub',
+              walletId:
+                  'f94905db6cbb0dc8c4adc48308571ea01387313e49c3a30c80b28ccfd539431d',
+              id: 'key-$position',
+              position: position,
+              signerId: 'signer-$position',
+              masterFingerprint: '0000000$position',
+              xpubFingerprint: '1111111$position',
+              xpub: 'xpub-vault-$position',
             ),
           );
-      await oldDb
-          .into(oldDb.walletMetadatas)
-          .insert(
-            v16.WalletMetadatasCompanion.insert(
-              id: 'wallet-2',
+    }
+    await oldDb.close();
 
-              network: 'bitcoinMainnet',
+    final db = SqliteDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 17);
+    await db.close();
 
-              isEncryptedVaultTested: 0,
+    final migrated = v17.DatabaseAtV17(schema.newConnection());
+    addTearDown(migrated.close);
+    await migrated.customStatement('PRAGMA foreign_keys = ON');
+    final wallets = await migrated
+        .select(migrated.walletMetadatas)
+        .get()
+        .then((rows) => {for (final row in rows) row.id: row});
+    expect(
+      wallets.keys,
+      containsAll(['wpkh([aabbccdd/84h/0h/0h])', 'wpkh([99887766/84h/0h/0h])']),
+    );
+    final wallet = wallets['wpkh([aabbccdd/84h/0h/0h])']!;
+    expect(wallet.hideOnHome, isNull);
+    expect(wallet.autoSweepEnabled, isNull);
+    expect(wallet.provenance, 'defaultSeed');
+    expect(wallet.seedPassphraseUsed, isNull);
+    expect(
+      wallets['wpkh([99887766/84h/0h/0h])']!.provenance,
+      'externalSigner',
+      reason: 'a non-default remote signer is backfilled from its signer row',
+    );
+    expect(
+      wallets['f94905db6cbb0dc8c4adc48308571ea01387313e49c3a30c80b28ccfd539431d']!
+          .provenance,
+      'descriptor',
+      reason:
+          'a hashed id is a descriptor import; its local first signer must '
+          'not make it look seed-recoverable',
+    );
+    await migrated
+        .update(migrated.walletMetadatas)
+        .write(
+          const v17.WalletMetadatasCompanion(
+            hideOnHome: Value(1),
+            autoSweepEnabled: Value(0),
+          ),
+        );
+    final updatedWallet = await migrated
+        .select(migrated.walletMetadatas)
+        .get()
+        .then(
+          (rows) =>
+              rows.firstWhere((row) => row.id == 'wpkh([aabbccdd/84h/0h/0h])'),
+        );
+    expect(updatedWallet.hideOnHome, 1);
+    expect(updatedWallet.autoSweepEnabled, 0);
 
-              isPhysicalBackupTested: 0,
+    await migrated
+        .into(migrated.keychainManifestEntries)
+        .insert(
+          v17.KeychainManifestEntriesCompanion.insert(
+            entryId: 'entry-1',
+            parentFingerprint: 'aabbccdd',
+            derivationKind: 'bip85',
+            derivationPath: "39'/0'/12'/100'",
+            description: const Value('BTCPay wallet'),
+            createdAt: 1,
+            updatedAt: 1,
+          ),
+        );
+    await migrated
+        .into(migrated.keychainManifestWalletBindings)
+        .insert(
+          v17.KeychainManifestWalletBindingsCompanion.insert(
+            walletId: 'wpkh([aabbccdd/84h/0h/0h])',
+            entryId: 'entry-1',
+            childSeedFingerprint: 'eeff0011',
+            network: 'bitcoinMainnet',
+            scriptType: 'bip84',
+            provenance: 'bip85',
+            seedPassphraseUsed: const Value(0),
+            createdAt: 1,
+            updatedAt: 1,
+          ),
+        );
+    await migrated
+        .into(migrated.keychainManifestNostrKeys)
+        .insert(
+          v17.KeychainManifestNostrKeysCompanion.insert(
+            entryId: 'entry-1',
+            publicKeyHex: '02',
+            keyKind: 'xOnly',
+            purpose: 'backup',
+            createdAt: 1,
+            updatedAt: 1,
+          ),
+        );
+    await migrated
+        .into(migrated.walletBackupStates)
+        .insert(v17.WalletBackupStatesCompanion.insert());
 
-              publicDescriptor: 'external-2',
+    await migrated.customStatement(
+      "INSERT INTO keychain_manifest_entries "
+      "SELECT 'entry-2', parent_fingerprint, derivation_kind, "
+      'derivation_path, description, created_at, updated_at '
+      "FROM keychain_manifest_entries WHERE entry_id = 'entry-1'",
+    );
+    expect(
+      await migrated.select(migrated.keychainManifestEntries).get(),
+      hasLength(2),
+      reason: 'different seed roots may share a BIP32 account path',
+    );
+    expect(
+      () => migrated.customStatement(
+        'INSERT INTO keychain_manifest_wallet_bindings '
+        'SELECT * FROM keychain_manifest_wallet_bindings',
+      ),
+      throwsA(isA<SqliteException>()),
+    );
+    expect(
+      () => migrated.customStatement(
+        'INSERT INTO keychain_manifest_nostr_keys '
+        'SELECT * FROM keychain_manifest_nostr_keys',
+      ),
+      throwsA(isA<SqliteException>()),
+    );
+    expect(
+      () => migrated.customStatement(
+        "INSERT INTO keychain_manifest_wallet_bindings "
+        "SELECT 'wpkh([99887766/84h/0h/0h])', 'missing-entry', child_seed_fingerprint, "
+        'network, script_type, provenance, seed_passphrase_used, '
+        'descriptor, label, created_at, updated_at '
+        'FROM keychain_manifest_wallet_bindings',
+      ),
+      throwsA(isA<SqliteException>()),
+    );
+    await migrated.customStatement(
+      "UPDATE keychain_manifest_entries SET updated_at = 2 "
+      "WHERE entry_id = 'entry-1'",
+    );
+    await migrated.customStatement(
+      "UPDATE keychain_manifest_wallet_bindings SET network = "
+      "'liquidMainnet' WHERE wallet_id = 'wpkh([aabbccdd/84h/0h/0h])'",
+    );
+    await migrated.customStatement(
+      "UPDATE keychain_manifest_entries SET description = 'backup key' "
+      "WHERE entry_id = 'entry-1'",
+    );
+    await migrated.customStatement(
+      'UPDATE wallet_backup_states SET enabled = 1, '
+      "recovery_state = 'needsAttention', local_revision = 3 WHERE id = 1",
+    );
 
-              isDefault: 0,
-            ),
-          );
-
-      await oldDb
-          .into(oldDb.walletSigners)
-          .insert(
-            v16.WalletSignersCompanion.insert(
-              walletId: 'wallet-2',
-
-              id: 'signer-0',
-
-              position: 0,
-
-              signer: 'remote',
-            ),
-          );
-
-      await oldDb
-          .into(oldDb.walletDescriptorKeys)
-          .insert(
-            v16.WalletDescriptorKeysCompanion.insert(
-              walletId: 'wallet-2',
-
-              id: 'key-0',
-
-              position: 0,
-
-              signerId: 'signer-0',
-
-              masterFingerprint: '99887766',
-
-              xpubFingerprint: '55443322',
-
-              xpub: 'xpub-2',
-            ),
-          );
-      await oldDb.close();
-
-      final db = SqliteDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 17);
-      await db.close();
-
-      final migrated = v17.DatabaseAtV17(schema.newConnection());
-      addTearDown(migrated.close);
-      await migrated.customStatement('PRAGMA foreign_keys = ON');
-      final wallets = await migrated
-          .select(migrated.walletMetadatas)
-          .get()
-          .then((rows) => {for (final row in rows) row.id: row});
-      expect(wallets.keys, containsAll(['wallet-1', 'wallet-2']));
-      final wallet = wallets['wallet-1']!;
-      expect(wallet.hideOnHome, isNull);
-      expect(wallet.autoSweepEnabled, isNull);
-      expect(wallet.provenance, 'defaultSeed');
-      expect(wallet.seedPassphraseUsed, isNull);
-      expect(
-        wallets['wallet-2']!.provenance,
-        'externalSigner',
-        reason: 'a non-default remote signer is backfilled from its signer row',
-      );
-      await migrated
-          .update(migrated.walletMetadatas)
-          .write(
-            const v17.WalletMetadatasCompanion(
-              hideOnHome: Value(1),
-              autoSweepEnabled: Value(0),
-            ),
-          );
-      final updatedWallet = await migrated
-          .select(migrated.walletMetadatas)
-          .get()
-          .then((rows) => rows.firstWhere((row) => row.id == 'wallet-1'));
-      expect(updatedWallet.hideOnHome, 1);
-      expect(updatedWallet.autoSweepEnabled, 0);
-
-      await migrated
-          .into(migrated.keychainManifestEntries)
-          .insert(
-            v17.KeychainManifestEntriesCompanion.insert(
-              entryId: 'entry-1',
-              parentFingerprint: 'aabbccdd',
-              derivationKind: 'bip85',
-              derivationPath: "39'/0'/12'/100'",
-              description: const Value('BTCPay wallet'),
-              createdAt: 1,
-              updatedAt: 1,
-            ),
-          );
-      await migrated
-          .into(migrated.keychainManifestWalletBindings)
-          .insert(
-            v17.KeychainManifestWalletBindingsCompanion.insert(
-              walletId: 'wallet-1',
-              entryId: 'entry-1',
-              childSeedFingerprint: 'eeff0011',
-              network: 'bitcoinMainnet',
-              scriptType: 'bip84',
-              provenance: 'bip85',
-              seedPassphraseUsed: const Value(0),
-              createdAt: 1,
-              updatedAt: 1,
-            ),
-          );
-      await migrated
-          .into(migrated.keychainManifestNostrKeys)
-          .insert(
-            v17.KeychainManifestNostrKeysCompanion.insert(
-              entryId: 'entry-1',
-              publicKeyHex: '02',
-              keyKind: 'xOnly',
-              purpose: 'backup',
-              createdAt: 1,
-              updatedAt: 1,
-            ),
-          );
-      await migrated
-          .into(migrated.walletBackupStates)
-          .insert(v17.WalletBackupStatesCompanion.insert());
-
-      await migrated.customStatement(
-        "INSERT INTO keychain_manifest_entries "
-        "SELECT 'entry-2', parent_fingerprint, derivation_kind, "
-        'derivation_path, description, created_at, updated_at '
-        "FROM keychain_manifest_entries WHERE entry_id = 'entry-1'",
-      );
-      expect(
-        await migrated.select(migrated.keychainManifestEntries).get(),
-        hasLength(2),
-        reason: 'different seed roots may share a BIP32 account path',
-      );
-      expect(
-        () => migrated.customStatement(
-          'INSERT INTO keychain_manifest_wallet_bindings '
-          'SELECT * FROM keychain_manifest_wallet_bindings',
-        ),
-        throwsA(isA<SqliteException>()),
-      );
-      expect(
-        () => migrated.customStatement(
-          'INSERT INTO keychain_manifest_nostr_keys '
-          'SELECT * FROM keychain_manifest_nostr_keys',
-        ),
-        throwsA(isA<SqliteException>()),
-      );
-      expect(
-        () => migrated.customStatement(
-          "INSERT INTO keychain_manifest_wallet_bindings "
-          "SELECT 'wallet-2', 'missing-entry', child_seed_fingerprint, "
-          'network, script_type, provenance, seed_passphrase_used, '
-          'descriptor, label, created_at, updated_at '
-          'FROM keychain_manifest_wallet_bindings',
-        ),
-        throwsA(isA<SqliteException>()),
-      );
-      await migrated.customStatement(
-        "UPDATE keychain_manifest_entries SET updated_at = 2 "
-        "WHERE entry_id = 'entry-1'",
-      );
-      await migrated.customStatement(
-        "UPDATE keychain_manifest_wallet_bindings SET network = "
-        "'liquidMainnet' WHERE wallet_id = 'wallet-1'",
-      );
-      await migrated.customStatement(
-        "UPDATE keychain_manifest_entries SET description = 'backup key' "
-        "WHERE entry_id = 'entry-1'",
-      );
-      await migrated.customStatement(
-        'UPDATE wallet_backup_states SET enabled = 1, '
-        "recovery_state = 'needsAttention', local_revision = 3 WHERE id = 1",
-      );
-
-      final entry = await migrated
-          .select(migrated.keychainManifestEntries)
-          .get()
-          .then((entries) => entries.first);
-      final binding = await migrated
-          .select(migrated.keychainManifestWalletBindings)
-          .getSingle();
-      final backup = await migrated
-          .select(migrated.walletBackupStates)
-          .getSingle();
-      expect(entry.updatedAt, 2);
-      expect(binding.network, 'liquidMainnet');
-      expect(entry.description, 'backup key');
-      expect(backup.enabled, 1);
-      expect(backup.recoveryState, 'needsAttention');
-      expect(backup.localRevision, 3);
-      expect(backup.uploadedRevision, 0);
-    },
-  );
+    final entry = await migrated
+        .select(migrated.keychainManifestEntries)
+        .get()
+        .then((entries) => entries.first);
+    final binding = await migrated
+        .select(migrated.keychainManifestWalletBindings)
+        .getSingle();
+    final backup = await migrated
+        .select(migrated.walletBackupStates)
+        .getSingle();
+    expect(entry.updatedAt, 2);
+    expect(binding.network, 'liquidMainnet');
+    expect(entry.description, 'backup key');
+    expect(backup.enabled, 1);
+    expect(backup.recoveryState, 'needsAttention');
+    expect(backup.localRevision, 3);
+    expect(backup.uploadedRevision, 0);
+  });
 
   test(
     'v16 to v17 gives wallet bindings writable descriptor and label columns',
@@ -434,7 +486,7 @@ void main() {
           .into(oldDb.walletMetadatas)
           .insert(
             v16.WalletMetadatasCompanion.insert(
-              id: 'wallet-1',
+              id: 'wpkh([aabbccdd/84h/0h/0h])',
 
               network: 'bitcoinMainnet',
 
@@ -452,7 +504,7 @@ void main() {
           .into(oldDb.walletSigners)
           .insert(
             v16.WalletSignersCompanion.insert(
-              walletId: 'wallet-1',
+              walletId: 'wpkh([aabbccdd/84h/0h/0h])',
 
               id: 'signer-0',
 
@@ -466,7 +518,7 @@ void main() {
           .into(oldDb.walletDescriptorKeys)
           .insert(
             v16.WalletDescriptorKeysCompanion.insert(
-              walletId: 'wallet-1',
+              walletId: 'wpkh([aabbccdd/84h/0h/0h])',
 
               id: 'key-0',
 
@@ -505,7 +557,7 @@ void main() {
           .into(migrated.keychainManifestWalletBindings)
           .insert(
             v17.KeychainManifestWalletBindingsCompanion.insert(
-              walletId: 'wallet-1',
+              walletId: 'wpkh([aabbccdd/84h/0h/0h])',
               entryId: 'entry-1',
               childSeedFingerprint: 'eeff0011',
               network: 'bitcoinMainnet',

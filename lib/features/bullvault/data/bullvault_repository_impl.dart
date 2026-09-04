@@ -120,6 +120,13 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   });
 
   @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() =>
+      _transaction(() async {
+        final records = await _datasource.loadAll();
+        return Ok(records.map(_recordMapper.toEntity).toList());
+      });
+
+  @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
     Network network,
   ) async {

@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 
 import '../support/canonical_backup_snapshot.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 
 /// The canonical version 1 document, frozen by the golden fixtures.
 void main() {
@@ -63,6 +64,16 @@ void main() {
         decoded.externalWalletDefinitions.single.walletRef,
         'external-cold-wallet',
       );
+      expect(
+        decoded.externalWalletDefinitions.single.signers.single.signerDevice,
+        SignerDeviceEntity.coldcardQ,
+      );
+      // Predecessor first: generation 0 is replayed before the vault linking
+      // to it.
+      expect(decoded.vaults.map((vault) => vault.walletRef), [
+        'vault-generation-0',
+        'vault-generation-1',
+      ]);
       expect(decoded.metadata!.labels.single.label, 'Coffee');
     });
 
@@ -70,6 +81,7 @@ void main() {
       final decoded = _decode(codec, _fixture('minimal'));
 
       expect(decoded.externalWalletDefinitions, isEmpty);
+      expect(decoded.vaults, isEmpty);
       expect(decoded.metadata, isNull);
     });
   });
@@ -210,6 +222,7 @@ void main() {
         ),
         externalWalletDefinitions:
             canonicalFullSnapshot().externalWalletDefinitions,
+        vaults: canonicalFullSnapshot().vaults,
         metadata: canonicalFullSnapshot().metadata,
       );
 
@@ -222,6 +235,7 @@ void main() {
         {
           WalletBackupDifference.walletManifest,
           WalletBackupDifference.externalWallets,
+          WalletBackupDifference.vaults,
           WalletBackupDifference.protectedData,
         },
       );

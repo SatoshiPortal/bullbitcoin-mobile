@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show Fingerprint, Ok;
 
 import '../metadata/support/portable_settings_fixture.dart';
+import '../support/fake_bullvault_backup.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 
 void main() {
   test('returns sanitized metadata counts', () async {
@@ -50,6 +52,9 @@ void main() {
           settings: portableSettingsFixture(),
         ),
       ),
+
+      vaults: FakeBullVaultBackupSection(),
+      inspectVault: fakeVaultInspector,
     );
 
     final result = await usecase.execute();
@@ -112,6 +117,9 @@ void main() {
           settings: portableSettingsFixture(),
         ),
       ),
+
+      vaults: FakeBullVaultBackupSection(),
+      inspectVault: fakeVaultInspector,
     );
 
     final result = await usecase.execute();
@@ -120,5 +128,62 @@ void main() {
     expect(wallet.derivationPath, "m/84'/0'/0'");
     expect(wallet.keysOnDevice, isTrue);
     expect(wallet.descriptor, isNull);
+  });
+
+  test('lists vaults and keeps their wallets out of the definitions', () async {
+    final vaults = FakeBullVaultBackupSection()
+      ..entries = [
+        fakeVaultEntry(
+          walletRef: 'vault-wallet',
+          label: 'Everyday Vault',
+          lineageId: 'lineage-a',
+          vaultGeneration: 1,
+        ),
+      ];
+    final usecase = GetWalletBackupContentsUsecase(
+      () async => Ok(
+        KeychainManifest(
+          parentFingerprint: Fingerprint('aabbccdd'),
+          generatedAt: 1,
+          entries: const [],
+        ),
+      ),
+      () async => [
+        WalletDefinition(
+          walletRef: 'vault-wallet',
+          network: Network.bitcoinMainnet,
+          descriptor: 'tr(vault)',
+          provenance: WalletProvenance.descriptor,
+        ),
+        WalletDefinition(
+          walletRef: 'cold-wallet',
+          network: Network.bitcoinMainnet,
+          descriptor: 'wpkh(cold)',
+          provenance: WalletProvenance.watchOnly,
+        ),
+      ],
+      () async => const {},
+      () async => Ok(
+        WalletMetadataSnapshot(
+          labels: const [],
+          frozenOutpoints: const [],
+          walletPreferences: const [],
+          settings: portableSettingsFixture(),
+        ),
+      ),
+      vaults: vaults,
+      inspectVault: fakeVaultInspector,
+    );
+
+    final contents = (await usecase.execute() as Ok).value;
+
+    expect(contents.wallets.map((wallet) => wallet.descriptor), ['wpkh(cold)']);
+    final vault = contents.vaults.single;
+    expect(vault.walletRef, 'vault-wallet');
+    expect(vault.label, 'Everyday Vault');
+    expect(vault.vaultGeneration, 1);
+    expect(vault.descriptor, 'tr(fake)');
+    expect(vault.birthHeight, 800000);
+    expect(vault.recoveryPackage, vaults.entries.single.recoveryPackage);
   });
 }

@@ -20,11 +20,16 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_result
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_catalog_changes_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_preference_changes_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_utxo_freeze_changes_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/wallet_backup/data/bullvault_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/metadata_backup_http_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_snapshot_model.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/data/recoverbull_wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_definitions_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/backup_wallet_now_usecase.dart';
@@ -113,6 +118,40 @@ final class _WalletBackupGraph {
       locator<RestoreWalletDefinitionUsecase>().execute,
       locator<WatchWalletCatalogChangesUsecase>().execute,
     );
+    // The vault feature is a lazy peer: resolved per call so the backup graph
+    // never depends on registration order, and only through its public
+    // surface (forbidden edge: wallet_backup -> bullvault internals).
+    BullVaultFacade bullVault() => locator<BullVaultFacade>();
+    WalletBackupVaultPackageFacts? inspectVault(String source) {
+      final package = bullVault().decodeRecoveryPackage(source);
+      if (package == null) return null;
+      final policy = package.policy;
+      return WalletBackupVaultPackageFacts(
+        network: policy.network,
+        lineageId: policy.lineageId,
+        vaultGeneration: policy.vaultGeneration,
+        descriptor: policy.descriptor,
+        birthHeight: policy.birthHeight,
+      );
+    }
+
+    final walletsForVaults = locator<WalletRepository>();
+    final vaults = BullVaultBackupImpl(
+      listRecords: () => bullVault().listRecords(),
+      encodePackage: (package) => bullVault().encodeRecoveryPackage(package),
+      walletLabel: (walletId) async =>
+          (await walletsForVaults.getWallet(walletId))?.label,
+      currentNetwork: () async => Network.fromEnvironment(
+        isTestnet: (await locator<GetSettingsUsecase>().execute())
+            .environment
+            .isTestnet,
+        isLiquid: false,
+      ),
+      walletExists: walletsForVaults.containsWallet,
+      restore: ({required source, required label}) =>
+          bullVault().restoreFromRecoveryPackage(source: source, label: label),
+    );
+    final vaultsCodec = WalletBackupVaultsCodec(inspect: inspectVault);
     final labels = locator<LabelsFacade>();
     final database = locator<SqliteDatabase>();
     final payjoin = locator<PayjoinPolicyAccess>();
@@ -153,6 +192,7 @@ final class _WalletBackupGraph {
     final codec = WalletBackupSnapshotCodec(
       encodeManifest: keychainManifest.encodeManifestFilePayload,
       decodeManifest: keychainManifest.parseManifestFilePayload,
+      vaults: vaultsCodec,
     );
     final encryption = RecoverBullWalletBackupEncryptionRepository(codec);
     final state = DriftWalletBackupStateRepository(database);
@@ -194,6 +234,7 @@ final class _WalletBackupGraph {
     final buildSnapshot = BuildWalletBackupSnapshotUsecase(
       keychainManifest,
       definitions,
+      vaults,
       metadata.localSnapshot,
     );
     final registerRecoveryMaterial =
@@ -226,6 +267,7 @@ final class _WalletBackupGraph {
     final applySnapshot = ApplyBackupSnapshotUsecase(
       state,
       definitions,
+      vaults,
       restoreManifest: RestoreWalletBackupManifestUsecase(
         wallets.matchesSeedDerivedRecoveryIdentity,
         keychainManifest,
@@ -259,6 +301,8 @@ final class _WalletBackupGraph {
         locator<GetWalletDefinitionsUsecase>().execute,
         wallets.getLocallyKeyedWalletIds,
         metadata.localSnapshot,
+        vaults: vaults,
+        inspectVault: inspectVault,
       ),
       WatchWalletBackupStateUsecase(state),
       SetWalletBackupEnabledUsecase(

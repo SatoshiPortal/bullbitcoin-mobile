@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 
 class _Bdk extends Mock implements BdkWalletDatasource {}
 
@@ -246,6 +247,36 @@ void main() {
     );
     expect(changes, 1);
     await metadata.delete(source.id);
+    expect(changes, 1);
+  });
+
+  test('a signer device change dirties a backed-up definition once', () async {
+    final source = await importSource(
+      provenance: WalletProvenance.externalSigner,
+    );
+    var changes = 0;
+    final subscription = metadata.catalogChanges.listen((_) => changes++);
+    addTearDown(subscription.cancel);
+
+    final signerId = source.signers.single.id;
+    expect(
+      await metadata.updateSignerDevice(
+        walletId: source.id,
+        signerId: signerId,
+        signer: Signer.remote,
+        signerDevice: SignerDevice.coldcardQ,
+      ),
+      isTrue,
+    );
+    expect(changes, 1);
+
+    // Writing the same device again is not a change.
+    await metadata.updateSignerDevice(
+      walletId: source.id,
+      signerId: signerId,
+      signer: Signer.remote,
+      signerDevice: SignerDevice.coldcardQ,
+    );
     expect(changes, 1);
   });
 

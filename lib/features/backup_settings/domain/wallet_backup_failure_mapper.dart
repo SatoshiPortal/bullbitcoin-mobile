@@ -23,7 +23,8 @@ BackupSettingsFailure mapWalletBackupFailure(
   WalletBackupInvalidEnvelopeFailure() ||
   WalletBackupEncryptionFailure() ||
   WalletBackupManifestFailure() ||
-  WalletBackupDefinitionsFailure() => const BackupSettingsInvalidFileFailure(),
+  WalletBackupDefinitionsFailure() ||
+  WalletBackupVaultsFailure() => const BackupSettingsInvalidFileFailure(),
   WalletBackupSigningFailure() ||
   WalletBackupInvalidRemoteFailure() ||
   WalletBackupRemoteRejectedFailure() =>

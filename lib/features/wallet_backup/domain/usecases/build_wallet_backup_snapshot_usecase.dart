@@ -2,7 +2,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_vaults_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_backup_failure.dart';
 import 'package:meta/meta.dart';
@@ -14,8 +16,12 @@ typedef ReadWalletMetadataSnapshot =
 
 DateTime _systemNowUtc() => DateTime.now().toUtc();
 
-/// One read-only capture of the manifest, the external wallet definitions and
-/// the protected-data section (spec 16).
+/// One read-only capture of the manifest, the external wallet definitions, the
+/// BullVault recovery packages and the protected-data section (spec 16).
+///
+/// A vault's wallet is carried by the vaults section only: its recovery
+/// package restores the wallet together with the vault record, so it is left
+/// out of the definitions it would otherwise qualify for.
 ///
 /// Building a snapshot writes nothing: the invariant recovery material a
 /// published document must carry is registered when the feature starts or is
@@ -25,12 +31,14 @@ DateTime _systemNowUtc() => DateTime.now().toUtc();
 final class BuildWalletBackupSnapshotUsecase {
   final KeychainManifestFacade _keychainManifest;
   final WalletDefinitionsBackup _definitions;
+  final BullVaultBackupSection _vaults;
   final ReadWalletMetadataSnapshot _readMetadata;
   final DateTime Function() _nowUtc;
 
   const BuildWalletBackupSnapshotUsecase(
     this._keychainManifest,
     this._definitions,
+    this._vaults,
     this._readMetadata, {
     this._nowUtc = _systemNowUtc,
   });
@@ -57,10 +65,23 @@ final class BuildWalletBackupSnapshotUsecase {
         return Err(WalletBackupManifestFailure(failure.runtimeType.toString()));
     }
 
+    final List<WalletBackupVaultEntry> vaults;
+    switch (await _vaults.read()) {
+      case Ok(:final value):
+        vaults = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    final vaultWalletRefs = {for (final vault in vaults) vault.walletRef};
+
     final List<WalletDefinition> definitions;
     switch (await _definitions.read()) {
       case Ok(:final value):
-        definitions = value;
+        definitions = value
+            .where(
+              (definition) => !vaultWalletRefs.contains(definition.walletRef),
+            )
+            .toList(growable: false);
       case Err(:final failure):
         return Err(failure);
     }
@@ -79,6 +100,7 @@ final class BuildWalletBackupSnapshotUsecase {
         createdAt: now.millisecondsSinceEpoch ~/ 1000,
         recoveryManifest: manifest,
         externalWalletDefinitions: definitions,
+        vaults: vaults,
         metadata: metadata,
       ),
     );

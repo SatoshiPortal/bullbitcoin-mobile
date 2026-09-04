@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_definitions_model.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/data/wallet_metadata_snapshot_codec.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
@@ -37,7 +39,7 @@ typedef DecodeKeychainManifestSection =
       bool allowEmpty,
     });
 
-/// The one canonical Bull backup document: outer envelope version 1 over three
+/// The one canonical Bull backup document: outer envelope version 1 over four
 /// independently versioned sections.
 ///
 /// Each section's wire form is owned by the domain that produces it; this codec
@@ -51,7 +53,12 @@ final class WalletBackupSnapshotCodec {
     'createdAt',
     'manifest',
   };
-  static const _allowedKeys = {..._requiredKeys, 'definitions', 'metadata'};
+  static const _allowedKeys = {
+    ..._requiredKeys,
+    'definitions',
+    'vaults',
+    'metadata',
+  };
 
   /// RecoverBull adds a 16-byte nonce, up to 16 bytes of AES-CBC padding, and
   /// a 32-byte HMAC. Leaving 64 bytes keeps ciphertext within 1 MiB.
@@ -60,11 +67,13 @@ final class WalletBackupSnapshotCodec {
   final EncodeKeychainManifestSection _encodeManifest;
   final DecodeKeychainManifestSection _decodeManifest;
   final WalletDefinitionsCodec _definitions;
+  final WalletBackupVaultsCodec _vaults;
   final WalletMetadataSnapshotCodec _metadata;
 
   const WalletBackupSnapshotCodec({
     required this._encodeManifest,
     required this._decodeManifest,
+    required this._vaults,
     this._definitions = const WalletDefinitionsCodec(),
     this._metadata = const WalletMetadataSnapshotCodec(),
   });
@@ -80,6 +89,9 @@ final class WalletBackupSnapshotCodec {
       'definitions': ?snapshot.externalWalletDefinitions.isEmpty
           ? null
           : _section(_definitions.encode(snapshot.externalWalletDefinitions)),
+      'vaults': ?snapshot.vaults.isEmpty
+          ? null
+          : _section(_vaults.encode(snapshot.vaults)),
       'metadata': ?metadata == null
           ? null
           : _section(_metadata.encode(metadata)),
@@ -122,6 +134,7 @@ final class WalletBackupSnapshotCodec {
         externalWalletDefinitions: _decodeDefinitionsSection(
           root['definitions'],
         ),
+        vaults: _decodeVaultsSection(root['vaults']),
         metadata: _decodeMetadataSection(root['metadata']),
       );
     } on WalletBackupSnapshotCodecException {
@@ -147,6 +160,8 @@ final class WalletBackupSnapshotCodec {
       WalletBackupDifference.walletManifest,
     if (_encodeDefinitions(left) != _encodeDefinitions(right))
       WalletBackupDifference.externalWallets,
+    if (_encodeVaults(left) != _encodeVaults(right))
+      WalletBackupDifference.vaults,
     if (_encodeMetadata(left) != _encodeMetadata(right))
       WalletBackupDifference.protectedData,
   };
@@ -155,6 +170,9 @@ final class WalletBackupSnapshotCodec {
       snapshot.externalWalletDefinitions.isEmpty
       ? null
       : _definitions.encode(snapshot.externalWalletDefinitions);
+
+  String? _encodeVaults(WalletBackupSnapshot snapshot) =>
+      snapshot.vaults.isEmpty ? null : _vaults.encode(snapshot.vaults);
 
   String? _encodeMetadata(WalletBackupSnapshot snapshot) {
     final metadata = snapshot.metadata;
@@ -201,6 +219,18 @@ final class WalletBackupSnapshotCodec {
     final definitions = _definitions.decode(jsonEncode(section));
     if (definitions.isEmpty) throw _malformed('empty definitions section');
     return definitions;
+  }
+
+  List<WalletBackupVaultEntry> _decodeVaultsSection(Object? value) {
+    if (value == null) return const [];
+    final section = _object(value);
+    _expectVersion(
+      _int(section, 'version'),
+      WalletBackupVaultsCodec.currentVersion,
+    );
+    final vaults = _vaults.decode(jsonEncode(section));
+    if (vaults.isEmpty) throw _malformed('empty vaults section');
+    return vaults;
   }
 
   WalletMetadataSnapshot? _decodeMetadataSection(Object? value) {

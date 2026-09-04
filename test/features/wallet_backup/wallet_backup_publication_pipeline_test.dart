@@ -50,6 +50,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
 import 'metadata/support/portable_settings_fixture.dart';
+import 'support/fake_bullvault_backup.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class _Settings extends Mock implements GetSettingsUsecase {}
 
@@ -73,6 +76,26 @@ final class _DefinitionsBackup implements WalletDefinitionsBackup {
     required List<WalletDefinition> definitions,
     DateTime? deadline,
   }) => throw UnimplementedError();
+}
+
+/// Definitions the snapshot builder sees; one of them belongs to a vault.
+final class _OwnedDefinitionsBackup extends _DefinitionsBackup {
+  @override
+  Future<Result<List<WalletDefinition>, WalletBackupFailure>> read() async =>
+      Ok([
+        WalletDefinition(
+          walletRef: 'vault-wallet',
+          network: Network.bitcoinMainnet,
+          descriptor: 'tr(vault)',
+          provenance: WalletProvenance.descriptor,
+        ),
+        WalletDefinition(
+          walletRef: 'cold-wallet',
+          network: Network.bitcoinMainnet,
+          descriptor: 'wpkh(cold)',
+          provenance: WalletProvenance.watchOnly,
+        ),
+      ]);
 }
 
 /// Only the two operations the publication path uses are exercised here.
@@ -277,6 +300,7 @@ void main() {
     final result = await BuildWalletBackupSnapshotUsecase(
       manifest,
       definitions,
+      FakeBullVaultBackupSection(),
       _readMetadata,
       nowUtc: () => DateTime.fromMillisecondsSinceEpoch(42000, isUtc: true),
     ).execute(parentFingerprint: _fingerprint, allowEmpty: true);
@@ -306,6 +330,28 @@ void main() {
     expect(materialization.purpose, 'Wallet backup');
   });
 
+  test("a vault's wallet is carried by the vaults section only", () async {
+    final vaults = FakeBullVaultBackupSection()
+      ..entries = [fakeVaultEntry(walletRef: 'vault-wallet')];
+
+    final result = await BuildWalletBackupSnapshotUsecase(
+      manifest,
+      _OwnedDefinitionsBackup(),
+      vaults,
+      _readMetadata,
+      nowUtc: () => DateTime.fromMillisecondsSinceEpoch(42000, isUtc: true),
+    ).execute(parentFingerprint: _fingerprint, allowEmpty: true);
+
+    final snapshot =
+        (result as Ok<WalletBackupSnapshot, WalletBackupFailure>).value;
+    expect(
+      snapshot.externalWalletDefinitions.map(
+        (definition) => definition.walletRef,
+      ),
+      ['cold-wallet'],
+    );
+    expect(snapshot.vaults.map((vault) => vault.walletRef), ['vault-wallet']);
+  });
   test('stores an authenticated backup when the remote is absent', () async {
     final harness = _publication(settings, defaultSeed, manifest);
 
@@ -392,6 +438,7 @@ _PublicationHarness _publication(
       buildSnapshot: BuildWalletBackupSnapshotUsecase(
         manifest,
         _DefinitionsBackup(),
+        FakeBullVaultBackupSection(),
         _readMetadata,
         nowUtc: () => DateTime.fromMillisecondsSinceEpoch(42000, isUtc: true),
       ),

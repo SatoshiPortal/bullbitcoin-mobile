@@ -28,6 +28,10 @@ abstract interface class BullVaultRepository {
     String walletId,
   );
 
+  /// Every vault record on this device, whatever its lifecycle status.
+  @useResult
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll();
+
   @useResult
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getLineage(
     String lineageId,

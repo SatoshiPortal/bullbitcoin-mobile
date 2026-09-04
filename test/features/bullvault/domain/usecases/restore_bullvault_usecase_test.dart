@@ -115,6 +115,10 @@ final class _TestRepository extends Fake implements BullVaultRepository {
   }
 
   @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() async =>
+      Ok(records.values.toList());
+
+  @override
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getLineage(
     String lineageId,
   ) async => Ok(

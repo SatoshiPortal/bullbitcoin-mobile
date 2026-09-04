@@ -227,8 +227,7 @@ final class KeychainManifestWallet extends KeychainManifestMaterialization {
       (label == null ||
           (label.length <= maxLabelLength &&
               !KeychainManifestNostrKey.hasControlCharacter(label))) &&
-      provenance != WalletProvenance.watchOnly &&
-      provenance != WalletProvenance.externalSigner &&
+      !provenance.backedUpAsDefinition &&
       (provenance != WalletProvenance.defaultSeedPassphrase ||
           (descriptor != null &&
               descriptor.trim().isNotEmpty &&

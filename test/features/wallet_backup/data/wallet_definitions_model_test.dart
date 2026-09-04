@@ -7,13 +7,18 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_definitions_model.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
+import '../support/fake_bullvault_backup.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import '../support/canonical_backup_snapshot.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const codec = WalletDefinitionsCodec();
   const descriptor =
-      'wpkh([86241f88/84h/0h/0h]xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7/<0;1>/*)#n8txaeah';
+      "wpkh([86241f88/84'/0'/0']xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7/<0;1>/*)#y0kg3ch2";
   const otherDescriptor =
       'wpkh([76241f88/84h/0h/0h]xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7/<0;1>/*)';
 
@@ -163,6 +168,60 @@ void main() {
       throwsA(isA<FormatException>()),
     );
   });
+
+  test('round-trips every signer and key of a multi-signer definition', () {
+    final definition = WalletDefinition(
+      walletRef: 'shared',
+      network: Network.bitcoinMainnet,
+      descriptor: canonicalExternalDescriptor,
+      signers: [
+        WalletSigner(
+          id: 'signer-0',
+          signer: SignerEntity.local,
+          signerDevice: null,
+          descriptorKeys: [
+            WalletDescriptorKey(
+              id: 'key-0',
+              signerId: 'signer-0',
+              masterFingerprint: '73c5da0a',
+              xpubFingerprint: 'aaaaaaaa',
+              xpub: 'xpub-local',
+              derivationPath: "m/48'/0'/0'/2'",
+              descriptorPath: '/<0;1>/*',
+            ),
+          ],
+        ),
+        WalletSigner(
+          id: 'signer-1',
+          signer: SignerEntity.remote,
+          signerDevice: SignerDeviceEntity.coldcardQ,
+          descriptorKeys: [
+            WalletDescriptorKey(
+              id: 'key-1',
+              signerId: 'signer-1',
+              masterFingerprint: '86241f88',
+              xpubFingerprint: 'bbbbbbbb',
+              xpub: 'xpub-cold',
+              derivationPath: null,
+              descriptorPath: '/<0;1>/*',
+            ),
+          ],
+        ),
+      ],
+      provenance: WalletProvenance.descriptor,
+    );
+
+    final decoded = codec.decode(codec.encode([definition])).single;
+
+    expect(decoded.signers, definition.signers);
+    expect(
+      decoded.signerDevice,
+      isNull,
+      reason: 'two signers, no single device',
+    );
+    expect(decoded.hasRemoteSigner, isTrue);
+    expect(decoded.provenance, WalletProvenance.descriptor);
+  });
 }
 
 WalletDefinition _definition(String walletRef, String descriptor) =>
@@ -170,7 +229,7 @@ WalletDefinition _definition(String walletRef, String descriptor) =>
       walletRef: walletRef,
       network: Network.bitcoinMainnet,
       descriptor: descriptor,
-      signerDevice: SignerDeviceEntity.ledgerNanoX,
+      signers: [singleRemoteSigner(SignerDeviceEntity.ledgerNanoX)],
       birthday: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
       provenance: WalletProvenance.externalSigner,
     );
