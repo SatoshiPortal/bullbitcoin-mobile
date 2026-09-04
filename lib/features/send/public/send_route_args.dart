@@ -7,21 +7,31 @@ final class SendRouteArgs {
   final Set<Outpoint> selectedOutpoints;
   final bool isSweep;
 
-  const SendRouteArgs({this.wallet, this.isSpMode = false}) : selectedOutpoints = const {}, isSweep = false;
+  const SendRouteArgs({this.wallet, this.isSpMode = false})
+    : selectedOutpoints = const {},
+      isSweep = false;
 
-  const SendRouteArgs.sp() : wallet = null, isSpMode = true, selectedOutpoints = const {}, isSweep = false;
+  const SendRouteArgs.sp()
+    : wallet = null,
+      isSpMode = true,
+      selectedOutpoints = const {},
+      isSweep = false;
 
   SendRouteArgs.selected({
-    required Wallet wallet,
+    required Wallet this.wallet,
     required Set<Outpoint> outpoints,
-  }) : wallet = wallet, isSpMode = false, selectedOutpoints = Set.unmodifiable(outpoints),
+  }) : isSpMode = false,
+       selectedOutpoints = Set.unmodifiable(outpoints),
        isSweep = false {
     _validate();
   }
 
-  SendRouteArgs.sweep({required Wallet wallet, required Set<Outpoint> outpoints})
-    : wallet = wallet, isSpMode = false, selectedOutpoints = Set.unmodifiable(outpoints),
-      isSweep = true {
+  SendRouteArgs.sweep({
+    required Wallet this.wallet,
+    required Set<Outpoint> outpoints,
+  }) : isSpMode = false,
+       selectedOutpoints = Set.unmodifiable(outpoints),
+       isSweep = true {
     _validate();
   }
 

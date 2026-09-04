@@ -25,7 +25,12 @@ class SendRouter {
       return BlocProvider(
         create: (_) => locator<SendCubit>(
           param1: wallet,
-          param2: (args: args, spWalletLabel: args?.isSpMode == true ? context.loc.walletSpTitle : null),
+          param2: (
+            args: args,
+            spWalletLabel: args?.isSpMode == true
+                ? context.loc.walletSpTitle
+                : null,
+          ),
         )..loadWalletWithRatesAndFees(),
         child: const SendScreen(),
       );

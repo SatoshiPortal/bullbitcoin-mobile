@@ -228,7 +228,7 @@ void main() {
 
   test('selected coins limit normal sends and the displayed balance', () {
     final state = SendState(
-      selectedWallet: _FakeWallet(130000),
+      selectedWallet: SendWalletBitcoin(_FakeWallet(130000)),
       selectedUtxos: [walletUtxoFixture(sats: 30000)],
       inputAmountCurrencyCode: BitcoinUnit.sats.code,
       amount: '40000',
@@ -241,7 +241,7 @@ void main() {
 
   test('an unresolved selected-input intent has no spendable balance', () {
     final state = SendState(
-      selectedWallet: _FakeWallet(130000),
+      selectedWallet: SendWalletBitcoin(_FakeWallet(130000)),
       selectedInputOutpoints: const {(txId: 'missing', vout: 0)},
       inputAmountCurrencyCode: BitcoinUnit.sats.code,
       amount: '40000',
