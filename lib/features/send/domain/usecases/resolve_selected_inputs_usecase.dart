@@ -5,10 +5,10 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:meta/meta.dart';
 
-class ResolveSweepInputsUsecase {
+class ResolveSelectedInputsUsecase {
   final PayjoinSessions _payjoinSessions;
 
-  ResolveSweepInputsUsecase(this._payjoinSessions);
+  ResolveSelectedInputsUsecase(this._payjoinSessions);
 
   @useResult
   Future<Result<List<WalletUtxo>, SendFailure>> execute({

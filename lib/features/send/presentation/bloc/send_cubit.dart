@@ -48,7 +48,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
@@ -115,7 +115,7 @@ class SendCubit extends Cubit<SendState>
     required this._checkLiquidConsolidationUsecase,
     required this._getSendPayjoinEnabledUsecase,
     required this._verifySignedTxUsecase,
-    required this._resolveSweepInputsUsecase,
+    required this._resolveSelectedInputsUsecase,
     required this._validateSweepPaymentRequestUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
@@ -181,7 +181,7 @@ class SendCubit extends Cubit<SendState>
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
   final VerifySendSignedTxUsecase _verifySignedTxUsecase;
-  final ResolveSweepInputsUsecase _resolveSweepInputsUsecase;
+  final ResolveSelectedInputsUsecase _resolveSelectedInputsUsecase;
   final ValidateSweepPaymentRequestUsecase _validateSweepPaymentRequestUsecase;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
@@ -1832,7 +1832,7 @@ class SendCubit extends Cubit<SendState>
           state.selectedUtxos.isNotEmpty &&
           refreshedSelection.length != state.selectedUtxos.length;
       final sweepResolution = state.isSweep
-          ? await _resolveSweepInputsUsecase.execute(
+          ? await _resolveSelectedInputsUsecase.execute(
               outpoints: state.sweepOutpoints,
               availableUtxos: utxos,
             )
