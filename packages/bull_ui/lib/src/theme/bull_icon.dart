@@ -22,6 +22,7 @@ abstract final class BullIcons {
   static const IconData deleteOutline = Icons.delete_outline;
   static const IconData errorOutline = Icons.error_outline;
   static const IconData callMerge = Icons.call_merge;
+  static const IconData arrowUpward = Icons.arrow_upward;
 }
 
 /// A thin wrapper over the Flutter [Icon] so feature code never touches
