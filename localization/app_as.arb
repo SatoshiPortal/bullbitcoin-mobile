@@ -8314,11 +8314,11 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "আপুনি ন্যূনতম পৰিমাণতকৈ কম উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "আপুনি সৰ্বোচ্চ পৰিমাণতকৈ বেছি উলিওৱাৰ চেষ্টা কৰিছে।",
+  "withdrawAboveMaxAmountError": "সৰ্বোচ্চ পৰিমাণ হ'ল {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },

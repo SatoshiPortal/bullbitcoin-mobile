@@ -1259,7 +1259,7 @@
   "@fundExchangeWarningTactic1": {
     "description": "First scammer tactic warning"
   },
-  "withdrawAboveMaxAmountError": "Você está tentando retirar acima da quantidade máxima.",
+  "withdrawAboveMaxAmountError": "A quantidade máxima é {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2104,7 +2104,7 @@
   "@payBillerName": {
     "description": "Label for biller name field"
   },
-  "withdrawBelowMinAmountError": "Você está tentando retirar abaixo do valor mínimo.",
+  "withdrawBelowMinAmountError": "Quantidade mínima é {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },

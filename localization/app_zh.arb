@@ -491,7 +491,7 @@
   "testBackupDefaultWallets": "违约情况",
   "receiveSendNetworkFee": "Send Network Fee",
   "autoswapRecipientWalletInfoText": "选择接收转账资金的比特币钱包（必选）",
-  "withdrawAboveMaxAmountError": "你试图将最高数额撤回.",
+  "withdrawAboveMaxAmountError": "最高限额为{amount}{currency}",
   "psbtFlowScanDeviceQr": "推土墙将请你扫描关于{device}的QR代码。 缩略语.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -696,7 +696,7 @@
   "transactionDetailAccelerate": "加速",
   "importQrDevicePassportStep11": "贴上你护照挂号的标签,并打上“港口”",
   "fundExchangeJurisdictionCanada": "🇨🇦 加拿大",
-  "withdrawBelowMinAmountError": "你们正试图在最低数额以下撤出.",
+  "withdrawBelowMinAmountError": "最低数额为{amount}{currency}",
   "swapYouPay": "页: 1",
   "encryptedVaultTitle": "加密",
   "fundExchangeCrIbanUsdLabelIban": "IBAN账户编号(仅美元)",

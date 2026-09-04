@@ -489,7 +489,7 @@
   "testBackupDefaultWallets": "По умолчанию",
   "receiveSendNetworkFee": "Отправить Сеть",
   "autoswapRecipientWalletInfoText": "Выберите, какой биткойн-кошелек получит переведенные средства (требуется)",
-  "withdrawAboveMaxAmountError": "Вы пытаетесь выйти выше максимальной суммы.",
+  "withdrawAboveMaxAmountError": "Максимальная сумма {amount} {currency}",
   "psbtFlowScanDeviceQr": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на {device}. Сканируйте.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -693,7 +693,7 @@
   "transactionDetailAccelerate": "Ускорение",
   "importQrDevicePassportStep11": "Введите этикетку для вашего паспортного кошелька и нажмите «Import»",
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
-  "withdrawBelowMinAmountError": "Вы пытаетесь уйти ниже минимальной суммы.",
+  "withdrawBelowMinAmountError": "Минимальная сумма {amount} {currency}",
   "swapYouPay": "Вы платите",
   "encryptedVaultTitle": "Зашифрованное хранилище",
   "fundExchangeCrIbanUsdLabelIban": "Номер счета IBAN (только доллары США)",

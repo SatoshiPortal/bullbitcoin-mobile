@@ -1438,7 +1438,7 @@
   "electrumServerOnline": "Інтернет",
   "testBackupDefaultWallets": "Гаманець за замовчуванням",
   "autoswapRecipientWalletInfoText": "Виберіть який гаманець Bitcoin отримає передані кошти (обов'язково)",
-  "withdrawAboveMaxAmountError": "Ви намагаєтеся виводити над максимальною кількістю.",
+  "withdrawAboveMaxAmountError": "Максимальна сума {amount} {currency}",
   "psbtFlowScanDeviceQr": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на {device}. Сканування.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -1582,7 +1582,7 @@
   "recoverbullRecoveryErrorWalletMismatch": "За замовчуванням гаманець вже існує. Ви можете мати один гаманець за замовчуванням.",
   "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
   "importQrDevicePassportStep11": "Введіть мітку для вашого паспорта гаманця і натисніть \"Імпорт\"",
-  "withdrawBelowMinAmountError": "Ви намагаєтеся виводити нижче мінімальної суми.",
+  "withdrawBelowMinAmountError": "Мінімальна сума {amount} {currency}",
   "swapYouPay": "Оплатити",
   "chooseAccessPinTitle": "Виберіть доступ {pinOrPassword}",
   "@chooseAccessPinTitle": {

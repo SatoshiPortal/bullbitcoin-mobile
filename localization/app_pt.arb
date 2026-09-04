@@ -488,7 +488,7 @@
   "testBackupDefaultWallets": "Carteiras padrão",
   "receiveSendNetworkFee": "Enviar Taxa de rede",
   "autoswapRecipientWalletInfoText": "Escolha qual carteira Bitcoin receberá os fundos transferidos (necessário)",
-  "withdrawAboveMaxAmountError": "Você está tentando retirar acima da quantidade máxima.",
+  "withdrawAboveMaxAmountError": "A quantidade máxima é {amount} {currency}",
   "psbtFlowScanDeviceQr": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no {device}. Analisa-o.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -693,7 +693,7 @@
   "transactionDetailAccelerate": "Acelerar",
   "importQrDevicePassportStep11": "Digite um rótulo para sua carteira de passaporte e toque em \"Importar\"",
   "fundExchangeJurisdictionCanada": "Canadá",
-  "withdrawBelowMinAmountError": "Você está tentando retirar abaixo do valor mínimo.",
+  "withdrawBelowMinAmountError": "Quantidade mínima é {amount} {currency}",
   "swapYouPay": "Você paga",
   "encryptedVaultTitle": "Vault criptografado",
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",

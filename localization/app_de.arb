@@ -479,7 +479,7 @@
   "testBackupDefaultWallets": "Standard-Wallets",
   "receiveSendNetworkFee": "Netzwerkgebühr senden",
   "autoswapRecipientWalletInfoText": "Wählen Sie aus, welche Bitcoin-Wallet die überwiesenen Gelder erhalten soll (erforderlich).",
-  "withdrawAboveMaxAmountError": "Sie versuchen, einen Betrag abzuheben, der über dem Höchstbetrag liegt.",
+  "withdrawAboveMaxAmountError": "Maximaler Betrag ist {amount} {currency}",
   "psbtFlowScanDeviceQr": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf dem {device} zu scannen. Scannen Sie ihn.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
@@ -680,7 +680,7 @@
   "transactionDetailAccelerate": "Beschleunigen",
   "importQrDevicePassportStep11": "Geben Sie eine Bezeichnung für Ihre Foundation Passport-Wallet ein und tippen Sie auf „Importieren“.",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
-  "withdrawBelowMinAmountError": "Sie versuchen, einen Betrag unterhalb des Mindestbetrags abzuheben.",
+  "withdrawBelowMinAmountError": "Mindestbetrag ist {amount} {currency}",
   "swapYouPay": "Sie zahlen",
   "encryptedVaultTitle": "Verschlüsselter Tresor",
   "fundExchangeCrIbanUsdLabelIban": "IBAN-Kontonummer (nur US-Dollar)",

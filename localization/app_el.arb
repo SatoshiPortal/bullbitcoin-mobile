@@ -1260,7 +1260,7 @@
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
-  "withdrawAboveMaxAmountError": "Προσπαθείτε να αποσύρετε πάνω από το μέγιστο ποσό.",
+  "withdrawAboveMaxAmountError": "Μέγιστη ποσότητα είναι {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -1785,7 +1785,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Προσπαθείτε να αποσύρετε κάτω από το ελάχιστο ποσό.",
+  "withdrawBelowMinAmountError": "Ελάχιστη ποσότητα είναι {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },

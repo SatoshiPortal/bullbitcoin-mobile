@@ -10413,11 +10413,11 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "Aap minimum amount se kam withdraw karne ki koshish kar rahe hain.",
+  "withdrawBelowMinAmountError": "Minimum amount hai {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
-  "withdrawAboveMaxAmountError": "Aap maximum amount se zyada withdraw karne ki koshish kar rahe hain.",
+  "withdrawAboveMaxAmountError": "Maximum amount {amount} {currency} hai",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },

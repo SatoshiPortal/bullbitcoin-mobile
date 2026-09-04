@@ -1672,7 +1672,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "Pokuste se odstoupit nad maximálním množstvím.",
+  "withdrawAboveMaxAmountError": "Maximální částka je {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2309,7 +2309,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Pokuste se odstoupit nad minimálním množstvím.",
+  "withdrawBelowMinAmountError": "Minimální částka je {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },

@@ -1446,7 +1446,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "최대 금액 위에 인출하려고 합니다.",
+  "withdrawAboveMaxAmountError": "최대 금액은 {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2103,7 +2103,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "최소 금액을 인출하려고 합니다.",
+  "withdrawBelowMinAmountError": "최소 금액은 {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },

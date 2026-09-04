@@ -12022,13 +12022,29 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "withdrawBelowMinAmountError": "You are trying to withdraw below the minimum amount.",
+  "withdrawBelowMinAmountError": "Minimum amount is {amount} {currency}",
   "@withdrawBelowMinAmountError": {
-    "description": "Error message for amount below minimum during withdraw"
+    "description": "Shown when the withdrawal amount is under the account minimum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
   },
-  "withdrawAboveMaxAmountError": "You are trying to withdraw above the maximum amount.",
+  "withdrawAboveMaxAmountError": "Maximum amount is {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
-    "description": "Error message for amount above maximum during withdraw"
+    "description": "Shown when the withdrawal amount is over the account maximum. Names the bound the exchange reported so the user can correct the amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
   },
   "coreScreensPageNotFound": "Page not found",
   "@coreScreensPageNotFound": {

@@ -1442,7 +1442,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "Maksimum miktarın üzerinde çekilmeye çalışıyorsunuz.",
+  "withdrawAboveMaxAmountError": "En fazla miktarı {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2095,7 +2095,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "Asgari miktarın altına çekilmeye çalışıyorsunuz.",
+  "withdrawBelowMinAmountError": "Minimum miktar {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },

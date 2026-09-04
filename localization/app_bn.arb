@@ -1432,7 +1432,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "==WEBLATE_PART==\nআপনি সর্বোচ্চ সীমা ছাড়িয়ে উত্তোলনের চেষ্টা করছেন।",
+  "withdrawAboveMaxAmountError": "সর্বোচ্চ পরিমাণ হলো {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2068,7 +2068,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "আপনি ন্যূনতম পরিমাণের নিচে উত্তোলন করার চেষ্টা করছেন।",
+  "withdrawBelowMinAmountError": "ন্যূনতম পরিমাণ হলো {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },

@@ -1446,7 +1446,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "withdrawAboveMaxAmountError": "คุณพยายามที่จะถอนเงินข้างต้น.",
+  "withdrawAboveMaxAmountError": "จำนวนสูงสุดคือ {amount} {currency}",
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
@@ -2103,7 +2103,7 @@
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
   },
-  "withdrawBelowMinAmountError": "คุณพยายามที่จะถอนขั้นต่ํา.",
+  "withdrawBelowMinAmountError": "จำนวนขั้นต่ำคือ {amount} {currency}",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
   },
