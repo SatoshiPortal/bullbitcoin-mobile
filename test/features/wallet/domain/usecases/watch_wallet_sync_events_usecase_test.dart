@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -19,8 +18,6 @@ class _MockWatchFinished extends Mock
 
 class _MockWatchElectrum extends Mock
     implements WatchElectrumSyncResultsUsecase {}
-
-class _MockWallet extends Mock implements Wallet {}
 
 class _MockElectrumSyncResult extends Mock implements ElectrumSyncResult {}
 
@@ -47,25 +44,25 @@ void main() {
   });
 
   test('wraps each event in Ok', () async {
-    final wallet = _MockWallet();
+    const wallet = 'wallet-1';
     when(
       () => watchStarted.execute(walletId: any(named: 'walletId')),
     ).thenAnswer((_) => Stream.value(wallet));
 
     final events = await usecase.started().toList();
 
-    expect(events, [isA<Ok<Wallet, WalletFailure>>()]);
+    expect(events, [isA<Ok<String, WalletFailure>>()]);
     expect((events.single as Ok).value, wallet);
   });
 
   test('a stream error becomes an Err WITHOUT ending the stream', () async {
     // The regression this guards: an `await for` would rethrow and kill the
     // subscription, so one hiccup froze the sync indicator permanently.
-    final wallet = _MockWallet();
+    const wallet = 'wallet-1';
     when(
       () => watchStarted.execute(walletId: any(named: 'walletId')),
     ).thenAnswer(
-      (_) => Stream<Wallet>.multi((controller) {
+      (_) => Stream<String>.multi((controller) {
         controller.addError(Exception('electrum read timed out'));
         controller.add(wallet);
         controller.close();
@@ -75,9 +72,9 @@ void main() {
     final events = await usecase.started().toList();
 
     expect(events, hasLength(2));
-    expect(events.first, isA<Err<Wallet, WalletFailure>>());
+    expect(events.first, isA<Err<String, WalletFailure>>());
     // The later event still arrives — the subscription survived.
-    expect(events.last, isA<Ok<Wallet, WalletFailure>>());
+    expect(events.last, isA<Ok<String, WalletFailure>>());
   });
 
   test('a throw on subscribe becomes a single Err event', () async {

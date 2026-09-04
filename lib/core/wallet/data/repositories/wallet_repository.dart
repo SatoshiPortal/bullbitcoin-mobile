@@ -57,6 +57,8 @@ class WalletRepository {
       .where((wallet) => wallet != null)
       .map((wallet) => wallet!);
 
+  Stream<String> get walletSyncStartedIdsStream => _walletSyncStartedStream;
+
   Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
       .asyncMap<Result<Wallet, WalletFailure>>((id) => getWallet(id))
       .map<Wallet?>((result) => result.fold((w) => w, (_) => null))
