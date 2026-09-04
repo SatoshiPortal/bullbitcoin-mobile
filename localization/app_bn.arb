@@ -3001,10 +3001,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "withdrawRecipientsNewTab": "নতুন প্রাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "importQrDeviceKeystoneStep10": "আপনার Keystone এখন সংযুক্ত এবং BULL Wallet-এ ব্যবহার করতে প্রস্তুত",
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
@@ -4114,10 +4110,6 @@
   "receiveInsufficientInboundLiquidity": "লাইটনিং গ্রহণক্ষমতা পর্যাপ্ত নয়",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "আমার ফিয়াট প্রাপকগণ",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "ফি হার খুব কম",
   "@sendFeeRateTooLow": {
@@ -5442,10 +5434,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "উত্তোলনের জন্য কোনো প্রাপক পাওয়া যায়নি",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "importQrDeviceSpecterStep4": "আপনার নির্বাচিত পদ্ধতির অনুযায়ী নির্দেশনা অনুসরণ করুন",
   "@importQrDeviceSpecterStep4": {
     "description": "Specter instruction step 4"
@@ -6533,10 +6521,6 @@
   "sendSatsPerVB": "sats/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "withdrawRecipientsContinue": "চালিয়ে যান",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "exchangeStatisticsSellStats": "বিক্রয় পরিসংখ্যান",
   "@exchangeStatisticsSellStats": {
@@ -7937,10 +7921,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "সব ধরন",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - সুপারিশ করা হয়েছে",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8271,14 +8251,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "টাকা কোথায় এবং কীভাবে পাঠাব?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "প্রাপক নির্বাচন করুন",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "পেআউট প্রাপক",
   "@sellPayoutRecipient": {

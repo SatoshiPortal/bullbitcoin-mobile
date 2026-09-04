@@ -1007,7 +1007,6 @@
   "bitboxScreenTroubleshootingStep1": "Assicurati di avere l'ultimo firmware installato sul BitBox.",
   "backupSettingsExportVault": "Vaso di esportazione",
   "bitboxActionUnlockDeviceTitle": "Sblocca il dispositivo BitBox",
-  "withdrawRecipientsNewTab": "Nuovo destinatario",
   "autoswapRecipientRequired": "#",
   "exchangeLandingFeature4": "Trasferimenti bancari e bollette di pagamento",
   "sellSendPaymentPayFromWallet": "Paga dal portafoglio",
@@ -1358,7 +1357,6 @@
   "transactionLabelTotalSwapFees": "Totale spese di swap",
   "errorLabel": "Errore",
   "receiveInsufficientInboundLiquidity": "Capacità di ricezione di fulmini insufficienti",
-  "withdrawRecipientsMyTab": "I miei destinatari fiat",
   "sendFeeRateTooLow": "Tassi di tariffa troppo bassi",
   "payLastNameHint": "Inserisci il cognome",
   "exchangeLandingRestriction": "L'accesso ai servizi di scambio sarà limitato ai paesi in cui Bull Bitcoin può operare legalmente e può richiedere KYC.",
@@ -1816,7 +1814,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "Swap completerà momentaneamente.",
   "addressViewAddressesTitle": "Indirizzo",
-  "withdrawRecipientsNoRecipients": "Nessun destinatario ha trovato di ritirarsi.",
   "transactionSwapProgressPaymentMade": "Pagamento\nFatto",
   "importQrDeviceSpecterStep4": "Seguire le istruzioni secondo il metodo scelto",
   "coreSwapsChainPending": "Il trasferimento non è ancora inizializzato.",
@@ -2162,7 +2159,6 @@
   "coreSwapsChainPaid": "In attesa del pagamento del fornitore di trasferimento per ricevere la conferma. Potrebbe volerci un po' per completare.",
   "importQrDevicePassportStep6": "Selezionare \"Single-sig\"",
   "sendSatsPerVB": "sats/vB",
-  "withdrawRecipientsContinue": "Continua",
   "enterPinAgainMessage": "Inserisci nuovamente il tuo {pinOrPassword} per continuare.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2658,7 +2654,6 @@
   "payRemoveRecipient": "Rimuovere Recipiente",
   "pasteInputDefaultHint": "Incolla un indirizzo di pagamento o una fattura",
   "sellKycPendingTitle": "Verifica dell'identità KYC in sospeso",
-  "withdrawRecipientsFilterAll": "Tutti i tipi",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Consigliato",
   "fundExchangeSpeiSubtitle": "Trasferire fondi utilizzando il CLABE",
   "encryptedVaultRecommendationText": "Non sei sicuro e hai bisogno di più tempo per conoscere le pratiche di sicurezza di backup.",
@@ -2777,8 +2772,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Dove e come dovremmo inviare i soldi?",
-  "withdrawRecipientsTitle": "Seleziona il destinatario",
   "sellPayoutRecipient": "Prestito",
   "backupWalletLastBackupTest": "Ultimo test di backup: ",
   "whatIsWordNumberPrompt": "Qual è il numero di parola {number}?",

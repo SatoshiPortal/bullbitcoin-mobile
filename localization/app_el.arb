@@ -2611,10 +2611,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "withdrawRecipientsNewTab": "Νέο παραλήπτη",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "importQrDeviceKeystoneStep10": "Το Keystone σας είναι τώρα συνδεδεμένο και έτοιμο να χρησιμοποιήσει με το BULL Wallet.",
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
@@ -3596,10 +3592,6 @@
   "receiveInsufficientInboundLiquidity": "Ανεπαρκή Lightning που λαμβάνει χωρητικότητα",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "Οι παραλήπτες μου",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "Το ποσοστό Fee πολύ χαμηλό",
   "@sendFeeRateTooLow": {
@@ -4751,10 +4743,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "Κανένας παραλήπτης δεν βρέθηκε να αποσυρθεί.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "Πληρωμή πληρωμής\nMade Made",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -5692,10 +5680,6 @@
   "sendSatsPerVB": "sats/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "withdrawRecipientsContinue": "Συνεχίστε να συνεχίζετε",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "exchangeStatisticsSellStats": "Sell Statistics",
   "@exchangeStatisticsSellStats": {
@@ -6878,10 +6862,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Όλα τα είδη",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Προτεινόμενη",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -7171,14 +7151,6 @@
   "addressLabel": "Διεύθυνση: ",
   "@addressLabel": {
     "description": "Label for UTXO address in coin selection tile"
-  },
-  "withdrawRecipientsPrompt": "Πού και πώς πρέπει να στείλουμε τα χρήματα?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Επιλέξτε παραλήπτη παραλήπτη",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Payout παραλήπτη παραλήπτη",
   "@sellPayoutRecipient": {

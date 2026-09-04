@@ -3070,10 +3070,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "withdrawRecipientsNewTab": "Yeni alıcı",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "importQrDeviceKeystoneStep10": "Keystone artık BULL Wallet ile kullanıma hazır.",
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
@@ -4206,10 +4202,6 @@
   "receiveInsufficientInboundLiquidity": "Yetersiz Lightning kapasiteye sahip",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "Benim fiat alıcılarım",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "Ücret oranı çok düşük",
   "@sendFeeRateTooLow": {
@@ -5576,10 +5568,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "Hiçbir alıcı geri çekilmeyi bulamadı.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "Ödeme",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6676,10 +6664,6 @@
   "sendSatsPerVB": "satmak/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "withdrawRecipientsContinue": "Devam etmeye devam et",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "exchangeStatisticsSellStats": "Satış İstatistikleri",
   "@exchangeStatisticsSellStats": {
@@ -8093,10 +8077,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Tüm türleri",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Yerli SegWit - Önerilen",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8427,14 +8407,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "Nerede ve nasıl para göndermeliyiz?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Alıcıyı seçin",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Payout alıcı",
   "@sellPayoutRecipient": {

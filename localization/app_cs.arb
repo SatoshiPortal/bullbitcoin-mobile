@@ -3243,10 +3243,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "withdrawRecipientsNewTab": "Nový příjemce",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "importQrDeviceKeystoneStep10": "Váš Keystone je nyní připojen a připraven k použití s BULL Peněženka.",
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
@@ -4314,10 +4310,6 @@
   "receiveInsufficientInboundLiquidity": "Nedostatečná kapacita blesku",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "Moje příjemci fiatu",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "Poplatek za poplatek",
   "@sendFeeRateTooLow": {
@@ -5623,10 +5615,6 @@
   "coreSwapsLnReceiveCanCoop": "Swap bude dokončit momentálně.",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
-  },
-  "withdrawRecipientsNoRecipients": "Žádné příjemce, které nejsou k dispozici.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
   },
   "transactionSwapProgressPaymentMade": "Platba\nČeština",
   "@transactionSwapProgressPaymentMade": {
@@ -8070,10 +8058,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "Všechny typy",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Nativní SegWit - Doporučené",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8388,14 +8372,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "Kde a jak bychom měli poslat peníze?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "Vyberte příjemce",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Výplatní příjemce",
   "@sellPayoutRecipient": {
@@ -11165,10 +11141,6 @@
   "confirmButtonLabel": "Potvrdit",
   "@confirmButtonLabel": {
     "description": "Button label to confirm and execute the transaction"
-  },
-  "withdrawRecipientsContinue": "Pokračovat",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "pinConfirmHeadline": "Potvrdit nový PIN",
   "@pinConfirmHeadline": {

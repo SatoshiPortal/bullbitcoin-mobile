@@ -984,7 +984,6 @@
   "bitboxScreenTroubleshootingBluetoothStep3": "Starten Sie Ihre BitBox02 Nova neu und versuchen Sie die Verbindung erneut.",
   "backupSettingsExportVault": "Tresor exportieren",
   "bitboxActionUnlockDeviceTitle": "BitBox-Gerät entsperren",
-  "withdrawRecipientsNewTab": "Neuer Empfänger",
   "autoswapRecipientRequired": "*",
   "exchangeLandingFeature4": "Banküberweisungen senden und Rechnungen bezahlen",
   "sellSendPaymentPayFromWallet": "Zahlung von Ihrer Wallet",
@@ -1326,7 +1325,6 @@
   "transactionLabelTotalSwapFees": "Gesamt-Swap-Gebühren",
   "errorLabel": "Fehler",
   "receiveInsufficientInboundLiquidity": "Unzureichende Lightning-Kapazität",
-  "withdrawRecipientsMyTab": "Meine Fiat-Empfänger",
   "sendFeeRateTooLow": "Gebührensatz zu niedrig",
   "payLastNameHint": "Nachname eingeben",
   "exchangeLandingRestriction": "Der Zugang zu den Austauschdiensten ist auf Länder beschränkt, in denen Bull Bitcoin legal arbeitet und KYC erforderlich sein kann",
@@ -1775,7 +1773,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "Der Swap wird in Kürze abgeschlossen",
   "addressViewAddressesTitle": "Adressen",
-  "withdrawRecipientsNoRecipients": "Keine Empfänger zum Abheben gefunden",
   "transactionSwapProgressPaymentMade": "Zahlung\nErfolgt",
   "importQrDeviceSpecterStep4": "Folgen Sie den Anweisungen für Ihre gewählte Methode",
   "coreSwapsChainPending": "Die Überweisung ist noch nicht eingeleitet",
@@ -2112,7 +2109,6 @@
   "coreSwapsChainPaid": "Wir warten auf die Zahlungsbestätigung unseres Zahlungsanbieters. Dies kann einige Zeit dauern",
   "importQrDevicePassportStep6": "Wählen Sie „Single-Sig“",
   "sendSatsPerVB": "sats/vB",
-  "withdrawRecipientsContinue": "Fortfahren",
   "enterPinAgainMessage": "Geben Sie Ihre {pinOrPassword} erneut ein, um fortzufahren.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2598,7 +2594,6 @@
   "payRemoveRecipient": "Empfänger entfernen",
   "pasteInputDefaultHint": "Zahlungsadresse oder Rechnung einfügen.",
   "sellKycPendingTitle": "KYC-Identitätsprüfung ausstehend",
-  "withdrawRecipientsFilterAll": "Alle Arten",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit – Empfohlen",
   "fundExchangeSpeiSubtitle": "Überweisung mit CLABE",
   "encryptedVaultRecommendationText": "Sie sind sich nicht sicher und benötigen mehr Zeit, um sich über Sicherheitsmaßnahmen für Backups zu informieren.",
@@ -2715,8 +2710,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Wo und wie sollen wir das Geld schicken?",
-  "withdrawRecipientsTitle": "Empfänger auswählen",
   "sellPayoutRecipient": "Empfänger der Auszahlung",
   "backupWalletLastBackupTest": "Letzter Backup-Test:",
   "whatIsWordNumberPrompt": "Was ist Wort Nummer {number}?",

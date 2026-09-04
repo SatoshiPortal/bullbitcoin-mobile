@@ -3078,10 +3078,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "withdrawRecipientsNewTab": "새로운 수신자",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "importQrDeviceKeystoneStep10": "Keystone은 이제 연결되고 BULL Wallet과 함께 사용할 수 있습니다.",
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
@@ -4226,10 +4222,6 @@
   "receiveInsufficientInboundLiquidity": "충분한 번개 받기 수용량",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "내 fiat 수신자",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "요금 너무 낮은",
   "@sendFeeRateTooLow": {
@@ -5604,10 +5596,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "인출할 수 있습니다.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "제품 정보\n이름 *",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6713,10 +6701,6 @@
   "sendSatsPerVB": "통계/VB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "withdrawRecipientsContinue": "계속하기",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "exchangeStatisticsSellStats": "판매 통계",
   "@exchangeStatisticsSellStats": {
@@ -8164,10 +8148,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "모든 유형",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - 추천",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8502,14 +8482,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "어디서 어떻게 돈을 보내야 하나요?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "자주 묻는 질문",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "Payout 수신자",
   "@sellPayoutRecipient": {

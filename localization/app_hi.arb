@@ -3078,10 +3078,6 @@
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
-  "withdrawRecipientsNewTab": "नया प्राप्तकर्ता",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "importQrDeviceKeystoneStep10": "आपका कीस्टोन अब जुड़ा हुआ है और BULL वॉलेट के साथ उपयोग करने के लिए तैयार है।।",
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
@@ -4226,10 +4222,6 @@
   "receiveInsufficientInboundLiquidity": "अपर्याप्त बिजली प्राप्त करने की क्षमता",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "My fiat प्राप्तकर्ता",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "शुल्क दर बहुत कम",
   "@sendFeeRateTooLow": {
@@ -5604,10 +5596,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "कोई प्राप्तकर्ता को वापस लेने के लिए नहीं मिला।।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "भुगतान\nकिया गया",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6713,10 +6701,6 @@
   "sendSatsPerVB": "sats/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "withdrawRecipientsContinue": "जारी",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "exchangeStatisticsSellStats": "बिक्री आँकड़े",
   "@exchangeStatisticsSellStats": {
@@ -8164,10 +8148,6 @@
   "@sellKycPendingTitle": {
     "description": "Title shown when KYC verification is pending"
   },
-  "withdrawRecipientsFilterAll": "सभी प्रकार",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "मूल SegWit - अनुशंसित",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8502,14 +8482,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "हम कहाँ और कैसे पैसे भेजने चाहिए?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "प्राप्तकर्ता चुनें",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "भुगतान प्राप्तकर्ता",
   "@sellPayoutRecipient": {

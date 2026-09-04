@@ -1791,7 +1791,6 @@
   "bitboxScreenTroubleshootingStep1": "Переконайтеся, що у вас є остання прошивка, встановлена на вашому BitBox.",
   "backupSettingsExportVault": "Експорт Vault",
   "bitboxActionUnlockDeviceTitle": "Розблокування пристрою BitBox",
-  "withdrawRecipientsNewTab": "Новий одержувач",
   "autoswapRecipientRequired": "Ім'я *",
   "exchangeLandingFeature4": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком -",
   "labelDeleteFailed": "Неможливо видалити \"{label}. Будь ласка, спробуйте знову.",
@@ -2016,7 +2015,6 @@
   "sendCustomFeeRate": "Спеціальна ціна",
   "swapErrorAmountExceedsMaximum": "Сума перевищена максимальна сума затиску",
   "receiveInsufficientInboundLiquidity": "Недостатня вантажопідйомність",
-  "withdrawRecipientsMyTab": "Мій одержувачів",
   "sendFeeRateTooLow": "Платна швидкість занадто низька",
   "exchangeLandingRestriction": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "payFailedPayments": "В'язниця",
@@ -2347,7 +2345,6 @@
       }
     }
   },
-  "withdrawRecipientsNoRecipients": "Не знайдено одержувачів для виведення.",
   "importQrDeviceSpecterStep4": "Дотримуйтесь запитань щодо обраного способу",
   "importWalletImportWatchOnly": "Імпорт годинник",
   "coldcardStep9": "Після того, як угода була імпортована в холодильнику, перевірте адресу призначення і суму.",
@@ -2584,7 +2581,6 @@
   "payInvalidAddress": "Неоплатна адреса",
   "appUnlockAttemptPlural": "невдалих спроб",
   "importQrDevicePassportStep6": "Виберіть \"Single-sig\"",
-  "withdrawRecipientsContinue": "Продовжити",
   "enterPinAgainMessage": "Введіть своє {pinOrPassword} знову, щоб продовжити.",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2932,7 +2928,6 @@
   "payRemoveRecipient": "Видалити одержувача",
   "pasteInputDefaultHint": "Введіть адресу платежу або рахунок-фактуру",
   "sellKycPendingTitle": "Перевірка ID KYC",
-  "withdrawRecipientsFilterAll": "Всі види",
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Рекомендований",
   "fundExchangeSpeiSubtitle": "Перерахування коштів за допомогою CLABE",
   "urDecodingFailedMessage": "Ур декодування не вдалося",
@@ -3028,8 +3023,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "Де і як ми надішлемо гроші?",
-  "withdrawRecipientsTitle": "Оберіть одержувач",
   "backupWalletLastBackupTest": "Останній тест резервного копіювання: ",
   "keystoneStep1": "Увійти на пристрій Keystone",
   "keystoneStep3": "Сканування QR-коду, показаного в булл-гаманці",

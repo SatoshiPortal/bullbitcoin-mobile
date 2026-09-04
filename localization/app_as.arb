@@ -6704,34 +6704,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "প্ৰাপক বাছনি কৰক",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "ক'ত আৰু কেনেকৈ টকা পঠাব লাগে?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "নতুন প্ৰাপক",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "মোৰ fiat প্ৰাপকসকল",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "সকলো ধৰণ",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "উঠাবলৈ কোনো প্ৰাপক পোৱা নগ'ল।",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "অব্যাহত ৰাখক",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "উঠোৱা নিশ্চিত কৰক",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"

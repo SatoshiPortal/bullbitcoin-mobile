@@ -8802,34 +8802,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "withdrawRecipientsTitle": "Recipient Select Karo",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
-  "withdrawRecipientsPrompt": "Paisa kahan aur kaise bhejun?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsNewTab": "Naya recipient",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
-  "withdrawRecipientsMyTab": "Mere fiat recipients",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
-  },
-  "withdrawRecipientsFilterAll": "Sabhi types",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
-  "withdrawRecipientsNoRecipients": "Withdraw karne ke liye koi recipient nahi mila.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
-  },
   "withdrawConfirmTitle": "Withdrawal Confirm Karo",
   "@withdrawConfirmTitle": {
     "description": "Title on confirmation screen"

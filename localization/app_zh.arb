@@ -1008,7 +1008,6 @@
   "bitboxScreenTroubleshootingStep1": "保证在您的Box上安装了最新的企业知识.",
   "backupSettingsExportVault": "出口单项",
   "bitboxActionUnlockDeviceTitle": "Unlock BiBox 装置",
-  "withdrawRecipientsNewTab": "新受援国",
   "autoswapRecipientRequired": "* E/CN.6/2009/1",
   "exchangeLandingFeature4": "银行转账和付款账单",
   "sellSendPaymentPayFromWallet": "付款钱包",
@@ -1359,7 +1358,6 @@
   "transactionLabelTotalSwapFees": "总收益",
   "errorLabel": "Error",
   "receiveInsufficientInboundLiquidity": "照明能力不足",
-  "withdrawRecipientsMyTab": "我的信托接受者",
   "sendFeeRateTooLow": "就业率太低",
   "payLastNameHint": "填写最后姓名",
   "exchangeLandingRestriction": "进入交换服务将仅限于“鹿特丹”能够合法运作并且可能需要“科索沃”的国家.",
@@ -1817,7 +1815,6 @@
   },
   "coreSwapsLnReceiveCanCoop": "斯瓦普将立即完成.",
   "addressViewAddressesTitle": "地址",
-  "withdrawRecipientsNoRecipients": "没有任何受援者发现退出.",
   "transactionSwapProgressPaymentMade": "支付\n.....",
   "importQrDeviceSpecterStep4": "遵循你选定的方法",
   "coreSwapsChainPending": "转让尚未启动.",
@@ -2164,7 +2161,6 @@
   "coreSwapsChainPaid": "放弃转让提供人的付款以获得确认。 这可能需要完成.",
   "importQrDevicePassportStep6": "选择“单体”",
   "sendSatsPerVB": "注",
-  "withdrawRecipientsContinue": "继续",
   "enterPinAgainMessage": "请再次输入您的{pinOrPassword}以继续。",
   "@enterPinAgainMessage": {
     "placeholders": {
@@ -2660,7 +2656,6 @@
   "payRemoveRecipient": "移走接收者",
   "pasteInputDefaultHint": "扣押付款地址或发票",
   "sellKycPendingTitle": "KYC ID 有待核查",
-  "withdrawRecipientsFilterAll": "所有类型",
   "bitboxScreenSegwitBip84Subtitle": "Indigenous SegWit - Proposaled",
   "fundExchangeSpeiSubtitle": "利用《公约》的资金转移",
   "encryptedVaultRecommendationText": "你不相信,你需要更多时间了解后备安保做法.",
@@ -2779,8 +2774,6 @@
       }
     }
   },
-  "withdrawRecipientsPrompt": "我们寄钱在哪里?",
-  "withdrawRecipientsTitle": "选定受援国",
   "sellPayoutRecipient": "收款人",
   "backupWalletLastBackupTest": "后续测试: ",
   "whatIsWordNumberPrompt": "字数{number}?",

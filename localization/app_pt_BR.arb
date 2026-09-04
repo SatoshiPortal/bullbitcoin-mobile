@@ -3008,10 +3008,6 @@
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "withdrawRecipientsNewTab": "Novo destinatário",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "sellPayFromWallet": "Pagar da carteira",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -3973,10 +3969,6 @@
   "hwPassport": "Passaporte da Fundação",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
-  },
-  "withdrawRecipientsMyTab": "Os meus destinatários fiat",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transferir fundos em dólares americanos (USD)",
   "@fundExchangeCostaRicaMethodIbanUsdSubtitle": {
@@ -5042,10 +5034,6 @@
       }
     }
   },
-  "withdrawRecipientsNoRecipients": "Nenhum destinatário encontrado para se retirar.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "buyInputCompleteKyc": "KYC completo",
   "@buyInputCompleteKyc": {
     "description": "Button to complete KYC"
@@ -5853,10 +5841,6 @@
   "importColdcardError": "Falhado para importar Coldcard",
   "@importColdcardError": {
     "description": "Error message"
-  },
-  "withdrawRecipientsContinue": "Continue",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "@receiveBoltzSwapFee": {
@@ -7305,10 +7289,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "withdrawRecipientsFilterAll": "Todos os tipos",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "electrumFormatError": "Use o formato host:port (por exemplo, example.com:50001)",
   "@electrumFormatError": {
     "description": "Validation error for incorrect server URL format"
@@ -8294,10 +8274,6 @@
   "@swapValidationPositiveAmount": {
     "description": "Validation error when amount is not positive"
   },
-  "withdrawRecipientsTitle": "Selecione o destinatário",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
-  },
   "testBackupWalletTitle": "Teste {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
@@ -8368,10 +8344,6 @@
   "pinSecurityTitle": "PIN de segurança",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
-  },
-  "withdrawRecipientsPrompt": "Onde e como devemos enviar o dinheiro?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
   },
   "fundExchangeLabelIbanUsdOnly": "Número da conta IBAN (apenas para dólares americanos)",
   "@fundExchangeLabelIbanUsdOnly": {

@@ -3585,10 +3585,6 @@
   "@bitboxActionUnlockDeviceTitle": {
     "description": "Title for unlock device action"
   },
-  "withdrawRecipientsNewTab": "گیرنده جدید",
-  "@withdrawRecipientsNewTab": {
-    "description": "Tab label for new recipient"
-  },
   "autoswapRecipientRequired": "*",
   "@autoswapRecipientRequired": {
     "description": "Required field indicator"
@@ -4542,10 +4538,6 @@
   "receiveInsufficientInboundLiquidity": "توانایی دریافت توانایی",
   "@receiveInsufficientInboundLiquidity": {
     "description": "Error when Lightning channels lack inbound capacity"
-  },
-  "withdrawRecipientsMyTab": "دریافت کنندگان فیات من",
-  "@withdrawRecipientsMyTab": {
-    "description": "Tab label for existing recipients"
   },
   "sendFeeRateTooLow": "نرخ هزینه بسیار پایین",
   "@sendFeeRateTooLow": {
@@ -5682,10 +5674,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "withdrawRecipientsNoRecipients": "هیچ دریافت کننده ای پیدا نشد که عقب نشینی کند.",
-  "@withdrawRecipientsNoRecipients": {
-    "description": "Empty state message"
-  },
   "transactionSwapProgressPaymentMade": "پرداخت پرداخت پرداخت\nساخته شده Made",
   "@transactionSwapProgressPaymentMade": {
     "description": "Swap progress step: payment made"
@@ -6605,10 +6593,6 @@
   "sendSatsPerVB": "نشستن/vB",
   "@sendSatsPerVB": {
     "description": "Unit label for satoshis per virtual byte"
-  },
-  "withdrawRecipientsContinue": "ادامه",
-  "@withdrawRecipientsContinue": {
-    "description": "Continue button on recipients screen"
   },
   "exchangeStatisticsSellStats": "فروش آمار",
   "@exchangeStatisticsSellStats": {
@@ -7817,10 +7801,6 @@
   "@pasteInputDefaultHint": {
     "description": "Default placeholder hint for paste input field"
   },
-  "withdrawRecipientsFilterAll": "همه انواع",
-  "@withdrawRecipientsFilterAll": {
-    "description": "Filter option for all recipient types"
-  },
   "bitboxScreenSegwitBip84Subtitle": "Native SegWit - توصیه شده",
   "@bitboxScreenSegwitBip84Subtitle": {
     "description": "Subtitle for BIP84 option"
@@ -8078,14 +8058,6 @@
         "type": "String"
       }
     }
-  },
-  "withdrawRecipientsPrompt": "کجا و چگونه باید پول ارسال کنیم؟?",
-  "@withdrawRecipientsPrompt": {
-    "description": "Instructions on recipients screen"
-  },
-  "withdrawRecipientsTitle": "انتخاب گیرنده",
-  "@withdrawRecipientsTitle": {
-    "description": "AppBar title for recipients screen"
   },
   "sellPayoutRecipient": "دریافت کننده پرداخت",
   "@sellPayoutRecipient": {
