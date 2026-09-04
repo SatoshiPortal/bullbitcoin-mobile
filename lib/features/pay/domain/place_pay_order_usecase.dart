@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class PlacePayOrderUsecase {
@@ -21,7 +23,8 @@ class PlacePayOrderUsecase {
 
   /// [usePayjoin] behaves as in CreateSellOrderUsecase: a payment is a sell to a
   /// recipient, and the request is resolved here against the same policy.
-  Future<FiatPaymentOrder> execute({
+  @useResult
+  Future<Result<FiatPaymentOrder, PayFailure>> execute({
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
@@ -50,12 +53,41 @@ class PlacePayOrderUsecase {
             network == OrderBitcoinNetwork.bitcoin,
       );
 
-      return order;
-    } on PayError {
-      rethrow;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw PayError.unexpected(message: '$e');
+      return Ok(order);
+    } on ApiKeyException catch (e, st) {
+      // Severe: a session that expired mid-flow is not something the user did
+      // wrong, and it is the one failure here worth finding in Sentry.
+      log.severe(
+        message: 'Pay order rejected: not authenticated',
+        error: e,
+        trace: st,
+      );
+      return Err(PayUnauthenticatedFailure(e.message));
+    } on BullBitcoinApiMinAmountException catch (e) {
+      // The two amount bounds are expected user input errors, so they are
+      // logged at info rather than severe. The bound is carried on the failure
+      // for the day payBelowMinAmountError takes a placeholder; today's string
+      // has none, so nothing reads it yet.
+      log.info('Pay order below the minimum: ${e.message}');
+      return Err(
+        PayBelowMinAmountFailure(
+          minAmount: e.minAmount,
+          currency: e.currency,
+          logMessage: e.message,
+        ),
+      );
+    } on BullBitcoinApiMaxAmountException catch (e) {
+      log.info('Pay order above the maximum: ${e.message}');
+      return Err(
+        PayAboveMaxAmountFailure(
+          maxAmount: e.maxAmount,
+          currency: e.currency,
+          logMessage: e.message,
+        ),
+      );
+    } catch (e, st) {
+      log.severe(message: 'Failed to place the pay order', error: e, trace: st);
+      return Err(PayUnexpectedFailure('$e'));
     }
   }
 }

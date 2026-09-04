@@ -5,12 +5,12 @@ sealed class PayState with _$PayState {
   const factory PayState.recipientSelection({
     UserSummary? userSummary,
     @Default(false) bool isLoadingUserSummary,
-    PayError? error,
+    PayFailure? error,
   }) = PayRecipientSelectionState;
   const factory PayState.amountInput({
     required RecipientViewModel selectedRecipient,
     required UserSummary userSummary,
-    PayError? error,
+    PayFailure? error,
   }) = PayAmountInputState;
   const factory PayState.walletSelection({
     required RecipientViewModel selectedRecipient,
@@ -18,7 +18,7 @@ sealed class PayState with _$PayState {
     required FiatAmount amount,
     String? paymentDescription,
     @Default(false) bool isCreatingPayOrder,
-    PayError? error,
+    PayFailure? error,
   }) = PayWalletSelectionState;
   const factory PayState.payment({
     required RecipientViewModel selectedRecipient,
@@ -32,7 +32,7 @@ sealed class PayState with _$PayState {
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
     // the send path must never run again for this order (#2522).
     String? payinBroadcastTxid,
-    PayError? error,
+    PayFailure? error,
     int? absoluteFees,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
@@ -219,6 +219,7 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
     double? exchangeRateEstimate,
     FeeOptions? bitcoinFees,
     int? bitcoinTxSize,
+    PayFailure? error,
   }) {
     return PayPaymentState(
       userSummary: userSummary,
@@ -232,6 +233,7 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
       utxos: utxos ?? [],
       bitcoinFees: bitcoinFees,
       bitcoinTxSize: bitcoinTxSize,
+      error: error,
     );
   }
 
