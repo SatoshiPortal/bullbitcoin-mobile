@@ -21,6 +21,8 @@ import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart';
 
+const _backgroundWalletSyncConcurrency = 2;
+
 @pragma('vm:entry-point')
 void backgroundTasksHandler() {
   runWorkmanagerTaskDispatcher(_bootstrapBackgroundRunner);
@@ -102,11 +104,13 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
       notifications: notifications,
       jobs: jobs,
       copy: copy,
+      maxConcurrentJobs: _backgroundWalletSyncConcurrency,
     ).execute(chain: 'bitcoin'),
     liquidSync: () => WalletTransactionSyncBackgroundTask(
       notifications: notifications,
       jobs: jobs,
       copy: copy,
+      maxConcurrentJobs: _backgroundWalletSyncConcurrency,
     ).execute(chain: 'liquid'),
     pruneLogs: log.prune,
     onFinished: () => _runAllCleanups([
