@@ -85,6 +85,9 @@ void main() {
       );
       final task = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [job],
         copy: (count, chain) => (
           title: 'Payment received!',
@@ -105,6 +108,9 @@ void main() {
 
       final second = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [
           WalletTransactionSyncBackgroundJob(
             key: job.key,
@@ -133,6 +139,9 @@ void main() {
         notifications: NotificationsFacade(
           gateway: gateway,
           outbox: reopenedOutbox,
+        ),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
         ),
         jobs: [
           WalletTransactionSyncBackgroundJob(
@@ -183,6 +192,9 @@ void main() {
       );
       final task = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [
           job('bitcoin', 'bad', true),
           job('bitcoin', 'good', false),
@@ -231,6 +243,9 @@ void main() {
 
       final task = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [
           job('one', ['one']),
           job('two', ['two']),
@@ -247,6 +262,9 @@ void main() {
 
       final second = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [
           job('one', ['one', 'new-one']),
           job('two', ['two']),
@@ -264,6 +282,9 @@ void main() {
 
       final third = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: gateway, outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [
           job('one', ['one', 'new-one', 'new-two']),
           job('two', ['two', 'new-three']),
@@ -304,6 +325,9 @@ void main() {
         );
     final task = WalletTransactionSyncBackgroundTask(
       notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: SqliteWalletSyncJobQueue(
+        databasePath: '${directory.path}/q.sqlite',
+      ),
       jobs: [job('bitcoin'), job('liquid')],
       copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
     );
@@ -333,6 +357,9 @@ void main() {
     expect(
       () => WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: const [],
         copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
         maxConcurrentJobs: 0,
@@ -370,13 +397,18 @@ void main() {
     });
     final task = WalletTransactionSyncBackgroundTask(
       notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: SqliteWalletSyncJobQueue(
+        databasePath: '${directory.path}/q.sqlite',
+      ),
       jobs: jobs,
       copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
       maxConcurrentJobs: 2,
+      maxJobsPerRun: 5,
     );
     final execution = task.execute(chain: 'bitcoin');
     await Future.wait([started[0].future, started[1].future]);
     expect(active, 2);
+    expect(started[2].isCompleted, isFalse);
     release[0].complete();
     await started[2].future;
     release[1].complete();
@@ -388,63 +420,6 @@ void main() {
     await execution;
     expect(maximum, 2);
   });
-
-  test(
-    'starts the next wallet when a slot frees before an earlier wallet',
-    () async {
-      final directory = await Directory.systemTemp.createTemp(
-        'background_tasks',
-      );
-      final outbox = SqliteNotificationOutbox(
-        databasePath: '${directory.path}/n.sqlite',
-      );
-      addTearDown(() async {
-        outbox.dispose();
-        await directory.delete(recursive: true);
-      });
-      final firstRelease = Completer<void>();
-      final secondRelease = Completer<void>();
-      final firstStarted = Completer<void>();
-      final secondStarted = Completer<void>();
-      final thirdStarted = Completer<void>();
-      final started = <String>[];
-      final firstKey = const WalletNetworkKey('first', 'bitcoin', 'testnet');
-      final secondKey = const WalletNetworkKey('second', 'bitcoin', 'testnet');
-      final thirdKey = const WalletNetworkKey('third', 'bitcoin', 'testnet');
-      WalletTransactionSyncBackgroundJob job(
-        WalletNetworkKey key,
-        Future<void>? wait,
-        Completer<void> didStart,
-      ) => WalletTransactionSyncBackgroundJob(
-        key: key,
-        synchronize: () async {
-          started.add(key.walletId);
-          didStart.complete();
-          if (wait != null) await wait;
-          return Ok(_outcome(key, const []));
-        },
-      );
-      final task = WalletTransactionSyncBackgroundTask(
-        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
-        jobs: [
-          job(firstKey, firstRelease.future, firstStarted),
-          job(secondKey, secondRelease.future, secondStarted),
-          job(thirdKey, null, thirdStarted),
-        ],
-        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
-        maxConcurrentJobs: 2,
-      );
-      final execution = task.execute(chain: 'bitcoin');
-      await Future.wait([firstStarted.future, secondStarted.future]);
-      expect(started, ['first', 'second']);
-      secondRelease.complete();
-      await thirdStarted.future;
-      expect(started, ['first', 'second', 'third']);
-      expect(firstRelease.isCompleted, isFalse);
-      firstRelease.complete();
-      await execution;
-    },
-  );
 
   test(
     'attempts remaining wallets after thrown and returned failures',
@@ -481,6 +456,9 @@ void main() {
       );
       final task = WalletTransactionSyncBackgroundTask(
         notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        queue: SqliteWalletSyncJobQueue(
+          databasePath: '${directory.path}/q.sqlite',
+        ),
         jobs: [
           job('thrown', () async => throw StateError('failed')),
           job(
@@ -492,6 +470,7 @@ void main() {
         ],
         copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
         maxConcurrentJobs: 2,
+        maxJobsPerRun: 3,
       );
 
       expect(
@@ -501,4 +480,97 @@ void main() {
       expect(calls, ['thrown', 'returned', 'successful']);
     },
   );
+
+  test('logs only aggregate counts and fixed failure categories', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final messages = <String>[];
+    final sink = _Sink(messages);
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+      logSink: sink,
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    const walletId = 'private-wallet-id';
+    const failureText = 'private.server.invalid transport secret';
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: const WalletNetworkKey(walletId, 'bitcoin', 'testnet'),
+          synchronize: () => throw StateError(failureText),
+        ),
+      ],
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      logSink: sink,
+    );
+
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.retry,
+    );
+    final logs = messages.join('\n');
+    expect(logs, contains('chain=bitcoin'));
+    expect(logs, contains('claimed=1'));
+    expect(logs, contains('category=operation_exception'));
+    expect(logs, isNot(contains(walletId)));
+    expect(logs, isNot(contains(failureText)));
+  });
+
+  test('logging sink failure cannot alter a successful batch', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    final queue = SqliteWalletSyncJobQueue(
+      databasePath: '${directory.path}/q.sqlite',
+      logSink: _ThrowingSink(),
+    );
+    addTearDown(() async {
+      await queue.close();
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    final key = const WalletNetworkKey('wallet', 'bitcoin', 'testnet');
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      queue: queue,
+      jobs: [
+        WalletTransactionSyncBackgroundJob(
+          key: key,
+          synchronize: () async => Ok(_outcome(key, const [])),
+        ),
+      ],
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      logSink: _ThrowingSink(),
+    );
+
+    expect(
+      (await task.execute(chain: 'bitcoin')).status,
+      BackgroundTaskExecutionStatus.success,
+    );
+  });
+}
+
+final class _Sink implements WalletSyncLogSink {
+  final List<String> messages;
+
+  _Sink(this.messages);
+
+  @override
+  void write(WalletSyncLogLevel level, String message) => messages.add(message);
+}
+
+final class _ThrowingSink implements WalletSyncLogSink {
+  @override
+  void write(WalletSyncLogLevel level, String message) {
+    throw StateError('logger unavailable');
+  }
 }

@@ -51,6 +51,12 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
   final outbox = SqliteNotificationOutbox(
     databasePath: path.join(documents.path, 'notification_outbox.sqlite'),
   );
+  final syncQueue = SqliteWalletSyncJobQueue(
+    databasePath: path.join(
+      documents.path,
+      'wallet_transaction_sync_queue.sqlite',
+    ),
+  );
   final localized = await _notificationLocalization(headless);
   final notifications = NotificationsFacade(
     gateway: FlutterLocalNotificationGateway(
@@ -88,6 +94,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
     jobs.add(
       WalletTransactionSyncBackgroundJob(
         key: key,
+        queueRevision: 'legacy-electrum-v1',
         synchronize: () => _synchronize(
           model: model,
           key: key,
@@ -103,12 +110,14 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
     bitcoinSync: () => WalletTransactionSyncBackgroundTask(
       notifications: notifications,
       jobs: jobs,
+      queue: syncQueue,
       copy: copy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
     ).execute(chain: 'bitcoin'),
     liquidSync: () => WalletTransactionSyncBackgroundTask(
       notifications: notifications,
       jobs: jobs,
+      queue: syncQueue,
       copy: copy,
       maxConcurrentJobs: _backgroundWalletSyncConcurrency,
     ).execute(chain: 'liquid'),
@@ -118,6 +127,7 @@ Future<BackgroundTaskRunner> _bootstrapBackgroundRunner() async {
       lwk.dispose,
       headless.reset,
       () async => outbox.dispose(),
+      syncQueue.close,
       sqlite.close,
     ]),
   );
