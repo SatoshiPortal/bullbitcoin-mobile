@@ -7,10 +7,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_inheritance_mnemonic_flow.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
@@ -24,7 +21,6 @@ import 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_completion_steps.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_schedule_fields.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_signer_input.dart';
-import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_registration_name_dialog.dart';
 import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/import_qr_device/public/import_qr_device_facade.dart';
 import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
@@ -32,10 +28,11 @@ import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullBorderedTile,
+        BullButton,
         BullInfoCard,
         BullInputText,
         BullPasteInput,
-        BullSnackBar,
         BullSwitch,
         Gap;
 import 'package:flutter/material.dart';
@@ -88,7 +85,7 @@ final class BullVaultOnboardingScreen extends StatelessWidget {
                   _stepContent(context, state),
                   if (state.failure case final failure?) ...[
                     const Gap(16),
-                    InfoCard(
+                    BullInfoCard(
                       description: failure.toTranslated(context),
                       tagColor: context.appColors.error,
                       bgColor: context.appColors.errorContainer,
@@ -183,7 +180,7 @@ final class _BottomActions extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BBButton.big(
+            BullButton.big(
               label: switch (state.step) {
                 BullVaultOnboardingStep.review when state.isCreating =>
                   context.loc.bullVaultCreating,
@@ -214,7 +211,7 @@ final class _BottomActions extends StatelessWidget {
                 (state.step == BullVaultOnboardingStep.inheritanceChoice &&
                     state.inheritanceChoiceMade)) ...[
               const Gap(8),
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.bullVaultCustomizeSetup,
                 onPressed: () => _showBullVaultAdvancedSetup(context),
                 bgColor: context.appColors.surface,
@@ -226,7 +223,7 @@ final class _BottomActions extends StatelessWidget {
             if (state.step == BullVaultOnboardingStep.hardwareSetup &&
                 !state.hardwareSetupComplete) ...[
               const Gap(8),
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.bullVaultDoHardwareSetupLater,
                 onPressed: () => _confirmHardwareSetupDeferral(context),
                 bgColor: context.appColors.surface,
@@ -238,7 +235,7 @@ final class _BottomActions extends StatelessWidget {
             if (state.step == BullVaultOnboardingStep.mobileBackup &&
                 !state.hasMobileBackup) ...[
               const Gap(8),
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.bullVaultSkipMobileBackup,
                 onPressed: () => _confirmMobileBackupDeferral(context),
                 bgColor: context.appColors.surface,
@@ -362,29 +359,36 @@ final class _BullVaultSetupIllustration extends StatelessWidget {
       border: Border.all(color: context.appColors.border),
       borderRadius: BorderRadius.circular(2),
     ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _SetupIllustrationIcon(
-          icon: Icons.phone_iphone_outlined,
-          semanticLabel: context.loc.bullVaultEverydayKey,
-        ),
-        const Gap(10),
-        Icon(Icons.add, color: context.appColors.textMuted, size: 20),
-        const Gap(10),
-        _SetupIllustrationIcon(
-          icon: Icons.key_outlined,
-          semanticLabel: context.loc.bullVaultColdKey,
-        ),
-        const Gap(14),
-        Icon(Icons.arrow_forward, color: context.appColors.textMuted, size: 22),
-        const Gap(14),
-        _SetupIllustrationIcon(
-          icon: Icons.shield_outlined,
-          semanticLabel: context.loc.bullVaultTitle,
-          emphasized: true,
-        ),
-      ],
+    child: FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _SetupIllustrationIcon(
+            icon: Icons.phone_iphone_outlined,
+            semanticLabel: context.loc.bullVaultEverydayKey,
+          ),
+          const Gap(10),
+          Icon(Icons.add, color: context.appColors.textMuted, size: 20),
+          const Gap(10),
+          _SetupIllustrationIcon(
+            icon: Icons.key_outlined,
+            semanticLabel: context.loc.bullVaultColdKey,
+          ),
+          const Gap(14),
+          Icon(
+            Icons.arrow_forward,
+            color: context.appColors.textMuted,
+            size: 22,
+          ),
+          const Gap(14),
+          _SetupIllustrationIcon(
+            icon: Icons.shield_outlined,
+            semanticLabel: context.loc.bullVaultTitle,
+            emphasized: true,
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -521,7 +525,7 @@ final class _InheritanceChoice extends StatelessWidget {
             state.inheritanceChoiceMade &&
             !state.includeInheritance) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultExtraNoInheritanceWarning,
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -752,14 +756,14 @@ final class _Inheritance extends StatelessWidget {
           BullVaultInheritanceKeySource.importedMnemonic => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              InfoCard(
+              BullInfoCard(
                 description: context.loc.bullVaultInheritanceMnemonicWarning,
                 tagColor: context.appColors.warning,
                 bgColor: context.appColors.warningContainer,
               ),
               const Gap(12),
               if (state.inheritanceInput.isNotEmpty)
-                InfoCard(
+                BullInfoCard(
                   description: context.loc
                       .bullVaultGeneratedInheritanceIdentity(
                         _accountFingerprint(state.inheritanceInput),
@@ -768,7 +772,7 @@ final class _Inheritance extends StatelessWidget {
                   bgColor: context.appColors.onSecondary,
                 )
               else
-                BBButton.big(
+                BullButton.big(
                   label:
                       state.inheritanceSource ==
                           BullVaultInheritanceKeySource.generatedMnemonic
@@ -992,7 +996,7 @@ final class _Review extends StatelessWidget {
             secondaryBody: _recoveryDate(context, recoveryDate),
           ),
           const Gap(12),
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultPassphraseFreeRecoveryWarning(
               DateFormat.yMMMMd(
                 Localizations.localeOf(context).toLanguageTag(),
@@ -1128,7 +1132,7 @@ final class _Review extends StatelessWidget {
         ],
         if (state.usesTwoColdKeys && !state.includeInheritance) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultExtraNoInheritanceWarning,
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -1136,7 +1140,7 @@ final class _Review extends StatelessWidget {
         ],
         if (state.schedule.isPractice) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultPracticeWarningDescription,
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -1164,24 +1168,14 @@ Future<void> _shareRecoveryPackage(
   BuildContext context,
   BullVaultOnboardingState state,
 ) async {
-  try {
-    final result = state.result!;
-    final exported = await shareBullVaultRecoveryPackage(
-      context,
-      content: state.recoveryPackageContent!,
-      policyId: result.policy.id,
-    );
-    if (!context.mounted || !exported) return;
-    context.read<BullVaultOnboardingCubit>().markRecoveryPackageExported();
-    BullSnackBar.show(
-      context,
-      message: context.loc.bullVaultRecoveryPackageExported,
-    );
-  } on Exception {
-    if (context.mounted) {
-      BullSnackBar.show(context, message: context.loc.oopsSomethingWentWrong);
-    }
-  }
+  await shareBullVaultRecoveryPackage(
+    context,
+    content: state.recoveryPackageContent!,
+    policyId: state.result!.policy.id,
+    onExported: context
+        .read<BullVaultOnboardingCubit>()
+        .markRecoveryPackageExported,
+  );
 }
 
 Future<void> _completeHardwareSetup(
@@ -1189,36 +1183,21 @@ Future<void> _completeHardwareSetup(
   required BullVaultCreateResult result,
   required WalletSigner signer,
 }) async {
-  var setupResult = result;
-  var setupSigner = signer;
-  final device = signer.signerDevice;
-  if (device != null) {
-    final name = await promptBullVaultRegistrationName(
-      context,
-      signer: signer,
-      fallbackName: result.wallet.label ?? context.loc.bullVaultTitle,
-    );
-    if (name == null || !context.mounted) return;
-    final cubit = context.read<BullVaultOnboardingCubit>();
-    final updated = await cubit.updateHardwareRegistrationName(
-      signerId: signer.id,
-      name: name,
-    );
-    if (!updated || !context.mounted) return;
-    setupResult = cubit.state.result!;
-    setupSigner = setupResult.wallet.signers.singleWhere(
-      (candidate) => candidate.id == signer.id,
-    );
-  }
+  final cubit = context.read<BullVaultOnboardingCubit>();
   final completed = await BullVaultPolicySetupFlow.execute(
     context,
-    result: setupResult,
-    signer: setupSigner,
+    result: result,
+    signer: signer,
+    updateRegistrationName: (name) async =>
+        await cubit.updateHardwareRegistrationName(
+          signerId: signer.id,
+          name: name,
+        )
+        ? cubit.state.result
+        : null,
   );
   if (completed && context.mounted) {
-    await context.read<BullVaultOnboardingCubit>().completeHardwareSigner(
-      signer.id,
-    );
+    await cubit.completeHardwareSigner(signer.id);
   }
 }
 
@@ -1457,7 +1436,7 @@ final class _AdvancedSetup extends StatelessWidget {
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: BBButton.big(
+        child: BullButton.big(
           label: context.loc.continueButton,
           onPressed: () => Navigator.of(context).pop(true),
           bgColor: context.appColors.primary,
@@ -1541,7 +1520,7 @@ final class _ScheduleEditor extends StatelessWidget {
                     onLastResortChanged: cubit.setLastResortDelay,
                   ),
                   const Gap(20),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.doneButton,
                     onPressed: context.pop,
                     bgColor: context.appColors.primary,
@@ -1569,7 +1548,7 @@ final class _AdvancedRow extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBorderedTile(
     onTap: onTap,
     child: Row(
       children: [
@@ -1613,7 +1592,7 @@ final class _AdvancedSwitchRow extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBorderedTile(
     onTap: () => onChanged(!value),
     child: Row(
       children: [
@@ -1655,7 +1634,7 @@ final class _SummaryTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBorderedTile(
     child: Row(
       children: [
         Icon(icon, color: context.appColors.secondary),
@@ -1703,7 +1682,7 @@ final class _ChoiceTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBorderedTile(
     onTap: onTap,
     child: Row(
       children: [

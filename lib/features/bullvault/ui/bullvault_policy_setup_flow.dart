@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
+import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_registration_name_dialog.dart';
 import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ abstract final class BullVaultPolicySetupFlow {
     BuildContext context, {
     required BullVaultCreateResult result,
     required WalletSigner signer,
+    required Future<BullVaultCreateResult?> Function(String name)
+    updateRegistrationName,
   }) async {
     final device = signer.signerDevice;
     if (device == null) {
@@ -21,12 +24,21 @@ abstract final class BullVaultPolicySetupFlow {
           ) ??
           false;
     }
+    final name = await promptBullVaultRegistrationName(
+      context,
+      signer: signer,
+      fallbackName: result.wallet.label ?? context.loc.bullVaultTitle,
+    );
+    if (name == null || !context.mounted) return false;
+    final updated = await updateRegistrationName(name);
+    if (updated == null || !context.mounted) return false;
+    final wallet = updated.wallet;
     if (device.isLedger) {
       const facade = LedgerFacade();
       final registered = await context.pushNamed<bool>(
         facade.registerWalletPolicyRouteName,
         extra: RegisterLedgerWalletPolicyRequest(
-          result.wallet,
+          wallet,
           requestedDeviceType: device,
           signerId: signer.id,
         ),
@@ -37,21 +49,15 @@ abstract final class BullVaultPolicySetupFlow {
       const facade = BitBoxFacade();
       final registered = await context.pushNamed<bool>(
         facade.registerWalletPolicyRouteName,
-        extra: RegisterBitBoxWalletPolicyRequest(
-          result.wallet,
-          signerId: signer.id,
-        ),
+        extra: RegisterBitBoxWalletPolicyRequest(wallet, signerId: signer.id),
       );
       return registered == true;
     }
 
     await context.pushNamed(
       SettingsRoute.walletRegistration.name,
-      pathParameters: {'walletId': result.wallet.id},
-      extra: WalletRegistrationRequest(
-        wallet: result.wallet,
-        signerId: signer.id,
-      ),
+      pathParameters: {'walletId': wallet.id},
+      extra: WalletRegistrationRequest(wallet: wallet, signerId: signer.id),
     );
     if (!context.mounted) return false;
     return await _confirmManualSetup(context, signerName: device.displayName) ??

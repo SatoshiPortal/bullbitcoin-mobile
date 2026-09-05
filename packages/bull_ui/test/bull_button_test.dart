@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,9 +9,8 @@ void main() {
     var taps = 0;
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.themeData(AppThemeType.light),
         home: Scaffold(
-          body: BBButton.big(
+          body: BullButton.big(
             label: 'Working',
             onPressed: () => taps++,
             bgColor: Colors.red,
