@@ -38,6 +38,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -45,6 +46,8 @@ import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
     show
         DurableWalletSourceOperationCoordinator,
         SqliteWalletSyncMetadataStore,
+        WalletCoordinationLogEvent,
+        WalletCoordinationLogLevel,
         WalletSourceOperationCoordinator,
         WalletSyncMetadataPort;
 
@@ -78,6 +81,7 @@ class WalletLocator {
     locator.registerLazySingleton<WalletSourceOperationCoordinator>(
       () => DurableWalletSourceOperationCoordinator(
         databasePath: coordinationDatabasePath(documentsDirectory.path),
+        logSink: _logWalletCoordination,
       ),
     );
 
@@ -261,5 +265,16 @@ class WalletLocator {
     locator.registerFactory<SyncWalletUsecase>(
       () => SyncWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
+  }
+}
+
+void _logWalletCoordination(WalletCoordinationLogEvent event) {
+  switch (event.level) {
+    case WalletCoordinationLogLevel.config:
+      log.config(event.message);
+    case WalletCoordinationLogLevel.fine:
+      log.fine(event.message);
+    case WalletCoordinationLogLevel.warning:
+      log.warning(event.message);
   }
 }
