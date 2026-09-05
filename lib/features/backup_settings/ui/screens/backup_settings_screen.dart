@@ -107,7 +107,7 @@ class _ViewVaultKeyButton extends StatelessWidget {
   Widget build(BuildContext context) => SettingsEntryItem(
     icon: Icons.vpn_key,
     title: context.loc.backupSettingsViewVaultKey,
-    onTap: () => const RecoverBullFacade().openViewVaultKey(context),
+    onTap: () => RecoverBullFacade.openViewVaultKey(context),
   );
 }
 

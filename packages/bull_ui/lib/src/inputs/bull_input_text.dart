@@ -3,8 +3,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// The standard themed text field — duplicated from
-/// `core/widgets/inputs/text_input.dart` (`BBInputText`).
+/// The standard themed text field.
 ///
 /// Supports a fixed prefix, trailing icon, obscuring, numeric/paste-only
 /// keyboards, length limits and single/multi-line layouts. Keeps the original
@@ -224,11 +223,13 @@ class _BullInputTextState extends State<BullInputText> {
               )
             : null,
         suffixIcon: widget.rightIcon != null
-            ? IconButton(
-                padding: const EdgeInsets.all(4),
-                icon: widget.rightIcon!,
-                onPressed: () => widget.onRightTap?.call(),
-              )
+            ? widget.onRightTap == null
+                  ? widget.rightIcon
+                  : IconButton(
+                      padding: const EdgeInsets.all(4),
+                      icon: widget.rightIcon!,
+                      onPressed: () => widget.onRightTap?.call(),
+                    )
             : null,
         border: _getBorder(context),
         enabledBorder: _getBorder(context),

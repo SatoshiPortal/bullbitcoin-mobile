@@ -2,11 +2,14 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
 class PrepareBitcoinSendUsecase {
@@ -34,6 +37,7 @@ class PrepareBitcoinSendUsecase {
     bool drain = false,
     List<WalletUtxo>? selectedInputs,
     bool replaceByFee = true,
+    BitcoinPolicyPath? policyPath,
   }) async {
     try {
       if (amountSat == null && drain == false) {
@@ -63,8 +67,12 @@ class PrepareBitcoinSendUsecase {
         unspendable: unspendableUtxos,
         selected: selectedInputs,
         replaceByFee: replaceByFee,
+        policyPath: policyPath,
       );
-      final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
+      final size = await _bitcoinWalletRepository.getTxSize(
+        psbt: psbt,
+        walletId: walletId,
+      );
       final isToSelf = await _bitcoinWalletRepository.isAddressOfWallet(
         address,
         walletId: walletId,
@@ -73,6 +81,10 @@ class PrepareBitcoinSendUsecase {
     } on NoSpendableUtxoException {
       rethrow;
     } on InsufficientFundsException {
+      rethrow;
+    } on BitcoinCoinSelectionException {
+      rethrow;
+    } on UnsupportedBitcoinPolicyPathException {
       rethrow;
     } catch (e) {
       throw PrepareBitcoinSendException(e.toString());

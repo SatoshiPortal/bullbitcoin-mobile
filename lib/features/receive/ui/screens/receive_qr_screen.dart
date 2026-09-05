@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
@@ -17,9 +19,11 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
+import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
+import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
@@ -41,12 +45,17 @@ class ReceiveQrPage extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
     final isLedger = context.select(
-      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isLedger ?? false,
+      (ReceiveBloc bloc) =>
+          _supportsVerification(bloc.state.wallet, (device) => device.isLedger),
     );
     final isBitBox = context.select(
-      (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
+      (ReceiveBloc bloc) =>
+          _supportsVerification(bloc.state.wallet, (device) => device.isBitBox),
     );
     final showAddressVerification = !isLightning && (isLedger || isBitBox);
+    final isBullVault = context.select(
+      (ReceiveBloc bloc) => bloc.state.isBullVault,
+    );
     final orderSwap = context.select(
       (ReceiveBloc bloc) => bloc.state.orderSwap,
     );
@@ -72,11 +81,21 @@ class ReceiveQrPage extends StatelessWidget {
           Gap(gap / 2),
           const ReceiveInfoDetails(),
           Gap(gap / 2),
+          if (!isLightning && isBullVault) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: InfoCard(
+                description: context.loc.bullVaultReceiveVerifyReminder,
+                tagColor: context.appColors.secondary,
+                bgColor: context.appColors.surfaceContainer,
+              ),
+            ),
+            const Gap(12),
+          ],
           if (showAddressVerification) ...[
-            if (isLedger)
-              const Column(children: [VerifyAddressOnLedgerButton()]),
-            if (isBitBox)
-              const Column(children: [VerifyAddressOnBitBoxButton()]),
+            if (isLedger) const VerifyAddressOnLedgerButton(),
+            if (isLedger && isBitBox) const Gap(12),
+            if (isBitBox) const VerifyAddressOnBitBoxButton(),
             Gap(gap),
           ],
           if (!isLightning) const ReceiveNewAddressButton(),
@@ -707,6 +726,23 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
             return;
           }
 
+          final wallet = state.wallet!;
+          final address = state.bitcoinAddress!;
+          if (!wallet.isStandardSingleSignatureWallet) {
+            const facade = LedgerFacade();
+            context.pushNamed(
+              facade.verifyWalletPolicyAddressRouteName,
+              extra: VerifyLedgerWalletPolicyAddressRequest(
+                wallet: wallet,
+                address: state.address,
+                keychain: _policyKeychain(address.keyChain),
+                index: address.index,
+                requestedDeviceType: _singleLedgerDeviceType(wallet),
+              ),
+            );
+            return;
+          }
+
           final keyChainPath =
               state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
               ? "0"
@@ -751,6 +787,22 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
             return;
           }
 
+          final wallet = state.wallet!;
+          final address = state.bitcoinAddress!;
+          if (!wallet.isStandardSingleSignatureWallet) {
+            const facade = BitBoxFacade();
+            context.pushNamed(
+              facade.verifyWalletPolicyAddressRouteName,
+              extra: VerifyBitBoxWalletPolicyAddressRequest(
+                wallet: wallet,
+                address: state.address,
+                keychain: _policyKeychain(address.keyChain),
+                index: address.index,
+              ),
+            );
+            return;
+          }
+
           final keyChainPath =
               state.bitcoinAddress!.keyChain == WalletAddressKeyChain.external
               ? "0"
@@ -773,4 +825,32 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
       ),
     );
   }
+}
+
+bool _supportsVerification(
+  Wallet? wallet,
+  bool Function(SignerDeviceEntity device) matchesDevice,
+) {
+  if (wallet == null) return false;
+  return wallet.signers.any(
+    (signer) =>
+        signer.signerDevice != null &&
+        matchesDevice(signer.signerDevice!) &&
+        (wallet.isStandardSingleSignatureWallet ||
+            wallet.supportsWalletPolicySigner(signer)),
+  );
+}
+
+BitcoinPolicyKeychain _policyKeychain(WalletAddressKeyChain keychain) =>
+    keychain == WalletAddressKeyChain.external
+    ? BitcoinPolicyKeychain.external
+    : BitcoinPolicyKeychain.internal;
+
+SignerDeviceEntity? _singleLedgerDeviceType(Wallet wallet) {
+  final devices = wallet.signers
+      .map((signer) => signer.signerDevice)
+      .whereType<SignerDeviceEntity>()
+      .where((device) => device.isLedger)
+      .toSet();
+  return devices.length == 1 ? devices.single : null;
 }

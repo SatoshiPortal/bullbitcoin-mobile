@@ -103,6 +103,18 @@ final class SendExchangeOrderMismatchFailure extends SendFailure {
   const SendExchangeOrderMismatchFailure([super.logMessage]);
 }
 
+final class SendTransactionSigningFailure extends SendFailure {
+  const SendTransactionSigningFailure([super.logMessage]);
+}
+
+final class SendSignerPassphraseMismatchFailure extends SendFailure {
+  const SendSignerPassphraseMismatchFailure([super.logMessage]);
+}
+
+final class SendUnsupportedPolicyPathFailure extends SendFailure {
+  const SendUnsupportedPolicyPathFailure([super.logMessage]);
+}
+
 final class SendTransactionConfirmationFailure extends SendFailure {
   final bool isBroadcastFailure;
 
@@ -114,4 +126,16 @@ final class SendTransactionConfirmationFailure extends SendFailure {
 
 final class SendUnexpectedFailure extends SendFailure {
   const SendUnexpectedFailure([super.logMessage]);
+}
+
+final class SendPersistenceFailure extends SendFailure {
+  const SendPersistenceFailure([super.logMessage]);
+}
+
+final class SendPendingTransactionChangedFailure extends SendFailure {
+  const SendPendingTransactionChangedFailure([super.logMessage]);
+}
+
+final class SendStoredTransactionInvalidFailure extends SendFailure {
+  const SendStoredTransactionInvalidFailure([super.logMessage]);
 }

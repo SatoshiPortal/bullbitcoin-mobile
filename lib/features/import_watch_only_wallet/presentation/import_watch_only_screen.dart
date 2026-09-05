@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -18,25 +18,38 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPasteInput, Gap;
 import 'package:go_router/go_router.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
   final WatchOnlyWalletEntity? watchOnlyWallet;
+  final String? input;
+  final SignerDeviceEntity? signerDevice;
 
-  const ImportWatchOnlyScreen({super.key, this.watchOnlyWallet});
+  const ImportWatchOnlyScreen({
+    super.key,
+    this.watchOnlyWallet,
+    this.input,
+    this.signerDevice,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ImportWatchOnlyCubit(
-        watchOnlyWallet: watchOnlyWallet,
-        importWatchOnlyDescriptorUsecase:
-            locator<ImportWatchOnlyDescriptorUsecase>(),
-        importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
-        parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
-        settingsRepository: locator(),
-      )..init(),
+      create: (context) {
+        final cubit = ImportWatchOnlyCubit(
+          watchOnlyWallet: watchOnlyWallet,
+          importWatchOnlyDescriptorUsecase:
+              locator<ImportWatchOnlyDescriptorUsecase>(),
+          importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
+          parseWatchOnlyInputUsecase: locator<ParseWatchOnlyInputUsecase>(),
+          settingsRepository: locator(),
+        );
+        if (input case final input?) {
+          cubit.parseInput(input, signerDevice: signerDevice);
+        }
+        return cubit;
+      },
       child: Scaffold(
         appBar: AppBar(
           flexibleSpace: TopBar(
@@ -73,10 +86,13 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           watchOnlyWallet: state.watchOnlyWallet!,
                         )
                       else ...[
-                        PasteInput(
+                        BullPasteInput(
                           text: state.input,
                           hint: context.loc.importWatchOnlyPasteHint,
-                          onChanged: cubit.parsePastedInput,
+                          onChanged: (input) => cubit.parseInput(
+                            input,
+                            signerDevice: signerDevice,
+                          ),
                         ),
                         if (state.failure != null)
                           Center(
@@ -86,7 +102,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                             ),
                           ),
                         const Gap(32),
-                        const ImportMethodWidget(),
+                        ImportMethodWidget(signerDevice: signerDevice),
                       ],
                     ],
                   ),

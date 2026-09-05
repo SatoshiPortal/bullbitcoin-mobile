@@ -18,6 +18,7 @@ class BBButton extends StatelessWidget {
     this.outlined = false,
     this.borderColor,
     this.disabled = false,
+    this.loading = false,
     this.height,
     this.width,
     this.textStyle,
@@ -35,6 +36,7 @@ class BBButton extends StatelessWidget {
     this.outlined = false,
     this.borderColor,
     this.disabled = false,
+    this.loading = false,
     this.height,
     this.width,
     this.textStyle,
@@ -52,6 +54,7 @@ class BBButton extends StatelessWidget {
   final ButtonSize size;
   final Color? borderColor;
   final bool disabled;
+  final bool loading;
   final double? height;
   final double? width;
   final TextStyle? textStyle;
@@ -81,9 +84,9 @@ class BBButton extends StatelessWidget {
 
     final button = AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
-      opacity: disabled ? 0.5 : 1,
+      opacity: disabled && !loading ? 0.5 : 1,
       child: IgnorePointer(
-        ignoring: disabled,
+        ignoring: disabled || loading,
         child: InkWell(
           onTap: () => disabled ? null : onPressed(),
           borderRadius: radius,
@@ -103,7 +106,17 @@ class BBButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (iconData == null && icon == null) ...[
+                if (loading) ...[
+                  SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: textColor,
+                    ),
+                  ),
+                  const Gap(10),
+                  labelText,
+                ] else if (iconData == null && icon == null) ...[
                   labelText,
                 ] else if (label.isEmpty) ...[
                   image,

@@ -1191,7 +1191,6 @@
   "exchangeDcaFrequencyDay": "день",
   "payBumpFee": "Bump Fee",
   "bitboxActionImportWalletProcessingSubtext": "Настройка кошелька только для часов...",
-  "psbtFlowDone": "Я закончил",
   "exchangeHomeDepositButton": "Депозит",
   "testBackupRecoverWallet": "Recover Wallet",
   "fundExchangeMethodSinpeTransferSubtitle": "Трансфер Колонны с помощью SINPE",

@@ -6,6 +6,9 @@ BULL Wallet is a self-custodial Bitcoin and Liquid Network wallet which offers n
 
 Following the cypherpunk ethos, the BULL Wallet is fully open-source and trustless.
 
+See [BullVault](docs/BULLVAULT.md) for multiple-key setups, scheduled recovery,
+hardware registration, backups, restoration, and renewal.
+
 ## Wallet basics
 
 At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant Payments Wallet. Both wallets are created using the same mnemonic seed, so that a single backup is sufficient for both.

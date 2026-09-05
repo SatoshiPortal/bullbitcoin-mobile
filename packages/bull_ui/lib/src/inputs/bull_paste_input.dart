@@ -1,17 +1,20 @@
-import 'package:bull_ui/src/data_display/bull_text.dart';
+import 'package:bull_ui/src/inputs/bull_input_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/src/layout/gap.dart';
 
-/// A read-only field with a paste button that fills it from the clipboard —
-/// duplicated from `core/widgets/inputs/paste_input.dart`.
+/// An editable text field with paste and optional scan actions.
 class BullPasteInput extends StatelessWidget {
   const BullPasteInput({
     super.key,
     required this.text,
     required this.onChanged,
-    this.hint = 'Paste a payment address or invoice',
+    required this.hint,
+    this.onScan,
+    this.onPasteError,
+    this.enabled = true,
+    this.minLines = 1,
+    this.maxLines = 4,
   });
 
   /// The current value (controlled by the parent).
@@ -20,52 +23,58 @@ class BullPasteInput extends StatelessWidget {
   /// Placeholder shown when [text] is empty.
   final String hint;
 
-  /// Fired with the pasted clipboard contents.
-  final Function(String) onChanged;
+  /// Fired for both typed and pasted contents.
+  final ValueChanged<String> onChanged;
+
+  /// Displays a scanner supplied by the consuming feature.
+  final VoidCallback? onScan;
+
+  /// Reports clipboard failures without exposing pasted contents.
+  final ValueChanged<Exception>? onPasteError;
+
+  final bool enabled;
+  final int minLines;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    return Container(
-      height: 48,
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colors.border),
-      ),
-      child: Row(
+    return BullInputText(
+      value: text,
+      hint: hint,
+      disabled: !enabled,
+      minLines: minLines,
+      maxLines: maxLines,
+      enableSuggestions: false,
+      autocorrect: false,
+      smartQuotesType: SmartQuotesType.disabled,
+      smartDashesType: SmartDashesType.disabled,
+      onChanged: onChanged,
+      rightIcon: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const Gap(15),
-          Expanded(
-            child: text.isEmpty
-                ? BullText(
-                    hint,
-                    style: Theme.of(context).textTheme.labelSmall,
-                    color: colors.onSurface,
-                  )
-                : BullText(
-                    text.trim(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    color: colors.onSurface,
-                  ),
-          ),
+          if (onScan != null)
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              icon: Icon(Icons.qr_code_scanner, color: colors.onSurface),
+              onPressed: enabled ? onScan : null,
+            ),
           IconButton(
             visualDensity: VisualDensity.compact,
-            iconSize: 20,
             icon: Icon(Icons.paste_sharp, color: colors.onSurface),
-            onPressed: () {
-              Clipboard.getData(Clipboard.kTextPlain).then((value) {
-                if (value != null) {
-                  onChanged(value.text ?? '');
-                }
-              });
-            },
+            onPressed: enabled ? _paste : null,
           ),
-          const Gap(8),
         ],
       ),
     );
+  }
+
+  Future<void> _paste() async {
+    try {
+      final value = await Clipboard.getData(Clipboard.kTextPlain);
+      if (value?.text case final text?) onChanged(text);
+    } on Exception catch (error) {
+      onPasteError?.call(error);
+    }
   }
 }

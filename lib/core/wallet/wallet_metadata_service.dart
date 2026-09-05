@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -51,7 +52,7 @@ class WalletMetadataService {
   })
   decodeOrigin({required String origin}) {
     final match = RegExp(
-      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
+      r"\[([a-fA-F0-9]+)/(\d+)[h']/(\d+)[h']/(\d+)[h']\]",
     ).firstMatch(origin);
 
     if (match == null) throw 'Invalid origin format: $origin';
@@ -59,15 +60,15 @@ class WalletMetadataService {
     final fingerprint = match.group(1)!;
     final matchingScript = match.group(2)!;
     final matchingNetwork = match.group(3)!;
-    final account = match.group(4)!;
+    final account = '${match.group(4)}h';
 
     ScriptType script;
     switch (matchingScript) {
-      case '84h':
+      case '84':
         script = ScriptType.bip84;
-      case '49h':
+      case '49':
         script = ScriptType.bip49;
-      case '44h':
+      case '44':
         script = ScriptType.bip44;
       default:
         throw 'Unknown script: $matchingScript';
@@ -75,9 +76,9 @@ class WalletMetadataService {
 
     Network network;
     switch (matchingNetwork) {
-      case '0h':
+      case '0':
         network = Network.bitcoinMainnet;
-      case '1h':
+      case '1':
         if (origin.contains('elwpkh(') ||
             origin.contains('elsh(wpkh(') ||
             origin.contains('elpkh(')) {
@@ -85,7 +86,7 @@ class WalletMetadataService {
         } else {
           network = Network.bitcoinTestnet;
         }
-      case '1776h':
+      case '1776':
         network = Network.liquidMainnet;
 
       default:
@@ -114,22 +115,18 @@ class WalletMetadataService {
       scriptType: scriptType,
     );
 
-    String descriptor;
-    String changeDescriptor;
+    final String descriptor;
     if (network.isBitcoin) {
-      final xprv = Bip32Derivation.getXprvFromSeed(seed.bytes, network);
       descriptor =
-          await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
-            xprv,
+          DescriptorDerivation.derivePublicBitcoinMultipathDescriptorFromXpub(
+            xpub.toBase58(),
             scriptType: scriptType,
             isTestnet: network.isTestnet,
-          );
-      changeDescriptor =
-          await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
-            xprv,
-            scriptType: scriptType,
-            isTestnet: network.isTestnet,
-            isInternalKeychain: true,
+            masterFingerprint: seed.masterFingerprint,
+            derivationPath: _accountDerivationPath(
+              network: network,
+              scriptType: scriptType,
+            ),
           );
     } else {
       if (seed is! MnemonicSeed) {
@@ -144,7 +141,6 @@ class WalletMetadataService {
             scriptType: scriptType,
             isTestnet: network.isTestnet,
           );
-      changeDescriptor = descriptor;
     }
 
     return WalletMetadataModel(
@@ -153,13 +149,31 @@ class WalletMetadataService {
         network: network,
         scriptType: scriptType,
       ),
-      masterFingerprint: seed.masterFingerprint,
-      xpubFingerprint: xpub.fingerprintHex,
-      signer: Signer.local,
-      signerDevice: null,
-      xpub: xpub.convert(scriptType.getXpubType(network)),
-      externalPublicDescriptor: descriptor,
-      internalPublicDescriptor: changeDescriptor,
+      network: network,
+      signers: [
+        WalletSignerModel(
+          id: 'signer-0',
+          signer: Signer.local,
+          signerDevice: null,
+          descriptorKeys: [
+            WalletDescriptorKeyModel(
+              id: 'key-0',
+              signerId: 'signer-0',
+              masterFingerprint: seed.masterFingerprint,
+              xpubFingerprint: xpub.fingerprintHex,
+              xpub: xpub.convert(scriptType.getXpubType(network)),
+              derivationPath: _accountDerivationPath(
+                network: network,
+                scriptType: scriptType,
+              ),
+              descriptorPath: network.isBitcoin
+                  ? standardSingleSignatureDescriptorPath
+                  : '',
+            ),
+          ],
+        ),
+      ],
+      publicDescriptor: descriptor,
       isDefault: isDefault,
       label: label,
       isPhysicalBackupTested: false,
@@ -168,82 +182,10 @@ class WalletMetadataService {
     );
   }
 
-  static Future<WalletMetadataModel> deriveFromXpub({
-    required String xpub,
+  static String _accountDerivationPath({
     required Network network,
     required ScriptType scriptType,
-    String label = '',
-  }) async {
-    if (network.isLiquid) {
-      throw UnimplementedError(
-        'Importing xpubs for Liquid network is not supported',
-      );
-    }
-
-    final bip32Xpub = Bip32Derivation.getBip32Xpub(xpub);
-    final xpubBase58 = bip32Xpub.toBase58();
-    final pubkeyFingerprint = bip32Xpub.fingerprintHex;
-
-    final descriptor =
-        await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
-          xpubBase58,
-          fingerprint: pubkeyFingerprint,
-          scriptType: scriptType,
-          isTestnet: network.isTestnet,
-        );
-    final changeDescriptor =
-        await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
-          xpubBase58,
-          fingerprint: pubkeyFingerprint,
-          scriptType: scriptType,
-          isTestnet: network.isTestnet,
-          isInternalKeychain: true,
-        );
-
-    return WalletMetadataModel(
-      id: WalletMetadataService.encodeOrigin(
-        fingerprint: pubkeyFingerprint,
-        network: network,
-        scriptType: scriptType,
-      ),
-      xpubFingerprint: bip32Xpub.fingerprintHex,
-      signer: Signer.none,
-      signerDevice: null,
-      xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
-      externalPublicDescriptor: descriptor,
-      internalPublicDescriptor: changeDescriptor,
-      label: label,
-      masterFingerprint: '',
-      isEncryptedVaultTested: false,
-      isPhysicalBackupTested: false,
-      isDefault: false,
-    );
-  }
-
-  static Future<WalletMetadataModel> fromDescriptor(
-    WatchOnlyDescriptorEntity entity,
-  ) async {
-    return WalletMetadataModel(
-      id: WalletMetadataService.encodeOrigin(
-        fingerprint: entity.masterFingerprint,
-        network: entity.network,
-        scriptType: entity.scriptType,
-      ),
-      masterFingerprint: entity.masterFingerprint,
-      xpubFingerprint: entity.pubkeyFingerprint,
-      signer: Signer.fromEntity(entity.signer),
-      signerDevice: entity.signerDevice != null
-          ? SignerDevice.fromEntity(entity.signerDevice!)
-          : null,
-      xpub: entity.pubkey,
-      externalPublicDescriptor: entity.descriptor.external,
-      internalPublicDescriptor: entity.descriptor.internal,
-      isDefault: false,
-      isEncryptedVaultTested: false,
-      isPhysicalBackupTested: false,
-      label: entity.label,
-    );
-  }
+  }) => "m/${scriptType.purpose}'/${network.coinType}'/0'";
 }
 
 class MnemonicSeedNeededException extends BullException {

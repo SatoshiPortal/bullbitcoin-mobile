@@ -17,6 +17,10 @@ import 'package:bb_mobile/features/wallet/domain/usecase/get_external_tor_proxy_
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_pending_transaction_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_pending_transactions_usecase.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_pending_transactions_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class WalletLocator {
@@ -42,6 +46,12 @@ class WalletLocator {
         locator<Tor>(),
       ),
     );
+    locator.registerFactory<WatchWalletPendingTransactionsUsecase>(
+      () => WatchWalletPendingTransactionsUsecase(locator<SendFacade>()),
+    );
+    locator.registerFactory<DeleteWalletPendingTransactionUsecase>(
+      () => DeleteWalletPendingTransactionUsecase(locator<SendFacade>()),
+    );
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
@@ -61,6 +71,12 @@ class WalletLocator {
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),
+      ),
+    );
+    locator.registerFactory<WalletPendingTransactionsCubit>(
+      () => WalletPendingTransactionsCubit(
+        locator<WatchWalletPendingTransactionsUsecase>(),
+        locator<DeleteWalletPendingTransactionUsecase>(),
       ),
     );
   }

@@ -1,8 +1,12 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
@@ -18,10 +22,10 @@ class WatchOnlyDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return watchOnlyWallet.when(
-      descriptor: (_, _, _) => const _DescriptorDetailsWidget(),
-      xpub: (_, _, _) => const _XpubDetailsWidget(),
-    );
+    return switch (watchOnlyWallet) {
+      WatchOnlyDescriptorEntity() => const _DescriptorDetailsWidget(),
+      WatchOnlyXpubEntity() => const _XpubDetailsWidget(),
+    };
   }
 }
 
@@ -40,69 +44,47 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BBText(
-          'Network: ${entity.network.name}',
-          style: context.font.bodyMedium,
+        LabeledTextInput(
+          label: context.loc.walletDetailsNetworkLabel,
+          value: entity.network == Network.bitcoinMainnet
+              ? context.loc.walletNetworkBitcoin
+              : context.loc.walletNetworkBitcoinTestnet,
+          onChanged: null,
         ),
         const Gap(24),
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
-          value: entity.descriptor.combined,
+          value: entity.descriptor,
           onChanged: null,
+          maxLines: 5,
         ),
-        const Gap(24),
-        LabeledTextInput(
-          label: context.loc.importWatchOnlyType,
-          value: entity.descriptor.derivation.label,
-          onChanged: null,
-        ),
-        const Gap(24),
-        if (entity.signerDevice == null)
-          Row(
-            children: [
-              SizedBox(
-                width: 120,
-                child: BBText(
-                  context.loc.importWatchOnlySigningDevice,
-                  style: context.font.titleMedium,
-                ),
-              ),
-              SizedBox(
-                width: 220,
-                child: DropdownButtonFormField<SignerDeviceEntity?>(
-                  alignment: Alignment.centerLeft,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
-                  ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.appColors.text,
-                  ),
-                  initialValue: entity.signerDevice,
-                  items: [null, ...SignerDeviceEntity.values]
-                      .map(
-                        (value) => DropdownMenuItem<SignerDeviceEntity?>(
-                          value: value,
-                          child: BBText(
-                            value?.displayName ??
-                                context.loc.importWatchOnlyUnknown,
-                            style: context.font.headlineSmall,
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: cubit.onSignerDeviceChanged,
-                ),
-              ),
-            ],
+        if (entity.inferredChangePath) ...[
+          const Gap(24),
+          InfoCard(
+            title: context.loc.importWatchOnlyChangePathTitle,
+            description: context.loc.importWatchOnlyChangePathDescription,
+            bgColor: context.appColors.warning.withValues(alpha: 0.1),
+            tagColor: context.appColors.warning,
           ),
-        if (entity.signerDevice != null)
+        ],
+        if (entity.scriptType case final scriptType?) ...[
+          const Gap(24),
           LabeledTextInput(
-            label: context.loc.importWatchOnlySigningDevice,
-            value: entity.signerDevice!.displayName,
+            label: context.loc.importWatchOnlyType,
+            value: _derivationFor(scriptType).label,
             onChanged: null,
           ),
+        ],
+        const Gap(24),
+        for (final (index, signer) in entity.signers.indexed) ...[
+          if (index > 0) const Gap(16),
+          _SignerDeviceField(
+            signer: signer,
+            index: index,
+            onChanged: (device) =>
+                cubit.onSignerDeviceChanged(signer.id, device),
+          ),
+        ],
         const Gap(24),
         LabeledTextInput(
           label: context.loc.importWatchOnlyLabel,
@@ -124,6 +106,47 @@ class _DescriptorDetailsWidget extends StatelessWidget {
   }
 }
 
+class _SignerDeviceField extends StatelessWidget {
+  final WalletSigner signer;
+  final int index;
+  final ValueChanged<SignerDeviceEntity?> onChanged;
+
+  const _SignerDeviceField({
+    required this.signer,
+    required this.index,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fingerprint = signer.displayFingerprint;
+    final label = fingerprint.isEmpty
+        ? context.loc.walletSignerLabel(index + 1)
+        : context.loc.walletSignerLabelWithFingerprint(index + 1, fingerprint);
+    if (signer.signer == SignerEntity.local) {
+      return LabeledTextInput(
+        label: label,
+        value: context.loc.importWatchOnlyBullMobileDevice,
+        onChanged: null,
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        BBText(label, style: context.font.titleMedium),
+        const Gap(8),
+        SignerDeviceDropdown(
+          key: ValueKey(signer.id),
+          value: signer.signerDevice,
+          unknownLabel: context.loc.importWatchOnlyUnknown,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
 class _XpubDetailsWidget extends StatelessWidget {
   const _XpubDetailsWidget();
 
@@ -135,7 +158,11 @@ class _XpubDetailsWidget extends StatelessWidget {
         .state
         .watchOnlyWallet;
     final entity = watchOnlyWallet! as WatchOnlyXpubEntity;
-    final isXpub = entity.pubkey.startsWith('xpub');
+    final isXpub = entity.extendedPublicKey.startsWith('xpub');
+    final usesStandardPrefix =
+        isXpub || entity.extendedPublicKey.startsWith('tpub');
+    final canSelectScriptType =
+        usesStandardPrefix && entity.derivationPath == null;
 
     return Column(
       crossAxisAlignment: .start,
@@ -145,7 +172,7 @@ class _XpubDetailsWidget extends StatelessWidget {
           style: context.font.titleMedium,
         ),
         const Gap(8),
-        BBText(entity.pubkey, style: context.font.bodyMedium),
+        BBText(entity.extendedPublicKey, style: context.font.bodyMedium),
         const Gap(24),
         if (!isXpub) ...[
           BBText(
@@ -153,10 +180,7 @@ class _XpubDetailsWidget extends StatelessWidget {
             style: context.font.titleMedium,
           ),
           const Gap(8),
-          BBText(
-            entity.watchOnlyXpub.extendedPubkey.xpub,
-            style: context.font.bodyMedium,
-          ),
+          BBText(entity.canonicalXpub, style: context.font.bodyMedium),
           const Gap(24),
         ],
         BBText(
@@ -164,9 +188,9 @@ class _XpubDetailsWidget extends StatelessWidget {
           style: context.font.titleMedium,
         ),
         const Gap(8),
-        if (!isXpub) ...[
+        if (!canSelectScriptType) ...[
           BBText(
-            entity.extendedPubkey.derivation.label,
+            _derivationFor(entity.scriptType).label,
             style: context.font.bodyMedium,
           ),
           const Gap(24),
@@ -189,7 +213,7 @@ class _XpubDetailsWidget extends StatelessWidget {
                 Icons.keyboard_arrow_down,
                 color: context.appColors.text,
               ),
-              initialValue: entity.extendedPubkey.derivation,
+              initialValue: _derivationFor(entity.scriptType),
               items: [...satoshifier.Derivation.values]
                   .map(
                     (value) => DropdownMenuItem<satoshifier.Derivation>(
@@ -228,3 +252,10 @@ class _XpubDetailsWidget extends StatelessWidget {
     );
   }
 }
+
+satoshifier.Derivation _derivationFor(ScriptType scriptType) =>
+    switch (scriptType) {
+      ScriptType.bip84 => satoshifier.Derivation.bip84,
+      ScriptType.bip49 => satoshifier.Derivation.bip49,
+      ScriptType.bip44 => satoshifier.Derivation.bip44,
+    };

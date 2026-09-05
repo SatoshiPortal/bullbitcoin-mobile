@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/urqr/urqr.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/psbt_flow/data/psbt_qr_encoder_adapter.dart';
 import 'package:bb_mobile/features/psbt_flow/domain/psbt_flow_failure.dart';
@@ -54,5 +55,28 @@ void main() {
       expect(result, isA<Ok<List<String>, PsbtFlowFailure>>());
       expect((result as Ok<List<String>, PsbtFlowFailure>).value, isNotEmpty);
     });
+
+    test(
+      'retries an oversized UR with the largest supported fragment',
+      () async {
+        final attemptedLengths = <int>[];
+        final adapter = PsbtQrEncoderAdapter(
+          urGenerator: (_, {required fragmentLength}) {
+            attemptedLengths.add(fragmentLength);
+            if (fragmentLength == 100) throw UrSequenceLimitExceeded();
+            return const ['part-1'];
+          },
+        );
+
+        final result = await adapter.encode(
+          psbt: 'cHNidP8BAAoAAAAAAAAAAAAA',
+          qrType: QrType.urqr,
+          fragmentLength: 100,
+        );
+
+        expect(result, isA<Ok<List<String>, PsbtFlowFailure>>());
+        expect(attemptedLengths, [100, 200]);
+      },
+    );
   });
 }

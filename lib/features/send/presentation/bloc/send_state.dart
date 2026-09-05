@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -8,6 +9,8 @@ import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -54,7 +57,7 @@ enum SendType {
   }
 }
 
-enum SendStep { address, amount, confirm, sending, success }
+enum SendStep { address, amount, confirm, signing, sending, success }
 
 SendStep sendStepForOrderSwapStatus(OrderSwapLocalStatus status) =>
     switch (status) {
@@ -159,6 +162,11 @@ abstract class SendState with _$SendState {
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
     String? signedBitcoinTx,
+    BitcoinSigningPlan? bitcoinSigningPlan,
+    @Default(BitcoinPolicyMaturity.empty())
+    BitcoinPolicyMaturity bitcoinPolicyMaturity,
+    BitcoinPolicySelection? bitcoinPolicySelection,
+    @Default({}) Set<String> satisfiedBitcoinPolicyPreimages,
     String? signedLiquidTx,
     OrderSwapRecord? lightningOrder,
     OrderSwapQuote? lightningQuote,
@@ -174,6 +182,14 @@ abstract class SendState with _$SendState {
     @Default(false) bool buildingTransaction,
     @Default(false) bool signingTransaction,
     @Default(false) bool broadcastingTransaction,
+    String? pendingTransactionId,
+    DateTime? pendingTransactionCreatedAt,
+    @Default(false) bool isDraftSaved,
+    @Default(false) bool isSigningSession,
+    @Default(false) bool isSigningConflict,
+    @Default(false) bool isSigningPolicyReady,
+    @Default(false) bool persistingPendingTransaction,
+    @Default(false) bool hasUnsavedDraftChanges,
     @Default('') String balanceApproximatedAmount,
     // Set when a Liquid build fails because the wallet has too many UTXOs to
     // spend in a single transaction and needs consolidating first.
@@ -190,18 +206,20 @@ abstract class SendState with _$SendState {
   bool get hasValidPaymentRequest => paymentRequest != null;
 
   /// Whether a payjoin is structurally possible for this send: the setting
-  /// is on, the wallet signs locally, and the recipient's BIP21 advertises a
-  /// pj= endpoint. Drives whether the confirm screen offers the payjoin
-  /// toggle at all — [willAttemptPayjoin] adds the sender's choice on top.
+  /// is on, the wallet is a standard local single-signature wallet that the
+  /// Payjoin adapter supports, and the recipient's BIP21 advertises a pj=
+  /// endpoint. Drives whether the confirm screen offers the payjoin toggle at
+  /// all — [willAttemptPayjoin] adds the sender's choice.
   ///
-  /// Gated on [Wallet.signsLocally]: a hardware/remote-signer wallet
-  /// (Ledger/BitBox) never reaches `signTransaction`'s payjoin branch (the
-  /// confirm screen swaps in a device-specific sign button for those
-  /// wallets instead), so without this check the toggle could promise a
-  /// payjoin that structurally can never happen for that wallet class.
+  /// A hardware/remote-signer wallet never reaches `signTransaction`'s
+  /// payjoin branch because the confirm screen uses its signer-specific
+  /// action. The analyzed plan prevents the toggle from appearing for any
+  /// policy that local keys cannot fully satisfy.
   bool get isPayjoinAvailable =>
       payjoinGloballyEnabled &&
-      (selectedWallet?.signsLocally ?? false) &&
+      selectedWallet?.isStandardLocalSingleSignatureWallet == true &&
+      (bitcoinSigningPlan?.canFinalizeLocally ?? true) &&
+      bitcoinSigningPlan?.policy.hasHashlock != true &&
       isToSelf != true &&
       paymentRequest is Bip21PaymentRequest &&
       (paymentRequest! as Bip21PaymentRequest).pj.isNotEmpty;
@@ -212,6 +230,147 @@ abstract class SendState with _$SendState {
   /// gate `signTransaction`'s payjoin branch and as the confirm screen's
   /// toggle value, so the two can never disagree.
   bool get willAttemptPayjoin => isPayjoinAvailable && !payjoinOptedOut;
+
+  bool get requiresExternalBitcoinSigning =>
+      bitcoinSigningPlan?.requiresExternalSigning ??
+      selectedWallet?.signsRemotely ??
+      false;
+
+  bool get requiresBitcoinSigningCoordination =>
+      selectedWallet?.isBitcoin == true &&
+      bitcoinSigningPlan != null &&
+      (bitcoinSigningPlan!.signersNeeded > 1 ||
+          eligibleBitcoinSigners.length > 1 ||
+          eligibleBitcoinSigners.any(
+            (signer) =>
+                signer.signer == SignerEntity.local &&
+                bitcoinSigningPlan!.requiresPassphrase(signer),
+          ) ||
+          _requiresExternalPsbtRoundTrip);
+
+  bool get _requiresExternalPsbtRoundTrip {
+    if (!requiresExternalBitcoinSigning || eligibleBitcoinSigners.length != 1) {
+      return false;
+    }
+    final signer = eligibleBitcoinSigners.single;
+    final supportsDirectFlow =
+        selectedWallet?.signers.length == 1 &&
+        selectedWallet?.scriptType != null &&
+        (signer.signerDevice?.isLedger == true ||
+            signer.signerDevice?.isBitBox == true);
+    return !supportsDirectFlow;
+  }
+
+  bool get hasFinalizedBitcoinTransaction =>
+      signedBitcoinPsbt != null || signedBitcoinTx != null;
+
+  List<BitcoinPolicyPathRequirement> get bitcoinPolicyPathRequirements {
+    final plan = bitcoinSigningPlan;
+    if (plan == null || !plan.policy.requiresPath) return const [];
+    return plan.policy.pathRequirements(
+      bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
+    );
+  }
+
+  Set<String> get _selectedBitcoinOutpoints => selectedUtxos
+      .whereType<BitcoinWalletUtxo>()
+      .map((utxo) => '${utxo.txId}:${utxo.vout}')
+      .toSet();
+
+  BitcoinPolicyOptionStatus bitcoinPolicyOptionStatus({
+    required BitcoinPolicyPathRequirement requirement,
+    required int optionIndex,
+    BitcoinPolicySelection? selection,
+  }) {
+    final plan = bitcoinSigningPlan;
+    if (plan == null) {
+      return BitcoinPolicyOptionStatus(
+        available: false,
+        availableAmountSat: BigInt.zero,
+        activatingAmountSat: BigInt.zero,
+      );
+    }
+    return plan.policy.optionStatus(
+      requirement: requirement,
+      optionIndex: optionIndex,
+      selection:
+          selection ??
+          bitcoinPolicySelection ??
+          const BitcoinPolicySelection.empty(),
+      maturity: bitcoinPolicyMaturity,
+      selectedOutpoints: _selectedBitcoinOutpoints,
+    );
+  }
+
+  bool bitcoinPolicySelectionIsAvailable(BitcoinPolicySelection selection) {
+    final plan = bitcoinSigningPlan;
+    if (plan == null || !bitcoinPolicyMaturity.isKnown) return true;
+    return plan.policy.selectionIsAvailable(
+      selection: selection,
+      maturity: bitcoinPolicyMaturity,
+      selectedOutpoints: _selectedBitcoinOutpoints,
+    );
+  }
+
+  bool get requiresBitcoinPolicySelection {
+    if (bitcoinPolicyPathRequirements.isNotEmpty) return true;
+    final plan = bitcoinSigningPlan;
+    if (plan == null || !bitcoinPolicyMaturity.isKnown) return false;
+    return !plan.policy.selectionIsAvailable(
+      selection: bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
+      maturity: bitcoinPolicyMaturity,
+      selectedOutpoints: _selectedBitcoinOutpoints,
+    );
+  }
+
+  List<BitcoinHashlockPolicyNode> get requiredBitcoinPolicyHashlocks {
+    final policy = bitcoinSigningPlan?.policy;
+    final selection =
+        bitcoinPolicySelection ?? const BitcoinPolicySelection.empty();
+    if (policy == null || policy.pathRequirements(selection).isNotEmpty) {
+      return const [];
+    }
+    return policy.requiredHashlocks(selection);
+  }
+
+  List<BitcoinHashlockPolicyNode> get missingBitcoinPolicyHashlocks =>
+      requiredBitcoinPolicyHashlocks
+          .where(
+            (hashlock) => !satisfiedBitcoinPolicyPreimages.contains(
+              '${hashlock.type.name}:${hashlock.hash.toLowerCase()}',
+            ),
+          )
+          .toList(growable: false);
+
+  bool get requiresBitcoinPolicyPreimage =>
+      missingBitcoinPolicyHashlocks.isNotEmpty;
+
+  BitcoinPolicyActivation? get nextBitcoinPolicyActivation {
+    final plan = bitcoinSigningPlan;
+    if (plan == null || !bitcoinPolicyMaturity.isKnown) return null;
+    return plan.policy.nextActivation(
+      selection: bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
+      maturity: bitcoinPolicyMaturity,
+      selectedOutpoints: _selectedBitcoinOutpoints,
+    );
+  }
+
+  bool get bitcoinPolicyPathRequiresRelativeTimelock {
+    final policy = bitcoinSigningPlan?.policy;
+    final selection = bitcoinPolicySelection;
+    if (policy == null || selection == null || requiresBitcoinPolicySelection) {
+      return false;
+    }
+    return policy
+        .buildPath(selection, maturity: bitcoinPolicyMaturity)
+        .requiresRelativeTimelock;
+  }
+
+  List<WalletSigner> get eligibleBitcoinSigners =>
+      bitcoinSigningPlan?.eligibleSigners ?? const [];
+
+  bool isBitcoinSignerSigned(WalletSigner signer) =>
+      bitcoinSigningPlan?.isSigned(signer) ?? false;
 
   String get paymentRequestAddress {
     if (paymentRequest == null) {
@@ -262,21 +421,22 @@ abstract class SendState with _$SendState {
   }
 
   bool get isInputAmountFiat =>
+      inputAmountCurrencyCode.isNotEmpty &&
       ![
         BitcoinUnit.btc.code,
         BitcoinUnit.sats.code,
-      ].contains(inputAmountCurrencyCode) &&
-      exchangeRate > 0;
+      ].contains(inputAmountCurrencyCode);
 
   int get inputAmountSat {
     int amountSat = 0;
     if (amount.isNotEmpty) {
       if (isInputAmountFiat) {
+        if (exchangeRate <= 0) return 0;
         final amountFiat = double.tryParse(amount) ?? 0;
         amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         amountSat = int.tryParse(amount) ?? 0;
-      } else {
+      } else if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
         final amountBtc = double.tryParse(amount) ?? 0;
         amountSat = ConvertAmount.btcToSats(amountBtc);
       }
@@ -457,17 +617,6 @@ abstract class SendState with _$SendState {
   /// failure" — the confirm screen renders whatever is left over.
   bool get hasBuildFailure => failure is SendTransactionBuildFailure;
 
-  /// Signing, confirming or broadcasting failed. Confirm screen only.
-  bool get hasConfirmFailure => failure is SendTransactionConfirmationFailure;
-
-  /// The broadcast itself failed, as opposed to an earlier confirm step. Drives
-  /// the "the payment may still have gone out" guidance.
-  bool get hasBroadcastFailure => switch (failure) {
-    SendTransactionConfirmationFailure(:final isBroadcastFailure) =>
-      isBroadcastFailure,
-    _ => false,
-  };
-
   /// The amount is short of the spendable balance. Rendered inline under the
   /// amount field, and in the address step's error line.
   bool get hasBalanceFailure => failure is SendInsufficientBalanceFailure;
@@ -509,7 +658,12 @@ abstract class SendState with _$SendState {
   }
 
   bool get disableConfirmSend =>
-      buildingTransaction || signingTransaction || broadcastingTransaction;
+      buildingTransaction ||
+      signingTransaction ||
+      broadcastingTransaction ||
+      persistingPendingTransaction ||
+      requiresBitcoinPolicySelection ||
+      requiresBitcoinPolicyPreimage;
 
   bool get blocksSwapDueToHardwareWallet {
     final wallet = selectedWallet;

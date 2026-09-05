@@ -22,7 +22,7 @@ class DeleteSeedUsecase {
     try {
       final wallets = await _walletRepository.getWallets();
       final hasExistingWallet = wallets.any(
-        (wallet) => wallet.masterFingerprint == fingerprint,
+        (wallet) => wallet.localMasterFingerprints.contains(fingerprint),
       );
       if (hasExistingWallet) {
         log.warning(

@@ -2671,7 +2671,6 @@
   "psbtImDone": "დავასრულე",
   "psbtFlowSignTransaction": "ტრანზაქციაზე ხელმოწერა",
   "psbtFlowInstructions": "ინსტრუქციები",
-  "psbtFlowDone": "დავასრულე",
   "psbtFlowSignViaNfc": "ხელმოწერა NFC-ით",
   "psbtFlowSignViaNfcSheetTitle": "შეეხეთ თქვენს {deviceName} მოწყობილობას PSBT-ის NFC-ით გასაგზავნად",
   "psbtFlowPartProgress": "ნაწილი {current}/{total}",

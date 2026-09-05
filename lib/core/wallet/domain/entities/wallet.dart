@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter/material.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -91,7 +93,23 @@ enum ScriptType {
         throw Exception('Invalid extended public key');
     }
   }
+
+  int? standardAccount(String? path, Network network) {
+    if (path == null) return null;
+    final hardened = "[h']";
+    final match = RegExp(
+      '^m/$purpose$hardened/${network.coinType}$hardened/'
+      r"([0-9]+)[h']$",
+    ).firstMatch(path);
+    final account = int.tryParse(match?.group(1) ?? '');
+    return account != null && account < 0x80000000 ? account : null;
+  }
+
+  bool matchesStandardAccountPath(String? path, Network network) =>
+      standardAccount(path, network) != null;
 }
+
+const standardSingleSignatureDescriptorPath = '/<0;1>/*';
 
 @freezed
 abstract class Wallet with _$Wallet {
@@ -100,15 +118,10 @@ abstract class Wallet with _$Wallet {
     String? label,
     required Network network,
     @Default(false) bool isDefault,
-    // The fingerprint of the BIP32 root/master key (if a seed was used to derive the wallet)
-    @Default('') String masterFingerprint,
-    required String xpubFingerprint,
-    required ScriptType scriptType,
-    required String xpub,
-    required String externalPublicDescriptor,
-    required String internalPublicDescriptor,
-    required SignerEntity signer,
-    required SignerDeviceEntity? signerDevice,
+    @Default(false) bool isHidden,
+    required List<WalletSigner> signers,
+    required ScriptType? scriptType,
+    required String publicDescriptor,
     required BigInt balanceSat,
     // Confirmed-only component of balanceSat (excludes trusted/untrusted
     // pending and immature funds). Nullable/optional so every existing
@@ -130,15 +143,44 @@ abstract class Wallet with _$Wallet {
   const Wallet._();
 
   String get id => origin;
+  List<WalletDescriptorKey> get descriptorKeys =>
+      List.unmodifiable(signers.expand((signer) => signer.descriptorKeys));
+  Iterable<String> get localMasterFingerprints => signers
+      .where((signer) => signer.signer == SignerEntity.local)
+      .expand((signer) => signer.descriptorKeys)
+      .map((key) => key.masterFingerprint)
+      .where((fingerprint) => fingerprint.isNotEmpty);
+  String? get singleLocalSeedFingerprint {
+    final fingerprints = signers
+        .where((signer) => signer.signer == SignerEntity.local)
+        .expand(
+          (signer) => signer.localSeedFingerprint != null
+              ? [signer.localSeedFingerprint!]
+              : signer.descriptorKeys.map((key) => key.masterFingerprint),
+        )
+        .map((fingerprint) => fingerprint.toLowerCase())
+        .toSet();
+    return fingerprints.length == 1 && fingerprints.single.isNotEmpty
+        ? fingerprints.single
+        : null;
+  }
+
+  WalletSigner? get singleSigner => signers.length == 1 ? signers.single : null;
+  WalletDescriptorKey? get singleDescriptorKey =>
+      descriptorKeys.length == 1 ? descriptorKeys.single : null;
+  String get masterFingerprint => singleDescriptorKey?.masterFingerprint ?? '';
+  SignerEntity get signer => singleSigner?.signer ?? SignerEntity.none;
+  SignerDeviceEntity? get signerDevice => singleSigner?.signerDevice;
+
   String get addressType {
     if (isLiquid) {
       return 'Confidential Segwit';
     }
-
     return switch (scriptType) {
       ScriptType.bip84 => 'Native Segwit',
       ScriptType.bip49 => 'Nested Segwit',
       ScriptType.bip44 => 'Legacy',
+      null => 'Descriptor',
     };
   }
 
@@ -186,28 +228,130 @@ abstract class Wallet with _$Wallet {
         network == Network.bitcoinTestnet;
   }
 
-  String get derivationPath {
+  bool get hasWalletPolicyKeyOrigins =>
+      _haveWalletPolicyKeyOrigins(descriptorKeys);
+
+  bool hasWalletPolicyKeyOriginsFor(WalletSigner signer) =>
+      _haveWalletPolicyKeyOrigins(signer.descriptorKeys);
+
+  bool get supportsLedgerWalletPolicy {
+    if (!isBitcoin || descriptorKeys.isEmpty) return false;
+    final descriptor = publicDescriptor.split('#').first.toLowerCase();
+    if (descriptor.startsWith('wsh(')) return true;
+    if (descriptor.startsWith('tr(')) {
+      return _hasExtendedTaprootInternalKey(descriptor);
+    }
+    return descriptor.startsWith('sh(wsh(sortedmulti(') ||
+        descriptor.startsWith('sh(wsh(multi(');
+  }
+
+  bool get supportsBitBoxWalletPolicy {
+    if (!isBitcoin || descriptorKeys.isEmpty) return false;
+    final descriptor = publicDescriptor.split('#').first.toLowerCase();
+    if (_containsMiniscriptHashlock(descriptor)) return false;
+    if (descriptor.startsWith('tr(')) {
+      return _hasExtendedTaprootInternalKey(descriptor);
+    }
+    return descriptor.startsWith('wsh(') ||
+        descriptor.startsWith('sh(wsh(sortedmulti(');
+  }
+
+  bool supportsWalletPolicySigner(WalletSigner signer) {
+    final device = signer.signerDevice;
+    if (device == null || !hasWalletPolicyKeyOriginsFor(signer)) return false;
+    if (device.isLedger) return supportsLedgerWalletPolicy;
+    if (!device.isBitBox || !supportsBitBoxWalletPolicy) return false;
+    final accountKey = signer.descriptorKeys.first;
+    return signer.descriptorKeys.every(
+      (key) =>
+          key.masterFingerprint.toLowerCase() ==
+              accountKey.masterFingerprint.toLowerCase() &&
+          _normalizeDerivationPath(key.derivationPath) ==
+              _normalizeDerivationPath(accountKey.derivationPath) &&
+          key.xpub == accountKey.xpub,
+    );
+  }
+
+  bool supportsWalletPolicyOn(SignerDeviceEntity device) => signers.any(
+    (signer) =>
+        (device.isLedger
+            ? signer.signerDevice?.isLedger == true
+            : device.isBitBox && signer.signerDevice?.isBitBox == true) &&
+        supportsWalletPolicySigner(signer),
+  );
+
+  bool get isTaprootKeyPathOnly {
+    final descriptor = publicDescriptor.split('#').first.toLowerCase();
+    return descriptor.startsWith('tr(') && !descriptor.contains(',');
+  }
+
+  bool supportsQrSigningFor(WalletSigner signer) {
+    final device = signer.signerDevice;
+    if (device == null || device.supportedQrType == QrType.none) return false;
+    final descriptor = publicDescriptor.split('#').first.toLowerCase();
+    if (!descriptor.startsWith('tr(')) return true;
+    return switch (device) {
+      SignerDeviceEntity.krux || SignerDeviceEntity.specter => true,
+      SignerDeviceEntity.passport => isTaprootKeyPathOnly,
+      _ => false,
+    };
+  }
+
+  bool supportsDevicePsbtFlowFor(WalletSigner signer) {
+    if (signer.signerDevice == SignerDeviceEntity.coldcardMk4) {
+      final descriptor = publicDescriptor.split('#').first.toLowerCase();
+      return !descriptor.startsWith('tr(');
+    }
+    return supportsQrSigningFor(signer);
+  }
+
+  static bool _haveWalletPolicyKeyOrigins(Iterable<WalletDescriptorKey> keys) =>
+      keys.isNotEmpty &&
+      keys.every(
+        (key) =>
+            key.masterFingerprint.length == 8 &&
+            key.xpub.isNotEmpty &&
+            key.derivationPath != null,
+      );
+
+  static bool _hasExtendedTaprootInternalKey(String descriptor) {
+    final separator = descriptor.indexOf(',');
+    final close = descriptor.indexOf(')');
+    final end = separator < 0 ? close : separator;
+    if (end <= 3) return false;
+    final internalKey = descriptor.substring(3, end);
+    return internalKey.contains('xpub') || internalKey.contains('tpub');
+  }
+
+  static bool _containsMiniscriptHashlock(String descriptor) =>
+      descriptor.contains('sha256(') ||
+      descriptor.contains('hash256(') ||
+      descriptor.contains('ripemd160(') ||
+      descriptor.contains('hash160(');
+
+  static String? _normalizeDerivationPath(String? path) =>
+      path?.replaceAll("'", 'h');
+
+  String? get derivationPath {
+    final descriptorKey = singleDescriptorKey;
+    if (descriptorKey != null) return descriptorKey.derivationPath;
+    if (descriptorKeys.isNotEmpty) return null;
     // Find the content between [ and ]
-    final startBracket = externalPublicDescriptor.indexOf('[');
-    final endBracket = externalPublicDescriptor.indexOf(']');
+    final startBracket = publicDescriptor.indexOf('[');
+    final endBracket = publicDescriptor.indexOf(']');
 
     if (startBracket == -1 || endBracket == -1 || startBracket >= endBracket) {
-      // Fallback to hardcoded path if descriptor doesn't contain path info
-      return "m/${scriptType.purpose}'/${network.coinType}'/0'";
+      return _legacyDerivationPath;
     }
 
     // Extract fingerprint/path portion
-    final keyOrigin = externalPublicDescriptor.substring(
-      startBracket + 1,
-      endBracket,
-    );
+    final keyOrigin = publicDescriptor.substring(startBracket + 1, endBracket);
 
     // Split by / to separate fingerprint from path
     final parts = keyOrigin.split('/');
 
     if (parts.length < 2) {
-      // Invalid format, use fallback
-      return "m/${scriptType.purpose}'/${network.coinType}'/0'";
+      return _legacyDerivationPath;
     }
 
     // Skip first part (fingerprint) and join the rest
@@ -217,10 +361,40 @@ abstract class Wallet with _$Wallet {
     return "m/${pathParts.join('/')}";
   }
 
-  bool get isWatchOnly => signer == SignerEntity.none;
-  bool get isWatchSigner => signer == SignerEntity.remote;
-  bool get signsLocally => signer == SignerEntity.local;
-  bool get signsRemotely => isWatchSigner;
+  String? get _legacyDerivationPath {
+    final type = scriptType;
+    if (type == null) return null;
+    return "m/${type.purpose}'/${network.coinType}'/0'";
+  }
+
+  bool get isWatchOnly =>
+      signers.every((signer) => signer.signer == SignerEntity.none);
+  bool get isWatchSigner => singleSigner?.signer == SignerEntity.remote;
+  bool get isStandardSingleSignatureWallet {
+    final key = singleDescriptorKey;
+    final type = scriptType;
+    if (key == null || type == null) return false;
+    if (!type.matchesStandardAccountPath(key.derivationPath, network)) {
+      return false;
+    }
+    return isLiquid ||
+        key.descriptorPath == standardSingleSignatureDescriptorPath;
+  }
+
+  bool get isStandardLocalSingleSignatureWallet {
+    final signer = singleSigner;
+    return signer?.signer == SignerEntity.local &&
+        isStandardSingleSignatureWallet;
+  }
+
+  bool get supportsSend =>
+      isLiquid ? !isWatchOnly : hasLocalSigner || hasRemoteSigner;
+
+  bool get signsRemotely => hasRemoteSigner;
   bool get isHardwareWallet => signerDevice != null;
   bool get isBitcoinHardwareWallet => isBitcoin && isHardwareWallet;
+  bool get hasLocalSigner =>
+      signers.any((signer) => signer.signer == SignerEntity.local);
+  bool get hasRemoteSigner =>
+      signers.any((signer) => signer.signer == SignerEntity.remote);
 }

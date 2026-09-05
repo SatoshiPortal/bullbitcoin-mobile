@@ -4,9 +4,11 @@ PODS:
   - Flutter (1.0.0)
   - flutter_secure_storage_legacy (6.0.0):
     - Flutter
-  - rust_lib_bull_sdk (0.0.1):
+  - IPtProxy (5.5.1)
+  - onion (0.1.0):
     - Flutter
-  - onion (0.0.1):
+    - IPtProxy (= 5.5.1)
+  - rust_lib_bull_sdk (0.0.1):
     - Flutter
   - universal_ble (0.0.1):
     - Flutter
@@ -18,10 +20,14 @@ DEPENDENCIES:
   - bull_tor (from `.symlinks/plugins/bull_tor/ios`)
   - Flutter (from `Flutter`)
   - flutter_secure_storage_legacy (from `.symlinks/plugins/flutter_secure_storage_legacy/ios`)
-  - rust_lib_bull_sdk (from `.symlinks/plugins/rust_lib_bull_sdk/ios`)
   - onion (from `.symlinks/plugins/onion/ios`)
+  - rust_lib_bull_sdk (from `.symlinks/plugins/rust_lib_bull_sdk/ios`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
   - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
+
+SPEC REPOS:
+  trunk:
+    - IPtProxy
 
 EXTERNAL SOURCES:
   bull_tor:
@@ -30,24 +36,25 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_secure_storage_legacy:
     :path: ".symlinks/plugins/flutter_secure_storage_legacy/ios"
-  rust_lib_bull_sdk:
-    :path: ".symlinks/plugins/rust_lib_bull_sdk/ios"
   onion:
     :path: ".symlinks/plugins/onion/ios"
+  rust_lib_bull_sdk:
+    :path: ".symlinks/plugins/rust_lib_bull_sdk/ios"
   universal_ble:
     :path: ".symlinks/plugins/universal_ble/darwin"
   webview_cookie_manager:
     :path: ".symlinks/plugins/webview_cookie_manager/ios"
 
 SPEC CHECKSUMS:
-  bull_tor: effca429a77cc1dd71ee148fa65903a325d79d33
+  bull_tor: 9080cbf03c4a3f0df35c65eb126c1bff89517365
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_secure_storage_legacy: a315f1c83d88e9490f44a269454281a2c9b2c160
-  rust_lib_bull_sdk: 6bdd9a2254b376e910a31340e03bf2db56c637db
-  onion: 4876b9b0120d40a2817eac0903dfb9bd59832755
-  universal_ble: 65e1257dffc557cc7991a93d253beeddc7c1dc92
-  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
+  flutter_secure_storage_legacy: 2b1517bd98433d760370884d3e2cc3ed8eeb2538
+  IPtProxy: c4c20975d2c793222b7a9e0dc3855818b5f1181f
+  onion: a5e641118e5768953552bd149aa6fe4ec5b691eb
+  rust_lib_bull_sdk: 160980033dfde220ad447a6dffa22d4269f8ea6c
+  universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
+  webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
 
-PODFILE CHECKSUM: b9aa080c2a42d4d61d216015adddd3850778d844
+PODFILE CHECKSUM: 57721febcc4eb8705754804ee8553d269d7fc0cb
 
 COCOAPODS: 1.17.0

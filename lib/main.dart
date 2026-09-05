@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bb_mobile/core/utils/report.dart';
@@ -16,6 +17,7 @@ import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -116,6 +118,15 @@ class Bull {
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    final bullVaultVisibility = await locator<BullVaultFacade>()
+        .reconcileVisibility();
+    if (bullVaultVisibility case Err(:final failure)) {
+      log.warning(
+        'Failed to reconcile BullVault wallet visibility',
+        error: failure.runtimeType,
+        trace: StackTrace.current,
+      );
+    }
     final settings = locator<SettingsRepository>();
     _diagnosticRuntime.setTorLoader(
       () => _loadTorContext(settings, locator<bull_tor.Tor>()),
@@ -257,7 +268,7 @@ class Bull {
   }
 }
 
-Future main() async {
+Future<void> main() async {
   await runZonedGuarded(
     () async {
       try {

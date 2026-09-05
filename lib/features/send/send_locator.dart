@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -24,16 +25,20 @@ import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/apply_bitcoin_policy_preimages_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_bitcoin_policy_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/restore_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
@@ -42,21 +47,60 @@ import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecas
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_policy_preimage_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_send_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
+import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/send/domain/repositories/pending_bitcoin_transaction_repository.dart';
+import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/save_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class SendLocator {
   static void setup(GetIt locator) {
+    registerRepositories(locator);
     registerUsecases(locator);
+    registerFacade(locator);
     registerBlocs(locator);
   }
 
+  static void registerRepositories(GetIt locator) {
+    locator.registerLazySingleton<PendingBitcoinTransactionDatasource>(
+      () => PendingBitcoinTransactionDatasource(locator<SqliteDatabase>()),
+    );
+    locator.registerLazySingleton<PendingBitcoinTransactionRepository>(
+      () => PendingBitcoinTransactionRepositoryImpl(
+        locator<PendingBitcoinTransactionDatasource>(),
+      ),
+    );
+  }
+
   static void registerUsecases(GetIt locator) {
+    locator.registerFactory<SavePendingBitcoinTransactionUsecase>(
+      () => SavePendingBitcoinTransactionUsecase(
+        locator<PendingBitcoinTransactionRepository>(),
+      ),
+    );
+    locator.registerFactory<GetPendingBitcoinTransactionUsecase>(
+      () => GetPendingBitcoinTransactionUsecase(
+        locator<PendingBitcoinTransactionRepository>(),
+      ),
+    );
+    locator.registerFactory<DeletePendingBitcoinTransactionUsecase>(
+      () => DeletePendingBitcoinTransactionUsecase(
+        locator<PendingBitcoinTransactionRepository>(),
+      ),
+    );
     locator.registerFactory<SendWithPayjoinUsecase>(
       () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
     );
@@ -90,8 +134,26 @@ class SendLocator {
       ),
     );
     locator.registerFactory<SignBitcoinTxUsecase>(
-      () => SignBitcoinTxUsecase(
-        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+      () => SignBitcoinTxUsecase(locator<BitcoinSigningPort>()),
+    );
+    locator.registerFactory<GetBitcoinSigningPlanUsecase>(
+      () => GetBitcoinSigningPlanUsecase(locator<BitcoinSigningPort>()),
+    );
+    locator.registerFactory<ResolveBitcoinPolicyUsecase>(
+      () =>
+          ResolveBitcoinPolicyUsecase(locator<GetBitcoinSigningPlanUsecase>()),
+    );
+    locator.registerFactory<ValidateBitcoinPolicyPreimageUsecase>(
+      () => ValidateBitcoinPolicyPreimageUsecase(locator<BitcoinSigningPort>()),
+    );
+    locator.registerFactory<ApplyBitcoinPolicyPreimagesUsecase>(
+      () => ApplyBitcoinPolicyPreimagesUsecase(locator<BitcoinSigningPort>()),
+    );
+    locator.registerFactory<ProcessBitcoinSignerResultUsecase>(
+      () => ProcessBitcoinSignerResultUsecase(
+        locator<SignBitcoinTxUsecase>(),
+        locator<GetBitcoinSigningPlanUsecase>(),
+        locator<BitcoinSigningPort>(),
       ),
     );
     locator.registerFactory<CreateSendSwapUsecase>(
@@ -172,8 +234,40 @@ class SendLocator {
     locator.registerFactory<GetSendPayjoinEnabledUsecase>(
       () => GetSendPayjoinEnabledUsecase(locator<PayjoinPolicyAccess>()),
     );
-    locator.registerFactory<VerifySignedTxUsecase>(
-      () => VerifySignedTxUsecase(),
+    locator.registerFactory<ValidatePendingBitcoinTransactionUsecase>(
+      () => ValidatePendingBitcoinTransactionUsecase(
+        locator<GetWalletUsecase>(),
+        locator<GetWalletUtxosUsecase>(),
+        locator<BitcoinSigningPort>(),
+        locator<GetBitcoinSigningPlanUsecase>(),
+      ),
+    );
+    locator.registerFactory<RestorePendingBitcoinTransactionUsecase>(
+      () => RestorePendingBitcoinTransactionUsecase(
+        locator<GetPendingBitcoinTransactionUsecase>(),
+        locator<GetWalletUsecase>(),
+        locator<GetWalletUtxosUsecase>(),
+        locator<DetectBitcoinStringUsecase>(),
+        locator<ValidatePendingBitcoinTransactionUsecase>(),
+        locator<GetBitcoinSigningPlanUsecase>(),
+        locator<CalculateBitcoinAbsoluteFeesUsecase>(),
+        locator<ConvertSatsToCurrencyAmountUsecase>(),
+      ),
+    );
+    locator.registerFactory<WatchPendingBitcoinTransactionsUsecase>(
+      () => WatchPendingBitcoinTransactionsUsecase(
+        locator<PendingBitcoinTransactionRepository>(),
+        locator<ValidatePendingBitcoinTransactionUsecase>(),
+      ),
+    );
+  }
+
+  static void registerFacade(GetIt locator) {
+    locator.registerLazySingleton<SendFacade>(
+      () => SendFacade(
+        locator<WatchPendingBitcoinTransactionsUsecase>(),
+        locator<DeletePendingBitcoinTransactionUsecase>(),
+      ),
     );
   }
 
@@ -195,6 +289,14 @@ class SendLocator {
             locator<ValidateBitcoinSelectionUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
+        getBitcoinSigningPlanUsecase: locator<GetBitcoinSigningPlanUsecase>(),
+        resolveBitcoinPolicyUsecase: locator<ResolveBitcoinPolicyUsecase>(),
+        validateBitcoinPolicyPreimageUsecase:
+            locator<ValidateBitcoinPolicyPreimageUsecase>(),
+        applyBitcoinPolicyPreimagesUsecase:
+            locator<ApplyBitcoinPolicyPreimagesUsecase>(),
+        processBitcoinSignerResultUsecase:
+            locator<ProcessBitcoinSignerResultUsecase>(),
         signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
         broadcastBitcoinTxUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),
@@ -232,7 +334,16 @@ class SendLocator {
         checkLiquidConsolidationUsecase:
             locator<CheckLiquidConsolidationUsecase>(),
         getSendPayjoinEnabledUsecase: locator<GetSendPayjoinEnabledUsecase>(),
-        verifySignedTxUsecase: locator<VerifySignedTxUsecase>(),
+        savePendingBitcoinTransactionUsecase:
+            locator<SavePendingBitcoinTransactionUsecase>(),
+        getPendingBitcoinTransactionUsecase:
+            locator<GetPendingBitcoinTransactionUsecase>(),
+        restorePendingBitcoinTransactionUsecase:
+            locator<RestorePendingBitcoinTransactionUsecase>(),
+        deletePendingBitcoinTransactionUsecase:
+            locator<DeletePendingBitcoinTransactionUsecase>(),
+        validatePendingBitcoinTransactionUsecase:
+            locator<ValidatePendingBitcoinTransactionUsecase>(),
       ),
     );
   }

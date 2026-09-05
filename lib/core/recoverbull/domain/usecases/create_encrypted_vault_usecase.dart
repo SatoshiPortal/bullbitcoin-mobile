@@ -27,9 +27,12 @@ class CreateEncryptedVaultUsecase {
   // repo. The local try/catch is the boundary for the wallet/seed calls; the
   // recoverbull repo already returns a Result that we forward.
   Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
+    Result<
+      ({EncryptedVault vault, String vaultKey, String walletId}),
+      RecoverBullCoreFailure
+    >
   >
-  execute() async {
+  execute({String? fingerprint}) async {
     try {
       final defaultBitcoinWallets = await _walletRepository.getWallets(
         onlyBitcoin: true,
@@ -43,11 +46,13 @@ class CreateEncryptedVaultUsecase {
       }
 
       // The default wallet is used to derive the backup key
-      final defaultWallet = defaultBitcoinWallets.first;
-      await _walletRepository.updateEncryptedBackupTime(
-        time: DateTime.now(),
-        walletId: defaultWallet.id,
-      );
+      final defaultWallet = fingerprint == null
+          ? defaultBitcoinWallets.first
+          : defaultBitcoinWallets.firstWhere(
+              (wallet) => wallet.localMasterFingerprints.any(
+                (value) => value.toLowerCase() == fingerprint.toLowerCase(),
+              ),
+            );
       final defaultSeed = await _seedRepository.get(
         defaultWallet.masterFingerprint,
       );
@@ -90,7 +95,10 @@ class CreateEncryptedVaultUsecase {
             plaintext: plaintext,
             derivationPath: derivationPath,
           )
-          .map((vault) => (vault: vault, vaultKey: backupKey));
+          .map(
+            (vault) =>
+                (vault: vault, vaultKey: backupKey, walletId: defaultWallet.id),
+          );
     } catch (e, st) {
       log.severe(message: 'createEncryptedVault failed', error: e, trace: st);
       return Err(RecoverBullUnexpectedCoreFailure(e.toString()));

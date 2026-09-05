@@ -4,18 +4,18 @@ import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dar
 extension WalletReceiveExtension on Wallet {
   List<ReceiveNetworkType> get availableReceiveNetworks {
     if (isLiquid) {
-      return signsLocally
+      return isStandardLocalSingleSignatureWallet
           ? [ReceiveNetworkType.lightning, ReceiveNetworkType.liquid]
           : [ReceiveNetworkType.liquid];
     }
-    return signsLocally
+    return isStandardLocalSingleSignatureWallet
         ? [ReceiveNetworkType.bitcoin, ReceiveNetworkType.lightning]
         : [ReceiveNetworkType.bitcoin];
   }
 
   ReceiveNetworkType get defaultReceiveNetwork {
     if (isLiquid) {
-      return signsLocally
+      return isStandardLocalSingleSignatureWallet
           ? ReceiveNetworkType.lightning
           : ReceiveNetworkType.liquid;
     }

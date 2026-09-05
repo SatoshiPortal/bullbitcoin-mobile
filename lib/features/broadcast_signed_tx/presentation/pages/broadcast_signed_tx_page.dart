@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_
 import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/nfc_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -19,7 +18,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullPasteInput, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,133 +27,153 @@ class BroadcastSignedTxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.broadcastSignedTxPageTitle,
-          onBack: () => context.pop(),
-        ),
-      ),
-      // Actions are pinned to the bottom of the screen (not inline in the
-      // scroll content) so they don't jump when the error appears/disappears.
-      bottomNavigationBar:
-          BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
-            builder: (context, state) {
-              final showActions =
-                  state.transaction != null && !state.isBroadcasted;
-              if (!showActions) return const SizedBox.shrink();
-              return const SafeArea(child: _BroadcastActions());
-            },
+    return BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+      listenWhen: (previous, state) =>
+          previous.collectedSignerResult == null &&
+          state.collectedSignerResult != null,
+      listener: (context, state) {
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          context.pop(state.collectedSignerResult);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            title: context.read<BroadcastSignedTxCubit>().collectSignerResult
+                ? context.loc.importSignedPsbtTitle
+                : context.loc.broadcastSignedTxPageTitle,
+            onBack: () => context.pop(),
           ),
-      body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
-        builder: (context, state) {
-          final cubit = context.read<BroadcastSignedTxCubit>();
-
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                if (state.transaction == null) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    child: PasteInput(
-                      text: state.transaction?.data ?? '',
-                      hint: context.loc.broadcastSignedTxPasteHint,
-                      onChanged: cubit.tryParseTransaction,
-                    ),
-                  ),
-                  if (state.failure != null) ...[
-                    const Gap(16),
-                    BBText(
-                      state.failure!.toTranslated(context),
-                      style: context.font.bodyMedium,
-                      color: context.appColors.error,
-                    ),
-                  ],
-
-                  const Gap(16),
-                  BBButton.small(
-                    label: context.loc.broadcastSignedTxCameraButton,
-                    onPressed: () {
-                      cubit.resetState();
-                      context.pushNamed(
-                        BroadcastSignedTxRoute.broadcastScanQr.name,
-                      );
-                    },
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
-                    iconData: Icons.qr_code_scanner,
-                    outlined: true,
-                  ),
-                  const Gap(32),
-                  BBButton.small(
-                    label: context.loc.broadcastSignedTxNfcButton,
-                    onPressed: () => NfcBottomSheet.showReadNfc(
-                      context: context,
-                      title: context.loc.broadcastSignedTxColdcardNfcSheetTitle,
-                      onDataReceived: (payload) => cubit.onQrScanned(payload),
-                    ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
-                    iconData: Icons.nfc,
-                    outlined: true,
-                  ),
-                  const Gap(32),
-                  BBButton.small(
-                    label: context.loc.broadcastSignedTxPushTxButton,
-                    onPressed: () => context.pushNamed(
-                      BroadcastSignedTxRoute.broadcastScanNfc.name,
-                    ),
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.text,
-                    iconData: Icons.contactless_outlined,
-                    outlined: true,
-                  ),
-                ],
-
-                // Transaction review using TransactionReviewView
-                if (state.transaction != null &&
-                    state.isBroadcasted == false) ...[
-                  BlocProvider(
-                    create: (_) => locator<TransactionReviewCubit>(),
-                    child: _TransactionReviewSection(
-                      bitcoinTx: state.transaction!.tx,
-                    ),
-                  ),
-                  // Broadcast failure is shown here in the scroll content so
-                  // the pinned action buttons stay put when it toggles.
-                  if (state.failure != null) ...[
-                    const Gap(16),
-                    _BroadcastError(failure: state.failure!),
-                  ],
-                ],
-
-                if (state.isBroadcasted == true) ...[
-                  Gif(
-                    image: AssetImage(Assets.animations.successTick.path),
-                    autostart: Autostart.once,
-                    height: 200,
-                    width: 200,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 100, right: 100),
-                    child: BBButton.big(
-                      label: context.loc.broadcastSignedTxDoneButton,
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                      onPressed: () =>
-                          context.goNamed(WalletRoute.walletHome.name),
-                    ),
-                  ),
-                ],
-              ],
+        ),
+        bottomNavigationBar:
+            BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+              builder: (context, state) {
+                final showActions =
+                    state.transaction != null && !state.isBroadcasted;
+                if (!showActions) return const SizedBox.shrink();
+                return const SafeArea(child: _BroadcastActions());
+              },
             ),
-          );
-        },
+        body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+          builder: (context, state) {
+            final cubit = context.read<BroadcastSignedTxCubit>();
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (state.transaction == null) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      child: BullPasteInput(
+                        text: state.transaction?.data ?? '',
+                        hint: cubit.collectSignerResult
+                            ? context.loc.importSignedPsbtPasteHint
+                            : context.loc.broadcastSignedTxPasteHint,
+                        onChanged: cubit.tryParseTransaction,
+                      ),
+                    ),
+                    if (state.failure != null) ...[
+                      const Gap(16),
+                      BBText(
+                        state.failure!.toTranslated(context),
+                        style: context.font.bodyMedium,
+                        color: context.appColors.error,
+                      ),
+                    ],
+
+                    const Gap(16),
+                    BBButton.small(
+                      label: context.loc.broadcastSignedTxCameraButton,
+                      onPressed: () async {
+                        cubit.resetState();
+                        final psbt = await context.pushNamed<String>(
+                          BroadcastSignedTxRoute.broadcastScanQr.name,
+                        );
+                        if (psbt != null && context.mounted) context.pop(psbt);
+                      },
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.text,
+                      iconData: Icons.qr_code_scanner,
+                      outlined: true,
+                    ),
+                    if (!cubit.collectSignerResult ||
+                        cubit.allowSignerResultNfc) ...[
+                      const Gap(32),
+                      BBButton.small(
+                        label: context.loc.broadcastSignedTxNfcButton,
+                        onPressed: () => NfcBottomSheet.showReadNfc(
+                          context: context,
+                          title: context
+                              .loc
+                              .broadcastSignedTxColdcardNfcSheetTitle,
+                          onDataReceived: (payload) =>
+                              cubit.onQrScanned(payload),
+                        ),
+                        bgColor: context.appColors.surface,
+                        textColor: context.appColors.text,
+                        iconData: Icons.nfc,
+                        outlined: true,
+                      ),
+                    ],
+                    if (!cubit.collectSignerResult) ...[
+                      const Gap(32),
+                      BBButton.small(
+                        label: context.loc.broadcastSignedTxPushTxButton,
+                        onPressed: () => context.pushNamed(
+                          BroadcastSignedTxRoute.broadcastScanNfc.name,
+                        ),
+                        bgColor: context.appColors.surface,
+                        textColor: context.appColors.text,
+                        iconData: Icons.contactless_outlined,
+                        outlined: true,
+                      ),
+                    ],
+                  ],
+
+                  if (state.transaction != null &&
+                      state.isBroadcasted == false) ...[
+                    BlocProvider(
+                      create: (_) => locator<TransactionReviewCubit>(),
+                      child: _TransactionReviewSection(
+                        bitcoinTx: state.transaction!.tx,
+                      ),
+                    ),
+                    // Broadcast failure is shown here in the scroll content so
+                    // the pinned action buttons stay put when it toggles.
+                    if (state.failure != null) ...[
+                      const Gap(16),
+                      _BroadcastError(failure: state.failure!),
+                    ],
+                  ],
+
+                  if (state.isBroadcasted == true) ...[
+                    Gif(
+                      image: AssetImage(Assets.animations.successTick.path),
+                      autostart: Autostart.once,
+                      height: 200,
+                      width: 200,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 100, right: 100),
+                      child: BBButton.big(
+                        label: context.loc.broadcastSignedTxDoneButton,
+                        bgColor: context.appColors.primary,
+                        textColor: context.appColors.onPrimary,
+                        onPressed: () =>
+                            context.goNamed(WalletRoute.walletHome.name),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -260,8 +279,6 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
 
   @override
   Widget build(BuildContext context) {
-    // Actions are rendered in the page's bottomNavigationBar (pinned), not
-    // here, so they don't shift with the scroll content.
     return const TransactionReviewView();
   }
 }
