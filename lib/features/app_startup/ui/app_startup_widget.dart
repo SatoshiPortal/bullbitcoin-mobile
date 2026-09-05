@@ -73,13 +73,13 @@ class AppStartupListener extends StatelessWidget {
         BlocListener<AppStartupBloc, AppStartupState>(
           listenWhen: (previous, current) =>
               current is AppStartupSuccess && previous != current,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
               AppRouter.router.go(AppUnlockRoute.appUnlock.path);
-            }
-
-            if (state is AppStartupSuccess && !state.hasDefaultWallets) {
+            } else if (state is AppStartupSuccess && !state.hasDefaultWallets) {
               AppRouter.router.go(OnboardingRoute.onboarding.path);
+            } else if (state is AppStartupSuccess) {
+              await AppRouter.routeAfterUnlock();
             }
           },
         ),

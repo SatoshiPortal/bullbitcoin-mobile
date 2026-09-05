@@ -3,6 +3,7 @@ import 'dart:io' show InternetAddress, Platform;
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
+import 'package:bb_mobile/core/notification_configuration.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
@@ -40,8 +41,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bull_tor/tor.dart' as bull_tor;
 import 'package:bull_tor/tor_adapter.dart' as tor;
-import 'package:workmanager/workmanager.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:notifications/notifications.dart';
+import 'package:path/path.dart' as path;
+import 'package:primitives/primitives.dart';
+import 'package:workmanager/workmanager.dart';
 
 /// Builds a [WizardRepository] without going through the locator. Used
 /// only in `main()` for the pre-init / pre-locator window: the wizard
@@ -117,6 +121,7 @@ class Bull {
     // settings repository is available, then mark the wizard complete.
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
     final settings = locator<SettingsRepository>();
+    await _initForegroundNotifications(settings);
     _diagnosticRuntime.setTorLoader(
       () => _loadTorContext(settings, locator<bull_tor.Tor>()),
     );
@@ -254,6 +259,39 @@ class Bull {
     // by previous releases, but keep initialization so upgrades reliably
     // remove those persisted native tasks.
     await Workmanager().cancelAll();
+  }
+
+  static Future<void> _initForegroundNotifications(
+    SettingsRepository settings,
+  ) async {
+    SqliteNotificationOutbox? outbox;
+    var registered = false;
+    try {
+      final documents = await getApplicationDocumentsDirectory();
+      final storedSettings = await settings.fetch();
+      outbox = SqliteNotificationOutbox(
+        databasePath: path.join(documents.path, 'notification_outbox.sqlite'),
+      );
+      final facade = NotificationsFacade(
+        gateway: FlutterLocalNotificationGateway(
+          channelId: 'bull_wallet_payments',
+          channelName: (await AppLocalizations.delegate.load(
+            storedSettings.language?.locale ?? const Locale('en'),
+          )).receivePaymentReceived,
+          androidIconResource: androidNotificationIconResource,
+        ),
+        outbox: outbox,
+      );
+      locator.registerSingleton<NotificationsFacade>(facade);
+      registered = true;
+      final result = await facade.initialize();
+      if (result case Err()) {
+        log.warning('Notification initialization failed');
+      }
+    } catch (_) {
+      if (!registered) outbox?.dispose();
+      log.warning('Notification initialization failed');
+    }
   }
 }
 

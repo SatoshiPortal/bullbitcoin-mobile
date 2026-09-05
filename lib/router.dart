@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -44,9 +45,11 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:notifications/notifications.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// The main router of the app. It is the root of the routing tree and contains
@@ -194,4 +197,47 @@ class AppRouter {
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+
+  static Future<void> routeAfterUnlock() async {
+    if (locator.isRegistered<NotificationsFacade>()) {
+      final notifications = locator<NotificationsFacade>();
+
+      try {
+        if (await notifications.requestPermission() case Err()) {
+          log.warning('Notification permission request failed');
+        }
+      } catch (_) {
+        log.warning('Notification permission request failed');
+      }
+
+      try {
+        if (await notifications.retryUnpersistedResponses() case Err()) {
+          log.warning('Notification response retry failed');
+        }
+      } catch (_) {
+        log.warning('Notification response retry failed');
+      }
+
+      try {
+        final result = await notifications.consumePendingDestination();
+        switch (result) {
+          case Ok(:final value):
+            switch (value) {
+              case NotificationDestination.walletHome:
+              case null:
+                router.goNamed(WalletRoute.walletHome.name);
+            }
+          case Err():
+            log.warning('Notification destination consumption failed');
+            router.goNamed(WalletRoute.walletHome.name);
+        }
+      } catch (_) {
+        log.warning('Notification destination consumption failed');
+        router.goNamed(WalletRoute.walletHome.name);
+      }
+      return;
+    }
+
+    router.goNamed(WalletRoute.walletHome.name);
+  }
 }

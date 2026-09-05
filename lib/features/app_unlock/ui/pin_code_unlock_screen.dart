@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/app_unlock_failure_l10n.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
@@ -36,13 +36,12 @@ class PinCodeUnlockScreen extends StatelessWidget {
               );
             }
           } else if (state.status == AppUnlockStatus.success) {
-            // If onSuccess is provided, call it, otherwise go to home as default.
-            // WalletHomeScreen syncs itself when it mounts / the router lands
-            // on the home location, so no explicit refresh dispatch is needed here.
+            // Custom flows keep their callback; the app-level flow handles
+            // notification permission and destination consumption before home.
             if (onSuccess != null) {
               onSuccess!();
             } else {
-              context.goNamed(WalletRoute.walletHome.name);
+              await AppRouter.routeAfterUnlock();
             }
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(const Duration(seconds: 1), () {
