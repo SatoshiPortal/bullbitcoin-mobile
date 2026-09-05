@@ -48,7 +48,9 @@ void main() {
     expect(confirmCalls, 1);
   });
 
-  testWidgets('starts hardware setup for the selected signer', (tester) async {
+  testWidgets('offers hardware setup until the signer is registered', (
+    tester,
+  ) async {
     WalletSigner? selected;
     final signer = WalletSigner.single(
       masterFingerprint: 'deadbeef',
@@ -61,21 +63,51 @@ void main() {
       id: 'cold',
     );
 
+    final otherSigner = WalletSigner.single(
+      masterFingerprint: 'cafebabe',
+      xpubFingerprint: 'cafebabe',
+      xpub: 'xpub-other',
+      signer: SignerEntity.remote,
+      signerDevice: SignerDeviceEntity.ledgerNanoX,
+      id: 'other',
+    );
+    final title =
+        '${SignerDeviceEntity.ledgerNanoX.displayName} · ${signer.displayFingerprint}';
     await _pump(
       tester,
       BullVaultHardwareSetupStep(
-        signers: [signer],
+        signers: [signer, otherSigner],
         completedSignerIds: const {},
         onSetUp: (value) async => selected = value,
       ),
     );
 
+    expect(find.text(title), findsOneWidget);
     expect(
-      find.text(SignerDeviceEntity.ledgerNanoX.displayName),
+      find.text(
+        '${SignerDeviceEntity.ledgerNanoX.displayName} · ${otherSigner.displayFingerprint}',
+      ),
       findsOneWidget,
     );
-    await tester.tap(find.text(SignerDeviceEntity.ledgerNanoX.displayName));
+    await tester.tap(find.text(title));
     expect(selected, same(signer));
+
+    selected = null;
+    await _pump(
+      tester,
+      BullVaultHardwareSetupStep(
+        signers: [signer],
+        completedSignerIds: {signer.id},
+        onSetUp: (value) async => selected = value,
+      ),
+    );
+    expect(
+      find.text(AppLocalizationsEn().bullVaultHardwareSetupComplete),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.arrow_forward), findsNothing);
+    await tester.tap(find.text(title));
+    expect(selected, isNull);
   });
 
   testWidgets('shows deposit guidance only after setup is complete', (

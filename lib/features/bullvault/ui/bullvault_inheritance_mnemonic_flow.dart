@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
@@ -12,7 +11,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullSnackBar;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -160,7 +159,7 @@ final class _ImportInheritanceMnemonicScreenState
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: InfoCard(
+            child: BullInfoCard(
               description: context.loc.bullVaultInheritanceMnemonicWarning,
               tagColor: context.appColors.warning,
               bgColor: context.appColors.warningContainer,

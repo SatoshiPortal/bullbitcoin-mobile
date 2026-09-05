@@ -191,14 +191,12 @@ class _SingleSignerWalletDetails extends StatelessWidget {
           WalletDetailCopyField(
             label: context.loc.walletDetailsPubkeyLabel,
             value: key.xpub,
-            copyLabel: context.loc.walletDetailsCopyButton,
           ),
           const Gap(18),
         ],
         WalletDetailCopyField(
           label: context.loc.walletDetailsDescriptorLabel,
           value: wallet.publicDescriptor,
-          copyLabel: context.loc.walletDetailsCopyButton,
         ),
         const Gap(18),
         WalletDetailInfoField(
