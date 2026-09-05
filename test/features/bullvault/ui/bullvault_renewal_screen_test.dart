@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_details_usecase.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_reference.dart';
@@ -275,8 +275,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Current recovery dates'), findsOneWidget);
     expect(find.text('New recovery dates'), findsNothing);
-    final exportButton = tester.widget<BBButton>(
-      find.widgetWithText(BBButton, 'Save recovery data'),
+    final exportButton = tester.widget<BullButton>(
+      find.widgetWithText(BullButton, 'Save recovery data'),
     );
     expect(exportButton.disabled, isFalse);
     expect(cubit.state.details, same(details));

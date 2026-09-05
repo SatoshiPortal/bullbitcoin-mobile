@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bitcoin_policy_condition.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/dialog/signer_passphrase_dialog.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_review.dart';
@@ -442,73 +442,18 @@ class _AuthorizationSectionState extends State<_AuthorizationSection> {
             if (_showDetails && root is BitcoinThresholdPolicyNode) ...[
               const Gap(12),
               for (final (index, child) in root.children.indexed) ...[
-                _PsbtPolicyCondition(node: child, wallet: review.wallet),
+                BitcoinPolicyCondition(
+                  node: child,
+                  describe: (node) =>
+                      describePsbtPolicyNode(context, node, review.wallet),
+                  textColor: context.appColors.secondary,
+                ),
                 if (index != root.children.length - 1) const Gap(8),
               ],
             ],
           ],
         ),
       ),
-    );
-  }
-}
-
-class _PsbtPolicyCondition extends StatelessWidget {
-  final BitcoinPolicyNode node;
-  final Wallet wallet;
-
-  const _PsbtPolicyCondition({required this.node, required this.wallet});
-
-  @override
-  Widget build(BuildContext context) {
-    final thresholdNode = node is BitcoinThresholdPolicyNode
-        ? node as BitcoinThresholdPolicyNode
-        : null;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 7),
-          child: Container(
-            width: 5,
-            height: 5,
-            decoration: BoxDecoration(
-              color: context.appColors.textMuted,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        const Gap(10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              BullText(
-                describePsbtPolicyNode(context, node, wallet),
-                style: context.font.bodySmall,
-                color: context.appColors.secondary,
-              ),
-              if (thresholdNode != null) ...[
-                const Gap(8),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final (index, child)
-                          in thresholdNode.children.indexed) ...[
-                        _PsbtPolicyCondition(node: child, wallet: wallet),
-                        if (index != thresholdNode.children.length - 1)
-                          const Gap(8),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

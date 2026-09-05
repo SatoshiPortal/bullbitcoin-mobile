@@ -3,12 +3,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -78,15 +80,48 @@ Future<void> _pumpScreen(
 }
 
 void main() {
-  testWidgets('shows wallet information directly and ends with Addresses', (
-    tester,
-  ) async {
+  testWidgets('shows and copies wallet information', (tester) async {
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copied = (call.arguments as Map<Object?, Object?>)['text'] as String?;
+        }
+        return null;
+      },
+    );
+    addTearDown(() {
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      );
+    });
     await _pumpScreen(tester, isDefault: false);
 
     expect(find.text('Savings'), findsOneWidget);
     expect(find.text('abcd1234'), findsOneWidget);
     expect(find.text('xpub-test'), findsOneWidget);
     expect(find.text('Addresses'), findsOneWidget);
+
+    for (final value in [
+      'xpub-test',
+      _wallet(isDefault: false).publicDescriptor,
+    ]) {
+      final field = find.ancestor(
+        of: find.text(value),
+        matching: find.byType(CopyInput),
+      );
+      final copyButton = find.descendant(
+        of: field,
+        matching: find.byIcon(Icons.copy_sharp),
+      );
+      await tester.ensureVisible(copyButton);
+      await tester.tap(copyButton);
+      expect(copied, value);
+      await tester.pump(const Duration(seconds: 4));
+      await tester.pumpAndSettle();
+    }
   });
 
   testWidgets('shows a repeated account xpub once', (tester) async {

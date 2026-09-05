@@ -1,10 +1,8 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPasteInput, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullPasteInput, BullDropdown, BullButton, BullInfoCard, Gap;
 import 'package:flutter/material.dart';
 
 final class BullVaultSignerInput extends StatelessWidget {
@@ -51,7 +49,7 @@ final class BullVaultSignerInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BBDropdown<String>(
+        BullDropdown<String>(
           key: ValueKey(selectedValue),
           value: selectedValue,
           hint: Text(context.loc.bullVaultChooseDevice),
@@ -82,7 +80,7 @@ final class BullVaultSignerInput extends StatelessWidget {
         ),
         const Gap(16),
         if (usesOtherSigner) ...[
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultGenericSignerWarning,
             tagColor: context.appColors.error,
             bgColor: context.appColors.errorContainer,
@@ -102,7 +100,7 @@ final class BullVaultSignerInput extends StatelessWidget {
           ),
         ] else if (device case final selectedDevice?) ...[
           if (value.isNotEmpty) ...[
-            InfoCard(
+            BullInfoCard(
               description: context.loc.bullVaultDeviceKeyLoaded(
                 selectedDevice.displayName,
               ),
@@ -111,7 +109,7 @@ final class BullVaultSignerInput extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          BBButton.big(
+          BullButton.big(
             label: value.isEmpty
                 ? context.loc.bullVaultGetKeyFromDevice(
                     selectedDevice.displayName,

@@ -116,7 +116,6 @@ class _SignerDetails extends StatelessWidget {
             WalletDetailCopyField(
               label: context.loc.importWatchOnlyExtendedPublicKey,
               value: key.xpub,
-              copyLabel: context.loc.walletDetailsCopyButton,
             ),
           ],
         ],

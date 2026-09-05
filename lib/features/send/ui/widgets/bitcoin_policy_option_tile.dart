@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bitcoin_policy_condition.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -215,57 +216,13 @@ class _BitcoinPolicyThresholdDetails extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       for (final (index, child) in node.children.indexed) ...[
-        _BitcoinPolicyConditionDetail(node: child, wallet: wallet),
+        BitcoinPolicyCondition(
+          node: child,
+          describe: (node) => describeBitcoinPolicyNode(context, node, wallet),
+          textColor: context.appColors.textMuted,
+        ),
         if (index != node.children.length - 1) const Gap(8),
       ],
-    ],
-  );
-}
-
-class _BitcoinPolicyConditionDetail extends StatelessWidget {
-  final BitcoinPolicyNode node;
-  final Wallet? wallet;
-
-  const _BitcoinPolicyConditionDetail({required this.node, this.wallet});
-
-  @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(top: 7),
-        child: Container(
-          width: 5,
-          height: 5,
-          decoration: BoxDecoration(
-            color: context.appColors.textMuted,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
-      const Gap(10),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BBText(
-              describeBitcoinPolicyNode(context, node, wallet),
-              style: context.font.bodySmall,
-              color: context.appColors.textMuted,
-            ),
-            if (node case final BitcoinThresholdPolicyNode threshold) ...[
-              const Gap(8),
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: _BitcoinPolicyThresholdDetails(
-                  node: threshold,
-                  wallet: wallet,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
     ],
   );
 }
