@@ -15,6 +15,7 @@ graph TB
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     WALLET_TRANSACTION_SYNC[Wallet Transaction Sync Package<br/>Local-source-first snapshots, freshness, source coordination]
+    NOTIFICATIONS[Notifications Package<br/>Durable outbox and deferred destinations]
     BULL_SDK[Bull SDK External Dependency<br/>BDK/LWK native adapters]
 
     %% Feature modules
@@ -73,6 +74,8 @@ graph TB
     CORE --> WALLET_TRANSACTION_SYNC
     WALLET_TRANSACTION_SYNC --> PRIMITIVES
     WALLET_TRANSACTION_SYNC --> BULL_SDK
+    CORE --> NOTIFICATIONS
+    NOTIFICATIONS --> PRIMITIVES
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -223,6 +226,7 @@ graph TB
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
 - **Wallet Transaction Sync**: `packages/wallet_transaction_sync` — local-source-first Bitcoin/Liquid synchronization contracts, immutable process snapshots, freshness/evidence, and the shared per-wallet SDK-state coordinator. Core currently consumes the coordinator while production transaction UI remains on legacy repositories; see the migration status in [ARCHITECTURE.md](ARCHITECTURE.md)
+- **Notifications**: `packages/notifications` — local-notification gateway, durable collision-safe outbox, silent topic baselines, and deferred post-unlock destinations
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price

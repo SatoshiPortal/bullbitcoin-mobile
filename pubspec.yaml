@@ -15,6 +15,7 @@ workspace:
   - packages/bull_ui_catalogue
   - packages/primitives
   - packages/wallet_transaction_sync
+  - packages/notifications
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_logger
@@ -31,6 +32,7 @@ dependencies:
   bull_logger:
   bull_logs:
   wallet_transaction_sync:
+  notifications:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
