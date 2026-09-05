@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
@@ -318,4 +319,186 @@ void main() {
     );
     expect(calls, isEmpty);
   });
+
+  test('rejects a non-positive concurrency limit', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    addTearDown(() async {
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+
+    expect(
+      () => WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        jobs: const [],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        maxConcurrentJobs: 0,
+      ),
+      throwsArgumentError,
+    );
+  });
+
+  test('never exceeds the configured concurrency limit', () async {
+    final directory = await Directory.systemTemp.createTemp('background_tasks');
+    final outbox = SqliteNotificationOutbox(
+      databasePath: '${directory.path}/n.sqlite',
+    );
+    addTearDown(() async {
+      outbox.dispose();
+      await directory.delete(recursive: true);
+    });
+    var active = 0;
+    var maximum = 0;
+    final started = List.generate(5, (_) => Completer<void>());
+    final release = List.generate(5, (_) => Completer<void>());
+    final jobs = List.generate(5, (index) {
+      final key = WalletNetworkKey('wallet-$index', 'bitcoin', 'testnet');
+      return WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          active++;
+          maximum = active > maximum ? active : maximum;
+          started[index].complete();
+          await release[index].future;
+          active--;
+          return Ok(_outcome(key, const []));
+        },
+      );
+    });
+    final task = WalletTransactionSyncBackgroundTask(
+      notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+      jobs: jobs,
+      copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+      maxConcurrentJobs: 2,
+    );
+    final execution = task.execute(chain: 'bitcoin');
+    await Future.wait([started[0].future, started[1].future]);
+    expect(active, 2);
+    release[0].complete();
+    await started[2].future;
+    release[1].complete();
+    await started[3].future;
+    release[2].complete();
+    await started[4].future;
+    release[3].complete();
+    release[4].complete();
+    await execution;
+    expect(maximum, 2);
+  });
+
+  test(
+    'starts the next wallet when a slot frees before an earlier wallet',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'background_tasks',
+      );
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      addTearDown(() async {
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      final firstRelease = Completer<void>();
+      final secondRelease = Completer<void>();
+      final firstStarted = Completer<void>();
+      final secondStarted = Completer<void>();
+      final thirdStarted = Completer<void>();
+      final started = <String>[];
+      final firstKey = const WalletNetworkKey('first', 'bitcoin', 'testnet');
+      final secondKey = const WalletNetworkKey('second', 'bitcoin', 'testnet');
+      final thirdKey = const WalletNetworkKey('third', 'bitcoin', 'testnet');
+      WalletTransactionSyncBackgroundJob job(
+        WalletNetworkKey key,
+        Future<void>? wait,
+        Completer<void> didStart,
+      ) => WalletTransactionSyncBackgroundJob(
+        key: key,
+        synchronize: () async {
+          started.add(key.walletId);
+          didStart.complete();
+          if (wait != null) await wait;
+          return Ok(_outcome(key, const []));
+        },
+      );
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        jobs: [
+          job(firstKey, firstRelease.future, firstStarted),
+          job(secondKey, secondRelease.future, secondStarted),
+          job(thirdKey, null, thirdStarted),
+        ],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        maxConcurrentJobs: 2,
+      );
+      final execution = task.execute(chain: 'bitcoin');
+      await Future.wait([firstStarted.future, secondStarted.future]);
+      expect(started, ['first', 'second']);
+      secondRelease.complete();
+      await thirdStarted.future;
+      expect(started, ['first', 'second', 'third']);
+      expect(firstRelease.isCompleted, isFalse);
+      firstRelease.complete();
+      await execution;
+    },
+  );
+
+  test(
+    'attempts remaining wallets after thrown and returned failures',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'background_tasks',
+      );
+      final outbox = SqliteNotificationOutbox(
+        databasePath: '${directory.path}/n.sqlite',
+      );
+      addTearDown(() async {
+        outbox.dispose();
+        await directory.delete(recursive: true);
+      });
+      final calls = <String>[];
+      WalletTransactionSyncBackgroundJob job(
+        String id,
+        Future<
+          Result<WalletTransactionSyncOutcome, WalletTransactionSyncFailure>
+        >
+        Function()
+        operation,
+      ) => WalletTransactionSyncBackgroundJob(
+        key: WalletNetworkKey(id, 'bitcoin', 'testnet'),
+        synchronize: () async {
+          calls.add(id);
+          return operation();
+        },
+      );
+      final successfulKey = const WalletNetworkKey(
+        'successful',
+        'bitcoin',
+        'testnet',
+      );
+      final task = WalletTransactionSyncBackgroundTask(
+        notifications: NotificationsFacade(gateway: _Gateway(), outbox: outbox),
+        jobs: [
+          job('thrown', () async => throw StateError('failed')),
+          job(
+            'returned',
+            () async =>
+                const Err(SourceFailure(SourceFailureReason.unavailable)),
+          ),
+          job('successful', () async => Ok(_outcome(successfulKey, const []))),
+        ],
+        copy: (_, _) => (title: 'Incoming', body: 'Payment received'),
+        maxConcurrentJobs: 2,
+      );
+
+      expect(
+        (await task.execute(chain: 'bitcoin')).status,
+        BackgroundTaskExecutionStatus.retry,
+      );
+      expect(calls, ['thrown', 'returned', 'successful']);
+    },
+  );
 }
