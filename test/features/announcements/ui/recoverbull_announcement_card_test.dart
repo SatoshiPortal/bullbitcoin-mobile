@@ -10,6 +10,93 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('RecoverBull announcement exposes a localized dismiss action', (
+    tester,
+  ) async {
+    final alert = RecoverBullAttemptAlert(
+      RecoverBullAttemptAlertKind.unavailable,
+    );
+    await _pumpCard(
+      tester,
+      RecoverBullAnnouncement(primaryAlert: alert, sourceAlerts: [alert]),
+    );
+
+    final l10n = RecoverBullLocalizations.of(
+      tester.element(find.byType(AnnouncementCard)),
+    );
+    final dismiss = find.bySemanticsLabel(
+      l10n.recoverbullAttemptMonitoringDismiss,
+    );
+    expect(dismiss, findsOneWidget);
+    expect(
+      tester.getSemantics(dismiss),
+      matchesSemantics(isButton: true, hasTapAction: true),
+    );
+  });
+
+  testWidgets('body and dismiss actions invoke distinct callbacks', (
+    tester,
+  ) async {
+    var bodyTaps = 0;
+    var dismissTaps = 0;
+    final alert = RecoverBullAttemptAlert(
+      RecoverBullAttemptAlertKind.unavailable,
+    );
+    await _pumpCard(
+      tester,
+      RecoverBullAnnouncement(primaryAlert: alert, sourceAlerts: [alert]),
+      onTap: () => bodyTaps++,
+      onDismiss: () => dismissTaps++,
+    );
+
+    final l10n = RecoverBullLocalizations.of(
+      tester.element(find.byType(AnnouncementCard)),
+    );
+    await tester.tap(
+      find.bySemanticsLabel(l10n.recoverbullAttemptMonitoringDismiss),
+    );
+    expect(dismissTaps, 1);
+    expect(bodyTaps, 0);
+
+    await tester.tap(find.byType(BullInfoCard));
+    expect(bodyTaps, 1);
+    expect(dismissTaps, 1);
+  });
+
+  testWidgets('service pressure announcements expose their dedicated content', (
+    tester,
+  ) async {
+    final cases = {
+      RecoverBullAttemptAlertKind.servicePressure:
+          'recoverbullAttemptMonitoringServicePressure',
+      RecoverBullAttemptAlertKind.identifierSaturation:
+          'recoverbullAttemptMonitoringIdentifierSaturation',
+      RecoverBullAttemptAlertKind.unavailable:
+          'recoverbullAttemptMonitoringUnavailableUnknownDuration',
+    };
+    for (final entry in cases.entries) {
+      final alert = RecoverBullAttemptAlert(entry.key);
+      await _pumpCard(
+        tester,
+        RecoverBullAnnouncement(primaryAlert: alert, sourceAlerts: [alert]),
+      );
+      final l10n = RecoverBullLocalizations.of(
+        tester.element(find.byType(AnnouncementCard)),
+      );
+      final text = switch (entry.key) {
+        RecoverBullAttemptAlertKind.servicePressure =>
+          l10n.recoverbullAttemptMonitoringServicePressure,
+        RecoverBullAttemptAlertKind.identifierSaturation =>
+          l10n.recoverbullAttemptMonitoringIdentifierSaturation,
+        RecoverBullAttemptAlertKind.unavailable =>
+          l10n.recoverbullAttemptMonitoringUnavailableUnknownDuration,
+        _ => throw StateError('unreachable'),
+      };
+      expect(find.text(text), findsExactly(2));
+      expect(find.byType(BullInfoCard), findsOneWidget);
+    }
+  });
+
   testWidgets('English suspicious alert card opens its educational details', (
     tester,
   ) async {
@@ -37,15 +124,16 @@ void main() {
     );
     expect(
       find.textContaining('Reinstallation, another phone or device'),
-      findsAtLeastNWidgets(1),
+      findsOneWidget,
     );
     expect(find.textContaining('If you recognize it'), findsOneWidget);
     expect(
       find.textContaining('new wallet with a new mnemonic'),
-      findsAtLeastNWidgets(1),
+      findsOneWidget,
     );
     expect(find.textContaining('secure every backup copy'), findsOneWidget);
     expect(find.textContaining('contact support'), findsAtLeastNWidgets(1));
+    expect(find.textContaining('too many failed attempts'), findsNothing);
   });
 
   testWidgets('English lockout details explain retry and migration choices', (
@@ -63,16 +151,17 @@ void main() {
     await tester.tap(find.byType(BullInfoCard));
     await tester.pumpAndSettle();
 
-    expect(
-      find.textContaining('too many failed attempts'),
-      findsAtLeastNWidgets(1),
-    );
-    expect(find.textContaining('wait and try again'), findsAtLeastNWidgets(1));
+    expect(find.textContaining('too many failed attempts'), findsOneWidget);
+    expect(find.textContaining('wait and try again'), findsOneWidget);
     expect(
       find.textContaining('move funds to a new wallet with a new mnemonic'),
       findsAtLeastNWidgets(1),
     );
     expect(find.textContaining('contact support'), findsAtLeastNWidgets(1));
+    expect(
+      find.textContaining('Reinstallation, another phone or device'),
+      findsNothing,
+    );
   });
 
   testWidgets(
@@ -137,16 +226,13 @@ void main() {
       find.text(l10n.recoverbullAttemptAlertAttempts(3, 7)),
       findsOneWidget,
     );
-    expect(find.textContaining('Une réinstallation'), findsAtLeastNWidgets(1));
-    expect(
-      find.textContaining('Si vous les reconnaissez'),
-      findsAtLeastNWidgets(1),
-    );
+    expect(find.textContaining('Une réinstallation'), findsOneWidget);
+    expect(find.textContaining('Si vous les reconnaissez'), findsOneWidget);
     expect(
       find.textContaining(
         'nouveau portefeuille avec une nouvelle phrase mnémotechnique',
       ),
-      findsAtLeastNWidgets(1),
+      findsOneWidget,
     );
   });
 
@@ -198,6 +284,8 @@ Future<void> _pumpCard(
   Locale locale = const Locale('en'),
   double textScale = 1,
   ValueNotifier<double>? textScaleNotifier,
+  VoidCallback? onTap,
+  VoidCallback? onDismiss,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -217,10 +305,12 @@ Future<void> _pumpCard(
           ),
           child: AnnouncementCard(
             announcement: announcement,
-            onTap: () => announcement.open(
-              tester.element(find.byType(AnnouncementCard)),
-            ),
-            onDismiss: () {},
+            onTap:
+                onTap ??
+                () => announcement.open(
+                  tester.element(find.byType(AnnouncementCard)),
+                ),
+            onDismiss: onDismiss ?? () {},
           ),
         ),
       ),
