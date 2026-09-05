@@ -38,7 +38,7 @@ void main() {
   late _MockLabelsFacade labelsFacade;
   late _MockWatchStarted watchStarted;
   late _MockWatchFinished watchFinished;
-  late StreamController<Wallet> startedController;
+  late StreamController<String> startedController;
   late StreamController<Wallet> finishedController;
 
   const walletId = 'w1';
@@ -60,7 +60,7 @@ void main() {
     labelsFacade = _MockLabelsFacade();
     watchStarted = _MockWatchStarted();
     watchFinished = _MockWatchFinished();
-    startedController = StreamController<Wallet>.broadcast();
+    startedController = StreamController<String>.broadcast();
     finishedController = StreamController<Wallet>.broadcast();
 
     when(
@@ -279,7 +279,7 @@ void main() {
         final cubit = buildCubit();
 
         // Sync started → syncing flips true.
-        startedController.add(_fakeWallet());
+        startedController.add(walletId);
         async.flushMicrotasks();
         expect(cubit.state.syncing, isTrue);
 

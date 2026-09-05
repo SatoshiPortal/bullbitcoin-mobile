@@ -10,6 +10,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+    show WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -17,6 +19,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final BdkWalletDatasource _bdkWalletDatasource;
   final LwkWalletDatasource _lwkWalletDatasource;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
+  final WalletSourceOperationCoordinator _coordinator;
 
   WalletUtxoRepositoryImpl({
     required this._walletMetadataDatasource,
@@ -24,6 +27,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     required this._bdkWalletDatasource,
     required this._lwkWalletDatasource,
     required this._frozenWalletUtxoDatasource,
+    required this._coordinator,
   });
 
   @override
@@ -47,9 +51,16 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
             id: metadata.id,
           );
 
-    final utxoModels = metadata.isBitcoin
-        ? await _bdkWalletDatasource.getUtxos(wallet: walletModel)
-        : await _lwkWalletDatasource.getUtxos(wallet: walletModel);
+    final utxoModels = await _coordinator.runExclusive(
+      WalletSourceKey(
+        walletModel.id,
+        walletModel is PublicBdkWalletModel ? 'bitcoin' : 'liquid',
+        walletModel.isTestnet ? 'testnet' : 'mainnet',
+      ),
+      (_) => metadata.isBitcoin
+          ? _bdkWalletDatasource.getUtxos(wallet: walletModel)
+          : _lwkWalletDatasource.getUtxos(wallet: walletModel),
+    );
     // `isFrozen` is matched by outpoint against the global frozen set (an
     // outpoint is globally unique, so it belongs to one wallet anyway). Frozen
     // rows for coins this wallet doesn't hold simply never match. Materialise

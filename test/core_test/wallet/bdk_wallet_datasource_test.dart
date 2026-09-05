@@ -146,47 +146,47 @@ void main() {
             as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the
-    // datasource's own (separate) `BdkFacade.createWallet` call sees the
+    // datasource's own (separate) scoped call sees the
     // exact same UTXOs when the test invokes `buildPsbt`.
-    final wallet = await BdkFacade.createWallet(walletModel);
+    await BdkFacade.withWallet(walletModel, (wallet) async {
+      final addr0 = wallet.revealNextAddress(
+        keychain: bdk.KeychainKind.external_,
+      );
+      final addr1 = wallet.revealNextAddress(
+        keychain: bdk.KeychainKind.external_,
+      );
 
-    final addr0 = wallet.revealNextAddress(
-      keychain: bdk.KeychainKind.external_,
-    );
-    final addr1 = wallet.revealNextAddress(
-      keychain: bdk.KeychainKind.external_,
-    );
+      final fundingTxBytes = _buildFundingTx([
+        (script: addr0.address.scriptPubkey(), amountSat: utxoLargeAmountSat),
+        (script: addr1.address.scriptPubkey(), amountSat: utxoSmallAmountSat),
+      ]);
+      final fundingTx = bdk.Transaction(transactionBytes: fundingTxBytes);
+      final fundingTxid = fundingTx.computeTxid().toString();
 
-    final fundingTxBytes = _buildFundingTx([
-      (script: addr0.address.scriptPubkey(), amountSat: utxoLargeAmountSat),
-      (script: addr1.address.scriptPubkey(), amountSat: utxoSmallAmountSat),
-    ]);
-    final fundingTx = bdk.Transaction(transactionBytes: fundingTxBytes);
-    final fundingTxid = fundingTx.computeTxid().toString();
+      wallet.applyUnconfirmedTxs(
+        unconfirmedTxs: [
+          bdk.UnconfirmedTx(
+            tx: fundingTx,
+            lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          ),
+        ],
+      );
 
-    wallet.applyUnconfirmedTxs(
-      unconfirmedTxs: [
-        bdk.UnconfirmedTx(
-          tx: fundingTx,
-          lastSeen: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        ),
-      ],
-    );
+      // Sanity-check the funding actually landed before persisting, so a
+      // failure here points clearly at the test's own setup rather than at
+      // `buildPsbt`.
+      final utxos = wallet.listUnspent();
+      expect(
+        utxos.length,
+        2,
+        reason: 'test setup: expected exactly 2 synthetic UTXOs after funding',
+      );
 
-    // Sanity-check the funding actually landed before persisting, so a
-    // failure here points clearly at the test's own setup rather than at
-    // `buildPsbt`.
-    final utxos = wallet.listUnspent();
-    expect(
-      utxos.length,
-      2,
-      reason: 'test setup: expected exactly 2 synthetic UTXOs after funding',
-    );
+      utxoLargeTxId = fundingTxid;
+      utxoLargeVout = 0;
 
-    utxoLargeTxId = fundingTxid;
-    utxoLargeVout = 0;
-
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    });
   });
 
   tearDown(() async {
@@ -385,4 +385,46 @@ void main() {
       );
     },
   );
+
+  test('selectTransactionAndPrevouts performs only targeted lookups', () {
+    final transactionsById = {
+      'unrelated': (txId: 'unrelated', previousTxIds: <String>[]),
+      'prevout': (txId: 'prevout', previousTxIds: <String>[]),
+      'requested': (
+        txId: 'requested',
+        previousTxIds: ['prevout', 'prevout', 'missing'],
+      ),
+    };
+    final lookups = <String>[];
+
+    final requestedTransactions = selectTransactionAndPrevouts(
+      'requested',
+      transactionById: (txId) {
+        lookups.add(txId);
+        return transactionsById[txId];
+      },
+      previousTxIdsOf: (transaction) => transaction.previousTxIds,
+    );
+    final missingTransactions = selectTransactionAndPrevouts(
+      'unknown',
+      transactionById: (txId) {
+        lookups.add(txId);
+        return transactionsById[txId];
+      },
+      previousTxIdsOf: (transaction) => transaction.previousTxIds,
+    );
+
+    expect(requestedTransactions.map((transaction) => transaction.txId), [
+      'requested',
+      'prevout',
+    ]);
+    expect(lookups, ['requested', 'prevout', 'missing', 'unknown']);
+    expect(missingTransactions, isEmpty);
+  });
+
+  test('selects discovery only for an unsynchronized persisted chain', () {
+    expect(bdkSyncModeForCheckpointHeight(0), BdkSyncMode.fullScan);
+    expect(bdkSyncModeForCheckpointHeight(1), BdkSyncMode.sync);
+    expect(bdkSyncModeForCheckpointHeight(849999), BdkSyncMode.sync);
+  });
 }

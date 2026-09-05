@@ -14,6 +14,9 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/wallet_transaction_sync
+  - packages/notifications
+  - packages/background_tasks
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_logger
@@ -29,6 +32,9 @@ dependencies:
   screen_privacy:
   bull_logger:
   bull_logs:
+  wallet_transaction_sync:
+  background_tasks:
+  notifications:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -57,17 +63,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 352c7fdf9c1a8ae9b6878a674214ad704a8f0bea
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 352c7fdf9c1a8ae9b6878a674214ad704a8f0bea
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 352c7fdf9c1a8ae9b6878a674214ad704a8f0bea
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -123,7 +129,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 88e05c9e9d2911f3dcd44b449ee97e27c73c1e51
+      ref: 352c7fdf9c1a8ae9b6878a674214ad704a8f0bea
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -141,7 +147,6 @@ dependencies:
   bitcoin_base: ^7.0.0
   socks5_proxy: ^2.1.1
   meta: ^1.17.0
-  workmanager: ^0.9.0
   path: ^1.9.1
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0

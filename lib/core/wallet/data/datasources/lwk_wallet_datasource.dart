@@ -270,12 +270,15 @@ class LwkWalletDatasource {
 
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
+    String? txId,
     String? toAddress,
   }) async {
     try {
       final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final transactions = await lwkWallet.txs();
-      final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
+      final transactions = await _getTransactionProjections(
+        lwkWallet,
+        txId: txId,
+      );
       final network = wallet.isTestnet
           ? Network.liquidTestnet
           : Network.liquidMainnet;
@@ -283,10 +286,10 @@ class LwkWalletDatasource {
       final walletTxs = await Future.wait(
         transactions.map((tx) async {
           if (toAddress != null && toAddress.isNotEmpty) {
-            final matches = tx.outputs.any(
+            final matches = tx.outputs.whereType<lwk.WalletTxOutCompact>().any(
               (output) =>
-                  output.address.standard == toAddress ||
-                  output.address.confidential == toAddress,
+                  output.standardAddress == toAddress ||
+                  output.confidentialAddress == toAddress,
             );
             if (!matches) return null;
           }
@@ -300,57 +303,53 @@ class LwkWalletDatasource {
               0;
           final isToSelf =
               tx.kind == 'redeposit' || finalBalance.abs() == tx.fee.toInt();
-          int changeAmountInToSelf = 0;
           final (inputs, outputs) = await (
             Future.wait(
-              tx.inputs.asMap().entries.map((entry) async {
-                final vin = entry.key;
-                final input = entry.value;
-                final walletInputAddress =
-                    usedAddressesMap[input.address.standard] ??
-                    usedAddressesMap[input.address.confidential];
-                final isOwn = isToSelf || walletInputAddress != null;
-                return TransactionInputModel.liquid(
-                  txId: tx.txid,
-                  vin: vin,
-                  isOwn: isOwn,
-                  value: input.unblinded.value,
-                  scriptPubkey: input.scriptPubkey,
-                  previousTxId: input.outpoint.txid,
-                  previousTxVout: input.outpoint.vout,
-                );
-              }),
+              tx.inputs
+                  .asMap()
+                  .entries
+                  .where((entry) => entry.value != null)
+                  .map((entry) async {
+                    final vin = entry.key;
+                    final input = entry.value!;
+                    return TransactionInputModel.liquid(
+                      txId: tx.txid,
+                      vin: vin,
+                      isOwn: true,
+                      value: input.value,
+                      scriptPubkey: input.scriptPubkey,
+                      previousTxId: input.outpoint.txid,
+                      previousTxVout: input.outpoint.vout,
+                    );
+                  }),
             ),
             Future.wait(
-              tx.outputs.asMap().entries.map((entry) async {
-                final vout = entry.key;
-                final output = entry.value;
-                final walletOutputAddress =
-                    usedAddressesMap[output.address.standard] ??
-                    usedAddressesMap[output.address.confidential];
-                final isOwn = isToSelf || walletOutputAddress != null;
-                if (isToSelf && walletOutputAddress == null) {
-                  changeAmountInToSelf += output.unblinded.value.toInt();
-                }
-                return TransactionOutputModel.liquid(
-                  txId: tx.txid,
-                  vout: vout,
-                  isOwn: isOwn,
-                  value: output.unblinded.value,
-                  scriptPubkey: output.scriptPubkey,
-                  address: output.address.confidential,
-                );
-              }),
+              tx.outputs
+                  .asMap()
+                  .entries
+                  .where((entry) => entry.value != null)
+                  .map((entry) async {
+                    final vout = entry.key;
+                    final output = entry.value!;
+                    return TransactionOutputModel.liquid(
+                      txId: tx.txid,
+                      vout: vout,
+                      isOwn: true,
+                      value: output.value,
+                      scriptPubkey: output.scriptPubkey,
+                      address: output.confidentialAddress,
+                    );
+                  }),
             ),
           ).wait;
-          final sumOutputs = outputs
-              .map((i) => i.value?.toInt() ?? 0)
-              .fold(0, (int a, b) => a + b);
-          final netAmountSat = isToSelf
-              ? sumOutputs - changeAmountInToSelf
-              : isIncoming
-              ? finalBalance
-              : finalBalance.abs() - tx.fee.toInt();
+          final netAmountSat = liquidTransactionAmountSat(
+            isToSelf: isToSelf,
+            isIncoming: isIncoming,
+            finalBalance: finalBalance,
+            feeSat: tx.fee.toInt(),
+            lbtcAssetId: lbtcAssetId,
+            outputs: tx.outputs,
+          );
 
           return WalletTransactionModel(
             txId: tx.txid,
@@ -377,6 +376,26 @@ class LwkWalletDatasource {
         rethrow;
       }
     }
+  }
+
+  Future<List<lwk.WalletTxProjection>> _getTransactionProjections(
+    lwk.Wallet wallet, {
+    String? txId,
+  }) async {
+    if (txId != null) {
+      // The optional URL contains unblinding factors; keep it in memory for the
+      // legacy viewer only. Never log, persist, or forward it to snapshots.
+      final transaction = await wallet.transactionProjection(
+        txid: txId,
+        includeUnblindingData: includeUnblindingDataForTransaction(txId: txId),
+      );
+      return transaction == null ? const [] : [transaction];
+    }
+    // The optional URL contains unblinding factors; keep it in memory for the
+    // legacy viewer only. Never log, persist, or forward it to snapshots.
+    return wallet.transactionsProjection(
+      includeUnblindingData: includeUnblindingDataForTransaction(txId: txId),
+    );
   }
 
   Future<String> buildPset({
@@ -576,46 +595,45 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<Map<String, ({String standard, String confidential, int index})>>
-  _getUsedAddressesMap({
-    required WalletModel wallet,
-    int batchSize = 10,
-  }) async {
-    try {
-      final lastIndex = await getLastUnusedAddressIndex(wallet: wallet);
-      final addressMap =
-          <String, ({String standard, String confidential, int index})>{};
-      final List<Future<void>> currentBatch = [];
-      for (int i = 0; i <= lastIndex; i++) {
-        final future = getAddressByIndex(i, wallet: wallet).then((addr) {
-          final address = addr;
-          addressMap[address.standard] = address;
-          addressMap[address.confidential] = address;
-        });
-        currentBatch.add(future);
-        if (currentBatch.length >= batchSize) {
-          await Future.wait(currentBatch);
-          currentBatch.clear();
-        }
-      }
-      if (currentBatch.isNotEmpty) {
-        await Future.wait(currentBatch);
-      }
-      return addressMap;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
   Future<void> delete({required WalletModel wallet}) async {
     await LwkFacade.delete(wallet);
     log.fine('Deleted wallet ${wallet.id} LWK database');
   }
 }
+
+@visibleForTesting
+int liquidTransactionAmountSat({
+  required bool isToSelf,
+  required bool isIncoming,
+  required int finalBalance,
+  required int feeSat,
+  required String lbtcAssetId,
+  required List<lwk.WalletTxOutCompact?> outputs,
+}) {
+  final sumOutputs = outputs
+      .whereType<lwk.WalletTxOutCompact>()
+      .where((output) => output.asset == lbtcAssetId)
+      .map((output) => output.value.toInt())
+      .fold(0, (int sum, value) => sum + value);
+  final internalChange = outputs
+      .whereType<lwk.WalletTxOutCompact>()
+      .where(
+        (output) =>
+            output.asset == lbtcAssetId &&
+            output.chain == lwk.WalletTxChain.internal,
+      )
+      .map((output) => output.value.toInt())
+      .fold(0, (int sum, value) => sum + value);
+  return isToSelf
+      ? sumOutputs - internalChange
+      : isIncoming
+      ? finalBalance
+      : finalBalance.abs() - feeSat;
+}
+
+@visibleForTesting
+bool includeUnblindingDataForTransaction({required String? txId}) =>
+    txId != null;
 
 extension NetworkX on Network {
   lwk.LiquidNetwork get lwkNetwork {

@@ -9,9 +9,12 @@ import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dar
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
+    show WalletOperationKind, WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -21,6 +24,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   // TODO: We should not pass a port into a repository, this is a dirty hack for now
   //  the syncing should be extracted from fetching the data
   final ElectrumServersPort _serversPort;
+  final WalletSourceOperationCoordinator _coordinator;
 
   WalletTransactionRepositoryImpl({
     required this._walletMetadataDatasource,
@@ -28,7 +32,8 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     required this._bdkWalletTransactionDatasource,
     required this._lwkWalletTransactionDatasource,
     required this._serversPort,
-  });
+    required WalletSourceOperationCoordinator coordinator,
+  }) : _coordinator = coordinator; // ignore: prefer_initializing_formals
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
@@ -41,13 +46,13 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     final walletModels = await _getPublicWalletModels(
       walletId: walletId,
       environment: environment,
-      sync: sync,
     );
 
     final walletTransactions = await _getWalletTransactions(
       txId: txId,
       walletModels: walletModels,
       toAddress: toAddress,
+      sync: sync,
     );
 
     return walletTransactions;
@@ -72,33 +77,42 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     required List<WalletModel> walletModels,
     String? txId,
     String? toAddress,
+    required bool sync,
   }) async {
-    final walletTransactionLists = await Future.wait(
+    final walletTransactionModelsByWallet = await Future.wait(
       walletModels.map((walletModel) async {
-        final walletTransactionModels = walletModel is PublicBdkWalletModel
-            ? await _bdkWalletTransactionDatasource.getTransactions(
+        return walletModel is PublicBdkWalletModel
+            ? await _getBdkWalletTransactionModels(
                 wallet: walletModel,
+                txId: txId,
                 toAddress: toAddress,
+                sync: sync,
               )
-            : await _lwkWalletTransactionDatasource.getTransactions(
-                wallet: walletModel,
+            : await _getLwkWalletTransactionModels(
+                wallet: walletModel as PublicLwkWalletModel,
+                txId: txId,
                 toAddress: toAddress,
+                sync: sync,
               );
+      }),
+    );
 
-        if (txId != null) {
-          walletTransactionModels.retainWhere(
-            (transaction) => transaction.txId == txId,
-          );
-        }
+    final labelsByReference = <String, List<Label>>{};
+    for (final label in await _labelsFacade.fetchAll()) {
+      labelsByReference.putIfAbsent(label.reference, () => []).add(label);
+    }
 
-        return await Future.wait(
+    final walletTransactionLists = await Future.wait(
+      walletTransactionModelsByWallet.indexed.map((entry) async {
+        final (walletIndex, walletTransactionModels) = entry;
+        final walletModel = walletModels[walletIndex];
+        return Future.wait(
           walletTransactionModels.map((walletTransactionModel) async {
             final (inputs, outputs, labels) = await (
               Future.wait(
                 walletTransactionModel.inputs.map((inputModel) async {
-                  final inputLabels = await _labelsFacade.fetchByReference(
-                    inputModel.labelRef,
-                  );
+                  final inputLabels =
+                      labelsByReference[inputModel.labelRef] ?? const <Label>[];
                   return TransactionInputMapper.toEntity(
                     inputModel,
                     labels: inputLabels.map((label) => label.label).toList(),
@@ -107,17 +121,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               ),
               Future.wait(
                 walletTransactionModel.outputs.map((outputModel) async {
-                  final outputLabels = await _labelsFacade.fetchByReference(
-                    outputModel.labelRef,
-                  );
+                  final outputLabels =
+                      labelsByReference[outputModel.labelRef] ??
+                      const <Label>[];
                   final outputModelAddress = outputModel.address;
-                  final addressLabels = <Label>[];
-                  if (outputModelAddress != null) {
-                    final rows = await _labelsFacade.fetchByReference(
-                      outputModelAddress,
-                    );
-                    addressLabels.addAll(rows);
-                  }
+                  final addressLabels = outputModelAddress == null
+                      ? const <Label>[]
+                      : labelsByReference[outputModelAddress] ??
+                            const <Label>[];
 
                   return TransactionOutputMapper.toEntity(
                     outputModel,
@@ -127,7 +138,10 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   );
                 }),
               ),
-              _labelsFacade.fetchByReference(walletTransactionModel.txId),
+              Future.value(
+                labelsByReference[walletTransactionModel.txId] ??
+                    const <Label>[],
+              ),
             ).wait;
 
             return WalletTransactionMapper.toEntity(
@@ -149,7 +163,6 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   Future<List<WalletModel>> _getPublicWalletModels({
     String? walletId,
     Environment? environment,
-    bool sync = false,
   }) async {
     List<WalletMetadataModel> walletsMetadata;
     if (walletId == null) {
@@ -182,37 +195,81 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         )
         .toList();
 
-    // TODO: We should extract syncing from fetching the data; routing the
-    //  port through a repository like this is a dirty hack for now.
-    if (sync) {
-      await Future.wait(
-        walletModels.map((walletModel) async {
-          final isLiquid = walletModel is PublicLwkWalletModel;
-          final network = ElectrumServerNetwork.fromEnvironment(
-            isTestnet: walletModel.isTestnet,
-            isLiquid: isLiquid,
-          );
-
-          await _serversPort.runWithFallback<void>(
-            network: network,
-            operation: (connection) async {
-              if (isLiquid) {
-                await _lwkWalletTransactionDatasource.sync(
-                  wallet: walletModel,
-                  electrumServer: connection,
-                );
-              } else {
-                await _bdkWalletTransactionDatasource.sync(
-                  wallet: walletModel,
-                  electrumServer: connection,
-                );
-              }
-            },
-          );
-        }),
-      );
-    }
-
     return walletModels;
   }
+
+  Future<List<WalletTransactionModel>> _getBdkWalletTransactionModels({
+    required PublicBdkWalletModel wallet,
+    String? txId,
+    String? toAddress,
+    required bool sync,
+  }) {
+    return _coordinator.runExclusive(
+      _sourceKey(wallet),
+      (_) async {
+        if (sync) {
+          await _serversPort.runWithFallback<void>(
+            network: ElectrumServerNetwork.fromEnvironment(
+              isTestnet: wallet.isTestnet,
+              isLiquid: false,
+            ),
+            operation: (connection) => _bdkWalletTransactionDatasource.sync(
+              wallet: wallet,
+              electrumServer: connection,
+            ),
+          );
+        }
+        return _bdkWalletTransactionDatasource.getTransactions(
+          wallet: wallet,
+          txId: txId,
+          toAddress: toAddress,
+        );
+      },
+      kind: sync
+          ? WalletOperationKind.synchronize
+          : WalletOperationKind.refresh,
+      timeout: sync ? null : const Duration(seconds: 30),
+    );
+  }
+
+  Future<List<WalletTransactionModel>> _getLwkWalletTransactionModels({
+    required PublicLwkWalletModel wallet,
+    String? txId,
+    String? toAddress,
+    required bool sync,
+  }) {
+    return _coordinator.runExclusive(
+      _sourceKey(wallet),
+      (_) async {
+        if (sync) {
+          await _serversPort.runWithFallback<void>(
+            network: ElectrumServerNetwork.fromEnvironment(
+              isTestnet: wallet.isTestnet,
+              isLiquid: true,
+            ),
+            operation: (connection) => _lwkWalletTransactionDatasource.sync(
+              wallet: wallet,
+              electrumServer: connection,
+            ),
+          );
+        }
+        final transactions = await _lwkWalletTransactionDatasource
+            .getTransactions(wallet: wallet, txId: txId, toAddress: toAddress);
+        if (txId == null) return transactions;
+        return transactions
+            .where((transaction) => transaction.txId == txId)
+            .toList();
+      },
+      kind: sync
+          ? WalletOperationKind.synchronize
+          : WalletOperationKind.refresh,
+      timeout: sync ? null : const Duration(seconds: 30),
+    );
+  }
+
+  WalletSourceKey _sourceKey(WalletModel wallet) => WalletSourceKey(
+    wallet.id,
+    wallet is PublicLwkWalletModel ? 'liquid' : 'bitcoin',
+    wallet.isTestnet ? 'testnet' : 'mainnet',
+  );
 }

@@ -174,8 +174,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
-      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
+      resolved-ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -232,8 +232,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
-      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
+      resolved-ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -321,8 +321,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
-      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
+      resolved-ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -784,6 +784,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.0"
+  flutter_local_notifications:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications
+      sha256: "1447ba911c60f2ba3f25dae1af151ec187162566b0f57e37771bf0b400f013ad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "22.3.0"
+  flutter_local_notifications_linux:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_linux
+      sha256: "9ca97e63776f29ab1b955725c09999fc2c150523269db150c39274f2a43c5a8b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.1"
+  flutter_local_notifications_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_platform_interface
+      sha256: "43c3761d916c9bd3d5c7ebbc44d82f4990329840c0c5d62ad5260cc1b5d399bd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.2.0"
+  flutter_local_notifications_web:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_web
+      sha256: "516afaf97a2d1e67a036c6617321b00d205d72f7a67b6eccf936cd565f985878"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  flutter_local_notifications_windows:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_windows
+      sha256: "6f43bdd03b171b7a90f22647506fea33e2bb12294b7c7c7a3d690e960a382945"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -1465,8 +1505,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
-      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
+      resolved-ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -1772,8 +1812,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
-      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
+      resolved-ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1789,8 +1829,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
-      resolved-ref: "88e05c9e9d2911f3dcd44b449ee97e27c73c1e51"
+      ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
+      resolved-ref: "352c7fdf9c1a8ae9b6878a674214ad704a8f0bea"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
@@ -2095,6 +2135,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.7.1"
+  timezone:
+    dependency: transitive
+    description:
+      name: timezone
+      sha256: "981d1020d6ef8fe1e7b3de5054e5b25579ae7c403d7734adc508ffc47668e9cb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.11.1"
   toml:
     dependency: transitive
     description:
@@ -2410,37 +2458,53 @@ packages:
     source: hosted
     version: "2.1.0"
   workmanager:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: workmanager
-      sha256: "53c2ae5d54f46b2eefacf541446efe01039471b1f0a605d5bbf3c77690702448"
+      sha256: c2c7a3eb984cfcf5623308042fc8270e7e02f5021b34f491ffc0a1ec8e281d5c
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.3"
+    version: "0.10.9"
   workmanager_android:
     dependency: transitive
     description:
       name: workmanager_android
-      sha256: "757fd2ef0761a130c6f71cd46ea656b7ea393d813ace46c1ef4fc24a7136953d"
+      sha256: "187d1d34864f57f9e388b33b88c001c494093c53679831a3dec2e8176e8829d1"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.3"
+    version: "0.10.8"
   workmanager_apple:
     dependency: transitive
     description:
       name: workmanager_apple
-      sha256: f960e829eea48859c7bdd730f59c4972f22259fb052416d611798e3976a3f4eb
+      sha256: "15558fb54415a010910c3529eaf8f61f94d23903dac620331895c472602d6f6e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.6"
+    version: "0.9.10"
+  workmanager_linux:
+    dependency: transitive
+    description:
+      name: workmanager_linux
+      sha256: "7d8520e1103b910a43d8bafe37ec2415f4c7c148afcb1eee0ec73ae67b4cdd22"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1+1"
   workmanager_platform_interface:
     dependency: transitive
     description:
       name: workmanager_platform_interface
-      sha256: "687ce0e27f2f7ce716d8e66143381e63312478ecc4aa0880e8064c7bf72e3e90"
+      sha256: "378b392db15ee88cd878ab983d3a0b4b1e460cfbb0f096ff74fda2614b1ba172"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.4"
+    version: "0.10.4"
+  workmanager_web:
+    dependency: transitive
+    description:
+      name: workmanager_web
+      sha256: "2ac481ade599bdd957ee2891be09a0c34be87923a2c3ca4dfe36add6fc735ffd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   xdg_directories:
     dependency: transitive
     description:

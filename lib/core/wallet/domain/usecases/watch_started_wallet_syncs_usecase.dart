@@ -1,20 +1,19 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class WatchStartedWalletSyncsUsecase {
   final WalletRepository _walletRepository;
 
   WatchStartedWalletSyncsUsecase({required this._walletRepository});
 
-  Stream<Wallet> execute({String? walletId}) {
+  Stream<String> execute({String? walletId}) {
     try {
       if (walletId != null) {
-        return _walletRepository.walletSyncStartedStream.where(
-          (wallet) => wallet.id == walletId,
+        return _walletRepository.walletSyncStartedIdsStream.where(
+          (startedWalletId) => startedWalletId == walletId,
         );
       } else {
-        return _walletRepository.walletSyncStartedStream;
+        return _walletRepository.walletSyncStartedIdsStream;
       }
     } catch (e) {
       throw WatchStartedWalletSyncsException(e.toString());

@@ -1,0 +1,28 @@
+name: wallet_transaction_sync
+description: Local-source-first wallet transaction synchronization contracts.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: "3.12.2"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bull_sdk:
+    git:
+      url: https://github.com/SatoshiPortal/bull_sdk
+      ref: 352c7fdf9c1a8ae9b6878a674214ad704a8f0bea
+      path: packages/bull_sdk
+  crypto: ^3.0.7
+  meta: ^1.17.0
+  primitives:
+  sqlite3: ^2.9.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0
+  test: ^1.26.3

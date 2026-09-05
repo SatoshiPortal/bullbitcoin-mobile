@@ -14693,5 +14693,22 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "backgroundNotificationBitcoinSingular": "1 Bitcoin transaction received",
+  "@backgroundNotificationBitcoinSingular": {
+    "description": "Privacy-preserving notification body for one newly received Bitcoin transaction"
+  },
+  "backgroundNotificationLiquidSingular": "1 Liquid transaction received",
+  "@backgroundNotificationLiquidSingular": {
+    "description": "Privacy-preserving notification body for one newly received Liquid transaction"
+  },
+  "backgroundNotificationTransactionsPlural": "{count} transactions received",
+  "@backgroundNotificationTransactionsPlural": {
+    "description": "Privacy-preserving notification body for multiple newly received transactions",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

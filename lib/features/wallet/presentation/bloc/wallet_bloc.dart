@@ -118,7 +118,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       await _electrumSyncResultsSubscription?.cancel();
       _startedSyncsSubscription = _watchStartedWalletSyncsUsecase
           .execute()
-          .listen((wallet) => add(WalletSyncStarted(wallet)));
+          .listen((walletId) => add(WalletSyncStarted(walletId)));
       _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
           .execute()
           .listen((wallet) => add(WalletSyncFinished(wallet)));
@@ -209,41 +209,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletSyncStarted event,
     Emitter<WalletState> emit,
   ) async {
-    try {
-      // Update sync status for the wallet that started syncing
-      final newSyncStatus = Map<String, bool>.from(state.syncStatus);
-      newSyncStatus[event.wallet.id] = true;
+    final newSyncStatus = Map<String, bool>.from(state.syncStatus);
+    newSyncStatus[event.walletId] = true;
 
-      emit(state.copyWith(syncStatus: newSyncStatus));
-      final wallets = await _getWalletsUsecase.execute();
-
-      if (wallets.isNotEmpty) {
-        final walletIds = wallets.map((w) => w.id).toList();
-        final unconfirmedIncomingBalance =
-            await _getUnconfirmedIncomingBalanceUsecase.execute(
-              walletIds: walletIds,
-            );
-
-        emit(
-          state.copyWith(
-            unconfirmedIncomingBalance: unconfirmedIncomingBalance,
-            status: WalletStatus.success,
-            error: null,
-            noWalletsFoundException: null,
-          ),
-        );
-      }
-    } on NoWalletsFoundException catch (e) {
-      emit(
-        state.copyWith(
-          noWalletsFoundException: e,
-          status: WalletStatus.failure,
-          error: e,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(status: WalletStatus.failure, error: e));
-    }
+    emit(state.copyWith(syncStatus: newSyncStatus));
   }
 
   Future<void> _onWalletSyncFinished(

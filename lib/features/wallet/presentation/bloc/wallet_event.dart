@@ -20,9 +20,9 @@ class WalletRefreshed extends WalletEvent {
 }
 
 class WalletSyncStarted extends WalletEvent {
-  final Wallet wallet;
+  final String walletId;
 
-  const WalletSyncStarted(this.wallet);
+  const WalletSyncStarted(this.walletId);
 }
 
 class WalletSyncFinished extends WalletEvent {
