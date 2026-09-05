@@ -1,3 +1,10 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/transactions/data/datasources/send_timestamp_datasource.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/load_historical_rates_usecase.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/historical_value/historical_value_cubit.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
@@ -139,6 +146,27 @@ class TransactionsLocator {
   }
 
   static void registerBlocs(GetIt locator) {
+    if (!locator.isRegistered<SendTimestampDatasource>()) {
+      locator.registerLazySingleton<SendTimestampDatasource>(
+        () => SendTimestampDatasource(db: locator<SqliteDatabase>()),
+      );
+    }
+    if (!locator.isRegistered<LoadHistoricalRatesUsecase>()) {
+      locator.registerFactory<LoadHistoricalRatesUsecase>(
+        () => LoadHistoricalRatesUsecase(
+          getPriceHistoryUsecase: locator<GetPriceHistoryUsecase>(),
+          refreshPriceHistoryUsecase: locator<RefreshPriceHistoryUsecase>(),
+        ),
+      );
+    }
+    locator.registerFactory<HistoricalValueCubit>(
+      () => HistoricalValueCubit(
+        loadHistoricalRatesUsecase: locator<LoadHistoricalRatesUsecase>(),
+        sendTimestampDatasource: locator<SendTimestampDatasource>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+      ),
+    );
+
     // Bloc
     locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
       (walletId, exchangeOnly) => TransactionsCubit(

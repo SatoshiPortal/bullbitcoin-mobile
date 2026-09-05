@@ -4,6 +4,22 @@ import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
 
 class PriceRepositoryImpl implements PriceRepository {
+  /// How long a `fifteen` row is kept.
+  ///
+  /// This was 15 minutes, which made the interval a spot-price cache rather
+  /// than a history: every refresh deleted all but the newest row. The
+  /// transaction history needs to price a payment received weeks ago to the
+  /// quarter hour, so the rows are now kept for the same window the `day`
+  /// tier serves the chart over. About 8,640 rows per currency.
+  static const fifteenRetention = Duration(days: 90);
+
+  /// `day` rows are never deleted.
+  ///
+  /// They previously expired after 90 days. They are now the only source that
+  /// can price a transaction from years back, and the whole available history
+  /// is about 1,223 rows per currency — the API returns nothing before
+  /// 2023-03-15 — so the table is naturally bounded and needs no sweeping.
+
   final PriceRemoteDatasource _remoteDatasource;
   final PriceLocalDatasource _localDatasource;
 
@@ -72,12 +88,6 @@ class PriceRepositoryImpl implements PriceRepository {
           .map((model) => model.toEntity())
           .toList();
 
-      await _localDatasource.clearPrices(
-        fromCurrency: fromCurrency,
-        toCurrency: toCurrency,
-        interval: interval.value,
-      );
-
       await _localDatasource.savePrices(remotePrices);
 
       if (interval == RateTimelineInterval.fifteen) {
@@ -102,18 +112,7 @@ class PriceRepositoryImpl implements PriceRepository {
             final dayPricesEntities = dayPrices
                 .map((model) => model.toEntity())
                 .toList();
-            await _localDatasource.clearPrices(
-              fromCurrency: fromCurrency,
-              toCurrency: toCurrency,
-              interval: RateTimelineInterval.day.value,
-            );
             await _localDatasource.savePrices(dayPricesEntities);
-            await _localDatasource.cleanupOldRates(
-              fromCurrency: fromCurrency,
-              toCurrency: toCurrency,
-              interval: RateTimelineInterval.day.value,
-              maxAge: const Duration(days: 90),
-            );
           }
         }
 
@@ -121,16 +120,9 @@ class PriceRepositoryImpl implements PriceRepository {
           fromCurrency: fromCurrency,
           toCurrency: toCurrency,
           interval: RateTimelineInterval.fifteen.value,
-          maxAge: const Duration(minutes: 15),
+          maxAge: fifteenRetention,
         );
       } else if (interval == RateTimelineInterval.day) {
-        await _localDatasource.cleanupOldRates(
-          fromCurrency: fromCurrency,
-          toCurrency: toCurrency,
-          interval: RateTimelineInterval.day.value,
-          maxAge: const Duration(days: 90),
-        );
-
         final fifteenFromDate = now.subtract(const Duration(minutes: 15));
         final localFifteen = await _localDatasource.getPriceHistory(
           fromCurrency: fromCurrency,
@@ -152,17 +144,12 @@ class PriceRepositoryImpl implements PriceRepository {
             final fifteenPricesEntities = fifteenPrices
                 .map((model) => model.toEntity())
                 .toList();
-            await _localDatasource.clearPrices(
-              fromCurrency: fromCurrency,
-              toCurrency: toCurrency,
-              interval: RateTimelineInterval.fifteen.value,
-            );
             await _localDatasource.savePrices(fifteenPricesEntities);
             await _localDatasource.cleanupOldRates(
               fromCurrency: fromCurrency,
               toCurrency: toCurrency,
               interval: RateTimelineInterval.fifteen.value,
-              maxAge: const Duration(minutes: 15),
+              maxAge: fifteenRetention,
             );
           }
         }
