@@ -603,13 +603,13 @@ class WalletRepository {
       } catch (_) {
         log.warning('Unable to persist foreground sync metadata');
       }
-    } on ElectrumFallbackException catch (e, stackTrace) {
+    } on ElectrumFallbackException catch (e) {
       // Both NoElectrumServersConfigured and AllElectrumServersFailed land
-      // here. Emit the failed result, log the rich `e.message` (per-server
-      // attempts on failure, network on no-config), then rethrow the typed
-      // exception so callers keep the diagnostic instead of receiving a
-      // flat string they have to parse.
-      log.severe(message: e.message, error: e, trace: stackTrace);
+      // here. Keep endpoints and raw transport exceptions out of persisted
+      // logs, then rethrow the typed exception for the caller.
+      log.warning(
+        'Wallet Electrum synchronization failed category=${_electrumFailureCategory(e)} chain=${isLiquid ? 'liquid' : 'bitcoin'} network=${wallet.isTestnet ? 'testnet' : 'mainnet'}',
+      );
       _electrumSyncResultController.add(
         ElectrumSyncResult(isLiquid: isLiquid, success: false),
       );
@@ -628,6 +628,18 @@ class WalletRepository {
     wallet is PublicLwkWalletModel ? 'liquid' : 'bitcoin',
     wallet.isTestnet ? 'testnet' : 'mainnet',
   );
+
+  String _electrumFailureCategory(ElectrumFallbackException failure) =>
+      switch (failure) {
+        NoElectrumServersConfiguredException() => 'no_servers',
+        OnionServerWithoutTorException() => 'onion_without_tor',
+        ClearnetServerWithoutConfiguredTorException() =>
+          'clearnet_without_configured_tor',
+        AllElectrumServersFailedException(:final triedCustomServers) =>
+          triedCustomServers
+              ? 'custom_servers_failed'
+              : 'default_servers_failed',
+      };
 
   Future<bool> isTorRequired() async {
     final defaultWallets = await getWallets(

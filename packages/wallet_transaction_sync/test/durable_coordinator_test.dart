@@ -775,6 +775,117 @@ void main() {
     expect(await later.runExclusive(key, (_) async => 2), 2);
   });
 
+  test('coordination logs are correlated without source identifiers', () async {
+    final events = <WalletCoordinationLogEvent>[];
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      logSink: events.add,
+    );
+    const sensitiveWalletId = 'never-log-this-wallet-id';
+
+    await coordinator.runExclusive(
+      const WalletSourceKey(sensitiveWalletId, 'bitcoin', 'testnet'),
+      (_) async {},
+      kind: WalletOperationKind.synchronize,
+      timeout: null,
+    );
+
+    expect(events.map((event) => event.level), [
+      WalletCoordinationLogLevel.config,
+      WalletCoordinationLogLevel.config,
+      WalletCoordinationLogLevel.fine,
+    ]);
+    final messages = events.map((event) => event.message).join('\n');
+    final sourceHash = sha256
+        .convert('$sensitiveWalletId\u0000bitcoin\u0000testnet'.codeUnits)
+        .toString();
+    expect(messages, isNot(contains(sensitiveWalletId)));
+    expect(messages, isNot(contains(sourceHash)));
+    expect(messages, contains('kind=synchronize'));
+    expect(messages, contains('priority=foreground'));
+    expect(messages, contains('chain=bitcoin'));
+    expect(messages, contains('network=testnet'));
+    final tokens = RegExp(
+      r'operation=([0-9a-f]{16})',
+    ).allMatches(messages).map((match) => match.group(1)).toSet();
+    expect(tokens, hasLength(1));
+  });
+
+  test('operation failures log only a fixed category', () async {
+    final events = <WalletCoordinationLogEvent>[];
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      logSink: events.add,
+    );
+    const sensitiveFailure = 'server.example.invalid wallet-secret';
+
+    await expectLater(
+      coordinator.runExclusive<void>(
+        const WalletSourceKey('failure-wallet', 'bitcoin', 'testnet'),
+        (_) => throw Exception(sensitiveFailure),
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      ),
+      throwsException,
+    );
+
+    final warnings = events
+        .where((event) => event.level == WalletCoordinationLogLevel.warning)
+        .map((event) => event.message)
+        .join('\n');
+    expect(warnings, contains('category=unexpected'));
+    expect(warnings, isNot(contains(sensitiveFailure)));
+    expect(warnings, isNot(contains('failure-wallet')));
+  });
+
+  test('operation and cleanup failures retain both fixed categories', () async {
+    final events = <WalletCoordinationLogEvent>[];
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      logSink: events.add,
+      beforeClaimRelease: () => throw StateError('cleanup-secret'),
+    );
+
+    await expectLater(
+      coordinator.runExclusive<void>(
+        const WalletSourceKey('double-failure', 'bitcoin', 'testnet'),
+        (_) => throw Exception('operation-secret'),
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      ),
+      throwsStateError,
+    );
+
+    final warnings = events
+        .where((event) => event.level == WalletCoordinationLogLevel.warning)
+        .map((event) => event.message)
+        .join('\n');
+    expect(warnings, contains('cleanup failed'));
+    expect(warnings, contains('category=state'));
+    expect(warnings, contains('operation failed'));
+    expect(warnings, contains('category=unexpected'));
+    expect(warnings, isNot(contains('cleanup-secret')));
+    expect(warnings, isNot(contains('operation-secret')));
+    expect(warnings, isNot(contains('double-failure')));
+  });
+
+  test('a failing log sink cannot alter synchronization', () async {
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+      logSink: (_) => throw StateError('logger unavailable'),
+    );
+
+    expect(
+      await coordinator.runExclusive(
+        const WalletSourceKey('log-failure', 'liquid', 'mainnet'),
+        (_) async => 42,
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      ),
+      42,
+    );
+  });
+
   test(
     'registered actors can acquire independently during slow startup',
     () async {

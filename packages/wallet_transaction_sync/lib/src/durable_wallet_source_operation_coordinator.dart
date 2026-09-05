@@ -11,6 +11,18 @@ import 'wallet_source_key_hash.dart';
 import 'wallet_source_operation_coordinator.dart';
 import 'wallet_source_session.dart';
 
+enum WalletCoordinationLogLevel { config, fine, warning }
+
+final class WalletCoordinationLogEvent {
+  final WalletCoordinationLogLevel level;
+  final String message;
+
+  const WalletCoordinationLogEvent(this.level, this.message);
+}
+
+typedef WalletCoordinationLogSink =
+    void Function(WalletCoordinationLogEvent event);
+
 final class DurableWalletSourceOperationCoordinator
     implements WalletSourceOperationCoordinator {
   final String databasePath;
@@ -19,6 +31,7 @@ final class DurableWalletSourceOperationCoordinator
   final Duration pendingHeartbeatTimeout;
   final Duration? acquisitionTimeout;
   final int maxActiveSynchronizations;
+  final WalletCoordinationLogSink? logSink;
   @visibleForTesting
   final void Function()? beforeClaimRelease;
   @visibleForTesting
@@ -35,6 +48,7 @@ final class DurableWalletSourceOperationCoordinator
     this.pendingHeartbeatTimeout = const Duration(seconds: 30),
     this.acquisitionTimeout = const Duration(seconds: 30),
     this.maxActiveSynchronizations = 2,
+    this.logSink,
     @visibleForTesting this.beforeClaimRelease,
     @visibleForTesting this.workerInitializationDelay = Duration.zero,
     @visibleForTesting this.failReleaseCleanup = false,
@@ -88,32 +102,60 @@ final class DurableWalletSourceOperationCoordinator
     WalletOperationPriority priority,
     Completer<T> result,
   ) async {
+    final operationToken = _newOperationToken();
+    final stopwatch = Stopwatch()..start();
+    final context = _logContext(operationToken, sourceKey, kind, priority);
+    final traceLifecycle =
+        kind == WalletOperationKind.synchronize ||
+        kind == WalletOperationKind.discover;
+    if (traceLifecycle) {
+      _emitLog(
+        WalletCoordinationLogLevel.config,
+        'Wallet source operation queued $context capacity=$maxActiveSynchronizations',
+      );
+    }
     final keyHash = hashWalletSourceParts(
       sourceKey.walletId,
       sourceKey.chain,
       sourceKey.network,
     );
-    final actor = await _DurableActor.start(
-      databasePath: databasePath,
-      lockDirectoryPath: lockDirectoryPath,
-      busyTimeout: busyTimeout,
-      pendingHeartbeatTimeout: pendingHeartbeatTimeout,
-      acquisitionTimeout: acquisitionTimeout,
-      maxActiveSynchronizations: maxActiveSynchronizations,
-      keyHash: keyHash,
-      kind: kind,
-      priority: priority,
-      allowRetired: allowRetired,
-      workerInitializationDelay: workerInitializationDelay,
-      failReleaseCleanup: failReleaseCleanup,
-      killWorkerAfterReady: killWorkerAfterReady,
-    );
+    late final _DurableActor actor;
+    try {
+      actor = await _DurableActor.start(
+        databasePath: databasePath,
+        lockDirectoryPath: lockDirectoryPath,
+        busyTimeout: busyTimeout,
+        pendingHeartbeatTimeout: pendingHeartbeatTimeout,
+        acquisitionTimeout: acquisitionTimeout,
+        maxActiveSynchronizations: maxActiveSynchronizations,
+        keyHash: keyHash,
+        kind: kind,
+        priority: priority,
+        allowRetired: allowRetired,
+        workerInitializationDelay: workerInitializationDelay,
+        failReleaseCleanup: failReleaseCleanup,
+        killWorkerAfterReady: killWorkerAfterReady,
+      );
+    } catch (error) {
+      _emitLog(
+        WalletCoordinationLogLevel.warning,
+        'Wallet source admission failed $context category=${_errorCategory(error)} wait_ms=${stopwatch.elapsedMilliseconds}',
+      );
+      rethrow;
+    }
+    if (traceLifecycle) {
+      _emitLog(
+        WalletCoordinationLogLevel.config,
+        'Wallet source operation admitted $context generation=${actor.claim.generation} wait_ms=${stopwatch.elapsedMilliseconds}',
+      );
+    }
     final session = _DurableSession(actor);
     Timer? timer;
     late T value;
     Object? operationError;
     StackTrace? operationStack;
     var finished = false;
+    var callerTimedOut = false;
     try {
       late Future<T> future;
       try {
@@ -124,6 +166,11 @@ final class DurableWalletSourceOperationCoordinator
       if (timeout != null) {
         timer = Timer(timeout, () {
           if (!result.isCompleted) {
+            callerTimedOut = true;
+            _emitLog(
+              WalletCoordinationLogLevel.warning,
+              'Wallet source caller timed out $context elapsed_ms=${stopwatch.elapsedMilliseconds}',
+            );
             result.completeError(
               TimeoutException('Wallet source operation timed out'),
             );
@@ -150,6 +197,23 @@ final class DurableWalletSourceOperationCoordinator
       } catch (error) {
         cleanupError ??= error;
       }
+      if (cleanupError != null) {
+        _emitLog(
+          WalletCoordinationLogLevel.warning,
+          'Wallet source cleanup failed $context category=${_errorCategory(cleanupError)} elapsed_ms=${stopwatch.elapsedMilliseconds}',
+        );
+      }
+      if (operationError != null) {
+        _emitLog(
+          WalletCoordinationLogLevel.warning,
+          'Wallet source operation failed $context category=${_errorCategory(operationError)} elapsed_ms=${stopwatch.elapsedMilliseconds}',
+        );
+      } else if (cleanupError == null && finished && traceLifecycle) {
+        _emitLog(
+          WalletCoordinationLogLevel.fine,
+          'Wallet source operation completed $context caller_timeout=$callerTimedOut elapsed_ms=${stopwatch.elapsedMilliseconds}',
+        );
+      }
       if (finished && !result.isCompleted) {
         if (cleanupError != null) {
           result.completeError(cleanupError);
@@ -161,7 +225,53 @@ final class DurableWalletSourceOperationCoordinator
       }
     }
   }
+
+  void _emitLog(WalletCoordinationLogLevel level, String message) {
+    try {
+      logSink?.call(WalletCoordinationLogEvent(level, message));
+    } catch (_) {
+      // Diagnostics must never alter synchronization behavior.
+    }
+  }
 }
+
+String _newOperationToken() {
+  final random = Random.secure();
+  return List.generate(
+    8,
+    (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ).join();
+}
+
+String _logContext(
+  String operationToken,
+  WalletSourceKey sourceKey,
+  WalletOperationKind kind,
+  WalletOperationPriority priority,
+) {
+  final chain = switch (sourceKey.chain) {
+    'bitcoin' => 'bitcoin',
+    'liquid' => 'liquid',
+    _ => 'unknown',
+  };
+  final network = switch (sourceKey.network) {
+    'mainnet' => 'mainnet',
+    'testnet' => 'testnet',
+    'signet' => 'signet',
+    'regtest' => 'regtest',
+    _ => 'unknown',
+  };
+  return 'operation=$operationToken kind=${kind.name} priority=${priority.name} chain=$chain network=$network';
+}
+
+String _errorCategory(Object error) => switch (error) {
+  TimeoutException() => 'timeout',
+  SqliteException() => 'sqlite',
+  FileSystemException() => 'filesystem',
+  StateError() => 'state',
+  ArgumentError() => 'argument',
+  _ => 'unexpected',
+};
 
 final class _DurableSession implements WalletSourceClaimedSession {
   final _DurableActor _actor;
