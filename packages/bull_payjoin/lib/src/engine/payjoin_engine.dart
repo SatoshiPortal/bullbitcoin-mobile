@@ -746,11 +746,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         final network = model.isTestnet
             ? primitives.BitcoinNetwork.testnet
             : primitives.BitcoinNetwork.mainnet;
-        final unspentUtxos = await _wallet.spendableUtxos(
+        result = await _wallet.withReceiverWallet(
           walletId: model.walletId,
           network: network,
+          operation: (session) => _proposePayjoin(model, session),
         );
-        result = await _proposePayjoin(model, unspentUtxos);
       }
     } catch (e) {
       _log.severe(
@@ -1390,12 +1390,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   Future<PayjoinReceiver?> _proposePayjoin(
     PayjoinReceiverModel payjoin,
-    List<api.PayjoinUtxo> unspentUtxos,
+    api.PayjoinWalletSession walletSession,
   ) {
     return _utxoSelectionLock.synchronized(() async {
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
       final inputPairs = _filterAvailableUtxos(
-        unspentUtxos,
+        walletSession.spendableUtxos,
         lockedUtxos,
         requestedAmountSat: payjoin.amountSat,
       );
@@ -1426,31 +1426,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         return null;
       }
 
-      final network = payjoin.isTestnet
-          ? primitives.BitcoinNetwork.testnet
-          : primitives.BitcoinNetwork.mainnet;
-      final isMineSync = await _wallet.createOwnershipChecker(
-        walletId: payjoin.walletId,
-        network: network,
-      );
       // The input guard asks about outpoints, not scripts: the sender supplies
       // the previous outputs in its PSBT, so a script-keyed answer could be
       // steered. The output check below is a different question — it is our own
       // address, so a script check is the right one there.
-      final ownsOutpointSync = await _wallet.createOutpointOwnershipChecker(
-        walletId: payjoin.walletId,
-        network: network,
-      );
-      final signPsbtSync = await _wallet.createPsbtProcessor(
-        walletId: payjoin.walletId,
-        network: network,
-      );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        ownsOutpoint: ownsOutpointSync,
-        hasReceiverOutput: isMineSync,
+        ownsOutpoint: walletSession.ownsOutpoint,
+        hasReceiverOutput: walletSession.hasReceiverOutput,
         inputPairs: inputPairs,
-        processPsbt: signPsbtSync,
+        processPsbt: walletSession.processPsbt,
       );
 
       try {
