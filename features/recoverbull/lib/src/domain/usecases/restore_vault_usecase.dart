@@ -29,7 +29,7 @@ class RestoreVaultUsecase {
 
       await _createDefaultWallets.execute(mnemonicWords: mnemonic.words);
 
-      log.fine('Vault restored');
+      log.fine('recoverbull.vault.restored');
       return const Ok(null);
     } catch (e, st) {
       log.error(

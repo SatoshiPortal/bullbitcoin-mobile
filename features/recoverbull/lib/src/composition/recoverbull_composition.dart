@@ -7,6 +7,7 @@ import '../data/file_system_repository.dart';
 import '../data/google_drive_repository.dart';
 import '../data/debug_google_drive_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
+import '../domain/recoverbull_failure.dart';
 import '../domain/usecases/check_server_connection_usecase.dart';
 import '../domain/usecases/allow_permission_usecase.dart';
 import '../domain/usecases/fetch_permission_usecase.dart';
@@ -178,6 +179,7 @@ final class RecoverBullFeature {
       enabled: (await database.select(database.recoverbullState).getSingle())
           .attemptMonitoringEnabled,
       poll: productionAttemptMonitoringRemote.poll,
+      log: log,
     );
     final fetchVaultKey = FetchVaultKeyFromServerUsecase(
       repository: repository,
@@ -264,11 +266,10 @@ final class RecoverBullFeature {
       final EncryptedVault vault;
       try {
         vault = EncryptedVault(file: encryptedBackup);
-      } catch (error, stackTrace) {
-        log.error(
+      } catch (_) {
+        log.warning(
           'recoverbull.recover_backup.invalid_vault',
           error: 'Invalid encrypted backup format',
-          trace: stackTrace,
         );
         return const RecoverBullRecoveryResult(restored: false);
       }
@@ -361,15 +362,17 @@ final class RecoverBullFeature {
 
   Future<RecoverBullHealth> checkService() async {
     try {
-      final result = await _check.execute().timeout(
-        const Duration(seconds: 20),
-      );
+      final result = await _check.execute();
       return switch (result) {
         Ok(:final value) when value => RecoverBullHealth.online,
+        Err(:final failure)
+            when failure is KeyServerHealthCheckTimeoutFailure =>
+          RecoverBullHealth.timeout,
+        Err(:final failure)
+            when failure is RecoverBullTemporarilyUnavailableFailure =>
+          RecoverBullHealth.temporarilyUnavailable,
         _ => RecoverBullHealth.offline,
       };
-    } on TimeoutException {
-      return RecoverBullHealth.timeout;
     } catch (_) {
       return RecoverBullHealth.offline;
     }

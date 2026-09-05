@@ -2,6 +2,7 @@ import 'package:bull_recoverbull/src/domain/entities/vault_provider.dart';
 import 'package:bull_recoverbull/src/ui/support.dart';
 import 'package:bull_recoverbull/src/ui/widgets/provider_cart.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,37 @@ import 'package:gif/gif.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('RecoverBull errors use the top Bull snackbar', (tester) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
+        home: Builder(
+          builder: (value) {
+            context = value;
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    BullSnackBar.show(context, message: 'Potential attack');
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byType(SnackBar), findsNothing);
+    final positioned = tester.widget<Positioned>(
+      find.ancestor(
+        of: find.text('Potential attack'),
+        matching: find.byType(Positioned),
+      ),
+    );
+    expect(positioned.top, 0);
+    expect(positioned.bottom, isNull);
+
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('CopyInput copies clipboardText, not masked display text', (
     tester,
@@ -26,9 +58,10 @@ void main() {
       },
     );
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        theme: ThemeData(extensions: const [testBullTheme]),
         localizationsDelegates: [RecoverBullLocalizations.delegate],
-        home: Scaffold(
+        home: const Scaffold(
           body: CopyInput(text: '******', clipboardText: 'secret-value'),
         ),
       ),
@@ -37,6 +70,8 @@ void main() {
     await tester.tap(find.byIcon(Icons.copy_sharp));
     await tester.pump();
     expect(copied, 'secret-value');
+    BullSnackBar.dismiss();
+    await tester.pumpAndSettle();
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       SystemChannels.platform,
       null,

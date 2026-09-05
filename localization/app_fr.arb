@@ -4746,5 +4746,7 @@
   "psbtFlowQrEncodingError": "Cette transaction n'a pas pu être convertie en code QR.",
   "sendErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
   "sendErrorExchangeOrderMismatch": "Ce paiement ne correspond plus à la commande. Veuillez recommencer le paiement.",
-  "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "statusCheckDegraded": "Dégradé",
+  "statusCheckTemporarilyUnavailableExplanation": "Le service est joignable mais temporairement incapable de traiter les requêtes. Les causes possibles incluent une surcharge, une maintenance, un incident ou une attaque."
 }

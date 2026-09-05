@@ -39,19 +39,19 @@ class CheckServerConnectionUsecase {
       }
       final routeToCheck = route;
       try {
-        await _recoverBullRepository.checkConnection(routeToCheck);
-        return const Ok(true);
+        final connection = await _recoverBullRepository.checkConnection(
+          routeToCheck,
+        );
+        return connection.map((_) => true);
       } finally {
         if (acquired) {
           // Without this the outer catch would turn a *successful* check into
           // `false` just because tearing the session down failed.
           try {
             await routeToCheck.close();
-          } catch (e, st) {
+          } catch (e, _) {
             log.warning(
-              'closing the RecoverBull Tor session failed',
-              error: e,
-              trace: st,
+              'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
             );
           }
         }

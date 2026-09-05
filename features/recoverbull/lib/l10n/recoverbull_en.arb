@@ -254,7 +254,8 @@
   "@recoverbullPasswordRequired": {
     "description": "Validation error when password field is empty"
   },
-  "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
+  "recoverbullAttemptMonitoringLockoutBody": "This may indicate a potential attack. Do you recognize these attempts? Open the details for recommended next steps. Never reveal your seed, mnemonic, password, PIN, or key material.",
+  "recoverbullAttemptMonitoringLockoutAnnouncement": "The server temporarily limited access after too many failed attempts. If you recognize them, wait and try again; otherwise, move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support. Never reveal a secret.",
   "durationSeconds": "{seconds} seconds",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -523,7 +524,8 @@
       }
     }
   },
-  "recoverbullAttemptMonitoringSuspiciousActivityBody": "We noticed unusual backup activity. Check whether it was you or another device.",
+  "recoverbullAttemptMonitoringSuspiciousActivityBody": "This may indicate a potential attack. Do you recognize these attempts? Open the details for recommended next steps.",
+  "recoverbullAttemptMonitoringSuspiciousActivityAnnouncement": "The server reports more backup attempts than this phone or app expected. Reinstallation, another phone or device, or your own recovery elsewhere can explain this. If you recognize it, no urgent action is needed; otherwise, treat it as a possible compromise and open the details.",
   "recoverbullEnterVaultKeyInstead": "Enter a vault key instead",
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
@@ -614,7 +616,7 @@
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
   },
-  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unusual backup activity",
+  "recoverbullAttemptMonitoringSuspiciousActivityTitle": "Unexpected backup attempts",
   "recoverbullVaultKey": "Vault Key",
   "@recoverbullVaultKey": {
     "description": "Screen title and label for vault key"
@@ -746,7 +748,7 @@
   "recoverbullAttemptAlertReference": "Backup reference: {reference}",
   "recoverbullAttemptAlertAttempts": "Attempts: {observed} / expected: {expected}",
   "recoverbullAttemptAlertWindow": "Window started: {date}",
-  "recoverbullAttemptAlertAction": "Recommended action: stop using this backup and contact support.",
-  "recoverbullAttemptAlertLockoutGuidance": "Never enter your seed, password, PIN, or key material in response to this alert.",
-  "recoverbullAttemptAlertInformational": "This is informational and does not indicate a security incident."
+  "recoverbullAttemptAlertAction": "If you recognize these attempts, no urgent action is needed. If you do not, treat this as a possible compromise: move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support.",
+  "recoverbullAttemptAlertLockoutGuidance": "If you recognize the failed attempts, wait for the limit to expire and try again. If you do not, consider migration: move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support. Never reveal your seed, mnemonic, password, PIN, or key material.",
+  "recoverbullAttemptAlertInformational": "This notification is informational and does not by itself indicate a security incident. Never reveal your seed, mnemonic, password, PIN, or key material."
 }

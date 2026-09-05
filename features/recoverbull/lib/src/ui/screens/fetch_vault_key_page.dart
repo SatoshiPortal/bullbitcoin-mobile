@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/context_localizations.dart';
 import '../support.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:go_router/go_router.dart';
 
 class FetchVaultKeyPage extends StatefulWidget {
@@ -90,9 +91,9 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               router.pushNamed('torSettings');
               return;
             }
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              state.failure!.toTranslated(context),
+              message: state.failure!.toTranslated(context),
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();

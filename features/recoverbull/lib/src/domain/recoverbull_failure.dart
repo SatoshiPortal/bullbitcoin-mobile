@@ -91,6 +91,17 @@ final class KeyServerUnavailableFailure extends RecoverBullFailure {
   const KeyServerUnavailableFailure([super.logMessage]);
 }
 
+/// Internal health probe deadline; callers map it to the normal connection UI.
+final class KeyServerHealthCheckTimeoutFailure extends RecoverBullFailure {
+  const KeyServerHealthCheckTimeoutFailure();
+}
+
+/// The key server is reachable but temporarily unable to serve health checks.
+final class RecoverBullTemporarilyUnavailableFailure
+    extends RecoverBullFailure {
+  const RecoverBullTemporarilyUnavailableFailure([super.logMessage]);
+}
+
 final class InvalidVaultFileFailure extends RecoverBullFailure {
   const InvalidVaultFileFailure([super.logMessage]);
 }

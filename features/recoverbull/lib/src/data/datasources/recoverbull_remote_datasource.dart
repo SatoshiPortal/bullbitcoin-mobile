@@ -22,8 +22,28 @@ class RecoverBullRemoteDatasource {
     List<int>,
   )?
   fetchRequest;
+  final Future<void> Function(
+    Uri,
+    HttpClient,
+    List<int>,
+    List<int>,
+    List<int>,
+    List<int>,
+  )?
+  storeRequest;
+  final Future<FetchBackupKeyResult> Function(
+    Uri,
+    HttpClient,
+    List<int>,
+    List<int>,
+    List<int>,
+  )?
+  trashRequest;
+  final Future<AttemptsResult> Function(Uri, HttpClient, String?, List<String>)?
+  attemptsRequest;
   final RecoverBullTiming? timing;
   final Duration operationTimeout;
+  final Duration healthCheckTimeout;
 
   RecoverBullRemoteDatasource({
     required this._recoverbullSettingsDatasource,
@@ -31,13 +51,21 @@ class RecoverBullRemoteDatasource {
     this.timing,
     this.infoRequest,
     this.fetchRequest,
+    this.storeRequest,
+    this.trashRequest,
+    this.attemptsRequest,
     this.operationTimeout = const Duration(seconds: 20),
+    this.healthCheckTimeout = const Duration(seconds: 30),
   });
 
-  Future<T> _timed<T>(String phase, Future<T> Function() operation) async {
+  Future<T> _timed<T>(
+    String phase,
+    Future<T> Function() operation, {
+    Duration? timeout,
+  }) async {
     final stopwatch = Stopwatch()..start();
     try {
-      final value = await operation().timeout(operationTimeout);
+      final value = await operation().timeout(timeout ?? operationTimeout);
       timing?.call(phase, stopwatch.elapsedMilliseconds, 'success');
       return value;
     } on TimeoutException {
@@ -57,14 +85,16 @@ class RecoverBullRemoteDatasource {
       if (infoRequest case final request?) {
         await _timed('server_info', () => request(url, route.client));
       } else {
-        final info = await _timed(
+        await _timed(
           'server_info',
           () => KeyServer(address: url, client: route.client).infos(),
         );
-        log.info('KeyServer canary: ${info.canary}');
       }
     } catch (e) {
-      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
+      log.error(
+        'recoverbull.info.unexpected error_type=${e.runtimeType}',
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -76,23 +106,21 @@ class RecoverBullRemoteDatasource {
     List<int> backupKey, {
     required RecoverBullTorRoute route,
   }) async {
-    try {
-      final url = validateRecoverBullServerUrl(
-        await _recoverbullSettingsDatasource.fetch(),
-      );
-      await _timed(
-        'store_key',
-        () => KeyServer(address: url, client: route.client).storeBackupKey(
-          backupId: backupId,
-          password: password,
-          backupKey: backupKey,
-          salt: salt,
-        ),
-      );
-    } catch (e) {
-      log.error('storeBackupKey error', error: e, trace: StackTrace.current);
-      rethrow;
-    }
+    final url = validateRecoverBullServerUrl(
+      await _recoverbullSettingsDatasource.fetch(),
+    );
+    final request = storeRequest;
+    await _timed(
+      'store_key',
+      () => request != null
+          ? request(url, route.client, backupId, password, salt, backupKey)
+          : KeyServer(address: url, client: route.client).storeBackupKey(
+              backupId: backupId,
+              password: password,
+              backupKey: backupKey,
+              salt: salt,
+            ),
+    );
   }
 
   Future<List<int>> fetch(
@@ -101,18 +129,13 @@ class RecoverBullRemoteDatasource {
     List<int> salt, {
     required RecoverBullTorRoute route,
   }) async {
-    try {
-      final result = await fetchWithStatus(
-        backupId,
-        password,
-        salt,
-        route: route,
-      );
-      return result.backupKey;
-    } catch (e) {
-      log.error('fetchBackupKey error', error: e, trace: StackTrace.current);
-      rethrow;
-    }
+    final result = await fetchWithStatus(
+      backupId,
+      password,
+      salt,
+      route: route,
+    );
+    return result.backupKey;
   }
 
   Future<FetchBackupKeyResult> fetchWithStatus(
@@ -146,12 +169,7 @@ class RecoverBullRemoteDatasource {
     List<int> salt, {
     required RecoverBullTorRoute route,
   }) async {
-    try {
-      await trashWithStatus(backupId, password, salt, route: route);
-    } catch (e) {
-      log.error('trashBackupKey error', error: e, trace: StackTrace.current);
-      rethrow;
-    }
+    await trashWithStatus(backupId, password, salt, route: route);
   }
 
   Future<FetchBackupKeyResult> trashWithStatus(
@@ -160,41 +178,37 @@ class RecoverBullRemoteDatasource {
     List<int> salt, {
     required RecoverBullTorRoute route,
   }) async {
-    try {
-      final url = validateRecoverBullServerUrl(
-        await _recoverbullSettingsDatasource.fetch(),
-      );
-      return await _timed(
-        'trash_key',
-        () => KeyServer(address: url, client: route.client)
-            .trashBackupKeyWithStatus(
+    final url = validateRecoverBullServerUrl(
+      await _recoverbullSettingsDatasource.fetch(),
+    );
+    final request = trashRequest;
+    return await _timed(
+      'trash_key',
+      () => request != null
+          ? request(url, route.client, backupId, password, salt)
+          : KeyServer(
+              address: url,
+              client: route.client,
+            ).trashBackupKeyWithStatus(
               backupId: backupId,
               password: password,
               salt: salt,
             ),
-      );
-    } catch (e) {
-      log.error('trashBackupKey error', error: e, trace: StackTrace.current);
-      rethrow;
-    }
+    );
   }
 
   Future<void> checkConnection(RecoverBullTorRoute route) async {
-    try {
-      final url = validateRecoverBullServerUrl(
-        await _recoverbullSettingsDatasource.fetch(),
-      );
-      final request = infoRequest;
-      await _timed(
-        'server_health',
-        () => request != null
-            ? request(url, route.client)
-            : KeyServer(address: url, client: route.client).infos(),
-      );
-    } catch (e) {
-      log.error('checkConnection error', error: e, trace: StackTrace.current);
-      rethrow;
-    }
+    final url = validateRecoverBullServerUrl(
+      await _recoverbullSettingsDatasource.fetch(),
+    );
+    final request = infoRequest;
+    await _timed(
+      'server_health',
+      () => request != null
+          ? request(url, route.client)
+          : KeyServer(address: url, client: route.client).infos(),
+      timeout: healthCheckTimeout,
+    );
   }
 
   Future<AttemptsResult> attempts({
@@ -205,13 +219,46 @@ class RecoverBullRemoteDatasource {
     final url = validateRecoverBullServerUrl(
       await _recoverbullSettingsDatasource.fetch(),
     );
-    return await _timed(
-      'attempts_poll',
-      () => KeyServer(
-        address: url,
-        client: route.client,
-      ).attempts(etag: etag, backupIdHashes: backupIdHashes),
-    );
+    try {
+      final result = await _timed(
+        'attempts_poll',
+        () => attemptsRequest != null
+            ? attemptsRequest!(url, route.client, etag, backupIdHashes)
+            : KeyServer(
+                address: url,
+                client: route.client,
+              ).attempts(etag: etag, backupIdHashes: backupIdHashes),
+      );
+      log.fine(
+        'recoverbull.attempts.poll.succeeded '
+        'outcome=${result is AttemptsNotModified ? 'not_modified' : 'modified'} '
+        'matching_count=${result is AttemptsModified ? result.matchingEntries.length : 0}',
+      );
+      return result;
+    } on KeyServerException catch (e) {
+      final code = e.code;
+      if (code == 429) {
+        log.warning(
+          'recoverbull.attempts.poll.rate_limited code=429 '
+          'attempts=${e.attempts ?? 'unknown'} '
+          'retry_after_seconds=${e.retryAfter?.inSeconds ?? 'unknown'}',
+        );
+      } else {
+        log.warning(
+          'recoverbull.attempts.poll.unavailable code=${code ?? 'unknown'}',
+        );
+      }
+      rethrow;
+    } on TimeoutException {
+      log.warning('recoverbull.attempts.poll.timeout');
+      rethrow;
+    } catch (e, st) {
+      log.error(
+        'recoverbull.attempts.poll.unexpected error_type=${e.runtimeType}',
+        trace: st,
+      );
+      rethrow;
+    }
   }
 }
 
@@ -286,9 +333,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
             isUtc: true,
           ),
           totalAttempts: const {},
-          targetedLockouts: [
-            for (final digest in backupDigests) _decodeDigest(digest),
-          ],
+          serviceBusy: true,
         );
       }
       rethrow;

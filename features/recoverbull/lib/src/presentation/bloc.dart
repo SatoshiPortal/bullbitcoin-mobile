@@ -132,11 +132,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     }
     try {
       await _route?.close();
-    } catch (error, stackTrace) {
+    } catch (error) {
       log.warning(
-        'closing RecoverBull route failed',
-        error: error,
-        trace: stackTrace,
+        'recoverbull.tor.route.close.failed error_type=${error.runtimeType}',
       );
     }
     return super.close();
@@ -217,11 +215,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     if (oldRoute != null) {
       try {
         await oldRoute.close();
-      } catch (error, stackTrace) {
+      } catch (error) {
         log.warning(
-          'closing RecoverBull route failed',
-          error: error,
-          trace: stackTrace,
+          'recoverbull.tor.route.close.failed error_type=${error.runtimeType}',
         );
       }
     }
@@ -315,11 +311,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             ),
           );
         case Ok(value: false):
-          log.error(
-            'recoverbull.unexpected',
-            error: 'Recoverbull server is not ready after $retries retries',
-            trace: StackTrace.current,
-          );
+          log.warning('recoverbull.server_check.exhausted attempts=$retries');
           emit(
             state.copyWith(
               failure: const KeyServerConnectionFailure(),
@@ -328,7 +320,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           );
         case Ok(value: true):
           log.fine(
-            'Recoverbull server ready after ${state.keyServerAttempt} attempts',
+            'recoverbull.server_check.succeeded '
+            'attempts=${state.keyServerAttempt}',
           );
           // Tor's status is not forced here. It used to be set to `online` on
           // this path, which asserted Tor's health from the key server's reply;
@@ -343,7 +336,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         }
         return;
       }
-      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
+      log.error(
+        'recoverbull.server_check.unexpected error_type=${e.runtimeType}',
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           failure: const RecoverBullUnexpectedFailure(),
@@ -416,7 +412,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
-      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
+      log.error(
+        'recoverbull.vault_provider_selection.unexpected '
+        'error_type=${e.runtimeType}',
+        trace: StackTrace.current,
+      );
       if (!isClosed && !_closingBloc && !emit.isDone) {
         emit(state.copyWith(failure: const RecoverBullUnexpectedFailure()));
       }
@@ -464,7 +464,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           emit(state.copyWith(failure: const SelectVaultFailure()));
           return;
       }
-      log.fine('Vault selected');
+      log.fine('recoverbull.vault.selected');
     } finally {
       if (!isClosed && !_closingBloc && !emit.isDone) {
         emit(state.copyWith(isLoading: false));
@@ -598,12 +598,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
     try {
       await _registerMonitoredBackupUsecase?.execute(backupIdHex: vault.id);
-    } catch (error, stackTrace) {
+    } catch (error) {
       // Local attempt monitoring is advisory after the external provider succeeded.
-      log.error(
-        'attempt monitoring registration failed',
-        error: error,
-        trace: stackTrace,
+      log.warning(
+        'recoverbull.attempts.monitoring.registration.failed '
+        'error_type=${error.runtimeType}',
       );
     }
     if (isClosed || _closingBloc || emit.isDone) {
@@ -621,7 +620,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     }
     emit(state.copyWith(failure: null, vault: vault, vaultProvider: provider));
     _pendingProviderVault = null;
-    log.fine('Vault created and key stored in server');
+    log.fine('recoverbull.vault.created_and_key_stored');
   }
 
   Future<void> _onFetchVaultKey(
@@ -643,7 +642,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       switch (fetched) {
         case Ok(:final value):
           emit(state.copyWith(vaultKey: value));
-          log.fine('Vault key fetched from server');
           if (isClosed || _closingBloc || emit.isDone) return;
           await _onVaultDecryption(OnVaultDecryption(vaultKey: value), emit);
         case Err(:final failure):
@@ -714,9 +712,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
 
       emit(state.copyWith(vaultKey: vaultKey));
-      log.fine('Vault decrypted');
+      log.fine('recoverbull.vault.decrypted');
     } catch (e) {
-      log.error('recoverbull.unexpected', error: e, trace: StackTrace.current);
+      log.error(
+        'recoverbull.vault_decryption.unexpected error_type=${e.runtimeType}',
+        trace: StackTrace.current,
+      );
       if (!isClosed && !_closingBloc && !emit.isDone) {
         emit(state.copyWith(failure: const VaultDecryptionFailure()));
       }

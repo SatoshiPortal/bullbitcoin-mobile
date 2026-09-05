@@ -308,14 +308,6 @@ class _StackedPage extends StatelessWidget {
   );
 }
 
-class SnackBarUtils {
-  static void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-}
-
 class BlurredBottomSheet {
   static Future<T?> show<T>({
     required BuildContext context,
@@ -453,9 +445,9 @@ class CopyInput extends StatelessWidget {
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: copyValue));
                 if (context.mounted) {
-                  SnackBarUtils.showSnackBar(
+                  BullSnackBar.show(
                     context,
-                    context.loc.copyDialogCopied,
+                    message: context.loc.copyDialogCopied,
                   );
                 }
               },
@@ -502,9 +494,9 @@ class CopyInput extends StatelessWidget {
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: copyValue));
                   if (context.mounted) {
-                    SnackBarUtils.showSnackBar(
+                    BullSnackBar.show(
                       context,
-                      context.loc.copyDialogCopied,
+                      message: context.loc.copyDialogCopied,
                     );
                   }
                 },

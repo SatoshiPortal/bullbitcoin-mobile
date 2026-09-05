@@ -7,7 +7,7 @@ import 'recoverbull_settings_cubit.dart';
 import '../../domain/usecases/fetch_recoverbull_url_usecase.dart';
 import '../../domain/usecases/store_recoverbull_url_usecase.dart';
 import '../../public/recoverbull.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullSwitch, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -60,9 +60,9 @@ class _SettingsPageState extends State<SettingsPage> {
       _originalUrl = widget.cubit.state.url;
       setState(() => _isEditing = false);
     } else if (mounted) {
-      SnackBarUtils.showSnackBar(
+      BullSnackBar.show(
         context,
-        context.loc.recoverbullErrorUnexpected,
+        message: context.loc.recoverbullErrorUnexpected,
       );
     }
   }

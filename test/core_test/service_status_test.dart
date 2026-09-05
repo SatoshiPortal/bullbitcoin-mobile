@@ -19,4 +19,16 @@ void main() {
     expect(status.allServicesOnline, isTrue);
     expect(status.hasAnyServiceOffline, isFalse);
   });
+
+  test('degraded status exposes its temporary unavailability reason', () {
+    const degraded = ServiceStatusInfo(
+      status: ServiceStatus.degraded,
+      name: 'Recoverbull',
+      reason: ServiceStatusReason.temporarilyUnavailable,
+    );
+
+    expect(degraded.isDegraded, isTrue);
+    expect(degraded.isOffline, isFalse);
+    expect(degraded.reason, ServiceStatusReason.temporarilyUnavailable);
+  });
 }

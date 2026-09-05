@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.da
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_dismiss_dialog.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 /// The home-screen announcements section: a paged carousel of dismissible
 /// banners with a dot indicator. Renders nothing (zero height) when there are
@@ -141,7 +140,7 @@ class _CarouselBodyState extends State<_CarouselBody>
   void _onTap(Announcement announcement) {
     switch (announcement.action) {
       case NavigateAction():
-        context.pushNamed(announcement.route.name);
+        announcement.open(context);
       case NoAction():
         break;
     }
@@ -156,7 +155,7 @@ class _CarouselBodyState extends State<_CarouselBody>
           _onTap(announcement);
         }
       case AnnouncementDismissChoice.dismiss:
-        await cubit.dismiss(announcement.id);
+        await cubit.dismiss(announcement);
       case null:
         break;
     }
@@ -192,6 +191,9 @@ class _CarouselBodyState extends State<_CarouselBody>
                   children: [
                     for (final announcement in announcements)
                       SizedBox(
+                        key: announcement.stableKey == null
+                            ? null
+                            : ValueKey(announcement.stableKey),
                         width: constraints.maxWidth,
                         // Reserve the dots strip at the bottom so the card
                         // content never collides with the indicator.

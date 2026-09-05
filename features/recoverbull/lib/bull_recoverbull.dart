@@ -14,6 +14,8 @@ export 'src/public/recoverbull.dart'
         RecoverBullAttemptAlert,
         RecoverBullAttemptAlertKind,
         recoverBullDefaultServerUrl;
+export 'src/public/recoverbull_alert_navigation.dart'
+    show openRecoverBullAttemptAlertDetails;
 export 'src/domain/entities/recoverbull_network.dart' show RecoverBullNetwork;
 export 'src/domain/entities/recoverbull_tor_settings.dart'
     show RecoverBullTorSettings;
@@ -37,5 +39,3 @@ export 'src/router/recoverbull_router.dart'
 export 'src/google_drive/recoverbull_google_drive_router.dart'
     show RecoverBullGoogleDriveRoute;
 export 'src/composition/recoverbull_composition.dart' show RecoverBullFeature;
-export 'src/ui/widgets/attempt_alert_warnings.dart'
-    show RecoverBullAttemptAlertWarnings;

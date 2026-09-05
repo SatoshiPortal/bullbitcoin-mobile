@@ -21,7 +21,7 @@ final class TargetedLockoutAlert extends AttemptAlert {
   const TargetedLockoutAlert({required this.backupIdHash});
 }
 
-enum ServicePressureKind { serviceBusy, mapNearlyFull }
+enum ServicePressureKind { serviceBusy }
 
 final class ServicePressureAlert extends AttemptAlert {
   final ServicePressureKind kind;
@@ -31,9 +31,4 @@ final class ServicePressureAlert extends AttemptAlert {
 final class AttemptMonitoringUnavailableAlert extends AttemptAlert {
   final Duration? since;
   const AttemptMonitoringUnavailableAlert({required this.since});
-}
-
-final class CountersWipedAlert extends AttemptAlert {
-  final DateTime wipedAt;
-  const CountersWipedAlert({required this.wipedAt});
 }

@@ -26,7 +26,7 @@ void main() {
   test('records the dismissal and returns Ok', () async {
     when(() => dismissalRepository.dismiss(any())).thenAnswer((_) async {});
 
-    final result = await usecase.execute(AnnouncementId.payjoinPrivacy);
+    final result = await usecase.execute(_announcement());
 
     expect(result, isA<Ok<void, dynamic>>());
     verify(
@@ -39,8 +39,16 @@ void main() {
       () => dismissalRepository.dismiss(any()),
     ).thenThrow(Exception('disk full'));
 
-    final result = await usecase.execute(AnnouncementId.payjoinPrivacy);
+    final result = await usecase.execute(_announcement());
 
     expect(result, isA<Err<void, dynamic>>());
   });
 }
+
+Announcement _announcement() => Announcement(
+  id: AnnouncementId.payjoinPrivacy,
+  priority: 0,
+  tone: AnnouncementTone.info,
+  action: const NoAction(),
+  dismissPolicy: const PermanentDismiss(),
+);

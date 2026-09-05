@@ -61,11 +61,9 @@ class StoreVaultKeyIntoServerUsecase {
       // flow half-completed with no typed failure for the caller to act on.
       try {
         if (ownsRoute) await session.close();
-      } catch (e, st) {
+      } catch (e, _) {
         log.warning(
-          'closing the RecoverBull Tor session failed',
-          error: e,
-          trace: st,
+          'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
         );
       }
     }

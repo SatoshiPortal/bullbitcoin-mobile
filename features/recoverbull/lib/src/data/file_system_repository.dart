@@ -26,7 +26,10 @@ class FileSystemRepository {
       }
       return Ok(EncryptedVault(file: fileContent));
     } catch (e, st) {
-      log.error('pickVault failed', error: e, trace: st);
+      log.error(
+        'recoverbull.file.pick.unexpected error_type=${e.runtimeType}',
+        trace: st,
+      );
       return const Err(RecoverBullUnexpectedFailure('File operation failed'));
     }
   }
@@ -39,7 +42,10 @@ class FileSystemRepository {
       await _fileStorageDataSource.saveFile(content, filename);
       return const Ok(null);
     } catch (e, st) {
-      log.error('saveFile failed', error: e, trace: st);
+      log.error(
+        'recoverbull.file.save.unexpected error_type=${e.runtimeType}',
+        trace: st,
+      );
       return const Err(RecoverBullUnexpectedFailure('File operation failed'));
     }
   }

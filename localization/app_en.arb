@@ -14113,5 +14113,13 @@
   "sendErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sendErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched. Blocking: the send cannot be built without them, so the message tells the user what to do rather than showing a generic error."
+  },
+  "statusCheckDegraded": "Degraded",
+  "@statusCheckDegraded": {
+    "description": "Status shown when a service is reachable but temporarily unable to process requests"
+  },
+  "statusCheckTemporarilyUnavailableExplanation": "The service is reachable but temporarily unable to process requests. Possible causes include overload, maintenance, an incident, or an attack.",
+  "@statusCheckTemporarilyUnavailableExplanation": {
+    "description": "Explanation for a temporarily unavailable service"
   }
 }

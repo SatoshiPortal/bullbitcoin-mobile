@@ -6,7 +6,6 @@ final class CheckBackupAttemptMonitoringUsecase {
   static const unavailabilityThreshold = Duration(days: 3);
   static const unavailabilityWarnCooldown = Duration(days: 1);
   static const minFailuresWithoutSuccess = 3;
-  static const mapFullnessThreshold = .85;
 
   final RecoverBullAttemptMonitoringStore store;
   final RecoverBullAttemptMonitoringRemotePort remote;
@@ -20,14 +19,15 @@ final class CheckBackupAttemptMonitoringUsecase {
 
   static DateTime _utcNow() => DateTime.now().toUtc();
 
-  Future<List<AttemptAlert>> execute() async {
+  Future<List<AttemptAlert>> execute({bool forceRefresh = false}) async {
     final rows = await store.monitoredBackups();
     if (rows.isEmpty) {
       return const [];
     }
     final state = await store.state();
     final current = now();
-    if (state.lastSuccessfulCheckAt != null &&
+    if (!forceRefresh &&
+        state.lastSuccessfulCheckAt != null &&
         current.difference(state.lastSuccessfulCheckAt!) < snapshotFreshness) {
       return const [];
     }
@@ -35,7 +35,7 @@ final class CheckBackupAttemptMonitoringUsecase {
     RecoverBullAttemptsSnapshot? snapshot;
     try {
       snapshot = await remote.poll(
-        etag: state.etag,
+        etag: forceRefresh ? null : state.etag,
         backupDigests: rows.map((row) => _hex(row.digest)).toList(),
       );
     } catch (_) {
@@ -61,15 +61,8 @@ final class CheckBackupAttemptMonitoringUsecase {
         if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
       ];
     }
-    if (snapshot.targetedLockouts.isNotEmpty) {
-      return [
-        for (final digest in snapshot.targetedLockouts)
-          TargetedLockoutAlert(backupIdHash: _hex(digest)),
-      ];
-    }
     final alerts = <AttemptAlert>[];
     final collection = await store.state();
-    var wiped = false;
     if (collection.collectionStartedAt != null &&
         RecoverBullAttemptMonitoringStore.collectionSecond(
               collection.collectionStartedAt!,
@@ -79,24 +72,11 @@ final class CheckBackupAttemptMonitoringUsecase {
             )) {
       final rebaselined = await store.rebaseline(snapshot, token);
       if (!rebaselined.accepted) return const [];
-      alerts.add(CountersWipedAlert(wipedAt: snapshot.collectionStartedAt));
-      wiped = true;
+      return const [];
     }
-    if (!wiped) {
-      final applied = await store.applySnapshot(snapshot, token);
-      if (!applied.accepted) return const [];
-    }
-    if (snapshot.notModified) {
-      if (wiped) await store.applySnapshot(snapshot);
-      return alerts;
-    }
-    if (wiped) return alerts;
-    if (snapshot.maxAttemptIdentifiers case final max?
-        when max > 0 &&
-            snapshot.totalEntries != null &&
-            snapshot.totalEntries! >= max * mapFullnessThreshold) {
-      alerts.add(const ServicePressureAlert(ServicePressureKind.mapNearlyFull));
-    }
+    final applied = await store.applySnapshot(snapshot, token);
+    if (!applied.accepted) return const [];
+    if (snapshot.notModified) return const [];
     final entries = {
       for (final entry in snapshot.totalAttempts.entries)
         _hex(entry.key): entry.value,

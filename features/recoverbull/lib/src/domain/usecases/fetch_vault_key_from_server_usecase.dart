@@ -53,7 +53,7 @@ class FetchVaultKeyFromServerUsecase {
       );
       return switch (result) {
         Ok(:final value) => _recordAndReturn(vault, value),
-        Err(:final failure) => Err(failure),
+        Err(:final failure) => _recordFailure(vault, failure),
       };
     } finally {
       // Closing forwards to a native session stop, which can throw. Letting it
@@ -61,14 +61,32 @@ class FetchVaultKeyFromServerUsecase {
       // a vault key this call already retrieved.
       try {
         if (ownsRoute) await session.close();
-      } catch (e, st) {
+      } catch (e, _) {
         log.warning(
-          'closing the RecoverBull Tor session failed',
-          error: e,
-          trace: st,
+          'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
         );
       }
     }
+  }
+
+  Future<Result<String, RecoverBullFailure>> _recordFailure(
+    EncryptedVault vault,
+    RecoverBullFailure failure,
+  ) async {
+    if (failure is KeyServerRateLimitedFailure) {
+      try {
+        final alert = await _recordAttempt?.recordTargetedLockout(
+          backupIdHex: vault.id,
+        );
+        if (alert != null) _alertPort?.publish(alert);
+      } catch (error, _) {
+        log.warning(
+          'recoverbull.attempts.monitoring.update.failed '
+          'error_type=${error.runtimeType}',
+        );
+      }
+    }
+    return Err(failure);
   }
 
   Future<Result<String, RecoverBullFailure>> _recordAndReturn(
@@ -81,11 +99,10 @@ class FetchVaultKeyFromServerUsecase {
         attemptStatus: value.attemptStatus,
       );
       if (alert != null) _alertPort?.publish(alert);
-    } catch (error, stackTrace) {
+    } catch (error, _) {
       log.warning(
-        'attempt monitoring update failed',
-        error: error,
-        trace: stackTrace,
+        'recoverbull.attempts.monitoring.update.failed '
+        'error_type=${error.runtimeType}',
       );
     }
     return Ok(value.vaultKey);

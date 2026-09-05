@@ -52,7 +52,7 @@ final class RecoverBullSetup {
     // background composition passes false and therefore does not open this DB.
     if (startAttemptMonitoring) {
       unawaited(
-        composed.attemptMonitoring.checkOnColdLaunch().catchError(
+        composed.attemptMonitoring.checkOnForeground().catchError(
           (_) => const <RecoverBullAttemptAlert>[],
         ),
       );
@@ -77,8 +77,8 @@ void _recordRecoverBullTiming(
   int durationMilliseconds,
   String outcome,
 ) {
-  log.info(
-    'RecoverBull timing phase=$phase '
+  log.fine(
+    'recoverbull.timing phase=$phase '
     'duration_ms=$durationMilliseconds outcome=$outcome',
   );
 }

@@ -5,7 +5,9 @@ part 'service_status.freezed.dart';
 /// [disabled]: the service is intentionally turned off by the user (e.g.
 /// payjoin off in settings), so it is neither reachable-checked nor a
 /// problem — distinct from [unknown] (not checked / indeterminate).
-enum ServiceStatus { online, offline, unknown, disabled }
+enum ServiceStatus { online, offline, degraded, unknown, disabled }
+
+enum ServiceStatusReason { temporarilyUnavailable }
 
 @freezed
 sealed class ServiceStatusInfo with _$ServiceStatusInfo {
@@ -13,12 +15,14 @@ sealed class ServiceStatusInfo with _$ServiceStatusInfo {
     required ServiceStatus status,
     required String name,
     DateTime? lastChecked,
+    ServiceStatusReason? reason,
   }) = _ServiceStatusInfo;
 
   const ServiceStatusInfo._();
 
   bool get isOnline => status == ServiceStatus.online;
   bool get isOffline => status == ServiceStatus.offline;
+  bool get isDegraded => status == ServiceStatus.degraded;
   bool get isUnknown => status == ServiceStatus.unknown;
   bool get isDisabled => status == ServiceStatus.disabled;
 }

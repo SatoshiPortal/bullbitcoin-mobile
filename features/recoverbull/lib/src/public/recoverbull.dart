@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 import '../database/recoverbull_database.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
@@ -71,7 +72,7 @@ final class RecoverBullStatus {
       isKnown = false;
 }
 
-enum RecoverBullHealth { online, offline, timeout }
+enum RecoverBullHealth { online, offline, timeout, temporarilyUnavailable }
 
 @immutable
 final class RecoverBullServerSettings {
@@ -104,37 +105,71 @@ enum RecoverBullAttemptAlertKind {
   targetedLockout,
   servicePressure,
   unavailable,
-  countersWiped,
 }
 
 final class RecoverBullAttemptAlert {
   final RecoverBullAttemptAlertKind kind;
   final String? backupReference;
+
+  /// Opaque complete backup digest used to correlate related event alerts.
+  /// Never display or log this value.
+  final String correlationId;
+
+  /// Stable identity of this particular event, used for deduplication and
+  /// acknowledgement. This is not the backup correlation identifier.
+  final String identity;
   final int? observedTotal;
   final int? expectedTotal;
   final DateTime? windowStartedAt;
-  final String _identity;
 
   RecoverBullAttemptAlert(this.kind)
     : backupReference = null,
+      correlationId = kind.name,
+      identity = kind.name,
       observedTotal = null,
       expectedTotal = null,
-      windowStartedAt = null,
-      _identity = kind.name;
+      windowStartedAt = null;
 
   const RecoverBullAttemptAlert._(
     this.kind,
-    this._identity, {
+    this.correlationId,
+    this.identity, {
     this.backupReference,
     this.observedTotal,
     this.expectedTotal,
     this.windowStartedAt,
   });
+
+  factory RecoverBullAttemptAlert.suspiciousActivity({
+    required String backupReference,
+    required String correlationId,
+    required int observedTotal,
+    required int expectedTotal,
+    required DateTime windowStartedAt,
+  }) => RecoverBullAttemptAlert._(
+    RecoverBullAttemptAlertKind.suspiciousActivity,
+    correlationId,
+    's:$correlationId:${windowStartedAt.toUtc().microsecondsSinceEpoch}',
+    backupReference: backupReference,
+    observedTotal: observedTotal,
+    expectedTotal: expectedTotal,
+    windowStartedAt: windowStartedAt,
+  );
+
+  factory RecoverBullAttemptAlert.targetedLockout({
+    required String backupReference,
+    required String correlationId,
+  }) => RecoverBullAttemptAlert._(
+    RecoverBullAttemptAlertKind.targetedLockout,
+    correlationId,
+    'l:$correlationId',
+    backupReference: backupReference,
+  );
 }
 
 abstract interface class RecoverBullAttemptMonitoringController {
   Future<List<RecoverBullAttemptAlert>> check();
-  Future<List<RecoverBullAttemptAlert>> checkOnColdLaunch();
+  Future<List<RecoverBullAttemptAlert>> checkOnForeground();
   Future<void> setEnabled(bool enabled);
   Future<void> acknowledge(RecoverBullAttemptAlert alert);
   bool get enabled;
@@ -147,6 +182,7 @@ final class RecoverBullAttemptMonitoring
         RecoverBullAttemptMonitoringController,
         RecoverBullAttemptAlertPort {
   final RecoverBullAttemptMonitoringStore _store;
+  final LogSink? _log;
   final Future<RecoverBullAttemptsSnapshot?> Function({
     required String? etag,
     required List<String> backupDigests,
@@ -156,12 +192,19 @@ final class RecoverBullAttemptMonitoring
   final StreamController<List<RecoverBullAttemptAlert>> _alertUpdates =
       StreamController.broadcast();
   final List<RecoverBullAttemptAlert> _visibleAlerts = [];
+  final Set<String> _acknowledgedIdentities = {};
+  Future<List<RecoverBullAttemptAlert>>? _checkInFlight;
+  bool _forceRefreshInFlight = false;
 
   RecoverBullAttemptMonitoring(
     this._store, {
     this._enabled = false,
     this._poll,
-  });
+    LogSink? log,
+  })
+    // `log` is intentionally public-facing while the stored sink stays private.
+    // ignore: prefer_initializing_formals
+    : _log = log;
 
   @override
   bool get enabled => _enabled;
@@ -189,18 +232,53 @@ final class RecoverBullAttemptMonitoring
   }
 
   @override
-  Future<List<RecoverBullAttemptAlert>> check() async {
+  Future<List<RecoverBullAttemptAlert>> check() =>
+      _runCheck(forceRefresh: false);
+
+  Future<List<RecoverBullAttemptAlert>> _runCheck({
+    required bool forceRefresh,
+  }) async {
+    while (true) {
+      final active = _checkInFlight;
+      if (active == null) break;
+      if (!forceRefresh || _forceRefreshInFlight) return active;
+      await active;
+    }
+    late final Future<List<RecoverBullAttemptAlert>> future;
+    future = _performCheck(forceRefresh: forceRefresh).whenComplete(() {
+      if (identical(_checkInFlight, future)) {
+        _checkInFlight = null;
+        _forceRefreshInFlight = false;
+      }
+    });
+    _checkInFlight = future;
+    _forceRefreshInFlight = forceRefresh;
+    return future;
+  }
+
+  Future<List<RecoverBullAttemptAlert>> _performCheck({
+    required bool forceRefresh,
+  }) async {
     if (!_enabled || _poll == null) return const [];
     try {
-      final alerts = (await CheckBackupAttemptMonitoringUsecase(
-        store: _store,
-        remote: _CallbackAttemptMonitoringRemote(_poll),
-      ).execute()).map(_publicAlert).toList(growable: false);
+      final alerts =
+          (await CheckBackupAttemptMonitoringUsecase(
+                store: _store,
+                remote: _CallbackAttemptMonitoringRemote(_poll),
+              ).execute(forceRefresh: forceRefresh))
+              .map(_publicAlert)
+              .where(
+                (alert) => !_acknowledgedIdentities.contains(alert.identity),
+              )
+              .toList(growable: false);
+      _log?.fine(
+        'recoverbull.attempts.monitoring.succeeded '
+        'alert_count=${alerts.length} force_refresh=$forceRefresh',
+      );
       for (final alert in alerts) {
         final alreadyVisible = _visibleAlerts.any(
           (visible) =>
-              visible.kind == alert.kind &&
-              visible._identity == alert._identity,
+              visible.kind == alert.kind && visible.identity == alert.identity,
         );
         if (!alreadyVisible) _visibleAlerts.add(alert);
       }
@@ -208,7 +286,11 @@ final class RecoverBullAttemptMonitoring
         _alertUpdates.add(List.unmodifiable(_visibleAlerts));
       }
       return alerts;
-    } catch (_) {
+    } catch (error) {
+      _log?.warning(
+        'recoverbull.attempts.monitoring.failed '
+        'error_type=${error.runtimeType}',
+      );
       return const [];
     }
   }
@@ -216,10 +298,11 @@ final class RecoverBullAttemptMonitoring
   @override
   void publish(domain_alert.AttemptAlert alert) {
     final publicAlert = _publicAlert(alert);
+    if (_acknowledgedIdentities.contains(publicAlert.identity)) return;
     final alreadyVisible = _visibleAlerts.any(
       (visible) =>
           visible.kind == publicAlert.kind &&
-          visible._identity == publicAlert._identity,
+          visible.identity == publicAlert.identity,
     );
     if (alreadyVisible) return;
     _visibleAlerts.add(publicAlert);
@@ -238,6 +321,7 @@ final class RecoverBullAttemptMonitoring
       ) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.suspiciousActivity,
+          backupIdHash,
           's:$backupIdHash:${windowStartedAt.toUtc().microsecondsSinceEpoch}',
           backupReference: _safeReference(backupIdHash),
           observedTotal: observedTotal,
@@ -247,31 +331,34 @@ final class RecoverBullAttemptMonitoring
       domain_alert.TargetedLockoutAlert(:final backupIdHash) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.targetedLockout,
+          backupIdHash,
           'l:$backupIdHash',
           backupReference: _safeReference(backupIdHash),
         ),
       domain_alert.ServicePressureAlert(:final kind) =>
         RecoverBullAttemptAlert._(
           RecoverBullAttemptAlertKind.servicePressure,
+          'service:${kind.name}',
           'p:$kind',
         ),
       domain_alert.AttemptMonitoringUnavailableAlert() =>
-        RecoverBullAttemptAlert._(RecoverBullAttemptAlertKind.unavailable, 'u'),
-      domain_alert.CountersWipedAlert(:final wipedAt) =>
         RecoverBullAttemptAlert._(
-          RecoverBullAttemptAlertKind.countersWiped,
-          'c:${wipedAt.toUtc().microsecondsSinceEpoch}',
+          RecoverBullAttemptAlertKind.unavailable,
+          'unavailable',
+          'u',
         ),
     };
   }
 
   @override
-  Future<List<RecoverBullAttemptAlert>> checkOnColdLaunch() => check();
+  Future<List<RecoverBullAttemptAlert>> checkOnForeground() =>
+      _runCheck(forceRefresh: true);
 
   @override
   Future<void> acknowledge(RecoverBullAttemptAlert alert) async {
+    _acknowledgedIdentities.add(alert.identity);
     _visibleAlerts.removeWhere(
-      (candidate) => candidate._identity == alert._identity,
+      (candidate) => candidate.identity == alert.identity,
     );
     if (!_alertUpdates.isClosed) {
       _alertUpdates.add(List.unmodifiable(_visibleAlerts));

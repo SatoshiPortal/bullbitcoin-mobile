@@ -351,12 +351,11 @@ void main() {
           totalAttempts: const {},
           notModified: true,
         );
-      final alerts = await CheckBackupAttemptMonitoringUsecase(
+      await CheckBackupAttemptMonitoringUsecase(
         store: store,
         remote: remote,
         clock: () => now,
       ).execute();
-      expect(alerts.whereType<CountersWipedAlert>(), isEmpty);
       expect(await store.monitoredBackups(), hasLength(1));
       expect((await store.state()).collectionStartedAt, window);
       await db.close();
@@ -392,7 +391,6 @@ void main() {
         remote: remote,
         clock: () => now,
       ).execute();
-      expect(alerts.whereType<CountersWipedAlert>(), isEmpty);
       expect(alerts, contains(isA<ServicePressureAlert>()));
       expect((await store.state()).consecutiveFailures, 1);
       expect(
@@ -421,12 +419,11 @@ void main() {
           collectionStartedAt: window.add(const Duration(microseconds: 123)),
           totalAttempts: const {},
         );
-      final alerts = await CheckBackupAttemptMonitoringUsecase(
+      await CheckBackupAttemptMonitoringUsecase(
         store: store,
         remote: remote,
         clock: () => now,
       ).execute();
-      expect(alerts.whereType<CountersWipedAlert>(), isEmpty);
       expect(await store.monitoredBackups(), hasLength(1));
       await db.close();
     },
@@ -547,21 +544,20 @@ void main() {
   });
 
   test(
-    'a rate-limited monitored backup emits a targeted lockout alert',
+    'a rate-limited monitoring poll reports global service pressure',
     () async {
       final (db, store) = await build();
       await store.registerBackup(id);
-      final digest = (await store.monitoredBackups()).single.digest;
       final alerts = await CheckBackupAttemptMonitoringUsecase(
         store: store,
         remote: _Remote()
           ..response = RecoverBullAttemptsSnapshot(
             collectionStartedAt: window,
             totalAttempts: const {},
-            targetedLockouts: [digest],
+            serviceBusy: true,
           ),
       ).execute();
-      expect(alerts.single, isA<TargetedLockoutAlert>());
+      expect(alerts.single, isA<ServicePressureAlert>());
       await db.close();
     },
   );
@@ -789,7 +785,7 @@ void main() {
         remote: remote,
         clock: () => DateTime.now().toUtc().add(const Duration(minutes: 2)),
       ).execute();
-      expect(alerts, contains(isA<CountersWipedAlert>()));
+      expect(alerts, isEmpty);
       expect(alerts.whereType<SuspiciousActivityAlert>(), isEmpty);
       await db.close();
     },
