@@ -5,6 +5,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
@@ -57,6 +59,34 @@ class _MockUpdateBullVaultRegistrationNameUsecase extends Mock
     implements UpdateBullVaultRegistrationNameUsecase {}
 
 void main() {
+  testWidgets('fits the setup illustration on a narrow screen', (tester) async {
+    const screenSize = Size(320, 740);
+    Device.screen = screenSize;
+    addTearDown(() => Device.screen = const Size(800, 600));
+    await tester.binding.setSurfaceSize(screenSize);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final cubit = BullVaultOnboardingCubit(
+      _MockCreateBullVaultOnboardingUsecase(),
+      _MockPrepareBullVaultTimeReferenceUsecase(),
+      _MockLoadBullVaultOnboardingUsecase(),
+      _MockCheckBullVaultMobileBackupsUsecase(),
+      _MockUpdateBullVaultSetupUsecase(),
+      _MockActivateInitialBullVaultUsecase(),
+      _MockEncodeBullVaultRecoveryPackageUsecase(),
+      _MockUpdateBullVaultRegistrationNameUsecase(),
+    );
+    addTearDown(cubit.close);
+    final router = _completionRouter(cubit);
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(_app(router));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.phone_iphone_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.shield_outlined), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('customizes last-resort recovery without adding another signer', (
     tester,
   ) async {
@@ -162,7 +192,7 @@ void main() {
 
       Future<void> openMnemonic() async {
         final button = find.widgetWithText(
-          BBButton,
+          BullButton,
           loc.bullVaultInheritanceGenerateMnemonic,
         );
         await tester.ensureVisible(button);
@@ -170,22 +200,18 @@ void main() {
         await tester.tap(button);
         await tester.pumpAndSettle();
         expect(find.byType(ShowMnemonicScreen), findsOneWidget);
-        words = tester
-            .widgetList<Text>(
-              find.descendant(
-                of: find.byType(ShowMnemonicScreen),
-                matching: find.byType(Text),
-              ),
-            )
-            .map((text) => text.data ?? '')
-            .where((text) => RegExp(r'^[a-z]+$').hasMatch(text))
-            .toList();
-        expect(words, hasLength(24));
-        // The shared backup screen displays two numbered columns.
-        words = [
-          for (var i = 0; i < words.length; i += 2) words[i],
-          for (var i = 1; i < words.length; i += 2) words[i],
-        ];
+        words = List.generate(24, (index) {
+          final number = (index + 1).toString().padLeft(2, '0');
+          final entry = find
+              .ancestor(of: find.text(number), matching: find.byType(Row))
+              .first;
+          return tester
+              .widgetList<Text>(
+                find.descendant(of: entry, matching: find.byType(Text)),
+              )
+              .map((text) => text.data!)
+              .singleWhere((text) => text != number);
+        });
         await tester.tap(find.text(loc.testBackupNext));
         await tester.pumpAndSettle();
         expect(find.byType(VerifyMnemonicScreen), findsOneWidget);
