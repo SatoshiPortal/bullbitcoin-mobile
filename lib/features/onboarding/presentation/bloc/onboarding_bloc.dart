@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
-import 'package:bb_mobile/features/onboarding/domain/apply_pending_wizard_choices_after_wallet_creation_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -19,7 +17,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required this._createOnboardingWalletUsecase,
     required this._recoverOnboardingWalletUsecase,
-    required this._applyPendingWizardChoices,
   }) : super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
@@ -31,8 +28,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   final CreateOnboardingWalletUsecase _createOnboardingWalletUsecase;
   final RecoverOnboardingWalletUsecase _recoverOnboardingWalletUsecase;
-  final ApplyPendingWizardChoicesAfterWalletCreationUsecase
-  _applyPendingWizardChoices;
 
   Future<void> _onCreateNewWallet(
     OnboardingCreateNewWallet event,
@@ -51,12 +46,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     );
     switch (await _createOnboardingWalletUsecase.execute()) {
       case Ok():
-        final choicesApplied = await _applyPendingChoicesAfterWalletCreation();
+        // The wizard's Data Backup opt-in, with its server recovery, is
+        // applied from the home page so the user never waits for it here.
         emit(
-          state.copyWith(
-            onboardingStepStatus: OnboardingStepStatus.success,
-            dataBackupEnableFailed: !choicesApplied,
-          ),
+          state.copyWith(onboardingStepStatus: OnboardingStepStatus.success),
         );
       case Err(:final failure):
         emit(
@@ -86,12 +79,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       mnemonicWords: event.mnemonic.words,
     )) {
       case Ok():
-        final choicesApplied = await _applyPendingChoicesAfterWalletCreation();
+        // The wizard's Data Backup opt-in, with its server recovery, is
+        // applied from the home page so the user never waits for it here.
         emit(
-          state.copyWith(
-            onboardingStepStatus: OnboardingStepStatus.success,
-            dataBackupEnableFailed: !choicesApplied,
-          ),
+          state.copyWith(onboardingStepStatus: OnboardingStepStatus.success),
         );
       case Err(:final failure):
         emit(
@@ -102,16 +93,5 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           ),
         );
     }
-  }
-
-  Future<bool> _applyPendingChoicesAfterWalletCreation() async {
-    if (await _applyPendingWizardChoices.execute() case Err(:final failure)) {
-      log.warning(
-        'Could not apply pending wizard choices after wallet creation',
-        error: failure.runtimeType,
-      );
-      return false;
-    }
-    return true;
   }
 }

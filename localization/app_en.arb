@@ -17223,5 +17223,17 @@
   "bullVaultShowDescriptorQr": "Show QR code",
   "@bullVaultShowDescriptorQr": {
     "description": "Button that shows the BullVault descriptor as a QR code for an air-gapped signer to scan."
+  },
+  "homeDataBackupSettingUp": "Setting up Data Backup…",
+  "@homeDataBackupSettingUp": {
+    "description": "Home banner while the wizard's Data Backup opt-in is applied and the server is checked for an existing backup."
+  },
+  "homeDataBackupRestoring": "Restoring your backup…",
+  "@homeDataBackupRestoring": {
+    "description": "Home banner while a metadata backup found on the server is being written into the wallet."
+  },
+  "homeDataBackupRetry": "Retry",
+  "@homeDataBackupRetry": {
+    "description": "Button on the home banner to retry enabling Data Backup after it was refused."
   }
 }

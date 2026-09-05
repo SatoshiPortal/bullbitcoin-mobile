@@ -19,7 +19,10 @@ class WizardLocator {
         settingsRepository: locator<SettingsRepository>(),
         walletBackup: locator<WalletBackupFacade>(),
       );
-      return WizardFacade(applyPendingChoices.execute);
+      return WizardFacade(
+        applyPendingChoices: applyPendingChoices.execute,
+        hasPendingChoices: () async => await repository.readPending() != null,
+      );
     });
   }
 }

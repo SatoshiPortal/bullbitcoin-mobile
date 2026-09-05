@@ -20,6 +20,8 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_ba
 import 'package:bb_mobile/features/backup_settings/domain/usecases/watch_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
 
 class BackupSettingsLocator {
   static void setup(GetIt locator) {
@@ -37,6 +39,13 @@ class BackupSettingsLocator {
         SetBackupRemindersDismissedUsecase(repository),
       );
     });
+    locator.registerFactory<DataBackupSetupBannerCubit>(
+      () => DataBackupSetupBannerCubit(
+        hasPendingChoices: locator<WizardFacade>().hasPendingChoices,
+        applyPendingChoices: locator<WizardFacade>().applyPendingChoices,
+        watchState: walletBackup.watchState,
+      ),
+    );
     locator.registerFactory<BackupSettingsCubit>(
       () => BackupSettingsCubit(
         watchWalletBackup: WatchWalletBackupUsecase(walletBackup),
