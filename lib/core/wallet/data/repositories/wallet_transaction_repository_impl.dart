@@ -14,7 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
-    show WalletSourceKey, WalletSourceOperationCoordinator;
+    show WalletOperationKind, WalletSourceKey, WalletSourceOperationCoordinator;
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -204,25 +204,32 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     String? toAddress,
     required bool sync,
   }) {
-    return _coordinator.runExclusive(_sourceKey(wallet), (_) async {
-      if (sync) {
-        await _serversPort.runWithFallback<void>(
-          network: ElectrumServerNetwork.fromEnvironment(
-            isTestnet: wallet.isTestnet,
-            isLiquid: false,
-          ),
-          operation: (connection) => _bdkWalletTransactionDatasource.sync(
-            wallet: wallet,
-            electrumServer: connection,
-          ),
+    return _coordinator.runExclusive(
+      _sourceKey(wallet),
+      (_) async {
+        if (sync) {
+          await _serversPort.runWithFallback<void>(
+            network: ElectrumServerNetwork.fromEnvironment(
+              isTestnet: wallet.isTestnet,
+              isLiquid: false,
+            ),
+            operation: (connection) => _bdkWalletTransactionDatasource.sync(
+              wallet: wallet,
+              electrumServer: connection,
+            ),
+          );
+        }
+        return _bdkWalletTransactionDatasource.getTransactions(
+          wallet: wallet,
+          txId: txId,
+          toAddress: toAddress,
         );
-      }
-      return _bdkWalletTransactionDatasource.getTransactions(
-        wallet: wallet,
-        txId: txId,
-        toAddress: toAddress,
-      );
-    });
+      },
+      kind: sync
+          ? WalletOperationKind.synchronize
+          : WalletOperationKind.refresh,
+      timeout: sync ? null : const Duration(seconds: 30),
+    );
   }
 
   Future<List<WalletTransactionModel>> _getLwkWalletTransactionModels({
@@ -231,26 +238,33 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     String? toAddress,
     required bool sync,
   }) {
-    return _coordinator.runExclusive(_sourceKey(wallet), (_) async {
-      if (sync) {
-        await _serversPort.runWithFallback<void>(
-          network: ElectrumServerNetwork.fromEnvironment(
-            isTestnet: wallet.isTestnet,
-            isLiquid: true,
-          ),
-          operation: (connection) => _lwkWalletTransactionDatasource.sync(
-            wallet: wallet,
-            electrumServer: connection,
-          ),
-        );
-      }
-      final transactions = await _lwkWalletTransactionDatasource
-          .getTransactions(wallet: wallet, txId: txId, toAddress: toAddress);
-      if (txId == null) return transactions;
-      return transactions
-          .where((transaction) => transaction.txId == txId)
-          .toList();
-    });
+    return _coordinator.runExclusive(
+      _sourceKey(wallet),
+      (_) async {
+        if (sync) {
+          await _serversPort.runWithFallback<void>(
+            network: ElectrumServerNetwork.fromEnvironment(
+              isTestnet: wallet.isTestnet,
+              isLiquid: true,
+            ),
+            operation: (connection) => _lwkWalletTransactionDatasource.sync(
+              wallet: wallet,
+              electrumServer: connection,
+            ),
+          );
+        }
+        final transactions = await _lwkWalletTransactionDatasource
+            .getTransactions(wallet: wallet, txId: txId, toAddress: toAddress);
+        if (txId == null) return transactions;
+        return transactions
+            .where((transaction) => transaction.txId == txId)
+            .toList();
+      },
+      kind: sync
+          ? WalletOperationKind.synchronize
+          : WalletOperationKind.refresh,
+      timeout: sync ? null : const Duration(seconds: 30),
+    );
   }
 
   WalletSourceKey _sourceKey(WalletModel wallet) => WalletSourceKey(

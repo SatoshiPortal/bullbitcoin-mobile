@@ -18,6 +18,7 @@ final class DurableWalletSourceOperationCoordinator
   final Duration busyTimeout;
   final Duration pendingHeartbeatTimeout;
   final Duration? acquisitionTimeout;
+  final int maxActiveSynchronizations;
   @visibleForTesting
   final void Function()? beforeClaimRelease;
   @visibleForTesting
@@ -33,13 +34,22 @@ final class DurableWalletSourceOperationCoordinator
     this.busyTimeout = const Duration(milliseconds: 250),
     this.pendingHeartbeatTimeout = const Duration(seconds: 30),
     this.acquisitionTimeout = const Duration(seconds: 30),
+    this.maxActiveSynchronizations = 2,
     @visibleForTesting this.beforeClaimRelease,
     @visibleForTesting this.workerInitializationDelay = Duration.zero,
     @visibleForTesting this.failReleaseCleanup = false,
     @visibleForTesting this.killWorkerAfterReady = false,
   }) : lockDirectoryPath =
            lockDirectoryPath ??
-           '${File(databasePath).parent.path}/wallet-source-locks';
+           '${File(databasePath).parent.path}/wallet-source-locks' {
+    if (maxActiveSynchronizations <= 0) {
+      throw ArgumentError.value(
+        maxActiveSynchronizations,
+        'maxActiveSynchronizations',
+        'must be positive',
+      );
+    }
+  }
 
   @override
   Future<T> runExclusive<T>(
@@ -89,6 +99,7 @@ final class DurableWalletSourceOperationCoordinator
       busyTimeout: busyTimeout,
       pendingHeartbeatTimeout: pendingHeartbeatTimeout,
       acquisitionTimeout: acquisitionTimeout,
+      maxActiveSynchronizations: maxActiveSynchronizations,
       keyHash: keyHash,
       kind: kind,
       priority: priority,
@@ -244,6 +255,7 @@ final class _DurableActor {
     required Duration busyTimeout,
     required Duration pendingHeartbeatTimeout,
     required Duration? acquisitionTimeout,
+    required int maxActiveSynchronizations,
     required String keyHash,
     required WalletOperationKind kind,
     required WalletOperationPriority priority,
@@ -273,6 +285,7 @@ final class _DurableActor {
         busyTimeout.inMilliseconds,
         pendingHeartbeatTimeout.inMilliseconds,
         acquisitionTimeout?.inMilliseconds,
+        maxActiveSynchronizations,
         keyHash,
         kind.name,
         priority.name,
@@ -446,14 +459,16 @@ Future<void> _workerMain(List<Object?> args) async {
   final busy = args[3] as int;
   final stale = args[4] as int;
   final acquisition = args[5] as int?;
-  final hash = args[6] as String;
-  final initializationDelay = args[10] as int;
-  final failReleaseCleanup = args[11] as bool;
-  final killWorkerAfterReady = args[13] as bool;
+  final maxActiveSynchronizations = args[6] as int;
+  final hash = args[7] as String;
+  final initializationDelay = args[11] as int;
+  final failReleaseCleanup = args[12] as bool;
+  final killWorkerAfterReady = args[14] as bool;
   final request = _token();
   final commands = ReceivePort();
   ReceivePort? registrationReply;
   Database? mutex;
+  Database? slot;
   WalletSourceClaim? claim;
   var readySent = false;
   var awaitingTermination = false;
@@ -466,32 +481,42 @@ Future<void> _workerMain(List<Object?> args) async {
     registrationReply = null;
     Directory(File(dbPath).parent.path).createSync(recursive: true);
     Directory(lockPath).createSync(recursive: true);
-    _initialize(dbPath, busy);
+    _initialize(dbPath, busy, maxActiveSynchronizations);
     _central(
       dbPath,
       busy,
-      (db) => db.execute('INSERT INTO requests VALUES (?,?,?,?,?,?)', [
-        request,
-        hash,
-        args[8],
-        'pending',
-        _now(),
-        _now(),
-      ]),
+      (db) => db.execute(
+        '''INSERT INTO requests
+        (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
+        VALUES (?,?,?,?,?,?,?)''',
+        [request, hash, args[8], args[9], 'pending', _now(), _now()],
+      ),
     );
     out.send(['registered']);
     if (initializationDelay > 0) {
       sleep(Duration(milliseconds: initializationDelay));
     }
-    mutex = _acquire(dbPath, lockPath, hash, request, busy, stale, acquisition);
+    final acquired = _acquire(
+      dbPath,
+      lockPath,
+      hash,
+      request,
+      busy,
+      stale,
+      acquisition,
+      maxActiveSynchronizations,
+      args[8] as String,
+    );
+    mutex = acquired.key;
+    slot = acquired.slot;
     claim = _activate(
       dbPath,
       busy,
       hash,
       request,
-      args[7] as String,
       args[8] as String,
-      args[9] as bool,
+      args[9] as String,
+      args[10] as bool,
     );
     out.send(['ready', commands.sendPort, claim.generation, claim.ownerToken]);
     readySent = true;
@@ -516,9 +541,10 @@ Future<void> _workerMain(List<Object?> args) async {
             if (failReleaseCleanup) {
               throw StateError('injected release cleanup failure');
             }
-            _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex);
+            _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
             claim = null;
             mutex = null;
+            slot = null;
             awaitingTermination = true;
           case 'terminate':
             if (!awaitingTermination) {
@@ -533,9 +559,10 @@ Future<void> _workerMain(List<Object?> args) async {
         }
       } catch (error) {
         if (message[1] == 'release') {
-          _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex);
+          _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
           claim = null;
           mutex = null;
+          slot = null;
           awaitingTermination = true;
         }
         out.send([reply, false, _category(error)]);
@@ -549,7 +576,7 @@ Future<void> _workerMain(List<Object?> args) async {
       out.send(['error', _category(error)]);
     }
   } finally {
-    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex);
+    _bestEffortCleanup(dbPath, busy, hash, request, claim, mutex, slot);
     registrationReply?.close();
     commands.close();
   }
@@ -562,6 +589,7 @@ void _bestEffortCleanup(
   String request,
   WalletSourceClaim? claim,
   Database? mutex,
+  Database? slot,
 ) {
   try {
     if (claim != null) {
@@ -583,6 +611,14 @@ void _bestEffortCleanup(
           db.execute('DELETE FROM requests WHERE request_token=?', [request]),
     );
   } catch (_) {}
+  if (slot != null) {
+    try {
+      slot.execute('ROLLBACK');
+    } catch (_) {}
+    try {
+      slot.dispose();
+    } catch (_) {}
+  }
   if (mutex != null) {
     try {
       mutex.execute('ROLLBACK');
@@ -613,7 +649,9 @@ String _category(Object error) {
   return 'coordination';
 }
 
-void _initialize(String path, int busy) => _central(path, busy, (db) {
+void _initialize(String path, int busy, int capacity) => _central(path, busy, (
+  db,
+) {
   db.execute('PRAGMA journal_mode = WAL');
   db.execute('BEGIN IMMEDIATE');
   try {
@@ -629,6 +667,25 @@ void _initialize(String path, int busy) => _central(path, busy, (db) {
     db.execute(
       'CREATE TABLE IF NOT EXISTS requests (request_token TEXT PRIMARY KEY, key_hash TEXT NOT NULL, priority TEXT NOT NULL, status TEXT NOT NULL, requested_at INTEGER NOT NULL, heartbeat_at INTEGER NOT NULL)',
     );
+    final columns = db.select('PRAGMA table_info(requests)');
+    if (!columns.any((row) => row['name'] == 'kind')) {
+      db.execute(
+        "ALTER TABLE requests ADD COLUMN kind TEXT NOT NULL DEFAULT 'refresh'",
+      );
+    }
+    db.execute(
+      'CREATE TABLE IF NOT EXISTS coordinator_config (id INTEGER PRIMARY KEY CHECK (id=1), max_active_synchronizations INTEGER NOT NULL)',
+    );
+    final config = db.select(
+      'SELECT max_active_synchronizations FROM coordinator_config WHERE id=1',
+    );
+    if (config.isEmpty) {
+      db.execute('INSERT INTO coordinator_config VALUES (1, ?)', [capacity]);
+    } else if (config.single['max_active_synchronizations'] != capacity) {
+      throw ArgumentError(
+        'Coordinator capacity does not match the shared database',
+      );
+    }
     db.execute(
       'CREATE TABLE IF NOT EXISTS source_state (key_hash TEXT PRIMARY KEY, retired INTEGER NOT NULL)',
     );
@@ -645,7 +702,7 @@ void _initialize(String path, int busy) => _central(path, busy, (db) {
   }
 });
 
-Database _acquire(
+({Database key, Database? slot}) _acquire(
   String central,
   String locks,
   String hash,
@@ -653,10 +710,15 @@ Database _acquire(
   int busy,
   int stale,
   int? timeout,
+  int capacity,
+  String kind,
 ) {
   final deadline = timeout == null
       ? null
       : DateTime.now().add(Duration(milliseconds: timeout));
+  final global =
+      kind == WalletOperationKind.synchronize.name ||
+      kind == WalletOperationKind.discover.name;
   while (true) {
     if (deadline != null && !DateTime.now().isBefore(deadline)) {
       _central(
@@ -669,15 +731,35 @@ Database _acquire(
       );
       throw TimeoutException('Wallet source admission timed out');
     }
-    final admitted = _admit(central, busy, hash, request, stale);
+    final admitted = _admit(central, busy, hash, request, stale, global);
     if (admitted) {
       final db = sqlite3.open('$locks/$hash.sqlite');
       db.execute('PRAGMA busy_timeout = $busy');
       try {
         db.execute('BEGIN IMMEDIATE');
-        if (_admit(central, busy, hash, request, stale)) return db;
-        db.execute('ROLLBACK');
-        db.dispose();
+        if (!_admit(central, busy, hash, request, stale, global)) {
+          db.execute('ROLLBACK');
+          db.dispose();
+          continue;
+        }
+        if (kind == WalletOperationKind.synchronize.name ||
+            kind == WalletOperationKind.discover.name) {
+          final slot = _tryAcquireSlot(locks, busy, capacity);
+          if (slot == null) {
+            db.execute('ROLLBACK');
+            db.dispose();
+            continue;
+          }
+          if (!_admit(central, busy, hash, request, stale, global)) {
+            slot.execute('ROLLBACK');
+            slot.dispose();
+            db.execute('ROLLBACK');
+            db.dispose();
+            continue;
+          }
+          return (key: db, slot: slot);
+        }
+        return (key: db, slot: null);
       } catch (error) {
         db.dispose();
         if (error is! SqliteException ||
@@ -691,7 +773,29 @@ Database _acquire(
   }
 }
 
-bool _admit(String path, int busy, String hash, String request, int stale) {
+Database? _tryAcquireSlot(String locks, int busy, int capacity) {
+  for (var index = 0; index < capacity; index++) {
+    final db = sqlite3.open('$locks/synchronization-slot-$index.sqlite');
+    db.execute('PRAGMA busy_timeout = $busy');
+    try {
+      db.execute('BEGIN IMMEDIATE');
+      return db;
+    } catch (error) {
+      db.dispose();
+      if (!_isRetryable(error)) rethrow;
+    }
+  }
+  return null;
+}
+
+bool _admit(
+  String path,
+  int busy,
+  String hash,
+  String request,
+  int stale,
+  bool global,
+) {
   var admitted = false;
   _central(path, busy, (db) {
     db.execute('BEGIN IMMEDIATE');
@@ -704,14 +808,46 @@ bool _admit(String path, int busy, String hash, String request, int stale) {
         throw StateError('coordinator request superseded');
       }
       db.execute(
-        "DELETE FROM requests WHERE key_hash=? AND status='pending' AND heartbeat_at < ? AND request_token <> ?",
-        [hash, _now() - stale, request],
+        "DELETE FROM requests WHERE status='pending' AND heartbeat_at < ? AND request_token <> ?",
+        [_now() - stale, request],
       );
       final rows = db.select(
-        "SELECT request_token FROM requests WHERE key_hash=? AND status='pending' ORDER BY CASE priority WHEN 'foreground' THEN 0 ELSE 1 END, requested_at, rowid LIMIT 1",
-        [hash],
+        global
+            ? '''
+        SELECT request_token FROM requests AS candidate
+        WHERE candidate.status='pending'
+          AND candidate.kind IN ('synchronize', 'discover')
+          AND NOT EXISTS (
+            SELECT 1 FROM claims WHERE claims.key_hash=candidate.key_hash
+          )
+          AND NOT EXISTS (
+            SELECT 1 FROM requests AS earlier
+            WHERE earlier.key_hash=candidate.key_hash
+              AND earlier.status='pending'
+              AND earlier.kind IN ('synchronize', 'discover')
+              AND (CASE earlier.priority WHEN 'foreground' THEN 0 ELSE 1 END,
+                   earlier.requested_at, earlier.rowid) <
+                  (CASE candidate.priority WHEN 'foreground' THEN 0 ELSE 1 END,
+                   candidate.requested_at, candidate.rowid)
+          )
+        ORDER BY CASE candidate.priority WHEN 'foreground' THEN 0 ELSE 1 END,
+          candidate.requested_at, candidate.rowid LIMIT 1
+      '''
+            : "SELECT request_token FROM requests WHERE key_hash=? AND status='pending' ORDER BY CASE priority WHEN 'foreground' THEN 0 ELSE 1 END, requested_at, rowid LIMIT 1",
+        global ? const [] : [hash],
       );
       admitted = rows.isNotEmpty && rows.single['request_token'] == request;
+      if (global && !admitted && rows.isEmpty) {
+        // A claim left by a dead worker must not make its key permanently
+        // ineligible. The physical key mutex below is the liveness check.
+        final staleClaimHead = db.select(
+          "SELECT request_token FROM requests WHERE key_hash=? AND status='pending' AND kind IN ('synchronize', 'discover') ORDER BY CASE priority WHEN 'foreground' THEN 0 ELSE 1 END, requested_at, rowid LIMIT 1",
+          [hash],
+        );
+        admitted =
+            staleClaimHead.isNotEmpty &&
+            staleClaimHead.single['request_token'] == request;
+      }
       db.execute('COMMIT');
     } catch (_) {
       try {

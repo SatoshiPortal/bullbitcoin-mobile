@@ -50,6 +50,179 @@ void main() {
     expect(nextClaim.ownerToken, isNot(firstClaim.ownerToken));
   });
 
+  test(
+    'synchronization slots are shared across keys and coordinator instances',
+    () async {
+      final first = DurableWalletSourceOperationCoordinator(databasePath: path);
+      final second = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      final entered = <String>[];
+      final releases = <String, Completer<void>>{};
+      final enteredSignals = <String, Completer<void>>{};
+
+      Future<void> hold(
+        DurableWalletSourceOperationCoordinator coordinator,
+        String wallet,
+        String chain,
+      ) {
+        final release = Completer<void>();
+        final signal = Completer<void>();
+        releases[wallet] = release;
+        enteredSignals[wallet] = signal;
+        return coordinator.runExclusive(
+          WalletSourceKey(wallet, chain, 'testnet'),
+          (_) async {
+            entered.add(wallet);
+            signal.complete();
+            await release.future;
+          },
+          kind: WalletOperationKind.synchronize,
+          timeout: null,
+        );
+      }
+
+      final bitcoin = hold(first, 'bitcoin-wallet', 'bitcoin');
+      final liquid = hold(second, 'liquid-wallet', 'liquid');
+      await Future.wait([
+        enteredSignals['bitcoin-wallet']!.future,
+        enteredSignals['liquid-wallet']!.future,
+      ]);
+      expect(entered, unorderedEquals(['bitcoin-wallet', 'liquid-wallet']));
+      final thirdEntered = Completer<void>();
+      final third = second.runExclusive(
+        const WalletSourceKey('third-wallet', 'bitcoin', 'testnet'),
+        (_) async {
+          entered.add('third-wallet');
+          thirdEntered.complete();
+        },
+        kind: WalletOperationKind.discover,
+        timeout: null,
+      );
+      expect(entered, isNot(contains('third-wallet')));
+      releases['bitcoin-wallet']!.complete();
+      await thirdEntered.future;
+      releases['liquid-wallet']!.complete();
+      await Future.wait([bitcoin, liquid, third]);
+    },
+  );
+
+  test('refresh does not consume synchronization capacity', () async {
+    final coordinator = DurableWalletSourceOperationCoordinator(
+      databasePath: path,
+    );
+    final firstRelease = Completer<void>();
+    final secondRelease = Completer<void>();
+    final firstEntered = Completer<void>();
+    final secondEntered = Completer<void>();
+    final first = coordinator.runExclusive(
+      const WalletSourceKey('sync-one', 'bitcoin', 'testnet'),
+      (_) async {
+        firstEntered.complete();
+        await firstRelease.future;
+      },
+      kind: WalletOperationKind.synchronize,
+      timeout: null,
+    );
+    final second = coordinator.runExclusive(
+      const WalletSourceKey('sync-two', 'liquid', 'testnet'),
+      (_) async {
+        secondEntered.complete();
+        await secondRelease.future;
+      },
+      kind: WalletOperationKind.synchronize,
+      timeout: null,
+    );
+    await Future.wait([firstEntered.future, secondEntered.future]);
+    final third = coordinator.runExclusive(
+      const WalletSourceKey('sync-three', 'bitcoin', 'testnet'),
+      (_) async {},
+      kind: WalletOperationKind.synchronize,
+      timeout: null,
+    );
+    final thirdHash = sha256
+        .convert('sync-three\u0000bitcoin\u0000testnet'.codeUnits)
+        .toString();
+    var thirdPending = false;
+    for (var attempt = 0; attempt < 100; attempt++) {
+      final db = sqlite3.open(path);
+      final pending = db.select(
+        "SELECT request_token FROM requests WHERE key_hash=? AND status='pending'",
+        [thirdHash],
+      );
+      db.dispose();
+      if (pending.isNotEmpty) {
+        thirdPending = true;
+        break;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    expect(thirdPending, isTrue);
+    final refreshed = Completer<void>();
+    final refresh = coordinator.runExclusive(
+      const WalletSourceKey('local-read', 'bitcoin', 'testnet'),
+      (_) async => refreshed.complete(),
+      kind: WalletOperationKind.refresh,
+    );
+    await refreshed.future;
+    firstRelease.complete();
+    secondRelease.complete();
+    await Future.wait([first, second, third, refresh]);
+  });
+
+  test(
+    'capacity is validated and a timed-out caller retains its slot',
+    () async {
+      expect(
+        () => DurableWalletSourceOperationCoordinator(
+          databasePath: path,
+          maxActiveSynchronizations: 0,
+        ),
+        throwsArgumentError,
+      );
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        maxActiveSynchronizations: 1,
+        acquisitionTimeout: const Duration(milliseconds: 30),
+      );
+      final release = Completer<void>();
+      final owner = coordinator.runExclusive(
+        const WalletSourceKey('timeout-owner', 'bitcoin', 'testnet'),
+        (_) => release.future,
+        kind: WalletOperationKind.synchronize,
+        timeout: const Duration(milliseconds: 10),
+      );
+      await expectLater(owner, throwsA(isA<TimeoutException>()));
+      final blocked = coordinator.runExclusive(
+        const WalletSourceKey('timeout-contender', 'bitcoin', 'testnet'),
+        (_) async {},
+        kind: WalletOperationKind.synchronize,
+        timeout: const Duration(milliseconds: 30),
+      );
+      await expectLater(blocked, throwsA(isA<TimeoutException>()));
+      release.complete();
+      final cleanupProbe = coordinator.runExclusive(
+        const WalletSourceKey('cleanup-probe', 'bitcoin', 'testnet'),
+        (_) async {},
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      await cleanupProbe;
+
+      final mismatch = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        maxActiveSynchronizations: 2,
+      );
+      await expectLater(
+        mismatch.runExclusive(
+          const WalletSourceKey('mismatch', 'bitcoin', 'testnet'),
+          (_) async {},
+        ),
+        throwsStateError,
+      );
+    },
+  );
+
   test('retire and reactivate commands are applied in session order', () async {
     const key = WalletSourceKey('ordered', 'bitcoin', 'testnet');
     final coordinator = DurableWalletSourceOperationCoordinator(
@@ -167,6 +340,117 @@ void main() {
   });
 
   test(
+    'global synchronization admission is foreground-first then FIFO',
+    () async {
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        maxActiveSynchronizations: 1,
+      );
+      final ownerEntered = Completer<void>();
+      final ownerRelease = Completer<void>();
+      final owner = coordinator.runExclusive(
+        const WalletSourceKey('global-owner', 'bitcoin', 'testnet'),
+        (_) async {
+          ownerEntered.complete();
+          await ownerRelease.future;
+        },
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      await ownerEntered.future;
+
+      final order = <String>[];
+      Future<void> enqueue(String wallet, WalletOperationPriority priority) =>
+          coordinator.runExclusive(
+            WalletSourceKey(wallet, 'bitcoin', 'testnet'),
+            (_) async => order.add(wallet),
+            kind: WalletOperationKind.synchronize,
+            priority: priority,
+            timeout: null,
+          );
+
+      final background = enqueue(
+        'global-background',
+        WalletOperationPriority.background,
+      );
+      await _waitForPendingSynchronizations(path, 1);
+      final firstForeground = enqueue(
+        'global-foreground-one',
+        WalletOperationPriority.foreground,
+      );
+      await _waitForPendingSynchronizations(path, 2);
+      final secondForeground = enqueue(
+        'global-foreground-two',
+        WalletOperationPriority.foreground,
+      );
+      await _waitForPendingSynchronizations(path, 3);
+
+      ownerRelease.complete();
+      await Future.wait([owner, background, firstForeground, secondForeground]);
+      expect(order, [
+        'global-foreground-one',
+        'global-foreground-two',
+        'global-background',
+      ]);
+    },
+  );
+
+  test(
+    'same-key pending sync does not consume the second global slot',
+    () async {
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+      );
+      const sharedKey = WalletSourceKey('shared-wallet', 'bitcoin', 'testnet');
+      final firstEntered = Completer<void>();
+      final firstRelease = Completer<void>();
+      final first = coordinator.runExclusive(
+        sharedKey,
+        (_) async {
+          firstEntered.complete();
+          await firstRelease.future;
+        },
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      await firstEntered.future;
+
+      final secondEntered = Completer<void>();
+      final secondRelease = Completer<void>();
+      final second = coordinator.runExclusive(
+        sharedKey,
+        (_) async {
+          secondEntered.complete();
+          await secondRelease.future;
+        },
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      await _waitForPendingSynchronizations(path, 1);
+
+      final otherEntered = Completer<void>();
+      final otherRelease = Completer<void>();
+      final other = coordinator.runExclusive(
+        const WalletSourceKey('independent-wallet', 'liquid', 'testnet'),
+        (_) async {
+          otherEntered.complete();
+          await otherRelease.future;
+        },
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      await otherEntered.future;
+      expect(secondEntered.isCompleted, isFalse);
+
+      firstRelease.complete();
+      await secondEntered.future;
+      otherRelease.complete();
+      secondRelease.complete();
+      await Future.wait([first, second, other]);
+    },
+  );
+
+  test(
     'stale pending requests are purged, but active owners are not',
     () async {
       final coordinator = DurableWalletSourceOperationCoordinator(
@@ -180,14 +464,12 @@ void main() {
           .convert('stale\u0000bitcoin\u0000testnet'.codeUnits)
           .toString();
       final db = sqlite3.open(path);
-      db.execute('INSERT INTO requests VALUES (?,?,?,?,?,?)', [
-        'stale-request',
-        hash,
-        'foreground',
-        'pending',
-        1,
-        1,
-      ]);
+      db.execute(
+        '''INSERT INTO requests
+        (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
+        VALUES (?,?,?,?,?,?,?)''',
+        ['stale-request', hash, 'refresh', 'foreground', 'pending', 1, 1],
+      );
       db.dispose();
       expect(await coordinator.runExclusive(key, (_) async => 1), 1);
 
@@ -207,6 +489,56 @@ void main() {
       await expectLater(blocked, throwsA(isA<TimeoutException>()));
       release.complete();
       await owner;
+    },
+  );
+
+  test(
+    'stale pending sync on another key cannot block global admission',
+    () async {
+      final coordinator = DurableWalletSourceOperationCoordinator(
+        databasePath: path,
+        pendingHeartbeatTimeout: const Duration(milliseconds: 1),
+        acquisitionTimeout: const Duration(milliseconds: 200),
+      );
+      await coordinator.runExclusive(
+        const WalletSourceKey('schema-bootstrap', 'bitcoin', 'testnet'),
+        (_) async {},
+      );
+      final staleHash = sha256
+          .convert('dead-pending bitcoin testnet'.codeUnits)
+          .toString();
+      final db = sqlite3.open(path);
+      db.execute(
+        '''INSERT INTO requests
+      (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
+      VALUES (?,?,?,?,?,?,?)''',
+        [
+          'dead-request',
+          staleHash,
+          'synchronize',
+          'foreground',
+          'pending',
+          1,
+          1,
+        ],
+      );
+      db.dispose();
+
+      final entered = await coordinator.runExclusive(
+        const WalletSourceKey('live-request', 'liquid', 'testnet'),
+        (_) async => true,
+        kind: WalletOperationKind.synchronize,
+        timeout: null,
+      );
+      expect(entered, isTrue);
+      final check = sqlite3.open(path);
+      expect(
+        check.select('SELECT * FROM requests WHERE request_token=?', [
+          'dead-request',
+        ]),
+        isEmpty,
+      );
+      check.dispose();
     },
   );
 
@@ -287,14 +619,12 @@ void main() {
         'foreground',
         1,
       ]);
-      db.execute('INSERT INTO requests VALUES (?,?,?,?,?,?)', [
-        'orphan-request',
-        hash,
-        'foreground',
-        'active',
-        1,
-        1,
-      ]);
+      db.execute(
+        '''INSERT INTO requests
+        (request_token, key_hash, kind, priority, status, requested_at, heartbeat_at)
+        VALUES (?,?,?,?,?,?,?)''',
+        ['orphan-request', hash, 'refresh', 'foreground', 'active', 1, 1],
+      );
       db.dispose();
 
       late WalletSourceClaim claim;
@@ -486,6 +816,7 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 20));
       },
       timeout: null,
+      kind: WalletOperationKind.synchronize,
     );
 
     await expectLater(
@@ -535,6 +866,22 @@ void main() {
     heartbeat.cancel();
     expect(beats, greaterThanOrEqualTo(5));
   });
+}
+
+Future<void> _waitForPendingSynchronizations(String path, int count) async {
+  for (var attempt = 0; attempt < 200; attempt++) {
+    final db = sqlite3.open(path);
+    try {
+      final rows = db.select(
+        "SELECT request_token FROM requests WHERE status='pending' AND kind IN ('synchronize', 'discover')",
+      );
+      if (rows.length >= count) return;
+    } finally {
+      db.dispose();
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+  }
+  throw TimeoutException('Expected $count pending synchronization requests');
 }
 
 Future<void> _holdInIsolate(List<Object> args) async {
