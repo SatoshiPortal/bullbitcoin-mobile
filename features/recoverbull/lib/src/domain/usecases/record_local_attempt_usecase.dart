@@ -27,7 +27,7 @@ final class RecordLocalAttemptUsecase {
         );
       } catch (_) {
         await _registerPendingAdoption(identifier);
-        rethrow;
+        return null;
       }
       if (snapshot == null || snapshot.serviceBusy) {
         await _registerPendingAdoption(identifier);

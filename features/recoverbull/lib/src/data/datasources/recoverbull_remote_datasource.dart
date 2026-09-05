@@ -231,10 +231,12 @@ class RecoverBullRemoteDatasource {
     String? etag,
     List<String> backupIdHashes = const [],
   }) async {
-    final url = validateRecoverBullServerUrl(
-      await _recoverbullSettingsDatasource.fetch(),
-    );
+    var operationTimed = false;
     try {
+      final url = validateRecoverBullServerUrl(
+        await _recoverbullSettingsDatasource.fetch(),
+      );
+      operationTimed = true;
       final result = await _timed(
         'attempts_poll',
         () => attemptsRequest != null
@@ -275,6 +277,7 @@ class RecoverBullRemoteDatasource {
       log.warning('recoverbull.attempts.poll.timeout');
       rethrow;
     } catch (e, st) {
+      if (!operationTimed) timing?.call('attempts_poll', 0, 'failure');
       log.error(
         'recoverbull.attempts.poll.unexpected error_type=${e.runtimeType}',
         trace: st,
@@ -341,23 +344,13 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
           ),
       };
     } on KeyServerException catch (error) {
-      if (error.code == 404 || error.code == 503) {
+      if (error.code == 503) {
         return RecoverBullAttemptsSnapshot(
           collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
             0,
             isUtc: true,
           ),
           totalAttempts: {},
-          serviceBusy: true,
-        );
-      }
-      if (error.code == 429) {
-        return RecoverBullAttemptsSnapshot(
-          collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
-            0,
-            isUtc: true,
-          ),
-          totalAttempts: const {},
           serviceBusy: true,
         );
       }
