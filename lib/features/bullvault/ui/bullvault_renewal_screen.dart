@@ -1,9 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_previous_vault.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
@@ -15,9 +12,9 @@ import 'package:bb_mobile/features/bullvault/ui/bullvault_policy_setup_flow.dart
 import 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_completion_steps.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_schedule_fields.dart';
-import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_registration_name_dialog.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullButton, BullInfoCard, BullSnackBar, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -132,7 +129,7 @@ final class _RenewalBottomActions extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BBButton.big(
+            BullButton.big(
               label: switch (state.step) {
                 BullVaultRenewalStep.review =>
                   state.timeReference != null
@@ -176,7 +173,7 @@ final class _RenewalBottomActions extends StatelessWidget {
             if (state.step == BullVaultRenewalStep.hardwareSetup &&
                 !state.hardwareSetupComplete) ...[
               const Gap(8),
-              BBButton.big(
+              BullButton.big(
                 label: context.loc.bullVaultDoHardwareSetupLater,
                 onPressed: () => context.go('/'),
                 bgColor: context.appColors.surface,
@@ -263,7 +260,7 @@ final class _InitialSetup extends StatelessWidget {
       crossAxisAlignment: .stretch,
       children: [
         if (details.policy.renewalSchedule.isPractice) ...[
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultPracticeBadge,
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -275,13 +272,13 @@ final class _InitialSetup extends StatelessWidget {
           style: context.font.headlineLarge,
         ),
         const Gap(24),
-        InfoCard(
+        BullInfoCard(
           description: context.loc.bullVaultFinishSetupDescription,
           tagColor: context.appColors.warning,
           bgColor: context.appColors.warningContainer,
         ),
         const Gap(12),
-        BBButton.big(
+        BullButton.big(
           label: context.loc.bullVaultFinishSetup,
           onPressed: () async {
             await context.pushNamed(
@@ -368,7 +365,7 @@ final class _RenewalReview extends StatelessWidget {
       crossAxisAlignment: .stretch,
       children: [
         if (schedule.isPractice) ...[
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultPracticeBadge,
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -411,7 +408,7 @@ final class _RenewalReview extends StatelessWidget {
         const _CurrentRecoveryExport(),
         if (details.showEarlyRenewalWarning) ...[
           const Gap(16),
-          InfoCard(
+          BullInfoCard(
             description: context.loc.bullVaultEarlyRenewalWarning,
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -424,7 +421,7 @@ final class _RenewalReview extends StatelessWidget {
         ),
         if (state.failure != null && reference == null) ...[
           const Gap(12),
-          InfoCard(
+          BullInfoCard(
             description: state.failure!.toTranslated(context),
             tagColor: context.appColors.error,
             bgColor: context.appColors.errorContainer,
@@ -475,27 +472,18 @@ final class _CurrentRecoveryExport extends StatelessWidget {
   const _CurrentRecoveryExport();
 
   @override
-  Widget build(BuildContext context) => BBButton.big(
+  Widget build(BuildContext context) => BullButton.big(
     label: context.loc.bullVaultSaveRecoveryData,
     onPressed: () async {
-      try {
-        final cubit = context.read<BullVaultRenewalCubit>();
-        final content = cubit.currentRecoveryPackageContent;
-        final policy = cubit.state.details?.policy;
-        if (content == null || policy == null) return;
-        await shareBullVaultRecoveryPackage(
-          context,
-          content: content,
-          policyId: policy.id,
-        );
-      } on Exception {
-        if (context.mounted) {
-          BullSnackBar.show(
-            context,
-            message: context.loc.oopsSomethingWentWrong,
-          );
-        }
-      }
+      final cubit = context.read<BullVaultRenewalCubit>();
+      final content = cubit.currentRecoveryPackageContent;
+      final policy = cubit.state.details?.policy;
+      if (content == null || policy == null) return;
+      await shareBullVaultRecoveryPackage(
+        context,
+        content: content,
+        policyId: policy.id,
+      );
     },
     bgColor: context.appColors.secondary,
     textColor: context.appColors.onSecondary,
@@ -554,7 +542,7 @@ final class _PreviousVaultTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBorderedTile(
     onTap: null,
     child: Padding(
       padding: const EdgeInsets.all(16),
@@ -580,13 +568,13 @@ final class _PreviousVaultTile extends StatelessWidget {
           ),
           if (previous.hasFunds) ...[
             const Gap(12),
-            InfoCard(
+            BullInfoCard(
               description: context.loc.bullVaultMigrationDestinationLocked,
               tagColor: context.appColors.secondary,
               bgColor: context.appColors.onSecondary,
             ),
             const Gap(12),
-            BBButton.big(
+            BullButton.big(
               label: pendingTransactionId == null
                   ? context.loc.bullVaultMoveFunds
                   : context.loc.bullVaultContinueMovingFunds,
@@ -657,33 +645,18 @@ final class _RenewalSetup extends StatelessWidget {
     final signer = result.wallet.signers.singleWhere(
       (candidate) => candidate.id == signerId,
     );
-    var setupResult = result;
-    var setupSigner = signer;
-    if (signer.signerDevice != null) {
-      final name = await promptBullVaultRegistrationName(
-        context,
-        signer: signer,
-        fallbackName: result.wallet.label ?? context.loc.bullVaultTitle,
-      );
-      if (name == null || !context.mounted) return;
-      final cubit = context.read<BullVaultRenewalCubit>();
-      final updated = await cubit.updateRegistrationName(
-        signerId: signer.id,
-        name: name,
-      );
-      if (!updated || !context.mounted) return;
-      setupResult = cubit.state.renewal!.replacement;
-      setupSigner = setupResult.wallet.signers.singleWhere(
-        (candidate) => candidate.id == signer.id,
-      );
-    }
+    final cubit = context.read<BullVaultRenewalCubit>();
     final completed = await BullVaultPolicySetupFlow.execute(
       context,
-      result: setupResult,
-      signer: setupSigner,
+      result: result,
+      signer: signer,
+      updateRegistrationName: (name) async =>
+          await cubit.updateRegistrationName(signerId: signer.id, name: name)
+          ? cubit.state.renewal?.replacement
+          : null,
     );
     if (completed && context.mounted) {
-      await context.read<BullVaultRenewalCubit>().completeSigner(signer.id);
+      await cubit.completeSigner(signer.id);
     }
   }
 
@@ -691,24 +664,14 @@ final class _RenewalSetup extends StatelessWidget {
     BuildContext context,
     BullVaultRenewalState state,
   ) async {
-    try {
-      final result = state.renewal!.replacement;
-      final exported = await shareBullVaultRecoveryPackage(
-        context,
-        content: state.recoveryPackageContent!,
-        policyId: result.policy.id,
-      );
-      if (!context.mounted || !exported) return;
-      context.read<BullVaultRenewalCubit>().markRecoveryPackageExported();
-      BullSnackBar.show(
-        context,
-        message: context.loc.bullVaultRecoveryPackageExported,
-      );
-    } on Exception {
-      if (context.mounted) {
-        BullSnackBar.show(context, message: context.loc.oopsSomethingWentWrong);
-      }
-    }
+    await shareBullVaultRecoveryPackage(
+      context,
+      content: state.recoveryPackageContent!,
+      policyId: state.renewal!.replacement.policy.id,
+      onExported: context
+          .read<BullVaultRenewalCubit>()
+          .markRecoveryPackageExported,
+    );
   }
 }
 

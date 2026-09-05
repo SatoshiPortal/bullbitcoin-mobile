@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullInfoCard, Gap;
 import 'package:flutter/material.dart';
 
 final class BullVaultScheduleFields extends StatelessWidget {
@@ -146,7 +145,7 @@ final class _ScheduleDropdown extends StatelessWidget {
     children: [
       Text(label, style: context.font.bodyMedium),
       const Gap(8),
-      BBDropdown<int>(
+      BullDropdown<int>(
         value: values.contains(value) ? value : null,
         items: [
           for (final delay in values)

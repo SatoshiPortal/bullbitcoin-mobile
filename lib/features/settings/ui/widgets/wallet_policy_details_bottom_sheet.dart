@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/widgets/bitcoin_policy_description.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
@@ -200,7 +199,12 @@ String _describeLeaf(
   Wallet wallet,
 ) => switch (node) {
   BitcoinSignaturePolicyNode(:final key) => context.loc.walletPolicySignWith(
-    _signerName(context, key, wallet),
+    bitcoinPolicySignerName(
+      context,
+      key,
+      wallet,
+      localSignerName: context.loc.importWatchOnlyBullMobileDevice,
+    ),
   ),
   BitcoinRelativeTimelockPolicyNode(
     type: BitcoinRelativeTimelockType.blocks,
@@ -218,37 +222,13 @@ String _describeLeaf(
     context.loc.walletDetailsAbsoluteBlockCondition(value),
   BitcoinAbsoluteTimelockPolicyNode(:final value) =>
     context.loc.walletDetailsAbsoluteTimeCondition(
-      _formatTimestamp(context, value),
+      formatBitcoinPolicyTimestamp(context, value),
     ),
   BitcoinHashlockPolicyNode() => context.loc.walletPolicyHashPreimage,
   BitcoinThresholdPolicyNode() => throw StateError(
     'Threshold policies must be rendered as groups',
   ),
 };
-
-String _signerName(BuildContext context, BitcoinPolicyKey key, Wallet wallet) {
-  WalletSigner? signer;
-  for (final candidate in wallet.signers) {
-    if (candidate.descriptorKeys.any(key.matches)) {
-      signer = candidate;
-      break;
-    }
-  }
-  if (signer?.signer == SignerEntity.local) {
-    return context.loc.importWatchOnlyBullMobileDevice;
-  }
-  if (signer?.signerDevice != null) {
-    final device = signer!.signerDevice!.displayName;
-    return signer.displayFingerprint.isEmpty
-        ? device
-        : '$device · ${signer.displayFingerprint}';
-  }
-  if (signer != null && signer.displayFingerprint.isNotEmpty) {
-    return signer.displayFingerprint;
-  }
-  final value = key.value.toUpperCase();
-  return value.length <= 8 ? value : value.substring(0, 8);
-}
 
 String _describeRelativeTime(BuildContext context, int seconds) {
   final duration = Duration(seconds: seconds);
@@ -260,14 +240,4 @@ String _describeRelativeTime(BuildContext context, int seconds) {
   }
   final minutes = (seconds / Duration.secondsPerMinute).ceil();
   return context.loc.walletDetailsRelativeMinutesCondition(minutes);
-}
-
-String _formatTimestamp(BuildContext context, int timestamp) {
-  final date = DateTime.fromMillisecondsSinceEpoch(
-    timestamp * Duration.millisecondsPerSecond,
-    isUtc: true,
-  ).toLocal();
-  final localizations = MaterialLocalizations.of(context);
-  return '${localizations.formatFullDate(date)} '
-      '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(date))}';
 }
