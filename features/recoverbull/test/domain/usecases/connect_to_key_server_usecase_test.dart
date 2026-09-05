@@ -68,6 +68,25 @@ void main() {
   Future<Result<bool, RecoverBullFailure>> run() =>
       usecase.execute(onAttempt: attempts.add);
 
+  test('temporary server pressure is preserved for the caller', () async {
+    when(() => checkConnection.execute(route: route)).thenAnswer(
+      (_) async => const Err(
+        RecoverBullTemporarilyUnavailableFailure(
+          retryIn: Duration(seconds: 30),
+        ),
+      ),
+    );
+
+    final result = await run();
+
+    final failure = (result as Err<bool, RecoverBullFailure>).failure;
+    expect(failure, isA<RecoverBullTemporarilyUnavailableFailure>());
+    expect(
+      (failure as RecoverBullTemporarilyUnavailableFailure).retryIn,
+      const Duration(seconds: 30),
+    );
+  });
+
   test('stops at the first answer instead of exhausting the budget', () async {
     when(
       () => checkConnection.execute(route: route),

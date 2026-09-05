@@ -25,6 +25,8 @@ AnnouncementId _idFor(RecoverBullAttemptAlertKind kind) => switch (kind) {
     AnnouncementId.recoverBullTargetedActivity,
   RecoverBullAttemptAlertKind.servicePressure =>
     AnnouncementId.recoverBullServicePressure,
+  RecoverBullAttemptAlertKind.identifierSaturation =>
+    AnnouncementId.recoverBullServicePressure,
   RecoverBullAttemptAlertKind.unavailable =>
     AnnouncementId.recoverBullUnavailable,
 };

@@ -17,9 +17,7 @@ extension AnnouncementL10n on Announcement {
       context,
       this,
     ),
-    AnnouncementId.recoverBullServicePressure => RecoverBullLocalizations.of(
-      context,
-    ).recoverbullAttemptMonitoringServicePressure,
+    AnnouncementId.recoverBullServicePressure => _servicePressureText(context),
     AnnouncementId.recoverBullUnavailable => RecoverBullLocalizations.of(
       context,
     ).recoverbullAttemptMonitoringUnavailableUnknownDuration,
@@ -33,9 +31,7 @@ extension AnnouncementL10n on Announcement {
       context,
       this,
     ),
-    AnnouncementId.recoverBullServicePressure => RecoverBullLocalizations.of(
-      context,
-    ).recoverbullAttemptMonitoringServicePressure,
+    AnnouncementId.recoverBullServicePressure => _servicePressureText(context),
     AnnouncementId.recoverBullUnavailable => RecoverBullLocalizations.of(
       context,
     ).recoverbullAttemptMonitoringUnavailableUnknownDuration,
@@ -49,6 +45,17 @@ extension AnnouncementL10n on Announcement {
         )
         ? l10n.recoverbullAttemptMonitoringLockoutTitle
         : l10n.recoverbullAttemptMonitoringSuspiciousActivityTitle;
+  }
+
+  String _servicePressureText(BuildContext context) {
+    final announcement = this as RecoverBullAnnouncement;
+    final l10n = RecoverBullLocalizations.of(context);
+    return announcement.sourceAlerts.any(
+          (alert) =>
+              alert.kind == RecoverBullAttemptAlertKind.identifierSaturation,
+        )
+        ? l10n.recoverbullAttemptMonitoringIdentifierSaturation
+        : l10n.recoverbullAttemptMonitoringServicePressure;
   }
 
   String _targetedActivityDescription(

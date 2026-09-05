@@ -32,6 +32,10 @@ final class _AttemptsDatasource extends RecoverBullRemoteDatasource {
     String? etag,
     List<String> backupIdHashes = const [],
   }) async => AttemptsNotModified();
+
+  @override
+  Future<Info> infoDetails(RecoverBullTorRoute route) async =>
+      Info(cooldown: 1, maxAttempts: 3, secretMaxLength: 1, canary: '🐦');
 }
 
 void main() {
@@ -193,6 +197,43 @@ void main() {
   });
 
   test(
+    'monitoring adapter carries capacity from info to the snapshot',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        attemptsRequest: (_, _, _, _) async => AttemptsModified(
+          etag: 'etag',
+          maxAgeSeconds: 1,
+          version: 1,
+          collectionStartedAt: DateTime.utc(2026),
+          totalEntries: 9,
+          matchingEntries: const [],
+        ),
+        infoDetailsRequest: (_, _) async => Info(
+          cooldown: 1,
+          maxAttempts: 3,
+          secretMaxLength: 1,
+          canary: '🐦',
+          maxAttemptIdentifiers: 10,
+        ),
+      );
+      final adapter = RecoverBullAttemptMonitoringRemoteAdapter(
+        datasource: datasource,
+        routeFactory: () async => routeFor(_Client()),
+      );
+
+      final snapshot = await adapter.poll(etag: null, backupDigests: const []);
+
+      expect(snapshot!.maxAttemptIdentifiers, 10);
+    },
+  );
+
+  test(
     'attempts logs modified and not-modified outcomes without identifiers',
     () async {
       final settings = _Settings();
@@ -247,6 +288,38 @@ void main() {
       expect(
         notModifiedLog.entries.single.message,
         contains('outcome=not_modified matching_count=0'),
+      );
+    },
+  );
+
+  test(
+    'monitoring adapter does not publish a snapshot when info fails',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        attemptsRequest: (_, _, _, _) async => AttemptsModified(
+          etag: 'etag',
+          maxAgeSeconds: 1,
+          version: 1,
+          collectionStartedAt: DateTime.utc(2026),
+          totalEntries: 9,
+          matchingEntries: const [],
+        ),
+        infoDetailsRequest: (_, _) async => throw StateError('info failed'),
+      );
+      final adapter = RecoverBullAttemptMonitoringRemoteAdapter(
+        datasource: datasource,
+        routeFactory: () async => routeFor(_Client()),
+      );
+
+      await expectLater(
+        adapter.poll(etag: null, backupDigests: const []),
+        throwsA(isA<StateError>()),
       );
     },
   );
@@ -324,6 +397,34 @@ void main() {
     );
     expect(log.entries.single.message, isNot(contains('sentinel')));
     expect(log.entries.single.error, isNull);
+  });
+
+  test('attempts logs Retry-After for shared 503 pressure', () async {
+    final settings = _Settings();
+    when(
+      () => settings.fetch(),
+    ).thenAnswer((_) async => Uri.parse('http://sentinel.onion'));
+    final log = TestLogSink.recording();
+    final datasource = RecoverBullRemoteDatasource(
+      log: log,
+      recoverbullSettingsDatasource: settings,
+      attemptsRequest: (_, _, _, _) async => throw KeyServerException(
+        code: 503,
+        retryAfter: const Duration(seconds: 47),
+        message: 'server payload',
+      ),
+    );
+
+    await expectLater(
+      datasource.attempts(route: routeFor(_Client())),
+      throwsA(isA<KeyServerException>()),
+    );
+
+    expect(
+      log.entries.single.message,
+      'recoverbull.attempts.poll.unavailable code=503 retry_after_seconds=47',
+    );
+    expect(log.entries.single.message, isNot(contains('payload')));
   });
 
   test('reports timings for every remote phase and terminal outcome', () async {

@@ -112,6 +112,91 @@ void main() {
     return (db, RecoverBullAttemptMonitoringStore(db));
   }
 
+  test('identifier saturation alerts without a matching user hash', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
+    final remote = _Remote()
+      ..response = RecoverBullAttemptsSnapshot(
+        collectionStartedAt: window,
+        totalAttempts: const {},
+        totalEntries: 9,
+        maxAttemptIdentifiers: 10,
+      );
+
+    final alerts = await CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: remote,
+      clock: () => DateTime.utc(2026, 8, 5, 16),
+    ).execute(forceRefresh: true);
+
+    expect(
+      alerts,
+      contains(
+        const ServicePressureAlert(ServicePressureKind.identifierSaturation),
+      ),
+    );
+    await db.close();
+  });
+
+  test(
+    'identifier saturation is silent below or without a positive capacity',
+    () async {
+      for (final snapshot in [
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          totalEntries: 8,
+          maxAttemptIdentifiers: 10,
+        ),
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          maxAttemptIdentifiers: 10,
+        ),
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          totalEntries: 9,
+        ),
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          totalEntries: 9,
+          maxAttemptIdentifiers: 0,
+        ),
+      ]) {
+        final (db, store) = await build();
+        await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
+        final alerts = await CheckBackupAttemptMonitoringUsecase(
+          store: store,
+          remote: _Remote()..response = snapshot,
+          clock: () => DateTime.utc(2026, 8, 5, 16),
+        ).execute(forceRefresh: true);
+        expect(alerts.whereType<ServicePressureAlert>(), isEmpty);
+        await db.close();
+      }
+    },
+  );
+
+  test('service busy and saturation produce one alert of each kind', () async {
+    final (db, store) = await build();
+    await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
+    final alerts = await CheckBackupAttemptMonitoringUsecase(
+      store: store,
+      remote: _Remote()
+        ..response = RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          serviceBusy: true,
+          totalEntries: 9,
+          maxAttemptIdentifiers: 10,
+        ),
+      clock: () => DateTime.utc(2026, 8, 5, 16),
+    ).execute(forceRefresh: true);
+    expect(alerts.whereType<ServicePressureAlert>(), hasLength(2));
+    await db.close();
+  });
+
   test('registering a backup does not count an attempt', () async {
     final (db, store) = await build();
     await RegisterMonitoredBackupUsecase(store).execute(

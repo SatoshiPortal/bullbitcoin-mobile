@@ -3,6 +3,7 @@ import '../entities/attempt_alert.dart';
 
 final class CheckBackupAttemptMonitoringUsecase {
   static const snapshotFreshness = Duration(seconds: 60);
+  static const identifierSaturationThreshold = 0.9;
   static const unavailabilityThreshold = Duration(days: 3);
   static const unavailabilityWarnCooldown = Duration(days: 1);
   static const minFailuresWithoutSuccess = 3;
@@ -58,6 +59,8 @@ final class CheckBackupAttemptMonitoringUsecase {
       final unavailable = await store.recordPollFailure(now: current);
       return [
         const ServicePressureAlert(ServicePressureKind.serviceBusy),
+        if (_isIdentifierSaturated(snapshot))
+          const ServicePressureAlert(ServicePressureKind.identifierSaturation),
         if (unavailable) const AttemptMonitoringUnavailableAlert(since: null),
       ];
     }
@@ -77,6 +80,11 @@ final class CheckBackupAttemptMonitoringUsecase {
     final applied = await store.applySnapshot(snapshot, token);
     if (!applied.accepted) return const [];
     if (snapshot.notModified) return const [];
+    if (_isIdentifierSaturated(snapshot)) {
+      alerts.add(
+        const ServicePressureAlert(ServicePressureKind.identifierSaturation),
+      );
+    }
     final entries = {
       for (final entry in snapshot.totalAttempts.entries)
         _hex(entry.key): entry.value,
@@ -103,4 +111,13 @@ final class CheckBackupAttemptMonitoringUsecase {
 
   static String _hex(List<int> bytes) =>
       bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+
+  static bool _isIdentifierSaturated(RecoverBullAttemptsSnapshot snapshot) {
+    final total = snapshot.totalEntries;
+    final capacity = snapshot.maxAttemptIdentifiers;
+    return total != null &&
+        capacity != null &&
+        capacity > 0 &&
+        total >= capacity * identifierSaturationThreshold;
+  }
 }

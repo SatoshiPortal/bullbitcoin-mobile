@@ -14,6 +14,7 @@ class RecoverBullRemoteDatasource {
   final LogSink log;
   final RecoverbullSettingsDatasource _recoverbullSettingsDatasource;
   final Future<void> Function(Uri, HttpClient)? infoRequest;
+  final Future<Info> Function(Uri, HttpClient)? infoDetailsRequest;
   final Future<FetchBackupKeyResult> Function(
     Uri,
     HttpClient,
@@ -50,6 +51,7 @@ class RecoverBullRemoteDatasource {
     required this.log,
     this.timing,
     this.infoRequest,
+    this.infoDetailsRequest,
     this.fetchRequest,
     this.storeRequest,
     this.trashRequest,
@@ -97,6 +99,19 @@ class RecoverBullRemoteDatasource {
       );
       rethrow;
     }
+  }
+
+  Future<Info> infoDetails(RecoverBullTorRoute route) async {
+    final url = validateRecoverBullServerUrl(
+      await _recoverbullSettingsDatasource.fetch(),
+    );
+    final request = infoDetailsRequest;
+    return _timed(
+      'server_info',
+      () => request != null
+          ? request(url, route.client)
+          : KeyServer(address: url, client: route.client).infos(),
+    );
   }
 
   Future<void> store(
@@ -238,9 +253,16 @@ class RecoverBullRemoteDatasource {
     } on KeyServerException catch (e) {
       final code = e.code;
       if (code == 429) {
+        // Defensive compatibility branch: the 2026-09 contract reserves 429
+        // for targeted operations, not proof of a targeted lockout here.
         log.warning(
           'recoverbull.attempts.poll.rate_limited code=429 '
           'attempts=${e.attempts ?? 'unknown'} '
+          'retry_after_seconds=${e.retryAfter?.inSeconds ?? 'unknown'}',
+        );
+      } else if (code == 503) {
+        log.warning(
+          'recoverbull.attempts.poll.unavailable code=503 '
           'retry_after_seconds=${e.retryAfter?.inSeconds ?? 'unknown'}',
         );
       } else {
@@ -286,6 +308,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
         etag: etag,
         backupIdHashes: backupDigests,
       );
+      final info = await datasource.infoDetails(route);
       return switch (result) {
         AttemptsNotModified() => RecoverBullAttemptsSnapshot(
           collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -294,6 +317,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
           ),
           totalAttempts: {},
           notModified: true,
+          maxAttemptIdentifiers: info.maxAttemptIdentifiers,
         ),
         AttemptsModified(
           :final etag,
@@ -305,6 +329,7 @@ final class RecoverBullAttemptMonitoringRemoteAdapter
             etag: etag,
             collectionStartedAt: collectionStartedAt,
             totalEntries: totalEntries,
+            maxAttemptIdentifiers: info.maxAttemptIdentifiers,
             totalAttempts: {
               for (final entry in matchingEntries)
                 _decodeDigest(entry.idHash): entry.totalAttempts,

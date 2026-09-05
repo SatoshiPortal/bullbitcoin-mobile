@@ -104,6 +104,7 @@ enum RecoverBullAttemptAlertKind {
   suspiciousActivity,
   targetedLockout,
   servicePressure,
+  identifierSaturation,
   unavailable,
 }
 
@@ -337,7 +338,9 @@ final class RecoverBullAttemptMonitoring
         ),
       domain_alert.ServicePressureAlert(:final kind) =>
         RecoverBullAttemptAlert._(
-          RecoverBullAttemptAlertKind.servicePressure,
+          kind == domain_alert.ServicePressureKind.identifierSaturation
+              ? RecoverBullAttemptAlertKind.identifierSaturation
+              : RecoverBullAttemptAlertKind.servicePressure,
           'service:${kind.name}',
           'p:$kind',
         ),

@@ -818,6 +818,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           const InvalidVaultCredentialsFailure(),
         core.KeyServerRateLimitedFailure(:final retryIn) =>
           VaultRateLimitedFailure(retryIn: retryIn ?? Duration.zero),
+        core.KeyServerBusyFailure(:final retryIn) => VaultServiceBusyFailure(
+          retryIn: retryIn,
+        ),
+        core.RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
+          VaultServiceBusyFailure(retryIn: retryIn),
         core.KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
         core.ExternalTorProxyUnavailableFailure() =>
           const ExternalTorProxyUnavailableFailure(),
@@ -837,6 +842,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     core.KeyServerRateLimitedFailure(:final retryIn) => VaultRateLimitedFailure(
       retryIn: retryIn ?? Duration.zero,
     ),
+    core.KeyServerBusyFailure(:final retryIn) => VaultServiceBusyFailure(
+      retryIn: retryIn,
+    ),
+    core.RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
+      VaultServiceBusyFailure(retryIn: retryIn),
     core.KeyServerUnavailableFailure() => const KeyServerConnectionFailure(),
     core.ExternalTorProxyUnavailableFailure() =>
       const ExternalTorProxyUnavailableFailure(),
