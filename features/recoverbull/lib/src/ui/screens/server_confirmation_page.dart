@@ -47,7 +47,9 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
         });
       }
     } catch (e) {
-      widget.log.warning('Error loading recoverbull url: $e');
+      widget.log.warning(
+        'recoverbull.settings.load.unexpected error_type=${e.runtimeType}',
+      );
       if (mounted) {
         setState(() {
           _serverUrl = recoverBullDefaultServerUrl;

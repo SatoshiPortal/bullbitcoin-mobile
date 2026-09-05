@@ -35,7 +35,10 @@ class GoogleDriveAppDatasource {
 
       _driveApi = drive.DriveApi(client);
     } catch (e) {
-      log.error('Google Sign-in error', error: e, trace: StackTrace.current);
+      log.error(
+        'recoverbull.drive.sign_in.unexpected error_type=${e.runtimeType}',
+        trace: StackTrace.current,
+      );
       await disconnect();
       rethrow;
     }
@@ -49,11 +52,10 @@ class GoogleDriveAppDatasource {
       if (client == null) return null;
       _driveApi = drive.DriveApi(client);
       return account.email;
-    } catch (error, stackTrace) {
+    } catch (error) {
       log.warning(
-        'Google silent sign-in unavailable',
-        error: error,
-        trace: stackTrace,
+        'recoverbull.drive.silent_sign_in.unavailable '
+        'error_type=${error.runtimeType}',
       );
       await disconnect();
       return null;

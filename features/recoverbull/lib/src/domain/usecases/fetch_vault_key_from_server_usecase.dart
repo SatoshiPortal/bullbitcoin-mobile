@@ -61,11 +61,9 @@ class FetchVaultKeyFromServerUsecase {
       // a vault key this call already retrieved.
       try {
         if (ownsRoute) await session.close();
-      } catch (e, st) {
+      } catch (e, _) {
         log.warning(
-          'closing the RecoverBull Tor session failed',
-          error: e,
-          trace: st,
+          'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
         );
       }
     }
@@ -81,11 +79,10 @@ class FetchVaultKeyFromServerUsecase {
           backupIdHex: vault.id,
         );
         if (alert != null) _alertPort?.publish(alert);
-      } catch (error, stackTrace) {
+      } catch (error, _) {
         log.warning(
-          'attempt monitoring update failed',
-          error: error,
-          trace: stackTrace,
+          'recoverbull.attempts.monitoring.update.failed '
+          'error_type=${error.runtimeType}',
         );
       }
     }
@@ -102,11 +99,10 @@ class FetchVaultKeyFromServerUsecase {
         attemptStatus: value.attemptStatus,
       );
       if (alert != null) _alertPort?.publish(alert);
-    } catch (error, stackTrace) {
+    } catch (error, _) {
       log.warning(
-        'attempt monitoring update failed',
-        error: error,
-        trace: stackTrace,
+        'recoverbull.attempts.monitoring.update.failed '
+        'error_type=${error.runtimeType}',
       );
     }
     return Ok(value.vaultKey);

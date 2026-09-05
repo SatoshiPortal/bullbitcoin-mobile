@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 import '../database/recoverbull_database.dart';
 import '../attempt_monitoring/recoverbull_attempt_monitoring.dart';
@@ -181,6 +182,7 @@ final class RecoverBullAttemptMonitoring
         RecoverBullAttemptMonitoringController,
         RecoverBullAttemptAlertPort {
   final RecoverBullAttemptMonitoringStore _store;
+  final LogSink? _log;
   final Future<RecoverBullAttemptsSnapshot?> Function({
     required String? etag,
     required List<String> backupDigests,
@@ -198,7 +200,11 @@ final class RecoverBullAttemptMonitoring
     this._store, {
     this._enabled = false,
     this._poll,
-  });
+    LogSink? log,
+  })
+    // `log` is intentionally public-facing while the stored sink stays private.
+    // ignore: prefer_initializing_formals
+    : _log = log;
 
   @override
   bool get enabled => _enabled;
@@ -265,6 +271,10 @@ final class RecoverBullAttemptMonitoring
                 (alert) => !_acknowledgedIdentities.contains(alert.identity),
               )
               .toList(growable: false);
+      _log?.fine(
+        'recoverbull.attempts.monitoring.succeeded '
+        'alert_count=${alerts.length} force_refresh=$forceRefresh',
+      );
       for (final alert in alerts) {
         final alreadyVisible = _visibleAlerts.any(
           (visible) =>
@@ -276,7 +286,11 @@ final class RecoverBullAttemptMonitoring
         _alertUpdates.add(List.unmodifiable(_visibleAlerts));
       }
       return alerts;
-    } catch (_) {
+    } catch (error) {
+      _log?.warning(
+        'recoverbull.attempts.monitoring.failed '
+        'error_type=${error.runtimeType}',
+      );
       return const [];
     }
   }

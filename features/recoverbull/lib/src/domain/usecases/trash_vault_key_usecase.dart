@@ -57,7 +57,12 @@ final class TrashVaultKeyUsecase {
             attemptStatus: value.attemptStatus,
           );
           if (alert != null) alertPort?.publish(alert);
-        } catch (_) {}
+        } catch (error, _) {
+          log.warning(
+            'recoverbull.attempts.monitoring.update.failed '
+            'error_type=${error.runtimeType}',
+          );
+        }
       }
       if (result case Ok()) {
         await recordAttempt?.store.removeBackup(vault.id);
@@ -67,11 +72,9 @@ final class TrashVaultKeyUsecase {
       if (ownsRoute) {
         try {
           await route.close();
-        } catch (error, stackTrace) {
+        } catch (error, _) {
           log.warning(
-            'closing the RecoverBull Tor session failed',
-            error: error,
-            trace: stackTrace,
+            'recoverbull.tor.session.close.failed error_type=${error.runtimeType}',
           );
         }
       }

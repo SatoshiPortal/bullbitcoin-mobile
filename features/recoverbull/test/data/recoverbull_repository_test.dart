@@ -10,6 +10,7 @@ import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_tor_route.dart';
+import 'package:bull_recoverbull/src/domain/entities/key_server_attempts.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -45,11 +46,13 @@ void main() {
   late _MockRemote remote;
   late RecoverBullRepositoryImpl repository;
   late RecoverBullTorRoute route;
+  late TestLogSink logSink;
 
   setUp(() {
     remote = _MockRemote();
+    logSink = TestLogSink.recording();
     repository = RecoverBullRepositoryImpl(
-      log: const TestLogSink(),
+      log: logSink,
       remoteDatasource: remote,
       recoverbullSettingsDatasource: _MockSettings(),
     );
@@ -70,6 +73,17 @@ void main() {
     ).thenThrow(error);
   }
 
+  void stubFetchWithStatusThrows(Object error) {
+    when(
+      () => remote.fetchWithStatus(
+        any(),
+        any(),
+        any(),
+        route: any(named: 'route'),
+      ),
+    ).thenThrow(error);
+  }
+
   // identifier/salt must be valid hex (the repo HEX-decodes them).
   Future<Result<String, RecoverBullFailure>> fetch() =>
       repository.fetchVaultKey('00', 'password', '00', route);
@@ -85,6 +99,11 @@ void main() {
       expect(result, isA<Err<String, RecoverBullFailure>>());
       final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerInvalidCredentialsFailure>());
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.invalid_credentials code=401',
+      );
+      expect(logSink.entries.single.level, 'warning');
     });
 
     test('429 -> KeyServerRateLimitedFailure with retryIn', () async {
@@ -101,6 +120,10 @@ void main() {
       final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerRateLimitedFailure>());
       expect((failure as KeyServerRateLimitedFailure).retryIn, isNotNull);
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.rate_limited code=429 attempts=unknown retry_after_seconds=unknown',
+      );
     });
 
     test('429 without cooldown -> retryIn null (no NPE)', () async {
@@ -111,6 +134,10 @@ void main() {
       final failure = (result as Err<String, RecoverBullFailure>).failure;
       expect(failure, isA<KeyServerRateLimitedFailure>());
       expect((failure as KeyServerRateLimitedFailure).retryIn, isNull);
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.rate_limited code=429 attempts=unknown retry_after_seconds=unknown',
+      );
     });
 
     test('429 prefers the server Retry-After value', () async {
@@ -153,6 +180,10 @@ void main() {
         (result as Err<String, RecoverBullFailure>).failure,
         isA<KeyServerUnavailableFailure>(),
       );
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.unavailable code=503',
+      );
     });
 
     test('null code -> KeyServerUnavailableFailure', () async {
@@ -164,6 +195,10 @@ void main() {
         (result as Err<String, RecoverBullFailure>).failure,
         isA<KeyServerUnavailableFailure>(),
       );
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.unavailable code=unknown',
+      );
     });
   });
 
@@ -174,6 +209,309 @@ void main() {
 
     final failure = (result as Err<String, RecoverBullFailure>).failure;
     expect(failure, isA<RecoverBullUnexpectedFailure>());
+    expect(
+      logSink.entries.single.message,
+      startsWith('recoverbull.key.fetch.unexpected error_type='),
+    );
+    expect(logSink.entries.single.error, isNull);
+    expect(logSink.entries.single.trace, isNotNull);
+  });
+
+  test('fetch timeout is a classified warning', () async {
+    stubFetchThrows(TimeoutException('timed out'));
+
+    await fetch();
+
+    expect(logSink.entries.single.message, 'recoverbull.key.fetch.timeout');
+    expect(logSink.entries.single.level, 'warning');
+  });
+
+  test(
+    'fetchWithStatus timeout returns unavailable and logs a warning',
+    () async {
+      stubFetchWithStatusThrows(TimeoutException('sentinel timeout'));
+
+      final result = await repository.fetchVaultKeyWithStatus(
+        '00',
+        'password',
+        '00',
+        route,
+      );
+
+      expect(
+        (result as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+        isA<KeyServerUnavailableFailure>(),
+      );
+      expect(logSink.entries.single.message, 'recoverbull.key.fetch.timeout');
+    },
+  );
+
+  test('fetchWithStatus logs safe rate-limit metadata', () async {
+    stubFetchWithStatusThrows(
+      recoverbull.KeyServerException(
+        code: 429,
+        attempts: 3,
+        retryAfter: const Duration(seconds: 47),
+        message: 'sentinel payload',
+      ),
+    );
+
+    await repository.fetchVaultKeyWithStatus('00', 'password', '00', route);
+
+    expect(
+      logSink.entries.single.message,
+      'recoverbull.key.fetch.rate_limited code=429 attempts=3 retry_after_seconds=47',
+    );
+    expect(logSink.entries.single.error, isNull);
+  });
+
+  test(
+    'fetchWithStatus success logs the absence of attempt metadata',
+    () async {
+      when(
+        () => remote.fetchWithStatus(
+          any(),
+          any(),
+          any(),
+          route: any(named: 'route'),
+        ),
+      ).thenAnswer(
+        (_) async => recoverbull.FetchBackupKeyResult(
+          backupKey: [0xab, 0xcd],
+          attemptStatus: null,
+        ),
+      );
+
+      final result = await repository.fetchVaultKeyWithStatus(
+        '00',
+        'password',
+        '00',
+        route,
+      );
+
+      expect(result, isA<Ok<VaultKeyFetchResult, RecoverBullFailure>>());
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.succeeded attempt_status=absent '
+        'attempts_total=unknown attempts_failed=unknown '
+        'attempts_remaining=unknown',
+      );
+    },
+  );
+
+  test(
+    'trashWithStatus timeout returns unavailable and logs a warning',
+    () async {
+      when(
+        () => remote.trashWithStatus(
+          any(),
+          any(),
+          any(),
+          route: any(named: 'route'),
+        ),
+      ).thenThrow(TimeoutException('sentinel timeout'));
+
+      final result = await repository.trashVaultKeyWithStatus(
+        '00',
+        'password',
+        '00',
+        route,
+      );
+
+      expect(
+        (result as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+        isA<KeyServerUnavailableFailure>(),
+      );
+      expect(logSink.entries.single.message, 'recoverbull.key.trash.timeout');
+      expect(logSink.entries.single.level, 'warning');
+    },
+  );
+
+  test(
+    'expected errors are classified once and never expose input secrets',
+    () async {
+      const secret = 'sentinel-secret';
+      stubFetchThrows(
+        recoverbull.KeyServerException(code: 401, message: secret),
+      );
+
+      await repository.fetchVaultKey(secret, secret, '00', route);
+
+      expect(logSink.entries, hasLength(1));
+      expect(logSink.entries.single.message, isNot(contains(secret)));
+      expect(logSink.entries.single.error, isNull);
+    },
+  );
+
+  group('store and trash classify key-server failures safely', () {
+    final expectedCases = <({int? code, Matcher failure, String event})>[
+      (
+        code: 401,
+        failure: isA<KeyServerInvalidCredentialsFailure>(),
+        event: 'invalid_credentials code=401',
+      ),
+      (
+        code: 429,
+        failure: isA<KeyServerRateLimitedFailure>(),
+        event: 'rate_limited code=429 attempts=3 retry_after_seconds=47',
+      ),
+      (
+        code: 503,
+        failure: isA<KeyServerUnavailableFailure>(),
+        event: 'unavailable code=503',
+      ),
+      (
+        code: null,
+        failure: isA<KeyServerUnavailableFailure>(),
+        event: 'unavailable code=unknown',
+      ),
+    ];
+
+    recoverbull.KeyServerException exceptionFor(int? code) =>
+        recoverbull.KeyServerException(
+          code: code,
+          attempts: code == 429 ? 3 : null,
+          retryAfter: code == 429 ? const Duration(seconds: 47) : null,
+          message: 'sentinel server payload',
+        );
+
+    for (final expected in expectedCases) {
+      test('store classifies code ${expected.code ?? 'unknown'}', () async {
+        when(
+          () => remote.store(
+            any(),
+            any(),
+            any(),
+            any(),
+            route: any(named: 'route'),
+          ),
+        ).thenThrow(exceptionFor(expected.code));
+
+        final result = await repository.storeVaultKey(
+          '00',
+          'password',
+          '00',
+          '00',
+          route,
+        );
+
+        expect(
+          (result as Err<Null, RecoverBullFailure>).failure,
+          expected.failure,
+        );
+        expect(
+          logSink.entries.single.message,
+          'recoverbull.key.store.${expected.event}',
+        );
+        expect(logSink.entries.single.level, 'warning');
+        expect(logSink.entries.single.message, isNot(contains('sentinel')));
+        expect(logSink.entries.single.error, isNull);
+      });
+
+      test('trash classifies code ${expected.code ?? 'unknown'}', () async {
+        when(
+          () => remote.trashWithStatus(
+            any(),
+            any(),
+            any(),
+            route: any(named: 'route'),
+          ),
+        ).thenThrow(exceptionFor(expected.code));
+
+        final result = await repository.trashVaultKeyWithStatus(
+          '00',
+          'password',
+          '00',
+          route,
+        );
+
+        expect(
+          (result as Err<VaultKeyFetchResult, RecoverBullFailure>).failure,
+          expected.failure,
+        );
+        expect(
+          logSink.entries.single.message,
+          'recoverbull.key.trash.${expected.event}',
+        );
+        expect(logSink.entries.single.level, 'warning');
+        expect(logSink.entries.single.message, isNot(contains('sentinel')));
+        expect(logSink.entries.single.error, isNull);
+      });
+    }
+
+    test('store timeout is an unavailable warning', () async {
+      when(
+        () => remote.store(
+          any(),
+          any(),
+          any(),
+          any(),
+          route: any(named: 'route'),
+        ),
+      ).thenThrow(TimeoutException('sentinel timeout'));
+
+      final result = await repository.storeVaultKey(
+        '00',
+        'password',
+        '00',
+        '00',
+        route,
+      );
+
+      expect(
+        (result as Err<Null, RecoverBullFailure>).failure,
+        isA<KeyServerUnavailableFailure>(),
+      );
+      expect(logSink.entries.single.message, 'recoverbull.key.store.timeout');
+      expect(logSink.entries.single.level, 'warning');
+    });
+
+    test('unexpected store exception exposes only its type', () async {
+      when(
+        () => remote.store(
+          any(),
+          any(),
+          any(),
+          any(),
+          route: any(named: 'route'),
+        ),
+      ).thenThrow(StateError('sentinel payload'));
+
+      await repository.storeVaultKey('00', 'password', '00', '00', route);
+
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.store.unexpected error_type=StateError',
+      );
+      expect(logSink.entries.single.error, isNull);
+      expect(
+        logSink.entries.single.trace.toString(),
+        isNot(contains('sentinel')),
+      );
+    });
+
+    test('unexpected trash exception exposes only its type', () async {
+      when(
+        () => remote.trashWithStatus(
+          any(),
+          any(),
+          any(),
+          route: any(named: 'route'),
+        ),
+      ).thenThrow(StateError('sentinel payload'));
+
+      await repository.trashVaultKeyWithStatus('00', 'password', '00', route);
+
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.trash.unexpected error_type=StateError',
+      );
+      expect(logSink.entries.single.error, isNull);
+      expect(
+        logSink.entries.single.trace.toString(),
+        isNot(contains('sentinel')),
+      );
+    });
   });
 
   test(
@@ -289,6 +627,7 @@ void main() {
         (result as Err<Null, RecoverBullFailure>).failure,
         isA<KeyServerHealthCheckTimeoutFailure>(),
       );
+      expect(logSink.entries.single.message, 'recoverbull.health.timeout');
     });
 
     test('maps other errors to unavailable', () async {

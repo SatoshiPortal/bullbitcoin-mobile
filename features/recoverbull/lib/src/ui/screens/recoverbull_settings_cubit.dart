@@ -54,11 +54,9 @@ final class RecoverBullSettingsCubit extends Cubit<RecoverBullSettingsState> {
           monitoring: await monitoring?.status(),
         ),
       );
-    } catch (error, trace) {
+    } catch (error, _) {
       log.warning(
-        'recoverbull.settings.load_failed',
-        error: error,
-        trace: trace,
+        'recoverbull.settings.load_failed error_type=${error.runtimeType}',
       );
       emit(state.copyWith(loading: false));
     }
@@ -71,11 +69,9 @@ final class RecoverBullSettingsCubit extends Cubit<RecoverBullSettingsState> {
       await storeUrl.execute(url);
       emit(state.copyWith(saving: false, url: url.toString()));
       return true;
-    } catch (error, trace) {
+    } catch (error, _) {
       log.warning(
-        'recoverbull.settings.save_failed',
-        error: error,
-        trace: trace,
+        'recoverbull.settings.save_failed error_type=${error.runtimeType}',
       );
       emit(state.copyWith(saving: false));
       return false;

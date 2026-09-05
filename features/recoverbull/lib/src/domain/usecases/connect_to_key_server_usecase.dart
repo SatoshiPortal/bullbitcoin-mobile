@@ -79,12 +79,10 @@ class ConnectToKeyServerUsecase {
     } finally {
       try {
         if (ownsRoute && route != null) await route.close();
-      } catch (e, st) {
+      } catch (e, _) {
         // Closing is cleanup only and must not replace the connection result.
         log.warning(
-          'closing the RecoverBull Tor session failed',
-          error: e,
-          trace: st,
+          'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
         );
       }
     }

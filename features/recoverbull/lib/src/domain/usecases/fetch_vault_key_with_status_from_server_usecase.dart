@@ -55,11 +55,10 @@ final class FetchVaultKeyWithStatusFromServerUsecase {
               attemptStatus: value.attemptStatus,
             );
             if (alert != null) alertPort?.publish(alert);
-          } catch (error, stackTrace) {
+          } catch (error, _) {
             log.warning(
-              'attempt monitoring update failed',
-              error: error,
-              trace: stackTrace,
+              'recoverbull.attempts.monitoring.update.failed '
+              'error_type=${error.runtimeType}',
             );
           }
         case Err(:final failure) when failure is KeyServerRateLimitedFailure:
@@ -68,11 +67,10 @@ final class FetchVaultKeyWithStatusFromServerUsecase {
               backupIdHex: vault.id,
             );
             if (alert != null) alertPort?.publish(alert);
-          } catch (error, stackTrace) {
+          } catch (error, _) {
             log.warning(
-              'attempt monitoring update failed',
-              error: error,
-              trace: stackTrace,
+              'recoverbull.attempts.monitoring.update.failed '
+              'error_type=${error.runtimeType}',
             );
           }
         case Err():
@@ -81,11 +79,9 @@ final class FetchVaultKeyWithStatusFromServerUsecase {
     } finally {
       try {
         if (ownsRoute) await route.close();
-      } catch (error, stackTrace) {
+      } catch (error, _) {
         log.warning(
-          'closing the RecoverBull Tor session failed',
-          error: error,
-          trace: stackTrace,
+          'recoverbull.tor.session.close.failed error_type=${error.runtimeType}',
         );
       }
     }

@@ -36,7 +36,7 @@ import '../domain/recoverbull_tor_route.dart';
 }
 
 /// Data boundary for the RecoverBull key server and vault crypto. Catches the
-/// foreign exceptions the datasources/SDK throw, logs the raw reason, and
+/// foreign exceptions the datasources/SDK throw, classifies safe metadata, and
 /// returns a [RecoverBullFailure] — no exception crosses this boundary.
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
   final LogSink log;
@@ -79,8 +79,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       ));
     } catch (e, st) {
       log.error(
-        'createVault failed',
-        error: 'Vault processing failed',
+        'recoverbull.vault.create.unexpected error_type=${e.runtimeType}',
         trace: st,
       );
       return const Err(RecoverBullUnexpectedFailure('Vault processing failed'));
@@ -104,8 +103,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return Ok(DecryptedVault.fromJson(decoded));
     } catch (e, st) {
       log.error(
-        'restoreVault failed',
-        error: 'Vault processing failed',
+        'recoverbull.vault.restore.unexpected error_type=${e.runtimeType}',
         trace: st,
       );
       return const Err(RecoverBullUnexpectedFailure('Vault processing failed'));
@@ -128,20 +126,16 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         convert.hex.decode(_normalizeHex(vaultKey)),
         route: route,
       );
+      log.fine('recoverbull.key.store.succeeded');
       return const Ok(null);
     } on recoverbull.KeyServerException catch (e, st) {
-      log.error(
-        'storeVaultKey failed',
-        error: 'Vault key processing failed',
-        trace: st,
-      );
+      _logKeyServer('store', e, st);
       return Err(_mapKeyServer(e));
+    } on TimeoutException {
+      log.warning('recoverbull.key.store.timeout');
+      return const Err(KeyServerUnavailableFailure());
     } catch (e, st) {
-      log.error(
-        'storeVaultKey failed',
-        error: 'Vault key processing failed',
-        trace: st,
-      );
+      _logUnexpected('store', e, st);
       return const Err(
         RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
@@ -162,20 +156,16 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         convert.hex.decode(_normalizeHex(salt)),
         route: route,
       );
+      log.fine('recoverbull.key.fetch.succeeded');
       return Ok(convert.hex.encode(vaultKey));
     } on recoverbull.KeyServerException catch (e, st) {
-      log.error(
-        'fetchVaultKey failed',
-        error: 'Vault key processing failed',
-        trace: st,
-      );
+      _logKeyServer('fetch', e, st);
       return Err(_mapKeyServer(e));
+    } on TimeoutException {
+      log.warning('recoverbull.key.fetch.timeout');
+      return const Err(KeyServerUnavailableFailure());
     } catch (e, st) {
-      log.error(
-        'fetchVaultKey failed',
-        error: 'Vault key processing failed',
-        trace: st,
-      );
+      _logUnexpected('fetch', e, st);
       return const Err(
         RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
@@ -197,16 +187,28 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         convert.hex.decode(_normalizeHex(salt)),
         route: route,
       );
+      final attemptStatus = result.attemptStatus;
+      log.fine(
+        'recoverbull.key.fetch.succeeded '
+        'attempt_status=${attemptStatus == null ? 'absent' : 'present'} '
+        'attempts_total=${attemptStatus?.totalAttempts ?? 'unknown'} '
+        'attempts_failed=${attemptStatus?.failedAttempts ?? 'unknown'} '
+        'attempts_remaining=${attemptStatus?.remainingAttempts ?? 'unknown'}',
+      );
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      log.error(
-        'fetchVaultKey failed',
-        error: 'Vault key processing failed',
-        trace: st,
-      );
+      if (e is recoverbull.KeyServerException) {
+        _logKeyServer('fetch', e, st);
+      } else if (e is TimeoutException) {
+        log.warning('recoverbull.key.fetch.timeout');
+      } else {
+        _logUnexpected('fetch', e, st);
+      }
       return Err(
         e is recoverbull.KeyServerException
             ? _mapKeyServer(e)
+            : e is TimeoutException
+            ? const KeyServerUnavailableFailure()
             : const RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
@@ -219,12 +221,24 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     RecoverBullTorRoute route,
   ) async {
-    await _remoteDatasource.trash(
-      convert.hex.decode(_normalizeHex(identifier)),
-      utf8.encode(password),
-      convert.hex.decode(_normalizeHex(salt)),
-      route: route,
-    );
+    try {
+      await _remoteDatasource.trash(
+        convert.hex.decode(_normalizeHex(identifier)),
+        utf8.encode(password),
+        convert.hex.decode(_normalizeHex(salt)),
+        route: route,
+      );
+      log.fine('recoverbull.key.trash.succeeded');
+    } on recoverbull.KeyServerException catch (e, st) {
+      _logKeyServer('trash', e, st);
+      rethrow;
+    } on TimeoutException {
+      log.warning('recoverbull.key.trash.timeout');
+      rethrow;
+    } catch (e, st) {
+      _logUnexpected('trash', e, st);
+      rethrow;
+    }
   }
 
   @override
@@ -242,16 +256,21 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
         convert.hex.decode(_normalizeHex(salt)),
         route: route,
       );
+      log.fine('recoverbull.key.trash.succeeded');
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      log.error(
-        'trashVaultKey failed',
-        error: 'Vault key processing failed',
-        trace: st,
-      );
+      if (e is recoverbull.KeyServerException) {
+        _logKeyServer('trash', e, st);
+      } else if (e is TimeoutException) {
+        log.warning('recoverbull.key.trash.timeout');
+      } else {
+        _logUnexpected('trash', e, st);
+      }
       return Err(
         e is recoverbull.KeyServerException
             ? _mapKeyServer(e)
+            : e is TimeoutException
+            ? const KeyServerUnavailableFailure()
             : const RecoverBullUnexpectedFailure('Vault key processing failed'),
       );
     }
@@ -281,15 +300,19 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   ) async {
     try {
       await _remoteDatasource.checkConnection(route);
+      log.fine('recoverbull.health.succeeded');
       return const Ok(null);
     } on TimeoutException {
+      log.warning('recoverbull.health.timeout');
       return const Err(KeyServerHealthCheckTimeoutFailure());
-    } on recoverbull.KeyServerException catch (error, trace) {
-      log.error(
-        'checkConnection failed',
-        error: 'RecoverBull health check failed',
-        trace: trace,
-      );
+    } on recoverbull.KeyServerException catch (error) {
+      if (error.code == 503) {
+        log.warning('recoverbull.health.temporarily_unavailable code=503');
+      } else {
+        log.warning(
+          'recoverbull.health.unavailable code=${error.code ?? 'unknown'}',
+        );
+      }
       return Err(
         error.code == 503
             ? const RecoverBullTemporarilyUnavailableFailure()
@@ -297,12 +320,44 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
     } catch (error, trace) {
       log.error(
-        'checkConnection failed',
-        error: 'RecoverBull health check failed',
+        'recoverbull.health.unexpected error_type=${error.runtimeType}',
         trace: trace,
       );
       return const Err(KeyServerUnavailableFailure());
     }
+  }
+
+  void _logKeyServer(
+    String operation,
+    recoverbull.KeyServerException error,
+    StackTrace trace,
+  ) {
+    final code = error.code;
+    final prefix = 'recoverbull.key.$operation';
+    if (code == 401) {
+      log.warning('$prefix.invalid_credentials code=401');
+    } else if (code == 429) {
+      final retryAfter = error.retryAfter?.inSeconds;
+      log.warning(
+        '$prefix.rate_limited code=429 attempts=${error.attempts ?? 'unknown'} '
+        'retry_after_seconds=${retryAfter ?? 'unknown'}',
+      );
+    } else if (code != null && code >= 400 && code < 500) {
+      log.warning('$prefix.rejected code=$code');
+    } else if (code != null && code >= 500) {
+      log.warning('$prefix.unavailable code=$code');
+    } else if (code == null) {
+      log.warning('$prefix.unavailable code=unknown');
+    } else {
+      _logUnexpected(operation, error, trace);
+    }
+  }
+
+  void _logUnexpected(String operation, Object error, StackTrace trace) {
+    log.error(
+      'recoverbull.key.$operation.unexpected error_type=${error.runtimeType}',
+      trace: trace,
+    );
   }
 
   @override

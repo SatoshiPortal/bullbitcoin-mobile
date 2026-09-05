@@ -77,8 +77,8 @@ void _recordRecoverBullTiming(
   int durationMilliseconds,
   String outcome,
 ) {
-  log.info(
-    'RecoverBull timing phase=$phase '
+  log.fine(
+    'recoverbull.timing phase=$phase '
     'duration_ms=$durationMilliseconds outcome=$outcome',
   );
 }

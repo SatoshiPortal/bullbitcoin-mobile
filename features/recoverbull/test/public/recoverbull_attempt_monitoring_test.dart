@@ -7,8 +7,35 @@ import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_moni
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
+import '../support/log_sink.dart';
 
 void main() {
+  test('logs a safe monitoring success', () async {
+    final harness = await _Harness.create();
+    addTearDown(harness.close);
+
+    await harness.monitoring.check();
+
+    expect(
+      harness.log.entries.single.message,
+      'recoverbull.attempts.monitoring.succeeded alert_count=0 force_refresh=false',
+    );
+    expect(harness.log.entries.single.message, isNot(contains('00010203')));
+  });
+
+  test('logs unexpected monitoring failures without raw details', () async {
+    final harness = await _Harness.create();
+    await harness.database.close();
+
+    await harness.monitoring.check();
+
+    expect(
+      harness.log.entries.single.message,
+      contains('recoverbull.attempts.monitoring.failed error_type='),
+    );
+    expect(harness.log.entries.single.message, isNot(contains('sentinel')));
+  });
+
   test(
     'delivers a pre-subscription alert once to the next subscriber',
     () async {
@@ -252,10 +279,11 @@ final class _Harness {
 
   final RecoverBullDatabase database;
   final RecoverBullAttemptMonitoring monitoring;
+  final TestLogSink log;
   final List<String?> etags = [];
   int pollCalls = 0;
 
-  _Harness(this.database, this.monitoring);
+  _Harness(this.database, this.monitoring, this.log);
 
   static Future<_Harness> create({
     RecoverBullAttemptsSnapshot? pollResult,
@@ -291,9 +319,16 @@ final class _Harness {
           Future.value(pollResult ?? emptySnapshot);
     }
 
+    final log = TestLogSink.recording();
     harness = _Harness(
       database,
-      RecoverBullAttemptMonitoring(store, enabled: true, poll: callback),
+      RecoverBullAttemptMonitoring(
+        store,
+        enabled: true,
+        poll: callback,
+        log: log,
+      ),
+      log,
     );
     return harness;
   }

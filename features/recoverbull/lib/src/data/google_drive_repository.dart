@@ -9,7 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 /// Data boundary for Google Drive vault storage. Catches Drive/auth/IO
-/// exceptions, logs the raw reason, and returns a [RecoverBullFailure].
+/// exceptions, logs safe classifications, and returns a [RecoverBullFailure].
 final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
   final LogSink log;
   final GoogleDriveAppDatasource _dataSource;
@@ -27,7 +27,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
         await _dataSource.connect();
         return const Ok(null);
       } catch (e, st) {
-        log.error('drive connect failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.connect.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );
@@ -57,7 +60,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
       try {
         return Ok(await _fetchAllMetadata());
       } catch (e, st) {
-        log.error('drive fetchAllMetadata failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.fetch_metadata.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );
@@ -73,7 +79,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
       try {
         return Ok(EncryptedVault(file: await _fetchContent(fileId)));
       } catch (e, st) {
-        log.error('drive fetchVault failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.fetch_vault.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );
@@ -89,7 +98,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
       try {
         return Ok(await _fetchContent(fileId));
       } catch (e, st) {
-        log.error('drive fetchRawFile failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.fetch_raw.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );
@@ -113,7 +125,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
         );
         return Ok(EncryptedVault(file: await _fetchContent(latest.id)));
       } catch (e, st) {
-        log.error('drive fetchLatestVault failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.fetch_latest.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );
@@ -128,7 +143,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
         await _dataSource.store(content);
         return const Ok(null);
       } catch (e, st) {
-        log.error('drive store failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.store.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );
@@ -143,7 +161,10 @@ final class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
         await _dataSource.trash(fileId);
         return const Ok(null);
       } catch (e, st) {
-        log.error('drive trash failed', error: e, trace: st);
+        log.error(
+          'recoverbull.drive.trash.unexpected error_type=${e.runtimeType}',
+          trace: st,
+        );
         return const Err(
           RecoverBullUnexpectedFailure('Drive operation failed'),
         );

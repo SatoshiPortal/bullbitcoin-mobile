@@ -179,6 +179,7 @@ final class RecoverBullFeature {
       enabled: (await database.select(database.recoverbullState).getSingle())
           .attemptMonitoringEnabled,
       poll: productionAttemptMonitoringRemote.poll,
+      log: log,
     );
     final fetchVaultKey = FetchVaultKeyFromServerUsecase(
       repository: repository,
@@ -265,11 +266,10 @@ final class RecoverBullFeature {
       final EncryptedVault vault;
       try {
         vault = EncryptedVault(file: encryptedBackup);
-      } catch (error, stackTrace) {
-        log.error(
+      } catch (_) {
+        log.warning(
           'recoverbull.recover_backup.invalid_vault',
           error: 'Invalid encrypted backup format',
-          trace: stackTrace,
         );
         return const RecoverBullRecoveryResult(restored: false);
       }

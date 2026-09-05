@@ -79,10 +79,10 @@ void main() {
     final entry = sink.entries.singleWhere(
       (entry) => entry.message == 'recoverbull.recover_backup.invalid_vault',
     );
-    expect(entry.level, 'error');
+    expect(entry.level, 'warning');
     expect(entry.scope, '[recoverbull]');
     expect(entry.error.toString(), 'Invalid encrypted backup format');
-    expect(entry.trace, isNotNull);
+    expect(entry.trace, isNull);
     expect(entry.message, isNot(contains(invalidBackup)));
     expect(entry.message, isNot(contains(password)));
     expect(entry.error.toString(), isNot(contains(invalidBackup)));

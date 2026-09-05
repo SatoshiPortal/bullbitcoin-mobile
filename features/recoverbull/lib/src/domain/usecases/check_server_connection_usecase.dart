@@ -49,11 +49,9 @@ class CheckServerConnectionUsecase {
           // `false` just because tearing the session down failed.
           try {
             await routeToCheck.close();
-          } catch (e, st) {
+          } catch (e, _) {
             log.warning(
-              'closing the RecoverBull Tor session failed',
-              error: e,
-              trace: st,
+              'recoverbull.tor.session.close.failed error_type=${e.runtimeType}',
             );
           }
         }
