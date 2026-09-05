@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 // Security audit reproducer for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2612
-// Finding: iOS registers disabled background tasks before Dart can cancel them after initialization.
+// Finding: iOS registered background tasks natively before Dart initialized its dependencies.
 // Regression test for the fix.
 void main() {
   group('Security audit #2612 startup background tasks', () {
-    test('disabled background tasks are not registered natively', () {
+    test('background tasks are registered from Dart after initialization', () {
       final appDelegate = File(
         'ios/Runner/AppDelegate.swift',
       ).readAsStringSync();
@@ -36,10 +36,17 @@ void main() {
 
       final initEnd = main.indexOf('await initLocator(');
       final workmanagerInit = main.indexOf('await initWorkmanager();');
-      final cancellation = main.indexOf('await Workmanager().cancelAll();');
+      final adapter = main.indexOf('BackgroundTaskWorkmanagerAdapter()');
+      final legacyCancellation = main.indexOf(
+        'cancelByUniqueName(BackgroundTask.swapsSync.id)',
+      );
+      final registration = main.indexOf('registerPeriodicTask(');
       expect(initEnd, greaterThanOrEqualTo(0));
       expect(workmanagerInit, greaterThan(initEnd));
-      expect(cancellation, greaterThan(workmanagerInit));
+      expect(adapter, greaterThan(workmanagerInit));
+      expect(legacyCancellation, greaterThan(adapter));
+      expect(registration, greaterThan(legacyCancellation));
+      expect(main, isNot(contains('Workmanager().cancelAll()')));
     });
   });
 }
