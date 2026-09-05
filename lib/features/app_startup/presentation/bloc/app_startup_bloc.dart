@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -74,7 +75,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       // Log app version on startup
       final packageInfo = await PackageInfo.fromPlatform();
       log.info(
-        'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
+        'App started: ${packageInfo.appName} '
+        'v${packageInfo.version}+${packageInfo.buildNumber} '
+        'platform=${Platform.operatingSystem} '
+        'osVersion=${Platform.operatingSystemVersion}',
       );
 
       final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
