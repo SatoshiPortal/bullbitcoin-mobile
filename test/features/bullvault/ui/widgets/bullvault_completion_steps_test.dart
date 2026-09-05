@@ -48,7 +48,9 @@ void main() {
     expect(confirmCalls, 1);
   });
 
-  testWidgets('starts hardware setup for the selected signer', (tester) async {
+  testWidgets('offers hardware setup until the signer is registered', (
+    tester,
+  ) async {
     WalletSigner? selected;
     final signer = WalletSigner.single(
       masterFingerprint: 'deadbeef',
@@ -76,6 +78,23 @@ void main() {
     );
     await tester.tap(find.text(SignerDeviceEntity.ledgerNanoX.displayName));
     expect(selected, same(signer));
+
+    selected = null;
+    await _pump(
+      tester,
+      BullVaultHardwareSetupStep(
+        signers: [signer],
+        completedSignerIds: {signer.id},
+        onSetUp: (value) async => selected = value,
+      ),
+    );
+    expect(
+      find.text(AppLocalizationsEn().bullVaultHardwareSetupComplete),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.arrow_forward), findsNothing);
+    await tester.tap(find.text(SignerDeviceEntity.ledgerNanoX.displayName));
+    expect(selected, isNull);
   });
 
   testWidgets('shows deposit guidance only after setup is complete', (

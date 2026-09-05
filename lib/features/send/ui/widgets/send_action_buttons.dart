@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
-import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/psbt_flow/public/psbt_flow_facade.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
@@ -239,7 +239,7 @@ class _BitcoinSignerTile extends StatelessWidget {
     final usesDevicePsbtFlow =
         wallet?.supportsDevicePsbtFlowFor(signer) == true;
     final result = await context.pushNamed<String>(
-      PsbtFlowRoutes.show.name,
+      const PsbtFlowFacade().showRouteName,
       extra: (
         psbt: context.read<SendCubit>().state.unsignedPsbt,
         signerDevice: usesDevicePsbtFlow ? signer.signerDevice : null,
@@ -278,7 +278,7 @@ class ShowPsbtButton extends StatelessWidget {
       label: context.loc.psbtFlowSharePsbt,
       onPressed: () async {
         final result = await context.pushNamed<String>(
-          PsbtFlowRoutes.show.name,
+          const PsbtFlowFacade().showRouteName,
           extra: (
             psbt: unsignedPsbt,
             signerDevice: usesDeviceSpecificFlow ? signer?.signerDevice : null,

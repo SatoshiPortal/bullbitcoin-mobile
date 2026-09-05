@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBackupOptionCard, Gap;
 import 'package:flutter/material.dart';
 
 final class BullVaultRecoveryPackageStep extends StatelessWidget {
@@ -284,38 +283,16 @@ final class _BackupOptionTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBackupOptionCard(
     onTap: onTap,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          completed ? Icons.check_circle_outline : Icons.shield_outlined,
-          color: completed
-              ? context.appColors.primary
-              : context.appColors.secondary,
-        ),
-        const Gap(14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: context.font.titleSmall),
-              const Gap(4),
-              Text(
-                description,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.textMuted,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (!completed) ...[
-          const Gap(8),
-          Icon(Icons.chevron_right, color: context.appColors.textMuted),
-        ],
-      ],
+    title: title,
+    description: description,
+    descriptionMaxLines: null,
+    icon: Icon(
+      completed ? Icons.check_circle_outline : Icons.shield_outlined,
+      color: completed
+          ? context.appColors.primary
+          : context.appColors.secondary,
     ),
   );
 }
@@ -332,42 +309,18 @@ final class _HardwareSetupTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => BorderedTappableTile(
+  Widget build(BuildContext context) => BullBackupOptionCard(
     onTap: completed ? null : onComplete,
-    child: Row(
-      children: [
-        Icon(
-          completed ? Icons.check_circle_outline : Icons.security_outlined,
-          color: completed
-              ? context.appColors.primary
-              : context.appColors.secondary,
-        ),
-        const Gap(14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                signer.signerDevice?.displayName ?? signer.displayFingerprint,
-                style: context.font.titleSmall,
-              ),
-              const Gap(4),
-              Text(
-                completed
-                    ? context.loc.bullVaultHardwareSetupComplete
-                    : _setupLabel(context),
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.textMuted,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (!completed) ...[
-          const Gap(8),
-          Icon(Icons.chevron_right, color: context.appColors.textMuted),
-        ],
-      ],
+    title: signer.signerDevice?.displayName ?? signer.displayFingerprint,
+    description: completed
+        ? context.loc.bullVaultHardwareSetupComplete
+        : _setupLabel(context),
+    descriptionMaxLines: null,
+    icon: Icon(
+      completed ? Icons.check_circle_outline : Icons.security_outlined,
+      color: completed
+          ? context.appColors.primary
+          : context.appColors.secondary,
     ),
   );
 
