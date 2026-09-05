@@ -1453,8 +1453,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           txSize: signedPsbtAndTxSize.txSize,
         )) {
           log.warning(
-            'Rebuild aborted — built fee $bitcoinAbsoluteFeesSat sats at '
-            '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+            'Rebuild aborted because the Bitcoin fee is below the relay floor',
           );
           emit(
             stateToUse.copyWith(
@@ -1529,8 +1528,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           txSize: signedPsbtAndTxSize.txSize,
         )) {
           log.warning(
-            'Rebuild aborted — built fee $bitcoinAbsoluteFeesSat sats at '
-            '${signedPsbtAndTxSize.txSize} vbytes is below the relay floor',
+            'Rebuild aborted because the Bitcoin fee is below the relay floor',
           );
           emit(
             stateToUse.copyWith(
@@ -1779,7 +1777,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           psbt: dummyDrainTxInfo.unsignedPsbt,
         );
 
-        log.info("Absolute fees: $absoluteFees");
+        log.info('Bitcoin fee estimate calculated');
       } else {
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
@@ -1792,7 +1790,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: dummyPset,
         );
-        log.info("Absolute fees: $absoluteFees");
+        log.info('Liquid fee estimate calculated');
       }
 
       final selectedBalanceSat = state.selectedUtxos.fold(
