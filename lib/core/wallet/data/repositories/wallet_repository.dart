@@ -27,6 +27,7 @@ import 'package:meta/meta.dart';
 import 'package:wallet_transaction_sync/wallet_transaction_sync.dart'
     show
         WalletNetworkKey,
+        WalletOperationKind,
         WalletSourceKey,
         WalletSourceOperationCoordinator,
         WalletSyncMetadataPort;
@@ -586,6 +587,9 @@ class WalletRepository {
           return result;
         },
         allowRetired: allowRetired,
+        kind: sync
+            ? WalletOperationKind.synchronize
+            : WalletOperationKind.refresh,
       );
     } else {
       final wallet = WalletModel.publicBdk(
@@ -617,6 +621,9 @@ class WalletRepository {
           return result;
         },
         allowRetired: allowRetired,
+        kind: sync
+            ? WalletOperationKind.synchronize
+            : WalletOperationKind.refresh,
       );
     }
 
@@ -646,6 +653,8 @@ class WalletRepository {
     await _coordinator.runExclusive<void>(
       _sourceKey(wallet),
       (_) => _syncWalletUncoordinated(wallet),
+      kind: WalletOperationKind.synchronize,
+      timeout: null,
     );
   }
 
