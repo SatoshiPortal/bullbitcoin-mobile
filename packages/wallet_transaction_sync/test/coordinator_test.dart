@@ -69,6 +69,48 @@ void main() {
     expect(secondEntered, isTrue);
   });
 
+  test('retired source keys reject later operations', () async {
+    final coordinator = InMemoryWalletSourceOperationCoordinator();
+    const key = WalletSourceKey('a', 'c', 'n');
+
+    await coordinator.runExclusive(key, (session) async {
+      session.retire();
+    });
+
+    await expectLater(
+      coordinator.runExclusive(key, (_) async {}),
+      throwsStateError,
+    );
+  });
+
+  test('an explicitly reactivated source key can be used again', () async {
+    final coordinator = InMemoryWalletSourceOperationCoordinator();
+    const key = WalletSourceKey('a', 'c', 'n');
+
+    await coordinator.runExclusive(key, (session) async {
+      session.retire();
+    });
+    await coordinator.runExclusive(key, (session) async {
+      session.reactivate();
+    }, allowRetired: true);
+    expect(await coordinator.runExclusive(key, (_) async => 1), 1);
+  });
+
+  test('allowRetired does not reactivate a source key by itself', () async {
+    final coordinator = InMemoryWalletSourceOperationCoordinator();
+    const key = WalletSourceKey('a', 'c', 'n');
+
+    await coordinator.runExclusive(key, (session) async {
+      session.retire();
+    });
+    await coordinator.runExclusive(key, (_) async {}, allowRetired: true);
+
+    await expectLater(
+      coordinator.runExclusive(key, (_) async {}),
+      throwsStateError,
+    );
+  });
+
   test(
     'the session handed to an operation is closed after it completes',
     () async {

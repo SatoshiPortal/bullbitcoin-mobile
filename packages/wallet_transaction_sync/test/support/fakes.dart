@@ -124,6 +124,7 @@ class RecordingMetadata implements WalletSyncMetadataPort {
   final Map<WalletNetworkKey, WalletSyncMetadata> values = {};
   final Map<WalletNetworkKey, WalletSyncReceipt> receipts = {};
   bool failSuccess = false;
+  int clearFailuresRemaining = 0;
 
   @override
   Future<WalletSyncMetadata?> read(WalletNetworkKey key) async => values[key];
@@ -176,6 +177,10 @@ class RecordingMetadata implements WalletSyncMetadataPort {
 
   @override
   Future<void> clear(WalletNetworkKey key) async {
+    if (clearFailuresRemaining > 0) {
+      clearFailuresRemaining--;
+      throw StateError('metadata clear failed');
+    }
     values.remove(key);
     receipts.remove(key);
   }

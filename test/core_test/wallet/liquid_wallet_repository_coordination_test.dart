@@ -28,6 +28,7 @@ class _TrackingCoordinator implements WalletSourceOperationCoordinator {
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
   }) async {
     acquisitions++;
     inOperation = true;
@@ -45,6 +46,12 @@ class _Session implements WalletSourceSession {
 
   @override
   void ensureOpen() {}
+
+  @override
+  void retire() {}
+
+  @override
+  void reactivate() {}
 
   @override
   Future<void> close() async {}

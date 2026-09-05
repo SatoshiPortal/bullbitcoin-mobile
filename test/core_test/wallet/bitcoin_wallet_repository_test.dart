@@ -65,9 +65,15 @@ class _CountingCoordinator implements WalletSourceOperationCoordinator {
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
   }) {
     acquisitions++;
-    return _delegate.runExclusive(key, operation, timeout: timeout);
+    return _delegate.runExclusive(
+      key,
+      operation,
+      timeout: timeout,
+      allowRetired: allowRetired,
+    );
   }
 }
 
@@ -274,6 +280,49 @@ void main() {
       },
     );
   });
+
+  test(
+    'does not use a stale model after deletion wins before source access',
+    () async {
+      final releaseFrozenLookup = Completer<void>();
+      final frozenLookupEntered = Completer<void>();
+      var metadataExists = true;
+      when(
+        () => metadataDatasource.fetch(_walletId),
+      ).thenAnswer((_) async => metadataExists ? metadata : null);
+      when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async {
+        frozenLookupEntered.complete();
+        await releaseFrozenLookup.future;
+        return [];
+      });
+
+      final build = buildPsbt();
+      await frozenLookupEntered.future;
+
+      await coordinator._delegate.runExclusive<void>(
+        const WalletSourceKey(_walletId, 'bitcoin', 'testnet'),
+        (session) async {
+          metadataExists = false;
+          session.retire();
+        },
+      );
+      releaseFrozenLookup.complete();
+
+      await expectLater(build, throwsStateError);
+      verifyNever(
+        () => bdkDatasource.buildPsbt(
+          wallet: any(named: 'wallet'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          drain: any(named: 'drain'),
+          unspendable: any(named: 'unspendable'),
+          selected: any(named: 'selected'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      );
+    },
+  );
 
   group('D7 — selected ∩ unspendable (caller-supplied) is rejected', () {
     test(

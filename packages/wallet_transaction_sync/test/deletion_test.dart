@@ -146,6 +146,182 @@ void main() {
     },
   );
 
+  test('successful package deletion retires its source key', () async {
+    final source = RecordingSource();
+    final metadata = RecordingMetadata();
+    final coordinator = InMemoryWalletSourceOperationCoordinator();
+    final facade = WalletTransactionSyncFacade(
+      source: source,
+      metadata: metadata,
+      coordinator: coordinator,
+    );
+    okValue(
+      await facade.refreshLocalSnapshot(
+        const RefreshLocalSnapshotRequest(testRegistration),
+      ),
+    );
+
+    okValue(await facade.deleteWallet(testKey));
+
+    await expectLater(
+      coordinator.runExclusive(
+        const WalletSourceKey('w', 'bitcoin', 'testnet'),
+        (_) async {},
+      ),
+      throwsStateError,
+    );
+  });
+
+  test(
+    'metadata clear failure does not strand package deletion retirement',
+    () async {
+      final source = RecordingSource();
+      final metadata = RecordingMetadata()..clearFailuresRemaining = 1;
+      final coordinator = InMemoryWalletSourceOperationCoordinator();
+      final facade = WalletTransactionSyncFacade(
+        source: source,
+        metadata: metadata,
+        coordinator: coordinator,
+      );
+      okValue(
+        await facade.refreshLocalSnapshot(
+          const RefreshLocalSnapshotRequest(testRegistration),
+        ),
+      );
+
+      expect(
+        errFailure(await facade.deleteWallet(testKey)),
+        isA<DeletionFailure>(),
+      );
+      expect(
+        await coordinator.runExclusive(
+          const WalletSourceKey('w', 'bitcoin', 'testnet'),
+          (_) async => true,
+        ),
+        isTrue,
+      );
+      okValue(await facade.deleteWallet(testKey));
+      await expectLater(
+        coordinator.runExclusive(
+          const WalletSourceKey('w', 'bitcoin', 'testnet'),
+          (_) async {},
+        ),
+        throwsStateError,
+      );
+    },
+  );
+
+  test(
+    'successful discovery reactivates after source reconstruction',
+    () async {
+      final source = RecordingSource();
+      final metadata = RecordingMetadata();
+      final coordinator = InMemoryWalletSourceOperationCoordinator();
+      final facade = WalletTransactionSyncFacade(
+        source: source,
+        metadata: metadata,
+        coordinator: coordinator,
+      );
+      okValue(
+        await facade.refreshLocalSnapshot(
+          const RefreshLocalSnapshotRequest(testRegistration),
+        ),
+      );
+      okValue(await facade.deleteWallet(testKey));
+
+      okValue(
+        await facade.discoverWalletHistory(
+          const DiscoverWalletHistoryRequest(testRegistration),
+        ),
+      );
+      expect(
+        await coordinator.runExclusive(
+          const WalletSourceKey('w', 'bitcoin', 'testnet'),
+          (_) async => true,
+        ),
+        isTrue,
+      );
+    },
+  );
+
+  test(
+    'failed discovery leaves a successfully deleted source retired',
+    () async {
+      final source = RecordingSource();
+      final metadata = RecordingMetadata();
+      final coordinator = InMemoryWalletSourceOperationCoordinator();
+      final facade = WalletTransactionSyncFacade(
+        source: source,
+        metadata: metadata,
+        coordinator: coordinator,
+      );
+      okValue(
+        await facade.refreshLocalSnapshot(
+          const RefreshLocalSnapshotRequest(testRegistration),
+        ),
+      );
+      okValue(await facade.deleteWallet(testKey));
+      source.failure = const DeletionFailure();
+
+      expect(
+        errFailure(
+          await facade.discoverWalletHistory(
+            const DiscoverWalletHistoryRequest(testRegistration),
+          ),
+        ),
+        isA<DeletionFailure>(),
+      );
+      await expectLater(
+        coordinator.runExclusive(
+          const WalletSourceKey('w', 'bitcoin', 'testnet'),
+          (_) async {},
+        ),
+        throwsStateError,
+      );
+    },
+  );
+
+  test(
+    'mismatched discovery leaves a successfully deleted source retired',
+    () async {
+      final source = RecordingSource();
+      final metadata = RecordingMetadata();
+      final coordinator = InMemoryWalletSourceOperationCoordinator();
+      final facade = WalletTransactionSyncFacade(
+        source: source,
+        metadata: metadata,
+        coordinator: coordinator,
+      );
+      okValue(
+        await facade.refreshLocalSnapshot(
+          const RefreshLocalSnapshotRequest(testRegistration),
+        ),
+      );
+      okValue(await facade.deleteWallet(testKey));
+      source.observationBuilder = (registration) => WalletSourceObservation(
+        key: const WalletNetworkKey('other', 'bitcoin', 'testnet'),
+        registration: registration,
+        transactions: const [],
+      );
+
+      expect(
+        errFailure(
+          await facade.discoverWalletHistory(
+            const DiscoverWalletHistoryRequest(testRegistration),
+          ),
+        ),
+        isA<SourceObservationMismatchFailure>(),
+      );
+      await expectLater(
+        coordinator.runExclusive(
+          const WalletSourceKey('w', 'bitcoin', 'testnet'),
+          (_) async {},
+        ),
+        throwsStateError,
+      );
+    },
+  );
+
   test('second delete after completion is an idempotent success', () async {
     final source = RecordingSource();
     final facade = buildFacade(source, RecordingMetadata());
