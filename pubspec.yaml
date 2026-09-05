@@ -16,6 +16,7 @@ workspace:
   - packages/primitives
   - packages/wallet_transaction_sync
   - packages/notifications
+  - packages/background_tasks
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_logger
@@ -32,6 +33,7 @@ dependencies:
   bull_logger:
   bull_logs:
   wallet_transaction_sync:
+  background_tasks:
   notifications:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
@@ -145,7 +147,6 @@ dependencies:
   bitcoin_base: ^7.0.0
   socks5_proxy: ^2.1.1
   meta: ^1.17.0
-  workmanager: ^0.9.0
   path: ^1.9.1
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0

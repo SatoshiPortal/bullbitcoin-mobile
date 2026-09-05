@@ -42,10 +42,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:bull_tor/tor.dart' as bull_tor;
 import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:notifications/notifications.dart';
 import 'package:path/path.dart' as path;
 import 'package:primitives/primitives.dart';
-import 'package:workmanager/workmanager.dart';
 
 /// Builds a [WizardRepository] without going through the locator. Used
 /// only in `main()` for the pre-init / pre-locator window: the wizard
@@ -254,11 +254,24 @@ class Bull {
   }
 
   static Future<void> initWorkmanager() async {
-    await Workmanager().initialize(backgroundTasksHandler);
-    // Background execution is intentionally disabled. Cancel schedules left
-    // by previous releases, but keep initialization so upgrades reliably
-    // remove those persisted native tasks.
-    await Workmanager().cancelAll();
+    final adapter = BackgroundTaskWorkmanagerAdapter();
+    await adapter.initialize(backgroundTasksHandler);
+    await adapter.cancelByUniqueName(BackgroundTask.swapsSync.id);
+    await adapter.registerPeriodicTask(
+      uniqueName: BackgroundTask.bitcoinSync.id,
+      taskName: BackgroundTask.bitcoinSync.name,
+      requiresNetwork: true,
+    );
+    await adapter.registerPeriodicTask(
+      uniqueName: BackgroundTask.liquidSync.id,
+      taskName: BackgroundTask.liquidSync.name,
+      requiresNetwork: true,
+    );
+    await adapter.registerPeriodicTask(
+      uniqueName: BackgroundTask.logsPrune.id,
+      taskName: BackgroundTask.logsPrune.name,
+      frequency: const Duration(days: 1),
+    );
   }
 
   static Future<void> _initForegroundNotifications(
