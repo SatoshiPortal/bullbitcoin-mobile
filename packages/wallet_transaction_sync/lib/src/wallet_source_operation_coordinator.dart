@@ -8,6 +8,7 @@ abstract interface class WalletSourceOperationCoordinator {
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
   });
 }
 
@@ -29,6 +30,7 @@ final class WalletSourceKey {
 final class InMemoryWalletSourceOperationCoordinator
     implements WalletSourceOperationCoordinator {
   final Map<WalletSourceKey, Future<void>> _tails = {};
+  final Set<WalletSourceKey> _retired = {};
   final Duration defaultTimeout;
   InMemoryWalletSourceOperationCoordinator({
     this.defaultTimeout = const Duration(seconds: 30),
@@ -39,6 +41,7 @@ final class InMemoryWalletSourceOperationCoordinator
     WalletSourceKey key,
     Future<T> Function(WalletSourceSession session) operation, {
     Duration timeout = const Duration(seconds: 30),
+    bool allowRetired = false,
   }) async {
     final previous = _tails[key] ?? Future<void>.value();
     final completer = Completer<void>();
@@ -57,7 +60,13 @@ final class InMemoryWalletSourceOperationCoordinator
     Future<void>(() async {
       try {
         await previous;
-        final session = _CoordinatorSession();
+        if (_retired.contains(key) && !allowRetired) {
+          throw StateError('wallet source is retired');
+        }
+        final session = _CoordinatorSession(
+          onRetire: () => _retired.add(key),
+          onReactivate: () => _retired.remove(key),
+        );
         late Future<T> operationFuture;
         try {
           operationFuture = operation(session);
@@ -96,12 +105,28 @@ final class InMemoryWalletSourceOperationCoordinator
 }
 
 final class _CoordinatorSession implements WalletSourceSession {
+  final void Function() _onRetire;
+  final void Function() _onReactivate;
   bool _closed = false;
+
+  _CoordinatorSession({required this._onRetire, required this._onReactivate});
   @override
   bool get isClosed => _closed;
   @override
   void ensureOpen() {
     if (_closed) throw StateError('source session is closed');
+  }
+
+  @override
+  void retire() {
+    ensureOpen();
+    _onRetire();
+  }
+
+  @override
+  void reactivate() {
+    ensureOpen();
+    _onReactivate();
   }
 
   @override

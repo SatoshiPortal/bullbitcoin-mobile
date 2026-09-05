@@ -179,9 +179,17 @@ final class WalletTransactionRepositoryImpl
       if (!local) await metadata.writeAttempt(key, now());
       final result = await coordinator.runExclusive(
         WalletSourceKey(key.walletId, key.chain, key.network),
-        (session) => local
-            ? source.refreshLocal(registration, session)
-            : source.synchronize(registration, session, discover: discover),
+        (session) async {
+          final result = local
+              ? await source.refreshLocal(registration, session)
+              : await source.synchronize(
+                  registration,
+                  session,
+                  discover: discover,
+                );
+          return result;
+        },
+        allowRetired: discover,
       );
       if (result case Err(:final failure)) {
         _emit(
@@ -263,6 +271,13 @@ final class WalletTransactionRepositoryImpl
             ? WalletStateReady(revision, durable)
             : WalletStateReadyWithWarning(revision, observed, warning),
       );
+      if (discover) {
+        await coordinator.runExclusive<void>(
+          WalletSourceKey(key.walletId, key.chain, key.network),
+          (session) async => session.reactivate(),
+          allowRetired: true,
+        );
+      }
       return Ok(WalletTransactionSyncOutcome(snapshot, warning: warning));
     } catch (error) {
       final failure = _map(error);
@@ -377,6 +392,7 @@ final class WalletTransactionRepositoryImpl
                 WalletDeletionPhase.sourceDeleted,
               );
               await metadata.clear(key);
+              session.retire();
               // The deleted state stays replayable through _states; the
               // controller is closed so subscribers complete and the map
               // does not grow with dead keys.

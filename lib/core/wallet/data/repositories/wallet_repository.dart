@@ -104,8 +104,13 @@ class WalletRepository {
       }
     }
 
-    final balance = await _getBalance(metadata, sync: sync);
-    await _walletMetadataDatasource.store(metadata);
+    final balance = await _getBalance(
+      metadata,
+      sync: sync,
+      revalidateMetadata: false,
+      allowRetired: true,
+      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+    );
 
     return Wallet(
       origin: metadata.id,
@@ -133,9 +138,6 @@ class WalletRepository {
       watchOnlyDescriptor,
     );
 
-    // Fetch the balance (in the future maybe other details of the wallet too)
-    final balance = await _getBalance(metadata, sync: sync);
-
     final allWallets = await getWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) {
@@ -143,7 +145,14 @@ class WalletRepository {
       }
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    // Fetch the balance (in the future maybe other details of the wallet too)
+    final balance = await _getBalance(
+      metadata,
+      sync: sync,
+      revalidateMetadata: false,
+      allowRetired: true,
+      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+    );
 
     // Return the created wallet entity
     return Wallet(
@@ -181,9 +190,6 @@ class WalletRepository {
       label: label,
     );
 
-    // Fetch the balance (in the future maybe other details of the wallet too)
-    final balance = await _getBalance(metadata, sync: sync);
-
     final allWallets = await getWallets();
     for (final wallet in allWallets) {
       if (wallet.id == metadata.id) {
@@ -191,7 +197,14 @@ class WalletRepository {
       }
     }
 
-    await _walletMetadataDatasource.store(metadata);
+    // Fetch the balance (in the future maybe other details of the wallet too)
+    final balance = await _getBalance(
+      metadata,
+      sync: sync,
+      revalidateMetadata: false,
+      allowRetired: true,
+      finalizeSource: () => _walletMetadataDatasource.store(metadata),
+    );
 
     // Return the created wallet entity
     return Wallet(
@@ -384,30 +397,34 @@ class WalletRepository {
     if (metadata == null) throw WalletError.notFound(walletId);
 
     if (metadata.isBitcoin) {
-      try {
-        final wallet = WalletModel.fromMetadata(metadata);
-        await _coordinator.runExclusive<void>(
-          _sourceKey(wallet),
-          (_) => _bdkWallet.delete(wallet: wallet),
-        );
-      } on WalletNotFound {
-        log.warning('deleteWallet: BDK file already absent for $walletId');
-      }
+      final wallet = WalletModel.fromMetadata(metadata);
+      await _coordinator.runExclusive<void>(_sourceKey(wallet), (
+        session,
+      ) async {
+        try {
+          await _bdkWallet.delete(wallet: wallet);
+        } on WalletNotFound {
+          log.warning('deleteWallet: BDK file already absent for $walletId');
+        }
+        await _walletMetadataDatasource.delete(walletId);
+        session.retire();
+      });
     }
 
     if (metadata.isLiquid) {
-      try {
-        final wallet = WalletModel.fromMetadata(metadata);
-        await _coordinator.runExclusive<void>(
-          _sourceKey(wallet),
-          (_) => _lwkWallet.delete(wallet: wallet),
-        );
-      } on WalletNotFound {
-        log.warning('deleteWallet: LWK file already absent for $walletId');
-      }
+      final wallet = WalletModel.fromMetadata(metadata);
+      await _coordinator.runExclusive<void>(_sourceKey(wallet), (
+        session,
+      ) async {
+        try {
+          await _lwkWallet.delete(wallet: wallet);
+        } on WalletNotFound {
+          log.warning('deleteWallet: LWK file already absent for $walletId');
+        }
+        await _walletMetadataDatasource.delete(walletId);
+        session.retire();
+      });
     }
-
-    await _walletMetadataDatasource.delete(walletId);
   }
 
   // used only to delete lwk db - required for UpdateOnDifferentStatusError
@@ -456,6 +473,9 @@ class WalletRepository {
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
+    bool revalidateMetadata = true,
+    bool allowRetired = false,
+    Future<void> Function()? finalizeSource,
   }) async {
     BalanceModel balance;
     if (metadata.isLiquid) {
@@ -466,10 +486,25 @@ class WalletRepository {
       );
       balance = await _coordinator.runExclusive<BalanceModel>(
         _sourceKey(wallet),
-        (_) async {
-          if (sync) await _syncWalletUncoordinated(wallet);
-          return _lwkWallet.getBalance(wallet: wallet);
+        (session) async {
+          final currentMetadata = revalidateMetadata
+              ? await _walletMetadataDatasource.fetch(metadata.id)
+              : metadata;
+          if (currentMetadata == null) {
+            throw WalletError.notFound(metadata.id);
+          }
+          final currentWallet = WalletModel.publicLwk(
+            combinedCtDescriptor: currentMetadata.externalPublicDescriptor,
+            isTestnet: currentMetadata.isTestnet,
+            id: currentMetadata.id,
+          );
+          if (sync) await _syncWalletUncoordinated(currentWallet);
+          final result = await _lwkWallet.getBalance(wallet: currentWallet);
+          await finalizeSource?.call();
+          if (allowRetired) session.reactivate();
+          return result;
         },
+        allowRetired: allowRetired,
       );
     } else {
       final wallet = WalletModel.publicBdk(
@@ -481,10 +516,26 @@ class WalletRepository {
 
       balance = await _coordinator.runExclusive<BalanceModel>(
         _sourceKey(wallet),
-        (_) async {
-          if (sync) await _syncWalletUncoordinated(wallet);
-          return _bdkWallet.getBalance(wallet: wallet);
+        (session) async {
+          final currentMetadata = revalidateMetadata
+              ? await _walletMetadataDatasource.fetch(metadata.id)
+              : metadata;
+          if (currentMetadata == null) {
+            throw WalletError.notFound(metadata.id);
+          }
+          final currentWallet = WalletModel.publicBdk(
+            externalDescriptor: currentMetadata.externalPublicDescriptor,
+            internalDescriptor: currentMetadata.internalPublicDescriptor,
+            isTestnet: currentMetadata.isTestnet,
+            id: currentMetadata.id,
+          );
+          if (sync) await _syncWalletUncoordinated(currentWallet);
+          final result = await _bdkWallet.getBalance(wallet: currentWallet);
+          await finalizeSource?.call();
+          if (allowRetired) session.reactivate();
+          return result;
         },
+        allowRetired: allowRetired,
       );
     }
 
@@ -591,10 +642,13 @@ class WalletRepository {
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
-      return await _lwkWallet.getAmountSentToAddress(
-        psbtOrPset,
-        address,
-        wallet: wallet,
+      return await _coordinator.runExclusive(
+        _sourceKey(wallet),
+        (_) => _lwkWallet.getAmountSentToAddress(
+          psbtOrPset,
+          address,
+          wallet: wallet,
+        ),
       );
     } else {
       return await _bdkWallet.getAmountSentToAddress(

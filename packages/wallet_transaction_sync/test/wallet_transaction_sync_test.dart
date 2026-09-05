@@ -13,6 +13,12 @@ class FakeSession implements WalletSourceSession {
   }
 
   @override
+  void retire() {}
+
+  @override
+  void reactivate() {}
+
+  @override
   Future<void> close() async => closed = true;
 }
 
