@@ -189,8 +189,11 @@
       }
     }
   },
+  "recoverbullErrorServiceBusy": "Le service est occupé. Veuillez réessayer plus tard.",
+  "recoverbullErrorServiceBusyRetryIn": "Le service est occupé. Veuillez réessayer dans {retryIn}.",
   "recoverbullAttemptMonitoringSuspiciousActivityBody": "Cela peut indiquer une attaque potentielle. Reconnaissez-vous ces tentatives ? Consultez les détails pour connaître les mesures recommandées.",
   "recoverbullAttemptMonitoringSuspiciousActivityAnnouncement": "Le serveur rapporte plus de tentatives de sauvegarde que ce téléphone ou cette app n’en attendait. Une réinstallation, un autre téléphone ou appareil, ou votre propre récupération ailleurs peuvent l’expliquer. Si vous les reconnaissez, aucune action urgente n’est nécessaire ; sinon, considérez une compromission possible et consultez les détails.",
+  "recoverbullAttemptMonitoringIdentifierSaturation": "Le service de sauvegarde approche de sa capacité d’identifiants. Veuillez réessayer plus tard.",
   "recoverbullEnterVaultKeyInstead": "Entrer une clé de coffre-fort",
   "recoverbullSettingsUrlHint": "http://exemple.onion",
   "recoverbullLearnMore": "En savoir plus sur Recoverbull",

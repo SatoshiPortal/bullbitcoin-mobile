@@ -26,15 +26,31 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.recoverbullSelectBackupFileNotValidError,
     VaultRateLimitedFailure(:final retryIn) =>
       context.loc.recoverbullErrorRateLimited(_cooldown(context, retryIn)),
+    VaultServiceBusyFailure(:final retryIn) =>
+      retryIn == null
+          ? context.loc.recoverbullErrorServiceBusy
+          : context.loc.recoverbullErrorServiceBusyRetryIn(
+              _cooldown(context, retryIn),
+            ),
     KeyServerInvalidCredentialsFailure() =>
       context.loc.recoverbullErrorUnexpected,
     KeyServerRateLimitedFailure() => context.loc.recoverbullErrorUnexpected,
+    KeyServerBusyFailure(:final retryIn) =>
+      retryIn == null
+          ? context.loc.recoverbullErrorServiceBusy
+          : context.loc.recoverbullErrorServiceBusyRetryIn(
+              _cooldown(context, retryIn),
+            ),
     KeyServerRejectedFailure() => context.loc.recoverbullErrorUnexpected,
     KeyServerUnavailableFailure() => context.loc.recoverbullErrorUnexpected,
     KeyServerHealthCheckTimeoutFailure() =>
       context.loc.recoverbullErrorUnexpected,
-    RecoverBullTemporarilyUnavailableFailure() =>
-      context.loc.recoverbullErrorUnexpected,
+    RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
+      retryIn == null
+          ? context.loc.recoverbullErrorServiceBusy
+          : context.loc.recoverbullErrorServiceBusyRetryIn(
+              _cooldown(context, retryIn),
+            ),
     InvalidVaultFileFailure() => context.loc.recoverbullErrorUnexpected,
     RecoverBullGoogleDriveFetchFailure() =>
       context.loc.recoverbullGoogleDriveErrorFetchFailed,
@@ -50,7 +66,7 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     // remaining duration) to 1s so the UI never shows "0 seconds" or a
     // negative value.
     final seconds = retryIn.inSeconds < 1 ? 1 : retryIn.inSeconds;
-    if (seconds < 60) {
+    if (seconds < 60 || seconds % 60 != 0) {
       return context.loc.durationSeconds(seconds.toString());
     }
     final minutes = seconds ~/ 60;

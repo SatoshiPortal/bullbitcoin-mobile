@@ -21,7 +21,7 @@ final class TargetedLockoutAlert extends AttemptAlert {
   const TargetedLockoutAlert({required this.backupIdHash});
 }
 
-enum ServicePressureKind { serviceBusy }
+enum ServicePressureKind { serviceBusy, identifierSaturation }
 
 final class ServicePressureAlert extends AttemptAlert {
   final ServicePressureKind kind;

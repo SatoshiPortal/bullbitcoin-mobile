@@ -92,7 +92,7 @@ void main() {
       ]),
     ).execute().first;
 
-    expect(announcements, hasLength(4));
+    expect(announcements, hasLength(5));
     expect(
       announcements.map((announcement) => announcement.primaryAlert.kind),
       containsAll(RecoverBullAttemptAlertKind.values),

@@ -524,8 +524,19 @@
       }
     }
   },
+  "recoverbullErrorServiceBusy": "The service is busy. Please try again later.",
+  "recoverbullErrorServiceBusyRetryIn": "The service is busy. Please try again in {retryIn}.",
+  "@recoverbullErrorServiceBusyRetryIn": {
+    "description": "Error message when the service is under shared pressure and provides a retry delay.",
+    "placeholders": {
+      "retryIn": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullAttemptMonitoringSuspiciousActivityBody": "This may indicate a potential attack. Do you recognize these attempts? Open the details for recommended next steps.",
   "recoverbullAttemptMonitoringSuspiciousActivityAnnouncement": "The server reports more backup attempts than this phone or app expected. Reinstallation, another phone or device, or your own recovery elsewhere can explain this. If you recognize it, no urgent action is needed; otherwise, treat it as a possible compromise and open the details.",
+  "recoverbullAttemptMonitoringIdentifierSaturation": "The backup service is nearing its identifier capacity. Please try again later.",
   "recoverbullEnterVaultKeyInstead": "Enter a vault key instead",
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"

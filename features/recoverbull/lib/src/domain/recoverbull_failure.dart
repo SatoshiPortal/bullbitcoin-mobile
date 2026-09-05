@@ -69,6 +69,11 @@ final class VaultRateLimitedFailure extends RecoverBullFailure {
   const VaultRateLimitedFailure({required this.retryIn});
 }
 
+final class VaultServiceBusyFailure extends RecoverBullFailure {
+  final Duration? retryIn;
+  const VaultServiceBusyFailure({this.retryIn});
+}
+
 final class ExternalTorProxyUnavailableFailure extends RecoverBullFailure {
   const ExternalTorProxyUnavailableFailure([super.logMessage]);
 }
@@ -80,6 +85,12 @@ final class KeyServerInvalidCredentialsFailure extends RecoverBullFailure {
 final class KeyServerRateLimitedFailure extends RecoverBullFailure {
   final Duration? retryIn;
   const KeyServerRateLimitedFailure({this.retryIn, String? logMessage})
+    : super(logMessage);
+}
+
+final class KeyServerBusyFailure extends RecoverBullFailure {
+  final Duration? retryIn;
+  const KeyServerBusyFailure({this.retryIn, String? logMessage})
     : super(logMessage);
 }
 
@@ -99,7 +110,11 @@ final class KeyServerHealthCheckTimeoutFailure extends RecoverBullFailure {
 /// The key server is reachable but temporarily unable to serve health checks.
 final class RecoverBullTemporarilyUnavailableFailure
     extends RecoverBullFailure {
-  const RecoverBullTemporarilyUnavailableFailure([super.logMessage]);
+  final Duration? retryIn;
+  const RecoverBullTemporarilyUnavailableFailure({
+    this.retryIn,
+    String? logMessage,
+  }) : super(logMessage);
 }
 
 final class InvalidVaultFileFailure extends RecoverBullFailure {

@@ -315,7 +315,9 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       }
       return Err(
         error.code == 503
-            ? const RecoverBullTemporarilyUnavailableFailure()
+            ? RecoverBullTemporarilyUnavailableFailure(
+                retryIn: error.retryAfter,
+              )
             : const KeyServerUnavailableFailure(),
       );
     } catch (error, trace) {
@@ -345,7 +347,10 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     } else if (code != null && code >= 400 && code < 500) {
       log.warning('$prefix.rejected code=$code');
     } else if (code != null && code >= 500) {
-      log.warning('$prefix.unavailable code=$code');
+      log.warning(
+        '$prefix.unavailable code=$code '
+        'retry_after_seconds=${code == 503 ? error.retryAfter?.inSeconds ?? 'unknown' : 'unknown'}',
+      );
     } else if (code == null) {
       log.warning('$prefix.unavailable code=unknown');
     } else {
@@ -403,6 +408,12 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return KeyServerRateLimitedFailure(
         retryIn: retryIn,
         logMessage: 'Key server rate limit reached',
+      );
+    }
+    if (code == 503) {
+      return KeyServerBusyFailure(
+        retryIn: e.retryAfter,
+        logMessage: 'Key server temporarily busy',
       );
     }
     if (code != null && code >= 400 && code < 500) {

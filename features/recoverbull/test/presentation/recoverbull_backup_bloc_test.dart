@@ -248,7 +248,7 @@ void main() {
     );
 
     test(
-      'rate-limited storeVaultKey -> VaultRateLimitedFailure (cooldown kept)',
+      'busy storeVaultKey -> VaultServiceBusyFailure (cooldown kept)',
       () async {
         const cooldown = Duration(minutes: 5);
         final vault = MockEncryptedVault();
@@ -275,8 +275,7 @@ void main() {
             vaultKey: any(named: 'vaultKey'),
           ),
         ).thenAnswer(
-          (_) async =>
-              Err(const core.KeyServerRateLimitedFailure(retryIn: cooldown)),
+          (_) async => Err(const core.KeyServerBusyFailure(retryIn: cooldown)),
         );
 
         final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
@@ -292,11 +291,11 @@ void main() {
         );
         await pumpEventQueue();
 
-        // The 429 cooldown must survive the create path instead of collapsing
+        // The 503 cooldown must survive the create path instead of collapsing
         // into the generic VaultCreationFailure.
-        expect(bloc.state.failure, isA<VaultRateLimitedFailure>());
+        expect(bloc.state.failure, isA<VaultServiceBusyFailure>());
         expect(
-          (bloc.state.failure as VaultRateLimitedFailure).retryIn,
+          (bloc.state.failure as VaultServiceBusyFailure).retryIn,
           cooldown,
         );
         verifyNever(() => lifecycle.markStored());

@@ -89,6 +89,56 @@ void main() {
       repository.fetchVaultKey('00', 'password', '00', route);
 
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
+    test('503 preserves Retry-After as a busy failure', () async {
+      stubFetchThrows(
+        recoverbull.KeyServerException(
+          code: 503,
+          retryAfter: const Duration(seconds: 30),
+          message: 'server text must not classify the response',
+        ),
+      );
+
+      final result = await fetch();
+
+      final failure = (result as Err<String, RecoverBullFailure>).failure;
+      expect(failure, isA<KeyServerBusyFailure>());
+      expect(
+        (failure as KeyServerBusyFailure).retryIn,
+        const Duration(seconds: 30),
+      );
+    });
+
+    test('500 remains unavailable regardless of response text', () async {
+      stubFetchThrows(
+        recoverbull.KeyServerException(code: 500, message: 'busy'),
+      );
+
+      final result = await fetch();
+
+      expect(
+        (result as Err<String, RecoverBullFailure>).failure,
+        isA<KeyServerUnavailableFailure>(),
+      );
+    });
+
+    test('server failure logs only status and retry metadata', () async {
+      stubFetchThrows(
+        recoverbull.KeyServerException(
+          code: 503,
+          retryAfter: const Duration(seconds: 47),
+          message: 'server payload',
+        ),
+      );
+
+      await fetch();
+
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.key.fetch.unavailable code=503 retry_after_seconds=47',
+      );
+      expect(logSink.entries.single.message, isNot(contains('payload')));
+    });
+
     test('401 -> KeyServerInvalidCredentialsFailure (no raw leak)', () async {
       stubFetchThrows(
         recoverbull.KeyServerException(code: 401, message: 'unauthorized xyz'),
@@ -171,18 +221,18 @@ void main() {
       );
     });
 
-    test('5xx -> KeyServerUnavailableFailure', () async {
+    test('503 -> KeyServerBusyFailure', () async {
       stubFetchThrows(recoverbull.KeyServerException(code: 503));
 
       final result = await fetch();
 
       expect(
         (result as Err<String, RecoverBullFailure>).failure,
-        isA<KeyServerUnavailableFailure>(),
+        isA<KeyServerBusyFailure>(),
       );
       expect(
         logSink.entries.single.message,
-        'recoverbull.key.fetch.unavailable code=503',
+        'recoverbull.key.fetch.unavailable code=503 retry_after_seconds=unknown',
       );
     });
 
@@ -357,8 +407,8 @@ void main() {
       ),
       (
         code: 503,
-        failure: isA<KeyServerUnavailableFailure>(),
-        event: 'unavailable code=503',
+        failure: isA<KeyServerBusyFailure>(),
+        event: 'unavailable code=503 retry_after_seconds=unknown',
       ),
       (
         code: null,
@@ -603,17 +653,21 @@ void main() {
 
   group('RecoverBullRepository.checkConnection', () {
     test('maps HTTP 503 to temporary unavailability', () async {
-      when(
-        () => remote.checkConnection(any()),
-      ).thenThrow(recoverbull.KeyServerException(code: 503));
+      when(() => remote.checkConnection(any())).thenThrow(
+        recoverbull.KeyServerException(
+          code: 503,
+          retryAfter: const Duration(seconds: 30),
+        ),
+      );
 
       final result = await repository.checkConnection(route);
 
       expect(result, isA<Err<Null, RecoverBullFailure>>());
-      expect(
-        (result as Err<Null, RecoverBullFailure>).failure,
-        isA<RecoverBullTemporarilyUnavailableFailure>(),
-      );
+      final failure =
+          (result as Err<Null, RecoverBullFailure>).failure
+              as RecoverBullTemporarilyUnavailableFailure;
+      expect(failure, isA<RecoverBullTemporarilyUnavailableFailure>());
+      expect(failure.retryIn, const Duration(seconds: 30));
     });
 
     test('maps timeout to health check timeout', () async {
