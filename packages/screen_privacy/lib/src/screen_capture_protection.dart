@@ -56,11 +56,10 @@ class ScreenCaptureProtection {
     final shouldProtect = _enabledByUser && _activeCount > 0;
     try {
       if (shouldProtect) {
-        await _noScreenshot.screenshotOff();
+        return await _noScreenshot.screenshotOff();
       } else {
-        await _noScreenshot.screenshotOn();
+        return await _noScreenshot.screenshotOn();
       }
-      return true;
     } catch (e, st) {
       // Callers fire-and-forget this, so a platform-channel failure would
       // otherwise vanish as an unhandled async error. On a secret screen a
