@@ -48,8 +48,4 @@ abstract interface class RecoverBullRepository {
   Future<Uri> fetchUrl();
 
   Future<void> storeUrl(Uri url);
-
-  Future<void> allowPermission(bool isGranted);
-
-  Future<bool> fetchPermission();
 }

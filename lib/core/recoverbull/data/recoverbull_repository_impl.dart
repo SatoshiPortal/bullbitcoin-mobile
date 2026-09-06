@@ -193,16 +193,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     await _recoverbullSettingsDatasource.store(url);
   }
 
-  @override
-  Future<void> allowPermission(bool isGranted) async {
-    await _recoverbullSettingsDatasource.allowPermission(isGranted);
-  }
-
-  @override
-  Future<bool> fetchPermission() async {
-    return await _recoverbullSettingsDatasource.fetchPermission();
-  }
-
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
   RecoverBullCoreFailure _mapKeyServer(recoverbull.KeyServerException e) {
     final code = e.code;
