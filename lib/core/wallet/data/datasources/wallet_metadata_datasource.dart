@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
@@ -9,24 +10,33 @@ import 'package:drift/drift.dart';
 
 class WalletMetadataDatasource {
   final SqliteDatabase _sqlite;
+  final BackupRevisionRecorder _revisions;
 
   final StreamController<void> _preferenceChanges =
       StreamController<void>.broadcast(sync: true);
   final StreamController<void> _catalogChanges =
       StreamController<void>.broadcast(sync: true);
 
-  WalletMetadataDatasource({required this._sqlite});
+  WalletMetadataDatasource({
+    required SqliteDatabase sqlite,
+    BackupRevisionRecorder? revisions,
+  }) : _sqlite = sqlite,
+       _revisions = revisions ?? DriftBackupRevisionRecorder(sqlite);
 
   Stream<void> get preferenceChanges => _preferenceChanges.stream;
   Stream<void> get catalogChanges => _catalogChanges.stream;
 
   Future<void> store(WalletMetadataModel metadata) async {
-    final previous = await fetch(metadata.id);
-    await _store(metadata);
-    if (_preferencesDiffer(previous, metadata)) {
-      _preferenceChanges.add(null);
-    }
-    if (_definitionsDiffer(previous, metadata)) _catalogChanges.add(null);
+    final changes = await _sqlite.transaction(() async {
+      final previous = await fetch(metadata.id);
+      final preferences = _preferencesDiffer(previous, metadata);
+      final definition = _definitionsDiffer(previous, metadata);
+      await _store(metadata);
+      if (preferences || definition) await _revisions.recordCommittedMutation();
+      return (preferences: preferences, definition: definition);
+    });
+    if (changes.preferences) _preferenceChanges.add(null);
+    if (changes.definition) _catalogChanges.add(null);
   }
 
   Future<void> _store(WalletMetadataModel metadata) async {
@@ -55,18 +65,22 @@ class WalletMetadataDatasource {
 
   Future<void> storeAll(List<WalletMetadataModel> metadata) async {
     if (metadata.isEmpty) return;
-    final previous = {for (final item in await fetchAll()) item.id: item};
-    await _sqlite.transaction(() async {
+    final changes = await _sqlite.transaction(() async {
+      final previous = {for (final item in await fetchAll()) item.id: item};
+      final preferences = metadata.any(
+        (item) => _preferencesDiffer(previous[item.id], item),
+      );
+      final definition = metadata.any(
+        (item) => _definitionsDiffer(previous[item.id], item),
+      );
       for (final item in metadata) {
         await _store(item);
       }
+      if (preferences || definition) await _revisions.recordCommittedMutation();
+      return (preferences: preferences, definition: definition);
     });
-    if (metadata.any((item) => _preferencesDiffer(previous[item.id], item))) {
-      _preferenceChanges.add(null);
-    }
-    if (metadata.any((item) => _definitionsDiffer(previous[item.id], item))) {
-      _catalogChanges.add(null);
-    }
+    if (changes.preferences) _preferenceChanges.add(null);
+    if (changes.definition) _catalogChanges.add(null);
   }
 
   /// Applies recovered preference fields only while the classified local
@@ -92,6 +106,7 @@ class WalletMetadataDatasource {
         if (_preferencesDiffer(current, recovered)) changed = true;
         await _store(recovered);
       }
+      if (changed) await _revisions.recordCommittedMutation();
     });
     if (changed) _preferenceChanges.add(null);
     return Set.unmodifiable(conflicted);
@@ -136,18 +151,22 @@ class WalletMetadataDatasource {
   });
 
   Future<void> delete(String walletId) async {
-    final previous = await fetch(walletId);
-    final deleted = await _sqlite.managers.walletMetadatas
-        .filter((row) => row.id(walletId))
-        .delete();
-    if (deleted > 0 &&
-        previous != null &&
-        _hasRepresentedPreferences(previous)) {
-      _preferenceChanges.add(null);
-    }
-    if (deleted > 0 && previous != null && _isBackedUpDefinition(previous)) {
-      _catalogChanges.add(null);
-    }
+    final changes = await _sqlite.transaction(() async {
+      final previous = await fetch(walletId);
+      final deleted = await _sqlite.managers.walletMetadatas
+          .filter((row) => row.id(walletId))
+          .delete();
+      final preferences =
+          deleted > 0 &&
+          previous != null &&
+          _hasRepresentedPreferences(previous);
+      final definition =
+          deleted > 0 && previous != null && _isBackedUpDefinition(previous);
+      if (preferences || definition) await _revisions.recordCommittedMutation();
+      return (preferences: preferences, definition: definition);
+    });
+    if (changes.preferences) _preferenceChanges.add(null);
+    if (changes.definition) _catalogChanges.add(null);
   }
 
   Future<bool> updateSignerDevice({
@@ -158,23 +177,30 @@ class WalletMetadataDatasource {
   }) async {
     // Signer facts are part of a backed-up definition, so a change here has
     // to reach the catalog stream like any other definition change.
-    final previous = await fetch(walletId);
-    final updatedRows =
-        await (_sqlite.update(_sqlite.walletSigners)..where(
-              (row) => row.walletId.equals(walletId) & row.id.equals(signerId),
-            ))
-            .write(
-              WalletSignersCompanion(
-                signer: Value(signer),
-                signerDevice: Value(signerDevice),
-              ),
-            );
-    if (updatedRows == 1 && previous != null) {
-      final current = await fetch(walletId);
-      if (current != null && _definitionsDiffer(previous, current)) {
-        _catalogChanges.add(null);
+    var changed = false;
+    final updatedRows = await _sqlite.transaction(() async {
+      final previous = await fetch(walletId);
+      final updatedRows =
+          await (_sqlite.update(_sqlite.walletSigners)..where(
+                (row) =>
+                    row.walletId.equals(walletId) & row.id.equals(signerId),
+              ))
+              .write(
+                WalletSignersCompanion(
+                  signer: Value(signer),
+                  signerDevice: Value(signerDevice),
+                ),
+              );
+      if (updatedRows == 1 && previous != null) {
+        final current = await fetch(walletId);
+        if (current != null && _definitionsDiffer(previous, current)) {
+          changed = true;
+          await _revisions.recordCommittedMutation();
+        }
       }
-    }
+      return updatedRows;
+    });
+    if (changed) _catalogChanges.add(null);
     return updatedRows == 1;
   }
 

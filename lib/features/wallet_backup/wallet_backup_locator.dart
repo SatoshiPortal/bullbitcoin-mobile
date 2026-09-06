@@ -179,7 +179,6 @@ final class _WalletBackupGraph {
       changeStreams: [
         labels.changes,
         locator<WatchWalletUtxoFreezeChangesUsecase>().execute(),
-        locator<WatchWalletPreferenceChangesUsecase>().execute(),
         database.select(database.settings).watch().skip(1).map((_) {}),
         database.select(database.autoSwap).watch().skip(1).map((_) {}),
         database.select(database.electrumServers).watch().skip(1).map((_) {}),
@@ -287,11 +286,14 @@ final class _WalletBackupGraph {
       apply: applySnapshot.execute,
     );
     final triggers = WalletBackupTriggers(
-      // The manifest records its own revision inside the transaction that
-      // changes it (decision 7); every other owner commits outside this
-      // database or outside a repository this feature can reach.
-      recordedChanges: keychainManifest.watchCommittedChanges(),
-      unrecordedChanges: _mergeChanges([definitions.changes, metadata.changes]),
+      // These owners commit the backup revision with their data. Their events
+      // only wake publication; recording them again would double-count writes.
+      recordedChanges: _mergeChanges([
+        keychainManifest.watchCommittedChanges(),
+        definitions.changes,
+        locator<WatchWalletPreferenceChangesUsecase>().execute(),
+      ]),
+      unrecordedChanges: metadata.changes,
       syncResults: locator<WatchElectrumSyncResultsUsecase>().execute(),
       runner: runner,
       recordMutation: state.recordLocalMutation,
