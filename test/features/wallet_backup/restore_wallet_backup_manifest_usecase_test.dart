@@ -62,10 +62,7 @@ void main() {
       manifest,
     );
     registerFallbackValue(_manifest(const []));
-    registerFallbackValue(KeychainManifestRestorePolicy.keepNewest);
-    when(
-      () => repository.restoreSnapshot(any(), policy: any(named: 'policy')),
-    ).thenAnswer(
+    when(() => repository.restoreSnapshot(any())).thenAnswer(
       (invocation) async => Ok(
         KeychainManifestRestoreReport(
           applied: (invocation.positionalArguments.single as KeychainManifest)
@@ -111,12 +108,7 @@ void main() {
     expect(result.restoredCount, 2);
     expect(result.failedCount, 0);
     final restored =
-        verify(
-              () => repository.restoreSnapshot(
-                captureAny(),
-                policy: any(named: 'policy'),
-              ),
-            ).captured.single
+        verify(() => repository.restoreSnapshot(captureAny())).captured.single
             as KeychainManifest;
     expect(restored.entries, hasLength(2));
   });
@@ -163,9 +155,7 @@ void main() {
 
     expect(result.restoredCount, 0);
     expect(result.failedCount, 1);
-    verifyNever(
-      () => repository.restoreSnapshot(any(), policy: any(named: 'policy')),
-    );
+    verifyNever(() => repository.restoreSnapshot(any()));
   });
 
   test(
@@ -186,12 +176,7 @@ void main() {
       expect(result.failedCount, 0);
       verifyZeroInteractions(wallets);
       final restored =
-          verify(
-                () => repository.restoreSnapshot(
-                  captureAny(),
-                  policy: any(named: 'policy'),
-                ),
-              ).captured.single
+          verify(() => repository.restoreSnapshot(captureAny())).captured.single
               as KeychainManifest;
       final saved =
           restored.entries.single.materializations.single
@@ -236,9 +221,7 @@ void main() {
 
     expect(result.restoredCount, 0);
     expect(result.failedCount, 1);
-    verifyNever(
-      () => repository.restoreSnapshot(any(), policy: any(named: 'policy')),
-    );
+    verifyNever(() => repository.restoreSnapshot(any()));
   });
 }
 

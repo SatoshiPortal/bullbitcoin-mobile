@@ -28,7 +28,7 @@ export 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_ma
     show KeychainManifestEdit, KeychainManifestWalletInventoryBinding;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
 export 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_repository.dart'
-    show KeychainManifestRestorePolicy, KeychainManifestRestoreReport;
+    show KeychainManifestRestoreReport;
 export 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_routes.dart';
 
 final class KeychainManifestFacade {
@@ -111,11 +111,8 @@ final class KeychainManifestFacade {
 
   @useResult
   Future<Result<KeychainManifestRestoreReport, KeychainManifestFailure>>
-  restoreSnapshot(
-    KeychainManifest manifest, {
-    KeychainManifestRestorePolicy policy =
-        KeychainManifestRestorePolicy.keepNewest,
-  }) => _restoreSnapshot.execute(manifest, policy: policy);
+  restoreSnapshot(KeychainManifest manifest) =>
+      _restoreSnapshot.execute(manifest);
 
   @useResult
   Future<Result<void, KeychainManifestFailure>> updatePassphraseLabelHint({

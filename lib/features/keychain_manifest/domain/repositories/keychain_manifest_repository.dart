@@ -8,16 +8,6 @@ import 'package:primitives/primitives.dart';
 
 enum KeychainManifestWriteOrigin { local, recovery }
 
-/// How [KeychainManifestRepository.restoreSnapshot] reconciles a restored
-/// record with the one already stored under the same entry id.
-enum KeychainManifestRestorePolicy {
-  /// Identical identity metadata: the newest `updatedAt` wins, so a restored
-  /// newer label or hint is applied and older restored text never clobbers
-  /// newer local text. Different identity metadata under the same entry id is
-  /// reported as a conflict and never merged (spec 6.5).
-  keepNewest,
-}
-
 /// What one [KeychainManifestRepository.restoreSnapshot] pass did.
 ///
 /// [conflicts] holds the entry ids the policy refused, so recovery can report
@@ -104,12 +94,11 @@ abstract interface class KeychainManifestRepository {
   /// Entries that do not carry exactly one wallet materialization are reported
   /// as conflicts; the Nostr materializations of a snapshot are restored by
   /// their own use case, which has the deriver needed to verify them.
+  /// Matching identities keep the newest `updatedAt` label/hint. Different
+  /// identities under the same entry id are conflicts and are never merged.
   @useResult
   Future<Result<KeychainManifestRestoreReport, KeychainManifestFailure>>
-  restoreSnapshot(
-    KeychainManifest manifest, {
-    KeychainManifestRestorePolicy policy,
-  });
+  restoreSnapshot(KeychainManifest manifest);
 
   /// Adds one deterministic Nostr key materialization.
   ///

@@ -295,11 +295,7 @@ final class KeychainManifestRepositoryImpl
 
   @override
   Future<Result<KeychainManifestRestoreReport, KeychainManifestFailure>>
-  restoreSnapshot(
-    KeychainManifest manifest, {
-    KeychainManifestRestorePolicy policy =
-        KeychainManifestRestorePolicy.keepNewest,
-  }) async {
+  restoreSnapshot(KeychainManifest manifest) async {
     try {
       return Ok(
         await _database.transaction(() async {
@@ -476,8 +472,7 @@ final class KeychainManifestRepositoryImpl
   @override
   Future<void> close() => _localChanges.close();
 
-  /// One restored wallet record under
-  /// [KeychainManifestRestorePolicy.keepNewest].
+  /// Restore matching identities while keeping the newest metadata.
   Future<_Restored> _restoreWallet(
     KeychainManifestEntry record,
     KeychainManifestWallet wallet,

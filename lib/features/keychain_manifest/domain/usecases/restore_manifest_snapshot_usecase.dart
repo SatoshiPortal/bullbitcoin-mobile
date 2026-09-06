@@ -13,9 +13,5 @@ final class RestoreManifestSnapshotUsecase {
   const RestoreManifestSnapshotUsecase(this._repository);
 
   Future<Result<KeychainManifestRestoreReport, KeychainManifestFailure>>
-  execute(
-    KeychainManifest manifest, {
-    KeychainManifestRestorePolicy policy =
-        KeychainManifestRestorePolicy.keepNewest,
-  }) => _repository.restoreSnapshot(manifest, policy: policy);
+  execute(KeychainManifest manifest) => _repository.restoreSnapshot(manifest);
 }

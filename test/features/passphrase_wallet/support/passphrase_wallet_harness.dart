@@ -180,11 +180,8 @@ final class FaultInjectingManifestRepository
 
   @override
   Future<Result<KeychainManifestRestoreReport, KeychainManifestFailure>>
-  restoreSnapshot(
-    KeychainManifest manifest, {
-    KeychainManifestRestorePolicy policy =
-        KeychainManifestRestorePolicy.keepNewest,
-  }) => _inner.restoreSnapshot(manifest, policy: policy);
+  restoreSnapshot(KeychainManifest manifest) =>
+      _inner.restoreSnapshot(manifest);
 
   @override
   Future<Result<void, KeychainManifestFailure>> insertNostrKey(

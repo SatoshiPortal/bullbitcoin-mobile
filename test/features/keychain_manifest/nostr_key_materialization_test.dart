@@ -329,11 +329,8 @@ final class _MemoryRepository implements KeychainManifestRepository {
 
   @override
   Future<Result<KeychainManifestRestoreReport, KeychainManifestFailure>>
-  restoreSnapshot(
-    KeychainManifest manifest, {
-    KeychainManifestRestorePolicy policy =
-        KeychainManifestRestorePolicy.keepNewest,
-  }) async => const Err(KeychainManifestConflictFailure());
+  restoreSnapshot(KeychainManifest manifest) async =>
+      const Err(KeychainManifestConflictFailure());
 
   @override
   Future<Result<void, KeychainManifestFailure>> updatePassphraseLabelHint({
