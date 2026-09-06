@@ -352,7 +352,6 @@ final class _WalletBackupGraph {
           encryption,
           storeRemote,
           state,
-          _nowSecs,
         ).execute,
       ),
       GetRemoteWalletBackupContentsUsecase(

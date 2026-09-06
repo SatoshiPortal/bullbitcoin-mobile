@@ -216,6 +216,64 @@ void main() {
   });
 
   group('backup files', () {
+    test(
+      'an older file leaves retained local records pending publication',
+      () async {
+        final device = await _device();
+        expect(await device.facade.setEnabled(true), _succeeds);
+        final exported =
+            (await device.facade.buildExport(
+                      protection: WalletBackupFileProtection.encrypted,
+                      confirmedUnencrypted: false,
+                    )
+                    as Ok<WalletBackupExport, WalletBackupFailure>)
+                .value;
+        await _addWallet(
+          device,
+          walletId: 'added-after-export',
+          label: 'Retained',
+        );
+        expect(await device.facade.backupNow(), _succeeds);
+        final comparison =
+            (await device.facade.compareFile(exported.copyBytes())
+                    as Ok<WalletBackupImportComparison, WalletBackupFailure>)
+                .value;
+
+        final result = await device.facade.recoverComparedFile(
+          fileBytes: exported.copyBytes(),
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+        );
+
+        expect(result.status, WalletBackupRecoveryStatus.restored);
+        expect(
+          (await _wallets(device)).map((wallet) => wallet.label),
+          contains('Retained'),
+        );
+        final selectedRemote =
+            (await device.facade.fetchRemoteContents()
+                    as Ok<WalletBackupContents?, WalletBackupFailure>)
+                .value!;
+        expect(
+          selectedRemote.wallets.map((wallet) => wallet.label),
+          isNot(contains('Retained')),
+        );
+        expect((await device.readState()).dirty, isTrue);
+
+        device.startCoordinator();
+        await device.runner.settle();
+        final published =
+            (await device.facade.fetchRemoteContents()
+                    as Ok<WalletBackupContents?, WalletBackupFailure>)
+                .value!;
+        expect(
+          published.wallets.map((wallet) => wallet.label),
+          contains('Retained'),
+        );
+        expect((await device.readState()).dirty, isFalse);
+      },
+    );
+
     test('an exported file matches the published backup exactly', () async {
       final device = await _device();
       await _addWallet(device, walletId: 'exported-wallet', label: 'Exported');

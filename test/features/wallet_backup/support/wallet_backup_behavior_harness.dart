@@ -525,7 +525,6 @@ final class WalletBackupBehaviorHarness {
           encryption,
           storeRemote,
           state,
-          () => DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000,
         ).execute,
       ),
 

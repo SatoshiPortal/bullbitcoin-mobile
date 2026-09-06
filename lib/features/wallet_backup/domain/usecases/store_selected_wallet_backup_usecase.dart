@@ -13,14 +13,12 @@ final class StoreSelectedWalletBackupUsecase {
   final WalletBackupEncryptionRepository _encryption;
   final StoreWalletBackupRemoteUsecase _storeRemote;
   final WalletBackupStateRepository _state;
-  final int Function() _nowSecs;
 
   const StoreSelectedWalletBackupUsecase(
     this._resolveKey,
     this._encryption,
     this._storeRemote,
     this._state,
-    this._nowSecs,
   );
 
   Future<Result<void, WalletBackupFailure>> execute({
@@ -40,11 +38,10 @@ final class StoreSelectedWalletBackupUsecase {
     if (encrypted case Err(:final failure)) return Err(failure);
     final ciphertext = (encrypted as Ok).value;
 
-    // The selected snapshot replaces local state as well as the remote one, so
-    // it counts as a local mutation before it counts as a publication.
+    // Recovery is additive: local records absent from this file can survive.
+    // Keep local state dirty until a full local snapshot has been published.
     final revision = await _state.recordLocalMutation();
     if (revision case Err(:final failure)) return Err(failure);
-    final capturedRevision = (revision as Ok<int, WalletBackupFailure>).value;
     final WalletBackupRemoteCheckpoint checkpoint;
     switch (await _storeRemote.execute(
       current: current,
@@ -55,10 +52,6 @@ final class StoreSelectedWalletBackupUsecase {
       case Err(:final failure):
         return Err(failure);
     }
-    return _state.recordPublication(
-      publishedRevision: capturedRevision,
-      succeededAt: _nowSecs(),
-      checkpoint: checkpoint,
-    );
+    return _state.saveRemoteCheckpoint(checkpoint);
   }
 }
