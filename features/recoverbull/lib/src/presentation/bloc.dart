@@ -410,7 +410,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case RecoverBullFlow.settings:
           throw UnimplementedError();
       }
-      log.fine('Vault provider ${event.provider.name} selected');
+      log.fine(
+        'recoverbull.vault.provider.selected provider=${event.provider.name}',
+      );
     } catch (e) {
       log.error(
         'recoverbull.vault_provider_selection.unexpected '
@@ -460,7 +462,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
               emit(state.copyWith(failure: _selectFailure(failure)));
           }
         case VaultProvider.iCloud:
-          log.warning('iCloud, not supported yet');
+          log.warning('recoverbull.vault.provider.unsupported provider=iCloud');
           emit(state.copyWith(failure: const SelectVaultFailure()));
           return;
       }
@@ -582,14 +584,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             return;
           }
         case VaultProvider.iCloud:
-          log.warning('iCloud, not supported yet');
+          log.warning('recoverbull.vault.provider.unsupported provider=iCloud');
           if (!isClosed && !_closingBloc && !emit.isDone) {
             emit(state.copyWith(failure: const VaultProviderSaveFailure()));
           }
           return;
       }
     } catch (_) {
-      log.warning('saving vault to provider failed with an exception');
+      log.warning('recoverbull.vault.provider.save.unexpected');
       if (!isClosed && !_closingBloc && !emit.isDone) {
         emit(state.copyWith(failure: const VaultProviderSaveFailure()));
       }
@@ -775,7 +777,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           log.warning('recoverbull.wallet_refresh.restore_failed');
         }
         if (isClosed || _closingBloc || emit.isDone) return;
-        log.fine('Vault recovered');
+        log.fine('recoverbull.vault.recovered');
         emit(
           state.copyWith(
             isFlowFinished: true,

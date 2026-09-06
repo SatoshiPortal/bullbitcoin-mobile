@@ -135,11 +135,12 @@ Future<void> tearDownRecoverBullBloc() => database.close();
 
 RecoverBullBloc buildBloc({
   required RecoverBullFlow flow,
+  TestLogSink? log,
   EncryptedVault? preSelectedVault,
   Future<void> Function()? onWalletUpdated,
   VerifyDecryptedVaultUsecase? verifyDecryptedVaultUsecase,
 }) => RecoverBullBloc(
-  log: const TestLogSink(),
+  log: log ?? const TestLogSink(),
   flow: flow,
   preSelectedVault: preSelectedVault,
   pickVaultUsecase: pickVault,

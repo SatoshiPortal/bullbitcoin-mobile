@@ -33,7 +33,7 @@ class RestoreVaultUsecase {
       return const Ok(null);
     } catch (e, st) {
       log.error(
-        'restoreVault failed',
+        'recoverbull.vault.restore.failed',
         error: 'Vault restoration failed',
         trace: st,
       );
