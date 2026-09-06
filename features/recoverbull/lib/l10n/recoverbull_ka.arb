@@ -57,6 +57,7 @@
   "recoverbullPasswordRequired": "პაროლი სავალდებულოა",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} წამი",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "recoverbullErrorVaultCreationFailed": "საცავის შექმნა ვერ მოხერხდა, შესაძლოა პრობლემა ფაილშია ან გასაღებში",
   "recoverbullRecoveryErrorKeyDerivationFailed": "ლოკალური სარეზერვო ასლის გასაღების გამოთვლა ვერ მოხერხდა.",
   "recoverbullSelectBackupFileNotValidError": "Recoverbull-ის სარეზერვო ასლის ფაილი არასწორია",

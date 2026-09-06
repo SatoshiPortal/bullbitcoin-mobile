@@ -87,6 +87,8 @@
   "recoverbullAttemptMonitoringLockoutBody": "Cela peut indiquer une attaque potentielle. Reconnaissez-vous ces tentatives ? Consultez les détails pour connaître les mesures recommandées. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé.",
   "recoverbullAttemptMonitoringLockoutAnnouncement": "Le serveur a temporairement limité l’accès après trop de tentatives échouées. Si vous les reconnaissez, attendez le délai puis réessayez ; sinon, transférez vos fonds vers un nouveau portefeuille avec une nouvelle phrase mnémotechnique, sécurisez chaque copie de la sauvegarde et contactez le support. Ne révélez aucun secret.",
   "durationSeconds": "{seconds} secondes",
+  "durationSecond": "{seconds} seconde",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {

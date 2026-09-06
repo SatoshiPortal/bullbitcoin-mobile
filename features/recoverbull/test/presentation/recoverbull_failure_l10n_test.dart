@@ -64,9 +64,82 @@ void main() {
     expect(messages, everyElement(isNotEmpty));
   });
 
-  testWidgets('503 failures say service busy with optional retry delay', (
+  testWidgets('retry delays are rendered exactly in English', (tester) async {
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            const durations = [
+              Duration(seconds: -1),
+              Duration(seconds: 1),
+              Duration(seconds: 30),
+              Duration(seconds: 59),
+              Duration(seconds: 60),
+              Duration(seconds: 61),
+              Duration(seconds: 90),
+              Duration(seconds: 120),
+              Duration(seconds: 253),
+            ];
+            messages = [
+              for (final duration in durations)
+                VaultRateLimitedFailure(
+                  retryIn: duration,
+                ).toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(messages, [
+      'Rate limited. Please try again in 1 second',
+      'Rate limited. Please try again in 1 second',
+      'Rate limited. Please try again in 30 seconds',
+      'Rate limited. Please try again in 59 seconds',
+      'Rate limited. Please try again in 1 minute',
+      'Rate limited. Please try again in 1 minute 1 second',
+      'Rate limited. Please try again in 1 minute 30 seconds',
+      'Rate limited. Please try again in 2 minutes',
+      'Rate limited. Please try again in 4 minutes 13 seconds',
+    ]);
+  });
+
+  testWidgets('retry delays are rendered exactly in French for 429 and 503', (
     tester,
   ) async {
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            messages = [
+              const VaultRateLimitedFailure(
+                retryIn: Duration(seconds: 253),
+              ).toTranslated(context),
+              const KeyServerBusyFailure(
+                retryIn: Duration(seconds: 253),
+              ).toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(messages, [
+      'Limite de taux atteinte. Veuillez réessayer dans 4 minutes 13 secondes',
+      'Le service est occupé. Veuillez réessayer dans 4 minutes 13 secondes.',
+    ]);
+  });
+
+  testWidgets('503 failures retain their service-busy message', (tester) async {
     late List<String> messages;
     await tester.pumpWidget(
       MaterialApp(
@@ -88,9 +161,6 @@ void main() {
               const KeyServerBusyFailure(
                 retryIn: Duration(seconds: 61),
               ).toTranslated(context),
-              const KeyServerBusyFailure(
-                retryIn: Duration(seconds: 90),
-              ).toTranslated(context),
             ];
             return const SizedBox.shrink();
           },
@@ -98,19 +168,88 @@ void main() {
       ),
     );
 
-    expect(messages[0], contains('service is busy'));
-    expect(messages[0], contains('30 seconds'));
-    expect(messages[0], isNot(contains('Rate limited')));
-    expect(messages[1], contains('service is busy'));
-    expect(messages[1], contains('30 seconds'));
-    expect(messages[1], isNot(contains('Rate limited')));
-    expect(messages[2], contains('service is busy'));
-    expect(messages[2], contains('later'));
-    expect(messages[2], isNot(contains('second')));
-    expect(messages[3], contains('service is busy'));
-    expect(messages[3], contains('later'));
-    expect(messages[3], isNot(contains('second')));
-    expect(messages[4], contains('61 seconds'));
-    expect(messages[5], contains('90 seconds'));
+    expect(messages, [
+      'The service is busy. Please try again in 30 seconds.',
+      'The service is busy. Please try again in 30 seconds.',
+      'The service is busy. Please try again later.',
+      'The service is busy. Please try again later.',
+      'The service is busy. Please try again in 1 minute 1 second.',
+    ]);
+  });
+
+  testWidgets('retry delays are rendered exactly in French for every duration', (
+    tester,
+  ) async {
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            const durations = [
+              Duration(seconds: -1),
+              Duration(seconds: 1),
+              Duration(seconds: 30),
+              Duration(seconds: 59),
+              Duration(seconds: 60),
+              Duration(seconds: 61),
+              Duration(seconds: 90),
+              Duration(seconds: 120),
+              Duration(seconds: 253),
+            ];
+            messages = [
+              for (final duration in durations)
+                VaultRateLimitedFailure(
+                  retryIn: duration,
+                ).toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(messages, [
+      'Limite de taux atteinte. Veuillez réessayer dans 1 seconde',
+      'Limite de taux atteinte. Veuillez réessayer dans 1 seconde',
+      'Limite de taux atteinte. Veuillez réessayer dans 30 secondes',
+      'Limite de taux atteinte. Veuillez réessayer dans 59 secondes',
+      'Limite de taux atteinte. Veuillez réessayer dans 1 minute',
+      'Limite de taux atteinte. Veuillez réessayer dans 1 minute 1 seconde',
+      'Limite de taux atteinte. Veuillez réessayer dans 1 minute 30 secondes',
+      'Limite de taux atteinte. Veuillez réessayer dans 2 minutes',
+      'Limite de taux atteinte. Veuillez réessayer dans 4 minutes 13 secondes',
+    ]);
+  });
+
+  testWidgets('VaultServiceBusyFailure renders its optional retry delay', (
+    tester,
+  ) async {
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            messages = [
+              const VaultServiceBusyFailure(
+                retryIn: Duration(seconds: 30),
+              ).toTranslated(context),
+              const VaultServiceBusyFailure().toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(messages, [
+      'Le service est occupé. Veuillez réessayer dans 30 secondes.',
+      'Le service est occupé. Veuillez réessayer plus tard.',
+    ]);
   });
 }

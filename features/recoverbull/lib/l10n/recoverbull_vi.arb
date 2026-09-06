@@ -57,6 +57,7 @@
   "recoverbullPasswordRequired": "Cần có mật khẩu",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} giây",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "recoverbullErrorVaultCreationFailed": "Tạo kho lưu trữ thất bại, có thể do tệp hoặc khóa",
   "recoverbullRecoveryErrorKeyDerivationFailed": "Không thể tạo khóa sao lưu cục bộ.",
   "recoverbullSelectBackupFileNotValidError": "Tệp sao lưu Recoverbull không hợp lệ",

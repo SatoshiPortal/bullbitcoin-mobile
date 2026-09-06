@@ -257,6 +257,8 @@
   "recoverbullAttemptMonitoringLockoutBody": "This may indicate a potential attack. Do you recognize these attempts? Open the details for recommended next steps. Never reveal your seed, mnemonic, password, PIN, or key material.",
   "recoverbullAttemptMonitoringLockoutAnnouncement": "The server temporarily limited access after too many failed attempts. If you recognize them, wait and try again; otherwise, move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support. Never reveal a secret.",
   "durationSeconds": "{seconds} seconds",
+  "durationSecond": "{seconds} second",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {

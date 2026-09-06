@@ -57,6 +57,7 @@
   "recoverbullPasswordRequired": "Գաղտնաբառը պարտադիր է",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} վայրկյան",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "recoverbullErrorVaultCreationFailed": "Պահոցի ստեղծումը ձախողվեց, խնդիրը կարող է լինել ֆայլում կամ բանալիում",
   "recoverbullRecoveryErrorKeyDerivationFailed": "Տեղական պահուստի բանալու ածանցումը ձախողվեց։",
   "recoverbullSelectBackupFileNotValidError": "Recoverbull պահուստի ֆայլը վավեր չէ",
