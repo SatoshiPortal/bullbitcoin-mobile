@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_s
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_remote_usecases.dart';
@@ -19,10 +20,9 @@ import 'package:primitives/primitives.dart';
 /// publication and a recovery cannot resurrect it (decision 1, spec F1/F2).
 ///
 /// With a trusted checkpoint the store goes straight out, with no preceding
-/// fetch (spec 19.3, F7). A head conflict means another installation published
-/// in the meantime: the head is fetched and authenticated once, a durable
-/// needs-attention state is recorded, local work stays dirty, and the decision
-/// is left to the user (spec 19.4, decision 3).
+/// fetch. A head conflict is fetched and authenticated once. Identical content
+/// is already safely stored (including a lost-reply retry); different content
+/// leaves local work dirty and the decision with the user.
 final class PublishWalletBackupUsecase {
   final BuildWalletBackupSnapshotUsecase _buildSnapshot;
   final ResolveWalletBackupKeyUsecase _resolveKey;
@@ -31,6 +31,7 @@ final class PublishWalletBackupUsecase {
   final StoreWalletBackupRemoteUsecase _storeRemote;
   final FetchWalletBackupSnapshotUsecase _readRemoteSnapshot;
   final WalletBackupStateRepository _state;
+  final CompareWalletBackupSnapshots _differences;
 
   const PublishWalletBackupUsecase({
     required this._buildSnapshot,
@@ -40,6 +41,7 @@ final class PublishWalletBackupUsecase {
     required this._storeRemote,
     required this._readRemoteSnapshot,
     required this._state,
+    required this._differences,
   });
 
   @useResult
@@ -91,15 +93,15 @@ final class PublishWalletBackupUsecase {
       ciphertext: ciphertext,
     )) {
       Ok(:final value) => Ok(value),
-      Err(failure: WalletBackupHeadConflictFailure()) => _recordConflict(),
+      Err(failure: WalletBackupHeadConflictFailure()) => _recordConflict(local),
       Err(:final failure) => Err(failure),
     };
   }
 
-  /// Fetches the head that beat this publication, authenticates it, and leaves
-  /// the feature needing attention. The remote is never overwritten here.
+  /// Authenticates the winning head before acknowledging matching content or
+  /// fencing a genuine difference. The remote is never overwritten here.
   Future<Result<WalletBackupRemoteCheckpoint, WalletBackupFailure>>
-  _recordConflict() async {
+  _recordConflict(WalletBackupSnapshot local) async {
     final WalletBackupRemoteHead head;
     switch (await _fetchRemote.execute()) {
       case Ok(:final value):
@@ -109,15 +111,20 @@ final class PublishWalletBackupUsecase {
     }
 
     final decoded = await _readRemoteSnapshot.execute(head);
+    // An unsupported version is its own durable block, already recorded while
+    // decoding. Adding needs-attention on top would mask it behind the
+    // recovery fence, so the version failure is reported as it stands.
+    if (decoded case Err(:final failure)) return Err(failure);
     if (await _state.saveRemoteCheckpoint(head.checkpoint) case Err(
       :final failure,
     )) {
       return Err(failure);
     }
-    // An unsupported version is its own durable block, already recorded while
-    // decoding. Adding needs-attention on top would mask it behind the
-    // recovery fence, so the version failure is reported as it stands.
-    if (decoded case Err(:final failure)) return Err(failure);
+    final remote =
+        (decoded as Ok<WalletBackupSnapshot?, WalletBackupFailure>).value;
+    if (remote != null && _differences(local, remote).isEmpty) {
+      return Ok(head.checkpoint!);
+    }
 
     // Local work stays dirty on its own: uploadedRevision never advanced, so
     // the head conflict only has to raise the fence.

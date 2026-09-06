@@ -257,6 +257,7 @@ final class _WalletBackupGraph {
       storeRemote: storeRemote,
       readRemoteSnapshot: fetchImport,
       state: state,
+      differences: codec.differences,
     );
     final publication = BackupWalletNowUsecase(
       state: state,

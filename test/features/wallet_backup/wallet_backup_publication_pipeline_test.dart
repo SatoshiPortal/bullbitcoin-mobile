@@ -25,6 +25,8 @@ import 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_key_reso
 import 'package:bb_mobile/features/nostr_identity/domain/sign_nostr_hash_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_snapshot_model.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_encryption_repository.dart';
@@ -452,6 +454,11 @@ _PublicationHarness _publication(
         state: state,
       ),
       state: state,
+      differences: WalletBackupSnapshotCodec(
+        encodeManifest: manifest.encodeManifestFilePayload,
+        decodeManifest: manifest.parseManifestFilePayload,
+        vaults: const WalletBackupVaultsCodec(inspect: fakeVaultInspector),
+      ).differences,
     ),
     remote: remote,
     encryption: encryption,

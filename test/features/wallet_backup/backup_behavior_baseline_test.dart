@@ -25,6 +25,55 @@ import 'support/wallet_backup_behavior_harness.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test(
+    'a lost store reply is acknowledged after rebuilding the app graph',
+    () async {
+      final device = await _device();
+      expect(await device.facade.setEnabled(true), _succeeds);
+      await _addWallet(device, walletId: 'pending-wallet', label: 'Pending');
+      device.remote.loseNextStoreResponse = true;
+      expect(await device.facade.backupNow(), isA<Err>());
+      expect((await device.readState()).dirty, isTrue);
+      final accepted = device.remote.storedCiphertext;
+      final stores = device.remote.storeCount;
+      await device.dispose(closeDatabase: false);
+      final restarted = await WalletBackupBehaviorHarness.create(
+        database: device.database,
+        remote: device.remote,
+      );
+      addTearDown(restarted.dispose);
+
+      expect(await restarted.facade.backupNow(), _succeeds);
+
+      expect(restarted.remote.storedCiphertext, accepted);
+      expect(restarted.remote.storeCount, stores);
+      final state = await restarted.readState();
+      expect(state.dirty, isFalse);
+      expect(state.recoveryBlocked, isFalse);
+      expect(state.remoteCheckpoint!.etag, restarted.remote.head().etag);
+    },
+  );
+
+  test('different remote content still requires conflict resolution', () async {
+    final server = FakeWalletBackupRemote();
+    final first = await _device(remote: server);
+    expect(await first.facade.setEnabled(true), _succeeds);
+    final second = await _device(remote: server);
+    expect(await second.facade.setEnabled(true), _succeeds);
+    await _addWallet(second, walletId: 'second-device-wallet', label: 'Second');
+    expect(await second.facade.backupNow(), _succeeds);
+    final accepted = server.storedCiphertext;
+    await _addWallet(first, walletId: 'first-device-wallet', label: 'First');
+
+    expect(
+      await first.facade.backupNow(),
+      isA<Err<void, WalletBackupFailure>>(),
+    );
+    expect((await first.readState()).recoveryBlocked, isTrue);
+    expect((await first.readState()).dirty, isTrue);
+    expect(server.storedCiphertext, accepted);
+  });
+
   group('enabling automatic backup', () {
     test('publishes a first snapshot when the account has no backup', () async {
       final device = await _device();

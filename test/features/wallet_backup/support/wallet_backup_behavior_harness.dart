@@ -127,6 +127,7 @@ final class FakeWalletBackupRemote implements WalletBackupRemoteRepository {
   /// server; clear to let the next attempt through.
   WalletBackupFailure? fetchFailure;
   WalletBackupFailure? storeFailure;
+  bool loseNextStoreResponse = false;
 
   int storeCount = 0;
   int storeAttempts = 0;
@@ -193,6 +194,10 @@ final class FakeWalletBackupRemote implements WalletBackupRemoteRepository {
     }
     storeCount += 1;
     install(ciphertext);
+    if (loseNextStoreResponse) {
+      loseNextStoreResponse = false;
+      return const Err(WalletBackupRemoteUnavailableFailure());
+    }
     return Ok(head().checkpoint!);
   }
 
@@ -419,6 +424,7 @@ final class WalletBackupBehaviorHarness {
       storeRemote: storeRemote,
       readRemoteSnapshot: fetchImport,
       state: state,
+      differences: codec.differences,
     );
     final publication = BackupWalletNowUsecase(
       state: state,
