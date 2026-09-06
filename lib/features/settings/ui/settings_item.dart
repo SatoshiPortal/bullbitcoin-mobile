@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_routes.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
+import 'package:bb_mobile/features/passphrase_wallet/public/passphrase_wallet_routes.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
@@ -33,6 +34,7 @@ enum SettingsItemId {
   startBackup,
   recoverbull,
   nostrKeys,
+  passphraseWallets,
   labels,
   transactionHistory,
   walletSettings,
@@ -268,6 +270,22 @@ List<SettingsItem> buildSettingsItems({
       icon: Icons.key,
       open: (context) => context.pushNamed(KeychainManifestRoutes.listName),
       keywords: [english.settingsNostrKeysTitle, 'nostr', 'nsec', 'npub'],
+    ),
+    SettingsItem(
+      id: SettingsItemId.passphraseWallets,
+      section: SettingsItemSection.root,
+      title: localization.passphraseWalletSettingsTitle,
+      path: path(
+        SettingsItemSection.root,
+        localization.passphraseWalletSettingsTitle,
+      ),
+      icon: Icons.key_outlined,
+      open: (context) => context.pushNamed(PassphraseWalletRoute.wallets.name),
+      keywords: [
+        english.passphraseWalletSettingsTitle,
+        'passphrase',
+        'private wallet',
+      ],
     ),
     SettingsItem(
       id: SettingsItemId.labels,

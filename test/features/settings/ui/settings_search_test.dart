@@ -126,6 +126,7 @@ void main() {
         SettingsItemId.backup,
         SettingsItemId.dataBackup,
         SettingsItemId.nostrKeys,
+        SettingsItemId.passphraseWallets,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
         SettingsItemId.btcMap,
@@ -138,6 +139,7 @@ void main() {
         'Wallet Recovery',
         'Data Backup',
         'Nostr keys',
+        AppLocalizationsEn().passphraseWalletSettingsTitle,
         'Wallet',
         'Exchange',
         'Map',
@@ -175,6 +177,8 @@ void main() {
       final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
       final expectedIds = {
         'trading': SettingsItemId.exchange,
+        'passphrase': SettingsItemId.passphraseWallets,
+        'private wallet': SettingsItemId.passphraseWallets,
         'seed backup': SettingsItemId.backup,
         'create backup': SettingsItemId.startBackup,
         'cloud backup': SettingsItemId.recoverbull,
