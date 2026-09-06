@@ -54,25 +54,54 @@ void main() {
     },
   );
 
-  test('different remote content still requires conflict resolution', () async {
-    final server = FakeWalletBackupRemote();
-    final first = await _device(remote: server);
-    expect(await first.facade.setEnabled(true), _succeeds);
-    final second = await _device(remote: server);
-    expect(await second.facade.setEnabled(true), _succeeds);
-    await _addWallet(second, walletId: 'second-device-wallet', label: 'Second');
-    expect(await second.facade.backupNow(), _succeeds);
-    final accepted = server.storedCiphertext;
-    await _addWallet(first, walletId: 'first-device-wallet', label: 'First');
+  for (final failCheckpoint in [false, true]) {
+    test(
+      'different content stays fenced (checkpoint failure: $failCheckpoint)',
+      () async {
+        final server = FakeWalletBackupRemote();
+        final first = await _device(remote: server);
+        expect(await first.facade.setEnabled(true), _succeeds);
+        final second = await _device(remote: server);
+        expect(await second.facade.setEnabled(true), _succeeds);
+        await _addWallet(
+          second,
+          walletId: 'second-device-wallet',
+          label: 'Second',
+        );
+        expect(await second.facade.backupNow(), _succeeds);
+        final accepted = server.storedCiphertext;
+        await _addWallet(
+          first,
+          walletId: 'first-device-wallet',
+          label: 'First',
+        );
+        if (failCheckpoint) {
+          await first.database.customStatement('''
+        CREATE TRIGGER reject_conflicting_checkpoint
+        BEFORE UPDATE OF remote_etag ON wallet_backup_states
+        WHEN NEW.remote_etag IS NOT OLD.remote_etag
+        BEGIN
+          SELECT RAISE(ABORT, 'simulated checkpoint write failure');
+        END
+      ''');
+        }
 
-    expect(
-      await first.facade.backupNow(),
-      isA<Err<void, WalletBackupFailure>>(),
+        expect(
+          await first.facade.backupNow(),
+          isA<Err<void, WalletBackupFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            failCheckpoint
+                ? isA<WalletBackupStorageFailure>()
+                : isA<WalletBackupHeadConflictFailure>(),
+          ),
+        );
+        expect((await first.readState()).recoveryBlocked, isTrue);
+        expect((await first.readState()).dirty, isTrue);
+        expect(server.storedCiphertext, accepted);
+      },
     );
-    expect((await first.readState()).recoveryBlocked, isTrue);
-    expect((await first.readState()).dirty, isTrue);
-    expect(server.storedCiphertext, accepted);
-  });
+  }
 
   group('enabling automatic backup', () {
     test('publishes a first snapshot when the account has no backup', () async {

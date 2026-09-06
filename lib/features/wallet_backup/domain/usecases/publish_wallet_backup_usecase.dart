@@ -115,11 +115,6 @@ final class PublishWalletBackupUsecase {
     // decoding. Adding needs-attention on top would mask it behind the
     // recovery fence, so the version failure is reported as it stands.
     if (decoded case Err(:final failure)) return Err(failure);
-    if (await _state.saveRemoteCheckpoint(head.checkpoint) case Err(
-      :final failure,
-    )) {
-      return Err(failure);
-    }
     final remote =
         (decoded as Ok<WalletBackupSnapshot?, WalletBackupFailure>).value;
     if (remote != null && _differences(local, remote).isEmpty) {
@@ -130,6 +125,13 @@ final class PublishWalletBackupUsecase {
     // the head conflict only has to raise the fence.
     if (await _state.setRecoveryState(WalletBackupRecoveryState.needsAttention)
         case Err(:final failure)) {
+      return Err(failure);
+    }
+    // Fence first: a crash or storage failure must not leave a competing head
+    // trusted for the next automatic store without its conflict guard.
+    if (await _state.saveRemoteCheckpoint(head.checkpoint) case Err(
+      :final failure,
+    )) {
       return Err(failure);
     }
     return const Err(WalletBackupHeadConflictFailure());
