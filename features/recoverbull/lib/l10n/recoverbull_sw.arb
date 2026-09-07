@@ -170,7 +170,7 @@
   "recoverbullConnecting": "Inaunganisha",
   "recoverbullErrorVaultCreatedKeyNotStored": "Imeshindwa: Faili ya hifadhi imeundwa lakini funguo haijahifadhiwa kwenye seva",
   "recoverbullRetry": "Jaribu Tena",
-  "recoverbullConnectingTor": "Inaunganisha na Seva ya Funguo kupitia Tor.\nHii inaweza kuchukua hadi dakika moja.",
+  "recoverbullConnectedTorCheckingServer": "Inaunganisha na Seva ya Funguo kupitia Tor.\nHii inaweza kuchukua hadi dakika moja.",
   "recoverbullSelectCustomLocationError": "Imeshindwa kuchagua faili kutoka mahali maalum",
   "torSettingsDescDisconnected": "Tor proxy haiendeshi",
   "oopsSomethingWentWrong": "Lo! Hitilafu fulani imetokea",

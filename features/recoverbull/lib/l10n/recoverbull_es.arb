@@ -275,7 +275,7 @@
   "recoverbullConnecting": "Conectando",
   "recoverbullErrorVaultCreatedKeyNotStored": "Error: Archivo de bóveda creado pero clave no almacenada en el servidor",
   "recoverbullRetry": "Reintentar",
-  "recoverbullConnectingTor": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
+  "recoverbullConnectedTorCheckingServer": "Conectando al servidor de claves a través de Tor.\nEsto puede tomar hasta un minuto.",
   "recoverbullSelectCustomLocationError": "Error al seleccionar archivo desde ubicación personalizada",
   "torSettingsDescDisconnected": "El proxy Tor no está activo",
   "oopsSomethingWentWrong": "¡Ups! Algo salió mal",

@@ -283,7 +283,15 @@
   "recoverbullConnecting": "Connexion en cours",
   "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
   "recoverbullRetry": "Réessayer",
-  "recoverbullConnectingTor": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
+  "recoverbullConnectedTorCheckingServer": "Connecté à Tor. Vérification du serveur de sauvegarde.",
+  "recoverbullElapsedSinceStart": "Temps écoulé depuis le début de la tentative : {duration}",
+  "@recoverbullElapsedSinceStart": {
+    "description": "Temps écoulé depuis le début de la tentative de connexion en cours"
+  },
+  "recoverbullWaitingForTor": "En attente de Tor",
+  "recoverbullChecking": "Vérification en cours",
+  "recoverbullReachable": "Accessible",
+  "recoverbullUnreachable": "Inaccessible",
   "recoverbullSelectCustomLocationError": "Échec de la sélection du fichier depuis l'emplacement personnalisé",
   "torSettingsDescDisconnected": "Le proxy Tor n'est pas actif",
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",

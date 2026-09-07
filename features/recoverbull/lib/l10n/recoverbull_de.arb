@@ -275,7 +275,7 @@
   "recoverbullConnecting": "Wird verbunden…",
   "recoverbullErrorVaultCreatedKeyNotStored": "Fehler: Vault-Datei erstellt, aber Schlüssel nicht auf dem Server gespeichert.",
   "recoverbullRetry": "Erneut versuchen",
-  "recoverbullConnectingTor": "Verbindung zum Schlüsselserver über Tor wird hergestellt.",
+  "recoverbullConnectedTorCheckingServer": "Verbindung zum Schlüsselserver über Tor wird hergestellt.",
   "recoverbullSelectCustomLocationError": "Datei vom benutzerdefinierten Speicherort konnte nicht ausgewählt werden.",
   "torSettingsDescDisconnected": "Tor-Proxy läuft nicht",
   "oopsSomethingWentWrong": "Ups! Etwas ist schief gelaufen",

@@ -170,7 +170,7 @@
   "recoverbullConnecting": "Đang kết nối",
   "recoverbullErrorVaultCreatedKeyNotStored": "Thất bại: Tệp kho lưu trữ đã được tạo nhưng khóa chưa được lưu trên máy chủ",
   "recoverbullRetry": "Thử lại",
-  "recoverbullConnectingTor": "Đang kết nối đến Máy chủ khóa qua Tor.\nQuá trình này có thể mất đến một phút.",
+  "recoverbullConnectedTorCheckingServer": "Đang kết nối đến Máy chủ khóa qua Tor.\nQuá trình này có thể mất đến một phút.",
   "recoverbullSelectCustomLocationError": "Không thể chọn tệp từ vị trí tùy chỉnh",
   "torSettingsDescDisconnected": "Proxy Tor không đang chạy",
   "oopsSomethingWentWrong": "Rất tiếc! Đã xảy ra lỗi",

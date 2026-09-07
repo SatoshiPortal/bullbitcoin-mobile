@@ -278,7 +278,7 @@
   "recoverbullConnecting": "Conexão",
   "recoverbullErrorVaultCreatedKeyNotStored": "Falhado: arquivo Vault criado mas chave não armazenado no servidor",
   "recoverbullRetry": "Repito",
-  "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
+  "recoverbullConnectedTorCheckingServer": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
   "recoverbullSelectCustomLocationError": "Falhado para selecionar o arquivo do local personalizado",
   "torSettingsDescDisconnected": "O proxy do Tor não está em execução",
   "@torSettingsDescDisconnected": {

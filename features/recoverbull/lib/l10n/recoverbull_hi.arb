@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Tor पर कुंजी सर्वर से जुड़ना।\nयह एक मिनट तक ले सकता है।।",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Tor पर कुंजी सर्वर से जुड़ना।\nयह एक मिनट तक ले सकता है।।",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "कस्टम स्थान से फ़ाइल चुनने में विफल",

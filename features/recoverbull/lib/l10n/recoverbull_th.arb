@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "เชื่อมต่อกับเซิร์ฟเวอร์\nคุณสามารถเพิ่มนาที.",
-  "@recoverbullConnectingTor": {
+    "recoverbullConnectedTorCheckingServer": "เชื่อมต่อกับเซิร์ฟเวอร์\nคุณสามารถเพิ่มนาที.",
+    "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "เลือกไฟล์จากรายการที่กําหนดเอง",

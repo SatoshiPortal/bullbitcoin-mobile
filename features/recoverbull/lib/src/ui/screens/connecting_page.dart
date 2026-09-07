@@ -31,7 +31,9 @@ const _blockageGrace = Duration(seconds: 5);
 const _reassureAfter = Duration(seconds: 20);
 
 class ConnectingPage extends StatefulWidget {
-  const ConnectingPage({super.key});
+  final DateTime Function() now;
+
+  const ConnectingPage({super.key, this.now = DateTime.now});
 
   @override
   State<ConnectingPage> createState() => _ConnectingPageState();
@@ -43,17 +45,9 @@ class _ConnectingPageState extends State<ConnectingPage> {
   /// of progress.
   Timer? _ticker;
 
-  /// Start of the phase currently on screen, not of the page.
-  ///
-  /// A single page-lifetime clock lied twice: the key-server row opened at the
-  /// bootstrap's own elapsed time, attributing 50 s of Tor work to the server,
-  /// and after a retry both the counter and the "this is the longest step"
-  /// threshold carried over from the attempt that had already failed.
-  DateTime _startedAt = DateTime.now();
+  /// Start of the current connection attempt.
+  late DateTime _startedAt;
   Duration _elapsed = Duration.zero;
-
-  /// Which phase the clock currently belongs to, to notice a handover.
-  bool? _torPhaseWasActive;
 
   /// When the current user-visible blockage first appeared, for [_blockageGrace].
   DateTime? _blockageSince;
@@ -70,9 +64,10 @@ class _ConnectingPageState extends State<ConnectingPage> {
   @override
   void initState() {
     super.initState();
+    _startedAt = widget.now();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
-      setState(() => _elapsed = DateTime.now().difference(_startedAt));
+      setState(() => _elapsed = widget.now().difference(_startedAt));
     });
 
     // `BlocListener` only sees emissions after it subscribes, so a blockage
@@ -95,7 +90,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
     if (_hasNavigated) return;
 
     final connection = state.torConnection;
-    final now = DateTime.now();
+    final now = widget.now();
 
     final diagnostic = switch (connection) {
       tor.TorConnecting(:final diagnostic) => diagnostic,
@@ -110,26 +105,6 @@ class _ConnectingPageState extends State<ConnectingPage> {
         _blockageSince = null;
       } else {
         _blockageSince ??= now;
-      }
-
-      // Hand the clock over when Tor stops being the active phase, so the
-      // key-server row starts from zero instead of inheriting the bootstrap.
-      final torIsActive = connection is! tor.TorReady;
-      if (_torPhaseWasActive != null && _torPhaseWasActive != torIsActive) {
-        _startedAt = now;
-        _elapsed = Duration.zero;
-      }
-      _torPhaseWasActive = torIsActive;
-
-      // A retry restarts the wait: `OnTorInitialization` clears the failure and
-      // sets the key-server status back to unknown, so the clock has to follow.
-      if (connection is tor.TorConnecting &&
-          state.keyServerStatus == KeyServerStatus.unknown &&
-          _elapsed > Duration.zero &&
-          diagnostic == null) {
-        _startedAt = now;
-        _elapsed = Duration.zero;
-        _blockageSince = null;
       }
     });
 
@@ -151,10 +126,26 @@ class _ConnectingPageState extends State<ConnectingPage> {
     }
   }
 
+  void _onRetry() {
+    // This is the only explicit reset signal. Tor phase changes and Arti
+    // republications belong to the same user-visible attempt.
+    setState(() {
+      _startedAt = widget.now();
+      _elapsed = Duration.zero;
+      _blockageSince = null;
+    });
+    final bloc = context.read<RecoverBullBloc>();
+    if (bloc.state.torConnection is tor.TorReady) {
+      bloc.add(const OnServerCheck());
+    } else {
+      bloc.add(const OnTorInitialization(restart: true));
+    }
+  }
+
   /// Whether a blockage has lasted long enough to be worth showing.
   bool get _blockageIsSettled {
     final since = _blockageSince;
-    return since != null && DateTime.now().difference(since) >= _blockageGrace;
+    return since != null && widget.now().difference(since) >= _blockageGrace;
   }
 
   @override
@@ -191,6 +182,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
                       state: state,
                       elapsed: _elapsed,
                       showBlockage: _blockageIsSettled,
+                      onRetry: _onRetry,
                     ),
                   ),
                 ),
@@ -210,11 +202,13 @@ class _Body extends StatelessWidget {
   final RecoverBullState state;
   final Duration elapsed;
   final bool showBlockage;
+  final VoidCallback onRetry;
 
   const _Body({
     required this.state,
     required this.elapsed,
     required this.showBlockage,
+    required this.onRetry,
   });
 
   tor.TorConnectionState get _tor => state.torConnection;
@@ -259,8 +253,7 @@ class _Body extends StatelessWidget {
     return switch (state.keyServerStatus) {
       KeyServerStatus.online => _PhaseState.done,
       KeyServerStatus.offline => _PhaseState.failed,
-      KeyServerStatus.connecting =>
-        _tor is tor.TorReady ? _PhaseState.active : _PhaseState.pending,
+      KeyServerStatus.connecting => _PhaseState.active,
       KeyServerStatus.unknown => _PhaseState.pending,
     };
   }
@@ -306,7 +299,7 @@ class _Body extends StatelessWidget {
   String _connectionNarrative(BuildContext context) {
     if (_tor is tor.TorReady &&
         state.keyServerStatus != KeyServerStatus.online) {
-      return context.loc.recoverbullConnectingTor;
+      return context.loc.recoverbullConnectedTorCheckingServer;
     }
 
     return switch (_mascotState) {
@@ -425,22 +418,30 @@ class _Body extends StatelessWidget {
             ),
           ),
         const Gap(20),
+        BBText(
+          context.loc.recoverbullElapsedSinceStart(_formatElapsed(elapsed)),
+          textAlign: .center,
+          style: context.font.bodySmall?.copyWith(
+            color: context.appColors.textMuted,
+          ),
+        ),
+        const Gap(12),
         _PhaseCard(
+          key: const ValueKey('tor-phase-card'),
           label: context.loc.recoverbullTorNetwork,
           phase: _torPhase,
           // No sub-step is named: the conn/dir split that would identify the
           // exact phase is private upstream, so claiming one would be wrong
           // about a third of the time.
-          caption: _torPhase == _PhaseState.active
-              ? context.loc.recoverbullPhaseNetworkInfo
-              : null,
-          elapsed: _torPhase == _PhaseState.active ? elapsed : null,
+          caption: _torCaption(context),
+          statusLabels: _torStatusLabels(context),
         ),
         const Gap(8),
         _PhaseCard(
+          key: const ValueKey('server-phase-card'),
           label: context.loc.recoverbullRecoverBullServer,
           phase: _serverPhase,
-          elapsed: _serverPhase == _PhaseState.active ? elapsed : null,
+          statusLabels: _serverStatusLabels(context),
           // Bare "2/3", deliberately unlocalised, like the timer.
           trailingDetail:
               _serverPhase == _PhaseState.active && state.keyServerAttempt > 0
@@ -459,14 +460,7 @@ class _Body extends StatelessWidget {
             // itself, and `restart` guarantees a stuck client is replaced rather
             // than adopted — which is what left a retry waiting on a dead
             // bootstrap after the network came back.
-            onRetry: () {
-              final bloc = context.read<RecoverBullBloc>();
-              if (_tor is tor.TorReady) {
-                bloc.add(const OnServerCheck());
-              } else {
-                bloc.add(const OnTorInitialization(restart: true));
-              }
-            },
+            onRetry: onRetry,
           )
         else
           BBText(
@@ -482,23 +476,63 @@ class _Body extends StatelessWidget {
       ],
     );
   }
+
+  String? _torCaption(BuildContext context) {
+    if (_torPhase != _PhaseState.active && state.torRefreshProgress == null) {
+      return null;
+    }
+    final progress = switch (_tor) {
+      tor.TorConnecting(:final progress) => progress,
+      _ => state.torRefreshProgress,
+    };
+    final transport = switch (_tor) {
+      tor.TorConnecting(:final transport) => transport,
+      _ => state.torRefreshTransport,
+    };
+    // Arti can report a transient drop during a directory refresh; showing the
+    // raw value is expected and honest, rather than hiding a real Tor state.
+    final percentage = progress == null ? null : '${(progress * 100).round()}%';
+    return [
+      context.loc.recoverbullPhaseNetworkInfo,
+      ?percentage,
+      ?transport?.name,
+    ].join(' · ');
+  }
+
+  ({String waiting, String active, String done, String failed})
+  _torStatusLabels(BuildContext context) => (
+    waiting: context.loc.recoverbullWaiting,
+    active: context.loc.recoverbullConnecting,
+    done: context.loc.recoverbullConnected,
+    failed: context.loc.recoverbullFailed,
+  );
+
+  ({String waiting, String active, String done, String failed})
+  _serverStatusLabels(BuildContext context) => (
+    waiting: context.loc.recoverbullWaitingForTor,
+    active: context.loc.recoverbullChecking,
+    done: context.loc.recoverbullReachable,
+    failed: context.loc.recoverbullUnreachable,
+  );
 }
 
 class _PhaseCard extends StatelessWidget {
   final String label;
   final _PhaseState phase;
   final String? caption;
-  final Duration? elapsed;
 
   /// An extra language-neutral token for the detail line, such as `2/3`.
   final String? trailingDetail;
+  final ({String waiting, String active, String done, String failed})
+  statusLabels;
 
   const _PhaseCard({
+    super.key,
     required this.label,
     required this.phase,
     this.caption,
-    this.elapsed,
     this.trailingDetail,
+    required this.statusLabels,
   });
 
   Color _color(BuildContext context) => switch (phase) {
@@ -508,10 +542,10 @@ class _PhaseCard extends StatelessWidget {
   };
 
   String _statusLabel(BuildContext context) => switch (phase) {
-    _PhaseState.done => context.loc.recoverbullConnected,
-    _PhaseState.failed => context.loc.recoverbullFailed,
-    _PhaseState.active => context.loc.recoverbullConnecting,
-    _PhaseState.pending => context.loc.recoverbullWaiting,
+    _PhaseState.done => statusLabels.done,
+    _PhaseState.failed => statusLabels.failed,
+    _PhaseState.active => statusLabels.active,
+    _PhaseState.pending => statusLabels.waiting,
   };
 
   @override
@@ -548,7 +582,7 @@ class _PhaseCard extends StatelessWidget {
               ),
             ],
           ),
-          if (caption != null || elapsed != null || trailingDetail != null) ...[
+          if (caption != null || trailingDetail != null) ...[
             const Gap(8),
             Padding(
               padding: const EdgeInsets.only(left: 32),
@@ -563,16 +597,10 @@ class _PhaseCard extends StatelessWidget {
                       ),
                       maxLines: 2,
                     ),
-                  if (elapsed != null || trailingDetail != null) ...[
+                  if (trailingDetail != null) ...[
                     const Gap(6),
                     BBText(
-                      [
-                        ?trailingDetail,
-                        // A bare timer, deliberately unlocalised: no words to
-                        // translate, and it is the only element that keeps
-                        // moving during the long directory phase.
-                        if (elapsed != null) _formatElapsed(elapsed!),
-                      ].join('  ·  '),
+                      [?trailingDetail].join('  ·  '),
                       style: context.font.bodySmall?.copyWith(
                         color: context.appColors.textMuted,
                       ),
@@ -586,12 +614,12 @@ class _PhaseCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  static String _formatElapsed(Duration d) {
-    final minutes = d.inMinutes;
-    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
-  }
+String _formatElapsed(Duration d) {
+  final minutes = d.inMinutes;
+  final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return '$minutes:$seconds';
 }
 
 class _PhaseIcon extends StatelessWidget {

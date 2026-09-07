@@ -99,7 +99,8 @@ class VaultProviderSelectionPage extends StatelessWidget {
                     child: ProgressScreen(
                       isLoading: true,
                       title: context.loc.recoverbullCreatingVault,
-                      description: context.loc.recoverbullConnectingTor,
+                      description:
+                          context.loc.recoverbullConnectedTorCheckingServer,
                     ),
                   ),
                 ),

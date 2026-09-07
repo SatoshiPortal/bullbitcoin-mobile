@@ -170,7 +170,7 @@
   "recoverbullConnecting": "მიმდინარეობს დაკავშირება",
   "recoverbullErrorVaultCreatedKeyNotStored": "ვერ შესრულდა: საცავის ფაილი შეიქმნა, მაგრამ გასაღები სერვერზე ვერ შენახულა",
   "recoverbullRetry": "ხელახლა ცდა",
-  "recoverbullConnectingTor": "Tor-ის მეშვეობით ხდება დაკავშირება გასაღების სერვერთან.\nამას შეიძლება წუთამდე დასჭირდეს.",
+  "recoverbullConnectedTorCheckingServer": "Tor-ის მეშვეობით ხდება დაკავშირება გასაღების სერვერთან.\nამას შეიძლება წუთამდე დასჭირდეს.",
   "recoverbullSelectCustomLocationError": "მორგებული მდებარეობიდან ფაილის არჩევა ვერ მოხერხდა",
   "torSettingsDescDisconnected": "Tor პროქსი გაშვებული არ არის",
   "oopsSomethingWentWrong": "უპს! რაღაც ვერ მოხერხდა",

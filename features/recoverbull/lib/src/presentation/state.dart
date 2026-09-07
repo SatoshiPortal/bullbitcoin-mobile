@@ -31,6 +31,11 @@ final class RecoverBullState with RecoverBullStateMappable {
   /// because it collapses all three into four values.
   final tor.TorConnectionState torConnection;
 
+  /// Raw Arti details observed during a directory refresh. These remain
+  /// separate from [torConnection], whose value is the user-facing verdict.
+  final double? torRefreshProgress;
+  final tor.TorTransport? torRefreshTransport;
+
   const RecoverBullState({
     required this.flow,
     this.vaultProvider,
@@ -46,6 +51,8 @@ final class RecoverBullState with RecoverBullStateMappable {
     this.keyServerAttempts = 0,
     this.isFlowFinished = false,
     this.torConnection = const tor.TorUninitialized(),
+    this.torRefreshProgress,
+    this.torRefreshTransport,
   });
 
   @override

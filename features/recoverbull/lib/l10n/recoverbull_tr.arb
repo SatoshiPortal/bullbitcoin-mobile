@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Tor üzerinde Key Server'a bağlanın.\nBu bir dakikaya kadar sürebilir.",
-  "@recoverbullConnectingTor": {
+    "recoverbullConnectedTorCheckingServer": "Tor üzerinde Key Server'a bağlanın.\nBu bir dakikaya kadar sürebilir.",
+    "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "Özel yerden dosya seçmek için başarısız oldu",

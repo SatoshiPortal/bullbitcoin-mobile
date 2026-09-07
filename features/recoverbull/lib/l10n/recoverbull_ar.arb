@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "(تواصل مع (كي سيرفر على (تور\nهذا يمكن أن يستغرق حتى دقيقة.",
-  "@recoverbullConnectingTor": {
+    "recoverbullConnectedTorCheckingServer": "(تواصل مع (كي سيرفر على (تور\nهذا يمكن أن يستغرق حتى دقيقة.",
+    "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "فشل في اختيار ملف من موقع العرف",

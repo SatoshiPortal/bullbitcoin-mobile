@@ -46,6 +46,9 @@ class _MutableBloc extends Fake implements RecoverBullBloc {
   }
 
   @override
+  void add(RecoverBullEvent event) {}
+
+  @override
   Future<void> close() => _states.close();
 }
 
@@ -59,7 +62,11 @@ class _RouteObserver extends NavigatorObserver {
 }
 
 void main() {
-  Future<void> pumpPage(WidgetTester tester, RecoverBullState state) async {
+  Future<void> pumpPage(
+    WidgetTester tester,
+    RecoverBullState state, {
+    DateTime Function()? now,
+  }) async {
     final bloc = _StaticBloc(state);
 
     await tester.pumpWidget(
@@ -69,7 +76,7 @@ void main() {
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
           value: bloc,
-          child: const ConnectingPage(),
+          child: ConnectingPage(now: now ?? DateTime.now),
         ),
       ),
     );
@@ -182,7 +189,251 @@ void main() {
     );
     expect(find.byKey(const ValueKey('tor-bull-ready')), findsOneWidget);
     expect(find.byKey(const ValueKey('tor-bull-direct')), findsNothing);
-    expect(find.text(l10n.recoverbullConnectingTor), findsOneWidget);
+    expect(
+      find.text(l10n.recoverbullConnectedTorCheckingServer),
+      findsOneWidget,
+    );
+    expect(find.text('Connecting to Key Server over Tor.'), findsNothing);
+  });
+
+  testWidgets('keeps the connected verdict while showing refresh progress', (
+    tester,
+  ) async {
+    final route = tor.TorRoute(
+      source: tor.TorSource.embedded,
+      endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+      evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+      transport: tor.TorTransport.direct,
+    );
+
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorReady(route),
+        torRefreshProgress: 0.42,
+        torRefreshTransport: tor.TorTransport.direct,
+      ),
+    );
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullConnected), findsOneWidget);
+    expect(find.textContaining('42%'), findsOneWidget);
+    expect(find.textContaining('direct'), findsOneWidget);
+  });
+
+  testWidgets('keeps one elapsed clock across an Arti republication', (
+    tester,
+  ) async {
+    var now = DateTime(2026, 1, 1);
+    final route = tor.TorRoute(
+      source: tor.TorSource.embedded,
+      endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+      evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+      transport: tor.TorTransport.direct,
+    );
+    final initial = RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: tor.TorReady(route),
+      keyServerStatus: KeyServerStatus.connecting,
+    );
+    final bloc = _MutableBloc(initial);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: ConnectingPage(now: () => now),
+        ),
+      ),
+    );
+    now = now.add(const Duration(seconds: 10));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('0:10'), findsOneWidget);
+
+    bloc.pushState(
+      initial.copyWith(
+        torConnection: const tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          diagnostic: tor.TorDiagnostic.offline,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.textContaining('0:10'), findsOneWidget);
+    await bloc.close();
+  });
+
+  testWidgets('resets the elapsed clock only after an explicit Retry', (
+    tester,
+  ) async {
+    var now = DateTime(2026, 1, 1);
+    const initial = RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: tor.TorConnecting(
+        source: tor.TorSource.embedded,
+        diagnostic: tor.TorDiagnostic.offline,
+      ),
+      keyServerStatus: KeyServerStatus.connecting,
+    );
+    final bloc = _MutableBloc(initial);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: ConnectingPage(now: () => now),
+        ),
+      ),
+    );
+    now = now.add(const Duration(seconds: 6));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('0:06'), findsOneWidget);
+    final retry = find.text('Retry');
+    await tester.ensureVisible(retry);
+    await tester.tap(retry);
+    await tester.pump();
+    expect(find.textContaining('0:00'), findsOneWidget);
+    await bloc.close();
+  });
+
+  testWidgets(
+    'shows Tor progress and an active server check before readiness',
+    (tester) async {
+      await pumpPage(
+        tester,
+        const RecoverBullState(
+          flow: RecoverBullFlow.recoverVault,
+          torConnection: tor.TorConnecting(
+            source: tor.TorSource.embedded,
+            progress: 0.45,
+          ),
+          keyServerStatus: KeyServerStatus.connecting,
+          keyServerAttempt: 1,
+          keyServerAttempts: 3,
+        ),
+      );
+
+      final l10n = await RecoverBullLocalizations.delegate.load(
+        const Locale('en'),
+      );
+      expect(find.textContaining('45%'), findsOneWidget);
+      expect(find.textContaining('1/3'), findsOneWidget);
+      expect(find.text(l10n.recoverbullChecking), findsOneWidget);
+      expect(find.text(l10n.recoverbullWaitingForTor), findsNothing);
+    },
+  );
+
+  testWidgets('does not invent a percentage when Tor has no progress', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorConnecting(source: tor.TorSource.embedded),
+      ),
+    );
+
+    expect(find.textContaining('%'), findsNothing);
+  });
+
+  testWidgets('shows a falling Arti progress value without smoothing it', (
+    tester,
+  ) async {
+    final bloc = _MutableBloc(
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          progress: 0.76,
+        ),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: const ConnectingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    bloc.pushState(
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          progress: 0.42,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining('42%'), findsOneWidget);
+    expect(find.textContaining('76%'), findsNothing);
+    await bloc.close();
+  });
+
+  testWidgets('shows elapsed time once outside the phase cards', (
+    tester,
+  ) async {
+    var now = DateTime(2026, 1, 1);
+    final bloc = _MutableBloc(
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+        keyServerStatus: KeyServerStatus.connecting,
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: ConnectingPage(now: () => now),
+        ),
+      ),
+    );
+    now = now.add(const Duration(seconds: 10));
+    await tester.pump(const Duration(seconds: 1));
+
+    final elapsed = find.textContaining('0:10');
+    expect(elapsed, findsOneWidget);
+    expect(
+      find.ancestor(
+        of: elapsed,
+        matching: find.byKey(const ValueKey('tor-phase-card')),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.ancestor(
+        of: elapsed,
+        matching: find.byKey(const ValueKey('server-phase-card')),
+      ),
+      findsNothing,
+    );
+    await bloc.close();
   });
 
   // The headline of this screen: a blockage that outlives the grace period has
@@ -192,6 +443,7 @@ void main() {
   testWidgets('explains a settled blockage while still connecting', (
     tester,
   ) async {
+    var fakeNow = DateTime(2026, 1, 1);
     const connecting = RecoverBullState(
       flow: RecoverBullFlow.recoverVault,
       torConnection: tor.TorConnecting(
@@ -208,7 +460,7 @@ void main() {
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: BlocProvider<RecoverBullBloc>.value(
           value: bloc,
-          child: const ConnectingPage(),
+          child: ConnectingPage(now: () => fakeNow),
         ),
       ),
     );
@@ -232,13 +484,7 @@ void main() {
     // Inside the grace period: still silent, on purpose.
     expect(find.text(l10n.recoverbullTorOffline), findsNothing);
 
-    // Two clocks have to move. The grace period is measured against the wall
-    // clock, which `pump` does not advance, so the wait is real. The rebuild then
-    // comes from the one-second ticker, which only fires when the *fake* clock
-    // advances. Six seconds of CI time is the price of pinning what shipped here.
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(seconds: 6)),
-    );
+    fakeNow = fakeNow.add(const Duration(seconds: 6));
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.text(l10n.recoverbullTorOffline), findsOneWidget);
@@ -277,6 +523,7 @@ void main() {
   testWidgets('shows the filtered mascot after the grace period', (
     tester,
   ) async {
+    var fakeNow = DateTime(2026, 1, 1);
     await pumpPage(
       tester,
       const RecoverBullState(
@@ -287,13 +534,12 @@ void main() {
           diagnostic: tor.TorDiagnostic.filtering,
         ),
       ),
+      now: () => fakeNow,
     );
 
     expect(find.byKey(const ValueKey('tor-bull-filtered')), findsNothing);
 
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(seconds: 6)),
-    );
+    fakeNow = fakeNow.add(const Duration(seconds: 6));
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.byKey(const ValueKey('tor-bull-filtered')), findsOneWidget);

@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Připojení k Key Serveru přes Tor.\nTo může trvat až minutu.",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Připojení k Key Serveru přes Tor.\nTo může trvat až minutu.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "Vypnuto vybrat soubor z vlastní polohy",

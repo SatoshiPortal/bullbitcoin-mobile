@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "Falhado para selecionar o arquivo do local personalizado",

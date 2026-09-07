@@ -170,7 +170,7 @@
   "recoverbullConnecting": "Միանում է",
   "recoverbullErrorVaultCreatedKeyNotStored": "Ձախողում․ Պահոցի ֆայլը ստեղծվեց, բայց բանալին չպահվեց սերվերում",
   "recoverbullRetry": "Կրկին փորձել",
-  "recoverbullConnectingTor": "Միանում ենք Բանալիների սերվերին Tor-ի միջոցով։\nԴա կարող է տևել մինչև մեկ րոպե։",
+  "recoverbullConnectedTorCheckingServer": "Միանում ենք Բանալիների սերվերին Tor-ի միջոցով։\nԴա կարող է տևել մինչև մեկ րոպե։",
   "recoverbullSelectCustomLocationError": "Չհաջողվեց ընտրել ֆայլը հատուկ վայրից",
   "torSettingsDescDisconnected": "Tor proxy-ն չի աշխատում",
   "oopsSomethingWentWrong": "Ուպս։ Ինչ-որ բան սխալ գնաց",

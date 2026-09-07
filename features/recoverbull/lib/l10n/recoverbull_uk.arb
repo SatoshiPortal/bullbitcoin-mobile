@@ -275,7 +275,7 @@
   "recoverbullConnecting": "Підключення",
   "recoverbullErrorVaultCreatedKeyNotStored": "Переміщений файл Vault створений, але ключ не зберігається в сервері",
   "recoverbullRetry": "Птиця",
-  "recoverbullConnectingTor": "Підключення до Key Server над Tor.\nЦе може прийняти до хвилини.",
+  "recoverbullConnectedTorCheckingServer": "Підключення до Key Server над Tor.\nЦе може прийняти до хвилини.",
   "recoverbullSelectCustomLocationError": "Вимкнено вибрати файл з індивідуального розташування",
   "torSettingsDescDisconnected": "Тор проксі не працює",
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",

@@ -608,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Συνδέοντας με τον Key Server πάνω από το Tor.\nΑυτό μπορεί να διαρκέσει έως και ένα λεπτό.",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Συνδέοντας με τον Key Server πάνω από το Tor.\nΑυτό μπορεί να διαρκέσει έως και ένα λεπτό.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "Επιθυμήθηκε να επιλέξει αρχείο από την προσαρμοσμένη τοποθεσία",
