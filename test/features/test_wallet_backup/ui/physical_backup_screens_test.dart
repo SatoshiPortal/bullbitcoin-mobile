@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -88,6 +90,7 @@ void main() {
         getMnemonicFromFingerprintUsecase: getMnemonic,
         verifyPhysicalBackupUsecase: _MockVerifyBackup(),
       );
+      addTearDown(bloc.close);
       bloc.seed(TestWalletBackupState(selectedWallet: _wallet));
 
       await tester.pumpWidget(
@@ -109,7 +112,77 @@ void main() {
       expect(find.byType(ErrorWidget), findsNothing);
       expect(find.text('legal'), findsWidgets);
       expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
     });
+  }
+
+  for (final accepted in [true, false]) {
+    for (final verify in [false, true]) {
+      testWidgets(
+        'provided mnemonic ${verify ? 'verification' : 'display'} waits for protection: $accepted',
+        (tester) async {
+          Device.screen = const Size(411, 890);
+          final protection = Completer<bool>();
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(privacyChannel, (call) async {
+                return call.method == 'screenshotOff'
+                    ? protection.future
+                    : true;
+              });
+          var completed = false;
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: AppTheme.themeData(AppThemeType.light),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: const Locale('en'),
+              home: verify
+                  ? VerifyMnemonicScreen.forMnemonic(
+                      mnemonic: _mnemonic,
+                      title: 'Verify inheritance key',
+                      onVerified: () => completed = true,
+                    )
+                  : ShowMnemonicScreen.forMnemonic(
+                      mnemonic: _mnemonic,
+                      title: 'Inheritance key',
+                      onContinue: () => completed = true,
+                    ),
+            ),
+          );
+          expect(find.text('legal'), findsNothing);
+          protection.complete(accepted);
+          await tester.pumpAndSettle();
+          if (accepted) {
+            expect(find.text('legal'), findsWidgets);
+            if (verify) {
+              for (final word in _mnemonic) {
+                final target = find
+                    .ancestor(
+                      of: find.text(word),
+                      matching: find.byWidgetPredicate(
+                        (widget) => widget is InkWell && widget.onTap != null,
+                      ),
+                    )
+                    .first;
+                await tester.ensureVisible(target);
+                await tester.tap(target);
+                await tester.pumpAndSettle();
+              }
+            } else {
+              await tester.tap(find.text('Next'));
+              await tester.pump();
+            }
+            expect(completed, isTrue);
+          } else {
+            expect(find.text('legal'), findsNothing);
+            expect(completed, isFalse);
+          }
+          expect(tester.takeException(), isNull);
+          await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpAndSettle();
+        },
+      );
+    }
   }
 }
 
