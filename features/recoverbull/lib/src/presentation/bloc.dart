@@ -68,6 +68,16 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   RecoverBullTorRoute? _route;
   int _routeGeneration = 0;
   EncryptedVault? _pendingProviderVault;
+  bool _serverCheckInFlight = false;
+  bool _serverCheckRequested = false;
+
+  void _requestServerCheck() {
+    _serverCheckRequested = true;
+    if (!_serverCheckInFlight && !isClosed && !_closingBloc) {
+      _serverCheckRequested = false;
+      add(const OnServerCheck());
+    }
+  }
 
   RecoverBullBloc({
     required this.log,
@@ -174,6 +184,17 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     if (state.torConnection is tor.TorReady &&
         next is tor.TorConnecting &&
         next.diagnostic == null) {
+      // Keep the verdict latched while exposing Arti's raw refresh details.
+      // A directory refresh can lower progress without invalidating the
+      // already usable route; hiding it would make support diagnostics and the
+      // secondary UI detail disagree with the actual Tor stream.
+      log.fine('recoverbull.tor.directory_refresh');
+      emit(
+        state.copyWith(
+          torRefreshProgress: next.progress,
+          torRefreshTransport: next.transport,
+        ),
+      );
       return;
     }
     emit(state.copyWith(torConnection: next));
@@ -182,7 +203,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     // server check observe whether the retained external route is still usable;
     // never manufacture recovery from an embedded readiness event.
     if (next is tor.TorUnavailable && nextIsExternal && _route != null) {
-      add(const OnServerCheck());
+      _requestServerCheck();
     }
 
     // The global readiness stream can emit before the flow's initialization
@@ -193,7 +214,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     if (next is tor.TorReady &&
         state.keyServerStatus == KeyServerStatus.unknown &&
         _route != null) {
-      add(const OnServerCheck());
+      _requestServerCheck();
     }
   }
 
@@ -201,16 +222,16 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnTorInitialization event,
     Emitter<RecoverBullState> emit,
   ) async {
+    final generation = ++_routeGeneration;
     emit(
       state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
     );
     if (!event.restart && _route != null) {
       emit(state.copyWith(torConnection: tor.TorReady(_route!.route)));
-      add(const OnServerCheck());
+      _requestServerCheck();
       return;
     }
     final oldRoute = _route;
-    final generation = ++_routeGeneration;
     _route = null;
     if (oldRoute != null) {
       try {
@@ -226,7 +247,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       restartEmbedded: event.restart,
     );
     _pendingRoutePreparation = preparation;
+    final bootstrapTimer = Stopwatch()..start();
     final result = await preparation;
+    bootstrapTimer.stop();
+    log.fine(
+      'recoverbull.timing phase=tor_bootstrap '
+      'duration_ms=${bootstrapTimer.elapsedMilliseconds} '
+      'outcome=${result is Ok ? 'success' : 'failure'}',
+    );
     if (identical(_pendingRoutePreparation, preparation)) {
       _pendingRoutePreparation = null;
     }
@@ -243,7 +271,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           return;
         }
         emit(state.copyWith(torConnection: connection));
-        add(const OnServerCheck());
+        _requestServerCheck();
       case Err(:final failure):
         final torFailure = failure is core.ExternalTorProxyUnavailableFailure
             ? tor.TorExternalProxyUnavailableFailure(failure.logMessage)
@@ -267,13 +295,20 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     OnServerCheck event,
     Emitter<RecoverBullState> emit,
   ) async {
+    _serverCheckInFlight = true;
+    _serverCheckRequested = false;
     final generation = _routeGeneration;
     final route = _route;
+    final checkTimer = Stopwatch()..start();
     try {
       // `torStatus` is not emitted here: it is driven by the subscription set
       // up in the constructor. Emitting a snapshot at this point is what made a
       // healthy cold start look like a Tor failure.
       const retries = ConnectToKeyServerUsecase.maxAttempts;
+      if (generation != _routeGeneration) {
+        _logAbandonedServerCheck('generation_changed');
+        return;
+      }
       emit(
         state.copyWith(
           failure: null,
@@ -296,14 +331,18 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         },
       );
       if (isClosed || _closingBloc || generation != _routeGeneration) {
-        if (!isClosed && !_closingBloc && generation != _routeGeneration) {
-          add(const OnServerCheck());
-        }
+        _logAbandonedServerCheck(
+          isClosed || _closingBloc ? 'closed' : 'generation_changed',
+        );
         return;
       }
 
       switch (result) {
         case Err(:final failure):
+          log.warning(
+            'recoverbull.server_check.failed '
+            'failure_type=${failure.runtimeType} attempts=${state.keyServerAttempt}',
+          );
           emit(
             state.copyWith(
               failure: _fetchKeyFailure(failure),
@@ -331,9 +370,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
     } catch (e) {
       if (isClosed || _closingBloc || generation != _routeGeneration) {
-        if (!isClosed && !_closingBloc && generation != _routeGeneration) {
-          add(const OnServerCheck());
-        }
+        _logAbandonedServerCheck(
+          isClosed || _closingBloc ? 'closed' : 'generation_changed',
+        );
         return;
       }
       log.error(
@@ -346,7 +385,22 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
+    } finally {
+      checkTimer.stop();
+      log.fine(
+        'recoverbull.timing phase=server_check '
+        'duration_ms=${checkTimer.elapsedMilliseconds}',
+      );
+      _serverCheckInFlight = false;
+      if (_serverCheckRequested && !isClosed && !_closingBloc) {
+        _serverCheckRequested = false;
+        add(const OnServerCheck());
+      }
     }
+  }
+
+  void _logAbandonedServerCheck(String reason) {
+    log.warning('recoverbull.server_check.abandoned reason=$reason');
   }
 
   Future<void> _onVaultPasswordSet(

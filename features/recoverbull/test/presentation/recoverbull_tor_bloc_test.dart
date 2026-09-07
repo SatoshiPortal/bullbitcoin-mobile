@@ -10,6 +10,7 @@ import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/recoverbull_bloc_harness.dart';
+import '../support/log_sink.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -74,12 +75,237 @@ void main() {
   });
 
   group('RecoverBull Tor readiness', () {
+    test('does not let an obsolete verdict reset the current check', () async {
+      final firstCheck = Completer<Result<bool, core.RecoverBullFailure>>();
+      var ensureCalls = 0;
+      final firstRoute = testRoute();
+      final secondRoute = testRoute();
+      when(
+        () => ensureRecoverBullTorSession.execute(
+          restartEmbedded: any(named: 'restartEmbedded'),
+        ),
+      ).thenAnswer(
+        (_) async => ++ensureCalls == 1 ? Ok(firstRoute) : Ok(secondRoute),
+      );
+      var checkCalls = 0;
+      when(
+        () => checkConnection.execute(route: any(named: 'route')),
+      ).thenAnswer((invocation) async {
+        checkCalls++;
+        if (checkCalls == 1) return firstCheck.future;
+        return const Ok(true);
+      });
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      expect(bloc.state.keyServerStatus, KeyServerStatus.connecting);
+      expect(bloc.state.keyServerAttempt, 1);
+
+      bloc.add(const OnTorInitialization(restart: true));
+      await pumpEventQueue();
+      firstCheck.complete(const Ok(false));
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      expect(bloc.state.keyServerAttempt, 1);
+      await bloc.close();
+    });
+
+    test(
+      'executes a replacement check after an obsolete check completes',
+      () async {
+        final firstCheck = Completer<Result<bool, core.RecoverBullFailure>>();
+        var ensureCalls = 0;
+        final firstRoute = testRoute();
+        final secondRoute = testRoute();
+        when(
+          () => ensureRecoverBullTorSession.execute(
+            restartEmbedded: any(named: 'restartEmbedded'),
+          ),
+        ).thenAnswer(
+          (_) async => ++ensureCalls == 1 ? Ok(firstRoute) : Ok(secondRoute),
+        );
+        var checkCalls = 0;
+        when(
+          () => checkConnection.execute(route: any(named: 'route')),
+        ).thenAnswer((_) async {
+          checkCalls++;
+          if (checkCalls == 1) return firstCheck.future;
+          return const Ok(true);
+        });
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnTorInitialization(restart: true));
+        await pumpEventQueue();
+        firstCheck.complete(const Ok(false));
+        await pumpEventQueue();
+
+        verify(() => checkConnection.execute(route: secondRoute)).called(1);
+        expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+        await bloc.close();
+      },
+    );
+
+    test(
+      'does not lose a check requested while the current check is in flight',
+      () async {
+        final firstCheck = Completer<Result<bool, core.RecoverBullFailure>>();
+        final firstRoute = testRoute();
+        final secondRoute = testRoute();
+        var ensureCalls = 0;
+        when(
+          () => ensureRecoverBullTorSession.execute(
+            restartEmbedded: any(named: 'restartEmbedded'),
+          ),
+        ).thenAnswer(
+          (_) async => ++ensureCalls == 1 ? Ok(firstRoute) : Ok(secondRoute),
+        );
+        var checkCalls = 0;
+        when(
+          () => checkConnection.execute(route: any(named: 'route')),
+        ).thenAnswer((invocation) async {
+          checkCalls++;
+          if (checkCalls == 1) return firstCheck.future;
+          return const Ok(true);
+        });
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+        bloc.add(const OnTorInitialization(restart: true));
+        await Future<void>.delayed(Duration.zero);
+        expect(checkCalls, 1);
+        firstCheck.complete(const Ok(false));
+        await pumpEventQueue();
+
+        verify(() => checkConnection.execute(route: secondRoute)).called(1);
+        await bloc.close();
+      },
+    );
+
+    test('executes a server check without a local route', () async {
+      final route = testRoute();
+      when(
+        () => ensureRecoverBullTorSession.execute(
+          restartEmbedded: any(named: 'restartEmbedded'),
+        ),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+
+      expect(bloc.state.keyServerStatus, KeyServerStatus.online);
+      verify(() => checkConnection.execute(route: route)).called(1);
+      await bloc.close();
+    });
+
+    test('logs screen-level bootstrap and server-check timings', () async {
+      final log = TestLogSink.recording();
+      final route = testRoute();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(
+        log.entries.any(
+          (entry) => entry.message.contains('phase=tor_bootstrap'),
+        ),
+        isTrue,
+      );
+      expect(
+        log.entries.any(
+          (entry) => entry.message.contains('phase=server_check'),
+        ),
+        isTrue,
+      );
+      expect(
+        log.entries.any((entry) => entry.message.contains('attempts=')),
+        isTrue,
+      );
+      await bloc.close();
+    });
+
+    test(
+      'emits exactly one verdict and one duration for a successful check',
+      () async {
+        final log = TestLogSink.recording();
+        final route = testRoute();
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(route));
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) async => const Ok(true));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+
+        final messages = log.entries
+            .map((entry) => entry.message)
+            .where((message) => message.contains('server_check'))
+            .toList();
+        expect(messages, hasLength(2));
+        expect(messages[0], 'recoverbull.server_check.succeeded attempts=1');
+        expect(
+          messages[1],
+          matches(r'^recoverbull\.timing phase=server_check duration_ms=\d+$'),
+        );
+        await bloc.close();
+      },
+    );
+
+    test(
+      'emits exactly one failure verdict and one duration when exhausted',
+      () async {
+        final log = TestLogSink.recording();
+        final route = testRoute();
+        when(
+          () => ensureRecoverBullTorSession.execute(),
+        ).thenAnswer((_) async => Ok(route));
+        when(
+          () => checkConnection.execute(route: route),
+        ).thenAnswer((_) async => const Ok(false));
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
+
+        bloc.add(const OnTorInitialization());
+        await pumpEventQueue();
+
+        final messages = log.entries
+            .map((entry) => entry.message)
+            .where((message) => message.contains('server_check'))
+            .toList();
+        expect(messages, hasLength(2));
+        expect(messages[0], 'recoverbull.server_check.exhausted attempts=3');
+        expect(
+          messages[1],
+          matches(r'^recoverbull\.timing phase=server_check duration_ms=\d+$'),
+        );
+        await bloc.close();
+      },
+    );
+
     test(
       'keeps a usable route ready during Arti directory refreshes',
       () async {
         final states = StreamController<TorConnectionState>();
+        final log = TestLogSink.recording();
         when(() => watchTor.execute()).thenAnswer((_) => states.stream);
-        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault);
+        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
         final route = TorRoute(
           source: TorSource.embedded,
           endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41001),
@@ -107,6 +333,12 @@ void main() {
         await pumpEventQueue();
 
         expect(bloc.state.torConnection, isA<TorReady>());
+        expect(bloc.state.torRefreshProgress, 0.42);
+        expect(bloc.state.torRefreshTransport, TorTransport.direct);
+        expect(
+          log.entries.map((entry) => entry.message),
+          contains('recoverbull.tor.directory_refresh'),
+        );
 
         states.add(
           const TorUnavailable(
