@@ -367,6 +367,10 @@ void main() {
     ).thenAnswer((_) => const Stream.empty());
     final wallets = WalletRepository(
       walletMetadataDatasource: metadataDatasource,
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: seedDatasource,
+        session: WalletUnlockSession(),
+      ),
       bdkWalletDatasource: bdkDatasource,
       lwkWalletDatasource: lwk,
       serversPort: _MockElectrumServersPort(),

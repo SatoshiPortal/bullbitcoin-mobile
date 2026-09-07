@@ -710,9 +710,11 @@ void main() {
         when(
           () => getDefaultSeed.execute(environment: Environment.testnet),
         ).thenAnswer(
-          (_) async => SeedModel.mnemonic(
-            mnemonicWords: testMnemonics[1].split(' '),
-          ).toEntity(),
+          (_) async => Ok(
+            SeedModel.mnemonic(
+              mnemonicWords: testMnemonics[1].split(' '),
+            ).toEntity(),
+          ),
         );
         when(
           () => getAllSeeds.execute(),

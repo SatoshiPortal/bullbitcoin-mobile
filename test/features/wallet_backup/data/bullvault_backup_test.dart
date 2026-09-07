@@ -120,11 +120,7 @@ void main() {
             generation: 0,
           );
           return Ok(
-            BullVaultRestoreResult(
-              wallet: _wallet(label),
-              record: record,
-              source: BullVaultRestoreSource.recoveryPackage,
-            ),
+            BullVaultRestoreResult(wallet: _wallet(label), record: record),
           );
         },
       );
@@ -212,7 +208,6 @@ void main() {
           BullVaultRestoreResult(
             wallet: _wallet(label),
             record: _record(walletId: label, lineageId: 'x', generation: 0),
-            source: BullVaultRestoreSource.recoveryPackage,
           ),
         );
       },

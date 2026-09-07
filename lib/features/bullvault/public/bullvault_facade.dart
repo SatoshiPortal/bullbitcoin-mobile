@@ -9,9 +9,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_u
 import 'package:meta/meta.dart';
 
 export 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
-export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
-export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_previous_vault.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
