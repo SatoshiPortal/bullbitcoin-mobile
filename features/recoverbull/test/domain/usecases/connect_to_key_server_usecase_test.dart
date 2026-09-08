@@ -24,6 +24,7 @@ void main() {
   late int closeCount;
   late List<Duration> waited;
   late List<int> attempts;
+  late TestLogSink log;
   late ConnectToKeyServerUsecase usecase;
 
   setUp(() {
@@ -43,10 +44,11 @@ void main() {
     when(() => ensureSession.execute()).thenAnswer((_) async => Ok(route));
     waited = [];
     attempts = [];
+    log = TestLogSink.recording();
     usecase = ConnectToKeyServerUsecase(
       check: checkConnection,
       ensureTor: ensureSession,
-      log: const TestLogSink(),
+      log: log,
       wait: (duration) async => waited.add(duration),
     );
   });
@@ -153,6 +155,135 @@ void main() {
 
     expect(waited, isEmpty);
     expect(closeCount, 1);
+  });
+
+  test('keeps the total connection phase within the global budget', () async {
+    var elapsed = Duration.zero;
+    final timeouts = <Duration>[];
+    final bounded = ConnectToKeyServerUsecase(
+      check: checkConnection,
+      ensureTor: ensureSession,
+      log: log,
+      elapsed: () => elapsed,
+      checkWithTimeout: ({required route, required timeout}) async {
+        timeouts.add(timeout);
+        elapsed += timeout;
+        return const Ok(false);
+      },
+    );
+
+    expect(
+      await bounded.execute(onAttempt: attempts.add),
+      isA<Ok<bool, RecoverBullFailure>>(),
+    );
+    expect(attempts, [1]);
+    expect(timeouts, [ConnectToKeyServerUsecase.connectionBudget]);
+  });
+
+  test('does not charge a cold Tor bootstrap to the server budget', () async {
+    var elapsed = Duration.zero;
+    var checks = 0;
+    var timeoutCalls = 0;
+    final bounded = ConnectToKeyServerUsecase(
+      check: checkConnection,
+      ensureTor: ensureSession,
+      log: log,
+      elapsed: () => elapsed,
+      timeout: <T>(future, timeout) {
+        timeoutCalls++;
+        return future;
+      },
+    );
+    when(() => checkConnection.execute(route: route)).thenAnswer((_) async {
+      checks++;
+      elapsed += const Duration(seconds: 5);
+      return const Ok(true);
+    });
+    when(() => ensureSession.execute()).thenAnswer((_) async {
+      elapsed += const Duration(seconds: 37);
+      return Ok(route);
+    });
+
+    final result = await bounded.execute(onAttempt: attempts.add);
+    expect(result, isA<Ok<bool, RecoverBullFailure>>());
+    expect((result as Ok<bool, RecoverBullFailure>).value, isTrue);
+    expect(checks, 1);
+    expect(timeoutCalls, 1);
+  });
+
+  test('allows a late first success inside the global budget', () async {
+    var elapsed = Duration.zero;
+    Duration? receivedTimeout;
+    final bounded = ConnectToKeyServerUsecase(
+      check: checkConnection,
+      ensureTor: ensureSession,
+      log: log,
+      elapsed: () => elapsed,
+      checkWithTimeout: ({required route, required Duration timeout}) async {
+        receivedTimeout = timeout;
+        elapsed += const Duration(seconds: 29);
+        return const Ok(true);
+      },
+    );
+
+    expect(
+      await bounded.execute(onAttempt: attempts.add),
+      isA<Ok<bool, RecoverBullFailure>>(),
+    );
+    expect(receivedTimeout, const Duration(seconds: 30));
+  });
+
+  test('gives a retry only the remaining connection budget', () async {
+    var elapsed = Duration.zero;
+    final timeouts = <Duration>[];
+    final bounded = ConnectToKeyServerUsecase(
+      check: checkConnection,
+      ensureTor: ensureSession,
+      log: log,
+      elapsed: () => elapsed,
+      wait: (duration) async => elapsed += duration,
+      checkWithTimeout: ({required route, required timeout}) async {
+        timeouts.add(timeout);
+        elapsed += const Duration(seconds: 10);
+        return const Ok(false);
+      },
+      budget: const Duration(seconds: 25),
+    );
+
+    await bounded.execute(onAttempt: attempts.add);
+
+    expect(timeouts, const [
+      Duration(seconds: 25),
+      Duration(seconds: 14),
+      Duration(seconds: 2),
+    ]);
+  });
+
+  test('does not start a retry after backoff consumes the budget', () async {
+    var elapsed = Duration.zero;
+    var checks = 0;
+    final bounded = ConnectToKeyServerUsecase(
+      check: checkConnection,
+      ensureTor: ensureSession,
+      log: log,
+      elapsed: () => elapsed,
+      wait: (duration) async => elapsed += duration,
+      checkWithTimeout: ({required route, required timeout}) async {
+        checks++;
+        elapsed += const Duration(seconds: 2);
+        return const Ok(false);
+      },
+      budget: const Duration(seconds: 3),
+    );
+
+    await bounded.execute(onAttempt: attempts.add);
+
+    expect(checks, 1);
+    expect(attempts, [1]);
+    expect(
+      log.entries.map((entry) => entry.message),
+      contains('recoverbull.server_check.budget_exhausted'),
+    );
   });
 
   test('does not retry an unavailable external proxy', () async {
