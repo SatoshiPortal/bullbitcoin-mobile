@@ -2279,57 +2279,9 @@
   "testBackupErrorNoMnemonic": "Siemenlausetta ei ole ladattu",
   "testBackupErrorSelectAllWords": "Valitse kaikki sanat",
   "testBackupErrorIncorrectOrder": "Sanat väärässä järjestyksessä. Yritä uudelleen.",
-  "testBackupErrorVerificationFailed": "Vahvistus epäonnistui: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Varmuuskopion hakeminen epäonnistui: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Virheellinen tiedoston sisältö",
   "testBackupErrorUnexpectedSuccess": "Odottamaton onnistuminen: varmuuskopion pitäisi vastata olemassa olevaa lompakkoa",
   "testBackupErrorWalletMismatch": "Varmuuskopio ei vastaa olemassa olevaa lompakkoa",
-  "testBackupErrorWriteFailed": "Tallennus epäonnistui: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Varmuuskopion testaus epäonnistui: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Lompakoiden lataus epäonnistui: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Siemenlauseen lataus epäonnistui: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveCancelButton": "Peruuta",
   "recoverbullGoogleDriveDeleteButton": "Poista",
   "recoverbullGoogleDriveDeleteConfirmation": "Haluatko varmasti poistaa tämän holvin varmuuskopion? Tätä toimintoa ei voi peruuttaa.",
@@ -4902,5 +4854,11 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "testBackupErrorWalletsUnavailable": "Lompakoitasi ei voitu ladata. Yritä uudelleen.",
+  "testBackupErrorNoWallets": "Ei ole lompakkoa, jonka varmuuskopion voisi testata.",
+  "testBackupErrorNoWalletSelected": "Valitse lompakko ennen sen varmuuskopion testaamista.",
+  "testBackupErrorSeedUnavailable": "Palautuslausettasi ei voitu lukea. Yritä uudelleen.",
+  "testBackupErrorSeedNotMnemonic": "Tällä lompakolla ei ole testattavaa palautuslausetta.",
+  "testBackupErrorCompletionFailed": "Palautuslauseesi oli oikein, mutta tulosta ei voitu tallentaa. Yritä uudelleen."
 }

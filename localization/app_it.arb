@@ -241,14 +241,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Non caricare i portafogli: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "Paese",
   "walletAddressTypeNestedSegwit": "Segwit annidato",
   "exchangeLandingFeature2": "DCA, ordini di limite e acquisto automatico",
@@ -1086,14 +1078,6 @@
   "recoverbullSelectDriveBackups": "Backup di unità",
   "exchangeAuthOk": "OK",
   "settingsSecurityPinTitle": "Perno di sicurezza",
-  "testBackupErrorFailedToFetch": "Non riuscito a recuperare il backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Se hai problemi di scansione:",
   "importQrDeviceJadeStep9": "Scansiona il codice QR che vedi sul tuo dispositivo.",
   "transactionDetailLabelPayjoinCompleted": "Completato",
@@ -1452,14 +1436,6 @@
   "sellNoInvoiceData": "Nessun dato di fattura disponibile",
   "ledgerInstructionsIos": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperto e Bluetooth abilitato.",
   "replaceByFeeScreenTitle": "Sostituire a pagamento",
-  "testBackupErrorWriteFailed": "Scrivi a storage fail: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "Rete di illuminazione",
   "sendType": "Tipo: ",
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
@@ -2445,14 +2421,6 @@
   "urProcessingFailedMessage": "Lavorazione UR fallita",
   "backupWalletChooseVaultLocationTitle": "Scegli la posizione del caveau",
   "receiveCopyAddressOnly": "Solo indirizzo di copia o di scansione",
-  "testBackupErrorTestFailed": "Non è riuscito a testare il backup: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Fee di fulmine",
   "payLabelOptional": "Etichetta (opzionale)",
   "recoverbullGoogleDriveDeleteButton": "Cancella",
@@ -2487,14 +2455,6 @@
   "sendPaymentProcessing": "Il pagamento viene effettuato. Potrebbe volerci un minuto",
   "electrumDefaultServersInfo": "Per proteggere la privacy, i server di default non vengono utilizzati quando i server personalizzati sono configurati.",
   "transactionDetailLabelPayoutMethod": "Metodo di pagamento",
-  "testBackupErrorLoadMnemonic": "Non caricare mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "Il prezzo si rinfresca in ",
   "passportStep3": "Scansione del codice QR mostrato nel portafoglio Bull",
   "jadeStep5": "Se hai problemi di scansione:",
@@ -3056,14 +3016,6 @@
   "coldcardStep11": "La Coldcard Q ti mostrerà il suo codice QR.",
   "fundExchangeLabelIban": "Numero di conto IBAN",
   "swapDoNotUninstallWarning": "Non disinstallare l'app finché il trasferimento non sarà completato!",
-  "testBackupErrorVerificationFailed": "La verifica è fallita: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "Visualizza dettagli",
   "recoverbullErrorUnexpected": "Errore inaspettato, vedi log",
   "sendSubmarineSwap": "Submarine Swap",
@@ -4914,5 +4866,11 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "testBackupErrorWalletsUnavailable": "Non è stato possibile caricare i tuoi portafogli. Riprova.",
+  "testBackupErrorNoWallets": "Non c'è alcun portafoglio di cui testare il backup.",
+  "testBackupErrorNoWalletSelected": "Seleziona un portafoglio prima di testarne il backup.",
+  "testBackupErrorSeedUnavailable": "Non è stato possibile leggere la tua frase di recupero. Riprova.",
+  "testBackupErrorSeedNotMnemonic": "Questo portafoglio non ha una frase di recupero da testare.",
+  "testBackupErrorCompletionFailed": "La tua frase di recupero era corretta, ma non è stato possibile salvare il risultato. Riprova."
 }

@@ -242,14 +242,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "加载钱包失败: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "银行账户",
   "walletAddressTypeNestedSegwit": "Nest",
   "exchangeLandingFeature2": "DCA, Limit Order and Auto-buy",
@@ -1087,14 +1079,6 @@
   "recoverbullSelectDriveBackups": "驱赶",
   "exchangeAuthOk": "OK",
   "settingsSecurityPinTitle": "安保科",
-  "testBackupErrorFailedToFetch": "Failed to fetch Backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "如果你遇到麻烦,就会:",
   "importQrDeviceJadeStep9": "你在你的装置上看到QR编码.",
   "transactionDetailLabelPayjoinCompleted": "完成",
@@ -1453,14 +1437,6 @@
   "sellNoInvoiceData": "无发票数据",
   "ledgerInstructionsIos": "保证你的Ledger与开启的Steb和Blutooth一起被锁定.",
   "replaceByFeeScreenTitle": "收费",
-  "testBackupErrorWriteFailed": "储存的书写失败:{error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "照明网络",
   "sendType": "类型: ",
   "buyBitcoinAddressHint": "BC1QYL7J673H..6Y6ALV70M0",
@@ -2447,14 +2423,6 @@
   "urProcessingFailedMessage": "UR处理失败",
   "backupWalletChooseVaultLocationTitle": "颜色",
   "receiveCopyAddressOnly": "只读或扫描",
-  "testBackupErrorTestFailed": "未能测试备份:{error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "F. 照明",
   "payLabelOptional": "Label (optional)",
   "recoverbullGoogleDriveDeleteButton": "删除",
@@ -2489,14 +2457,6 @@
   "sendPaymentProcessing": "付款正在处理之中。 最多不超过一分钟",
   "electrumDefaultServersInfo": "为了保护你的隐私,在定制服务器配置时,不使用违约服务器.",
   "transactionDetailLabelPayoutMethod": "薪酬办法",
-  "testBackupErrorLoadMnemonic": "Failed toload mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "价格上涨 ",
   "passportStep3": "扫描 Bull 钱包中显示的二维码",
   "jadeStep5": "如果你遇到麻烦,就会:",
@@ -3056,14 +3016,6 @@
   "coldcardStep11": "冷漠 然后,Q将显示自己的QR代码.",
   "fundExchangeLabelIban": "IBAN账户",
   "swapDoNotUninstallWarning": "在转让完成之前,不要 app!",
-  "testBackupErrorVerificationFailed": "核查失败:{error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "观点细节",
   "recoverbullErrorUnexpected": "未预见的错误,见记录",
   "sendSubmarineSwap": "3. 潜艇",
@@ -4914,5 +4866,11 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "testBackupErrorWalletsUnavailable": "无法加载您的钱包。请重试。",
+  "testBackupErrorNoWallets": "没有可测试备份的钱包。",
+  "testBackupErrorNoWalletSelected": "请先选择一个钱包，再测试其备份。",
+  "testBackupErrorSeedUnavailable": "无法读取您的恢复短语。请重试。",
+  "testBackupErrorSeedNotMnemonic": "此钱包没有可测试的恢复短语。",
+  "testBackupErrorCompletionFailed": "您的恢复短语正确，但我们无法保存结果。请重试。"
 }

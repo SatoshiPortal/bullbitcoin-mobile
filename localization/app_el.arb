@@ -9558,15 +9558,6 @@
   "@customLocationTitle": {
     "description": "Title for custom location screen"
   },
-  "testBackupErrorLoadWallets": "Απέτυχε να φορτώσει πορτοφόλια: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullErrorConnectionFailed": "Απέτυχε να συνδεθεί με τον βασικό διακομιστή-στόχο. Παρακαλώ δοκιμάστε ξανά αργότερα!",
   "@recoverbullErrorConnectionFailed": {
     "description": "Error message when server connection fails"
@@ -9942,15 +9933,6 @@
   "@recoverbullSelectDriveBackups": {
     "description": "AppBar title for screen showing list of Google Drive backups"
   },
-  "testBackupErrorFailedToFetch": "Απέτυχε να σπάσει αντίγραφα ασφαλείας: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Αν έχετε πρόβλημα σάρωση:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -10130,15 +10112,6 @@
     "description": "Label for confirmation input field",
     "placeholders": {
       "inputType": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorWriteFailed": "Γράψτε στην αποθήκευση απέτυχε: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
         "type": "String"
       }
     }
@@ -10623,15 +10596,6 @@
   "@testBackupConfirm": {
     "description": "Button text to confirm wallet selection"
   },
-  "testBackupErrorTestFailed": "Απέτυχε να δοκιμάσει αντίγραφα ασφαλείας: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveDeleteButton": "Διαγράψτε",
   "@recoverbullGoogleDriveDeleteButton": {
     "description": "Delete button text for vault backup"
@@ -10652,15 +10616,6 @@
   "transactionListYesterday": "Χθες",
   "@transactionListYesterday": {
     "description": "Date label for yesterday's transactions"
-  },
-  "testBackupErrorLoadMnemonic": "Απέτυχε να φορτώσει mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "backupWalletHowToDecideVaultModalTitle": "Πώς να αποφασίσετε",
   "@backupWalletHowToDecideVaultModalTitle": {
@@ -10979,15 +10934,6 @@
     "placeholders": {
       "number": {
         "type": "int"
-      }
-    }
-  },
-  "testBackupErrorVerificationFailed": "Η επαλήθευση απέτυχε: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
       }
     }
   },
@@ -12232,5 +12178,11 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "testBackupErrorWalletsUnavailable": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Δοκιμάστε ξανά.",
+  "testBackupErrorNoWallets": "Δεν υπάρχει πορτοφόλι για να δοκιμαστεί το αντίγραφο ασφαλείας του.",
+  "testBackupErrorNoWalletSelected": "Επιλέξτε ένα πορτοφόλι πριν δοκιμάσετε το αντίγραφο ασφαλείας του.",
+  "testBackupErrorSeedUnavailable": "Δεν ήταν δυνατή η ανάγνωση της φράσης ανάκτησής σας. Δοκιμάστε ξανά.",
+  "testBackupErrorSeedNotMnemonic": "Αυτό το πορτοφόλι δεν έχει φράση ανάκτησης για δοκιμή.",
+  "testBackupErrorCompletionFailed": "Η φράση ανάκτησής σας ήταν σωστή, αλλά δεν μπορέσαμε να αποθηκεύσουμε το αποτέλεσμα. Δοκιμάστε ξανά."
 }

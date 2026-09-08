@@ -736,15 +736,6 @@
   "@sendEstimatedDeliveryHoursToDays": {
     "description": "Estimated delivery time ranging from hours to days"
   },
-  "testBackupErrorLoadWallets": "Неуспях да заредя портфейли: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "Държава на банковата сметка",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -2721,15 +2712,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "Неуспях да изтегля резервното копие: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Ако имате затруднения със сканирането:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -3617,15 +3599,6 @@
   "replaceByFeeScreenTitle": "Замени с такса.",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "Неуспях да запиша в хранилището: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendType": "Тип: ",
   "@sendType": {
@@ -5844,15 +5817,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "Неуспях да тествам резервното копие: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Такса Lightning",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -5934,15 +5898,6 @@
   "transactionDetailLabelPayoutMethod": "Метод за изплащане",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "Неуспях да заредя мнемонична фраза: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "Цената ще се обнови след ",
   "@payPriceRefreshIn": {
@@ -7206,15 +7161,6 @@
   "swapDoNotUninstallWarning": "Не деинсталирайте приложението, докато прехвърлянето не завърши!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "Потвърждението не е успешно: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "Виж подробности",
   "@sendViewDetails": {
@@ -10233,5 +10179,11 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "testBackupErrorWalletsUnavailable": "Портфейлите ви не можаха да бъдат заредени. Опитайте отново.",
+  "testBackupErrorNoWallets": "Няма портфейл, чието резервно копие да бъде тествано.",
+  "testBackupErrorNoWalletSelected": "Изберете портфейл, преди да тествате резервното му копие.",
+  "testBackupErrorSeedUnavailable": "Фразата ви за възстановяване не можа да бъде прочетена. Опитайте отново.",
+  "testBackupErrorSeedNotMnemonic": "Този портфейл няма фраза за възстановяване за тестване.",
+  "testBackupErrorCompletionFailed": "Фразата ви за възстановяване беше правилна, но не успяхме да запазим резултата. Опитайте отново."
 }

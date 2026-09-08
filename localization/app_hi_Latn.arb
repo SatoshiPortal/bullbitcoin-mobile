@@ -6697,24 +6697,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "testBackupErrorVerificationFailed": "Verification fail hua: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Backup fetch karne mein dikkat aayi: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "File ka content valid nahi hai",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -6726,42 +6708,6 @@
   "testBackupErrorWalletMismatch": "Backup existing wallet se match nahi karta",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "testBackupErrorWriteFailed": "Storage mein likhne mein dikkat aayi: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Backup test karne mein dikkat aayi: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Wallets load karne mein dikkat aayi: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Mnemonic load karne mein dikkat aayi: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "recoverbullGoogleDriveCancelButton": "Raddh Karo",
   "@recoverbullGoogleDriveCancelButton": {
@@ -12620,5 +12566,11 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "testBackupErrorWalletsUnavailable": "Aapke wallet load nahin ho sake. Kripya phir se prayas karein.",
+  "testBackupErrorNoWallets": "Backup jaanchne ke liye koi wallet nahin hai.",
+  "testBackupErrorNoWalletSelected": "Backup jaanchne se pehle ek wallet chunein.",
+  "testBackupErrorSeedUnavailable": "Aapka recovery phrase padha nahin ja saka. Kripya phir se prayas karein.",
+  "testBackupErrorSeedNotMnemonic": "Is wallet mein jaanchne ke liye koi recovery phrase nahin hai.",
+  "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein."
 }

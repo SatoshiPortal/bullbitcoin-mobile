@@ -2388,15 +2388,9 @@
   "testBackupErrorNoMnemonic": "Chưa tải mnemonic",
   "testBackupErrorSelectAllWords": "Vui lòng chọn tất cả các từ",
   "testBackupErrorIncorrectOrder": "Thứ tự từ không đúng. Vui lòng thử lại.",
-  "testBackupErrorVerificationFailed": "Xác minh thất bại: {error}",
-  "testBackupErrorFailedToFetch": "Không thể lấy bản sao lưu: {error}",
   "testBackupErrorInvalidFile": "Nội dung tệp không hợp lệ",
   "testBackupErrorUnexpectedSuccess": "Thành công không mong đợi: bản sao lưu phải khớp với ví hiện có",
   "testBackupErrorWalletMismatch": "Bản sao lưu không khớp với ví hiện có",
-  "testBackupErrorWriteFailed": "Ghi vào bộ nhớ thất bại: {error}",
-  "testBackupErrorTestFailed": "Kiểm tra sao lưu thất bại: {error}",
-  "testBackupErrorLoadWallets": "Không thể tải ví: {error}",
-  "testBackupErrorLoadMnemonic": "Không thể tải mnemonic: {error}",
   "recoverbullGoogleDriveCancelButton": "Hủy",
   "recoverbullGoogleDriveDeleteButton": "Xóa",
   "recoverbullGoogleDriveDeleteConfirmation": "Bạn có chắc muốn xóa bản sao lưu kho lưu trữ này không? Hành động này không thể hoàn tác.",
@@ -3596,5 +3590,11 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "testBackupErrorWalletsUnavailable": "Không thể tải ví của bạn. Vui lòng thử lại.",
+  "testBackupErrorNoWallets": "Không có ví nào để kiểm tra bản sao lưu.",
+  "testBackupErrorNoWalletSelected": "Hãy chọn một ví trước khi kiểm tra bản sao lưu.",
+  "testBackupErrorSeedUnavailable": "Không thể đọc cụm từ khôi phục của bạn. Vui lòng thử lại.",
+  "testBackupErrorSeedNotMnemonic": "Ví này không có cụm từ khôi phục để kiểm tra.",
+  "testBackupErrorCompletionFailed": "Cụm từ khôi phục của bạn chính xác, nhưng chúng tôi không thể lưu kết quả. Vui lòng thử lại."
 }

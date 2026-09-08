@@ -2327,57 +2327,9 @@
   "testBackupErrorNoMnemonic": "Aucune mnémonique chargée",
   "testBackupErrorSelectAllWords": "Veuillez sélectionner tous les mots",
   "testBackupErrorIncorrectOrder": "Ordre des mots incorrect. Veuillez réessayer.",
-  "testBackupErrorVerificationFailed": "Échec de la vérification : {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Échec de la récupération de la sauvegarde : {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Contenu du fichier invalide",
   "testBackupErrorUnexpectedSuccess": "Succès inattendu : la sauvegarde devrait correspondre au portefeuille existant",
   "testBackupErrorWalletMismatch": "La sauvegarde ne correspond pas au portefeuille existant",
-  "testBackupErrorWriteFailed": "Échec de l'écriture dans le stockage : {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Échec du test de la sauvegarde : {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Échec du chargement des portefeuilles : {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Échec du chargement de la mnémonique : {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveCancelButton": "Annuler",
   "recoverbullGoogleDriveDeleteButton": "Supprimer",
   "recoverbullGoogleDriveDeleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette sauvegarde de coffre-fort ? Cette action ne peut pas être annulée.",
@@ -4960,5 +4912,11 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "testBackupErrorWalletsUnavailable": "Vos portefeuilles n’ont pas pu être chargés. Veuillez réessayer.",
+  "testBackupErrorNoWallets": "Il n’y a aucun portefeuille dont tester la sauvegarde.",
+  "testBackupErrorNoWalletSelected": "Sélectionnez un portefeuille avant de tester sa sauvegarde.",
+  "testBackupErrorSeedUnavailable": "Votre phrase de récupération n’a pas pu être lue. Veuillez réessayer.",
+  "testBackupErrorSeedNotMnemonic": "Ce portefeuille n’a pas de phrase de récupération à tester.",
+  "testBackupErrorCompletionFailed": "Votre phrase de récupération était correcte, mais nous n’avons pas pu enregistrer le résultat. Veuillez réessayer."
 }

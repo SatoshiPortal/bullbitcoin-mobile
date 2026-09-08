@@ -1270,14 +1270,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Надіслане на завантаження гаманців: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeLandingFeature2": "DCA, Обмеження замовлень і автокупе",
   "payPaymentPending": "Кредитне кредитування",
   "payConfirmHighFee": "Плата за цей платіж {percentage}% від суми. Продовжити?",
@@ -1842,14 +1834,6 @@
   "jadeStep1": "Увійти на пристрій Jade",
   "recoverbullSelectDriveBackups": "Приводні резервні копії",
   "exchangeAuthOk": "ЗАРЕЄСТРУВАТИСЯ",
-  "testBackupErrorFailedToFetch": "Надіслане до резервного копіювання: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Якщо у вас є проблеми сканування:",
   "importQrDeviceJadeStep9": "Скануйте QR-код, який ви бачите на вашому пристрої.",
   "exchangeKycLight": "Світло",
@@ -2073,14 +2057,6 @@
   "fundExchangeLabelTransferCode": "Поштовий індекс (за умови оплати)",
   "ledgerInstructionsIos": "Переконайтеся, що ваш Ledger розблоковується з підтримкою Bitcoin і Bluetooth.",
   "replaceByFeeScreenTitle": "Замінити платіж",
-  "testBackupErrorWriteFailed": "{error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "Мережа Lightning",
   "exchangeHomeWithdrawButton": "Зняття",
   "addressViewAddress": "Контакти",
@@ -2807,14 +2783,6 @@
   "testBackupConfirm": "Підтвердження",
   "urProcessingFailedMessage": "UR обробка не вдалося",
   "backupWalletChooseVaultLocationTitle": "Виберіть місце розташування",
-  "testBackupErrorTestFailed": "Надійшла до резервного копіювання: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Освітлення Fee",
   "recoverbullGoogleDriveDeleteButton": "Видалення",
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Купити",
@@ -2839,14 +2807,6 @@
   "replaceByFeeActivatedLabel": "Замініть активоване",
   "sendPaymentProcessing": "Опрацьовується платіж. До хвилини",
   "electrumDefaultServersInfo": "Щоб захистити конфіденційність, сервери за замовчуванням не використовуються при налаштуванні користувацьких серверів.",
-  "testBackupErrorLoadMnemonic": "Надійшла до навантаження мнемоніки: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "passportStep3": "Сканування QR-коду, показаного в булл-гаманці",
   "jadeStep5": "Якщо у вас є проблеми сканування:",
   "electrumProtocolError": "Не містить протоколу (ssl:// або tcp://).",
@@ -3211,14 +3171,6 @@
   "addressViewReceiveType": "Отримати",
   "coldcardStep11": "Холодна листівка Після того, як ви покажете свій власний QR-код.",
   "swapDoNotUninstallWarning": "Не встановіть додаток до завершення переказу!",
-  "testBackupErrorVerificationFailed": "Перевірка не вдалося: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "Переглянути подробиці",
   "recoverbullErrorUnexpected": "Несподівана помилка, див. журнали",
   "sendSubmarineSwap": "Submarine Заміна",
@@ -4911,5 +4863,11 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "testBackupErrorWalletsUnavailable": "Не вдалося завантажити ваші гаманці. Спробуйте ще раз.",
+  "testBackupErrorNoWallets": "Немає гаманця, резервну копію якого можна перевірити.",
+  "testBackupErrorNoWalletSelected": "Виберіть гаманець, перш ніж перевіряти його резервну копію.",
+  "testBackupErrorSeedUnavailable": "Не вдалося прочитати вашу фразу відновлення. Спробуйте ще раз.",
+  "testBackupErrorSeedNotMnemonic": "У цього гаманця немає фрази відновлення для перевірки.",
+  "testBackupErrorCompletionFailed": "Ваша фраза відновлення була правильною, але нам не вдалося зберегти результат. Спробуйте ще раз."
 }

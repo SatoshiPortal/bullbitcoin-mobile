@@ -932,15 +932,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Neúspěšné zatížení peněženky: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "Bankovní účet",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3425,15 +3416,6 @@
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
   },
-  "testBackupErrorFailedToFetch": "Vypnuto zálohování fetch: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Máte-li potíže skenování:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4583,15 +4565,6 @@
   "replaceByFeeScreenTitle": "Nahradit poplatek",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "Napište úložiště selhalo: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "Bleskové sítě",
   "@exchangeDcaNetworkLightning": {
@@ -7459,15 +7432,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "Vypnuto pro testovací zálohování: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Lightning poplatek",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7561,15 +7525,6 @@
   "transactionDetailLabelPayoutMethod": "Metoda výplaty",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "Podařilo se načíst mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "Cena bude obnovena v ",
   "@payPriceRefreshIn": {
@@ -9192,15 +9147,6 @@
   "swapDoNotUninstallWarning": "Odinstalujte aplikaci, dokud nebude kompletní přenos!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "Ověřování selhalo: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "Zobrazit podrobnosti",
   "@sendViewDetails": {
@@ -12232,5 +12178,11 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "testBackupErrorWalletsUnavailable": "Vaše peněženky se nepodařilo načíst. Zkuste to prosím znovu.",
+  "testBackupErrorNoWallets": "Není k dispozici žádná peněženka, jejíž zálohu by bylo možné otestovat.",
+  "testBackupErrorNoWalletSelected": "Před testováním zálohy vyberte peněženku.",
+  "testBackupErrorSeedUnavailable": "Vaši obnovovací frázi se nepodařilo přečíst. Zkuste to prosím znovu.",
+  "testBackupErrorSeedNotMnemonic": "Tato peněženka nemá obnovovací frázi k otestování.",
+  "testBackupErrorCompletionFailed": "Vaše obnovovací fráze byla správná, ale výsledek se nepodařilo uložit. Zkuste to prosím znovu."
 }

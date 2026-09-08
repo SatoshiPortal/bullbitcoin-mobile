@@ -237,14 +237,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Wallets konnten nicht geladen werden: {error}.",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "Bankkontoland",
   "walletAddressTypeNestedSegwit": "Verschachteltes SegWit",
   "exchangeLandingFeature2": "DCA, Limit-Aufträge und automatische Käufe",
@@ -1061,14 +1053,6 @@
   "jadeStep1": "Melden Sie sich bei Ihrem Jade-Gerät an",
   "recoverbullSelectDriveBackups": "Laufwerkssicherungen",
   "settingsSecurityPinTitle": "Sicherheits-PIN",
-  "testBackupErrorFailedToFetch": "Fehler beim Backup: {error}.",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Wenn Sie Probleme beim Scannen haben:",
   "importQrDeviceJadeStep9": "Scannen Sie den QR-Code, den Sie auf Ihrem Gerät sehen",
   "sellArsBalance": "ARS-Saldo",
@@ -1419,14 +1403,6 @@
   "sellNoInvoiceData": "Rechnungsdaten nicht verfügbar",
   "ledgerInstructionsIos": "Stellen Sie sicher, dass Ihr Ledger mit der Bitcoin App geöffnet und Bluetooth aktiviert ist.",
   "replaceByFeeScreenTitle": "Gebührenerhöhung",
-  "testBackupErrorWriteFailed": "Fehler beim Schreiben zum Speicher: {error}.",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "Lightning-Netzwerk",
   "sendType": "Typ:",
   "buyBitcoinAddressHint": "BC1QYL7J673H…6Y6ALV70M0",
@@ -2386,14 +2362,6 @@
   "urProcessingFailedMessage": "UR-Verarbeitung fehlgeschlagen",
   "backupWalletChooseVaultLocationTitle": "Wählen Sie den Speicherort",
   "receiveCopyAddressOnly": "Nur Adresse kopieren oder scannen",
-  "testBackupErrorTestFailed": "Fehler beim Testen von Backups: {error}.",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Lightning-Gebühren",
   "payLabelOptional": "Bezeichnung (optional)",
   "recoverbullGoogleDriveDeleteButton": "Löschen",
@@ -2429,14 +2397,6 @@
   "sendPaymentProcessing": "Die Zahlung wird bearbeitet. Es kann eine Minute dauern",
   "electrumDefaultServersInfo": "Um Ihre Privatsphäre zu schützen, werden Standardserver nicht verwendet, wenn benutzerdefinierte Server konfiguriert sind",
   "transactionDetailLabelPayoutMethod": "Auszahlungsmethode",
-  "testBackupErrorLoadMnemonic": "Mnemonik nicht geladen: {error}.",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "Der Preis wird aktualisiert in",
   "passportStep3": "Scannen Sie den QR-Code, der in der Bull-Wallet angezeigt wird",
   "jadeStep5": "Wenn Sie Probleme beim Scannen haben:",
@@ -2996,14 +2956,6 @@
   "addressViewReceiveType": "Empfangen",
   "fundExchangeLabelIban": "IBAN Kontonummer",
   "swapDoNotUninstallWarning": "Deinstallieren Sie die App erst, wenn der Transfer abgeschlossen ist!",
-  "testBackupErrorVerificationFailed": "Verifizierung nicht möglich: {error}.",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "Details anzeigen",
   "recoverbullErrorUnexpected": "Unerwarteter Fehler, siehe Protokolle.",
   "sendSubmarineSwap": "Submarine Swap",
@@ -4899,5 +4851,11 @@
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
   "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
-  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "testBackupErrorWalletsUnavailable": "Deine Wallets konnten nicht geladen werden. Bitte versuche es erneut.",
+  "testBackupErrorNoWallets": "Es gibt keine Wallet, deren Backup getestet werden kann.",
+  "testBackupErrorNoWalletSelected": "Wähle eine Wallet aus, bevor du ihr Backup testest.",
+  "testBackupErrorSeedUnavailable": "Deine Wiederherstellungsphrase konnte nicht gelesen werden. Bitte versuche es erneut.",
+  "testBackupErrorSeedNotMnemonic": "Diese Wallet hat keine Wiederherstellungsphrase zum Testen.",
+  "testBackupErrorCompletionFailed": "Deine Wiederherstellungsphrase war korrekt, aber wir konnten das Ergebnis nicht speichern. Bitte versuche es erneut."
 }

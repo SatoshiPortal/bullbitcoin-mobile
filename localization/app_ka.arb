@@ -2542,15 +2542,9 @@
   "testBackupErrorNoMnemonic": "მნემონიკი არ ჩატვირთულა",
   "testBackupErrorSelectAllWords": "გთხოვთ, აირჩიოთ ყველა სიტყვა",
   "testBackupErrorIncorrectOrder": "სიტყვების არასწორი თანმიმდევრობა. გთხოვთ, სცადოთ ხელახლა.",
-  "testBackupErrorVerificationFailed": "გადამოწმება ვერ მოხერხდა: {error}",
-  "testBackupErrorFailedToFetch": "სარეზერვო ასლის მოძიება ვერ მოხერხდა: {error}",
   "testBackupErrorInvalidFile": "ფაილის შემცველობა არასწორია",
   "testBackupErrorUnexpectedSuccess": "მოულოდნელი წარმატება: სარეზერვო ასლი უნდა ემთხვეოდეს არსებულ საფულეს",
   "testBackupErrorWalletMismatch": "სარეზერვო ასლი არ ემთხვევა არსებულ საფულეს",
-  "testBackupErrorWriteFailed": "საცავში ჩაწერა ვერ მოხერხდა: {error}",
-  "testBackupErrorTestFailed": "სარეზერვო ასლის ტესტირება ვერ მოხერხდა: {error}",
-  "testBackupErrorLoadWallets": "საფულეების ჩატვირთვა ვერ მოხერხდა: {error}",
-  "testBackupErrorLoadMnemonic": "მნემონიკის ჩატვირთვა ვერ მოხერხდა: {error}",
   "recoverbullGoogleDriveCancelButton": "გაუქმება",
   "recoverbullGoogleDriveDeleteButton": "წაშლა",
   "recoverbullGoogleDriveDeleteConfirmation": "დარწმუნებული ხართ, რომ გსურთ ამ საცავის სარეზერვო ასლის წაშლა? ამ მოქმედების გაუქმება შეუძლებელია.",
@@ -3743,5 +3737,11 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "testBackupErrorWalletsUnavailable": "თქვენი საფულეების ჩატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა.",
+  "testBackupErrorNoWallets": "არ არსებობს საფულე, რომლის სარეზერვო ასლიც შეიძლება შემოწმდეს.",
+  "testBackupErrorNoWalletSelected": "აირჩიეთ საფულე სარეზერვო ასლის შემოწმებამდე.",
+  "testBackupErrorSeedUnavailable": "თქვენი აღდგენის ფრაზის წაკითხვა ვერ მოხერხდა. სცადეთ ხელახლა.",
+  "testBackupErrorSeedNotMnemonic": "ამ საფულეს არ აქვს აღდგენის ფრაზა შესამოწმებლად.",
+  "testBackupErrorCompletionFailed": "თქვენი აღდგენის ფრაზა სწორი იყო, მაგრამ შედეგის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა."
 }

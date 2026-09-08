@@ -665,15 +665,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "वॉलेट लोड करने में विफल: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "बैंक खाता देश",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3277,15 +3268,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "बैकअप प्राप्त करने में विफल: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "यदि आपको कोई परेशानी स्कैनिंग है:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4511,15 +4493,6 @@
   "replaceByFeeScreenTitle": "शुल्क द्वारा बदलें",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "भंडारण विफल: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "लाइटनिंग नेटवर्क",
   "@exchangeDcaNetworkLightning": {
@@ -7528,15 +7501,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "बैकअप का परीक्षण करने में विफल: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "लाइटनिंग शुल्क",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7630,15 +7594,6 @@
   "transactionDetailLabelPayoutMethod": "Payout विधि",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "Mnemonic लोड करने में विफल: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "कीमत इस समय में ताज़ा होगी ",
   "@payPriceRefreshIn": {
@@ -9354,15 +9309,6 @@
   "swapDoNotUninstallWarning": "जब तक स्थानांतरण पूरा नहीं होता तब तक ऐप को अनइंस्टॉल न करें!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "सत्यापन विफल: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "विवरण देखें",
   "@sendViewDetails": {
@@ -12422,5 +12368,11 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "testBackupErrorWalletsUnavailable": "आपके वॉलेट लोड नहीं किए जा सके। कृपया फिर से प्रयास करें।",
+  "testBackupErrorNoWallets": "बैकअप जाँचने के लिए कोई वॉलेट नहीं है।",
+  "testBackupErrorNoWalletSelected": "बैकअप जाँचने से पहले एक वॉलेट चुनें।",
+  "testBackupErrorSeedUnavailable": "आपका रिकवरी वाक्यांश पढ़ा नहीं जा सका। कृपया फिर से प्रयास करें।",
+  "testBackupErrorSeedNotMnemonic": "इस वॉलेट में जाँचने के लिए कोई रिकवरी वाक्यांश नहीं है।",
+  "testBackupErrorCompletionFailed": "आपका रिकवरी वाक्यांश सही था, लेकिन हम परिणाम सहेज नहीं सके। कृपया फिर से प्रयास करें।"
 }

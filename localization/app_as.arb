@@ -4607,24 +4607,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "testBackupErrorVerificationFailed": "যাচাইকৰণ বিফল হৈছে: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "বেকআপ আনিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "অবৈধ ফাইল বিষয়বস্তু",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -4636,42 +4618,6 @@
   "testBackupErrorWalletMismatch": "বেকআপ বৰ্তমানৰ wallet-ৰ সৈতে নিমিলে",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "testBackupErrorWriteFailed": "সংৰক্ষণত লিখিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "বেকআপ পৰীক্ষা কৰিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Wallets লোড কৰিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Mnemonic লোড কৰিবলৈ বিফল হৈছে: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "recoverbullGoogleDriveCancelButton": "বাতিল কৰক",
   "@recoverbullGoogleDriveCancelButton": {
@@ -9344,5 +9290,11 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorWalletsUnavailable": "আপোনাৰ ৱালেটবোৰ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorNoWallets": "বেকআপ পৰীক্ষা কৰিবলৈ কোনো ৱালেট নাই।",
+  "testBackupErrorNoWalletSelected": "বেকআপ পৰীক্ষা কৰাৰ আগতে এটা ৱালেট বাছনি কৰক।",
+  "testBackupErrorSeedUnavailable": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ পঢ়িব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "testBackupErrorSeedNotMnemonic": "এই ৱালেটত পৰীক্ষা কৰিবলৈ কোনো পুনৰুদ্ধাৰ বাক্যাংশ নাই।",
+  "testBackupErrorCompletionFailed": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ শুদ্ধ আছিল, কিন্তু আমি ফলাফল সংৰক্ষণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

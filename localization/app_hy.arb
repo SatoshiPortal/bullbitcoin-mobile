@@ -2388,15 +2388,9 @@
   "testBackupErrorNoMnemonic": "Մնեմոնիկ չի բեռնվել",
   "testBackupErrorSelectAllWords": "Խնդրում ենք ընտրել բոլոր բառերը",
   "testBackupErrorIncorrectOrder": "Սխալ բառերի հերթականություն։ Խնդրում ենք կրկին փորձել։",
-  "testBackupErrorVerificationFailed": "Ստուգումը ձախողվեց․ {error}",
-  "testBackupErrorFailedToFetch": "Չհաջողվեց բերել պահուստը․ {error}",
   "testBackupErrorInvalidFile": "Ֆայլի անվավեր պարունակություն",
   "testBackupErrorUnexpectedSuccess": "Անսպասելի հաջողություն․ պահուստը պետք է համընկնի գոյություն ունեցող դրամապանակի հետ",
   "testBackupErrorWalletMismatch": "Պահուստը չի համընկնում գոյություն ունեցող դրամապանակի հետ",
-  "testBackupErrorWriteFailed": "Պահեստում գրելը ձախողվեց․ {error}",
-  "testBackupErrorTestFailed": "Չհաջողվեց ստուգել պահուստը․ {error}",
-  "testBackupErrorLoadWallets": "Չհաջողվեց բեռնել դրամապանակները․ {error}",
-  "testBackupErrorLoadMnemonic": "Չհաջողվեց բեռնել մնեմոնիկը․ {error}",
   "recoverbullGoogleDriveCancelButton": "Չեղարկել",
   "recoverbullGoogleDriveDeleteButton": "Ջնջել",
   "recoverbullGoogleDriveDeleteConfirmation": "Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս պահոցի պահուստը։ Այս գործողությունը հնարավոր չէ հետարկել։",
@@ -3596,5 +3590,11 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "testBackupErrorWalletsUnavailable": "Ձեր դրամապանակները չհաջողվեց բեռնել։ Փորձեք կրկին։",
+  "testBackupErrorNoWallets": "Չկա դրամապանակ, որի պահուստավորումը կարելի է ստուգել։",
+  "testBackupErrorNoWalletSelected": "Ընտրեք դրամապանակ՝ նախքան դրա պահուստավորումը ստուգելը։",
+  "testBackupErrorSeedUnavailable": "Ձեր վերականգնման արտահայտությունը չհաջողվեց կարդալ։ Փորձեք կրկին։",
+  "testBackupErrorSeedNotMnemonic": "Այս դրամապանակը չունի վերականգնման արտահայտություն՝ ստուգելու համար։",
+  "testBackupErrorCompletionFailed": "Ձեր վերականգնման արտահայտությունը ճիշտ էր, բայց չհաջողվեց պահել արդյունքը։ Փորձեք կրկին։"
 }

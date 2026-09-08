@@ -665,15 +665,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Cüzdanları yüklemek için başarısız oldu: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "Banka hesabı ülke",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3265,15 +3256,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "Yedek getirmek için başarısız oldu: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Bir sorun taramanız varsa:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4491,15 +4473,6 @@
   "replaceByFeeScreenTitle": "Taksitle",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "Depolama başarısız oldu: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "Lightning Network",
   "@exchangeDcaNetworkLightning": {
@@ -7474,15 +7447,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "Yedek test etmek için başarısız oldu: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Lightning Fee",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7563,15 +7527,6 @@
   "transactionDetailLabelPayoutMethod": "Payout yöntemi",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "Mnemonik yüklemek için başarısız oldu: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "Fiyat yenilenecek ",
   "@payPriceRefreshIn": {
@@ -9279,15 +9234,6 @@
   "swapDoNotUninstallWarning": "Uygulamayı transfer tamamlanmaya kadar yüklemeyin!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "Verification başarısız oldu: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "View Details",
   "@sendViewDetails": {
@@ -12232,5 +12178,11 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "testBackupErrorWalletsUnavailable": "Cüzdanlarınız yüklenemedi. Lütfen tekrar deneyin.",
+  "testBackupErrorNoWallets": "Yedeği test edilecek bir cüzdan yok.",
+  "testBackupErrorNoWalletSelected": "Yedeğini test etmeden önce bir cüzdan seçin.",
+  "testBackupErrorSeedUnavailable": "Kurtarma ifadeniz okunamadı. Lütfen tekrar deneyin.",
+  "testBackupErrorSeedNotMnemonic": "Bu cüzdanın test edilecek bir kurtarma ifadesi yok.",
+  "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin."
 }

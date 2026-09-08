@@ -2401,15 +2401,9 @@
   "testBackupErrorNoMnemonic": "Hakuna msemo uliopakiwa",
   "testBackupErrorSelectAllWords": "Tafadhali chagua maneno yote",
   "testBackupErrorIncorrectOrder": "Mpangilio wa maneno si sahihi. Tafadhali jaribu tena.",
-  "testBackupErrorVerificationFailed": "Uthibitisho umeshindwa: {error}",
-  "testBackupErrorFailedToFetch": "Imeshindwa kupata nakala rudufu: {error}",
   "testBackupErrorInvalidFile": "Maudhui ya faili si sahihi",
   "testBackupErrorUnexpectedSuccess": "Mafanikio yasiyotarajiwa: nakala rudufu inapaswa kulingana na pochi iliyopo",
   "testBackupErrorWalletMismatch": "Nakala rudufu haiendani na pochi iliyopo",
-  "testBackupErrorWriteFailed": "Kuandika kwenye hifadhi kumeshindwa: {error}",
-  "testBackupErrorTestFailed": "Imeshindwa kujaribu nakala rudufu: {error}",
-  "testBackupErrorLoadWallets": "Imeshindwa kupakia pochi: {error}",
-  "testBackupErrorLoadMnemonic": "Imeshindwa kupakia msemo: {error}",
   "recoverbullGoogleDriveCancelButton": "Ghairi",
   "recoverbullGoogleDriveDeleteButton": "Futa",
   "recoverbullGoogleDriveDeleteConfirmation": "Una uhakika unataka kufuta nakala rudufu hii ya hifadhi? Kitendo hiki hakiwezi kutenduliwa.",
@@ -3608,5 +3602,11 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "testBackupErrorWalletsUnavailable": "Pochi zako hazikuweza kupakiwa. Tafadhali jaribu tena.",
+  "testBackupErrorNoWallets": "Hakuna pochi ya kujaribu nakala yake rudufu.",
+  "testBackupErrorNoWalletSelected": "Chagua pochi kabla ya kujaribu nakala yake rudufu.",
+  "testBackupErrorSeedUnavailable": "Kifungu chako cha kurejesha hakikuweza kusomwa. Tafadhali jaribu tena.",
+  "testBackupErrorSeedNotMnemonic": "Pochi hii haina kifungu cha kurejesha cha kujaribu.",
+  "testBackupErrorCompletionFailed": "Kifungu chako cha kurejesha kilikuwa sahihi, lakini hatukuweza kuhifadhi matokeo. Tafadhali jaribu tena."
 }
