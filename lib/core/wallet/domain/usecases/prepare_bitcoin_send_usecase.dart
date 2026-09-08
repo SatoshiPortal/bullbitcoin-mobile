@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -9,6 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository
 import 'package:bb_mobile/core/wallet/domain/selected_inputs_unavailable_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 class PrepareBitcoinSendUsecase {
   final PayjoinSessions _payjoin;
@@ -27,20 +29,27 @@ class PrepareBitcoinSendUsecase {
     );
   }
 
-  Future<({String unsignedPsbt, int txSize, bool isToSelf})> execute({
+  Future<
+    ({
+      String unsignedPsbt,
+      int txSize,
+      bool isToSelf,
+      List<Sats> recipientAmountsSat,
+    })
+  >
+  execute({
     required String walletId,
-    required String address,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    int? amountSat,
-    bool drain = false,
     List<WalletUtxo>? selectedInputs,
     bool selectedOnly = false,
     bool replaceByFee = true,
   }) async {
+    validateBitcoinTransactionRecipients(recipients);
     try {
-      if (amountSat == null && drain == false) {
-        throw Exception('Amount cannot be empty if drain is not true');
-      }
+      final remainderRecipients = recipients
+          .where((recipient) => recipient.receivesRemainder)
+          .toList();
 
       // D7: a frozen coin must never be spendable in any transaction. Always
       // compute the unspendable set (user-frozen ∪ payjoin-derived) and feed it
@@ -76,21 +85,30 @@ class PrepareBitcoinSendUsecase {
 
       final psbt = await _bitcoinWalletRepository.buildPsbt(
         walletId: walletId,
-        address: address,
-        amountSat: amountSat,
+        recipients: recipients,
         networkFee: networkFee,
-        drain: drain,
         unspendable: unspendableUtxos,
         selected: filteredSelectedInputs,
         selectedOnly: selectedOnly,
         replaceByFee: replaceByFee,
       );
       final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
-      final isToSelf = await _bitcoinWalletRepository.isAddressOfWallet(
-        address,
-        walletId: walletId,
+      final isToSelf = await _bitcoinWalletRepository.areAddressesOfWallet([
+        for (final recipient in recipients) recipient.address,
+      ], walletId: walletId);
+      final recipientAmountsSat = remainderRecipients.isEmpty
+          ? [for (final recipient in recipients) recipient.amountSat!]
+          : await _bitcoinWalletRepository.getRecipientAmounts(
+              psbt: psbt,
+              recipients: recipients,
+              walletId: walletId,
+            );
+      return (
+        unsignedPsbt: psbt,
+        txSize: size,
+        isToSelf: isToSelf,
+        recipientAmountsSat: recipientAmountsSat,
       );
-      return (unsignedPsbt: psbt, txSize: size, isToSelf: isToSelf);
     } on NoSpendableUtxoException catch (error) {
       if (selectedOnly) {
         throw SelectedInputsUnavailableException(error.message);

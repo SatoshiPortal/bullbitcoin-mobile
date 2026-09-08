@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_transaction_recipient.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 abstract interface class BitcoinSendPort {
   Future<String> buildPsbt({
     required String walletId,
-    required String address,
-    int? amountSat,
+    required List<BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
-    bool? drain,
     List<({String txId, int vout})>? unspendable,
     List<WalletUtxo>? selected,
     bool selectedOnly = false,
@@ -16,5 +16,14 @@ abstract interface class BitcoinSendPort {
 
   Future<int> getTxSize({required String psbt});
 
-  Future<bool> isAddressOfWallet(String address, {required String walletId});
+  Future<List<Sats>> getRecipientAmounts({
+    required String psbt,
+    required List<BitcoinTransactionRecipient> recipients,
+    required String walletId,
+  });
+
+  Future<bool> areAddressesOfWallet(
+    List<String> addresses, {
+    required String walletId,
+  });
 }
