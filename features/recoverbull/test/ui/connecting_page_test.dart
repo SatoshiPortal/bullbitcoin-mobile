@@ -162,6 +162,172 @@ void main() {
     expect(find.text(l10n.torSettingsTitle), findsNothing);
   });
 
+  testWidgets('uses the attributed Tor failure instead of blaming the server', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: const KeyServerTorFailure(),
+        keyServerStatus: KeyServerStatus.offline,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+      ),
+    );
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullErrorTorConnection), findsOneWidget);
+    expect(find.text(l10n.recoverbullServerUnreachableTorOk), findsNothing);
+  });
+
+  testWidgets('uses the attributed server failure message', (tester) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: const KeyServerOnionUnreachableFailure(),
+        keyServerStatus: KeyServerStatus.offline,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+      ),
+    );
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullErrorOnionUnavailable), findsOneWidget);
+    expect(find.text(l10n.recoverbullServerUnreachableTorOk), findsNothing);
+  });
+
+  testWidgets('keeps the phase-based fallback when no cause is attributed', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: const KeyServerConnectionFailure(),
+        keyServerStatus: KeyServerStatus.offline,
+        torConnection: tor.TorReady(
+          tor.TorRoute(
+            source: tor.TorSource.embedded,
+            endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+            evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+            transport: tor.TorTransport.direct,
+          ),
+        ),
+      ),
+    );
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullServerUnreachableTorOk), findsOneWidget);
+  });
+
+  testWidgets('keeps the Tor fallback when it was never ready', (tester) async {
+    await pumpPage(
+      tester,
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: KeyServerConnectionFailure(),
+        keyServerStatus: KeyServerStatus.offline,
+        torConnection: tor.TorUnavailable(
+          source: tor.TorSource.embedded,
+          failure: tor.TorBootstrapFailure('offline'),
+        ),
+      ),
+    );
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullTorCantStart), findsOneWidget);
+    expect(find.text(l10n.recoverbullServerUnreachableTorOk), findsNothing);
+  });
+
+  testWidgets('keeps an explicit Arti diagnostic above an attribution', (
+    tester,
+  ) async {
+    await pumpPage(
+      tester,
+      RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        failure: KeyServerTorFailure(),
+        keyServerStatus: KeyServerStatus.offline,
+        torConnection: tor.TorUnavailable(
+          source: tor.TorSource.embedded,
+          failure: tor.TorBootstrapFailure(
+            'offline',
+            tor.TorDiagnostic.offline,
+          ),
+        ),
+      ),
+    );
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullTorOffline), findsOneWidget);
+    expect(find.text(l10n.recoverbullErrorTorConnection), findsNothing);
+  });
+
+  testWidgets(
+    'marks Tor failed when its attributed cause conflicts with ready',
+    (tester) async {
+      await pumpPage(
+        tester,
+        RecoverBullState(
+          flow: RecoverBullFlow.recoverVault,
+          failure: KeyServerTorFailure(),
+          keyServerStatus: KeyServerStatus.offline,
+          torConnection: tor.TorReady(
+            tor.TorRoute(
+              source: tor.TorSource.embedded,
+              endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+              evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+              transport: tor.TorTransport.direct,
+            ),
+          ),
+        ),
+      );
+
+      final l10n = await RecoverBullLocalizations.delegate.load(
+        const Locale('en'),
+      );
+      final torCard = find.byKey(const ValueKey('tor-phase-card'));
+      expect(
+        find.descendant(
+          of: torCard,
+          matching: find.text(l10n.recoverbullFailed),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: torCard,
+          matching: find.text(l10n.recoverbullConnected),
+        ),
+        findsNothing,
+      );
+    },
+  );
+
   // Tor being usable and the key server answering are two different facts,
   // separated by 17-24s on device. Holding the mascot on "searching" for that
   // whole window told the user nothing had happened yet.

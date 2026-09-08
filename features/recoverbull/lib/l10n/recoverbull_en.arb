@@ -775,5 +775,10 @@
   "recoverbullAttemptAlertWindow": "Window started: {date}",
   "recoverbullAttemptAlertAction": "If you recognize these attempts, no urgent action is needed. If you do not, treat this as a possible compromise: move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support.",
   "recoverbullAttemptAlertLockoutGuidance": "If you recognize the failed attempts, wait for the limit to expire and try again. If you do not, consider migration: move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support. Never reveal your seed, mnemonic, password, PIN, or key material.",
-  "recoverbullAttemptAlertInformational": "This notification is informational and does not by itself indicate a security incident. Never reveal your seed, mnemonic, password, PIN, or key material."
+  "recoverbullAttemptAlertInformational": "This notification is informational and does not by itself indicate a security incident. Never reveal your seed, mnemonic, password, PIN, or key material.",
+  "recoverbullErrorTorConnection": "The network connection could not be established. Please try again.",
+  "recoverbullErrorOnionUnavailable": "The key server could not be reached. Please try again later.",
+  "recoverbullErrorServiceRefused": "The key server refused the connection. Please try again later.",
+  "recoverbullErrorConnectionBudget": "The key server took too long to respond. Please try again.",
+  "recoverbullErrorConnectionUnknown": "The key server could not be reached. Please try again."
 }

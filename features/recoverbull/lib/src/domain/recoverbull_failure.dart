@@ -11,6 +11,8 @@ import 'package:primitives/primitives.dart';
 /// presentation extension `recoverbull_failure_l10n.dart`, never here.
 sealed class RecoverBullFailure extends Failure {
   const RecoverBullFailure([super.logMessage]);
+
+  String? get supportCause => null;
 }
 
 final class SelectVaultFailure extends RecoverBullFailure {
@@ -27,6 +29,41 @@ final class VaultNotSetFailure extends RecoverBullFailure {
 
 final class KeyServerConnectionFailure extends RecoverBullFailure {
   const KeyServerConnectionFailure();
+}
+
+final class KeyServerTorFailure extends RecoverBullFailure {
+  const KeyServerTorFailure();
+
+  @override
+  String get supportCause => 'tor';
+}
+
+final class KeyServerOnionUnreachableFailure extends RecoverBullFailure {
+  const KeyServerOnionUnreachableFailure();
+
+  @override
+  String get supportCause => 'onion_unreachable';
+}
+
+final class KeyServerServiceRefusedFailure extends RecoverBullFailure {
+  const KeyServerServiceRefusedFailure();
+
+  @override
+  String get supportCause => 'refused';
+}
+
+final class KeyServerConnectionBudgetFailure extends RecoverBullFailure {
+  const KeyServerConnectionBudgetFailure();
+
+  @override
+  String get supportCause => 'budget';
+}
+
+final class KeyServerConnectionUnknownFailure extends RecoverBullFailure {
+  const KeyServerConnectionUnknownFailure();
+
+  @override
+  String get supportCause => 'unknown';
 }
 
 final class VaultCreationFailure extends RecoverBullFailure {

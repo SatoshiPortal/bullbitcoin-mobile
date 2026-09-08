@@ -12,10 +12,17 @@ import 'package:bull_tor/tor.dart';
 final class RecoverBullTorRoute {
   final TorRoute route;
   final HttpClient client;
+  final TorConnectionFailureRecorder connectionFailureRecorder;
   final Future<void> Function() _onClose;
   Future<void>? _closing;
 
-  RecoverBullTorRoute(this.route, this._onClose, this.client);
+  RecoverBullTorRoute(
+    this.route,
+    this._onClose,
+    this.client, {
+    TorConnectionFailureRecorder? connectionFailureRecorder,
+  }) : connectionFailureRecorder =
+           connectionFailureRecorder ?? TorConnectionFailureRecorder();
 
   TorProxyEndpoint get endpoint => route.endpoint;
 

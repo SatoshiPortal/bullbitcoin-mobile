@@ -248,6 +248,11 @@ class _Body extends StatelessWidget {
   /// very thing the next row already reports. A missing network shows up here
   /// instead, as the reason Tor is stuck.
   _PhaseState get _torPhase {
+    // The attributed Tor verdict is stronger evidence than Arti's last
+    // readiness snapshot: showing "Connected" beside a Tor-attributed
+    // failure would present two contradictory claims to the user.
+    if (state.failure?.supportCause == 'tor') return _PhaseState.failed;
+
     return switch (_tor) {
       tor.TorReady() => _PhaseState.done,
       tor.TorUnavailable() => _PhaseState.failed,
@@ -345,6 +350,11 @@ class _Body extends StatelessWidget {
         tor.TorDiagnostic.cantBootstrap ||
         tor.TorDiagnostic.unknown => context.loc.recoverbullTorCantStart,
       };
+    }
+
+    final failure = state.failure;
+    if (failure?.supportCause != null) {
+      return failure!.toTranslated(context);
     }
 
     // Only blame the server when Tor actually reached readiness. Otherwise the

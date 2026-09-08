@@ -12,6 +12,15 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     VaultNotSetFailure() => context.loc.recoverbullErrorVaultNotSet,
     KeyServerConnectionFailure() =>
       context.loc.recoverbullErrorConnectionFailed,
+    KeyServerTorFailure() => context.loc.recoverbullErrorTorConnection,
+    KeyServerOnionUnreachableFailure() =>
+      context.loc.recoverbullErrorOnionUnavailable,
+    KeyServerServiceRefusedFailure() =>
+      context.loc.recoverbullErrorServiceRefused,
+    KeyServerConnectionBudgetFailure() =>
+      context.loc.recoverbullErrorConnectionBudget,
+    KeyServerConnectionUnknownFailure() =>
+      context.loc.recoverbullErrorConnectionUnknown,
     VaultCreationFailure() => context.loc.recoverbullErrorVaultCreationFailed,
     VaultProviderSaveFailure() => context.loc.recoverbullProviderSaveFailed,
     TorNotStartedFailure() => context.loc.recoverbullTorNotStarted,

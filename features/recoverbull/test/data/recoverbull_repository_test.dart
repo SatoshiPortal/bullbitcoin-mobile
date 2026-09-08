@@ -88,6 +88,43 @@ void main() {
   Future<Result<String, RecoverBullFailure>> fetch() =>
       repository.fetchVaultKey('00', 'password', '00', route);
 
+  test('maps SOCKS causes to distinct safe failures and log fields', () async {
+    final causes = <CommandReplyCode, Type>{
+      CommandReplyCode.networkUnreachable: KeyServerTorFailure,
+      CommandReplyCode.hostUnreachable: KeyServerOnionUnreachableFailure,
+      CommandReplyCode.connectionRefused: KeyServerServiceRefusedFailure,
+      CommandReplyCode.ttlExpired: KeyServerConnectionBudgetFailure,
+      CommandReplyCode.serverError: KeyServerConnectionUnknownFailure,
+    };
+
+    for (final entry in causes.entries) {
+      logSink = TestLogSink.recording();
+      repository = RecoverBullRepositoryImpl(
+        log: logSink,
+        remoteDatasource: remote,
+        recoverbullSettingsDatasource: _MockSettings(),
+      );
+      when(
+        () => remote.checkConnection(any()),
+      ).thenThrow(SocksClientConnectionCommandFailedException(entry.key));
+
+      final result = await repository.checkConnection(route);
+
+      expect(result, isA<Err<Null, RecoverBullFailure>>());
+      expect(
+        (result as Err<Null, RecoverBullFailure>).failure.runtimeType,
+        entry.value,
+      );
+      final message = logSink.entries.single.message;
+      expect(message, contains('cause='));
+      expect(message, isNot(contains('127.0.0.1')));
+      expect(message, isNot(contains('.onion')));
+      expect(message, isNot(contains('endpoint')));
+      expect(message, isNot(contains('payload')));
+      expect(message, isNot(contains(entry.key.name)));
+    }
+  });
+
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
     test('503 preserves Retry-After as a busy failure', () async {
       stubFetchThrows(
@@ -265,6 +302,49 @@ void main() {
     );
     expect(logSink.entries.single.error, isNull);
     expect(logSink.entries.single.trace, isNotNull);
+  });
+
+  test('opaque key-server failure uses a fresh SOCKS cause', () async {
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.hostUnreachable,
+    );
+    when(
+      () => remote.fetch(any(), any(), any(), route: any(named: 'route')),
+    ).thenAnswer((_) async {
+      route.connectionFailureRecorder.record(error);
+      throw recoverbull.KeyServerException();
+    });
+
+    final result = await fetch();
+
+    expect(
+      (result as Err<String, RecoverBullFailure>).failure,
+      isA<KeyServerOnionUnreachableFailure>(),
+    );
+    expect(
+      logSink.entries.single.message,
+      'recoverbull.key.fetch.unavailable code=unknown cause=onion_unreachable',
+    );
+  });
+
+  test('a stale SOCKS cause is invalidated before an opaque failure', () async {
+    route.connectionFailureRecorder.record(
+      const SocksClientConnectionCommandFailedException(
+        CommandReplyCode.hostUnreachable,
+      ),
+    );
+    stubFetchThrows(recoverbull.KeyServerException());
+
+    final result = await fetch();
+
+    expect(
+      (result as Err<String, RecoverBullFailure>).failure,
+      isA<KeyServerUnavailableFailure>(),
+    );
+    expect(
+      logSink.entries.single.message,
+      'recoverbull.key.fetch.unavailable code=unknown',
+    );
   });
 
   test('fetch timeout is a classified warning', () async {
@@ -682,6 +762,28 @@ void main() {
         isA<KeyServerHealthCheckTimeoutFailure>(),
       );
       expect(logSink.entries.single.message, 'recoverbull.health.timeout');
+    });
+
+    test('maps opaque health failure using the fresh SOCKS cause', () async {
+      final error = const SocksClientConnectionCommandFailedException(
+        CommandReplyCode.hostUnreachable,
+      );
+      when(() => remote.checkConnection(any())).thenAnswer((_) async {
+        route.connectionFailureRecorder.record(error);
+        throw recoverbull.KeyServerException();
+      });
+
+      final result = await repository.checkConnection(route);
+
+      expect(
+        (result as Err<Null, RecoverBullFailure>).failure,
+        isA<KeyServerOnionUnreachableFailure>(),
+      );
+      expect(
+        logSink.entries.single.message,
+        'recoverbull.health.unavailable code=unknown '
+        'cause=onion_unreachable',
+      );
     });
 
     test('maps other errors to unavailable', () async {

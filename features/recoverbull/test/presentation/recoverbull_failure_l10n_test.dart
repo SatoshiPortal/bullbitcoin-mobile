@@ -5,6 +5,57 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('distinguishes Tor from an unavailable key server', (
+    tester,
+  ) async {
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            messages = [
+              const KeyServerTorFailure().toTranslated(context),
+              const KeyServerOnionUnreachableFailure().toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(messages[0], isNot(equals(messages[1])));
+    expect(messages[0], contains('network'));
+    expect(messages[1], contains('key server'));
+  });
+
+  testWidgets('distinguishes Tor from an unavailable key server in French', (
+    tester,
+  ) async {
+    late List<String> messages;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            messages = [
+              const KeyServerTorFailure().toTranslated(context),
+              const KeyServerOnionUnreachableFailure().toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(messages[0], isNot(equals(messages[1])));
+    expect(messages[0], contains('réseau'));
+    expect(messages[1], contains('clés'));
+  });
+
   testWidgets('translates every failure without exposing diagnostics', (
     tester,
   ) async {

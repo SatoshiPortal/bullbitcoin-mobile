@@ -327,5 +327,10 @@
   "recoverbullAttemptAlertWindow": "Début de la fenêtre : {date}",
   "recoverbullAttemptAlertAction": "Si vous reconnaissez ces tentatives, aucune action urgente n’est nécessaire. Sinon, considérez une compromission possible : transférez vos fonds vers un nouveau portefeuille avec une nouvelle phrase mnémotechnique, sécurisez chaque copie de la sauvegarde et contactez le support.",
   "recoverbullAttemptAlertLockoutGuidance": "Si vous reconnaissez les tentatives échouées, attendez la fin de la limitation puis réessayez. Sinon, envisagez une migration : transférez vos fonds vers un nouveau portefeuille avec une nouvelle phrase mnémotechnique, sécurisez chaque copie de la sauvegarde et contactez le support. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé.",
-  "recoverbullAttemptAlertInformational": "Cette notification est informative et n’indique pas à elle seule un incident de sécurité. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé."
+  "recoverbullAttemptAlertInformational": "Cette notification est informative et n’indique pas à elle seule un incident de sécurité. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé.",
+  "recoverbullErrorTorConnection": "La connexion réseau n’a pas pu être établie. Veuillez réessayer.",
+  "recoverbullErrorOnionUnavailable": "Le serveur de clés est inaccessible. Veuillez réessayer plus tard.",
+  "recoverbullErrorServiceRefused": "Le serveur de clés a refusé la connexion. Veuillez réessayer plus tard.",
+  "recoverbullErrorConnectionBudget": "Le serveur de clés a mis trop de temps à répondre. Veuillez réessayer.",
+  "recoverbullErrorConnectionUnknown": "Le serveur de clés n’a pas pu être joint. Veuillez réessayer."
 }
