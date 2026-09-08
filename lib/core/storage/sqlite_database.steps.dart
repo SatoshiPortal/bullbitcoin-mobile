@@ -7716,6 +7716,8 @@ final class Schema16 extends i0.VersionedSchema {
     sendTransactions,
     sendTransactionInputs,
     sendTransactionPolicyChoices,
+    bullVaultRecords,
+    bullVaultGenerationReservations,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,
@@ -8240,6 +8242,49 @@ final class Schema16 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape49 bullVaultRecords = Shape49(
+    source: i0.VersionedTable(
+      entityName: 'bull_vault_records',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(wallet_id)',
+        'UNIQUE(lineage_id, vault_generation)',
+      ],
+      columns: [
+        _column_161,
+        _column_314,
+        _column_315,
+        _column_316,
+        _column_317,
+        _column_318,
+        _column_319,
+        _column_320,
+        _column_321,
+        _column_322,
+        _column_190,
+        _column_323,
+        _column_324,
+        _column_325,
+        _column_326,
+        _column_327,
+        _column_231,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape50 bullVaultGenerationReservations = Shape50(
+    source: i0.VersionedTable(
+      entityName: 'bull_vault_generation_reservations',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(lineage_id, generation)'],
+      columns: [_column_314, _column_328],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
   final i1.Index orderSwapsRequestId = i1.Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -8623,6 +8668,178 @@ i1.GeneratedColumn<String> _column_312(String aliasedName) =>
 i1.GeneratedColumn<int> _column_313(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'option_index',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape49 extends i0.VersionedTable {
+  Shape49({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get walletId =>
+      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get lineageId =>
+      columnsByName['lineage_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get vaultGeneration =>
+      columnsByName['vault_generation']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get mobileAccount =>
+      columnsByName['mobile_account']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get mobileSeedFingerprint =>
+      columnsByName['mobile_seed_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get mobilePassphraseRequired =>
+      columnsByName['mobile_passphrase_required']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get birthHeight =>
+      columnsByName['birth_height']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get recoveryPackage =>
+      columnsByName['recovery_package']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get previousVaultId =>
+      columnsByName['previous_vault_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get successorWalletId =>
+      columnsByName['successor_wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get status =>
+      columnsByName['status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get hardwareSetupComplete =>
+      columnsByName['hardware_setup_complete']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get hardwareSetupDeferred =>
+      columnsByName['hardware_setup_deferred']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get completedHardwareSignerIdsJson =>
+      columnsByName['completed_hardware_signer_ids_json']!
+          as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get recoveryPackageConfirmed =>
+      columnsByName['recovery_package_confirmed']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get mobileBackupDeferred =>
+      columnsByName['mobile_backup_deferred']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_314(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'lineage_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_315(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'vault_generation',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_316(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'mobile_account',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_317(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'mobile_seed_fingerprint',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_318(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'mobile_passphrase_required',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints:
+          'NOT NULL DEFAULT 0 CHECK (mobile_passphrase_required IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_319(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'birth_height',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_320(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'recovery_package',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_321(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'previous_vault_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_322(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'successor_wallet_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<int> _column_323(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'hardware_setup_complete',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (hardware_setup_complete IN (0, 1))',
+    );
+i1.GeneratedColumn<int> _column_324(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'hardware_setup_deferred',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (hardware_setup_deferred IN (0, 1))',
+    );
+i1.GeneratedColumn<String> _column_325(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'completed_hardware_signer_ids_json',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_326(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'recovery_package_confirmed',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints:
+          'NOT NULL CHECK (recovery_package_confirmed IN (0, 1))',
+    );
+i1.GeneratedColumn<int> _column_327(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'mobile_backup_deferred',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (mobile_backup_deferred IN (0, 1))',
+    );
+
+class Shape50 extends i0.VersionedTable {
+  Shape50({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get lineageId =>
+      columnsByName['lineage_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get generation =>
+      columnsByName['generation']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_328(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'generation',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,

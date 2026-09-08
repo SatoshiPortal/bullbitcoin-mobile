@@ -9,11 +9,18 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 void main() {
-  test('finds a tested RecoverBull backup for the requested seed', () async {
+  test('finds the exact seed backup even when its wallet is hidden', () async {
     final getWallets = _MockGetWalletsUsecase();
     when(
-      () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => [_wallet(fingerprint: 'deadbeef')]);
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer(
+      (_) async => [
+        _wallet(fingerprint: 'deadbeef').copyWith(isHidden: true),
+        _wallet(
+          fingerprint: 'deadbeef',
+        ).copyWith(isEncryptedVaultTested: false),
+      ],
+    );
     final usecase = CheckRecoverBullBackupUsecase(getWallets);
 
     expect(await usecase.execute('DEADBEEF'), isTrue);
@@ -40,7 +47,7 @@ void main() {
       );
       final getWallets = _MockGetWalletsUsecase();
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => [mixedWallet]);
       final usecase = CheckRecoverBullBackupUsecase(getWallets);
 

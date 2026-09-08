@@ -16841,7 +16841,7 @@
   "@bullVaultRecoverBullVerified": {
     "description": "BullVault status for a tested RecoverBull backup"
   },
-  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for this phone and network.",
+  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for the selected network.",
   "bullVaultPrimaryPathValue": "Your everyday key and cold key must sign together.",
   "@bullVaultColdKey": {},
   "@bullVaultMoveFunds": {
@@ -16895,7 +16895,7 @@
   "@bullVaultDeferHardwareSetupDescription": {
     "description": "Warning shown before allowing BullVault hardware setup to be deferred."
   },
-  "bullVaultRestoreDescriptorDescription": "Use this only when the recovery package is unavailable. Bull will verify that the descriptor matches a BullVault and your mobile key.",
+  "bullVaultRestoreDescriptorDescription": "Use this when the recovery package is unavailable. Bull checks the vault policy and which keys are available on this phone.",
   "bullVaultCreateEntry": "Create BullVault",
   "@bullVaultColdRecoveryPath": {},
   "@bullVaultGeneration": {
@@ -16975,7 +16975,7 @@
   "bullVaultRegistrationRequired": "{hardwareSignerCount, plural, =1 {Register this BullVault on your hardware device.} other {Register this BullVault on each hardware device.}}",
   "bullVaultCustomizeSetup": "Advanced setup",
   "walletDeletionErrorProtectedWallet": "This wallet cannot be deleted here.",
-  "bullVaultRestorePackageDescription": "This restores the wallet details, keys, and original recovery schedule.",
+  "bullVaultRestorePackageDescription": "Restores the wallet details and recovery schedule. The recovery package contains no private keys.",
   "bullVaultScanDescriptor": "Scan BullVault descriptor",
   "@bullVaultCreateEntry": {},
   "bullVaultMoveFunds": "Move all funds to current BullVault",
@@ -17454,5 +17454,15 @@
     "description": "Status of a saved payment handed off to Payjoin"
   },
   "sendPendingSubmissionMessage": "This payment may already have been sent. Continue to check its status or retry the same payment. Its recipient, amount and coins cannot be changed.",
-  "sendPendingPayjoin": "Payjoin pending"
+  "sendPendingPayjoin": "Payjoin pending",
+  "@bullVaultRestoreHardwareSetup": {},
+  "bullVaultRestoreHardwareSetup": "Register the vault on your hardware wallets again before using them to sign.",
+  "@bullVaultRestoreWatchOnly": {},
+  "@bullVaultRestoreMobileAvailable": {},
+  "bullVaultRestoreRecoveryOnly": "Delayed mobile recovery is available. To use your mobile key before that date, enter its original passphrase when signing.",
+  "@bullVaultRestoreRecoveryOnly": {},
+  "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
+  "@bullVaultRestoreCompleteTitle": {},
+  "bullVaultRestoreCompleteTitle": "BullVault restored",
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy."
 }

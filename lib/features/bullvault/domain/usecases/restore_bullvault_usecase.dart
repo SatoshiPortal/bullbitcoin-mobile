@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -41,7 +40,6 @@ class RestoreBullVaultUsecase {
   final GetWalletUsecase _getWalletUsecase;
   final ReserveBip48AccountUsecase _reserveBip48AccountUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
-  final SetWalletHiddenUsecase _setWalletHiddenUsecase;
   final WalletSignerOwnershipPort _walletSignerOwnershipPort;
   static Future<void> _restoreLock = Future.value();
 
@@ -54,7 +52,6 @@ class RestoreBullVaultUsecase {
     this._getWalletUsecase,
     this._reserveBip48AccountUsecase,
     this._deleteWalletUsecase,
-    this._setWalletHiddenUsecase,
     this._walletSignerOwnershipPort,
     this._getAllSeedsUsecase,
     this._ensureCanonicalSeedUsecase,
@@ -190,6 +187,15 @@ class RestoreBullVaultUsecase {
       if (!matchesPassphrase) {
         return const Err(BullVaultInvalidRecoveryFailure());
       }
+      final mobileAccess = verifiedSeed == null
+          ? BullVaultMobileAccess.unavailable
+          : _descriptorService.matchesEverydaySeed(
+              policy,
+              verifiedSeed!,
+              passphrase: mobilePassphrase,
+            )
+          ? BullVaultMobileAccess.available
+          : BullVaultMobileAccess.recoveryOnly;
       final package = BullVaultRecoveryPackage(
         previousVaultId: decodedPackage.previousVaultId,
         policy: policy,
@@ -250,11 +256,6 @@ class RestoreBullVaultUsecase {
         if (policy.everydayKey.signer == SignerEntity.local) {
           shouldMarkEverydaySignerLocal = !_descriptorService
               .matchesEverydaySignerOwnership(importedWallet, policy);
-        } else if (!_descriptorService.matchesExistingWallet(
-          importedWallet,
-          policy,
-        )) {
-          return const Err(BullVaultInvalidRecoveryFailure());
         }
       }
       var wallet = importedWallet;
@@ -273,31 +274,22 @@ class RestoreBullVaultUsecase {
             if (!existing.recoveryPackage.canBeEnrichedBy(package)) {
               return const Err(BullVaultInvalidRecoveryFailure());
             }
+            final predecessorResult = await _validatedLocalPredecessor(
+              package: package,
+              successorWalletId: wallet.id,
+            );
+            final BullVaultRecord? predecessor;
+            switch (predecessorResult) {
+              case Err(:final failure):
+                return Err(failure);
+              case Ok(:final value):
+                predecessor = value;
+            }
             if (existing.recoveryPackageConfirmed &&
                 _repository.encodeRecoveryPackage(existing.recoveryPackage) ==
                     _repository.encodeRecoveryPackage(package)) {
-              final predecessorResult = await _validatedLocalPredecessor(
-                package: package,
-                successorWalletId: wallet.id,
-              );
-              switch (predecessorResult) {
-                case Err(:final failure):
-                  return Err(failure);
-                case Ok(:final value):
-                  predecessorToLink = value;
-              }
+              predecessorToLink = predecessor;
             } else {
-              final predecessorResult = await _validatedLocalPredecessor(
-                package: package,
-                successorWalletId: wallet.id,
-              );
-              late final BullVaultRecord? predecessor;
-              switch (predecessorResult) {
-                case Err(:final failure):
-                  return Err(failure);
-                case Ok(:final value):
-                  predecessor = value;
-              }
               final activeRecords = await _otherActiveRecords(
                 lineageId: policy.lineageId,
                 walletId: wallet.id,
@@ -391,9 +383,9 @@ class RestoreBullVaultUsecase {
               return const Err(BullVaultInvalidRecoveryFailure());
             }
           }
-          if (shouldSaveRestoredRecord) {
+          if (shouldSaveRestoredRecord || wallet.isHidden) {
             final saved = predecessorToLink == null
-                ? await _repository.save(restoredRecord)
+                ? await _repository.publishRestored(restoredRecord)
                 : await _repository.linkRestoredRenewal(
                     previous: predecessorToLink,
                     successor: restoredRecord,
@@ -405,21 +397,12 @@ class RestoreBullVaultUsecase {
                 return Err(failure);
             }
           }
-          if (wallet.isHidden) {
-            await _setWalletHiddenUsecase.execute(
-              walletId: wallet.id,
-              isHidden: false,
-            );
-          }
-          final linkedPredecessor = predecessorToLink;
-          if (linkedPredecessor != null) {
-            await _setWalletHiddenUsecase.execute(
-              walletId: linkedPredecessor.walletId,
-              isHidden: true,
-            );
-          }
           return Ok(
-            BullVaultRestoreResult(wallet: wallet, record: restoredRecord),
+            BullVaultRestoreResult(
+              wallet: wallet,
+              record: restoredRecord,
+              mobileAccess: mobileAccess,
+            ),
           );
         case Err(:final failure):
           await rollbackImportedWallet();
@@ -489,13 +472,6 @@ class RestoreBullVaultUsecase {
             kind == BullVaultRestoreInputKind.recoveryPackage,
         createdAt: DateTime.now().toUtc(),
       );
-      switch (await _repository.save(record)) {
-        case Ok():
-          break;
-        case Err(:final failure):
-          await rollbackImportedWallet();
-          return Err(failure);
-      }
       final reservation = mobileAccount == null || mobileSeedFingerprint == null
           ? null
           : await _reserveBip48AccountUsecase.execute(
@@ -504,25 +480,24 @@ class RestoreBullVaultUsecase {
               account: mobileAccount,
             );
       if (reservation case Err()) {
-        final metadataDeleted = await _repository.delete(wallet.id);
-        switch (metadataDeleted) {
-          case Ok():
-            await rollbackImportedWallet();
-          case Err(:final failure):
-            log.severe(
-              message: 'Failed to roll back BullVault metadata',
-              error: failure.runtimeType,
-              trace: StackTrace.current,
-            );
-        }
+        await rollbackImportedWallet();
         return const Err(BullVaultInvalidRecoveryFailure());
       }
+      switch (await _repository.publishRestored(record)) {
+        case Ok():
+          break;
+        case Err(:final failure):
+          await rollbackImportedWallet();
+          return Err(failure);
+      }
       importedNewWallet = false;
-      await _setWalletHiddenUsecase.execute(
-        walletId: wallet.id,
-        isHidden: false,
+      return Ok(
+        BullVaultRestoreResult(
+          wallet: wallet,
+          record: record,
+          mobileAccess: mobileAccess,
+        ),
       );
-      return Ok(BullVaultRestoreResult(wallet: wallet, record: record));
     } on Exception catch (error, stackTrace) {
       await rollbackImportedWallet();
       log.warning(

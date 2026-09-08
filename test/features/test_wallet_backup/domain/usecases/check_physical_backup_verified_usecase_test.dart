@@ -9,21 +9,24 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 void main() {
-  test(
-    'finds a verified local wallet for the exact seed fingerprint',
-    () async {
-      final getWallets = _MockGetWalletsUsecase();
-      when(() => getWallets.execute(onlyBitcoin: true)).thenAnswer(
-        (_) async => [
-          _wallet(fingerprint: 'deadbeef', isPhysicalBackupTested: true),
-        ],
-      );
-      final usecase = CheckPhysicalBackupVerifiedUsecase(getWallets);
+  test('finds the exact seed backup even when its wallet is hidden', () async {
+    final getWallets = _MockGetWalletsUsecase();
+    when(
+      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
+    ).thenAnswer(
+      (_) async => [
+        _wallet(
+          fingerprint: 'deadbeef',
+          isPhysicalBackupTested: true,
+        ).copyWith(isHidden: true),
+        _wallet(fingerprint: 'deadbeef', isPhysicalBackupTested: false),
+      ],
+    );
+    final usecase = CheckPhysicalBackupVerifiedUsecase(getWallets);
 
-      expect(await usecase.execute('DEADBEEF'), isTrue);
-      expect(await usecase.execute('cafebabe'), isFalse);
-    },
-  );
+    expect(await usecase.execute('DEADBEEF'), isTrue);
+    expect(await usecase.execute('cafebabe'), isFalse);
+  });
 }
 
 Wallet _wallet({

@@ -141,6 +141,8 @@ class Schema15To16 {
       await m.createTable(schema16.sendTransactionPolicyChoices);
       await m.createIndex(schema16.sendTransactionsWallet);
       await m.createIndex(schema16.sendTransactionsUpdatedAt);
+      await m.createTable(schema16.bullVaultRecords);
+      await m.createTable(schema16.bullVaultGenerationReservations);
 
       final foreignKeyViolations = await m.database
           .customSelect('PRAGMA foreign_key_check')

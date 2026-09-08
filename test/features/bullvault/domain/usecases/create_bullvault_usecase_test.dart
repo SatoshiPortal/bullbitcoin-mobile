@@ -18,13 +18,11 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_key.dart';
@@ -51,9 +49,6 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
 class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
-
-class _MockSetWalletHiddenUsecase extends Mock
-    implements SetWalletHiddenUsecase {}
 
 class _MockReserveBip48AccountUsecase extends Mock
     implements ReserveBip48AccountUsecase {}
@@ -159,7 +154,8 @@ final class _TestBip48AccountRepository implements Bip48AccountRepository {
   }
 }
 
-final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
+final class _ParsingDescriptorPort extends Fake
+    implements BitcoinDescriptorPort {
   @override
   ({
     String descriptor,
@@ -171,13 +167,6 @@ final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
     required String descriptor,
     required Network network,
   }) => parseTestBullVaultDescriptor(descriptor: descriptor, network: network);
-
-  @override
-  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
-  analyzeBitcoinPolicyDescriptor({
-    required String descriptor,
-    required Network network,
-  }) => throw UnimplementedError();
 
   @override
   Future<Wallet> importDescriptor({
@@ -199,7 +188,8 @@ final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
   );
 }
 
-final class _SequentialDescriptorPort implements BitcoinDescriptorPort {
+final class _SequentialDescriptorPort extends Fake
+    implements BitcoinDescriptorPort {
   final _parser = _ParsingDescriptorPort();
   var _importCount = 0;
 
@@ -215,13 +205,6 @@ final class _SequentialDescriptorPort implements BitcoinDescriptorPort {
     required Network network,
   }) =>
       _parser.parseBitcoinDescriptor(descriptor: descriptor, network: network);
-
-  @override
-  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
-  analyzeBitcoinPolicyDescriptor({
-    required String descriptor,
-    required Network network,
-  }) => throw UnimplementedError();
 
   @override
   Future<Wallet> importDescriptor({
@@ -243,36 +226,10 @@ final class _SequentialDescriptorPort implements BitcoinDescriptorPort {
   );
 }
 
-final class _TestBullVaultRepository implements BullVaultRepository {
+final class _TestBullVaultRepository extends Fake
+    implements BullVaultRepository {
   BullVaultRecord? savedRecord;
   final List<String> events = [];
-
-  @override
-  Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
-    String source,
-  ) => throw UnimplementedError();
-
-  @override
-  String encodeRecoveryPackage(BullVaultRecoveryPackage recoveryPackage) =>
-      throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> activateRenewal({
-    required BullVaultRecord previous,
-    required BullVaultRecord replacement,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> linkRestoredRenewal({
-    required BullVaultRecord previous,
-    required BullVaultRecord successor,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> cancelRenewal({
-    required String previousWalletId,
-    required String replacementWalletId,
-  }) => throw UnimplementedError();
 
   @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getByWalletId(
@@ -280,25 +237,9 @@ final class _TestBullVaultRepository implements BullVaultRepository {
   ) async => Ok(savedRecord?.walletId == walletId ? savedRecord : null);
 
   @override
-  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getLineage(
-    String lineageId,
-  ) => throw UnimplementedError();
-
-  @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
     Network network,
   ) async => Ok(savedRecord);
-
-  @override
-  Future<Result<int, BullVaultFailure>> reserveNextGeneration(
-    BullVaultRecord current,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> releaseGeneration({
-    required String lineageId,
-    required int generation,
-  }) => throw UnimplementedError();
 
   @override
   Future<Result<void, BullVaultFailure>> save(BullVaultRecord record) async {
@@ -443,7 +384,6 @@ void main() {
     );
 
     final getWallet = _MockGetWalletUsecase();
-    final setHidden = _MockSetWalletHiddenUsecase();
     when(
       () => getWallet.execute(created.wallet.id),
     ).thenAnswer((_) async => created.wallet);
@@ -458,7 +398,6 @@ void main() {
     final resume = ResumeBullVaultOnboardingUsecase(
       repository,
       getWallet,
-      setHidden,
       reserveAccount,
     );
 
