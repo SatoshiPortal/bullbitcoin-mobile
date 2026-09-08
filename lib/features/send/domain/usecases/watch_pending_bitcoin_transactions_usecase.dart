@@ -28,11 +28,16 @@ class WatchPendingBitcoinTransactionsUsecase {
             transaction,
           )) {
             case Ok(:final value):
-              validated.add(value);
+              validated.add(value.transaction);
             case Err(failure: SendStoredTransactionInvalidFailure()):
               invalidCount++;
-            case Err(:final failure):
-              return Err(failure);
+            case Err():
+              validated.add(
+                transaction.copyWith(
+                  isPolicyReady: false,
+                  isValidationUnavailable: true,
+                ),
+              );
           }
         }
         return Ok(

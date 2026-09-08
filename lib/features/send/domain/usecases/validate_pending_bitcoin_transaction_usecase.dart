@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -8,6 +9,11 @@ import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart'
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:meta/meta.dart';
+
+typedef ValidatedPendingBitcoinTransaction = ({
+  PendingBitcoinTransaction transaction,
+  BitcoinSigningPlanDetails? details,
+});
 
 class ValidatePendingBitcoinTransactionUsecase {
   final GetWalletUsecase _getWalletUsecase;
@@ -23,10 +29,13 @@ class ValidatePendingBitcoinTransactionUsecase {
   );
 
   @useResult
-  Future<Result<PendingBitcoinTransaction, SendFailure>> execute(
-    PendingBitcoinTransaction transaction,
-  ) async {
-    if (transaction.isDraft) return Ok(transaction);
+  Future<Result<ValidatedPendingBitcoinTransaction, SendFailure>> execute(
+    PendingBitcoinTransaction transaction, {
+    Set<String> satisfiedPreimageKeys = const {},
+  }) async {
+    if (transaction.isDraft) {
+      return Ok((transaction: transaction, details: null));
+    }
     try {
       final wallet = await _getWalletUsecase.execute(transaction.walletId);
       if (wallet == null || !wallet.isBitcoin) {
@@ -40,22 +49,37 @@ class ValidatePendingBitcoinTransactionUsecase {
         selection: transaction.policySelection,
         allowSpentWalletInputs: true,
         allowFrozenWalletInputs: true,
+        satisfiedPreimageKeys: satisfiedPreimageKeys,
       )) {
         case Ok(:final value):
           planDetails = value;
         case Err(:final failure):
-          return Err(_storedTransactionFailure(failure));
+          return Err(
+            failure is SendUnexpectedFailure
+                ? failure
+                : const SendStoredTransactionInvalidFailure(),
+          );
       }
       final review = planDetails.review;
       if (review == null) {
         return const Err(SendStoredTransactionInvalidFailure());
       }
       final plan = planDetails.plan;
+      var recipient = transaction.recipient;
+      if (transaction.stage == PendingBitcoinTransactionStage.payjoinPending) {
+        final request = await PaymentRequest.parse(recipient);
+        if (request is! Bip21PaymentRequest ||
+            request.pj.isEmpty ||
+            request.network != wallet.network) {
+          return const Err(SendStoredTransactionInvalidFailure());
+        }
+        recipient = request.address;
+      }
       final amountSat = BigInt.parse(transaction.amount);
       final matchingOutputs = review.outputs
           .where(
             (output) =>
-                _sameBitcoinAddress(output.address, transaction.recipient) &&
+                _sameBitcoinAddress(output.address, recipient) &&
                 output.amountSat == amountSat,
           )
           .toList(growable: false);
@@ -70,13 +94,10 @@ class ValidatePendingBitcoinTransactionUsecase {
       if (unexpectedExternalOutput) {
         return const Err(SendStoredTransactionInvalidFailure());
       }
-      final hasRequiredPreimages = plan.policy
-          .requiredHashlocks(transaction.policySelection)
-          .every(
-            (hashlock) => plan.satisfiedPreimageKeys.contains(
-              '${hashlock.type.name}:${hashlock.hash.toLowerCase()}',
-            ),
-          );
+      final hasRequiredPreimages = plan.policy.hasRequiredPreimages(
+        transaction.policySelection,
+        plan.satisfiedPreimageKeys,
+      );
       final policyReady =
           plan.policy.pathRequirements(transaction.policySelection).isEmpty &&
           plan.policy.selectionIsAvailable(
@@ -110,7 +131,9 @@ class ValidatePendingBitcoinTransactionUsecase {
         }
       }
       final ({String psbt, bool isFinalized}) finalized;
-      if (review.isFinalized) {
+      if (transaction.stage == PendingBitcoinTransactionStage.payjoinPending) {
+        finalized = (psbt: psbt, isFinalized: false);
+      } else if (review.isFinalized) {
         finalized = (psbt: psbt, isFinalized: true);
       } else {
         switch (await _bitcoinSigningPort.finalizePsbt(psbt)) {
@@ -122,17 +145,25 @@ class ValidatePendingBitcoinTransactionUsecase {
       }
       final ready =
           transaction.finalTransaction != null || finalized.isFinalized;
-      return Ok(
-        transaction.copyWith(
+      if (transaction.stage ==
+              PendingBitcoinTransactionStage.broadcastPending &&
+          !ready) {
+        return const Err(SendStoredTransactionInvalidFailure());
+      }
+      return Ok((
+        transaction: transaction.copyWith(
           psbt: finalized.psbt,
-          stage: ready
+          stage: transaction.isSubmission
+              ? transaction.stage
+              : ready
               ? PendingBitcoinTransactionStage.readyToBroadcast
               : PendingBitcoinTransactionStage.needsSignatures,
           isConflict: conflict,
           isPolicyReady: policyReady,
           signersNeeded: ready ? 0 : plan.signersNeeded,
         ),
-      );
+        details: finalized.psbt == psbt ? planDetails : null,
+      ));
     } on FormatException {
       return const Err(SendStoredTransactionInvalidFailure());
     } on ArgumentError {

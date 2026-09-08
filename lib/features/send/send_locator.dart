@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_u
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/send/domain/usecases/refresh_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -73,6 +74,7 @@ import 'package:bb_mobile/features/send/domain/repositories/pending_bitcoin_tran
 import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/save_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_pending_bitcoin_submission_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -113,6 +115,11 @@ class SendLocator {
       ),
     );
     locator.registerFactory<VerifySignedTxUsecase>(VerifySignedTxUsecase.new);
+    locator.registerFactory<PreparePendingBitcoinSubmissionUsecase>(
+      () => PreparePendingBitcoinSubmissionUsecase(
+        locator<PendingBitcoinTransactionRepository>(),
+      ),
+    );
     locator.registerFactory<SavePendingBitcoinTransactionUsecase>(
       () => SavePendingBitcoinTransactionUsecase(
         locator<PendingBitcoinTransactionRepository>(),
@@ -129,7 +136,11 @@ class SendLocator {
       ),
     );
     locator.registerFactory<SendWithPayjoinUsecase>(
-      () => SendWithPayjoinUsecase(locator<PayjoinSender>()),
+      () => SendWithPayjoinUsecase(
+        locator<PayjoinSender>(),
+        locator<PayjoinSessions>(),
+        locator<PayjoinLifecycle>(),
+      ),
     );
     locator.registerFactory<RetryPayjoinProposalUsecase>(
       () => RetryPayjoinProposalUsecase(locator<PayjoinSender>()),
@@ -305,6 +316,12 @@ class SendLocator {
         locator<GetBitcoinSigningPlanUsecase>(),
       ),
     );
+    locator.registerFactory<RefreshBitcoinSigningPlanUsecase>(
+      () => RefreshBitcoinSigningPlanUsecase(
+        locator<ValidatePendingBitcoinTransactionUsecase>(),
+        locator<GetBitcoinSigningPlanUsecase>(),
+      ),
+    );
     locator.registerFactory<RestorePendingBitcoinTransactionUsecase>(
       () => RestorePendingBitcoinTransactionUsecase(
         locator<GetPendingBitcoinTransactionUsecase>(),
@@ -427,12 +444,16 @@ class SendLocator {
             locator<ValidateCoinControlPaymentRequestUsecase>(),
         savePendingBitcoinTransactionUsecase:
             locator<SavePendingBitcoinTransactionUsecase>(),
+        preparePendingBitcoinSubmissionUsecase:
+            locator<PreparePendingBitcoinSubmissionUsecase>(),
         getPendingBitcoinTransactionUsecase:
             locator<GetPendingBitcoinTransactionUsecase>(),
         restorePendingBitcoinTransactionUsecase:
             locator<RestorePendingBitcoinTransactionUsecase>(),
         deletePendingBitcoinTransactionUsecase:
             locator<DeletePendingBitcoinTransactionUsecase>(),
+        refreshBitcoinSigningPlanUsecase:
+            locator<RefreshBitcoinSigningPlanUsecase>(),
         validatePendingBitcoinTransactionUsecase:
             locator<ValidatePendingBitcoinTransactionUsecase>(),
       ),
