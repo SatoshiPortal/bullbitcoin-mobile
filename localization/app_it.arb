@@ -3250,14 +3250,6 @@
   "fundExchangeRestrictedTitle": "Finanziamento non disponibile",
   "fundExchangeRestrictedMessage": "Il finanziamento non è disponibile sul tuo account. Contatta l'assistenza per maggiori informazioni.",
   "fundExchangeWarningTitle": "Attenzione per truffatori",
-  "receiveError": "Errore: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Conte di recupero",
   "walletDetailsDescriptorLabel": "Descrittore",
   "importQrDeviceSeedsignerInstructionsTitle": "Istruzioni SeedSigner",
@@ -4914,5 +4906,9 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "receiveErrorAmountAboveProtocolLimit": "L'importo supera l'importo massimo possibile in Bitcoin di {max}",
+  "receiveErrorNoteNotSaved": "Non è stato possibile salvare la tua nota. Riprova.",
+  "receiveErrorAddressUnavailable": "Non è stato possibile preparare un indirizzo di ricezione. Riprova.",
+  "receiveErrorBroadcastOriginal": "Non è stato possibile trasmettere la transazione. Controlla la connessione a Internet e riprova."
 }

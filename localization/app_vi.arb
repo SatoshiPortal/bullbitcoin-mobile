@@ -953,7 +953,6 @@
   "receivePaymentNormally": "Nhận thanh toán bình thường",
   "receiveContinue": "Tiếp tục",
   "receiveCopyAddressOnly": "Chỉ sao chép hoặc quét địa chỉ",
-  "receiveError": "Lỗi: {error}",
   "receiveFeeExplanation": "Khoản phí này sẽ được trừ từ số tiền được gửi",
   "receiveReceiveAmount": "Số tiền nhận được",
   "receiveSendNetworkFee": "Phí mạng gửi",
@@ -3596,5 +3595,9 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "receiveErrorAmountAboveProtocolLimit": "Số tiền vượt quá số lượng Bitcoin tối đa có thể là {max}",
+  "receiveErrorNoteNotSaved": "Không thể lưu ghi chú của bạn. Vui lòng thử lại.",
+  "receiveErrorAddressUnavailable": "Không thể tạo địa chỉ nhận. Vui lòng thử lại.",
+  "receiveErrorBroadcastOriginal": "Chúng tôi không thể phát giao dịch. Vui lòng kiểm tra kết nối Internet và thử lại."
 }

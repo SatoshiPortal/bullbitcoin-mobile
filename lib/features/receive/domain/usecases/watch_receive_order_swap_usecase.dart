@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class WatchReceiveOrderSwapUsecase {
@@ -7,6 +8,7 @@ class WatchReceiveOrderSwapUsecase {
 
   const WatchReceiveOrderSwapUsecase(this._swapFacade);
 
+  @useResult
   Stream<Result<OrderSwapRecord, ReceiveFailure>> execute(String localId) =>
       _swapFacade
           .watchOrder(localId)

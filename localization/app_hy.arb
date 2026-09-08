@@ -953,7 +953,6 @@
   "receivePaymentNormally": "Ստանալ վճարումը սովորական եղանակով",
   "receiveContinue": "Շարունակել",
   "receiveCopyAddressOnly": "Պատճենել կամ սկանավորել միայն հասցեն",
-  "receiveError": "Սխալ․ {error}",
   "receiveFeeExplanation": "Այս վճարը կհանվի ուղարկվող գումարից",
   "receiveReceiveAmount": "Ստացվող գումար",
   "receiveSendNetworkFee": "Ուղարկման ցանցի վճար",
@@ -3596,5 +3595,9 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "receiveErrorAmountAboveProtocolLimit": "Գումարը գերազանցում է Bitcoin-ի առավելագույն հնարավոր գումարը՝ {max}",
+  "receiveErrorNoteNotSaved": "Ձեր նշումը չհաջողվեց պահել։ Փորձեք կրկին։",
+  "receiveErrorAddressUnavailable": "Չհաջողվեց պատրաստել ստացման հասցե։ Փորձեք կրկին։",
+  "receiveErrorBroadcastOriginal": "Չհաջողվեց հեռարձակել գործարքը։ Ստուգեք ինտերնետ կապը և փորձեք կրկին։"
 }

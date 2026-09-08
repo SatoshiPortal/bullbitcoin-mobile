@@ -8253,15 +8253,6 @@
       }
     }
   },
-  "receiveError": "Erro: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "swapValidationEnterAmount": "Por favor, insira um montante",
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
@@ -12244,5 +12235,9 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "receiveErrorAmountAboveProtocolLimit": "O valor está acima do valor máximo possível de Bitcoin de {max}",
+  "receiveErrorNoteNotSaved": "Não foi possível salvar sua nota. Tente novamente.",
+  "receiveErrorAddressUnavailable": "Não foi possível preparar um endereço de recebimento. Tente novamente.",
+  "receiveErrorBroadcastOriginal": "Não foi possível transmitir a transação. Verifique sua conexão com a internet e tente novamente."
 }

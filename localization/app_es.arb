@@ -326,14 +326,6 @@
   "receivePaymentNormally": "Recibir pago normalmente",
   "receiveContinue": "Continuar",
   "receiveCopyAddressOnly": "Copiar o escanear solo la dirección",
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Esta comisión se deducirá del monto enviado",
   "receiveReceiveAmount": "Monto a recibir",
   "receiveSendNetworkFee": "Comisión de red de envío",
@@ -4911,5 +4903,9 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "receiveErrorAmountAboveProtocolLimit": "El monto supera el monto máximo posible de Bitcoin de {max}",
+  "receiveErrorNoteNotSaved": "No se pudo guardar tu nota. Inténtalo de nuevo.",
+  "receiveErrorAddressUnavailable": "No se pudo preparar una dirección de recepción. Inténtalo de nuevo.",
+  "receiveErrorBroadcastOriginal": "No pudimos transmitir la transacción. Revisa tu conexión a Internet e inténtalo de nuevo."
 }

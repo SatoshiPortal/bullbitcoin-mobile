@@ -9892,15 +9892,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "त्रुटि: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry गिनती",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12422,5 +12413,9 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "receiveErrorAmountAboveProtocolLimit": "राशि बिटकॉइन की अधिकतम संभव राशि {max} से अधिक है",
+  "receiveErrorNoteNotSaved": "आपका नोट सहेजा नहीं जा सका। कृपया फिर से प्रयास करें।",
+  "receiveErrorAddressUnavailable": "प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।",
+  "receiveErrorBroadcastOriginal": "हम लेनदेन प्रसारित नहीं कर सके। अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।"
 }

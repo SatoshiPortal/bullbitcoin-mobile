@@ -9694,15 +9694,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Chyba: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Počet",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12232,5 +12223,9 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "receiveErrorAmountAboveProtocolLimit": "Částka je vyšší než maximální možná částka Bitcoinu {max}",
+  "receiveErrorNoteNotSaved": "Vaši poznámku nebylo možné uložit. Zkuste to prosím znovu.",
+  "receiveErrorAddressUnavailable": "Nepodařilo se připravit přijímací adresu. Zkuste to prosím znovu.",
+  "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu."
 }

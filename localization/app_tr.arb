@@ -9813,15 +9813,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Hata: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Count",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12232,5 +12223,9 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "receiveErrorAmountAboveProtocolLimit": "Tutar, mümkün olan en yüksek Bitcoin tutarı olan {max} değerini aşıyor",
+  "receiveErrorNoteNotSaved": "Notunuz kaydedilemedi. Lütfen tekrar deneyin.",
+  "receiveErrorAddressUnavailable": "Alım adresi hazırlanamadı. Lütfen tekrar deneyin.",
+  "receiveErrorBroadcastOriginal": "İşlemi yayınlayamadık. İnternet bağlantınızı kontrol edip tekrar deneyin."
 }

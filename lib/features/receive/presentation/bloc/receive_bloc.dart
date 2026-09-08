@@ -1,30 +1,30 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/fetch_receive_note_suggestions_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_currencies_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_settings_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_wallets_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/load_receive_address_label_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/save_receive_address_label_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/set_receive_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/watch_payjoin_usecase.dart';
@@ -44,19 +44,21 @@ part 'receive_state.dart';
 
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
-    required this._getWalletsUsecase,
-    required this._getAvailableCurrenciesUsecase,
-    required this._getSettingsUsecase,
-    required this._convertSatsToCurrencyAmountUsecase,
-    required this._getReceiveAddressUsecase,
-    required this._getAddressAtIndexUsecase,
+    required this._getReceiveWalletsUsecase,
+    required this._getReceiveCurrenciesUsecase,
+    required this._getReceiveSettingsUsecase,
+    required this._convertReceiveAmountUsecase,
+    required this._prepareReceiveAddressUsecase,
+    required this._getReceiveAddressAtIndexUsecase,
     required this._createReceiveOrderSwapUsecase,
     required this._receiveWithPayjoinUsecase,
     required this._broadcastOriginalTransactionUsecase,
     required this._watchPayjoinUsecase,
     required this._watchWalletTransactionByAddressUsecase,
     required this._watchReceiveOrderSwapUsecase,
-    required this._labelsFacade,
+    required this._loadReceiveAddressLabelUsecase,
+    required this._saveReceiveAddressLabelUsecase,
+    required this._fetchReceiveNoteSuggestionsUsecase,
     required this._watchReceivePayjoinEnabledUsecase,
     required this._watchReceivePayjoinMinAmountUsecase,
     required this._getReceivePayjoinPolicyUsecase,
@@ -121,12 +123,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveOrderSwapUpdated>(_onOrderSwapUpdated);
   }
 
-  final GetWalletsUsecase _getWalletsUsecase;
-  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
-  final GetSettingsUsecase _getSettingsUsecase;
-  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
-  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
+  final GetReceiveWalletsUsecase _getReceiveWalletsUsecase;
+  final GetReceiveCurrenciesUsecase _getReceiveCurrenciesUsecase;
+  final GetReceiveSettingsUsecase _getReceiveSettingsUsecase;
+  final ConvertReceiveAmountUsecase _convertReceiveAmountUsecase;
+  final PrepareReceiveAddressUsecase _prepareReceiveAddressUsecase;
+  final GetReceiveAddressAtIndexUsecase _getReceiveAddressAtIndexUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
@@ -135,14 +137,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final WatchWalletTransactionByAddressUsecase
   _watchWalletTransactionByAddressUsecase;
   final WatchReceiveOrderSwapUsecase _watchReceiveOrderSwapUsecase;
-  final LabelsFacade _labelsFacade;
+  final LoadReceiveAddressLabelUsecase _loadReceiveAddressLabelUsecase;
+  final SaveReceiveAddressLabelUsecase _saveReceiveAddressLabelUsecase;
+  final FetchReceiveNoteSuggestionsUsecase _fetchReceiveNoteSuggestionsUsecase;
   final WatchReceivePayjoinEnabledUsecase _watchReceivePayjoinEnabledUsecase;
   final WatchReceivePayjoinMinAmountUsecase
   _watchReceivePayjoinMinAmountUsecase;
   final GetReceivePayjoinPolicyUsecase _getReceivePayjoinPolicyUsecase;
   final SetReceivePayjoinEnabledUsecase _setReceivePayjoinEnabledUsecase;
   final Wallet? _wallet;
-  StreamSubscription<PayjoinSession>? _payjoinSubscription;
+  StreamSubscription<Result<PayjoinSession, ReceiveFailure>>?
+  _payjoinSubscription;
   StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
   StreamSubscription<Result<OrderSwapRecord, ReceiveFailure>>?
   _orderSwapSubscription;
@@ -190,275 +195,335 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveBitcoinStarted event,
     Emitter<ReceiveState> emit,
   ) async {
-    try {
-      final isWalletChange =
-          event.wallet != null && state.wallet?.id != event.wallet!.id;
-      if (isWalletChange) {
-        // Clear the previous wallet's payjoin receiver and stop watching it
-        // so the URI does not embed a payjoin link from the old wallet.
-        await _payjoinSubscription?.cancel();
-        emit(state.copyWith(payjoin: null, receivePayjoinException: null));
+    final isWalletChange =
+        event.wallet != null && state.wallet?.id != event.wallet!.id;
+    if (isWalletChange) {
+      // Clear the previous wallet's payjoin receiver and stop watching it
+      // so the URI does not embed a payjoin link from the old wallet.
+      await _payjoinSubscription?.cancel();
+      emit(state.copyWith(payjoin: null, payjoinAttemptSettled: false));
+    }
+
+    final eventWallet = event.wallet != null && event.wallet!.isBitcoin
+        ? event.wallet
+        : null;
+    if (state.wallet != null && !state.wallet!.isBitcoin) {
+      emit(state.copyWith(wallet: null, bitcoinAddress: null));
+    } else {
+      emit(state.copyWith(wallet: eventWallet, bitcoinAddress: null));
+    }
+
+    // Emit a state with the Bitcoin type so the UI can update allready before
+    // the async data is loaded. Remove values that should
+    // not be shared between the different receive types. Currently only the
+    // amount and note shouldn't be shared.
+    emit(
+      state.copyWith(
+        type: ReceiveType.bitcoin,
+        inputAmount: '',
+        confirmedAmountSat: null,
+        note: '',
+        failure: null,
+        // The eligibility decision for this address starts here and is only
+        // settled after the block below. Until then the QR must wait.
+        payjoinAttemptSettled: false,
+      ),
+    );
+
+    // If no bitcoin wallet is passed through the constructor, get the
+    // default bitcoin wallet. The network check on _wallet matters: the
+    // preselected wallet survives tab switches (the shell's bloc is
+    // created once), so entering receive from a liquid wallet and
+    // switching to the Bitcoin tab must not resurrect the liquid wallet
+    // here — its balance would drive the payjoin gates (hasUtxos,
+    // _isPayjoinEligible) and its id the generated address.
+    final presetWallet = _wallet != null && _wallet.isBitcoin ? _wallet : null;
+    Wallet? wallet = presetWallet ?? state.wallet;
+    if (wallet == null) {
+      switch (await _getReceiveWalletsUsecase.execute(onlyBitcoin: true)) {
+        case Ok(:final value):
+          // firstWhere's orElse and .first both throw on an empty list, and
+          //  there is no try/catch above this any more. An empty list is a
+          //  legitimate Ok from the use-case, so it is checked here.
+          if (value.isEmpty) {
+            log.warning('No bitcoin wallet available to receive into');
+            emit(
+              state.copyWith(
+                failure: const ReceiveAddressUnavailableFailure(),
+                payjoinAttemptSettled: true,
+              ),
+            );
+            return;
+          }
+          emit(state.copyWith(wallets: value));
+          wallet = value.firstWhere(
+            (w) => w.isDefault,
+            orElse: () => value.first,
+          );
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+          return;
       }
+    }
+    emit(state.copyWith(wallet: wallet));
 
-      final eventWallet = event.wallet != null && event.wallet!.isBitcoin
-          ? event.wallet
-          : null;
-      if (state.wallet != null && !state.wallet!.isBitcoin) {
-        emit(state.copyWith(wallet: null, bitcoinAddress: null));
-      } else {
-        emit(state.copyWith(wallet: eventWallet, bitcoinAddress: null));
+    if (state.bitcoinUnit == null) {
+      // If the bitcoin unit is not set yet, we need to get it from the settings
+      // And set the input amount currency code to the bitcoin unit code
+      // if no other currency code was selected yet.
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          emit(
+            state.copyWith(
+              bitcoinUnit: value.bitcoinUnit,
+              inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                  ? state.inputAmountCurrencyCode
+                  : value.bitcoinUnit.code,
+            ),
+          );
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+          return;
       }
+    }
 
-      // Emit a state with the Bitcoin type so the UI can update allready before
-      // the async data is loaded. Remove values that should
-      // not be shared between the different receive types. Currently only the
-      // amount and note shouldn't be shared.
-      emit(
-        state.copyWith(
-          type: ReceiveType.bitcoin,
-          inputAmount: '',
-          confirmedAmountSat: null,
-          note: '',
-          amountException: null,
-          error: null,
-        ),
-      );
-
-      // If no bitcoin wallet is passed through the constructor, get the
-      // default bitcoin wallet. The network check on _wallet matters: the
-      // preselected wallet survives tab switches (the shell's bloc is
-      // created once), so entering receive from a liquid wallet and
-      // switching to the Bitcoin tab must not resurrect the liquid wallet
-      // here — its balance would drive the payjoin gates (hasUtxos,
-      // _isPayjoinEligible) and its id the generated address.
-      final presetWallet = _wallet != null && _wallet.isBitcoin
-          ? _wallet
-          : null;
-      Wallet? wallet = presetWallet ?? state.wallet;
-      if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(onlyBitcoin: true);
-        emit(state.copyWith(wallets: wallets));
-        wallet = wallets.firstWhere(
-          (w) => w.isDefault,
-          orElse: () => wallets.first,
-        );
+    if (state.fiatCurrencyCode.isEmpty) {
+      // If the fiat currency code is not set yet, we need to get it from the settings
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+          return;
       }
-      emit(state.copyWith(wallet: wallet));
+    }
 
-      if (state.bitcoinUnit == null) {
-        // If the bitcoin unit is not set yet, we need to get it from the settings
-        // And set the input amount currency code to the bitcoin unit code
-        // if no other currency code was selected yet.
-        final settings = await _getSettingsUsecase.execute();
-        final bitcoinUnit = settings.bitcoinUnit;
-        emit(
-          state.copyWith(
-            bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-                ? state.inputAmountCurrencyCode
-                : bitcoinUnit.code,
-          ),
-        );
+    if (state.fiatCurrencyCodes.isEmpty) {
+      // If the fiat currency codes are not set yet, we need to get them from the settings
+      switch (await _getReceiveCurrenciesUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(fiatCurrencyCodes: value));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+          return;
       }
+    }
 
-      if (state.fiatCurrencyCode.isEmpty) {
-        // If the fiat currency code is not set yet, we need to get it from the settings
-        final settings = await _getSettingsUsecase.execute();
-        final fiatCurrency = settings.currencyCode;
-        emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+    var bitcoinAddress = state.bitcoinAddress;
+    if (bitcoinAddress == null) {
+      // If the bitcoin address is not set yet, we need to get it from the wallet
+      switch (await _prepareReceiveAddressUsecase.execute(
+        walletId: wallet.id,
+      )) {
+        case Ok(:final value):
+          bitcoinAddress = value;
+          final note = await _loadAddressLabel(bitcoinAddress.address);
+          emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+          return;
       }
+    }
 
-      if (state.fiatCurrencyCodes.isEmpty) {
-        // If the fiat currency codes are not set yet, we need to get them from the settings
-        final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-        emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
-      }
-
-      var bitcoinAddress = state.bitcoinAddress;
-      if (bitcoinAddress == null) {
-        // If the bitcoin address is not set yet, we need to get it from the wallet
-        final address = await _getReceiveAddressUsecase.execute(
-          walletId: wallet.id,
-        );
-        bitcoinAddress = address;
-        final note = await _loadAddressLabel(bitcoinAddress.address);
-        emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
-      }
-
-      // If the payjoin receiver is not set yet, we need to create it, but only
-      //  if the wallet is eligible (see _isPayjoinEligible: not watch-only,
-      //  payjoin enabled globally, and a balance to contribute) —
-      //  when disabled the QR must never advertise a pj= endpoint, or the
-      //  sender's wallet would attempt a payjoin nobody here will process.
-      //
-      // Isolated in its own try/catch: a settings-read failure here must not
-      //  leave payjoinGloballyEnabled at its default null. isPayjoinLoading's
-      //  `(payjoinGloballyEnabled ?? true)` treats null as "may still become
-      //  enabled, keep waiting" — so an uncaught failure here would leave the
-      //  QR stuck loading forever, the exact failure class this whole gate
-      //  exists to prevent, just via a different entrance. Fail closed
-      //  (disabled) on a read failure instead.
-      bool payjoinEnabled;
-      int? payjoinMinAmountSat;
-      try {
-        final policy = await _getReceivePayjoinPolicyUsecase.execute();
-        payjoinEnabled = policy.enabled;
-        payjoinMinAmountSat = policy.minimumAmountSat;
-      } catch (e) {
+    // If the payjoin receiver is not set yet, we need to create it, but only
+    //  if the wallet is eligible (see _isPayjoinEligible: not watch-only,
+    //  payjoin enabled globally, and a balance to contribute) —
+    //  when disabled the QR must never advertise a pj= endpoint, or the
+    //  sender's wallet would attempt a payjoin nobody here will process.
+    //
+    // Fails closed (disabled) rather than propagating: an unreadable
+    //  setting must not leave payjoinGloballyEnabled null, and must not
+    //  abort the receive — the address itself is fine, it just cannot
+    //  advertise a pj= endpoint.
+    final bool payjoinEnabled;
+    final int? payjoinMinAmountSat;
+    switch (await _getReceivePayjoinPolicyUsecase.execute()) {
+      case Ok(:final value):
+        payjoinEnabled = value.enabled;
+        payjoinMinAmountSat = value.minimumAmountSat;
+      case Err(:final failure):
         log.warning(
-          'Failed to read payjoin settings; treating as disabled: $e',
+          'Failed to read payjoin settings; treating as disabled: '
+          '${failure.logMessage}',
         );
         payjoinEnabled = false;
         payjoinMinAmountSat = null;
-      }
-      // The state must know the setting: ReceiveState.isPayjoinLoading (and
-      // through it the QR's paymentRequest) waits for a payjoin session
-      // unless it can see payjoin is disabled. payjoinMinAmountSat is carried
-      // too so the in-progress screen can explain a below-minimum decline.
-      emit(
-        state.copyWith(
-          payjoinGloballyEnabled: payjoinEnabled,
-          payjoinMinAmountSat: payjoinMinAmountSat,
-        ),
+    }
+    // The state must know the setting: ReceiveState.isPayjoinLoading (and
+    // through it the QR's paymentRequest) waits for a payjoin session
+    // unless it can see payjoin is disabled. payjoinMinAmountSat is carried
+    // too so the in-progress screen can explain a below-minimum decline.
+    emit(
+      state.copyWith(
+        payjoinGloballyEnabled: payjoinEnabled,
+        payjoinMinAmountSat: payjoinMinAmountSat,
+      ),
+    );
+    if (state.payjoin == null && _isPayjoinEligible(wallet, payjoinEnabled)) {
+      PayjoinReceiverSession? payjoin;
+      final result = await _receiveWithPayjoinUsecase.execute(
+        walletId: wallet.id,
+        isTestnet: wallet.network.isTestnet,
+        address: bitcoinAddress.address,
       );
-      if (state.payjoin == null && _isPayjoinEligible(wallet, payjoinEnabled)) {
-        PayjoinReceiverSession? payjoin;
-        Object? error;
-        try {
-          final created = await _receiveWithPayjoinUsecase.execute(
-            walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
-            address: bitcoinAddress.address,
-          );
+      switch (result) {
+        case Ok(:final value):
           // Same belt-and-suspenders re-check as _onPayjoinSettingChanged:
           //  the setting could have been toggled off while the directory
           //  round trip above was in flight — never arm a watcher and
           //  surface a pj= QR that the (already-updated) chip says is
           //  disabled.
           if (state.payjoinGloballyEnabled == payjoinEnabled) {
-            payjoin = created;
+            payjoin = value;
             _watchPayjoin(payjoin.id);
           }
-        } catch (e) {
+        case Err(:final failure):
+          // Logged, not stored: nothing renders a payjoin creation failure.
+          //  The receive itself is unaffected — the address just cannot
+          //  advertise a pj= endpoint — so the only state that matters is
+          //  that the attempt is over, carried by payjoinAttemptSettled.
           log.severe(
-            message: 'Payjoin receiver creation failed',
-            error: e,
+            message: 'Payjoin receiver creation failed: ${failure.logMessage}',
+            error: failure,
             trace: StackTrace.current,
           );
-          error = e;
-        }
-
-        emit(
-          state.copyWith(
-            payjoin: payjoin,
-            error: error is! ReceivePayjoinException ? error : null,
-            receivePayjoinException: error is ReceivePayjoinException
-                ? error
-                : null,
-          ),
-        );
-      } else if (state.payjoin != null &&
-          !_isPayjoinEligible(wallet, payjoinEnabled)) {
-        // If the wallet is watch only, payjoin was turned off since we last
-        //  created a receiver, or the wallet no longer has a balance to
-        //  contribute, clear it.
-        emit(state.copyWith(payjoin: null));
-        // cancel the payjoin subscription as well if it exists
-        await _payjoinSubscription?.cancel();
       }
 
-      if (state.exchangeRate == 0) {
-        // If the exchange rate is not set yet, we need to get it from the settings
-        final exchangeRate = await _convertSatsToCurrencyAmountUsecase
-            .execute();
-        emit(state.copyWith(exchangeRate: exchangeRate));
-      }
-
-      // Start watching for transactions on the wallet address
-      _watchWalletTransactionToAddress(
-        walletId: wallet.id,
-        address: bitcoinAddress.address,
-      );
-    } catch (e) {
-      emit(state.copyWith(error: e));
+      emit(state.copyWith(payjoin: payjoin));
+    } else if (state.payjoin != null &&
+        !_isPayjoinEligible(wallet, payjoinEnabled)) {
+      // If the wallet is watch only, payjoin was turned off since we last
+      //  created a receiver, or the wallet no longer has a balance to
+      //  contribute, clear it.
+      emit(state.copyWith(payjoin: null));
+      // cancel the payjoin subscription as well if it exists
+      await _payjoinSubscription?.cancel();
     }
+
+    // Settled on EVERY path above — created, failed, cleared, or never
+    //  attempted because the wallet was ineligible. Unconditional on
+    //  purpose: this is the single place the QR is released, so a branch
+    //  added above cannot forget to release it and hang the screen.
+    emit(state.copyWith(payjoinAttemptSettled: true));
+
+    if (state.exchangeRate == 0) {
+      // If the exchange rate is not set yet, we need to get it from the settings
+      switch (await _convertReceiveAmountUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(exchangeRate: value));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
+
+    // Start watching for transactions on the wallet address
+    _watchWalletTransactionToAddress(
+      walletId: wallet.id,
+      address: bitcoinAddress.address,
+    );
   }
 
   Future<void> _onLightningStarted(
     ReceiveLightningStarted event,
     Emitter<ReceiveState> emit,
   ) async {
-    try {
-      // Emit a state with the Lightning type so the UI can update allready before
-      // the async data is loaded. Remove values that should
-      // not be shared between the different receive types. Currently only the
-      // amount and note shouldn't be shared. But for Lightning, also clear the
-      // swap since it goes to the amount screen first and so a new swap should
-      // be created anyways.
-      emit(
-        state.copyWith(
-          type: ReceiveType.lightning,
-          lightningSwap: null,
-          orderSwap: null,
-          inputAmount: '',
-          confirmedAmountSat: null,
-          note: '',
-          amountException: null,
-          failure: null,
-          error: null,
-        ),
-      );
+    // Emit a state with the Lightning type so the UI can update allready before
+    // the async data is loaded. Remove values that should
+    // not be shared between the different receive types. Currently only the
+    // amount and note shouldn't be shared. But for Lightning, also clear the
+    // swap since it goes to the amount screen first and so a new swap should
+    // be created anyways.
+    emit(
+      state.copyWith(
+        type: ReceiveType.lightning,
+        lightningSwap: null,
+        orderSwap: null,
+        inputAmount: '',
+        confirmedAmountSat: null,
+        note: '',
+        failure: null,
+      ),
+    );
 
-      if (state.bitcoinUnit == null) {
-        // If the bitcoin unit is not set yet, we need to get it from the settings
-        // And set the input amount currency code to the bitcoin unit code
-        // if no other currency code was selected yet.
-        final settings = await _getSettingsUsecase.execute();
-        final bitcoinUnit = settings.bitcoinUnit;
-        emit(
-          state.copyWith(
-            bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-                ? state.inputAmountCurrencyCode
-                : bitcoinUnit.code,
-          ),
-        );
+    if (state.bitcoinUnit == null) {
+      // If the bitcoin unit is not set yet, we need to get it from the settings
+      // And set the input amount currency code to the bitcoin unit code
+      // if no other currency code was selected yet.
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          emit(
+            state.copyWith(
+              bitcoinUnit: value.bitcoinUnit,
+              inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                  ? state.inputAmountCurrencyCode
+                  : value.bitcoinUnit.code,
+            ),
+          );
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
       }
+    }
 
-      if (state.fiatCurrencyCode.isEmpty) {
-        // If the fiat currency code is not set yet, we need to get it from the settings
-        final settings = await _getSettingsUsecase.execute();
-        final fiatCurrency = settings.currencyCode;
-        emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+    if (state.fiatCurrencyCode.isEmpty) {
+      // If the fiat currency code is not set yet, we need to get it from the settings
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
       }
+    }
 
-      if (state.fiatCurrencyCodes.isEmpty) {
-        // If the fiat currency codes are not set yet, we need to get them from the settings
-        final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-        emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+    if (state.fiatCurrencyCodes.isEmpty) {
+      // If the fiat currency codes are not set yet, we need to get them from the settings
+      switch (await _getReceiveCurrenciesUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(fiatCurrencyCodes: value));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
       }
+    }
 
-      // If no wallet is passed through the constructor, get the default liquid wallet,
-      //  which is the default wallet to receive lightning payments since fees are lower
-      //  than on the bitcoin network.
-      Wallet? wallet = _wallet?.isLiquid == true ? _wallet : null;
-      if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(
-          onlyLiquid: true,
-          onlyDefaults: true,
-        );
-        wallet = wallets.first;
+    // If no wallet is passed through the constructor, get the default liquid wallet,
+    //  which is the default wallet to receive lightning payments since fees are lower
+    //  than on the bitcoin network.
+    Wallet? wallet = _wallet?.isLiquid == true ? _wallet : null;
+    if (wallet == null) {
+      switch (await _getReceiveWalletsUsecase.execute(
+        onlyLiquid: true,
+        onlyDefaults: true,
+      )) {
+        case Ok(:final value):
+          // .first throws on an empty list, and an empty list is a
+          //  legitimate Ok from the use-case rather than a thrown failure.
+          if (value.isEmpty) {
+            log.warning('No liquid wallet available to receive into');
+            emit(
+              state.copyWith(failure: const ReceiveAddressUnavailableFailure()),
+            );
+            return;
+          }
+          wallet = value.first;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
       }
-      emit(state.copyWith(wallet: wallet));
+    }
+    emit(state.copyWith(wallet: wallet));
 
-      if (state.exchangeRate == 0) {
-        // If the exchange rate is not set yet, we need to get it from the settings
-        final exchangeRate = await _convertSatsToCurrencyAmountUsecase
-            .execute();
-        emit(state.copyWith(exchangeRate: exchangeRate));
+    if (state.exchangeRate == 0) {
+      // If the exchange rate is not set yet, we need to get it from the settings
+      switch (await _convertReceiveAmountUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(exchangeRate: value));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
       }
-    } catch (e) {
-      emit(state.copyWith(error: e));
     }
   }
 
@@ -466,175 +531,200 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveLiquidStarted event,
     Emitter<ReceiveState> emit,
   ) async {
-    try {
-      // Emit a state with the Liquid type so the UI can update with the Liquid
-      // receive UI already before the async data is loaded. Remove values that should
-      // not be shared between the different receive types. Currently only the
-      // amount and note shouldn't be shared.
-      emit(
-        state.copyWith(
-          type: ReceiveType.liquid,
-          inputAmount: '',
-          confirmedAmountSat: null,
-          note: '',
-          amountException: null,
-          error: null,
-        ),
-      );
+    // Emit a state with the Liquid type so the UI can update with the Liquid
+    // receive UI already before the async data is loaded. Remove values that should
+    // not be shared between the different receive types. Currently only the
+    // amount and note shouldn't be shared.
+    emit(
+      state.copyWith(
+        type: ReceiveType.liquid,
+        inputAmount: '',
+        confirmedAmountSat: null,
+        note: '',
+        failure: null,
+      ),
+    );
 
-      if (state.bitcoinUnit == null) {
-        // If the bitcoin unit is not set yet, we need to get it from the settings
-        // And set the input amount currency code to the bitcoin unit code
-        // if no other currency code was selected yet.
-        final settings = await _getSettingsUsecase.execute();
-        final bitcoinUnit = settings.bitcoinUnit;
-        emit(
-          state.copyWith(
-            bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-                ? state.inputAmountCurrencyCode
-                : bitcoinUnit.code,
-          ),
-        );
+    if (state.bitcoinUnit == null) {
+      // If the bitcoin unit is not set yet, we need to get it from the settings
+      // And set the input amount currency code to the bitcoin unit code
+      // if no other currency code was selected yet.
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          emit(
+            state.copyWith(
+              bitcoinUnit: value.bitcoinUnit,
+              inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                  ? state.inputAmountCurrencyCode
+                  : value.bitcoinUnit.code,
+            ),
+          );
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
       }
-
-      if (state.fiatCurrencyCode.isEmpty) {
-        // If the fiat currency code is not set yet, we need to get it from the settings
-        final settings = await _getSettingsUsecase.execute();
-        final fiatCurrency = settings.currencyCode;
-        emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
-      }
-
-      if (state.fiatCurrencyCodes.isEmpty) {
-        // If the fiat currency codes are not set yet, we need to get them from the settings
-        final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-        emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
-      }
-
-      // If no liquid wallet is passed through the constructor, get the
-      // default liquid wallet (same network guard as the bitcoin flow: the
-      // preselected wallet survives tab switches).
-      Wallet? wallet = _wallet != null && _wallet.isLiquid ? _wallet : null;
-      if (wallet == null) {
-        final wallets = await _getWalletsUsecase.execute(
-          onlyLiquid: true,
-          onlyDefaults: true,
-        );
-        wallet = wallets.first;
-      }
-      emit(state.copyWith(wallet: wallet));
-
-      var liquidAddress = state.liquidAddress;
-      if (liquidAddress == null) {
-        // If the liquid address is not set yet, we need to get it from the wallet
-        final address = await _getReceiveAddressUsecase.execute(
-          walletId: wallet.id,
-        );
-        liquidAddress = address;
-        final note = await _loadAddressLabel(liquidAddress.address);
-        emit(state.copyWith(liquidAddress: liquidAddress, note: note));
-      }
-
-      if (state.exchangeRate == 0) {
-        // If the exchange rate is not set yet, we need to get it from the settings
-        final exchangeRate = await _convertSatsToCurrencyAmountUsecase
-            .execute();
-        emit(state.copyWith(exchangeRate: exchangeRate));
-      }
-
-      // Start watching for transactions on the wallet address
-      _watchWalletTransactionToAddress(
-        walletId: wallet.id,
-        address: liquidAddress.address,
-      );
-    } catch (e) {
-      emit(state.copyWith(error: e));
     }
+
+    if (state.fiatCurrencyCode.isEmpty) {
+      // If the fiat currency code is not set yet, we need to get it from the settings
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(fiatCurrencyCode: value.currencyCode));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
+
+    if (state.fiatCurrencyCodes.isEmpty) {
+      // If the fiat currency codes are not set yet, we need to get them from the settings
+      switch (await _getReceiveCurrenciesUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(fiatCurrencyCodes: value));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
+
+    // If no liquid wallet is passed through the constructor, get the
+    // default liquid wallet (same network guard as the bitcoin flow: the
+    // preselected wallet survives tab switches).
+    Wallet? wallet = _wallet != null && _wallet.isLiquid ? _wallet : null;
+    if (wallet == null) {
+      switch (await _getReceiveWalletsUsecase.execute(
+        onlyLiquid: true,
+        onlyDefaults: true,
+      )) {
+        case Ok(:final value):
+          // .first throws on an empty list, and an empty list is a
+          //  legitimate Ok from the use-case rather than a thrown failure.
+          if (value.isEmpty) {
+            log.warning('No liquid wallet available to receive into');
+            emit(
+              state.copyWith(failure: const ReceiveAddressUnavailableFailure()),
+            );
+            return;
+          }
+          wallet = value.first;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
+    emit(state.copyWith(wallet: wallet));
+
+    var liquidAddress = state.liquidAddress;
+    if (liquidAddress == null) {
+      // If the liquid address is not set yet, we need to get it from the wallet
+      switch (await _prepareReceiveAddressUsecase.execute(
+        walletId: wallet.id,
+      )) {
+        case Ok(:final value):
+          liquidAddress = value;
+          final note = await _loadAddressLabel(liquidAddress.address);
+          emit(state.copyWith(liquidAddress: liquidAddress, note: note));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
+
+    if (state.exchangeRate == 0) {
+      // If the exchange rate is not set yet, we need to get it from the settings
+      switch (await _convertReceiveAmountUsecase.execute()) {
+        case Ok(:final value):
+          emit(state.copyWith(exchangeRate: value));
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+    }
+
+    // Start watching for transactions on the wallet address
+    _watchWalletTransactionToAddress(
+      walletId: wallet.id,
+      address: liquidAddress.address,
+    );
   }
 
   Future<void> _onAmountInputChanged(
     ReceiveAmountInputChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    try {
-      String amount;
-      AmountException? amountException;
+    String amount;
+    ReceiveFailure? amountFailure;
 
-      if (event.amount.isEmpty) {
-        amount = event.amount;
-        amountException = null;
-      } else if (state.isInputAmountFiat) {
-        final amountFiat = double.tryParse(event.amount);
-        final isDecimalPoint = event.amount == '.';
-        amount = amountFiat == null && !isDecimalPoint
-            ? state.inputAmount
-            : event.amount;
-      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        // If the amount is in sats, make sure it is a valid BigInt and do not
-        //  allow a decimal point or for it to be bigger than the max sats amount that can exist.
-        final amountSats = BigInt.tryParse(event.amount);
-        final hasDecimals = event.amount.contains('.');
-        if (amountSats == null || hasDecimals) {
-          amount = state.inputAmount; // revert if not integer
-        } else {
-          amount = amountSats.toString();
-        }
+    if (event.amount.isEmpty) {
+      amount = event.amount;
+      amountFailure = null;
+    } else if (state.isInputAmountFiat) {
+      final amountFiat = double.tryParse(event.amount);
+      final isDecimalPoint = event.amount == '.';
+      amount = amountFiat == null && !isDecimalPoint
+          ? state.inputAmount
+          : event.amount;
+    } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      // If the amount is in sats, make sure it is a valid BigInt and do not
+      //  allow a decimal point or for it to be bigger than the max sats amount that can exist.
+      final amountSats = BigInt.tryParse(event.amount);
+      final hasDecimals = event.amount.contains('.');
+      if (amountSats == null || hasDecimals) {
+        amount = state.inputAmount; // revert if not integer
       } else {
-        // If the amount is in BTC, make sure it is a valid double and
-        //  do not allow more than 8 decimal places and that it is not bigger than the max bitcoin amount that can exist.
-        final amountBtc = double.tryParse(event.amount);
-        final decimals = event.amount.split('.').last.length;
-        final isDecimalPoint = event.amount == '.';
-        if ((amountBtc == null && !isDecimalPoint) ||
-            decimals > BitcoinUnit.btc.decimals) {
-          amount = state.inputAmount;
-        } else {
-          amount = event.amount;
-        }
+        amount = amountSats.toString();
       }
-
-      int inputSat = 0;
-      if (amount.isNotEmpty) {
-        inputSat = state.isInputAmountFiat
-            ? ConvertAmount.fiatToSats(
-                double.tryParse(amount) ?? 0,
-                state.exchangeRate,
-              )
-            : state.inputAmountCurrencyCode == BitcoinUnit.sats.code
-            ? int.tryParse(amount) ?? 0
-            : ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
-      }
-      if (inputSat > ConversionConstants.maxSatsAmount.toInt()) {
-        amountException = AboveBitcoinProtocolLimitAmountException(
-          ConversionConstants.maxSatsAmount.toInt(),
-        );
+    } else {
+      // If the amount is in BTC, make sure it is a valid double and
+      //  do not allow more than 8 decimal places and that it is not bigger than the max bitcoin amount that can exist.
+      final amountBtc = double.tryParse(event.amount);
+      final decimals = event.amount.split('.').last.length;
+      final isDecimalPoint = event.amount == '.';
+      if ((amountBtc == null && !isDecimalPoint) ||
+          decimals > BitcoinUnit.btc.decimals) {
         amount = state.inputAmount;
+      } else {
+        amount = event.amount;
       }
-
-      // if (state.type == ReceiveType.lightning &&
-      //     state.swapLimits != null &&
-      //     amount.isNotEmpty) {
-      //   if (inputSat < state.swapLimits!.min) {
-      //     amountException = AmountException.belowSwapLimit(
-      //       state.swapLimits!.min,
-      //     );
-      //   } else if (inputSat > state.swapLimits!.max) {
-      //     amountException = AmountException.aboveSwapLimit(
-      //       state.swapLimits!.max,
-      //     );
-      //   }
-      // }
-
-      emit(
-        state.copyWith(
-          inputAmount: amount,
-          amountException: amountException,
-          failure: null,
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(error: e));
     }
+
+    int inputSat = 0;
+    if (amount.isNotEmpty) {
+      if (state.isInputAmountFiat) {
+        // A long enough digit string parses to double.infinity, and
+        //  fiatToSats would then reach (infinity * 1e8).round(), which throws
+        //  UnsupportedError. There is no try/catch above this any more, so
+        //  the non-finite case is rejected as an out-of-bounds amount — which
+        //  is what it is — instead of being converted.
+        final amountFiat = double.tryParse(amount) ?? 0;
+        if (!amountFiat.isFinite) {
+          emit(
+            state.copyWith(
+              inputAmount: state.inputAmount,
+              failure: ReceiveAmountAboveProtocolLimitFailure(
+                limitAmountSat: ConversionConstants.maxSatsAmount.toInt(),
+              ),
+            ),
+          );
+          return;
+        }
+        inputSat = ConvertAmount.fiatToSats(amountFiat, state.exchangeRate);
+      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        inputSat = int.tryParse(amount) ?? 0;
+      } else {
+        inputSat = ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
+      }
+    }
+    if (inputSat > ConversionConstants.maxSatsAmount.toInt()) {
+      amountFailure = ReceiveAmountAboveProtocolLimitFailure(
+        limitAmountSat: ConversionConstants.maxSatsAmount.toInt(),
+      );
+      amount = state.inputAmount;
+    }
+
+    // A validation pass clears any previous failure (including a failed
+    // swap creation) so the user can retry with the corrected amount.
+    emit(state.copyWith(inputAmount: amount, failure: amountFailure));
   }
 
   Future<void> _onAmountCurrencyChanged(
@@ -651,19 +741,32 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
       //  the current exchange rate and fiat currency code.
       fiatCurrencyCode = event.currencyCode;
-      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+      switch (await _convertReceiveAmountUsecase.execute(
         currencyCode: event.currencyCode,
-      );
+      )) {
+        case Ok(:final value):
+          exchangeRate = value;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
     } else {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
-      final currencyValues = await Future.wait([
-        _getSettingsUsecase.execute(),
-        _convertSatsToCurrencyAmountUsecase.execute(),
-      ]);
-
-      fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
-      exchangeRate = currencyValues[1] as double;
+      switch (await _getReceiveSettingsUsecase.execute()) {
+        case Ok(:final value):
+          fiatCurrencyCode = value.currencyCode;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
+      switch (await _convertReceiveAmountUsecase.execute()) {
+        case Ok(:final value):
+          exchangeRate = value;
+        case Err(:final failure):
+          emit(state.copyWith(failure: failure));
+          return;
+      }
     }
 
     emit(
@@ -672,7 +775,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         fiatCurrencyCode: fiatCurrencyCode,
         exchangeRate: exchangeRate,
         inputAmount: '',
-        amountException: null,
         failure: null,
       ),
     );
@@ -700,11 +802,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(
         creatingSwap: true,
-        amountException: null,
         lightningSwap: null,
         orderSwap: null,
         failure: null,
-        error: null,
       ),
     );
     final result = await _createReceiveOrderSwapUsecase.execute(
@@ -735,54 +835,39 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    final validationResult = NoteValidator.validate(event.note);
-
-    if (validationResult.isValid) {
-      emit(state.copyWith(note: event.note.trim(), error: null));
-    } else {
-      emit(state.copyWith(error: validationResult.errorMessage));
-    }
+    // No validation here. The only dispatcher is the note bottom sheet
+    //  (receive_amount_screen), which refuses to pop while NoteValidator
+    //  rejects the text — so an invalid note cannot reach this handler, and
+    //  the branch that used to exist put NoteValidator's hardcoded English
+    //  message straight into state.
+    //
+    //  Re-implementing the rules here instead would duplicate them and let
+    //  receive drift the day one is added. The proper fix is to make
+    //  NoteValidator return a typed violation that each feature maps and
+    //  translates; that lands with the labels migration, and receive picks it
+    //  up then.
+    emit(state.copyWith(note: event.note.trim()));
   }
 
   Future<void> _onNoteSaved(
     ReceiveNoteSaved event,
     Emitter<ReceiveState> emit,
   ) async {
-    try {
-      final note = state.note;
-      final address = switch (state.type) {
-        ReceiveType.bitcoin => state.bitcoinAddress,
-        ReceiveType.liquid => state.liquidAddress,
-        _ => null,
-      };
-      if (address == null) return;
+    final address = switch (state.type) {
+      ReceiveType.bitcoin => state.bitcoinAddress,
+      ReceiveType.liquid => state.liquidAddress,
+      _ => null,
+    };
+    if (address == null) return;
 
-      if (note.isEmpty) {
-        final labels = await _labelsFacade.fetchByReference(address.address);
-        for (final label in labels.where(
-          (label) => label.type == LabelType.address,
-        )) {
-          final result = await _labelsFacade.trash(label.id);
-          if (result case Err(:final failure)) {
-            emit(state.copyWith(error: failure));
-            return;
-          }
-        }
-      } else {
-        final result = await _labelsFacade.store(
-          NewLabel.addr(
-            address: address.address,
-            origin: address.walletId,
-            label: note,
-          ),
-        );
-        if (result case Err(:final failure)) {
-          emit(state.copyWith(error: failure));
-        }
-      }
-    } catch (e) {
-      emit(state.copyWith(error: e));
-      return;
+    final result = await _saveReceiveAddressLabelUsecase.execute(
+      address: address.address,
+      walletId: address.walletId,
+      note: state.note,
+    );
+    if (result case Err(:final failure)) {
+      log.warning('Failed to save the receive note: ${failure.logMessage}');
+      emit(state.copyWith(failure: failure));
     }
   }
 
@@ -801,107 +886,119 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       state.copyWith(bitcoinAddress: null, liquidAddress: null, payjoin: null),
     );
 
-    try {
-      if (state.wallet == null) {
-        throw Exception('No wallet found');
-      }
-      final walletId = state.wallet!.id;
+    if (state.wallet == null) {
+      log.warning('New address requested with no wallet selected');
+      emit(state.copyWith(failure: const ReceiveAddressUnavailableFailure()));
+      return;
+    }
 
-      WalletAddress address;
-      switch (state.type) {
-        case ReceiveType.bitcoin:
-          PayjoinReceiverSession? payjoin;
-          Object? error;
-          address = await _getReceiveAddressUsecase.execute(
-            walletId: walletId,
-            generateNew: true,
-          );
-          // If a new address is generated, we need to update the payjoin
-          // receiver as well, but only if the wallet is eligible (see
-          // _isPayjoinEligible / _onBitcoinStarted).
-          //
-          // Same fail-closed handling as _onBitcoinStarted: a settings-read
-          //  failure must not leave isPayjoinLoading waiting forever.
-          bool payjoinEnabled;
-          int? payjoinMinAmountSat;
-          try {
-            final policy = await _getReceivePayjoinPolicyUsecase.execute();
-            payjoinEnabled = policy.enabled;
-            payjoinMinAmountSat = policy.minimumAmountSat;
-          } catch (e) {
+    final walletId = state.wallet!.id;
+
+    WalletAddress address;
+    switch (state.type) {
+      case ReceiveType.bitcoin:
+        PayjoinReceiverSession? payjoin;
+        // A new address needs its own payjoin session, so whether it will
+        //  carry a pj= endpoint is unsettled again until the block below.
+        emit(state.copyWith(payjoinAttemptSettled: false));
+        switch (await _prepareReceiveAddressUsecase.execute(
+          walletId: walletId,
+          generateNew: true,
+        )) {
+          case Ok(:final value):
+            address = value;
+          case Err(:final failure):
+            // Release the QR: no new address means no new payjoin session
+            //  either, so nothing further will settle it.
+            emit(state.copyWith(failure: failure, payjoinAttemptSettled: true));
+            return;
+        }
+        // If a new address is generated, we need to update the payjoin
+        // receiver as well, but only if the wallet is eligible (see
+        // _isPayjoinEligible / _onBitcoinStarted).
+        //
+        // Same fail-closed handling as _onBitcoinStarted.
+        final bool payjoinEnabled;
+        final int? payjoinMinAmountSat;
+        switch (await _getReceivePayjoinPolicyUsecase.execute()) {
+          case Ok(:final value):
+            payjoinEnabled = value.enabled;
+            payjoinMinAmountSat = value.minimumAmountSat;
+          case Err(:final failure):
             log.warning(
-              'Failed to read payjoin settings; treating as disabled: $e',
+              'Failed to read payjoin settings; treating as disabled: '
+              '${failure.logMessage}',
             );
             payjoinEnabled = false;
             payjoinMinAmountSat = null;
-          }
-          emit(
-            state.copyWith(
-              payjoinGloballyEnabled: payjoinEnabled,
-              payjoinMinAmountSat: payjoinMinAmountSat,
-            ),
+        }
+        emit(
+          state.copyWith(
+            payjoinGloballyEnabled: payjoinEnabled,
+            payjoinMinAmountSat: payjoinMinAmountSat,
+          ),
+        );
+        if (_isPayjoinEligible(state.wallet!, payjoinEnabled)) {
+          final result = await _receiveWithPayjoinUsecase.execute(
+            walletId: walletId,
+            isTestnet: state.wallet!.network.isTestnet,
+            address: address.address,
           );
-          if (_isPayjoinEligible(state.wallet!, payjoinEnabled)) {
-            try {
-              final created = await _receiveWithPayjoinUsecase.execute(
-                walletId: walletId,
-                isTestnet: state.wallet!.network.isTestnet,
-                address: address.address,
-              );
+          switch (result) {
+            case Ok(:final value):
               // Same belt-and-suspenders re-check as
               //  _onPayjoinSettingChanged: the setting could have been
               //  toggled off while the directory round trip above was in
               //  flight — never arm a watcher and surface a pj= QR that the
               //  (already-updated) chip says is disabled.
               if (state.payjoinGloballyEnabled == payjoinEnabled) {
-                payjoin = created;
+                payjoin = value;
                 _watchPayjoin(payjoin.id);
               }
-            } catch (e) {
+            case Err(:final failure):
+              // See _onBitcoinStarted: logged, not stored — only the fact
+              //  that the attempt is over affects the screen.
               log.severe(
-                message: 'Payjoin receiver creation failed',
-                error: e,
+                message:
+                    'Payjoin receiver creation failed: ${failure.logMessage}',
+                error: failure,
                 trace: StackTrace.current,
               );
-              error = e;
-            }
           }
+        }
 
-          emit(
-            state.copyWith(
-              bitcoinAddress: address,
-              payjoin: payjoin,
-              // Split the error the same way _onBitcoinStarted does: a
-              //  ReceivePayjoinException must land in receivePayjoinException,
-              //  not the generic error slot. Otherwise isPayjoinLoading stays
-              //  true forever (payjoin == null && receivePayjoinException ==
-              //  null) and the QR never resolves.
-              error: error is! ReceivePayjoinException ? error : null,
-              receivePayjoinException: error is ReceivePayjoinException
-                  ? error
-                  : null,
-            ),
-          );
+        emit(
+          state.copyWith(
+            bitcoinAddress: address,
+            payjoin: payjoin,
+            // Settled whether or not a session was created, and whether or
+            //  not the wallet was eligible for one.
+            payjoinAttemptSettled: true,
+          ),
+        );
 
-        case ReceiveType.liquid:
-          address = await _getAddressAtIndexUsecase.execute(
-            walletId: walletId,
-            index: currentAddress.index + 1,
-          );
-          emit(state.copyWith(liquidAddress: address));
-        default:
-          // No other receive types have addresses, so we don't need to do anything here.
-          return;
-      }
-
-      // We have to start listening for transactions to this new address now
-      _watchWalletTransactionToAddress(
-        walletId: walletId,
-        address: address.address,
-      );
-    } catch (e) {
-      emit(state.copyWith(error: e));
+      case ReceiveType.liquid:
+        switch (await _getReceiveAddressAtIndexUsecase.execute(
+          walletId: walletId,
+          index: currentAddress.index + 1,
+        )) {
+          case Ok(:final value):
+            address = value;
+            emit(state.copyWith(liquidAddress: address));
+          case Err(:final failure):
+            emit(state.copyWith(failure: failure));
+            return;
+        }
+      default:
+        // No other receive types have addresses, so we don't need to do anything here.
+        return;
     }
+
+    // We have to start listening for transactions to this new address now
+    _watchWalletTransactionToAddress(
+      walletId: walletId,
+      address: address.address,
+    );
   }
 
   Future<void> _onPayjoinUpdated(
@@ -929,12 +1026,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
-  /// Reacts live to the global payjoin setting changing (see the
-  /// constructor's subscription): creates or clears the payjoin receiver
-  /// session for the CURRENTLY displayed bitcoin address without requiring
-  /// the user to leave and re-enter the receive screen. A no-op outside the
-  /// bitcoin flow, or before a wallet/address is loaded — _onBitcoinStarted
-  /// picks up the freshly-read setting on the next entry regardless.
   /// User tapped the payjoin toggle on the receive screen. Persists the new
   /// value to the global policy; the resulting policy stream event flows back
   /// in as [ReceivePayjoinSettingChanged], which creates or clears the session.
@@ -942,22 +1033,20 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceivePayjoinToggled event,
     Emitter<ReceiveState> emit,
   ) async {
-    emit(state.copyWith(error: null));
+    emit(state.copyWith(failure: null));
     final result = await _setReceivePayjoinEnabledUsecase.execute(
       event.enabled,
       requestConsent: event.requestConsent,
     );
-    result.fold(
-      (updated) {
-        add(ReceivePayjoinSettingChanged(updated));
-      },
-      (failure) {
+    switch (result) {
+      case Ok(:final value):
+        add(ReceivePayjoinSettingChanged(value));
+      case Err(:final failure):
         log.warning(
           'Failed to toggle Payjoin from Receive: ${failure.logMessage}',
         );
-        emit(state.copyWith(error: failure));
-      },
-    );
+        emit(state.copyWith(failure: failure));
+    }
   }
 
   void _onPayjoinMinAmountChanged(
@@ -967,6 +1056,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(state.copyWith(payjoinMinAmountSat: event.amountSat));
   }
 
+  /// Reacts live to the global payjoin setting changing (see the
+  /// constructor's subscription): creates or clears the payjoin receiver
+  /// session for the CURRENTLY displayed bitcoin address without requiring
+  /// the user to leave and re-enter the receive screen. A no-op outside the
+  /// bitcoin flow, or before a wallet/address is loaded — _onBitcoinStarted
+  /// picks up the freshly-read setting on the next entry regardless.
   Future<void> _onPayjoinSettingChanged(
     ReceivePayjoinSettingChanged event,
     Emitter<ReceiveState> emit,
@@ -983,49 +1078,64 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state.payjoin == null && _isPayjoinEligible(wallet, event.enabled)) {
       PayjoinReceiverSession? payjoin;
-      Object? error;
-      try {
-        payjoin = await _receiveWithPayjoinUsecase.execute(
-          walletId: wallet.id,
-          isTestnet: wallet.network.isTestnet,
-          address: bitcoinAddress.address,
-        );
-        // Belt-and-suspenders alongside restartable(): the setting could have
-        //  changed again while the creation above was in flight (restartable()
-        //  guards this handler's own emit() calls once a newer
-        //  ReceivePayjoinSettingChanged starts, but doesn't stop the code
-        //  running up to that point). Re-check against the CURRENT state
-        //  before arming the watcher / emitting the session — otherwise a
-        //  stale "enable" outcome could still surface a payjoin session (and
-        //  a live watcher for it) after the setting was flipped back off.
-        if (state.payjoinGloballyEnabled != event.enabled) {
-          return;
-        }
-        _watchPayjoin(payjoin.id);
-      } catch (e) {
-        log.severe(
-          message: 'Payjoin receiver creation failed',
-          error: e,
-          trace: StackTrace.current,
-        );
-        error = e;
-      }
-      emit(
-        state.copyWith(
-          payjoin: payjoin,
-          error: error is! ReceivePayjoinException ? error : null,
-          receivePayjoinException: error is ReceivePayjoinException
-              ? error
-              : null,
-        ),
+      // Toggling payjoin on re-opens the question for the address already on
+      //  screen, so the QR waits again rather than flipping from a plain
+      //  address to a pj= BIP21 a moment later.
+      emit(state.copyWith(payjoinAttemptSettled: false));
+      final result = await _receiveWithPayjoinUsecase.execute(
+        walletId: wallet.id,
+        isTestnet: wallet.network.isTestnet,
+        address: bitcoinAddress.address,
       );
-    } else if (state.payjoin != null &&
-        !_isPayjoinEligible(wallet, event.enabled)) {
+      switch (result) {
+        case Ok(:final value):
+          // Belt-and-suspenders alongside restartable(): the setting could
+          //  have changed again while the creation above was in flight
+          //  (restartable() guards this handler's own emit() calls once a
+          //  newer ReceivePayjoinSettingChanged starts, but doesn't stop the
+          //  code running up to that point). Re-check against the CURRENT
+          //  state before arming the watcher / emitting the session —
+          //  otherwise a stale "enable" outcome could still surface a payjoin
+          //  session (and a live watcher for it) after the setting was
+          //  flipped back off.
+          if (state.payjoinGloballyEnabled != event.enabled) {
+            // Abandon the stale session but still release the QR: the
+            //  attempt is over either way, and a newer handler (restartable)
+            //  sets its own unsettled flag if it is creating another one.
+            emit(state.copyWith(payjoinAttemptSettled: true));
+            return;
+          }
+          payjoin = value;
+          _watchPayjoin(payjoin.id);
+        case Err(:final failure):
+          // See _onBitcoinStarted: logged, not stored.
+          log.severe(
+            message: 'Payjoin receiver creation failed: ${failure.logMessage}',
+            error: failure,
+            trace: StackTrace.current,
+          );
+      }
+      emit(state.copyWith(payjoin: payjoin, payjoinAttemptSettled: true));
+      return;
+    }
+
+    if (state.payjoin != null && !_isPayjoinEligible(wallet, event.enabled)) {
       final payjoinSubscription = _payjoinSubscription;
       _payjoinSubscription = null;
       emit(state.copyWith(payjoin: null));
       await payjoinSubscription?.cancel();
     }
+
+    // Settles unconditionally, and this is load-bearing rather than tidy.
+    //  restartable() cancels an in-flight enable handler, silently dropping
+    //  the emits it had queued after it had already unsettled the flag. The
+    //  handler that replaces it is usually this disable path, and it creates
+    //  no session — so if it only settled inside the branch above (which
+    //  needs state.payjoin != null, false when the cancelled handler never
+    //  got to emit one) the flag would stay false forever and the QR would
+    //  never render again. Toggling on then straight back off did exactly
+    //  that.
+    emit(state.copyWith(payjoinAttemptSettled: true));
   }
 
   Future<void> _onPayjoinOriginalTxBroadcasted(
@@ -1044,22 +1154,35 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         payjoin != null &&
         payjoin.hasOriginalTransaction &&
         payjoin.canManuallyBroadcastOriginal) {
-      try {
-        emit(state.copyWith(isBroadcastingOriginalTransaction: true));
-        final updatedPayjoin =
-            await _broadcastOriginalTransactionUsecase.execute(payjoin.id)
-                as PayjoinReceiverSession;
-
-        emit(state.copyWith(payjoin: updatedPayjoin));
-      } on BroadcastOriginalTransactionUnavailableException {
-        // A competing transaction became visible after the button was shown.
-        // Existing Payjoin and wallet watchers will converge the screen.
-        emit(state.copyWith(error: null));
-      } catch (e) {
-        emit(state.copyWith(error: e));
-      } finally {
-        emit(state.copyWith(isBroadcastingOriginalTransaction: false));
+      emit(
+        state.copyWith(isBroadcastingOriginalTransaction: true, failure: null),
+      );
+      final result = await _broadcastOriginalTransactionUsecase.execute(
+        payjoin.id,
+      );
+      switch (result) {
+        // Pattern-matched, not cast: an unchecked `as` here would throw if the
+        //  package ever returned a sender session, crashing the screen instead
+        //  of leaving it on a still-valid payjoin.
+        case Ok(value: final PayjoinReceiverSession session):
+          emit(state.copyWith(payjoin: session));
+        case Ok(:final value):
+          log.warning(
+            'Ignoring a non-receiver session from broadcastOriginal: '
+            '${value.runtimeType}',
+          );
+        case Err(failure: ReceiveBroadcastOriginalTxUnavailableFailure()):
+          // A competing transaction became visible after the button was shown.
+          // Existing Payjoin and wallet watchers will converge the screen, so
+          // there is nothing to tell the user.
+          break;
+        case Err(:final failure):
+          log.warning(
+            'Failed to broadcast original transaction: ${failure.logMessage}',
+          );
+          emit(state.copyWith(failure: failure));
       }
+      emit(state.copyWith(isBroadcastingOriginalTransaction: false));
     }
   }
 
@@ -1076,12 +1199,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveOrderSwapUpdated event,
     Emitter<ReceiveState> emit,
   ) async {
-    if (event.result case Err(:final failure)) {
-      emit(state.copyWith(failure: failure));
-      return;
+    final OrderSwapRecord orderSwap;
+    switch (event.result) {
+      case Ok(:final value):
+        orderSwap = value;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
     }
-    final orderSwap =
-        (event.result as Ok<OrderSwapRecord, ReceiveFailure>).value;
     if (state.type != ReceiveType.lightning ||
         orderSwap.localId != state.orderSwap?.localId) {
       return;
@@ -1104,58 +1229,84 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
     if (orderSwap.localStatus == OrderSwapLocalStatus.completed) {
-      await _getWalletsUsecase.execute(sync: true);
-    }
-  }
-
-  /// Loads the most recent user-defined label stored against [address] so
-  /// the receive note tile and the note bottom sheet pre-fill with the saved
-  /// value. System labels (e.g. seed-injected metadata) are ignored.
-  Future<String> _loadAddressLabel(String address) async {
-    try {
-      final labels = await _labelsFacade.fetchByReference(address);
-      for (final label in labels) {
-        if (!LabelSystem.isSystemLabel(label.label)) {
-          return label.label;
-        }
+      // Awaited, so a slow sync delays the next order-swap event — kept as
+      //  it is on develop rather than changed here, since making it
+      //  unawaited would alter ordering for every consumer of this handler.
+      //
+      //  A failed sync is logged and dropped though: the swap already
+      //  completed, and the balance reconciles on the next sync anyway, so
+      //  there is nothing to tell the user.
+      final result = await _getReceiveWalletsUsecase.execute(sync: true);
+      if (result case Err(:final failure)) {
+        log.warning(
+          'Wallet sync after a completed order swap failed: '
+          '${failure.logMessage}',
+        );
       }
-    } catch (e) {
-      log.severe(
-        message: 'Failed to load address label',
-        error: e,
-        trace: StackTrace.current,
-      );
     }
-    return '';
   }
 
-  /// Distinct user-defined address labels for the suggestion chips in
-  /// the note bottom sheet. Scoped to [LabelType.address] because the
-  /// chosen string becomes a counterparty-visible BIP21 `message=` —
-  /// private transaction labels must never be surfaced here.
-  Future<Set<String>> fetchDistinctLabels() =>
-      _labelsFacade.fetchDistinctLabels(type: LabelType.address);
+  /// The note previously saved against [address], so the receive note tile
+  /// and the note bottom sheet pre-fill with it.
+  ///
+  /// Degrades to an empty note on failure rather than surfacing one: a
+  /// missing pre-fill is a cosmetic loss, and blocking the receive screen
+  /// over it would be worse than the problem.
+  Future<String> _loadAddressLabel(String address) async {
+    final result = await _loadReceiveAddressLabelUsecase.execute(address);
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => () {
+        log.warning('Failed to load address label: ${failure.logMessage}');
+        return '';
+      }(),
+    };
+  }
+
+  /// Suggestion chips for the note bottom sheet. Degrades to no suggestions
+  /// on failure, for the same reason as [_loadAddressLabel].
+  Future<Set<String>> fetchDistinctLabels() async {
+    final result = await _fetchReceiveNoteSuggestionsUsecase.execute();
+    return switch (result) {
+      Ok(:final value) => value,
+      Err(:final failure) => () {
+        log.warning('Failed to load note suggestions: ${failure.logMessage}');
+        return <String>{};
+      }(),
+    };
+  }
 
   void _watchPayjoin(String payjoinId) {
     // Cancel the previous subscription if it exists
     _payjoinSubscription?.cancel();
     // The receive flow only deals with the receiver side of a payjoin
     //  (WatchPayjoinUsecase now emits senders too, for the send flow).
-    _payjoinSubscription = _watchPayjoinUsecase
-        .execute(ids: [payjoinId])
-        .where((payjoin) => payjoin is PayjoinReceiverSession)
-        .cast<PayjoinReceiverSession>()
-        .listen((updatedPayjoin) {
-          // cancel() stops FUTURE events but not one already in flight on the
-          //  microtask queue; the repository's poll/expiry timers outlive
-          //  this bloc, so an event can arrive after close(). Never add to a
-          //  closed bloc (it throws).
-          if (isClosed) return;
+    _payjoinSubscription = _watchPayjoinUsecase.execute(ids: [payjoinId]).listen((
+      result,
+    ) {
+      // cancel() stops FUTURE events but not one already in flight on the
+      //  microtask queue; the repository's poll/expiry timers outlive
+      //  this bloc, so an event can arrive after close(). Never add to a
+      //  closed bloc (it throws).
+      if (isClosed) return;
+      switch (result) {
+        case Ok(:final value):
+          // The receive flow only deals with the receiver side of a payjoin
+          //  (WatchPayjoinUsecase also emits senders, for the send flow).
+          if (value is! PayjoinReceiverSession) return;
           log.info(
-            '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
+            '[ReceiveBloc] Watched payjoin ${value.id} updated: ${value.status}',
           );
-          add(ReceivePayjoinUpdated(updatedPayjoin));
-        });
+          add(ReceivePayjoinUpdated(value));
+        case Err(:final failure):
+          // Logged and dropped rather than surfaced: the session on screen
+          //  stays valid and the next poll can still succeed, so there is
+          //  nothing actionable to tell the user.
+          log.warning(
+            'Skipping failed payjoin session update: ${failure.logMessage}',
+          );
+      }
+    });
   }
 
   void _watchWalletTransactionToAddress({

@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,10 +45,13 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
     // settings screen.
     return BlocListener<ReceiveBloc, ReceiveState>(
       listenWhen: (previous, current) =>
-          current.error is SettingsFailure && previous.error != current.error,
+          current.failure is ReceivePayjoinSettingFailure &&
+          previous.failure != current.failure,
       listener: (context, state) {
-        final failure = state.error! as SettingsFailure;
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        SnackBarUtils.showSnackBar(
+          context,
+          state.failure!.toTranslated(context),
+        );
       },
       child: Padding(
         padding: EdgeInsets.only(top: topGap / 2),

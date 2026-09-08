@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class ReceiveWithPayjoinUsecase {
@@ -7,7 +8,8 @@ class ReceiveWithPayjoinUsecase {
 
   const ReceiveWithPayjoinUsecase(this._receiver);
 
-  Future<PayjoinReceiverSession> execute({
+  @useResult
+  Future<Result<PayjoinReceiverSession, ReceiveFailure>> execute({
     required String walletId,
     bool isTestnet = false,
     required String address,
@@ -26,14 +28,10 @@ class ReceiveWithPayjoinUsecase {
       ),
     );
     return switch (result) {
-      Ok(:final value) => value,
-      Err() => throw ReceivePayjoinException(
-        'Failed to start Payjoin receiver',
+      Ok(:final value) => Ok(value),
+      Err(:final failure) => Err(
+        ReceivePayjoinUnavailableFailure(failure.logMessage),
       ),
     };
   }
-}
-
-class ReceivePayjoinException extends BullException {
-  ReceivePayjoinException(super.message);
 }

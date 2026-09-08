@@ -9892,15 +9892,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "ข้อผิดพลาด: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "ระยะเวลา",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12236,5 +12227,9 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "receiveErrorAmountAboveProtocolLimit": "จำนวนเงินสูงกว่าจำนวนบิตคอยน์สูงสุดที่เป็นไปได้ {max}",
+  "receiveErrorNoteNotSaved": "ไม่สามารถบันทึกหมายเหตุของคุณได้ โปรดลองอีกครั้ง",
+  "receiveErrorAddressUnavailable": "ไม่สามารถเตรียมที่อยู่รับได้ โปรดลองอีกครั้ง",
+  "receiveErrorBroadcastOriginal": "เราไม่สามารถกระจายธุรกรรมได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง"
 }

@@ -1141,7 +1141,6 @@
   "receivePaymentNormally": "გადახდის ჩვეულებრივად მიღება",
   "receiveContinue": "გაგრძელება",
   "receiveCopyAddressOnly": "მხოლოდ მისამართის კოპირება ან სკანირება",
-  "receiveError": "შეცდომა: {error}",
   "receiveFeeExplanation": "ეს საკომისიო გამოაკლდება გამოგზავნილ თანხას",
   "receiveReceiveAmount": "მისაღები თანხა",
   "receiveSendNetworkFee": "გამგზავნის ქსელის საკომისიო",
@@ -3743,5 +3742,9 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "receiveErrorAmountAboveProtocolLimit": "თანხა აღემატება Bitcoin-ის მაქსიმალურ შესაძლო თანხას — {max}",
+  "receiveErrorNoteNotSaved": "თქვენი შენიშვნა ვერ შეინახა. სცადეთ ხელახლა.",
+  "receiveErrorAddressUnavailable": "მიღების მისამართის მომზადება ვერ მოხერხდა. სცადეთ ხელახლა.",
+  "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
 }

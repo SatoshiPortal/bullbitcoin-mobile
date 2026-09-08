@@ -9250,15 +9250,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "خطای: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Count",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12232,5 +12223,9 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "receiveErrorAmountAboveProtocolLimit": "مبلغ بیشتر از حداکثر مبلغ ممکن بیت‌کوین یعنی {max} است",
+  "receiveErrorNoteNotSaved": "یادداشت شما ذخیره نشد. لطفاً دوباره تلاش کنید.",
+  "receiveErrorAddressUnavailable": "آدرس دریافت آماده نشد. لطفاً دوباره تلاش کنید.",
+  "receiveErrorBroadcastOriginal": "نتوانستیم تراکنش را ارسال کنیم. اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید."
 }
