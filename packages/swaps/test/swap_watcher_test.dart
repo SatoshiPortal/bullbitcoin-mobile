@@ -102,6 +102,30 @@ void main() {
     verify(() => repo.refund(any())).called(1);
   });
 
+  test(
+    'heartbeat retries actions even when the Boltz backend is down',
+    () async {
+      when(() => repo.reconcile(any())).thenThrow(Exception('boltz down'));
+      when(
+        () => repo.ongoing(),
+      ).thenAnswer((_) async => [chainSwap(SwapStatus.refundable)]);
+      watcher = SwapWatcher(
+        repo: repo,
+        heartbeat: const Duration(milliseconds: 40),
+      );
+
+      await watcher.start();
+      await Future<void>.delayed(const Duration(milliseconds: 110));
+
+      // Start sweep + at least one heartbeat sweep — refund must not depend
+      // on reconcile succeeding or the backend re-emitting the swap.
+      expect(
+        verify(() => repo.refund(any())).callCount,
+        greaterThanOrEqualTo(2),
+      );
+    },
+  );
+
   test('a live update drives the swap', () async {
     await watcher.start();
     updates.add(chainSwap(SwapStatus.refundable));

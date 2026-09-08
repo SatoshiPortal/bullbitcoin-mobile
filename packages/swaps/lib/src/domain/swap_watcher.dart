@@ -10,9 +10,10 @@ import 'package:swaps/src/domain/swap_repository.dart';
 ///
 /// On [start]: retract unproven completions, then sweep every ongoing swap
 /// (act by status), subscribe to live events and reconcile against the
-/// backend (events are never trusted to replay). A heartbeat re-reconciles
-/// while ongoing swaps exist — a websocket can be connected yet mute, and
-/// timers freeze under app suspension, so recovery never depends on either.
+/// backend (events are never trusted to replay). A heartbeat repeats the
+/// full sweep while ongoing swaps exist — a websocket can be connected yet
+/// mute, timers freeze under app suspension, and the Boltz API can be down
+/// while electrum still works, so recovery never depends on any of them.
 class SwapWatcher {
   final SwapRepository _repo;
   final Duration _heartbeat;
@@ -62,42 +63,49 @@ class SwapWatcher {
     await _sweep();
   }
 
-  bool _reconciling = false;
+  bool _sweeping = false;
 
+  /// The heartbeat is a full sweep, not just a reconcile: reconciliation
+  /// needs the Boltz API, but claim/refund/coop-sign work Boltz-free via
+  /// electrum, so a mid-session retry of a failed action must not depend on
+  /// the backend re-emitting the swap. Backoff gating in [processSwap] keeps
+  /// this from hot-looping.
   Future<void> _onHeartbeat() async {
-    if (_reconciling) return;
-    _reconciling = true;
+    if (_sweeping) return;
     try {
-      final ongoing = await _repo.ongoing();
-      if (ongoing.isEmpty) return;
-      swapsLog.fine(
-        'SWAPS: heartbeat reconciling ${ongoing.length} ongoing swap(s)',
-      );
-      _repo.listen([for (final s in ongoing) s.id]);
-      await _repo.reconcile([for (final s in ongoing) s.id]);
+      await _sweep();
     } catch (e) {
       swapsLog.warning('SWAPS: heartbeat failed: $e');
-    } finally {
-      _reconciling = false;
     }
   }
 
   Future<void> _sweep() async {
-    final ongoing = await _repo.ongoing();
-    if (ongoing.isEmpty) {
-      swapsLog.fine('SWAPS: no ongoing swaps to drive');
-      return;
+    _sweeping = true;
+    try {
+      var ongoing = await _repo.ongoing();
+      if (ongoing.isEmpty) {
+        swapsLog.fine('SWAPS: no ongoing swaps to drive');
+        return;
+      }
+      swapsLog.fine(
+        'SWAPS: driving ${ongoing.length} ongoing swap(s): '
+        '${ongoing.map((s) => s.id).join(',')}',
+      );
+      _repo.listen([for (final s in ongoing) s.id]);
+      try {
+        await _repo.reconcile([for (final s in ongoing) s.id]);
+        // Reconcile may have moved statuses — act on the fresh rows.
+        ongoing = await _repo.ongoing();
+      } catch (e) {
+        swapsLog.warning('SWAPS: reconcile failed, driving stored state: $e');
+      }
+      for (final swap in ongoing) {
+        await processSwap(swap);
+      }
+      await swapsLog.flush();
+    } finally {
+      _sweeping = false;
     }
-    swapsLog.fine(
-      'SWAPS: driving ${ongoing.length} ongoing swap(s): '
-      '${ongoing.map((s) => s.id).join(',')}',
-    );
-    _repo.listen([for (final s in ongoing) s.id]);
-    await _repo.reconcile([for (final s in ongoing) s.id]);
-    for (final swap in ongoing) {
-      await processSwap(swap);
-    }
-    await swapsLog.flush();
   }
 
   /// Acts on [swap] according to its status. Safe to call repeatedly: the
