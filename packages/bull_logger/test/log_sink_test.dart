@@ -153,4 +153,32 @@ void main() {
     expect(reporter.exception, 'fallback');
     expect(reporter.stackTrace, isNotNull);
   });
+
+  test('sanitizes secrets without hiding CamelCase failure types', () async {
+    final directory = await Directory.systemTemp.createTemp('logger-sanitize-');
+    addTearDown(() async {
+      await log.flush();
+      await directory.delete(recursive: true);
+    });
+    log = Logger.replace(directory: directory);
+
+    const typeName = 'RecoverBullTemporarilyUnavailableFailure';
+    const hex = '0123456789abcdef0123456789abcdef';
+    const base64 = 'QmFzZTY0IHNlY3JldCBibG9iIHdpdGggMTIzNDU2Nzg=';
+    const mnemonic =
+        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+    const token = 'token=super-secret-token-value';
+    log.warning(typeName);
+    log.warning(hex);
+    log.warning(base64);
+    log.warning(mnemonic);
+    log.warning(token);
+
+    final lines = await log.readLogs();
+    expect(lines[0], contains(typeName));
+    expect(lines[1], isNot(contains(hex)));
+    expect(lines[2], isNot(contains(base64)));
+    expect(lines[3], isNot(contains(mnemonic)));
+    expect(lines[4], isNot(contains('super-secret-token-value')));
+  });
 }

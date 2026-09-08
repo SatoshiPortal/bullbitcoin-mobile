@@ -555,9 +555,15 @@ class Logger implements LogSink {
     final tabNewLine = RegExp(r'[\t\n\r]');
     var value = input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
     // Defense in depth for secrets accidentally included in exception text.
-    value = value.replaceAll(
-      RegExp(r'\b(?:[0-9a-fA-F]{32,}|[A-Za-z0-9+/]{32,}={0,2})\b'),
-      '[REDACTED]',
+    // Hex remains unconditionally redacted. For base64, preserve the narrow
+    // letter-only CamelCase shape used by Dart type symbols; digits, padding,
+    // and other base64 alphabet characters remain unconditionally redacted.
+    value = value.replaceAll(RegExp(r'\b[0-9a-fA-F]{32,}\b'), '[REDACTED]');
+    value = value.replaceAllMapped(
+      RegExp(r'\b[A-Za-z0-9+/]{32,}={0,2}\b'),
+      (match) => _isCamelCaseTypeName(match.group(0)!)
+          ? match.group(0)!
+          : '[REDACTED]',
     );
     value = value.replaceAll(
       RegExp(r'\b(?:[a-z]+\s+){11,23}[a-z]+\b', caseSensitive: false),
@@ -572,6 +578,10 @@ class Logger implements LogSink {
     );
     return value;
   }
+
+  bool _isCamelCaseTypeName(String value) =>
+      !RegExp(r'[0-9+/=]').hasMatch(value) &&
+      RegExp(r'^[A-Z][a-z]+(?:[A-Z][a-z]+)+$').hasMatch(value);
 }
 
 final class _ScopedLogSink implements LogSink {
