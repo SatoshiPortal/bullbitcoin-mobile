@@ -62,6 +62,7 @@ class ReviewPsbtUsecase {
         final maturityResult = await _bitcoinSigningPort.getPolicyMaturity(
           walletId: walletId,
           includeTimeBasedLocks: transaction.hasTimeBasedTimingConstraint,
+          includeRelativeTimeLocks: transaction.hasRelativeTimeConstraint,
         );
         switch (maturityResult) {
           case Ok(:final value):

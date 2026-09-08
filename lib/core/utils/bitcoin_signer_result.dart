@@ -54,9 +54,6 @@ String normalizeBitcoinPsbt(String value) {
     throw const FormatException('PSBT exceeds the maximum supported size');
   }
   final normalized = value.replaceAll(RegExp(r'\s'), '');
-  if (normalized.length > maxBitcoinPsbtTransportBytes) {
-    throw const FormatException('PSBT exceeds the maximum supported size');
-  }
 
   final Uint8List decoded;
   try {

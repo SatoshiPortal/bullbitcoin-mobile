@@ -38,6 +38,7 @@ void main() {
         () => port.getPolicyMaturity(
           walletId: wallet.id,
           includeTimeBasedLocks: false,
+          includeRelativeTimeLocks: false,
         ),
       ).thenAnswer((_) async => Ok(maturity));
       when(
@@ -73,6 +74,7 @@ void main() {
         () => port.getPolicyMaturity(
           walletId: wallet.id,
           includeTimeBasedLocks: false,
+          includeRelativeTimeLocks: false,
         ),
       ).called(1);
     },
@@ -138,6 +140,7 @@ void main() {
       () => port.getPolicyMaturity(
         walletId: wallet.id,
         includeTimeBasedLocks: false,
+        includeRelativeTimeLocks: false,
       ),
     ).thenAnswer((_) async => Ok(maturity));
 
@@ -152,6 +155,7 @@ void main() {
       () => port.getPolicyMaturity(
         walletId: wallet.id,
         includeTimeBasedLocks: false,
+        includeRelativeTimeLocks: false,
       ),
     ).called(1);
   });

@@ -1,5 +1,5 @@
 import 'dart:isolate';
-import 'dart:math';
+import 'package:bb_mobile/core/electrum/data/electrum_median_time_past.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
@@ -31,19 +31,13 @@ class BdkBitcoinBlockchainDatasource {
     }
     try {
       final tip = blockchain.blockHeadersSubscribe();
-      final timestamps = <int>[];
-      for (
-        var height = max(0, tip.height - 10);
-        height < tip.height;
-        height++
-      ) {
-        timestamps.add(blockchain.blockHeader(height: height).time);
-      }
-      timestamps.add(tip.header.time);
-      timestamps.sort();
       return (
         height: tip.height,
-        medianTimePast: timestamps[timestamps.length ~/ 2],
+        medianTimePast: electrumMedianTimePast(
+          client: blockchain,
+          height: tip.height,
+          knownHeader: tip.header,
+        ),
       );
     } finally {
       blockchain.dispose();

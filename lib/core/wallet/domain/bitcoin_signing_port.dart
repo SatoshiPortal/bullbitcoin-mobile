@@ -15,6 +15,7 @@ abstract interface class BitcoinSigningPort {
   getPolicyMaturity({
     required String walletId,
     required bool includeTimeBasedLocks,
+    bool includeRelativeTimeLocks = true,
   });
 
   @useResult
@@ -62,6 +63,8 @@ abstract interface class BitcoinSigningPort {
     required List<BitcoinPolicyPreimage> preimages,
   });
 
+  /// Checks transaction structure and supported signature encoding/sighashes.
+  /// Does not cryptographically verify signatures or execute spending scripts.
   @useResult
   Future<Result<({String transaction, int txSize}), BitcoinSigningFailure>>
   verifyFinalTransaction({required String psbt, required String transaction});
