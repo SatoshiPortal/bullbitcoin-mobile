@@ -97,4 +97,43 @@ void main() {
       expect(targetConnected.isCompleted, isFalse);
     },
   );
+
+  test('records and rethrows a connection-factory failure', () async {
+    final recorder = TorConnectionFailureRecorder();
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.hostUnreachable,
+    );
+    final factory = recorder.wrap((_, _, _) async => throw error);
+
+    await expectLater(
+      factory(Uri.parse('http://destination.invalid/'), null, null),
+      throwsA(same(error)),
+    );
+    expect(
+      recorder.take(),
+      SocksConnectionFailureCause.onionServiceUnreachable,
+    );
+  });
+
+  test('records a failure while awaiting the connection task socket', () async {
+    final recorder = TorConnectionFailureRecorder();
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.connectionRefused,
+    );
+    final socketFailure = Completer<Socket>();
+    final factory = recorder.wrap(
+      (_, _, _) async =>
+          ConnectionTask.fromSocket(socketFailure.future, () async {}),
+    );
+
+    final task = await factory(
+      Uri.parse('http://destination.invalid/'),
+      null,
+      null,
+    );
+    final socket = expectLater(task.socket, throwsA(same(error)));
+    socketFailure.completeError(error);
+    await socket;
+    expect(recorder.take(), SocksConnectionFailureCause.serviceRefused);
+  });
 }

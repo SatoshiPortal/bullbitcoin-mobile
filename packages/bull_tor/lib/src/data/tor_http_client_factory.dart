@@ -4,6 +4,7 @@ import 'package:socks5_proxy/socks_client.dart';
 
 import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/tor_failure.dart';
+import '../domain/tor_connection_failure_recorder.dart';
 
 /// Builds an HTTP client for an already-selected Tor route.
 ///
@@ -16,7 +17,10 @@ import '../domain/tor_failure.dart';
 final class TorHttpClientFactory {
   const TorHttpClientFactory();
 
-  HttpClient create(TorProxyEndpoint endpoint) {
+  HttpClient create(
+    TorProxyEndpoint endpoint, {
+    TorConnectionFailureRecorder? failureRecorder,
+  }) {
     // The proxy endpoint is loopback by product contract. The destination
     // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
     // ATYP DOMAINNAME instead of resolving it on the device.
@@ -30,9 +34,32 @@ final class TorHttpClientFactory {
     }
 
     final client = HttpClient();
-    SocksTCPClient.assignToHttpClient(client, [
-      ProxySettings(address, endpoint.port, password: null),
-    ]);
+    final recorder = failureRecorder;
+    final proxy = ProxySettings(address, endpoint.port, password: null);
+    client.connectionFactory = (uri, _, _) {
+      Future<ConnectionTask<Socket>> delegate() async {
+        final socket = SocksTCPClient.connect(
+          [proxy],
+          InternetAddress(uri.host, type: InternetAddressType.unix),
+          uri.port,
+        );
+        if (uri.scheme == 'https') {
+          final Future<SecureSocket> secureSocket;
+          return ConnectionTask.fromSocket(
+            secureSocket = (await socket).secure(uri.host),
+            () async => (await secureSocket).close().ignore(),
+          );
+        }
+        return ConnectionTask.fromSocket(
+          socket,
+          () async => (await socket).close().ignore(),
+        );
+      }
+
+      return recorder == null
+          ? delegate()
+          : recorder.wrap((_, _, _) => delegate())(uri, null, null);
+    };
     return client;
   }
 }
