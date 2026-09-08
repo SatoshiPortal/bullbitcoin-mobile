@@ -23,24 +23,23 @@ class GetBullVaultDetailsUsecase {
 
   @useResult
   Future<Result<BullVaultDetails?, BullVaultFailure>> execute(
-    String walletId,
-  ) async {
-    final result = await _repository.getByWalletId(walletId);
+    String walletId, {
+    String? syncedWalletId,
+  }) async {
+    final result = await _repository.getWalletLineage(
+      walletId,
+      memberWalletId: syncedWalletId,
+    );
     switch (result) {
-      case Ok(value: null):
+      case Ok(value: []):
         return const Ok(null);
       case Err(:final failure):
         return Err(failure);
-      case Ok(value: final record?):
+      case Ok(value: final lineage):
         try {
-          final lineageResult = await _repository.getLineage(record.lineageId);
-          late final List<BullVaultRecord> lineage;
-          switch (lineageResult) {
-            case Ok(:final value):
-              lineage = value;
-            case Err(:final failure):
-              return Err(failure);
-          }
+          final record = lineage.firstWhere(
+            (record) => record.walletId == walletId,
+          );
           final activeRecords =
               lineage
                   .where(

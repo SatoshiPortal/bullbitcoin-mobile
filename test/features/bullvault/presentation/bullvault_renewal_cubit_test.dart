@@ -320,12 +320,18 @@ void main() {
           ),
         ),
       );
+      var activationAttempts = 0;
       when(
         () => activate.execute(
           previousWalletId: details.record.walletId,
           replacementWalletId: renewal.replacement.wallet.id,
         ),
-      ).thenAnswer((_) async => const Ok(null));
+      ).thenAnswer((_) async {
+        activationAttempts++;
+        return activationAttempts == 1
+            ? const Err(BullVaultRenewalFailure())
+            : const Ok(null);
+      });
       final cubit = BullVaultRenewalCubit(
         load,
         renew,
@@ -372,6 +378,11 @@ void main() {
       cubit.continueSetup();
       expect(cubit.state.step, BullVaultRenewalStep.activation);
 
+      await cubit.activate();
+
+      expect(cubit.state.isActivating, isFalse);
+      expect(cubit.state.step, BullVaultRenewalStep.activation);
+      expect(cubit.state.failure, isA<BullVaultRenewalFailure>());
       await cubit.activate();
 
       expect(cubit.state.renewal, same(renewal));

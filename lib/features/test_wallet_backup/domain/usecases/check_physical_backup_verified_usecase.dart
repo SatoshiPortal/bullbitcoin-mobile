@@ -9,7 +9,10 @@ class CheckPhysicalBackupVerifiedUsecase {
     final normalized = fingerprint.toLowerCase();
     if (!RegExp(r'^[0-9a-f]{8}$').hasMatch(normalized)) return false;
 
-    final wallets = await _getWalletsUsecase.execute(onlyBitcoin: true);
+    final wallets = await _getWalletsUsecase.execute(
+      onlyBitcoin: true,
+      includeHidden: true,
+    );
     return wallets.any(
       (wallet) =>
           wallet.isPhysicalBackupTested &&

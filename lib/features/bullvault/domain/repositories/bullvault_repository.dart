@@ -34,6 +34,12 @@ abstract interface class BullVaultRepository {
   );
 
   @useResult
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getWalletLineage(
+    String walletId, {
+    String? memberWalletId,
+  });
+
+  @useResult
   Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
     Network network,
   );
@@ -42,7 +48,21 @@ abstract interface class BullVaultRepository {
   Future<Result<void, BullVaultFailure>> save(BullVaultRecord record);
 
   @useResult
+  Future<Result<void, BullVaultFailure>> publishRestored(
+    BullVaultRecord record,
+  );
+
+  @useResult
   Future<Result<void, BullVaultFailure>> delete(String walletId);
+
+  @useResult
+  Future<Result<void, BullVaultFailure>> activateInitial(
+    BullVaultRecord record,
+  );
+
+  @useResult
+  Future<Result<Map<String, String>, BullVaultFailure>>
+  getMigrationDestinations(Set<String> walletIds);
 
   @useResult
   Future<Result<void, BullVaultFailure>> activateRenewal({

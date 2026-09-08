@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_model.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_recovery_package_codec.dart';
@@ -24,8 +26,9 @@ final class BullVaultRecordMapper {
     status: entity.status.name,
     hardwareSetupComplete: entity.hardwareSetupComplete,
     hardwareSetupDeferred: entity.hardwareSetupDeferred,
-    completedHardwareSignerIds: entity.completedHardwareSignerIds.toList()
-      ..sort(),
+    completedHardwareSignerIdsJson: jsonEncode(
+      entity.completedHardwareSignerIds.toList()..sort(),
+    ),
     recoveryPackageConfirmed: entity.recoveryPackageConfirmed,
     mobileBackupDeferred: entity.mobileBackupDeferred,
     createdAt: entity.createdAt.toUtc().toIso8601String(),
@@ -55,7 +58,10 @@ final class BullVaultRecordMapper {
       status: BullVaultLifecycleStatus.values.byName(model.status),
       hardwareSetupComplete: model.hardwareSetupComplete,
       hardwareSetupDeferred: model.hardwareSetupDeferred,
-      completedHardwareSignerIds: model.completedHardwareSignerIds.toSet(),
+      completedHardwareSignerIds:
+          (jsonDecode(model.completedHardwareSignerIdsJson) as List<dynamic>)
+              .cast<String>()
+              .toSet(),
       recoveryPackageConfirmed: model.recoveryPackageConfirmed,
       mobileBackupDeferred: model.mobileBackupDeferred,
       createdAt: DateTime.parse(model.createdAt).toUtc(),
