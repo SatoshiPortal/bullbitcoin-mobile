@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -128,7 +127,7 @@ class SendAddressScreen extends StatelessWidget {
                       child: OpenTheCameraWidget(
                         disabled: context.select(
                           (SendCubit cubit) =>
-                              cubit.state.sweepDestinationBlocked,
+                              cubit.state.selectedInputsUnavailable,
                         ),
                         onScannedPaymentRequest: (data) => context
                             .read<SendCubit>()
@@ -201,8 +200,8 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
-    final sweepDestinationBlocked = context.select(
-      (SendCubit cubit) => cubit.state.sweepDestinationBlocked,
+    final selectedInputsUnavailable = context.select(
+      (SendCubit cubit) => cubit.state.selectedInputsUnavailable,
     );
     final hasInvalidAdditionalRecipient = context.select(
       (SendCubit cubit) => cubit.state.hasInvalidAdditionalRecipient,
@@ -218,7 +217,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
           hasInvalidAdditionalRecipient ||
           loadingBestWallet ||
           creatingSwap ||
-          sweepDestinationBlocked,
+          selectedInputsUnavailable,
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
     );
@@ -233,14 +232,14 @@ class AddressField extends StatelessWidget {
     final address = context.select<SendCubit, String>(
       (cubit) => cubit.state.copiedRawPaymentRequest,
     );
-    final sweepDestinationBlocked = context.select(
-      (SendCubit cubit) => cubit.state.sweepDestinationBlocked,
+    final selectedInputsUnavailable = context.select(
+      (SendCubit cubit) => cubit.state.selectedInputsUnavailable,
     );
 
     return BullInputText(
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
-      disabled: sweepDestinationBlocked,
+      disabled: selectedInputsUnavailable,
       hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
         color: context.appColors.textMuted,
@@ -449,39 +448,59 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0,
                                       ),
-                                      child: DropdownButtonFormField<Wallet>(
-                                        alignment: Alignment.centerLeft,
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          contentPadding: EdgeInsets.zero,
-                                        ),
-                                        icon: Icon(
-                                          Icons.keyboard_arrow_down,
-                                          color: context.appColors.secondary,
-                                        ),
-                                        iconSize: 24,
-                                        initialValue: selectedWallet,
-                                        items: wallets.map((w) {
-                                          return DropdownMenuItem(
-                                            value: w,
-                                            child: Text(
-                                              w.displayLabel(context),
-                                              style: context.font.headlineSmall,
-                                            ),
-                                          );
-                                        }).toList(),
-                                        onChanged: state.isSweep
-                                            ? null
-                                            : (value) {
-                                                if (value != null) {
+                                      child: state.usesSelectedInputsOnly
+                                          ? SizedBox(
+                                              height: 48,
+                                              child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  selectedWallet.displayLabel(
+                                                    context,
+                                                  ),
+                                                  style: context
+                                                      .font
+                                                      .headlineSmall,
+                                                ),
+                                              ),
+                                            )
+                                          : DropdownButtonFormField<String>(
+                                              alignment: Alignment.centerLeft,
+                                              decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                                contentPadding: EdgeInsets.zero,
+                                              ),
+                                              icon: Icon(
+                                                Icons.keyboard_arrow_down,
+                                                color:
+                                                    context.appColors.secondary,
+                                              ),
+                                              iconSize: 24,
+                                              initialValue: selectedWallet.id,
+                                              items: wallets.map((w) {
+                                                return DropdownMenuItem(
+                                                  value: w.id,
+                                                  child: Text(
+                                                    w.displayLabel(context),
+                                                    style: context
+                                                        .font
+                                                        .headlineSmall,
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              onChanged: (walletId) {
+                                                if (walletId != null) {
                                                   context
                                                       .read<SendCubit>()
                                                       .updateSelectedWallet(
-                                                        value,
+                                                        wallets.firstWhere(
+                                                          (wallet) =>
+                                                              wallet.id ==
+                                                              walletId,
+                                                        ),
                                                       );
                                                 }
                                               },
-                                      ),
+                                            ),
                                     ),
                                   ),
                                   const Gap(10),
@@ -642,6 +661,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       vertical: 16,
                                     ),
                                     child: BalanceRow(
+                                      title: state.usesSelectedInputsOnly
+                                          ? context.loc.sendSelectedCoinsLabel
+                                          : context.loc.addressViewBalance,
                                       balance: state.formattedWalletBalance(),
                                       currencyCode: '',
                                       isMax: state.isMaxSend,
@@ -1086,6 +1108,12 @@ class _OnchainTransactionReview extends StatelessWidget {
         onFeePriorityTap: state.signedBitcoinTx == null
             ? () => _showBitcoinFeeOptions(context)
             : null,
+        selectedCoinsDetails: state.selectedUtxos.isEmpty
+            ? null
+            : _SelectedCoinsDetails(
+                count: state.selectedUtxos.length,
+                totalSat: state.selectedSpendableBalanceSat,
+              ),
         feeWarning: state.showFeeWarning
             ? _HighFeeWarning(state.getFeeAsPercentOfAmount())
             : null,
@@ -1128,6 +1156,12 @@ class _OnchainTransactionReview extends StatelessWidget {
     final willAttemptPayjoin = context.select(
       (SendCubit cubit) => cubit.state.willAttemptPayjoin,
     );
+    final selectedCoins = context.select(
+      (SendCubit cubit) => (
+        count: cubit.state.selectedUtxos.length,
+        totalSat: cubit.state.selectedSpendableBalanceSat,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1143,6 +1177,12 @@ class _OnchainTransactionReview extends StatelessWidget {
           payjoinToggleValue: isPayjoinAvailable ? willAttemptPayjoin : null,
           onPayjoinToggleChanged: (attempt) =>
               context.read<SendCubit>().togglePayjoin(attempt),
+          selectedCoinsDetails: selectedCoins.count == 0
+              ? null
+              : _SelectedCoinsDetails(
+                  count: selectedCoins.count,
+                  totalSat: selectedCoins.totalSat,
+                ),
           note: label,
           onFeePriorityTap: hasFinalizedTx
               ? null
@@ -1152,6 +1192,34 @@ class _OnchainTransactionReview extends StatelessWidget {
           const Gap(16),
           _HighFeeWarning(feePercent),
         ],
+      ],
+    );
+  }
+}
+
+class _SelectedCoinsDetails extends StatelessWidget {
+  const _SelectedCoinsDetails({required this.count, required this.totalSat});
+
+  final int count;
+  final int totalSat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        BBText(
+          context.loc.coinsSelectedCount(count),
+          style: context.font.bodyLarge,
+          color: context.appColors.secondary,
+          textAlign: TextAlign.end,
+        ),
+        CurrencyText(
+          totalSat,
+          showFiat: false,
+          style: context.font.labelSmall,
+          color: context.appColors.secondary,
+        ),
       ],
     );
   }

@@ -48,7 +48,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_lightning_address_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/resolve_sweep_inputs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/resolve_selected_inputs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_exchange_payin_usecase.dart';
@@ -76,6 +76,7 @@ class SendCubit extends Cubit<SendState>
   SendCubit({
     this._wallet,
     Set<Outpoint> initialSweepOutpoints = const {},
+    Set<Outpoint> initialSelectedOutpoints = const {},
     required this._labelsFacade,
     required this._bestWalletUsecase,
     required this._detectBitcoinStringUsecase,
@@ -115,18 +116,22 @@ class SendCubit extends Cubit<SendState>
     required this._checkLiquidConsolidationUsecase,
     required this._getSendPayjoinEnabledUsecase,
     required this._verifySignedTxUsecase,
-    required this._resolveSweepInputsUsecase,
+    required this._resolveSelectedInputsUsecase,
     required this._validateSweepPaymentRequestUsecase,
     Future<PaymentRequest> Function(String)? parsePaymentRequest,
   }) : _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse,
        super(
          SendState(
            sweepOutpoints: Set.unmodifiable(initialSweepOutpoints),
-           sendType: initialSweepOutpoints.isEmpty
+           selectedInputOutpoints: Set.unmodifiable(initialSelectedOutpoints),
+           sendType:
+               initialSweepOutpoints.isEmpty && initialSelectedOutpoints.isEmpty
                ? SendType.lightning
                : SendType.bitcoin,
            sendMax: initialSweepOutpoints.isNotEmpty,
-           loadingBestWallet: initialSweepOutpoints.isNotEmpty,
+           loadingBestWallet:
+               initialSweepOutpoints.isNotEmpty ||
+               initialSelectedOutpoints.isNotEmpty,
          ),
        );
 
@@ -181,7 +186,7 @@ class SendCubit extends Cubit<SendState>
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
   final VerifySendSignedTxUsecase _verifySignedTxUsecase;
-  final ResolveSweepInputsUsecase _resolveSweepInputsUsecase;
+  final ResolveSelectedInputsUsecase _resolveSelectedInputsUsecase;
   final ValidateSweepPaymentRequestUsecase _validateSweepPaymentRequestUsecase;
   final Future<PaymentRequest> Function(String) _parsePaymentRequest;
 
@@ -308,11 +313,14 @@ class SendCubit extends Cubit<SendState>
               .toList(),
         ),
       );
-      await getCurrencies();
-      await getExchangeRate();
+      await _loadLocalSendSettings();
       if (state.isSweep) {
         await _initializeSweep(state.sweepOutpoints);
+      } else if (state.selectedInputOutpoints.isNotEmpty) {
+        await _initializeSelectedInputs();
       }
+      await _loadCurrencyData();
+      await getExchangeRate();
       await loadFees();
     } catch (e) {
       log.warning('Failed to load wallet rates and fees', error: e);
@@ -354,12 +362,33 @@ class SendCubit extends Cubit<SendState>
     );
   }
 
+  Future<void> _initializeSelectedInputs() async {
+    final wallet = _wallet;
+    if (wallet == null || !wallet.isBitcoin) {
+      emit(
+        state.copyWith(
+          sendType: SendType.bitcoin,
+          loadingBestWallet: false,
+          failure: const SendSelectedCoinsUnavailableFailure(),
+        ),
+      );
+      return;
+    }
+
+    await _setSelectedWallet(
+      wallet,
+      manual: true,
+      preserveSelectedInputs: true,
+    );
+    if (!isClosed) emit(state.copyWith(loadingBestWallet: false));
+  }
+
   /// Called when a payment request is detected directly from the scanner
   Future<void> onScannedPaymentRequest(
     String scannedRawPaymentRequest,
     PaymentRequest? paymentRequest,
   ) async {
-    if (state.sweepDestinationBlocked) return;
+    if (state.selectedInputsUnavailable) return;
     _startNewPaymentRequestInput();
     clearFailure();
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
@@ -396,7 +425,7 @@ class SendCubit extends Cubit<SendState>
 
   /// Called when text is pasted or entered manually
   Future<void> onChangedText(String text) async {
-    if (state.sweepDestinationBlocked) return;
+    if (state.selectedInputsUnavailable) return;
     final inputGeneration = _startNewPaymentRequestInput();
     clearFailure();
     final sanitizedText = text.trim().replaceAll(
@@ -588,7 +617,7 @@ class SendCubit extends Cubit<SendState>
 
   Future<bool> addRecipient() async {
     final inputGeneration = _paymentRequestInputGeneration;
-    if (state.sweepDestinationBlocked) return false;
+    if (state.selectedInputsUnavailable) return false;
     emit(state.copyWith(loadingBestWallet: true, failure: null));
     final paymentRequest = await _resolvePrimaryPaymentRequest(inputGeneration);
     if (paymentRequest == null) return false;
@@ -823,7 +852,7 @@ class SendCubit extends Cubit<SendState>
       networkFee: fee,
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      selectedOnly: state.isSweep,
+      selectedOnly: state.usesSelectedInputsOnly,
     );
     if (isClosed ||
         epoch != _bitcoinPreviewEpoch ||
@@ -926,7 +955,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> continueOnAddressConfirmed() async {
-    if (state.sweepDestinationBlocked) return;
+    if (state.selectedInputsUnavailable) return;
     final inputGeneration = _paymentRequestInputGeneration;
     PaymentRequest? confirmedRequest;
     bool isStale() =>
@@ -936,7 +965,7 @@ class SendCubit extends Cubit<SendState>
       emit(state.copyWith(loadingBestWallet: true, failure: null));
       var paymentRequest = await _resolvePrimaryPaymentRequest(inputGeneration);
       if (paymentRequest == null) return;
-      if (!state.isSweep && !state.hasMultipleRecipients) {
+      if (!state.usesSelectedInputsOnly && !state.hasMultipleRecipients) {
         await unifiedBip21Prioritization(inputGeneration: inputGeneration);
         paymentRequest = state.paymentRequest ?? paymentRequest;
       }
@@ -1358,26 +1387,31 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
-  Future<void> getCurrencies() async {
+  Future<void> _loadLocalSendSettings() async {
     final settings = await _getSettingsUsecase.execute();
     final payjoinEnabled = await _getSendPayjoinEnabledUsecase.execute();
-
-    final (exchangeRate, fiatCurrencies) = await (
-      _convertSatsToCurrencyAmountUsecase.execute(),
-      _getAvailableCurrenciesUsecase.execute(),
-    ).wait;
-
     final bitcoinUnit = settings.bitcoinUnit;
     final fiatCurrency = settings.currencyCode;
 
     emit(
       state.copyWith(
-        fiatCurrencyCodes: fiatCurrencies,
         fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate,
         bitcoinUnit: bitcoinUnit,
         inputAmountCurrencyCode: bitcoinUnit.code,
         payjoinGloballyEnabled: payjoinEnabled,
+      ),
+    );
+  }
+
+  Future<void> _loadCurrencyData() async {
+    final (exchangeRate, fiatCurrencies) = await (
+      _convertSatsToCurrencyAmountUsecase.execute(),
+      _getAvailableCurrenciesUsecase.execute(),
+    ).wait;
+    emit(
+      state.copyWith(
+        fiatCurrencyCodes: fiatCurrencies,
+        exchangeRate: exchangeRate,
       ),
     );
   }
@@ -1817,33 +1851,24 @@ class SendCubit extends Cubit<SendState>
           wallet.isLiquid &&
           await _checkLiquidConsolidationUsecase.execute(walletId: wallet.id);
       if (isStale()) return;
-      // Re-projected onto the fresh entities, not just filtered, so the sheet's
-      // `selected` check still matches what it renders. Frozen coins drop out:
-      // the sheet hides them, so a coin frozen after being picked could not be
-      // deselected yet would still inflate the total (D7).
-      final selectedOutpoints = state.selectedUtxos
-          .map((u) => u.outpoint)
-          .toSet();
-      final refreshedSelection = utxos
-          .where((u) => selectedOutpoints.contains(u.outpoint) && !u.isFrozen)
-          .toList();
-      final selectionWasLost =
-          !state.isSweep &&
-          state.selectedUtxos.isNotEmpty &&
-          refreshedSelection.length != state.selectedUtxos.length;
-      final sweepResolution = state.isSweep
-          ? await _resolveSweepInputsUsecase.execute(
-              outpoints: state.sweepOutpoints,
+      // Resolve the persisted intent against fresh wallet data. On failure the
+      // resolved list is emptied but the requested outpoints remain in state,
+      // so clearing an error cannot silently fall back to automatic selection
+      // or a partial subset.
+      final requiredOutpoints = state.requiredInputOutpoints;
+      final selectionResolution = requiredOutpoints.isEmpty
+          ? null
+          : await _resolveSelectedInputsUsecase.execute(
+              outpoints: requiredOutpoints,
               availableUtxos: utxos,
-            )
-          : null;
+            );
       if (isStale()) return;
-      final selectedUtxos = switch (sweepResolution) {
+      final selectedUtxos = switch (selectionResolution) {
         Ok(:final value) => value,
         Err() => const <WalletUtxo>[],
-        null => refreshedSelection,
+        null => const <WalletUtxo>[],
       };
-      final sweepSelectionWasLost = switch (sweepResolution) {
+      final selectionWasLost = switch (selectionResolution) {
         Err() => true,
         _ => false,
       };
@@ -1851,23 +1876,22 @@ class SendCubit extends Cubit<SendState>
         state.copyWith(
           utxos: utxos,
           selectedUtxos: selectedUtxos,
+          selectedInputOutpoints: state.isSweep
+              ? state.selectedInputOutpoints
+              : requiredOutpoints,
           recipientAmountsSat: utxosChanged
               ? const []
               : state.recipientAmountsSat,
           consolidationRequired: consolidationRequired,
-          failure: switch (sweepResolution) {
+          failure: switch (selectionResolution) {
             Err(:final failure) => failure,
             Ok() when state.failure is SendSelectedCoinsUnavailableFailure =>
               null,
-            null when selectionWasLost =>
-              const SendSelectedCoinsUnavailableFailure(
-                'A selected coin is no longer spendable',
-              ),
             _ => state.failure,
           },
         ),
       );
-      if (selectionWasLost || sweepSelectionWasLost) {
+      if (selectionWasLost) {
         _invalidateSignedTransaction(
           cancelInFlightBuild: transactionGeneration == null,
         );
@@ -1912,7 +1936,14 @@ class SendCubit extends Cubit<SendState>
     } else {
       selectedUtxos.add(utxo);
     }
-    emit(state.copyWith(selectedUtxos: selectedUtxos));
+    emit(
+      state.copyWith(
+        selectedUtxos: selectedUtxos,
+        selectedInputOutpoints: state.isSweep
+            ? state.selectedInputOutpoints
+            : {for (final selected in selectedUtxos) selected.outpoint},
+      ),
+    );
     // UTXO set is part of the cache fingerprint — different inputs
     // produce a different PSBT, even at the same rate.
     clearBitcoinFeePreviews();
@@ -2136,7 +2167,7 @@ class SendCubit extends Cubit<SendState>
       networkFee: fee,
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      selectedOnly: state.isSweep,
+      selectedOnly: state.usesSelectedInputsOnly,
     );
     // An input-shape change cleared the cache while we were building —
     // discard this now-stale result instead of repopulating an emptied
@@ -2194,7 +2225,7 @@ class SendCubit extends Cubit<SendState>
       recipients: recipients,
       replaceByFee: state.replaceByFee,
       selectedInputs: state.selectedUtxos,
-      selectedOnly: state.isSweep,
+      selectedOnly: state.usesSelectedInputsOnly,
     );
     // Discard if an input-shape change emptied the cache mid-build (see
     // previewBitcoinCustomFee).
@@ -2514,7 +2545,7 @@ class SendCubit extends Cubit<SendState>
                 networkFee: selectedFee,
                 replaceByFee: state.replaceByFee,
                 selectedInputs: state.selectedUtxos,
-                selectedOnly: state.isSweep,
+                selectedOnly: state.usesSelectedInputsOnly,
               );
         if (isStale()) return false;
         final recipientAmountsSat = [
@@ -2710,7 +2741,7 @@ class SendCubit extends Cubit<SendState>
       if (e is NoSpendableUtxoException) {
         emit(
           state.copyWith(
-            failure: state.selectedUtxos.isNotEmpty
+            failure: state.usesSelectedInputsOnly
                 ? SendSelectedCoinsUnavailableFailure(e.message)
                 : SendInsufficientBalanceFailure(e.message),
             buildingTransaction: false,
@@ -2723,12 +2754,12 @@ class SendCubit extends Cubit<SendState>
         // Give manual selection its actionable failure; keep automatic
         // selection on the existing balance/fee paths.
         final blamesFees =
-            state.selectedUtxos.isEmpty && state.frozenBalanceSat == 0;
+            !state.usesSelectedInputsOnly && state.frozenBalanceSat == 0;
         emit(
           state.copyWith(
             failure: blamesFees
                 ? SendInsufficientFundsForFeesFailure(e.message)
-                : state.selectedUtxos.isNotEmpty
+                : state.usesSelectedInputsOnly
                 ? SendSelectedCoinsInsufficientFailure(e.message)
                 : SendInsufficientBalanceFailure(e.message),
             buildingTransaction: false,
@@ -3063,7 +3094,18 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<bool> _validateSelectedBitcoinInputsForBroadcast(Wallet wallet) async {
-    if (wallet.isLiquid || state.selectedUtxos.isEmpty) return true;
+    if (wallet.isLiquid || !state.usesSelectedInputsOnly) return true;
+    if (state.selectedInputsUnavailable) {
+      emit(
+        state.copyWith(
+          failure: const SendSelectedCoinsUnavailableFailure(
+            'selected_coins_unavailable',
+          ),
+          broadcastingTransaction: false,
+        ),
+      );
+      return false;
+    }
     try {
       await _validateBitcoinSelectionUsecase.execute(
         walletId: wallet.id,
@@ -3497,7 +3539,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> updateSelectedWallet(Wallet newWallet) async {
-    if (state.isSweep) return;
+    if (state.usesSelectedInputsOnly) return;
     if (state.hasMultipleRecipients && newWallet.isLiquid) return;
     await _setSelectedWallet(newWallet, manual: true);
   }
@@ -3506,7 +3548,11 @@ class SendCubit extends Cubit<SendState>
   /// `manual: true` locks the pick so [updateBestWallet]'s auto-switching
   /// (used as the user types an amount) doesn't override the user's choice —
   /// the silent override regressed cold-wallet sends. See #1918.
-  Future<void> _setSelectedWallet(Wallet wallet, {required bool manual}) async {
+  Future<void> _setSelectedWallet(
+    Wallet wallet, {
+    required bool manual,
+    bool preserveSelectedInputs = false,
+  }) async {
     final walletChanged = state.selectedWallet?.id != wallet.id;
     final walletGeneration = ++_selectedWalletGeneration;
     final previousSubscription = _selectedWalletSyncingSubscription;
@@ -3517,15 +3563,14 @@ class SendCubit extends Cubit<SendState>
         selectedWallet: wallet,
         isWalletManuallySelected: manual,
         failure: null,
-        // Drop the previous wallet's utxos on a change so spendable-balance math
-        // never mixes the new wallet's balance with the old wallet's frozen
-        // coins in the window before loadUtxos() repopulates (it degrades to the
-        // full balance meanwhile — the safe fallback). Also clear any manual
-        // coin selection: those outpoints belong to the old wallet and would
-        // otherwise be fed as required inputs into the new wallet's PSBT build,
-        // which fails (outpoint not in wallet) or builds against wrong coins.
+        // Drop resolved UTXOs on a wallet change so balance math never mixes
+        // wallets. A user-selected wallet clears the old input intent below;
+        // route initialization preserves it and stays blocked until resolved.
         utxos: walletChanged ? const [] : state.utxos,
         selectedUtxos: walletChanged ? const [] : state.selectedUtxos,
+        selectedInputOutpoints: walletChanged && !preserveSelectedInputs
+            ? const {}
+            : state.selectedInputOutpoints,
         recipientAmountsSat: walletChanged
             ? const []
             : state.recipientAmountsSat,

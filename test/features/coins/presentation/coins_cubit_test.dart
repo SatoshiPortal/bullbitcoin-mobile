@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs
 import 'package:bb_mobile/features/coins/domain/coins_failure.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/freeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/coins/domain/usecases/refresh_coins_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/unfreeze_utxos_usecase.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:bb_mobile/features/coins/presentation/coins_cubit.dart';
@@ -24,6 +25,8 @@ class _MockFreezeUtxosUsecase extends Mock implements FreezeUtxosUsecase {}
 
 class _MockUnfreezeUtxosUsecase extends Mock implements UnfreezeUtxosUsecase {}
 
+class _MockRefreshCoinsUsecase extends Mock implements RefreshCoinsUsecase {}
+
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 class _MockWatchStarted extends Mock
@@ -36,6 +39,7 @@ void main() {
   late _MockGetUtxosUsecase getUtxos;
   late _MockFreezeUtxosUsecase freezeUtxos;
   late _MockUnfreezeUtxosUsecase unfreezeUtxos;
+  late _MockRefreshCoinsUsecase refreshCoins;
   late _MockLabelsFacade labelsFacade;
   late _MockWatchStarted watchStarted;
   late _MockWatchFinished watchFinished;
@@ -49,6 +53,7 @@ void main() {
     getUtxosUsecase: getUtxos,
     freezeUtxosUsecase: freezeUtxos,
     unfreezeUtxosUsecase: unfreezeUtxos,
+    refreshCoinsUsecase: refreshCoins,
     labelsFacade: labelsFacade,
     watchStartedWalletSyncsUsecase: watchStarted,
     watchFinishedWalletSyncsUsecase: watchFinished,
@@ -58,6 +63,7 @@ void main() {
     getUtxos = _MockGetUtxosUsecase();
     freezeUtxos = _MockFreezeUtxosUsecase();
     unfreezeUtxos = _MockUnfreezeUtxosUsecase();
+    refreshCoins = _MockRefreshCoinsUsecase();
     labelsFacade = _MockLabelsFacade();
     watchStarted = _MockWatchStarted();
     watchFinished = _MockWatchFinished();
@@ -73,6 +79,7 @@ void main() {
     when(
       () => labelsFacade.fetchDistinctLabels(),
     ).thenAnswer((_) async => <String>{});
+    when(() => refreshCoins.execute()).thenAnswer((_) async {});
   });
 
   tearDown(() {
@@ -122,6 +129,21 @@ void main() {
       expect(cubit.state.failure, isA<CoinsLoadFailure>());
       await cubit.close();
     });
+  });
+
+  test('refresh syncs before reloading coins', () async {
+    when(
+      () => getUtxos.execute(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => const Ok([]));
+    final cubit = buildCubit();
+
+    await cubit.refresh();
+
+    verifyInOrder([
+      () => refreshCoins.execute(),
+      () => getUtxos.execute(walletId: walletId),
+    ]);
+    await cubit.close();
   });
 
   group('selection', () {
