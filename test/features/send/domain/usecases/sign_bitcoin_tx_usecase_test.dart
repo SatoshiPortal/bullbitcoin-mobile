@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final class _FakeBitcoinSigningPort implements BitcoinSigningPort {
@@ -39,6 +40,7 @@ final class _FakeBitcoinSigningPort implements BitcoinSigningPort {
   getPolicyMaturity({
     required String walletId,
     required bool includeTimeBasedLocks,
+    bool includeRelativeTimeLocks = true,
   }) => throw UnimplementedError();
 
   @override
@@ -99,14 +101,11 @@ void main() {
         walletId: 'wallet',
       );
 
-      expect(
-        result,
-        isA<Err<SignedBitcoinTransaction, BitcoinSigningFailure>>(),
-      );
+      expect(result, isA<Err<SignedBitcoinTransaction, SendFailure>>());
       expect(switch (result) {
         Ok() => null,
-        Err(:final failure) => failure.kind,
-      }, BitcoinSigningFailureKind.incomplete);
+        Err(:final failure) => failure,
+      }, isA<SendTransactionSigningFailure>());
     },
   );
 

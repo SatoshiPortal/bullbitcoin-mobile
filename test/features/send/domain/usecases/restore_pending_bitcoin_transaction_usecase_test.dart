@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -127,21 +126,13 @@ void main() {
         () => detectBitcoinString.execute(data: stored.recipient),
       ).thenAnswer((_) async => request);
       when(() => validatePending.execute(stored)).thenAnswer(
-        (_) async => Ok<PendingBitcoinTransaction, SendFailure>(stored),
-      );
-      when(
-        () => getSigningPlan.execute(
-          wallet: _wallet,
-          psbt: stored.psbt,
-          selection: stored.policySelection,
-          allowSpentWalletInputs: true,
-          allowFrozenWalletInputs: true,
-        ),
-      ).thenAnswer(
-        (_) async => Ok((
-          plan: _signingPlan,
-          maturity: const BitcoinPolicyMaturity.empty(),
-          review: null,
+        (_) async => Ok<ValidatedPendingBitcoinTransaction, SendFailure>((
+          transaction: stored,
+          details: (
+            plan: _signingPlan,
+            maturity: const BitcoinPolicyMaturity.empty(),
+            review: null,
+          ),
         )),
       );
       when(
@@ -153,6 +144,15 @@ void main() {
       final restored =
           (result as Ok<RestoredPendingBitcoinTransaction, SendFailure>).value;
       expect(restored.paymentRequest, request);
+      verifyNever(
+        () => getSigningPlan.execute(
+          wallet: _wallet,
+          psbt: stored.psbt,
+          selection: stored.policySelection,
+          allowSpentWalletInputs: true,
+          allowFrozenWalletInputs: true,
+        ),
+      );
       expect(restored.signingPlan, _signingPlan);
       expect(restored.absoluteFeesSat, 321);
     },
@@ -175,7 +175,10 @@ void main() {
       ),
     );
     when(() => validatePending.execute(stored)).thenAnswer(
-      (_) async => Ok<PendingBitcoinTransaction, SendFailure>(conflicted),
+      (_) async => Ok<ValidatedPendingBitcoinTransaction, SendFailure>((
+        transaction: conflicted,
+        details: null,
+      )),
     );
     when(
       () => getSigningPlan.execute(
@@ -221,7 +224,7 @@ void main() {
     verifyNever(() => getWallet.execute(any()));
   });
 
-  test('restores an old Lightning draft as editable recipient text', () async {
+  test('opens an unsupported stored recipient for correction', () async {
     final stored = _pendingTransaction(
       stage: PendingBitcoinTransactionStage.draft,
       recipient: 'user@example.com',
@@ -301,7 +304,10 @@ void main() {
       ),
     );
     when(() => validatePending.execute(stored)).thenAnswer(
-      (_) async => Ok<PendingBitcoinTransaction, SendFailure>(stored),
+      (_) async => Ok<ValidatedPendingBitcoinTransaction, SendFailure>((
+        transaction: stored,
+        details: null,
+      )),
     );
     when(
       () => getSigningPlan.execute(
@@ -312,9 +318,7 @@ void main() {
         allowFrozenWalletInputs: true,
       ),
     ).thenAnswer(
-      (_) async => const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
-      ),
+      (_) async => const Err(SendTransactionSigningFailure('walletMismatch')),
     );
 
     final result = await usecase.execute(stored.id);

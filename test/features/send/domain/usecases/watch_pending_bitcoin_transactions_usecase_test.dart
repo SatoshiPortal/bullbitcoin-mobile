@@ -16,26 +16,38 @@ class _MockValidatePendingBitcoinTransactionUsecase extends Mock
 
 void main() {
   test(
-    'keeps valid transactions when another stored transaction is invalid',
+    'keeps other rows when a transaction is invalid or temporarily unavailable',
     () async {
       final repository = _MockRepository();
       final validate = _MockValidatePendingBitcoinTransactionUsecase();
       final valid = _draft('valid');
       final invalid = _draft('invalid');
+      final unavailable = _draft('unavailable').copyWith(
+        stage: PendingBitcoinTransactionStage.needsSignatures,
+        psbt: 'cHNidP8=',
+        recipient: 'tb1qrecipient',
+        amount: '1000',
+        amountCurrencyCode: 'sats',
+      );
       when(() => repository.watchWallet('wallet-id')).thenAnswer(
         (_) => Stream.value(
           Ok(
             PendingBitcoinTransactionSnapshot(
-              transactions: [valid, invalid],
+              transactions: [valid, invalid, unavailable],
               invalidCount: 0,
             ),
           ),
         ),
       );
-      when(() => validate.execute(valid)).thenAnswer((_) async => Ok(valid));
+      when(
+        () => validate.execute(valid),
+      ).thenAnswer((_) async => Ok((transaction: valid, details: null)));
       when(() => validate.execute(invalid)).thenAnswer(
         (_) async => const Err(SendStoredTransactionInvalidFailure()),
       );
+      when(
+        () => validate.execute(unavailable),
+      ).thenAnswer((_) async => const Err(SendUnexpectedFailure('offline')));
 
       final result = await WatchPendingBitcoinTransactionsUsecase(
         repository,
@@ -45,7 +57,13 @@ void main() {
       expect(result, isA<Ok<PendingBitcoinTransactionSnapshot, SendFailure>>());
       final snapshot =
           (result as Ok<PendingBitcoinTransactionSnapshot, SendFailure>).value;
-      expect(snapshot.transactions, [valid]);
+      expect(snapshot.transactions.map((transaction) => transaction.id), [
+        'valid',
+        'unavailable',
+      ]);
+      expect(snapshot.transactions.last.isPolicyReady, isFalse);
+      expect(snapshot.transactions.last.isValidationUnavailable, isTrue);
+      expect(snapshot.transactions.first.isValidationUnavailable, isFalse);
       expect(snapshot.invalidCount, 1);
     },
   );

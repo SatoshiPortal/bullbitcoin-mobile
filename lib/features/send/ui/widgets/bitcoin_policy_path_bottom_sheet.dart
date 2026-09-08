@@ -35,11 +35,10 @@ class _BitcoinPolicyPathBottomSheetState
         const BitcoinPolicySelection.empty();
     final selectors = policy.pathSelectors(selection);
     final requirements = policy.pathRequirements(selection);
-    final requiredHashlocks = policy.requiredHashlocks(selection);
-    final hasRequiredPreimages = requiredHashlocks.every(
-      (hashlock) => state.satisfiedBitcoinPolicyPreimages.contains(
-        '${hashlock.type.name}:${hashlock.hash.toLowerCase()}',
-      ),
+    final hashlocksForSelection = policy.hashlocksForSelection(selection);
+    final hasRequiredPreimages = policy.hasRequiredPreimages(
+      selection,
+      state.satisfiedBitcoinPolicyPreimages,
     );
 
     final showKeychain =
@@ -157,7 +156,7 @@ class _BitcoinPolicyPathBottomSheetState
             ),
             if (selectorIndex != selectors.length - 1) const Gap(24),
           ],
-          for (final hashlock in requiredHashlocks) ...[
+          for (final hashlock in hashlocksForSelection) ...[
             if (selectors.isNotEmpty) const Gap(24),
             BitcoinPolicyPreimageInput(
               key: ValueKey('${hashlock.type.name}:${hashlock.hash}'),

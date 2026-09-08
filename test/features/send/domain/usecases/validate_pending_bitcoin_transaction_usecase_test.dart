@@ -73,9 +73,14 @@ void main() {
 
       final conflicted = await usecase.execute(_pendingTransaction);
 
-      expect(conflicted, isA<Ok<PendingBitcoinTransaction, SendFailure>>());
+      expect(
+        conflicted,
+        isA<Ok<ValidatedPendingBitcoinTransaction, SendFailure>>(),
+      );
       final conflictedValue =
-          (conflicted as Ok<PendingBitcoinTransaction, SendFailure>).value;
+          (conflicted as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
+              .value
+              .transaction;
       expect(conflictedValue.isConflict, isTrue);
       expect(
         conflictedValue.stage,
@@ -93,7 +98,9 @@ void main() {
       final ready = await usecase.execute(_pendingTransaction);
 
       final readyValue =
-          (ready as Ok<PendingBitcoinTransaction, SendFailure>).value;
+          (ready as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
+              .value
+              .transaction;
       expect(readyValue.isConflict, isFalse);
       expect(readyValue.stage, PendingBitcoinTransactionStage.readyToBroadcast);
       expect(readyValue.signersNeeded, 0);
@@ -117,9 +124,13 @@ void main() {
 
       final result = await usecase.execute(_pendingTransaction);
 
-      expect(result, isA<Err<PendingBitcoinTransaction, SendFailure>>());
       expect(
-        (result as Err<PendingBitcoinTransaction, SendFailure>).failure,
+        result,
+        isA<Err<ValidatedPendingBitcoinTransaction, SendFailure>>(),
+      );
+      expect(
+        (result as Err<ValidatedPendingBitcoinTransaction, SendFailure>)
+            .failure,
         isA<SendStoredTransactionInvalidFailure>(),
       );
     },
@@ -146,7 +157,7 @@ void main() {
 
     final result = await usecase.execute(_pendingTransaction);
 
-    expect(result, isA<Ok<PendingBitcoinTransaction, SendFailure>>());
+    expect(result, isA<Ok<ValidatedPendingBitcoinTransaction, SendFailure>>());
   });
 
   test(
@@ -162,16 +173,18 @@ void main() {
 
       final blocked = await usecase.execute(_pendingTransaction);
       expect(
-        (blocked as Ok<PendingBitcoinTransaction, SendFailure>)
+        (blocked as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
             .value
+            .transaction
             .isConflict,
         isTrue,
       );
       frozen = false;
       final resumed = await usecase.execute(_pendingTransaction);
       expect(
-        (resumed as Ok<PendingBitcoinTransaction, SendFailure>)
+        (resumed as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
             .value
+            .transaction
             .isConflict,
         isFalse,
       );
@@ -199,7 +212,7 @@ void main() {
 
     final result = await usecase.execute(_pendingTransaction);
 
-    expect(result, isA<Ok<PendingBitcoinTransaction, SendFailure>>());
+    expect(result, isA<Ok<ValidatedPendingBitcoinTransaction, SendFailure>>());
   });
 
   test(
@@ -220,14 +233,51 @@ void main() {
 
       final first = await usecase.execute(_pendingTransaction);
       final second = await usecase.execute(
-        (first as Ok<PendingBitcoinTransaction, SendFailure>).value,
+        (first as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
+            .value
+            .transaction,
       );
 
       expect(
-        (second as Ok<PendingBitcoinTransaction, SendFailure>).value.stage,
+        (second as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
+            .value
+            .transaction
+            .stage,
         PendingBitcoinTransactionStage.readyToBroadcast,
       );
       verifyNever(() => signingPort.finalizePsbt(any()));
+    },
+  );
+  test(
+    'retains the submission stage when a broadcast consumed its inputs',
+    () async {
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
+      ).thenAnswer((_) async => []);
+      when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
+        (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: true)),
+      );
+      final result = await usecase.execute(
+        _pendingTransaction.copyWith(
+          stage: PendingBitcoinTransactionStage.broadcastPending,
+        ),
+      );
+      final transaction =
+          (result as Ok<ValidatedPendingBitcoinTransaction, SendFailure>)
+              .value
+              .transaction;
+      expect(
+        transaction.stage,
+        PendingBitcoinTransactionStage.broadcastPending,
+      );
+      expect(transaction.isConflict, isTrue);
+      when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
+        (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)),
+      );
+      expect(
+        await usecase.execute(transaction),
+        isA<Err<ValidatedPendingBitcoinTransaction, SendFailure>>(),
+      );
     },
   );
 }

@@ -8,8 +8,14 @@ import 'package:primitives/primitives.dart';
 
 class _MockPayjoinSender extends Mock implements PayjoinSender {}
 
-PayjoinSenderSession _session() => PayjoinSenderSession(
-  status: PayjoinStatus.requested,
+class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
+
+class _MockPayjoinLifecycle extends Mock implements PayjoinLifecycle {}
+
+PayjoinSenderSession _session({
+  PayjoinStatus status = PayjoinStatus.requested,
+}) => PayjoinSenderSession(
+  status: status,
   uri: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
   network: BitcoinNetwork.mainnet,
   walletId: 'wallet-1',
@@ -20,15 +26,27 @@ PayjoinSenderSession _session() => PayjoinSenderSession(
 );
 
 Future<core.Result<PayjoinSenderSession, SendFailure>> _start(
-  PayjoinSender sender,
-) => SendWithPayjoinUsecase(sender).execute(
-  walletId: 'wallet-1',
-  isTestnet: false,
-  bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
-  unsignedOriginalPsbt: 'cHNidP8=',
-  amountSat: 10000,
-  networkFeesSatPerVb: 2,
-);
+  PayjoinSender sender, {
+  PayjoinSessions? sessions,
+  PayjoinLifecycle? lifecycle,
+}) {
+  final lookup = sessions ?? _MockPayjoinSessions();
+  if (sessions == null) {
+    when(() => lookup.byId(any())).thenAnswer((_) async => const Ok(null));
+  }
+  final recovery = lifecycle ?? _MockPayjoinLifecycle();
+  if (lifecycle == null) {
+    when(recovery.resume).thenAnswer((_) async => const Ok(null));
+  }
+  return SendWithPayjoinUsecase(sender, lookup, recovery).execute(
+    walletId: 'wallet-1',
+    isTestnet: false,
+    bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
+    unsignedOriginalPsbt: 'cHNidP8=',
+    amountSat: 10000,
+    networkFeesSatPerVb: 2,
+  );
+}
 
 void main() {
   setUpAll(() {
@@ -81,4 +99,64 @@ void main() {
         expect(failure, isA<SendTransactionConfirmationFailure>());
     }
   });
+  for (final status in [
+    PayjoinStatus.requested,
+    PayjoinStatus.completed,
+    PayjoinStatus.aborted,
+  ]) {
+    test(
+      'resumes a $status payment without publishing another original',
+      () async {
+        final sender = _MockPayjoinSender();
+        final sessions = _MockPayjoinSessions();
+        final session = _session(status: status);
+        final lifecycle = _MockPayjoinLifecycle();
+        var current = session;
+        when(lifecycle.resume).thenAnswer((_) async {
+          current = _session(status: PayjoinStatus.completed);
+          return const Ok(null);
+        });
+        when(
+          () => sessions.byId(session.id),
+        ).thenAnswer((_) async => Ok(current));
+
+        final result = await _start(
+          sender,
+          sessions: sessions,
+          lifecycle: lifecycle,
+        );
+
+        expect(
+          (result as core.Ok<PayjoinSenderSession, SendFailure>).value,
+          current,
+        );
+        verifyZeroInteractions(sender);
+        if (status == PayjoinStatus.requested) {
+          verify(lifecycle.resume).called(1);
+          expect(current.status, PayjoinStatus.completed);
+        } else {
+          verifyZeroInteractions(lifecycle);
+        }
+      },
+    );
+  }
+
+  test(
+    'does not publish when the previous outcome cannot be checked',
+    () async {
+      final sender = _MockPayjoinSender();
+      final sessions = _MockPayjoinSessions();
+      when(
+        () => sessions.byId(any()),
+      ).thenAnswer((_) async => const Err(PayjoinStorageFailure()));
+
+      final result = await _start(sender, sessions: sessions);
+
+      expect(
+        (result as core.Err<PayjoinSenderSession, SendFailure>).failure,
+        isA<SendPersistenceFailure>(),
+      );
+      verifyZeroInteractions(sender);
+    },
+  );
 }

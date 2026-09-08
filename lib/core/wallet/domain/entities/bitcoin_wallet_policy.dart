@@ -551,7 +551,20 @@ final class BitcoinWalletPolicy {
       ),
   });
 
-  List<BitcoinHashlockPolicyNode> requiredHashlocks(
+  bool hasRequiredPreimages(
+    BitcoinPolicySelection selection,
+    Set<String> satisfiedPreimageKeys,
+  ) =>
+      pathRequirements(selection).isEmpty &&
+      canBeSatisfiedBy(
+        selection: selection,
+        hasSignature: (_) => true,
+        hasPreimage: (hashlock) => satisfiedPreimageKeys.contains(
+          '${hashlock.type.name}:${hashlock.hash.toLowerCase()}',
+        ),
+      );
+
+  List<BitcoinHashlockPolicyNode> hashlocksForSelection(
     BitcoinPolicySelection selection,
   ) => List.unmodifiable(
     {
