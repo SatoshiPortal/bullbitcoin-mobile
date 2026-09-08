@@ -14614,5 +14614,9 @@
   "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
   "@swapsFailureUnexpected": {
     "description": "Rescue failure: generic catch-all, never shows raw details"
+  },
+  "swapServerInvalid": "Enter a valid server address (e.g. api.boltz.exchange/v2)",
+  "@swapServerInvalid": {
+    "description": "Validation error when the swap server URL is not a valid host"
   }
 }

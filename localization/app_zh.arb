@@ -4987,5 +4987,6 @@
   "swapsFailureNotRestorable": "无法从服务器重建此 Swap。请携带您的 Swap ID 联系客服。",
   "swapsFailureRefundNotFinal": "退款尚不可花费（时间锁）。请稍后重试。",
   "swapsFailureNetwork": "无法连接任何服务器。请检查网络连接后重试。",
-  "swapsFailureUnexpected": "Swap 出现问题，请重试。"
+  "swapsFailureUnexpected": "Swap 出现问题，请重试。",
+  "swapServerInvalid": "请输入有效的服务器地址（例如 api.boltz.exchange/v2）"
 }

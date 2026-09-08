@@ -4987,5 +4987,6 @@
   "swapsFailureNotRestorable": "No se pudo reconstruir este swap desde el servidor. Contacte a soporte con su ID de swap.",
   "swapsFailureRefundNotFinal": "El reembolso aún no es gastable (timelock). Inténtelo de nuevo más tarde.",
   "swapsFailureNetwork": "No se pudo conectar con ningún servidor. Verifique su conexión e inténtelo de nuevo.",
-  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo."
+  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo.",
+  "swapServerInvalid": "Introduce una dirección de servidor válida (p. ej. api.boltz.exchange/v2)"
 }

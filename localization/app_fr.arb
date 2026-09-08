@@ -5034,5 +5034,6 @@
   "swapsFailureNotRestorable": "Ce swap n'a pas pu être reconstruit depuis le serveur. Contactez le support avec votre identifiant de swap.",
   "swapsFailureRefundNotFinal": "Le remboursement n'est pas encore dépensable (timelock). Réessayez plus tard.",
   "swapsFailureNetwork": "Impossible de joindre un serveur. Vérifiez votre connexion et réessayez.",
-  "swapsFailureUnexpected": "Une erreur est survenue avec le swap. Veuillez réessayer."
+  "swapsFailureUnexpected": "Une erreur est survenue avec le swap. Veuillez réessayer.",
+  "swapServerInvalid": "Entrez une adresse de serveur valide (ex. api.boltz.exchange/v2)"
 }

@@ -15,45 +15,65 @@ Future<void> showSwapServerDialog(BuildContext context) async {
     text: current == SwapServerSettingRepository.defaultUrl ? '' : current,
   );
 
-  await showDialog<void>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(dialogContext.loc.swapServerTitle),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            dialogContext.loc.swapServerSubtitle,
-            style: Theme.of(dialogContext).textTheme.bodySmall,
+  String? errorText;
+  try {
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setState) => AlertDialog(
+          title: Text(dialogContext.loc.swapServerTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                dialogContext.loc.swapServerSubtitle,
+                style: Theme.of(dialogContext).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                autocorrect: false,
+                keyboardType: TextInputType.url,
+                decoration: InputDecoration(
+                  hintText: SwapServerSettingRepository.defaultUrl,
+                  errorText: errorText,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: controller,
-            autocorrect: false,
-            keyboardType: TextInputType.url,
-            decoration: InputDecoration(
-              hintText: SwapServerSettingRepository.defaultUrl,
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await repository.reset();
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+              child: Text(dialogContext.loc.swapServerReset),
             ),
-          ),
-        ],
+            TextButton(
+              onPressed: () async {
+                if (!SwapServerSettingRepository.isValid(controller.text)) {
+                  setState(
+                    () => errorText = dialogContext.loc.swapServerInvalid,
+                  );
+                  return;
+                }
+                await repository.save(controller.text);
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+              child: Text(
+                MaterialLocalizations.of(dialogContext).okButtonLabel,
+              ),
+            ),
+          ],
+        ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await repository.reset();
-            if (dialogContext.mounted) Navigator.of(dialogContext).pop();
-          },
-          child: Text(dialogContext.loc.swapServerReset),
-        ),
-        TextButton(
-          onPressed: () async {
-            await repository.save(controller.text);
-            if (dialogContext.mounted) Navigator.of(dialogContext).pop();
-          },
-          child: Text(MaterialLocalizations.of(dialogContext).okButtonLabel),
-        ),
-      ],
-    ),
-  );
+    );
+  } finally {
+    controller.dispose();
+  }
 }

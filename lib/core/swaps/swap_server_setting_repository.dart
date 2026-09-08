@@ -28,6 +28,20 @@ class SwapServerSettingRepository {
     await prefs.setString(_key, _normalize(trimmed));
   }
 
+  /// Empty input is valid (falls back to the default). Anything else must
+  /// normalize to a parseable host — permissive on purpose so IP:port,
+  /// localhost and .onion backends all pass.
+  static bool isValid(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) return true;
+    if (trimmed.contains(RegExp(r'\s'))) return false;
+    final normalized = trimmed
+        .replaceFirst(RegExp('^https?://'), '')
+        .replaceFirst(RegExp(r'/+$'), '');
+    final uri = Uri.tryParse('https://$normalized');
+    return uri != null && uri.host.isNotEmpty;
+  }
+
   Future<void> reset() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
