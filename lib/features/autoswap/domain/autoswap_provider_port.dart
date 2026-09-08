@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/features/autoswap/domain/auto_swap.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
 import 'package:meta/meta.dart';

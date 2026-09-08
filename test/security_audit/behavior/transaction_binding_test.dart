@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart'
     hide Environment;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart' as se;
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -33,7 +32,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements SwapHistoryRepository {}
+class _MockBoltzSwapRepository extends Mock implements SwapRepository {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -108,7 +107,7 @@ void main() {
       () => payjoinSessions.list(any()),
     ).thenAnswer((_) async => const Ok([]));
     when(
-      () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
+      () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
     when(() => orderRepository.getOrders()).thenAnswer((_) async => <Order>[]);
     when(
@@ -204,7 +203,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [tx]);
       when(
-        () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
+        () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
       ).thenAnswer(
         (_) async => [
           Swap.lnSend(

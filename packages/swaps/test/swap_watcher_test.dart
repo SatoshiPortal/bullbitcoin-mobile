@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:mocktail/mocktail.dart';
-import 'package:swaps/src/swap.dart';
-import 'package:swaps/src/swap_repository.dart';
-import 'package:swaps/src/swap_watcher.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:swaps/src/domain/swap_watcher.dart';
 import 'package:test/test.dart';
 
 class _MockSwapRepository extends Mock implements SwapRepository {}

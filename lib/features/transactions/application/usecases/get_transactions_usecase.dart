@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -19,7 +18,7 @@ import 'package:primitives/primitives.dart';
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final SwapHistoryRepository _boltzSwapRepository;
+  final SwapRepository _boltzSwapRepository;
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
@@ -71,7 +70,7 @@ class GetTransactionsUsecase {
                 : BitcoinNetwork.mainnet,
           ),
         ),
-        _boltzSwapRepository.getAllSwaps(walletId: walletId),
+        _boltzSwapRepository.all(walletId: walletId),
         _getTransactionOrderSwapsUsecase.execute(walletId: walletId),
       ).wait;
       final payjoins = switch (payjoinResult) {

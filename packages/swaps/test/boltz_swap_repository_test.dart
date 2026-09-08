@@ -1,11 +1,11 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:swaps/src/boltz_api.dart';
-import 'package:swaps/src/boltz_swap_repository.dart';
-import 'package:swaps/src/swap.dart';
-import 'package:swaps/src/swap_model.dart';
-import 'package:swaps/src/swap_storage.dart';
-import 'package:swaps/src/swap_tx_outspend.dart';
-import 'package:swaps/src/swap_tx_outspend_model.dart';
+import 'package:swaps/src/data/boltz_api.dart';
+import 'package:swaps/src/data/boltz_swap_repository.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/data/models/swap_model.dart';
+import 'package:swaps/src/data/swap_storage.dart';
+import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
+import 'package:swaps/src/data/models/swap_tx_outspend_model.dart';
 import 'package:swaps/src/util.dart';
 import 'package:test/test.dart';
 

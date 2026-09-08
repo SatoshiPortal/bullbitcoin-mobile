@@ -4,24 +4,20 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/auto_swap_settings_repository_impl.dart';
-import 'package:bb_mobile/core/swaps/data/swap_server_setting_repository.dart';
-import 'package:bb_mobile/core/swaps/data/swaps_adapters.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/swaps/swap_server_setting_repository.dart';
+import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' as wallet;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:get_it/get_it.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' as wallet;
 import 'package:swaps/swaps.dart';
 
+/// Wires the self-contained `swaps` engine package to the app: storage
+/// backends, wallet/fee/electrum callbacks, the watcher, and the usecases
+/// blocs consume. This is the only place the app knows how the engine is
+/// assembled.
 class SwapsLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     // The engine stays silent unless the app wires a logger.
@@ -118,15 +114,6 @@ class SwapsLocator {
     locator.registerLazySingleton<SwapWatcher>(
       () => SwapWatcher(repo: locator<SwapRepository>()),
     );
-    locator.registerLazySingleton<SwapHistoryRepository>(
-      () => _SwapHistoryAdapter(locator<SwapRepository>()),
-    );
-    locator.registerLazySingleton<AutoSwapSettingsRepository>(
-      () => AutoSwapSettingsRepositoryImpl(
-        locator<SqliteDatabase>(),
-        locator<SettingsRepository>(),
-      ),
-    );
   }
 
   static void registerUsecases(GetIt locator) {
@@ -167,45 +154,5 @@ class SwapsLocator {
         ),
       ),
     );
-    locator.registerFactory<GetAutoSwapSettingsUsecase>(
-      () => GetAutoSwapSettingsUsecase(
-        repository: locator<AutoSwapSettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<SaveAutoSwapSettingsUsecase>(
-      () => SaveAutoSwapSettingsUsecase(
-        repository: locator<AutoSwapSettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<WatchAutoSwapSettingsUsecase>(
-      () => WatchAutoSwapSettingsUsecase(
-        repository: locator<AutoSwapSettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<DisableAutoswapWarningUsecase>(
-      () => DisableAutoswapWarningUsecase(
-        repository: locator<AutoSwapSettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<DisableAutoswapUsecase>(
-      () => DisableAutoswapUsecase(
-        repository: locator<AutoSwapSettingsRepository>(),
-      ),
-    );
   }
-}
-
-/// Read-only history view the transactions feature consumes.
-class _SwapHistoryAdapter implements SwapHistoryRepository {
-  final SwapRepository _repo;
-
-  _SwapHistoryAdapter(this._repo);
-
-  @override
-  Future<List<Swap>> getAllSwaps({String? walletId}) =>
-      _repo.all(walletId: walletId);
-
-  @override
-  Future<Swap?> getSwapByTxId(String txId) =>
-      (_repo as BoltzSwapRepository).getSwapByTxId(txId);
 }

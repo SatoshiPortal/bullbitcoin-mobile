@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/data/swap_server_setting_repository.dart';
+import 'package:bb_mobile/core/swaps/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
