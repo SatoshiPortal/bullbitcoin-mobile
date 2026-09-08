@@ -20,6 +20,16 @@ class PendingBitcoinTransactionDatasource {
     );
 
     return _database.transaction(() async {
+      final existing = await (_database.select(
+        _database.sendTransactions,
+      )..where((row) => row.id.equals(model.id))).getSingleOrNull();
+      if (existing != null &&
+          (existing.stage == 'broadcastPending' ||
+              existing.stage == 'payjoinPending')) {
+        // Once publication can have started, only the original payload may be
+        // retried. Even a freshly loaded revision cannot turn it into a draft.
+        throw const PendingBitcoinTransactionChangedException();
+      }
       final row = SendTransactionsCompanion.insert(
         id: persistedModel.id,
         walletId: persistedModel.walletId,

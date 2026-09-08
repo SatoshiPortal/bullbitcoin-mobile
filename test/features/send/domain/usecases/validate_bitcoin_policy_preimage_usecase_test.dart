@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_bitcoin_policy_preimage_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -22,7 +22,7 @@ void main() {
     ).execute(hashlock: _hashlock(), preimageHex: '  ${_repeat('AABB', 16)}  ');
 
     expect(
-      (result as Ok<BitcoinPolicyPreimage?, BitcoinSigningFailure>).value,
+      (result as Ok<BitcoinPolicyPreimage?, SendFailure>).value,
       _preimage(_repeat('aabb', 16)),
     );
     verify(
@@ -37,10 +37,7 @@ void main() {
       port,
     ).execute(hashlock: _hashlock(), preimageHex: 'not hex');
 
-    expect(
-      (result as Ok<BitcoinPolicyPreimage?, BitcoinSigningFailure>).value,
-      isNull,
-    );
+    expect((result as Ok<BitcoinPolicyPreimage?, SendFailure>).value, isNull);
     verifyNever(() => port.validatePolicyPreimage(any()));
   });
 
@@ -56,14 +53,8 @@ void main() {
       hashlock: _hashlock(),
       preimageHex: _repeat('00', 33),
     );
-    expect(
-      (tooShort as Ok<BitcoinPolicyPreimage?, BitcoinSigningFailure>).value,
-      isNull,
-    );
-    expect(
-      (tooLong as Ok<BitcoinPolicyPreimage?, BitcoinSigningFailure>).value,
-      isNull,
-    );
+    expect((tooShort as Ok<BitcoinPolicyPreimage?, SendFailure>).value, isNull);
+    expect((tooLong as Ok<BitcoinPolicyPreimage?, SendFailure>).value, isNull);
     verifyNever(() => port.validatePolicyPreimage(any()));
   });
 }

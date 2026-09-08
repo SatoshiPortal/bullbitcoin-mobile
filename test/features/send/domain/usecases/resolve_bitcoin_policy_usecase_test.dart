@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/resolve_bitcoin_policy_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,8 +60,7 @@ void main() {
       satisfiedHashlocks: const {'sha256:aa'},
     );
 
-    final value =
-        (resolved as Ok<ResolvedBitcoinPolicy, BitcoinSigningFailure>).value;
+    final value = (resolved as Ok<ResolvedBitcoinPolicy, SendFailure>).value;
     expect(value.canBuildTransaction, isTrue);
     expect(value.selectionAvailable, isTrue);
     expect(value.path, isNotNull);
@@ -114,12 +113,103 @@ void main() {
       satisfiedHashlocks: const {},
     );
 
-    final value =
-        (resolved as Ok<ResolvedBitcoinPolicy, BitcoinSigningFailure>).value;
+    final value = (resolved as Ok<ResolvedBitcoinPolicy, SendFailure>).value;
     expect(value.canBuildTransaction, isFalse);
     expect(value.selectionAvailable, isFalse);
     expect(value.path, isNull);
   });
+
+  test(
+    'an optional hashlock does not block the signature-only branch',
+    () async {
+      final wallet = _wallet();
+      final a = BitcoinPolicyKey(
+        kind: BitcoinPolicyKeyKind.fingerprint,
+        value: 'aabbccdd',
+      );
+      final b = BitcoinPolicyKey(
+        kind: BitcoinPolicyKeyKind.fingerprint,
+        value: '11223344',
+      );
+      final spending = BitcoinSpendingPolicy(
+        requiresPath: false,
+        root: BitcoinThresholdPolicyNode(
+          id: 'either',
+          threshold: 1,
+          children: [
+            BitcoinSignaturePolicyNode(id: 'a', key: a),
+            BitcoinThresholdPolicyNode(
+              id: 'both',
+              threshold: 2,
+              children: [
+                BitcoinSignaturePolicyNode(id: 'b', key: b),
+                BitcoinHashlockPolicyNode(
+                  id: 'secret',
+                  type: BitcoinHashlockType.sha256,
+                  hash: 'aa',
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      final policy = BitcoinWalletPolicy(
+        external: spending,
+        internal: spending,
+      );
+      final plan = BitcoinSigningPlan.fromPolicy(
+        policy: policy,
+        signers: wallet.signers,
+      );
+      when(
+        () => getSigningPlan.execute(
+          wallet: wallet,
+          selection: const BitcoinPolicySelection.empty(),
+          satisfiedPreimageKeys: const {},
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          plan: plan,
+          review: null,
+          maturity: BitcoinPolicyMaturity(
+            tipHeight: 100,
+            medianTimePast: null,
+            utxos: [
+              BitcoinPolicyUtxoMaturity(
+                outpoint: '00:0',
+                keychain: BitcoinPolicyKeychain.external,
+                amountSat: BigInt.from(10000),
+                confirmations: 1,
+              ),
+            ],
+          ),
+        )),
+      );
+      final result = await usecase.execute(
+        wallet: wallet,
+        selection: const BitcoinPolicySelection.empty(),
+        selectedOutpoints: const {'00:0'},
+        satisfiedHashlocks: const {},
+      );
+      expect(
+        (result as Ok<ResolvedBitcoinPolicy, SendFailure>)
+            .value
+            .canBuildTransaction,
+        isTrue,
+      );
+      expect(plan.canFinalizeLocally, isTrue);
+      for (final hasPreimage in [false, true]) {
+        expect(
+          policy.canBeSatisfiedBy(
+            selection: const BitcoinPolicySelection.empty(),
+            hasSignature: (key) => key == b,
+            hasPreimage: (_) => hasPreimage,
+          ),
+          hasPreimage,
+        );
+      }
+    },
+  );
 }
 
 Wallet _wallet() => Wallet(

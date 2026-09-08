@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_description.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_error.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +25,9 @@ class SendSigningScreen extends StatelessWidget {
     final plan = state.bitcoinSigningPlan;
     final ready = state.hasFinalizedBitcoinTransaction;
     final signingActionActive =
-        state.signingTransaction || state.persistingPendingTransaction;
+        state.signingTransaction ||
+        state.persistingPendingTransaction ||
+        state.broadcastingTransaction;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -57,9 +59,7 @@ class SendSigningScreen extends StatelessWidget {
           children: [
             FadingLinearProgress(
               height: 3,
-              trigger:
-                  state.signingTransaction ||
-                  state.persistingPendingTransaction,
+              trigger: signingActionActive,
               backgroundColor: context.appColors.background,
               foregroundColor: context.appColors.primary,
             ),
@@ -95,7 +95,17 @@ class SendSigningScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (state.isSigningConflict) ...[
+                    if (state.isPendingSubmission) ...[
+                      const Gap(16),
+                      BullInfoCard(
+                        title: state.isPendingPayjoin
+                            ? context.loc.sendPendingPayjoin
+                            : context.loc.sendPendingBroadcast,
+                        description: context.loc.sendPendingSubmissionMessage,
+                        tagColor: context.appColors.secondary,
+                        bgColor: context.appColors.onSecondary,
+                      ),
+                    ] else if (state.isSigningConflict) ...[
                       const Gap(16),
                       InfoCard(
                         title: context.loc.sendSigningConflictTitle,
@@ -113,6 +123,7 @@ class SendSigningScreen extends StatelessWidget {
                       ),
                     ],
                     if (plan != null &&
+                        !state.isPendingSubmission &&
                         !state.isSigningConflict &&
                         state.isSigningPolicyReady) ...[
                       const Gap(24),
@@ -136,15 +147,16 @@ class SendSigningScreen extends StatelessWidget {
                 BBButton.big(
                   label: context.loc.sendEditTransaction,
                   onPressed: () => _confirmRestartSigning(context),
-                  disabled: signingActionActive,
+                  disabled: signingActionActive || state.isPendingSubmission,
                   borderColor: context.appColors.secondary,
                   outlined: true,
                   bgColor: context.appColors.transparent,
                   textColor: context.appColors.secondary,
                 ),
-                if (ready &&
-                    !state.isSigningConflict &&
-                    state.isSigningPolicyReady) ...[
+                if (state.isPendingSubmission ||
+                    (ready &&
+                        !state.isSigningConflict &&
+                        state.isSigningPolicyReady)) ...[
                   const Gap(12),
                   const ConfirmSendButton(),
                 ],
@@ -159,6 +171,7 @@ class SendSigningScreen extends StatelessWidget {
 
 Future<void> _finishSigningLater(BuildContext context) async {
   final cubit = context.read<SendCubit>();
+  if (cubit.state.broadcastingTransaction) return;
   if (cubit.state.pendingTransactionId == null &&
       !await cubit.persistSigningSession()) {
     return;
@@ -215,7 +228,11 @@ class _SigningTransactionSummary extends StatelessWidget {
 Future<void> _handleSigningBack(BuildContext context) async {
   final cubit = context.read<SendCubit>();
   final state = cubit.state;
-  if (state.signingTransaction || state.persistingPendingTransaction) return;
+  if (state.signingTransaction ||
+      state.persistingPendingTransaction ||
+      state.broadcastingTransaction) {
+    return;
+  }
   if (!state.isSigningSession) {
     await _confirmRestartSigning(context);
     return;
@@ -280,7 +297,11 @@ Future<void> _handleSigningBack(BuildContext context) async {
 
 Future<void> _confirmRestartSigning(BuildContext context) async {
   final state = context.read<SendCubit>().state;
-  if (state.signingTransaction || state.persistingPendingTransaction) return;
+  if (state.signingTransaction ||
+      state.persistingPendingTransaction ||
+      state.broadcastingTransaction) {
+    return;
+  }
   final restart = await showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(

@@ -15,8 +15,7 @@ extension SendFailureL10n on SendFailure {
     SendInvoiceExpiredFailure() => context.loc.sendErrorInvoiceExpired,
     SendInvoiceAmountRequiredFailure() =>
       context.loc.sendErrorInvoiceMustContainAmount,
-    SendHardwareWalletFailure() =>
-      context.loc.sendErrorHardwareWalletCannotSwap,
+    SendSwapWalletFailure() => context.loc.sendErrorHardwareWalletCannotSwap,
     SendInsufficientBalanceFailure() =>
       formattedFrozenBalance == null
           ? context.loc.sendErrorInsufficientBalanceForPayment

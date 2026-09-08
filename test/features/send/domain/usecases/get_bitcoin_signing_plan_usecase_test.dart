@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -61,8 +61,7 @@ void main() {
         port,
       ).execute(wallet: wallet, psbt: 'psbt');
       final details =
-          (result as Ok<BitcoinSigningPlanDetails, BitcoinSigningFailure>)
-              .value;
+          (result as Ok<BitcoinSigningPlanDetails, SendFailure>).value;
       final plan = details.plan;
 
       expect(plan.policy, same(policy));
@@ -89,10 +88,8 @@ void main() {
     ).execute(wallet: wallet);
 
     expect(
-      (result as Err<BitcoinSigningPlanDetails, BitcoinSigningFailure>)
-          .failure
-          .kind,
-      BitcoinSigningFailureKind.unexpected,
+      (result as Err<BitcoinSigningPlanDetails, SendFailure>).failure,
+      isA<SendUnexpectedFailure>(),
     );
     verifyNever(() => port.getPolicy(walletId: any(named: 'walletId')));
   });
@@ -148,7 +145,7 @@ void main() {
       port,
     ).execute(wallet: wallet, psbt: 'psbt');
     final details =
-        (result as Ok<BitcoinSigningPlanDetails, BitcoinSigningFailure>).value;
+        (result as Ok<BitcoinSigningPlanDetails, SendFailure>).value;
 
     expect(details.maturity, same(maturity));
     verify(
@@ -191,7 +188,7 @@ void main() {
       port,
     ).execute(wallet: wallet, psbt: 'psbt');
     final details =
-        (result as Ok<BitcoinSigningPlanDetails, BitcoinSigningFailure>).value;
+        (result as Ok<BitcoinSigningPlanDetails, SendFailure>).value;
 
     expect(details.plan.satisfiedPreimageKeys, const {'sha256:aa'});
   });

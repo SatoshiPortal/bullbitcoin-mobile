@@ -1,9 +1,9 @@
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart' as core;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:meta/meta.dart';
@@ -52,7 +52,7 @@ class ProcessBitcoinSignerResultUsecase {
   );
 
   @useResult
-  Future<Result<ProcessedBitcoinSignerResult, BitcoinSigningFailure>> execute({
+  Future<Result<ProcessedBitcoinSignerResult, SendFailure>> execute({
     required String result,
     required BitcoinSignerResultKind kind,
     required String currentPsbt,
@@ -64,9 +64,7 @@ class ProcessBitcoinSignerResultUsecase {
     try {
       parsed = core.parseBitcoinSignerResult(result);
     } on FormatException {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.invalidPsbt),
-      );
+      return const Err(SendTransactionSigningFailure('invalidPsbt'));
     }
     final expectedFormat = switch (kind) {
       BitcoinSignerResultKind.detect => null,
@@ -75,16 +73,12 @@ class ProcessBitcoinSignerResultUsecase {
         core.BitcoinSignerResultFormat.transaction,
     };
     if (expectedFormat != null && parsed.format != expectedFormat) {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.invalidPsbt),
-      );
+      return const Err(SendTransactionSigningFailure('invalidPsbt'));
     }
     return switch (parsed.format) {
       core.BitcoinSignerResultFormat.psbt =>
         wallet == null
-            ? const Err(
-                BitcoinSigningFailure(BitcoinSigningFailureKind.unexpected),
-              )
+            ? const Err(SendUnexpectedFailure())
             : _processPsbt(
                 psbt: parsed.value,
                 currentPsbt: currentPsbt,
@@ -99,8 +93,7 @@ class ProcessBitcoinSignerResultUsecase {
     };
   }
 
-  Future<Result<ProcessedBitcoinTransaction, BitcoinSigningFailure>>
-  _processTransaction({
+  Future<Result<ProcessedBitcoinTransaction, SendFailure>> _processTransaction({
     required String transaction,
     required String currentPsbt,
   }) async {
@@ -115,11 +108,11 @@ class ProcessBitcoinSignerResultUsecase {
           txSize: value.txSize,
         ),
       ),
-      Err(:final failure) => Err(failure),
+      Err(:final failure) => Err(SendFailure.fromBitcoinSigning(failure)),
     };
   }
 
-  Future<Result<ProcessedBitcoinPsbt, BitcoinSigningFailure>> _processPsbt({
+  Future<Result<ProcessedBitcoinPsbt, SendFailure>> _processPsbt({
     required String psbt,
     required String currentPsbt,
     required Wallet wallet,
@@ -155,9 +148,7 @@ class ProcessBitcoinSignerResultUsecase {
     }
     final review = details.review;
     if (review == null) {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.unexpected),
-      );
+      return const Err(SendUnexpectedFailure());
     }
     final signingPlan = details.plan;
     var finalized = (psbt: signingResult.signedPsbt, isFinalized: false);
@@ -168,12 +159,10 @@ class ProcessBitcoinSignerResultUsecase {
         case Ok(:final value):
           finalized = value;
         case Err(:final failure):
-          return Err(failure);
+          return Err(SendFailure.fromBitcoinSigning(failure));
       }
       if (!finalized.isFinalized) {
-        return const Err(
-          BitcoinSigningFailure(BitcoinSigningFailureKind.incomplete),
-        );
+        return const Err(SendTransactionSigningFailure('incomplete'));
       }
     }
     return Ok(

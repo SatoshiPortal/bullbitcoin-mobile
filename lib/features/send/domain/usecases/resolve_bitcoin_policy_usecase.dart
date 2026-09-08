@@ -1,7 +1,7 @@
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -29,7 +29,7 @@ class ResolveBitcoinPolicyUsecase {
   const ResolveBitcoinPolicyUsecase(this._getBitcoinSigningPlanUsecase);
 
   @useResult
-  Future<Result<ResolvedBitcoinPolicy, BitcoinSigningFailure>> execute({
+  Future<Result<ResolvedBitcoinPolicy, SendFailure>> execute({
     required Wallet wallet,
     required BitcoinPolicySelection selection,
     required Set<String> selectedOutpoints,
@@ -73,15 +73,10 @@ class ResolveBitcoinPolicyUsecase {
         maturity: initial.maturity,
         selectedOutpoints: selectedOutpoints,
       );
-      final hasRequiredPreimages =
-          selectionComplete &&
-          signingPlan.policy
-              .requiredHashlocks(resolvedSelection)
-              .every(
-                (hashlock) => satisfiedHashlocks.contains(
-                  '${hashlock.type.name}:${hashlock.hash.toLowerCase()}',
-                ),
-              );
+      final hasRequiredPreimages = signingPlan.policy.hasRequiredPreimages(
+        resolvedSelection,
+        satisfiedHashlocks,
+      );
       final canBuildTransaction =
           selectionComplete && selectionAvailable && hasRequiredPreimages;
       final path =
@@ -105,9 +100,7 @@ class ResolveBitcoinPolicyUsecase {
         ),
       );
     } on ArgumentError {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
-      );
+      return const Err(SendTransactionSigningFailure('unsupportedPolicyPath'));
     }
   }
 }
