@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
+import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
 /// The dedicated swap master key (the "swap mnemonic"), derived from a wallet

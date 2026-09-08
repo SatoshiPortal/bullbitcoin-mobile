@@ -1,5 +1,5 @@
-import 'package:swaps/src/restored_swap.dart';
-import 'package:swaps/src/swap.dart';
+import 'package:swaps/src/domain/entities/restored_swap.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
 
 /// The swap engine's one interface: the swaps we hold, and the operations on
 /// one swap. Implementations own their storage and their backend client;
@@ -20,6 +20,7 @@ abstract class SwapRepository {
   Future<Swap> get(String swapId);
   Stream<Swap> watch(String swapId);
   Future<List<Swap>> all({String? walletId});
+  Future<Swap?> byTxId(String txId);
 
   /// Swaps that still need watching: non-terminal, or terminal-without-proof
   /// with funds at risk.

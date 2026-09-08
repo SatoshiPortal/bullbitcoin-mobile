@@ -10,7 +10,7 @@ class SwapRescueState {
   final SwapRescueStatus status;
   final List<Wallet> wallets;
   final String? selectedWalletId;
-  final String? error;
+  final SwapsFailure? error;
 
   const SwapRescueState({
     this.status = SwapRescueStatus.loading,
@@ -28,7 +28,7 @@ class SwapRescueState {
     SwapRescueStatus? status,
     List<Wallet>? wallets,
     String? selectedWalletId,
-    String? error,
+    SwapsFailure? error,
   }) {
     return SwapRescueState(
       status: status ?? this.status,
@@ -71,7 +71,12 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
       );
     } catch (e) {
       if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
+      emit(
+        state.copyWith(
+          status: SwapRescueStatus.error,
+          error: classifySwapsFailure(e),
+        ),
+      );
     }
   }
 
@@ -83,19 +88,21 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
     final walletId = state.selectedWalletId;
     if (walletId == null) return;
     emit(state.copyWith(status: SwapRescueStatus.rescuing));
-    try {
-      final swap = await _rescueSwapUsecase.execute(
-        restored: _restored,
-        selectedWalletId: walletId,
-      );
-      log.fine(
-        'SWAPS: rescue of ${swap.id} finished with status ${swap.status.name}',
-      );
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.success));
-    } catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
-    }
+    final result = await _rescueSwapUsecase.execute(
+      restored: _restored,
+      selectedWalletId: walletId,
+    );
+    if (isClosed) return;
+    result.fold(
+      (swap) {
+        log.fine(
+          'SWAPS: rescue of ${swap.id} finished with status '
+          '${swap.status.name}',
+        );
+        emit(state.copyWith(status: SwapRescueStatus.success));
+      },
+      (failure) =>
+          emit(state.copyWith(status: SwapRescueStatus.error, error: failure)),
+    );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
+import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
 
 class SwapTxOutspendModel {
   final String? txid;

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:bull_sdk/boltz.dart';
-import 'package:swaps/src/boltz_network.dart';
+import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/log.dart';
 
-import 'package:swaps/src/swap_master_key_model.dart';
-import 'package:swaps/src/swap_model.dart';
+import 'package:swaps/src/data/models/swap_master_key_model.dart';
+import 'package:swaps/src/data/models/swap_model.dart';
 
 /// Key prefixes are wire format for existing installs — they must never
 /// change. `swapKeyIndex` deliberately differs from the historical

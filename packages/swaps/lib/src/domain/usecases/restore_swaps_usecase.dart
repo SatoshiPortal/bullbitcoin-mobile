@@ -1,31 +1,21 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:swaps/src/log.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/src/domain/entities/restored_swap.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/swap_repository.dart';
 
 class RestoreSwapsUsecase {
-  final BoltzSwapRepository _swapRepository;
-  final SettingsRepository _settingsRepository;
+  final SwapRepository _swapRepository;
 
-  RestoreSwapsUsecase({
-    required this._swapRepository,
-    required this._settingsRepository,
-  });
+  RestoreSwapsUsecase({required this._swapRepository});
 
-  Future<List<RestorableSwap>> execute() async {
+  Future<Result<List<RestorableSwap>, SwapsFailure>> execute() async {
     try {
-      final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-      log.fine('SWAP_RESTORE: starting (testnet=$isTestnet)');
-
-      final restored = await _swapRepository.restoreSwaps(isTestnet: isTestnet);
-
+      final restored = await _swapRepository.restore();
       final localSwaps = {
-        for (final swap in await _swapRepository.getAllSwaps()) swap.id: swap,
+        for (final swap in await _swapRepository.all()) swap.id: swap,
       };
-
       final result = [
         for (final swap in restored)
           RestorableSwap(
@@ -39,30 +29,24 @@ class RestoreSwapsUsecase {
       ];
       for (final r in result) {
         final local = localSwaps[r.swap.id];
-        log.fine(
-          'SWAP_RESTORE: ${r.swap.id} ${r.swap.kind.name} '
-          'recoverable=${r.swap.recoverable} '
-          'local=${r.existsLocally}'
-          '${local != null ? ' localStatus=${local.status.name} localUnresolved=${r.locallyUnresolved}' : ''} '
+        swapsLog.fine(
+          'SWAPS: restore ${r.swap.id} ${r.swap.kind.name} '
+          'recoverable=${r.swap.recoverable} local=${r.existsLocally}'
+          '${local != null ? ' localStatus=${local.status.name}' : ''} '
           '=> rescuable=${r.isRescuable}',
         );
       }
-      log.fine(
-        'SWAP_RESTORE: ${result.length} restored, '
-        '${result.where((r) => r.isRescuable).length} rescuable',
-      );
-      await log.flush();
-      return result;
+      await swapsLog.flush();
+      return Ok(result);
     } catch (e) {
-      log.warning('SWAP_RESTORE: failed: $e');
-      throw RestoreSwapsException('$e');
+      swapsLog.warning('SWAPS: restore failed: $e');
+      return Err(classifySwapsFailure(e));
     }
   }
 
-  /// Whether the local row records a resolution we can trust. Mirrors the
-  /// datasource's settled rules: a terminal status alone is not enough when
-  /// funds were locked — there must be a proving txid (or an MRH direct
-  /// payment) behind it.
+  /// Whether the local row records a resolution we can trust: a terminal
+  /// status alone is not enough when funds were locked — there must be a
+  /// proving txid (or an MRH direct payment) behind it.
   bool _isLocallySettled(Swap swap) {
     switch (swap.status) {
       case SwapStatus.completed:
@@ -88,8 +72,4 @@ class RestoreSwapsUsecase {
         return false;
     }
   }
-}
-
-class RestoreSwapsException extends BullException {
-  RestoreSwapsException(super.message);
 }

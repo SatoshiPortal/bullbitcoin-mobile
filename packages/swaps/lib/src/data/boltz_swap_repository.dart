@@ -1,35 +1,73 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
-import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
-import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
+import 'package:swaps/src/util.dart';
+import 'package:swaps/src/data/boltz_api.dart';
+import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:swaps/src/data/models/swap_model.dart';
+import 'package:swaps/src/domain/entities/restored_swap.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/entities/swap_master_key_info.dart';
+import 'package:swaps/src/domain/entities/swap_tx_outspend.dart'
     hide SwapDirection;
-import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
-    as outspend;
-import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:swaps/src/domain/entities/swap_tx_outspend.dart' as outspend;
+import 'package:swaps/src/log.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-class BoltzSwapRepository
-    implements AutoSwapSettingsRepository, SwapHistoryRepository {
+/// Fresh receive address on [walletId], for claim/refund destinations.
+typedef NewAddressFor = Future<String> Function(String walletId);
+
+/// Look up one wallet transaction (null when absent). [sync] freshens the
+/// wallet first; implementations must throw — not return stale data — when
+/// freshening was requested but failed.
+typedef WalletTxLookup =
+    Future<SwapWalletTx?> Function(String txid, {required String walletId});
+
+typedef WalletTxsLookup =
+    Future<List<SwapWalletTx>> Function(String walletId, {bool sync});
+
+/// Fastest-confirmation absolute fee for [txSize] vbytes; throws when the
+/// estimate is unavailable (the engine falls back to the relay floor).
+typedef FastestFee =
+    Future<int> Function({
+      required int txSize,
+      required bool isLiquid,
+      required bool isTestnet,
+    });
+
+typedef WalletsList =
+    Future<List<SwapWalletInfo>> Function({required bool isTestnet});
+
+/// The default bitcoin wallet's seed for deriving the swap master key; null
+/// when unavailable (watch-only / hardware-only / pre-onboarding).
+typedef MasterSeedSource =
+    Future<SwapSeedSource?> Function({required bool isTestnet});
+
+class BoltzSwapRepository implements SwapRepository {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
-  final StreamController<AutoSwap> _autoSwapSettingsController =
-      StreamController<AutoSwap>.broadcast();
+  final ElectrumRunner _electrum;
+  final NewAddressFor _newAddressFor;
+  final WalletTxLookup _walletTx;
+  final WalletTxsLookup _walletTxs;
+  final FastestFee _fastestFee;
+  final WalletsList _wallets;
+  final MasterSeedSource _masterSeedSource;
 
   /// Serializes swap creation so two concurrent creations can never compute
   /// the same key index from a stale table scan.
   Future<void> _creationLock = Future.value();
 
-  BoltzSwapRepository({required this._boltz, required this._isTestnet});
+  BoltzSwapRepository({
+    required this._boltz,
+    required this._isTestnet,
+    required this._electrum,
+    required this._newAddressFor,
+    required this._walletTx,
+    required this._walletTxs,
+    required this._fastestFee,
+    required this._wallets,
+    required this._masterSeedSource,
+  });
 
   Future<T> _withCreationLock<T>(Future<T> Function() action) {
     final completer = Completer<void>();
@@ -551,7 +589,7 @@ class BoltzSwapRepository
       swapMasterKey.fingerprint,
       current + count,
     );
-    log.info(
+    swapsLog.info(
       'SWAP_KEY: reserved index $current (count=$count) '
       'fp=${swapMasterKey.fingerprint}',
     );
@@ -625,7 +663,7 @@ class BoltzSwapRepository
       ),
     };
 
-    log.fine(
+    swapsLog.fine(
       '[SwapStore] $swapId'
       '${status != null ? ' status=${swap.status.name}->${status.name}' : ''}'
       '${receiveTxid != null ? ' receiveTxid=$receiveTxid' : ''}'
@@ -773,7 +811,6 @@ class BoltzSwapRepository
         .toList();
   }
 
-  @override
   Future<List<Swap>> getAllSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(
       walletId: walletId,
@@ -790,14 +827,16 @@ class BoltzSwapRepository
   /// them into local storage is handled separately.
   Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
     final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
-    log.fine(
+    swapsLog.fine(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
     );
     final summaries = await _boltz.restoreSwapSummaries(
       swapMasterKey: swapMasterKey,
     );
-    log.fine('SWAP_RESTORE: restore endpoint returned ${summaries.length}');
+    swapsLog.fine(
+      'SWAP_RESTORE: restore endpoint returned ${summaries.length}',
+    );
     return [
       for (final s in summaries)
         RestoredSwap(
@@ -827,7 +866,7 @@ class BoltzSwapRepository
         !s.recoverable &&
         s.kind == boltz.SwapType.chain &&
         s.status == 'transaction.refunded';
-    log.fine(
+    swapsLog.fine(
       'SWAP_RESTORE: summary ${s.id} kind=${s.kind.name} '
       'boltzStatus=${s.status} recoverable=${s.recoverable} '
       '${overridden ? 'OVERRIDDEN->true (chain swap: boltz refunded its own lockup; ours may be unspent) ' : ''}'
@@ -868,9 +907,13 @@ class BoltzSwapRepository
       case 'transaction.confirmed':
       case 'transaction.server.mempool':
       case 'transaction.server.confirmed':
+        return SwapStatus.claimable;
+      // For a submarine swap these mean the coop-close window, not a user
+      // claim — storing `claimable` wedged rescued submarine swaps in a
+      // state the type can never legally hold.
       case 'transaction.claim.pending':
       case 'invoice.paid':
-        return SwapStatus.claimable;
+        return SwapStatus.canCoop;
       default:
         return SwapStatus.pending;
     }
@@ -1065,13 +1108,13 @@ class BoltzSwapRepository
     await _boltz.storage.store(model);
     subscribeToSwaps([id]);
     await reconcileSwaps([id]);
-    log.fine('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
+    swapsLog.fine('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
     return model.toEntity();
   }
 
   void _logSkippedRestores(List<boltz.SkippedRestoreSwap> skipped) {
     for (final s in skipped) {
-      log.warning(
+      swapsLog.warning(
         'SWAP_RESTORE: swap ${s.id} returned by scan but not rebuildable: '
         '${s.error}',
       );
@@ -1103,7 +1146,7 @@ class BoltzSwapRepository
   }
 
   @override
-  Future<Swap?> getSwapByTxId(String txId) async {
+  Future<Swap?> byTxId(String txId) async {
     final swapModel = await _boltz.storage.fetchByTxId(txId);
     if (swapModel == null) {
       return null; // No swap found for the given txId
@@ -1307,28 +1350,6 @@ class BoltzSwapRepository
     }
   }
 
-  @override
-  Future<AutoSwap> getAutoSwapParams() async {
-    final model = _isTestnet
-        ? await _boltz.storage.getAutoSwapSettingsTestnet()
-        : await _boltz.storage.getAutoSwapSettings();
-    return model.toEntity();
-  }
-
-  @override
-  Future<void> updateAutoSwapParams(AutoSwap params) async {
-    final model = AutoSwapModel.fromEntity(params);
-    if (_isTestnet) {
-      await _boltz.storage.storeAutoSwapSettingsTestnet(model);
-    } else {
-      await _boltz.storage.storeAutoSwapSettings(model);
-    }
-    _autoSwapSettingsController.add(params);
-  }
-
-  @override
-  Stream<AutoSwap> watchAutoSwapParams() => _autoSwapSettingsController.stream;
-
   /// Lists the spends of the swap's lockup tx outputs, one per spent vout.
   /// An entry proves only that an output was spent — never that we were
   /// paid; callers must verify a spender against their own wallet before
@@ -1348,5 +1369,800 @@ class BoltzSwapRepository
       isClaim: isClaim,
     );
     return models.map((model) => model.toEntity()).toList();
+  }
+
+  /// Fingerprint of the default bitcoin wallet for this environment; null
+  /// when none exists. Used by the seed viewer's swap-key usecases.
+  Future<String?> defaultBitcoinFingerprint() async {
+    final wallets = await _wallets(isTestnet: _isTestnet);
+    for (final w in wallets) {
+      if (w.isDefault && !w.isLiquid && w.fingerprint.isNotEmpty) {
+        return w.fingerprint;
+      }
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------------
+  // SwapRepository interface
+  // ---------------------------------------------------------------------
+
+  @override
+  bool get isTestnet => _isTestnet;
+
+  @override
+  Stream<Swap> get updates => swapUpdatesStream;
+
+  @override
+  Future<Swap> get(String swapId) => getSwap(swapId: swapId);
+
+  @override
+  Stream<Swap> watch(String swapId) => watchSwap(swapId: swapId);
+
+  @override
+  Future<List<Swap>> all({String? walletId}) => getAllSwaps(walletId: walletId);
+
+  @override
+  Future<List<Swap>> ongoing({String? walletId}) =>
+      getOngoingSwaps(walletId: walletId);
+
+  @override
+  void listen(List<String> swapIds) => subscribeToSwaps(swapIds);
+
+  @override
+  Future<void> reconcile(List<String> swapIds) => reconcileSwaps(swapIds);
+
+  Future<String> _electrumUrl({required bool isLiquid}) => _electrum.run(
+    isLiquid: isLiquid,
+    isTestnet: _isTestnet,
+    operation: (connection) async => connection.url,
+  );
+
+  @override
+  Future<LnReceiveSwap> createLightningReceive({
+    required String walletId,
+    required int amountSat,
+    required bool toLiquid,
+    String? description,
+  }) async {
+    await _ensureMasterKey();
+    final electrumUrl = await _electrumUrl(isLiquid: toLiquid);
+    final claimAddress = await _newAddressFor(walletId);
+    return toLiquid
+        ? createLightningToLiquidSwap(
+            walletId: walletId,
+            amountSat: amountSat,
+            electrumUrl: electrumUrl,
+            claimAddress: claimAddress,
+            description: description,
+          )
+        : createLightningToBitcoinSwap(
+            walletId: walletId,
+            amountSat: amountSat,
+            electrumUrl: electrumUrl,
+            claimAddress: claimAddress,
+            description: description,
+          );
+  }
+
+  @override
+  Future<LnSendSwap> createLightningSend({
+    required String walletId,
+    required String invoice,
+    required bool fromLiquid,
+  }) async {
+    await _ensureMasterKey();
+    final electrumUrl = await _electrumUrl(isLiquid: fromLiquid);
+    return fromLiquid
+        ? createLiquidToLightningSwap(
+            walletId: walletId,
+            invoice: invoice,
+            electrumUrl: electrumUrl,
+          )
+        : createBitcoinToLightningSwap(
+            walletId: walletId,
+            invoice: invoice,
+            electrumUrl: electrumUrl,
+          );
+  }
+
+  @override
+  Future<ChainSwap> createChain({
+    required String sendWalletId,
+    required int amountSat,
+    required bool fromLiquid,
+    String? receiveWalletId,
+    String? externalRecipientAddress,
+  }) async {
+    await _ensureMasterKey();
+    final btcElectrumUrl = await _electrumUrl(isLiquid: false);
+    final lbtcElectrumUrl = await _electrumUrl(isLiquid: true);
+    return fromLiquid
+        ? createLiquidToBitcoinSwap(
+            sendWalletId: sendWalletId,
+            amountSat: amountSat,
+            btcElectrumUrl: btcElectrumUrl,
+            lbtcElectrumUrl: lbtcElectrumUrl,
+            receiveWalletId: receiveWalletId,
+            externalRecipientAddress: externalRecipientAddress,
+          )
+        : createBitcoinToLiquidSwap(
+            sendWalletId: sendWalletId,
+            amountSat: amountSat,
+            btcElectrumUrl: btcElectrumUrl,
+            lbtcElectrumUrl: lbtcElectrumUrl,
+            receiveWalletId: receiveWalletId,
+            externalRecipientAddress: externalRecipientAddress,
+          );
+  }
+
+  // RESOLVE OPERATIONS — the watcher's verbs. Each resolves its own
+  // address, estimates fees (floored at relay minimum, capped at half the
+  // swap amount), tries the cooperative path first and falls back to the
+  // script path, walks the app's electrum servers, and records the outcome.
+
+  @override
+  Future<String> claim(Swap swap) async {
+    final existing = switch (swap) {
+      LnReceiveSwap() => swap.receiveTxid,
+      ChainSwap() => swap.receiveTxid,
+      LnSendSwap() => throw SwapsException(
+        'submarine swap ${swap.id} is refunded or coop-signed, never claimed',
+      ),
+    };
+    if (existing != null) return existing;
+    if (swap is LnReceiveSwap && swap.wasDirectPayment) {
+      return swap.receiveTxid ?? '';
+    }
+
+    final claimAddress = await _resolveClaimAddress(swap);
+    final claimOnLiquid = switch (swap) {
+      LnReceiveSwap() => swap.type == SwapType.lightningToLiquid,
+      ChainSwap() => swap.type == SwapType.bitcoinToLiquid,
+      LnSendSwap() => false,
+    };
+
+    try {
+      return await _electrum.run(
+        isLiquid: claimOnLiquid,
+        isTestnet: _isTestnet,
+        isTransient: _isServerFailure,
+        operation: (connection) async {
+          // Pin the claim fee to the stored creation-time claimFee: the
+          // receive/transfer screens promise amount-minus-quoted-fees, so a
+          // live fee changes what the user actually receives. Rescued swaps
+          // carry no trustworthy stored fee and use live estimation.
+          final storedClaimFee = swap.fees?.claimFee;
+          int absoluteFees;
+          if (storedClaimFee != null && storedClaimFee > 0) {
+            absoluteFees = storedClaimFee;
+          } else {
+            // Cooperative sizing round-trips Boltz and can fail (notably for
+            // rescued swaps); the script-path size is computed locally, so
+            // try that next — same fallback the original watcher had.
+            int txSize;
+            try {
+              txSize = await getSwapClaimTxSize(
+                swapId: swap.id,
+                swapType: swap.type,
+                claimAddressForChainSwaps: swap is ChainSwap
+                    ? claimAddress
+                    : null,
+              );
+            } catch (_) {
+              txSize = await getSwapClaimTxSize(
+                swapId: swap.id,
+                swapType: swap.type,
+                isCooperative: false,
+                claimAddressForChainSwaps: swap is ChainSwap
+                    ? claimAddress
+                    : null,
+              );
+            }
+            absoluteFees = await _resolveFees(
+              txSize: txSize,
+              isLiquid: claimOnLiquid,
+              amountSat: _amountSatOrNull(swap),
+            );
+          }
+          unsubscribeFromSwaps([swap.id]);
+          String txid;
+          try {
+            txid = await _broadcastClaim(
+              swap,
+              claimAddress: claimAddress,
+              absoluteFees: absoluteFees,
+              cooperate: true,
+            );
+          } catch (e) {
+            swapsLog.severe(
+              'SWAPS: coop claim failed for ${swap.id} '
+              '(${_errorMessage(e)}); trying script path',
+              error: e,
+            );
+            txid = await _broadcastClaim(
+              swap,
+              claimAddress: claimAddress,
+              absoluteFees: absoluteFees,
+              cooperate: false,
+            );
+          }
+          await updateSwapFields(
+            swap.id,
+            status: SwapStatus.completed,
+            receiveTxid: txid,
+            receiveAddress: claimAddress,
+            claimFee: absoluteFees,
+            completionTime: DateTime.now(),
+          );
+          swapsLog.fine(
+            'SWAPS: claim succeeded for ${swap.id} txid=$txid '
+            'fees=$absoluteFees server=${connection.url}',
+          );
+          await swapsLog.flush();
+          return txid;
+        },
+      );
+    } catch (e) {
+      final recovered = await _recoverFromVerifiedOutspend(swap, isClaim: true);
+      await swapsLog.flush();
+      if (recovered != null) return recovered;
+      listen([swap.id]);
+      throw SwapsException('claim failed for ${swap.id}: ${_errorMessage(e)}');
+    }
+  }
+
+  @override
+  Future<String> refund(Swap swap) async {
+    final existing = switch (swap) {
+      ChainSwap() => swap.refundTxid,
+      LnSendSwap() => swap.refundTxid,
+      LnReceiveSwap() => throw SwapsException(
+        'reverse swap ${swap.id} is claimed, never refunded',
+      ),
+    };
+    if (existing != null) return existing;
+
+    final refundOnLiquid = switch (swap.type) {
+      SwapType.liquidToBitcoin || SwapType.liquidToLightning => true,
+      _ => false,
+    };
+    final sendWalletId = switch (swap) {
+      ChainSwap() => swap.sendWalletId,
+      LnSendSwap() => swap.sendWalletId,
+      LnReceiveSwap() => null,
+    };
+    if (sendWalletId == null) {
+      throw SwapsException('swap ${swap.id} has no wallet to refund into');
+    }
+    final refundAddress =
+        switch (swap) {
+          ChainSwap() => swap.refundAddress,
+          LnSendSwap() => swap.refundAddress,
+          LnReceiveSwap() => null,
+        } ??
+        await _persistRefundAddress(swap.id, sendWalletId);
+
+    try {
+      final (txid, _) = await _electrum.run(
+        isLiquid: refundOnLiquid,
+        isTestnet: _isTestnet,
+        isTransient: _isServerFailure,
+        operation: (connection) => _attemptRefund(
+          swap,
+          refundAddress: refundAddress,
+          isLiquid: refundOnLiquid,
+          connection: connection,
+        ),
+      );
+      return txid;
+    } catch (e) {
+      swapsLog.severe(
+        'SWAPS: refund failed for ${swap.id}: ${_errorMessage(e)}',
+        error: e,
+      );
+      // A non-final rejection means the timelock has not passed — nothing of
+      // ours can be on-chain, so the outspend recovery must not get the
+      // chance to match an unrelated spend.
+      if (_isNonFinalError(e)) {
+        await swapsLog.flush();
+        throw SwapsException(
+          'refund for ${swap.id} is not yet final (timelock); retry later',
+        );
+      }
+      final recovered = await _recoverFromVerifiedOutspend(
+        swap,
+        isClaim: false,
+      );
+      await swapsLog.flush();
+      if (recovered != null) return recovered;
+      throw SwapsException('refund failed for ${swap.id}: ${_errorMessage(e)}');
+    }
+  }
+
+  @override
+  Future<void> coopSign(Swap swap) async {
+    if (swap is! LnSendSwap) return;
+    try {
+      if (swap.preimage == null) {
+        final preimage = await getSendSwapPreimage(swapId: swap.id);
+        if (preimage != null) {
+          await updateSwapFields(swap.id, preimage: preimage);
+        }
+      }
+      if (swap.type == SwapType.bitcoinToLightning) {
+        await coopSignBitcoinToLightningSwap(swapId: swap.id);
+      } else {
+        await coopSignLiquidToLightningSwap(swapId: swap.id);
+      }
+      unsubscribeFromSwaps([swap.id]);
+      swapsLog.fine('SWAPS: coop close succeeded for ${swap.id}');
+    } catch (e) {
+      // Non-fatal: the payment is already made; Boltz completes via the
+      // script path and the swap settles on transaction.claimed.
+      swapsLog.warning(
+        'SWAPS: coop close failed for ${swap.id} (${_errorMessage(e)}); '
+        'swap completes via transaction.claimed',
+      );
+      rethrow;
+    }
+  }
+
+  Future<(String, int)> _attemptRefund(
+    Swap swap, {
+    required String refundAddress,
+    required bool isLiquid,
+    required ElectrumConnection connection,
+  }) async {
+    Future<String> broadcast({required bool cooperate, required int fees}) {
+      switch (swap.type) {
+        case SwapType.liquidToBitcoin:
+          return refundLiquidToBitcoinSwap(
+            swapId: swap.id,
+            liquidRefundAddress: refundAddress,
+            absoluteFees: fees,
+            cooperate: cooperate,
+            electrum: connection,
+          );
+        case SwapType.bitcoinToLiquid:
+          return refundBitcoinToLiquidSwap(
+            swapId: swap.id,
+            bitcoinRefundAddress: refundAddress,
+            absoluteFees: fees,
+            cooperate: cooperate,
+            electrum: connection,
+          );
+        case SwapType.liquidToLightning:
+          return refundLiquidToLightningSwap(
+            swapId: swap.id,
+            liquidAddress: refundAddress,
+            absoluteFees: fees,
+            cooperate: cooperate,
+          );
+        case SwapType.bitcoinToLightning:
+          return refundBitcoinToLightningSwap(
+            swapId: swap.id,
+            bitcoinAddress: refundAddress,
+            absoluteFees: fees,
+            cooperate: cooperate,
+          );
+        case SwapType.lightningToBitcoin:
+        case SwapType.lightningToLiquid:
+          throw SwapsException('reverse swap has no refund');
+      }
+    }
+
+    Future<int> feesFor({required bool cooperative}) async => _resolveFees(
+      txSize: await getSwapRefundTxSize(
+        swapId: swap.id,
+        swapType: swap.type,
+        isCooperative: cooperative,
+        refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
+        electrum: swap is ChainSwap ? connection : null,
+      ),
+      isLiquid: isLiquid,
+      amountSat: _amountSatOrNull(swap),
+    );
+
+    String txid;
+    int fees;
+    try {
+      fees = await feesFor(cooperative: true);
+      swapsLog.fine(
+        'SWAPS: ${swap.id} cooperative refund fees=$fees '
+        'server=${connection.url}',
+      );
+      txid = await broadcast(cooperate: true, fees: fees);
+    } catch (e) {
+      swapsLog.severe(
+        'SWAPS: coop refund failed for ${swap.id} '
+        '(${_errorMessage(e)}); trying script path (Boltz-free)',
+        error: e,
+      );
+      fees = await feesFor(cooperative: false);
+      swapsLog.fine(
+        'SWAPS: ${swap.id} script-path refund fees=$fees '
+        'server=${connection.url}',
+      );
+      txid = await broadcast(cooperate: false, fees: fees);
+    }
+    await updateSwapFields(
+      swap.id,
+      status: SwapStatus.refunded,
+      refundTxid: txid,
+      refundAddress: refundAddress,
+      refundFee: fees,
+      completionTime: DateTime.now(),
+    );
+    swapsLog.fine('SWAPS: refund succeeded for ${swap.id} txid=$txid');
+    await swapsLog.flush();
+    return (txid, fees);
+  }
+
+  Future<String> _resolveClaimAddress(Swap swap) async {
+    switch (swap) {
+      case LnReceiveSwap():
+        final existing = swap.receiveAddress;
+        if (existing != null) return existing;
+        final address = await _newAddressFor(swap.receiveWalletId);
+        await updateSwapFields(swap.id, receiveAddress: address);
+        return address;
+      case ChainSwap():
+        final existing = swap.receiveAddress;
+        if (existing != null) {
+          final uri = Uri.tryParse(existing);
+          if (uri != null && uri.scheme.isNotEmpty && uri.path.isNotEmpty) {
+            // bip21-style stored destination (bitcoin:/liquidnetwork:...).
+            return uri.path;
+          }
+          return existing;
+        }
+        final receiveWalletId = swap.receiveWalletId;
+        if (receiveWalletId == null) {
+          throw SwapsException(
+            'chain swap ${swap.id} has neither a receive wallet nor a '
+            'receive address',
+          );
+        }
+        final address = await _newAddressFor(receiveWalletId);
+        await updateSwapFields(swap.id, receiveAddress: address);
+        return address;
+      case LnSendSwap():
+        throw SwapsException('submarine swaps have no claim address');
+    }
+  }
+
+  Future<String> _persistRefundAddress(String swapId, String walletId) async {
+    final address = await _newAddressFor(walletId);
+    await updateSwapFields(swapId, refundAddress: address);
+    return address;
+  }
+
+  /// Live fee, floored at the relay minimum (a lower fee cannot broadcast)
+  /// and capped at half the swap amount (an automatic action must never burn
+  /// the swap on fees). Fee-API outage falls back to the floor itself.
+  Future<int> _resolveFees({
+    required int txSize,
+    required bool isLiquid,
+    int? amountSat,
+  }) async {
+    final floor = isLiquid ? (txSize * 0.11).ceil() + 1 : txSize;
+    int fees;
+    try {
+      final live = await _fastestFee(
+        txSize: txSize,
+        isLiquid: isLiquid,
+        isTestnet: _isTestnet,
+      );
+      fees = live > floor ? live : floor;
+    } catch (e) {
+      swapsLog.warning(
+        'SWAPS: fee estimation unavailable ($e) — using relay floor $floor '
+        'for txSize=$txSize',
+      );
+      fees = floor;
+    }
+    if (amountSat != null && amountSat > 0) {
+      final cap = amountSat ~/ 2;
+      if (fees > cap && cap >= floor) fees = cap;
+    }
+    return fees;
+  }
+
+  Future<String> _broadcastClaim(
+    Swap swap, {
+    required String claimAddress,
+    required int absoluteFees,
+    required bool cooperate,
+  }) {
+    switch (swap.type) {
+      case SwapType.lightningToBitcoin:
+        return claimLightningToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFees,
+          bitcoinAddress: claimAddress,
+          cooperate: cooperate,
+        );
+      case SwapType.lightningToLiquid:
+        return claimLightningToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFees,
+          liquidAddress: claimAddress,
+          cooperate: cooperate,
+        );
+      case SwapType.bitcoinToLiquid:
+        return claimBitcoinToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFees,
+          liquidClaimAddress: claimAddress,
+          cooperate: cooperate,
+        );
+      case SwapType.liquidToBitcoin:
+        return claimLiquidToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFees,
+          bitcoinClaimAddress: claimAddress,
+          cooperate: cooperate,
+        );
+      case SwapType.bitcoinToLightning:
+      case SwapType.liquidToLightning:
+        throw SwapsException('submarine swaps have no claim transaction');
+    }
+  }
+
+  int? _amountSatOrNull(Swap swap) {
+    try {
+      return swap.amountSat;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// After a failed broadcast: is the relevant lockup already spent by a tx
+  /// that actually PAID us? Only an incoming transaction of the wallet the
+  /// funds must land in settles the swap — a spend of the lockup's change
+  /// output by our own wallet, or Boltz spending its own side, must never.
+  /// Fail closed: no verified candidate leaves the swap actionable.
+  Future<String?> _recoverFromVerifiedOutspend(
+    Swap swap, {
+    required bool isClaim,
+  }) async {
+    try {
+      final walletId = switch (swap) {
+        ChainSwap() => isClaim ? swap.receiveWalletId : swap.sendWalletId,
+        LnReceiveSwap() => swap.receiveWalletId,
+        LnSendSwap() => swap.sendWalletId,
+      };
+      if (walletId == null) return null;
+
+      final network = switch (swap) {
+        ChainSwap() => Network.fromEnvironment(
+          isTestnet: _isTestnet,
+          isLiquid: isClaim
+              ? swap.type == SwapType.bitcoinToLiquid
+              : swap.type == SwapType.liquidToBitcoin,
+        ),
+        LnReceiveSwap() => Network.fromEnvironment(
+          isTestnet: _isTestnet,
+          isLiquid: swap.type == SwapType.lightningToLiquid,
+        ),
+        LnSendSwap() => Network.fromEnvironment(
+          isTestnet: _isTestnet,
+          isLiquid: swap.type == SwapType.liquidToLightning,
+        ),
+      };
+      final direction = swap is ChainSwap
+          ? (swap.type == SwapType.liquidToBitcoin
+                ? outspend.SwapDirection.liquidToBitcoin
+                : outspend.SwapDirection.bitcoinToLiquid)
+          : null;
+
+      final outspends = await checkLockupOutspends(
+        swapId: swap.id,
+        swapType: swap.type,
+        network: network,
+        swapDirection: direction,
+        isClaim: isClaim,
+      );
+      if (outspends.isEmpty) {
+        swapsLog.fine(
+          'SWAPS: ${swap.id} lockup outputs unspent — still actionable',
+        );
+        return null;
+      }
+
+      for (final candidate in outspends) {
+        final txid = candidate.txid;
+        if (txid == null) continue;
+        final tx = await _walletTx(txid, walletId: walletId);
+        if (tx == null) continue;
+        if (!tx.isIncoming) {
+          swapsLog.fine(
+            'SWAPS: ${swap.id} spender $txid is in our wallet but not '
+            'incoming (change/self spend) — ignoring',
+          );
+          continue;
+        }
+        swapsLog.fine(
+          'SWAPS: ${swap.id} ${isClaim ? 'claim' : 'refund'} already '
+          'on-chain as $txid (verified incoming) — settling',
+        );
+        await updateSwapFields(
+          swap.id,
+          status: isClaim ? SwapStatus.completed : SwapStatus.refunded,
+          receiveTxid: isClaim ? txid : null,
+          refundTxid: isClaim ? null : txid,
+          completionTime: candidate.timestamp ?? DateTime.now(),
+        );
+        return txid;
+      }
+      swapsLog.warning(
+        'SWAPS: ${swap.id} lockup spent by '
+        '${outspends.map((o) => o.txid).whereType<String>().join(',')} but '
+        'none is an incoming tx of our wallet — NOT settling',
+      );
+      return null;
+    } catch (e) {
+      swapsLog.severe('SWAPS: outspend check failed for ${swap.id}', error: e);
+      return null;
+    }
+  }
+
+  bool _isNonFinalError(Object error) {
+    final message = _errorMessage(error).toLowerCase();
+    return message.contains('non-final') ||
+        message.contains('non_final') ||
+        message.contains('nonfinal') ||
+        message.contains('non-bip68-final') ||
+        message.contains('locktime');
+  }
+
+  bool _isServerFailure(Object error) {
+    final message = _errorMessage(error).toLowerCase();
+    if (_isNonFinalError(error)) return false;
+    if (message.contains('missingorspent')) return false;
+    return message.contains('timed out') ||
+        message.contains('timeout') ||
+        message.contains('connection') ||
+        message.contains('refused') ||
+        message.contains('lookup') ||
+        message.contains('electrum') ||
+        message.contains('socket');
+  }
+
+  String _errorMessage(Object error) =>
+      error is boltz.BoltzError ? error.message : error.toString();
+
+  /// Binds (or first derives) the swap master key so restore/rescue can run.
+  /// Every 6.13 build shipped with the key never bound — restore threw
+  /// unconditionally; the engine now self-ensures instead of trusting a
+  /// startup hook that can be refactored away.
+  Future<void> _ensureMasterKey() async {
+    final source = await _masterSeedSource(isTestnet: _isTestnet);
+    if (source == null) {
+      throw SwapsException(
+        'no default bitcoin wallet seed available to derive the swap '
+        'master key (watch-only or hardware-only wallet)',
+      );
+    }
+    if (await swapMasterKeyReady(walletFingerprint: source.fingerprint)) {
+      return;
+    }
+    await deriveSwapMasterKey(
+      mnemonic: source.mnemonic,
+      walletFingerprint: source.fingerprint,
+    );
+    swapsLog.fine(
+      'SWAPS: swap master key derived for wallet ${source.fingerprint}',
+    );
+  }
+
+  @override
+  Future<List<RestoredSwap>> restore() async {
+    await _ensureMasterKey();
+    return restoreSwaps(isTestnet: _isTestnet);
+  }
+
+  @override
+  Future<Swap> rescue(RestoredSwap restored, {required String walletId}) async {
+    await _ensureMasterKey();
+    final btcElectrumUrl = await _electrumUrl(isLiquid: false);
+    final lbtcElectrumUrl = await _electrumUrl(isLiquid: true);
+
+    final wallets = await _wallets(isTestnet: _isTestnet);
+    String? defaultIdForLiquid(bool wantLiquid) {
+      for (final w in wallets) {
+        if (w.isDefault && w.isLiquid == wantLiquid) return w.id;
+      }
+      return null;
+    }
+
+    String sendWalletId;
+    String? receiveWalletId;
+    switch (restored.kind) {
+      case RestoredSwapKind.lightningReceive:
+        receiveWalletId = walletId;
+        sendWalletId = walletId;
+      case RestoredSwapKind.lightningSend:
+        sendWalletId = walletId;
+        receiveWalletId = null;
+      case RestoredSwapKind.crossChain:
+        if (restored.isRefundAction) {
+          sendWalletId = walletId;
+          receiveWalletId = null;
+        } else {
+          receiveWalletId = walletId;
+          sendWalletId =
+              defaultIdForLiquid(restored.fromAsset == 'L-BTC') ??
+              (throw SwapsException(
+                'no default ${restored.fromAsset} wallet for the refund side',
+              ));
+        }
+    }
+    swapsLog.fine(
+      'SWAPS: rescuing ${restored.id} (${restored.kind.name}) '
+      'send=$sendWalletId receive=$receiveWalletId',
+    );
+    return rescueSwap(
+      restored: restored,
+      sendWalletId: sendWalletId,
+      receiveWalletId: receiveWalletId,
+      btcElectrumUrl: btcElectrumUrl,
+      lbtcElectrumUrl: lbtcElectrumUrl,
+    );
+  }
+
+  /// Re-verifies recorded chain-swap completions against the receiving
+  /// wallet and reopens the ones that never paid us as refundable.
+  /// Cache-first: the wallet is only force-synced when the recorded claim is
+  /// MISSING from the cached view, so the common all-good launch does no
+  /// network work per swap.
+  @override
+  Future<void> verifyCompletions() async {
+    try {
+      final swaps = await getAllSwaps();
+      for (final swap in swaps) {
+        if (swap is! ChainSwap) continue;
+        if (swap.status != SwapStatus.completed) continue;
+        if (swap.refundTxid != null) continue;
+        if (swap.sendTxid == null) continue;
+        final receiveTxid = swap.receiveTxid;
+        if (receiveTxid == null) {
+          swapsLog.warning(
+            'SWAPS: ${swap.id} completed with funds locked and no txid '
+            'recorded — reopening as refundable',
+          );
+          await updateSwapFields(swap.id, status: SwapStatus.refundable);
+          continue;
+        }
+        final walletId = swap.receiveWalletId;
+        if (walletId == null) continue;
+        try {
+          var txs = await _walletTxs(walletId);
+          if (txs.any((tx) => tx.txId == receiveTxid)) continue;
+          // Missing from cache: force one fresh sync before judging. A sync
+          // failure throws into the per-swap catch — never retract on a
+          // cache we could not freshen.
+          txs = await _walletTxs(walletId, sync: true);
+          if (txs.isEmpty) continue;
+          if (txs.any((tx) => tx.txId == receiveTxid)) continue;
+          swapsLog.warning(
+            'SWAPS: ${swap.id} completed but recorded claim $receiveTxid is '
+            'not in wallet $walletId — retracting and reopening as '
+            'refundable',
+          );
+          await updateSwapFields(
+            swap.id,
+            status: SwapStatus.refundable,
+            clearReceiveTxid: true,
+          );
+        } catch (e) {
+          swapsLog.warning('SWAPS: verify failed for ${swap.id}: $e');
+        }
+      }
+      await swapsLog.flush();
+    } catch (e) {
+      swapsLog.warning('SWAPS: verifyCompletions failed: $e');
+    }
   }
 }

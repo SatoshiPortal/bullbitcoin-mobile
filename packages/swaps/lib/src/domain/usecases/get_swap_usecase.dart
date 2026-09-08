@@ -1,21 +1,21 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:swaps/src/util.dart';
 
 class GetSwapUsecase {
-  final BoltzSwapRepository _boltzSwapRepository;
+  final SwapRepository _swapRepository;
 
-  GetSwapUsecase({required this._boltzSwapRepository});
+  GetSwapUsecase({required this._swapRepository});
 
-  Future<Swap> execute(String swapId) async {
+  Future<Swap> execute({required String swapId}) async {
     try {
-      return await _boltzSwapRepository.getSwap(swapId: swapId);
+      return await _swapRepository.get(swapId);
     } catch (e) {
       throw GetSwapException('$e');
     }
   }
 }
 
-class GetSwapException extends BullException {
+class GetSwapException extends SwapsException {
   GetSwapException(super.message);
 }

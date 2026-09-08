@@ -1,13 +1,27 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/percentage.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bolt11_decoder/bolt11_decoder.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:swaps/src/util.dart';
 
 part 'swap.freezed.dart';
+
+/// The network environment a swap lives on. Mirrors the app's settings
+/// environment; mapped at the app boundary.
+enum Environment {
+  mainnet,
+  testnet;
+
+  factory Environment.fromName(String name) {
+    return Environment.values.firstWhere(
+      (environment) => environment.name == name,
+    );
+  }
+
+  bool get isMainnet => this == Environment.mainnet;
+  bool get isTestnet => this == Environment.testnet;
+}
+
+/// Clash-free alias for app code that also imports another `Environment`.
+typedef SwapEnvironment = Environment;
 
 enum SwapType {
   lightningToBitcoin,
@@ -39,26 +53,6 @@ enum SwapStatus {
   refunded,
   expired,
   failed;
-
-  String displayName(BuildContext context) {
-    switch (this) {
-      case SwapStatus.pending:
-        return context.loc.coreSwapsStatusPending;
-      case SwapStatus.paid:
-      case SwapStatus.claimable:
-      case SwapStatus.refundable:
-      case SwapStatus.canCoop:
-        return context.loc.coreSwapsStatusInProgress;
-      case SwapStatus.completed:
-        return context.loc.coreSwapsStatusCompleted;
-      case SwapStatus.refunded:
-        return context.loc.coreSwapsStatusRefunded;
-      case SwapStatus.expired:
-        return context.loc.coreSwapsStatusExpired;
-      case SwapStatus.failed:
-        return context.loc.coreSwapsStatusFailed;
-    }
-  }
 
   /// Done states: no further watcher action will ever run for this swap.
   bool get isTerminal =>
@@ -368,14 +362,6 @@ sealed class Swap with _$Swap {
   bool get isChainSwapExternal =>
       this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
 
-  String swapAction(BuildContext context) => status == SwapStatus.claimable
-      ? context.loc.coreSwapsActionClaim
-      : status == SwapStatus.canCoop
-      ? context.loc.coreSwapsActionClose
-      : status == SwapStatus.refundable
-      ? context.loc.coreSwapsActionRefund
-      : '';
-
   bool get swapCompleted => status == SwapStatus.completed;
 
   bool get isBitcoin =>
@@ -464,94 +450,4 @@ class Invoice {
     this.magicBip21,
     this.description,
   });
-}
-
-extension SwapStatusMessage on Swap {
-  String getDisplayMessage(BuildContext context) {
-    if (isLnReceiveSwap) {
-      switch (status) {
-        case SwapStatus.pending:
-          return context.loc.coreSwapsLnReceivePending;
-        case SwapStatus.paid:
-          return context.loc.coreSwapsLnReceivePaid;
-        case SwapStatus.claimable:
-          return context.loc.coreSwapsLnReceiveClaimable;
-        case SwapStatus.refundable:
-          return context.loc.coreSwapsLnReceiveRefundable;
-        case SwapStatus.canCoop:
-          return context.loc.coreSwapsLnReceiveCanCoop;
-        case SwapStatus.completed:
-          return context.loc.coreSwapsLnReceiveCompleted;
-        case SwapStatus.refunded:
-          return context.loc.coreSwapsLnReceiveFailed;
-        case SwapStatus.expired:
-          return context.loc.coreSwapsLnReceiveExpired;
-        case SwapStatus.failed:
-          return context.loc.coreSwapsLnReceiveFailed;
-      }
-    } else if (isLnSendSwap) {
-      switch (status) {
-        case SwapStatus.pending:
-          return context.loc.coreSwapsLnSendPending;
-        case SwapStatus.paid:
-          return context.loc.coreSwapsLnSendPaid;
-        case SwapStatus.claimable:
-          return context.loc.coreSwapsLnSendClaimable;
-        case SwapStatus.refundable:
-          return context.loc.coreSwapsLnSendRefundable;
-        case SwapStatus.canCoop:
-          return context.loc.coreSwapsLnSendCanCoop;
-        case SwapStatus.completed:
-          final swap = this;
-          if (swap is LnSendSwap && swap.refundTxid != null) {
-            return context.loc.coreSwapsLnSendCompletedRefunded;
-          } else {
-            return context.loc.coreSwapsLnSendCompletedSuccess;
-          }
-        case SwapStatus.refunded:
-          return context.loc.coreSwapsLnSendCompletedRefunded;
-        case SwapStatus.expired:
-          return context.loc.coreSwapsLnSendExpired;
-        case SwapStatus.failed:
-          final swap = this;
-          if (swap is LnSendSwap && swap.sendTxid != null) {
-            return context.loc.coreSwapsLnSendFailedRefunding;
-          } else {
-            return context.loc.coreSwapsLnSendFailed;
-          }
-      }
-    } else if (isChainSwap) {
-      switch (status) {
-        case SwapStatus.pending:
-          return context.loc.coreSwapsChainPending;
-        case SwapStatus.paid:
-          return context.loc.coreSwapsChainPaid;
-        case SwapStatus.claimable:
-          return context.loc.coreSwapsChainClaimable;
-        case SwapStatus.refundable:
-          return context.loc.coreSwapsChainRefundable;
-        case SwapStatus.canCoop:
-          return context.loc.coreSwapsChainCanCoop;
-        case SwapStatus.completed:
-          final swap = this;
-          if (swap is ChainSwap && swap.refundTxid != null) {
-            return context.loc.coreSwapsChainCompletedRefunded;
-          } else {
-            return context.loc.coreSwapsChainCompletedSuccess;
-          }
-        case SwapStatus.refunded:
-          return context.loc.coreSwapsChainCompletedRefunded;
-        case SwapStatus.expired:
-          return context.loc.coreSwapsChainExpired;
-        case SwapStatus.failed:
-          final swap = this;
-          if (swap is ChainSwap && swap.sendTxid != null) {
-            return context.loc.coreSwapsChainFailedRefunding;
-          } else {
-            return context.loc.coreSwapsChainFailed;
-          }
-      }
-    }
-    return "";
-  }
 }

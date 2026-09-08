@@ -8,6 +8,7 @@ export 'package:swaps/src/data/boltz_swap_repository.dart';
 export 'src/log.dart';
 export 'package:swaps/src/domain/entities/restored_swap.dart';
 export 'package:swaps/src/domain/entities/swap.dart';
+export 'package:swaps/src/domain/entities/swap_failure.dart';
 export 'package:swaps/src/domain/entities/swap_master_key_info.dart';
 export 'package:swaps/src/data/models/swap_model.dart';
 export 'package:swaps/src/domain/swap_repository.dart';

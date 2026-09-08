@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
 
 enum RestoredSwapKind { lightningSend, lightningReceive, crossChain }
 

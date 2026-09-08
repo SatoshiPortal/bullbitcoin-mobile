@@ -1,38 +1,42 @@
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:swaps/src/log.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/swap_repository.dart';
 
-/// Emits one log line enumerating every swap in local storage, so a single
-/// user log export shows exactly which local state (status / recorded txids)
-/// a stuck swap carries.
-///
-/// Called once from the app-startup sequence, after migrations have run, so
-/// the read happens against a fully-opened database.
-///
-/// Emitted at `fine`, not `info`: the logger deliberately drops `Level.INFO`
-/// records from the on-disk file, so an `info` census never reaches a shared
-/// log. One line rather than one-per-swap, because this lands in every
-/// user's export on every launch.
+/// One log line enumerating every stored swap, so a single user log export
+/// shows exactly which local state a stuck swap carries. Full detail only
+/// for unresolved swaps; settled swaps contribute a count (address/txid
+/// linkage stays out of routine exports).
 class LogSwapCensusUsecase {
-  final BoltzSwapRepository _swapRepository;
+  final SwapRepository _swapRepository;
 
   LogSwapCensusUsecase({required this._swapRepository});
 
   Future<void> execute() async {
     try {
-      final swaps = await _swapRepository.getAllSwaps();
-      final detail = swaps.isEmpty
+      final swaps = await _swapRepository.all();
+      final unresolved = [
+        for (final s in swaps)
+          if (!s.status.isTerminal ||
+              (s.status == SwapStatus.completed &&
+                  switch (s) {
+                    LnReceiveSwap() =>
+                      s.receiveTxid == null && !s.wasDirectPayment,
+                    ChainSwap() =>
+                      s.receiveTxid == null && s.refundTxid == null,
+                    LnSendSwap() => false,
+                  }))
+            s,
+      ];
+      final detail = unresolved.isEmpty
           ? ''
-          : ': ${swaps.map(_describe).join(' | ')}';
-      log.fine('[SwapCensus] ${swaps.length} stored swaps$detail');
-      // `fine` records are only flushed opportunistically — the logger
-      // forces a flush at SEVERE and above — so without this the census can
-      // sit in the sink buffer and be lost to the force-restart a user does
-      // when collecting clean logs.
-      await log.flush();
+          : ': ${unresolved.map(_describe).join(' | ')}';
+      swapsLog.fine(
+        '[SwapCensus] ${swaps.length} stored swaps, '
+        '${unresolved.length} unresolved$detail',
+      );
+      await swapsLog.flush();
     } catch (e) {
-      // Diagnostics must never break startup.
-      log.warning('[SwapCensus] failed: $e');
+      swapsLog.warning('[SwapCensus] failed: $e');
     }
   }
 
@@ -52,15 +56,8 @@ class LogSwapCensusUsecase {
       ChainSwap(:final refundTxid) => refundTxid,
       _ => null,
     };
-    final refundAddr = switch (s) {
-      LnSendSwap(:final refundAddress) => refundAddress,
-      ChainSwap(:final refundAddress) => refundAddress,
-      _ => null,
-    };
     return '${s.id} ${s.type.name} ${s.status.name}'
         ' keyIndex=${s.keyIndex}'
-        ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}'
-        ' refundAddr=${refundAddr ?? '-'}'
-        ' completedAt=${s.completionTime?.toIso8601String() ?? '-'}';
+        ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}';
   }
 }

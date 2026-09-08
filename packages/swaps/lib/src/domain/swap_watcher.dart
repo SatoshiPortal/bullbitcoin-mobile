@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:swaps/src/log.dart';
-import 'package:swaps/src/swap.dart';
-import 'package:swaps/src/swap_repository.dart';
+import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/swap_repository.dart';
 
 /// The one driver in the system: makes sure every swap reaches a terminal
 /// state. Blocs never move a swap — they read; the watcher acts.

@@ -2,18 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
-import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
-import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
-import 'package:bb_mobile/core/swaps/data/models/swap_tx_outspend_model.dart';
-import 'package:bb_mobile/core/swaps/data/services/swap_status_mapper.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
-import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:swaps/src/util.dart';
+import 'package:swaps/src/data/swap_storage.dart';
+import 'package:swaps/src/data/models/swap_master_key_model.dart';
+import 'package:swaps/src/data/models/swap_model.dart';
+import 'package:swaps/src/data/models/swap_tx_outspend_model.dart';
+import 'package:swaps/src/data/swap_status_mapper.dart';
+import 'package:swaps/src/data/models/boltz_network.dart';
+import 'package:swaps/src/domain/entities/swap.dart' as swap_entity;
+import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
+import 'package:swaps/src/log.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
 import 'package:bull_sdk/boltz.dart' hide Network;
@@ -32,6 +30,9 @@ BoltzWebSocket _createBoltzWebSocket(
   void Function(Object error)? onError,
 }) => BoltzWebSocket.create(boltzUrl, onDone: onDone, onError: onError);
 
+/// Boltz partner referral id — fixed product identity, not a backend choice.
+const boltzReferralId = 'BULL';
+
 class BoltzDatasource {
   final String _baseUrl;
   final BoltzWebSocketFactory webSocketFactory;
@@ -39,7 +40,7 @@ class BoltzDatasource {
   late final Dio _http;
 
   BoltzWebSocket? _boltzWebSocket;
-  final BoltzStorageDatasource _boltzStore;
+  final SwapStorage _boltzStore;
 
   /// Default-wallet fingerprint the swap master key is keyed under, bound by
   /// [swapMasterKeyReady] / [deriveSwapMasterKey] when wallets become ready.
@@ -66,7 +67,7 @@ class BoltzDatasource {
   DateTime? _chainFeesFetchedAt;
 
   BoltzDatasource({
-    String url = ApiServiceConstants.boltzMainnetUrlPath,
+    required String url,
     required this._boltzStore,
     this.webSocketFactory = _createBoltzWebSocket,
   }) : _baseUrl = url {
@@ -95,7 +96,7 @@ class BoltzDatasource {
   bool _isStale(DateTime? fetchedAt) =>
       fetchedAt == null || DateTime.now().difference(fetchedAt) > _feesTtl;
 
-  BoltzStorageDatasource get storage => _boltzStore;
+  SwapStorage get storage => _boltzStore;
 
   Stream<SwapModel> get swapUpdatesStream => _swapUpdatesController.stream;
 
@@ -343,7 +344,7 @@ class BoltzDatasource {
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
-        referralId: ApiServiceConstants.boltzReferralId,
+        referralId: boltzReferralId,
       );
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
       final swapModel = SwapModel.lnReceive(
@@ -419,7 +420,7 @@ class BoltzDatasource {
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
-        referralId: ApiServiceConstants.boltzReferralId,
+        referralId: boltzReferralId,
       );
 
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
@@ -536,7 +537,7 @@ class BoltzDatasource {
         network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
-        referralId: ApiServiceConstants.boltzReferralId,
+        referralId: boltzReferralId,
       );
 
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
@@ -594,7 +595,7 @@ class BoltzDatasource {
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
-        referralId: ApiServiceConstants.boltzReferralId,
+        referralId: boltzReferralId,
       );
 
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
@@ -754,7 +755,7 @@ class BoltzDatasource {
         isTestnet: isTestnet,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
-        referralId: ApiServiceConstants.boltzReferralId,
+        referralId: boltzReferralId,
       );
 
       await _boltzStore.storeChainSwap(chainSwap);
@@ -815,7 +816,7 @@ class BoltzDatasource {
         isTestnet: isTestnet,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
-        referralId: ApiServiceConstants.boltzReferralId,
+        referralId: boltzReferralId,
       );
 
       await _boltzStore.storeChainSwap(chainSwap);
@@ -1185,11 +1186,11 @@ class BoltzDatasource {
     final boltzWebSocket = webSocketFactory(
       _baseUrl,
       onDone: () {
-        log.warning('[Boltz] websocket closed unexpectedly');
+        swapsLog.warning('[Boltz] websocket closed unexpectedly');
         _scheduleReconnect();
       },
       onError: (error) {
-        log.warning('[Boltz] websocket error: $error');
+        swapsLog.warning('[Boltz] websocket error: $error');
       },
     );
     _boltzWebSocket = boltzWebSocket;
@@ -1199,10 +1200,12 @@ class BoltzDatasource {
         _reconnectAttempt = 0;
         if (event.id.isEmpty) {
           // Connection-level error frames carry no swap id.
-          log.warning('[Boltz] websocket error frame: ${event.error}');
+          swapsLog.warning('[Boltz] websocket error frame: ${event.error}');
           return;
         }
-        log.fine('[Boltz] event swap=${event.id} status=${event.status.name}');
+        swapsLog.fine(
+          '[Boltz] event swap=${event.id} status=${event.status.name}',
+        );
         _enqueueEvent(event.id, event.status, event.transaction?.id);
       },
       onError: (error) {
@@ -1219,7 +1222,7 @@ class BoltzDatasource {
     if (_reconnectTimer?.isActive ?? false) return;
     final delaySeconds = min(60, 1 << min(_reconnectAttempt, 6));
     _reconnectAttempt++;
-    log.warning(
+    swapsLog.warning(
       '[Boltz] reconnecting websocket in ${delaySeconds}s '
       '(attempt $_reconnectAttempt)',
     );
@@ -1231,7 +1234,7 @@ class BoltzDatasource {
         subscribeToSwaps(ids);
         await reconcileSwaps(ids);
       } catch (e) {
-        log.warning('[Boltz] websocket reconnect failed: $e');
+        swapsLog.warning('[Boltz] websocket reconnect failed: $e');
         _scheduleReconnect();
       }
     });
@@ -1268,7 +1271,7 @@ class BoltzDatasource {
         final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
         await _enqueueEvent(swapId, status.status, status.transaction?.id);
       } catch (e) {
-        log.warning('[Boltz] reconcile failed for swap $swapId: $e');
+        swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
       }
     }
   }
@@ -1315,7 +1318,7 @@ class BoltzDatasource {
 
       switch (mapping) {
         case SwapStale():
-          log.info(
+          swapsLog.info(
             '[Boltz] deleting stale pending swap $swapId '
             '(no funds at risk, expired upstream)',
           );
@@ -1335,7 +1338,7 @@ class BoltzDatasource {
 
         case SwapUpdated(:final swap):
           await _boltzStore.store(swap);
-          log.info(
+          swapsLog.info(
             '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
             '(event ${boltzStatus.name})',
           );
@@ -1345,8 +1348,8 @@ class BoltzDatasource {
           }
       }
     } catch (e, st) {
-      log.severe(
-        message: '[Boltz] failed to process event for swap $swapId',
+      swapsLog.severe(
+        '[Boltz] failed to process event for swap $swapId',
         error: e,
         trace: st,
       );
@@ -1695,7 +1698,7 @@ class BoltzDatasource {
       chainSwapDirection: chainSwapDirection,
     );
 
-    log.fine(
+    swapsLog.fine(
       '[Boltz] outspend report swap=$swapId '
       'kind=${isClaim ? 'claim' : 'refund'} network=${network.name} '
       '${outspends.isEmpty ? '(empty — lockup tx not indexed yet)' : outspends.map((o) => 'vout=${o.vout} value=${o.valueSat ?? 'blinded'} spender=${o.spenderTxid ?? 'unspent'} time=${o.timestamp ?? '-'}').join(' | ')}',
