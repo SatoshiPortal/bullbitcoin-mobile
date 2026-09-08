@@ -239,6 +239,85 @@ void main() {
       await bloc.close();
     });
 
+    test('logs when initialization reuses an open route', () async {
+      final log = TestLogSink.recording();
+      final route = testRoute();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+      final entriesBeforeReuse = log.entries.length;
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      final reuseEntries = log.entries.skip(entriesBeforeReuse).toList();
+      expect(
+        reuseEntries,
+        contains(
+          isA<TestLogEntry>()
+              .having((entry) => entry.level, 'level', 'fine')
+              .having(
+                (entry) => entry.message,
+                'message',
+                'recoverbull.tor.initialization.reused_route',
+              ),
+        ),
+      );
+      expect(
+        reuseEntries.where((entry) => entry.message.contains('tor_bootstrap')),
+        isEmpty,
+      );
+      expect(
+        reuseEntries
+            .where(
+              (entry) =>
+                  entry.message ==
+                  'recoverbull.tor.initialization.reused_route',
+            )
+            .length,
+        1,
+      );
+      verify(() => ensureRecoverBullTorSession.execute()).called(1);
+      await bloc.close();
+    });
+
+    test('does not log route reuse when acquiring a route', () async {
+      final log = TestLogSink.recording();
+      final route = testRoute();
+      when(
+        () => ensureRecoverBullTorSession.execute(),
+      ).thenAnswer((_) async => Ok(route));
+      when(
+        () => checkConnection.execute(route: route),
+      ).thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
+
+      bloc.add(const OnTorInitialization());
+      await pumpEventQueue();
+
+      expect(
+        log.entries.where(
+          (entry) =>
+              entry.message == 'recoverbull.tor.initialization.reused_route',
+        ),
+        isEmpty,
+      );
+      expect(
+        log.entries.where(
+          (entry) => entry.message.contains('phase=tor_bootstrap'),
+        ),
+        hasLength(1),
+      );
+      await bloc.close();
+    });
+
     test(
       'emits exactly one verdict and one duration for a successful check',
       () async {
@@ -280,7 +359,11 @@ void main() {
         when(
           () => checkConnection.execute(route: route),
         ).thenAnswer((_) async => const Ok(false));
-        final bloc = buildBloc(flow: RecoverBullFlow.recoverVault, log: log);
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          log: log,
+          maxAttempts: 1,
+        );
 
         bloc.add(const OnTorInitialization());
         await pumpEventQueue();
@@ -290,7 +373,7 @@ void main() {
             .where((message) => message.contains('server_check'))
             .toList();
         expect(messages, hasLength(2));
-        expect(messages[0], 'recoverbull.server_check.exhausted attempts=3');
+        expect(messages[0], 'recoverbull.server_check.exhausted attempts=1');
         expect(
           messages[1],
           matches(r'^recoverbull\.timing phase=server_check duration_ms=\d+$'),

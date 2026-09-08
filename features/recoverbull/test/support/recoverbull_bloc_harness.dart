@@ -141,6 +141,7 @@ RecoverBullBloc buildBloc({
   VerifyDecryptedVaultUsecase? verifyDecryptedVaultUsecase,
   DateTime Function()? now,
   Timer Function(Duration, void Function())? scheduleTimer,
+  int maxAttempts = ConnectToKeyServerUsecase.maxAttempts,
 }) => RecoverBullBloc(
   log: log ?? const TestLogSink(),
   flow: flow,
@@ -158,6 +159,7 @@ RecoverBullBloc buildBloc({
     ensureTor: ensureRecoverBullTorSession,
     log: const TestLogSink(),
     wait: (_) async {},
+    maxAttempts: maxAttempts,
   ),
   fetchVaultKeyFromServerUsecase: fetchKey,
   decryptVaultUsecase: decrypt,

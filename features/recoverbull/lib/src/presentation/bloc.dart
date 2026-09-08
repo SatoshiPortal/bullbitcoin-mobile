@@ -269,6 +269,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       state.copyWith(failure: null, keyServerStatus: KeyServerStatus.unknown),
     );
     if (!event.restart && _route != null) {
+      log.fine('recoverbull.tor.initialization.reused_route');
       emit(state.copyWith(torConnection: tor.TorReady(_route!.route)));
       _requestServerCheck();
       return;
@@ -347,6 +348,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       // up in the constructor. Emitting a snapshot at this point is what made a
       // healthy cold start look like a Tor failure.
       const retries = ConnectToKeyServerUsecase.maxAttempts;
+      var attemptsPerformed = 0;
       if (generation != _routeGeneration) {
         _logAbandonedServerCheck('generation_changed');
         return;
@@ -366,6 +368,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         // actually in flight rather than which one already failed. Guarded:
         // the backoff outlives the screen when the user navigates away.
         onAttempt: (attempt) {
+          attemptsPerformed = attempt;
           if (isClosed || _closingBloc || generation != _routeGeneration) {
             return;
           }
@@ -383,7 +386,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case Err(:final failure):
           log.warning(
             'recoverbull.server_check.failed '
-            'failure_type=${failure.runtimeType} attempts=${state.keyServerAttempt}',
+            'cause=${failure.supportCause ?? 'unknown'} '
+            'attempts=$attemptsPerformed',
           );
           emit(
             state.copyWith(
@@ -392,7 +396,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
             ),
           );
         case Ok(value: false):
-          log.warning('recoverbull.server_check.exhausted attempts=$retries');
+          log.warning(
+            'recoverbull.server_check.exhausted attempts=$attemptsPerformed',
+          );
           emit(
             state.copyWith(
               failure: const KeyServerConnectionFailure(),
@@ -402,7 +408,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case Ok(value: true):
           log.fine(
             'recoverbull.server_check.succeeded '
-            'attempts=${state.keyServerAttempt}',
+            'attempts=$attemptsPerformed',
           );
           // Tor's status is not forced here. It used to be set to `online` on
           // this path, which asserted Tor's health from the key server's reply;
@@ -922,6 +928,15 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         core.RecoverBullTemporarilyUnavailableFailure(:final retryIn) =>
           VaultServiceBusyFailure(retryIn: retryIn),
         core.KeyServerUnavailableFailure() => const VaultKeyFetchFailure(),
+        core.KeyServerTorFailure() => const KeyServerTorFailure(),
+        core.KeyServerOnionUnreachableFailure() =>
+          const KeyServerOnionUnreachableFailure(),
+        core.KeyServerServiceRefusedFailure() =>
+          const KeyServerServiceRefusedFailure(),
+        core.KeyServerConnectionBudgetFailure() =>
+          const KeyServerConnectionBudgetFailure(),
+        core.KeyServerConnectionUnknownFailure() =>
+          const KeyServerConnectionUnknownFailure(),
         core.ExternalTorProxyUnavailableFailure() =>
           const ExternalTorProxyUnavailableFailure(),
         _ => RecoverBullUnexpectedFailure(failure.logMessage),

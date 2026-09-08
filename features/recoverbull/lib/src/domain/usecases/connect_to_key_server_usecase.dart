@@ -55,6 +55,7 @@ class ConnectToKeyServerUsecase {
     Future<void> Function(Duration)? wait,
     Duration Function()? elapsed,
     Duration budget = connectionBudget,
+    int maxAttempts = ConnectToKeyServerUsecase.maxAttempts,
     RecoverBullTimeout? timeout,
     Future<Result<bool, RecoverBullFailure>> Function({
       required RecoverBullTorRoute route,
@@ -69,11 +70,14 @@ class ConnectToKeyServerUsecase {
        // The public parameter keeps the injectable seam readable at call sites.
        // ignore: prefer_initializing_formals
        _budget = budget,
+       // ignore: prefer_initializing_formals
+       _maxAttempts = maxAttempts,
        _timeout = timeout ?? _defaultTimeout,
        // ignore: prefer_initializing_formals
        _checkWithTimeout = checkWithTimeout;
 
   final Duration _budget;
+  final int _maxAttempts;
 
   /// [onAttempt] fires before each call with a 1-based attempt number, so the
   /// caller can show which attempt is in flight rather than which one failed.
@@ -107,7 +111,7 @@ class ConnectToKeyServerUsecase {
     }
 
     try {
-      for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      for (var attempt = 1; attempt <= _maxAttempts; attempt++) {
         var left = remaining();
         if (left <= Duration.zero) {
           budgetExhausted();
