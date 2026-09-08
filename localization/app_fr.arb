@@ -326,14 +326,6 @@
   "receivePaymentNormally": "Recevoir le paiement normalement",
   "receiveContinue": "Continuer",
   "receiveCopyAddressOnly": "Copier ou scanner l'adresse uniquement",
-  "receiveError": "Erreur : {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Ces frais seront déduits du montant envoyé",
   "receiveReceiveAmount": "Montant à recevoir",
   "receiveSendNetworkFee": "Frais de réseau d'envoi",
@@ -4960,5 +4952,9 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "receiveErrorAmountAboveProtocolLimit": "Le montant dépasse le montant maximal possible en Bitcoin de {max}",
+  "receiveErrorNoteNotSaved": "Votre note n’a pas pu être enregistrée. Veuillez réessayer.",
+  "receiveErrorAddressUnavailable": "Impossible de préparer une adresse de réception. Veuillez réessayer.",
+  "receiveErrorBroadcastOriginal": "Nous n’avons pas pu diffuser la transaction. Vérifiez votre connexion Internet et réessayez."
 }

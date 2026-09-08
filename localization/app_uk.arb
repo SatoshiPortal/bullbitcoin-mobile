@@ -747,14 +747,6 @@
   "receivePaymentNormally": "Отримуйте додаткову оплату",
   "receiveContinue": "Продовжити",
   "receiveCopyAddressOnly": "Статус на сервери",
-  "receiveError": "{error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyInstantPaymentWallet": "Миттєвий платіж гаманець",
   "buyShouldBuyAtLeast": "Ви повинні придбати принаймні",
   "buyCantBuyMoreThan": "Ви не можете придбати більше",
@@ -4911,5 +4903,9 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "receiveErrorAmountAboveProtocolLimit": "Сума перевищує максимально можливу суму Bitcoin: {max}",
+  "receiveErrorNoteNotSaved": "Не вдалося зберегти примітку. Спробуйте ще раз.",
+  "receiveErrorAddressUnavailable": "Не вдалося підготувати адресу для отримання. Спробуйте ще раз.",
+  "receiveErrorBroadcastOriginal": "Не вдалося надіслати транзакцію. Перевірте підключення до Інтернету та спробуйте ще раз."
 }

@@ -7642,15 +7642,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Грешка: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "walletDetailsDescriptorLabel": "Дескриптор",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
@@ -10233,5 +10224,9 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "receiveErrorAmountAboveProtocolLimit": "Сумата надвишава максимално възможната сума в Bitcoin от {max}",
+  "receiveErrorNoteNotSaved": "Бележката ви не можа да бъде запазена. Опитайте отново.",
+  "receiveErrorAddressUnavailable": "Не можа да бъде подготвен адрес за получаване. Опитайте отново.",
+  "receiveErrorBroadcastOriginal": "Не успяхме да излъчим транзакцията. Проверете интернет връзката си и опитайте отново."
 }

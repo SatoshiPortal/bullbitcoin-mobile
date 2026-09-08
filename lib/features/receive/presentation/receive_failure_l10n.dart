@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/primitives/payment_network_l10n.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:flutter/widgets.dart';
@@ -29,5 +30,19 @@ extension ReceiveFailureL10n on ReceiveFailure {
     ReceiveRateLimitedFailure(:final retryAfter) =>
       context.loc.swapErrorRateLimited(retryAfter?.inSeconds ?? 30),
     ReceiveNetworkFailure() => context.loc.payNetworkError,
+    ReceiveAmountAboveProtocolLimitFailure(:final limitAmountSat) =>
+      context.loc.receiveErrorAmountAboveProtocolLimit(
+        FormatAmount.sats(limitAmountSat),
+      ),
+    ReceiveNoteNotSavedFailure() => context.loc.receiveErrorNoteNotSaved,
+    ReceiveAddressUnavailableFailure() =>
+      context.loc.receiveErrorAddressUnavailable,
+    ReceiveBroadcastOriginalTxFailure() =>
+      context.loc.receiveErrorBroadcastOriginal,
+    ReceivePayjoinSettingFailure() => context.loc.oopsSomethingWentWrong,
+    ReceivePayjoinUnavailableFailure() ||
+    ReceivePayjoinPolicyUnavailableFailure() ||
+    ReceiveBroadcastOriginalTxUnavailableFailure() =>
+      context.loc.oopsSomethingWentWrong,
   };
 }

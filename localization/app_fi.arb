@@ -288,14 +288,6 @@
   "receivePaymentNormally": "Vastaanota maksu normaalisti",
   "receiveContinue": "Jatka",
   "receiveCopyAddressOnly": "Kopioi tai skannaa vain osoite",
-  "receiveError": "Virhe: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Tämä kulu vähennetään lähetetystä summasta",
   "receiveReceiveAmount": "Vastaanotettava määrä",
   "receiveSendNetworkFee": "Lähetyksen verkkokulu",
@@ -4902,5 +4894,9 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "receiveErrorAmountAboveProtocolLimit": "Summa ylittää suurimman mahdollisen Bitcoin-määrän {max}",
+  "receiveErrorNoteNotSaved": "Muistiinpanoasi ei voitu tallentaa. Yritä uudelleen.",
+  "receiveErrorAddressUnavailable": "Vastaanotto-osoitetta ei voitu valmistella. Yritä uudelleen.",
+  "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen."
 }

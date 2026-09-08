@@ -8274,15 +8274,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Count",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12232,5 +12223,9 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "receiveErrorAmountAboveProtocolLimit": "Το ποσό υπερβαίνει το μέγιστο δυνατό ποσό Bitcoin των {max}",
+  "receiveErrorNoteNotSaved": "Η σημείωσή σας δεν μπόρεσε να αποθηκευτεί. Δοκιμάστε ξανά.",
+  "receiveErrorAddressUnavailable": "Δεν ήταν δυνατή η προετοιμασία διεύθυνσης λήψης. Δοκιμάστε ξανά.",
+  "receiveErrorBroadcastOriginal": "Δεν μπορέσαμε να μεταδώσουμε τη συναλλαγή. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά."
 }

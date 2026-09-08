@@ -1589,15 +1589,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "receiveError": "Error: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "This fee will be deducted from the amount sent",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
@@ -14693,5 +14684,26 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "receiveErrorAmountAboveProtocolLimit": "Amount is above the maximum possible Bitcoin amount of {max}",
+  "@receiveErrorAmountAboveProtocolLimit": {
+    "description": "Shown under the receive amount field when the entered amount exceeds the total Bitcoin supply.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveErrorNoteNotSaved": "Your note could not be saved. Please try again.",
+  "@receiveErrorNoteNotSaved": {
+    "description": "Shown when persisting the receive note as an address label fails."
+  },
+  "receiveErrorAddressUnavailable": "Could not prepare a receiving address. Please try again.",
+  "@receiveErrorAddressUnavailable": {
+    "description": "Shown when no receive address could be derived for the selected wallet."
+  },
+  "receiveErrorBroadcastOriginal": "We could not broadcast the transaction. Check your internet connection and try again.",
+  "@receiveErrorBroadcastOriginal": {
+    "description": "Shown when broadcasting the sender original non-payjoin transaction fails."
   }
 }

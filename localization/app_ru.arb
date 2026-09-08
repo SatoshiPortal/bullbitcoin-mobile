@@ -3249,14 +3249,6 @@
   "fundExchangeRestrictedTitle": "Пополнение недоступно",
   "fundExchangeRestrictedMessage": "Пополнение недоступно для вашего аккаунта. Пожалуйста, свяжитесь со службой поддержки для получения дополнительной информации.",
   "fundExchangeWarningTitle": "Следите за мошенниками",
-  "receiveError": "Ошибка: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Count",
   "walletDetailsDescriptorLabel": "Дескриптор",
   "importQrDeviceSeedsignerInstructionsTitle": "Инструкции для SeedSigner",
@@ -4920,5 +4912,9 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "receiveErrorAmountAboveProtocolLimit": "Сумма превышает максимально возможную сумму Bitcoin: {max}",
+  "receiveErrorNoteNotSaved": "Не удалось сохранить заметку. Попробуйте ещё раз.",
+  "receiveErrorAddressUnavailable": "Не удалось подготовить адрес для получения. Попробуйте ещё раз.",
+  "receiveErrorBroadcastOriginal": "Не удалось отправить транзакцию. Проверьте подключение к интернету и попробуйте ещё раз."
 }

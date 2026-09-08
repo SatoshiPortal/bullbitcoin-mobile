@@ -3190,14 +3190,6 @@
   "fundExchangeRestrictedTitle": "Einzahlung nicht verfügbar",
   "fundExchangeRestrictedMessage": "Einzahlungen sind für Ihr Konto nicht verfügbar. Bitte kontaktieren Sie den Support für weitere Informationen.",
   "fundExchangeWarningTitle": "Achtung: Betrugsrisiko",
-  "receiveError": "Fehler: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Wiederholungsversuche",
   "walletDetailsDescriptorLabel": "Output-Descriptor",
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner-Anleitung",
@@ -4899,5 +4891,9 @@
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
   "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
-  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "receiveErrorAmountAboveProtocolLimit": "Der Betrag liegt über dem maximal möglichen Bitcoin-Betrag von {max}",
+  "receiveErrorNoteNotSaved": "Deine Notiz konnte nicht gespeichert werden. Bitte versuche es erneut.",
+  "receiveErrorAddressUnavailable": "Es konnte keine Empfangsadresse erstellt werden. Bitte versuche es erneut.",
+  "receiveErrorBroadcastOriginal": "Wir konnten die Transaktion nicht senden. Überprüfe deine Internetverbindung und versuche es erneut."
 }

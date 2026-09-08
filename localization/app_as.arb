@@ -627,14 +627,6 @@
   "receivePaymentNormally": "সাধাৰণভাৱে পৰিশোধ গ্ৰহণ কৰক",
   "receiveContinue": "অব্যাহত ৰাখক",
   "receiveCopyAddressOnly": "কেৱল ঠিকনা কপি বা স্কেন কৰক",
-  "receiveError": "ভুল: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
   "receiveReceiveAmount": "গ্ৰহণ কৰা পৰিমাণ",
   "receiveSendNetworkFee": "প্ৰেৰণ নেটৱৰ্ক মাচুল",
@@ -9344,5 +9336,9 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "receiveErrorAmountAboveProtocolLimit": "পৰিমাণটো বিটকইনৰ সৰ্বাধিক সম্ভাব্য পৰিমাণ {max} তকৈ অধিক",
+  "receiveErrorNoteNotSaved": "আপোনাৰ টোকা সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "receiveErrorAddressUnavailable": "গ্ৰহণৰ ঠিকনা প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "receiveErrorBroadcastOriginal": "আমি লেনদেনটো প্ৰচাৰ কৰিব নোৱাৰিলোঁ। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
 }

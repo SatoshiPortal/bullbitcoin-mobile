@@ -966,7 +966,6 @@
   "receivePaymentNormally": "Pokea malipo kwa njia ya kawaida",
   "receiveContinue": "Endelea",
   "receiveCopyAddressOnly": "Nakili au changanua anwani pekee",
-  "receiveError": "Hitilafu: {error}",
   "receiveFeeExplanation": "Ada hii itaondolewa kutoka kwa kiasi kilichotumwa",
   "receiveReceiveAmount": "Kiasi cha Kupokea",
   "receiveSendNetworkFee": "Ada ya Mtandao wa Kutuma",
@@ -3608,5 +3607,9 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "receiveErrorAmountAboveProtocolLimit": "Kiasi kinazidi kiasi cha juu zaidi cha Bitcoin cha {max}",
+  "receiveErrorNoteNotSaved": "Kumbukumbu yako haikuweza kuhifadhiwa. Tafadhali jaribu tena.",
+  "receiveErrorAddressUnavailable": "Haikuwezekana kutayarisha anwani ya kupokea. Tafadhali jaribu tena.",
+  "receiveErrorBroadcastOriginal": "Hatukuweza kutangaza muamala. Angalia muunganisho wako wa intaneti na ujaribu tena."
 }

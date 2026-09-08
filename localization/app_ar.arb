@@ -9217,15 +9217,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "الخطأ: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "الكونت",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12235,5 +12226,9 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "receiveErrorAmountAboveProtocolLimit": "المبلغ أعلى من أقصى مبلغ بيتكوين ممكن وهو {max}",
+  "receiveErrorNoteNotSaved": "لم نتمكن من حفظ ملاحظتك. حاول مرة أخرى.",
+  "receiveErrorAddressUnavailable": "لم نتمكن من تجهيز عنوان استلام. حاول مرة أخرى.",
+  "receiveErrorBroadcastOriginal": "لم نتمكن من بث المعاملة. تحقق من اتصالك بالإنترنت وحاول مرة أخرى."
 }

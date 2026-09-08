@@ -3250,14 +3250,6 @@
   "fundExchangeRestrictedTitle": "无法充值",
   "fundExchangeRestrictedMessage": "您的账户无法充值。请联系客服了解更多信息。",
   "fundExchangeWarningTitle": "for监测",
-  "receiveError": "Rror: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "业余",
   "walletDetailsDescriptorLabel": "说明",
   "importQrDeviceSeedsignerInstructionsTitle": "见dSigner 指示",
@@ -4914,5 +4906,9 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "receiveErrorAmountAboveProtocolLimit": "金额超过比特币的最大可能金额 {max}",
+  "receiveErrorNoteNotSaved": "无法保存您的备注。请重试。",
+  "receiveErrorAddressUnavailable": "无法准备接收地址。请重试。",
+  "receiveErrorBroadcastOriginal": "我们无法广播该交易。请检查您的网络连接并重试。"
 }

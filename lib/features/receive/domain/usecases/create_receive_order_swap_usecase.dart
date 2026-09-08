@@ -4,6 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 
 class CreateReceiveOrderSwapUsecase {
@@ -20,6 +21,7 @@ class CreateReceiveOrderSwapUsecase {
   }) : _now = now ?? DateTime.now,
        _parsePaymentRequest = parsePaymentRequest ?? PaymentRequest.parse;
 
+  @useResult
   Future<Result<OrderSwapRecord, ReceiveFailure>> execute({
     required Wallet wallet,
     required int amountSat,

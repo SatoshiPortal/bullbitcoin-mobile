@@ -40,8 +40,8 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
       listenWhen: (previous, current) =>
           // Only listen on confirmed amount changes
           previous.confirmedAmountSat != current.confirmedAmountSat &&
-          // Only listen when no amount exception is present
-          current.amountException == null &&
+          // Only listen when the entered amount is valid
+          !current.hasAmountInputFailure &&
           // Prevent using the amount from a previous receive type
           previous.type == current.type,
       listener: (context, state) {
@@ -147,8 +147,10 @@ class _ReceiveFailureMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // An invalid amount is already reported inline under the amount field
+    // (see ReceiveAmountInput), so it must not be repeated here.
     final failure = context.select<ReceiveBloc, ReceiveFailure?>(
-      (bloc) => bloc.state.failure,
+      (bloc) => bloc.state.hasAmountInputFailure ? null : bloc.state.failure,
     );
     if (failure == null) return const SizedBox.shrink();
 
@@ -172,7 +174,10 @@ class ReceiveAmountContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final creatingSwap = context.watch<ReceiveBloc>().state.creatingSwap;
-    final amountException = context.watch<ReceiveBloc>().state.amountException;
+    final hasAmountInputFailure = context
+        .watch<ReceiveBloc>()
+        .state
+        .hasAmountInputFailure;
 
     return Padding(
       // padding (not viewPadding): it is viewPadding minus the keyboard
@@ -198,7 +203,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
             bloc.add(const ReceiveAmountConfirmed());
           }
         },
-        disabled: creatingSwap || amountException != null,
+        disabled: creatingSwap || hasAmountInputFailure,
         bgColor: context.appColors.secondary,
         textColor: context.appColors.onSecondary,
       ),
