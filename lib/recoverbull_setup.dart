@@ -39,6 +39,7 @@ final class RecoverBullSetup {
       ),
       settings: _SettingsAdapter(settingsRepository),
       tor: locator<Tor>(),
+      routePool: locator<TorRoutePool>(),
       log: recoverBullLog,
       timing: (phase, duration, outcome) =>
           _recordRecoverBullTiming(recoverBullLog, phase, duration, outcome),

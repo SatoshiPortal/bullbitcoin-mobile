@@ -23,6 +23,7 @@ class EnsureRecoverBullTorSessionUsecase {
   final RecoverBullSettingsPort _settingsRepository;
   final Tor _tor;
   final TorHttpClientFactory _torHttpClientFactory;
+  final TorRoutePool? routePool;
   final RecoverBullTiming? timing;
 
   const EnsureRecoverBullTorSessionUsecase(
@@ -31,6 +32,7 @@ class EnsureRecoverBullTorSessionUsecase {
     this._tor, {
     this.timing,
     TorHttpClientFactory? torHttpClientFactory,
+    this.routePool,
   }) : _torHttpClientFactory =
            torHttpClientFactory ?? const TorHttpClientFactory();
 
@@ -63,13 +65,34 @@ class EnsureRecoverBullTorSessionUsecase {
           reportTiming('failure');
           return const Err(ExternalTorProxyUnavailableFailure());
         }
-        switch (await _tor.external.verify(endpoint)) {
+        final shared = routePool == null
+            ? null
+            : await routePool!.acquire(
+                key: 'external:${endpoint.host}:${endpoint.port}',
+                open: () async {
+                  final verified = await _tor.external.verify(endpoint);
+                  if (verified case TorReady(:final route)) return route;
+                  throw const TorBackendException(
+                    TorUnexpectedFailure('External Tor unavailable'),
+                  );
+                },
+                close: () async {},
+              );
+        final routeState = routePool == null
+            ? await _tor.external.verify(endpoint)
+            : TorReady(shared!.route);
+        switch (routeState) {
           case TorReady(:final route):
+            final failureRecorder = TorConnectionFailureRecorder();
             final value = Ok<RecoverBullTorRoute, RecoverBullFailure>(
               RecoverBullTorRoute(
-                route,
-                () async {},
-                _torHttpClientFactory.create(route.endpoint),
+                shared?.route ?? route,
+                shared?.release ?? (() async {}),
+                _torHttpClientFactory.create(
+                  route.endpoint,
+                  failureRecorder: failureRecorder,
+                ),
+                connectionFailureRecorder: failureRecorder,
               ),
             );
             reportTiming('success');
@@ -111,24 +134,48 @@ class EnsureRecoverBullTorSessionUsecase {
   }
 
   Future<Result<RecoverBullTorRoute, RecoverBullFailure>> _openSession() async {
+    TorSession? session;
     try {
-      final session = await _embeddedTor.sessions.open();
+      final shared = routePool == null
+          ? null
+          : await routePool!.acquire(
+              key: 'embedded',
+              open: () async {
+                session = await _embeddedTor.sessions.open();
+                return TorRoute(
+                  source: TorSource.embedded,
+                  endpoint: session!.endpoint,
+                  evidence: TorReadinessEvidence.embeddedBootstrap,
+                  transport: session!.transport,
+                );
+              },
+              close: () async => session?.close(),
+            );
+      if (shared == null) session = await _embeddedTor.sessions.open();
       try {
-        return Ok(
-          RecoverBullTorRoute(
+        final failureRecorder = TorConnectionFailureRecorder();
+        final route =
+            shared?.route ??
             TorRoute(
               source: TorSource.embedded,
-              endpoint: session.endpoint,
+              endpoint: session!.endpoint,
               evidence: TorReadinessEvidence.embeddedBootstrap,
-              transport: session.transport,
+              transport: session!.transport,
+            );
+        return Ok(
+          RecoverBullTorRoute(
+            route,
+            shared?.release ?? session!.close,
+            _torHttpClientFactory.create(
+              route.endpoint,
+              failureRecorder: failureRecorder,
             ),
-            session.close,
-            _torHttpClientFactory.create(session.endpoint),
+            connectionFailureRecorder: failureRecorder,
           ),
         );
       } catch (_) {
         try {
-          await session.close();
+          await (shared?.release() ?? session?.close());
         } catch (_) {}
         rethrow;
       }

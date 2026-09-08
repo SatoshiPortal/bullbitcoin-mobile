@@ -101,6 +101,7 @@ final class RecoverBullFeature {
     required RecoverBullDefaultWalletsPort defaultWallets,
     required RecoverBullSettingsPort settings,
     required Tor tor,
+    TorRoutePool? routePool,
     required LogSink log,
     RecoverBullTiming? timing,
     Future<void> Function()? onWalletUpdated,
@@ -150,6 +151,7 @@ final class RecoverBullFeature {
       tor,
       timing: core.dependencies.timing,
       torHttpClientFactory: const TorHttpClientFactory(),
+      routePool: routePool,
     );
     final decryptVault = DecryptVaultUsecase(recoverBullRepository: repository);
     final restoreVault = RestoreVaultUsecase(
