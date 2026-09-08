@@ -1141,7 +1141,6 @@
   "receivePaymentNormally": "გადახდის ჩვეულებრივად მიღება",
   "receiveContinue": "გაგრძელება",
   "receiveCopyAddressOnly": "მხოლოდ მისამართის კოპირება ან სკანირება",
-  "receiveError": "შეცდომა: {error}",
   "receiveFeeExplanation": "ეს საკომისიო გამოაკლდება გამოგზავნილ თანხას",
   "receiveReceiveAmount": "მისაღები თანხა",
   "receiveSendNetworkFee": "გამგზავნის ქსელის საკომისიო",
@@ -3818,5 +3817,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "თანხა აღემატება Bitcoin-ის მაქსიმალურ შესაძლო თანხას — {max}",
+  "receiveErrorNoteNotSaved": "თქვენი შენიშვნა ვერ შეინახა. სცადეთ ხელახლა.",
+  "receiveErrorAddressUnavailable": "მიღების მისამართის მომზადება ვერ მოხერხდა. სცადეთ ხელახლა.",
+  "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
 }

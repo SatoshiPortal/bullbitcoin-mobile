@@ -9840,15 +9840,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "ข้อผิดพลาด: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "ระยะเวลา",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12252,5 +12243,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "จำนวนเงินสูงกว่าจำนวนบิตคอยน์สูงสุดที่เป็นไปได้ {max}",
+  "receiveErrorNoteNotSaved": "ไม่สามารถบันทึกหมายเหตุของคุณได้ โปรดลองอีกครั้ง",
+  "receiveErrorAddressUnavailable": "ไม่สามารถเตรียมที่อยู่รับได้ โปรดลองอีกครั้ง",
+  "receiveErrorBroadcastOriginal": "เราไม่สามารถกระจายธุรกรรมได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง"
 }

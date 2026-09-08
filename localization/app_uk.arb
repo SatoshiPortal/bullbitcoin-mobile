@@ -739,14 +739,6 @@
   "receivePaymentNormally": "Отримуйте додаткову оплату",
   "receiveContinue": "Продовжити",
   "receiveCopyAddressOnly": "Статус на сервери",
-  "receiveError": "{error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyInstantPaymentWallet": "Миттєвий платіж гаманець",
   "buyShouldBuyAtLeast": "Ви повинні придбати принаймні",
   "buyCantBuyMoreThan": "Ви не можете придбати більше",
@@ -4979,5 +4971,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "Сума перевищує максимально можливу суму Bitcoin: {max}",
+  "receiveErrorNoteNotSaved": "Не вдалося зберегти примітку. Спробуйте ще раз.",
+  "receiveErrorAddressUnavailable": "Не вдалося підготувати адресу для отримання. Спробуйте ще раз.",
+  "receiveErrorBroadcastOriginal": "Не вдалося надіслати транзакцію. Перевірте підключення до Інтернету та спробуйте ще раз."
 }

@@ -34,14 +34,25 @@ abstract class ReceiveState with _$ReceiveState {
     // itself happens in PayjoinRepositoryImpl before any negotiation.
     int? payjoinMinAmountSat,
     @Default(false) bool isBroadcastingOriginalTransaction,
-    ReceivePayjoinException? receivePayjoinException,
+    // Whether it is settled yet whether THIS address will carry a payjoin
+    // endpoint. Recorded by ReceiveBloc, which knows it as a fact, rather than
+    // re-derived by [isPayjoinLoading] from the reasons a session might never
+    // arrive — that enumeration caused three separate "QR stuck loading
+    // forever" bugs by missing a case (payjoin disabled, empty wallet,
+    // creation failed). Set to false when a new eligibility decision starts,
+    // to true as soon as its outcome is known, whatever the outcome.
+    @Default(false) bool payjoinAttemptSettled,
     WalletTransaction? tx,
-    Object? error,
     ReceiveFailure? failure,
-    AmountException? amountException,
     @Default(false) bool creatingSwap,
   }) = _ReceiveState;
   const ReceiveState._();
+
+  /// True while the entered amount itself is invalid, so continuing cannot
+  /// possibly succeed. Distinct from any other [failure] — a failed swap
+  /// creation must leave the user able to retry.
+  bool get hasAmountInputFailure =>
+      failure is ReceiveAmountAboveProtocolLimitFailure;
 
   List<String> get inputAmountCurrencyCodes {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
@@ -285,34 +296,19 @@ abstract class ReceiveState with _$ReceiveState {
         amountSat < minAmountSat;
   }
 
-  bool get isPayjoinLoading {
-    if (type == ReceiveType.bitcoin) {
-      // Gated on [payjoinGloballyEnabled]: when payjoin is disabled in
-      // settings, ReceiveBloc never creates a session and never sets an
-      // exception (see _onBitcoinStarted), so [payjoin] stays null forever
-      // and this getter must not keep reporting "still loading"
-      // indefinitely — otherwise [paymentRequest] (which waits on this so
-      // the QR doesn't flip from address-only to a pj= BIP21 mid-display)
-      // never resolves and the receive QR never renders at all. Payjoin is
-      // disabled by default, so without this gate that would be the state
-      // of every fresh install. `null` (settings not read yet) still
-      // counts as loading: the fetch resolves within the same handler that
-      // would create the session.
-      //
-      // Also gated on [hasUtxos]: ReceiveBloc only creates a session for a
-      // wallet with a balance to contribute (unconfirmed counts, see
-      // ReceiveBloc._isPayjoinEligible — a payjoin proposal needs at least
-      // one UTXO), so an empty wallet would otherwise hit the exact same
-      // "stuck loading forever" bug as the disabled case.
-      return wallet != null &&
-          wallet!.signsLocally &&
-          (payjoinGloballyEnabled ?? true) &&
-          hasUtxos &&
-          payjoin == null &&
-          receivePayjoinException == null;
-    }
-    return false;
-  }
+  /// True while it is not yet settled whether this address will carry a
+  /// payjoin endpoint. [paymentRequest] waits on it so the QR never flips
+  /// from an address-only URI to a `pj=` BIP21 mid-display.
+  ///
+  /// Reads [payjoinAttemptSettled] rather than re-deriving the answer from
+  /// the reasons a session might never arrive (payjoin disabled, watch-only
+  /// wallet, no UTXOs to contribute, creation failed). That enumeration is
+  /// what made this getter a recurring source of "QR stuck loading forever"
+  /// bugs: every newly discovered reason had to be added as another guard,
+  /// and a missed one hangs the receive screen with no way out. ReceiveBloc
+  /// already knows the answer as a fact, so it records it.
+  bool get isPayjoinLoading =>
+      type == ReceiveType.bitcoin && !payjoinAttemptSettled;
 
   /// True when payjoin is enabled globally and this wallet can sign
   /// locally, but it has no balance yet — so ReceiveBloc did not
@@ -470,28 +466,4 @@ abstract class ReceiveState with _$ReceiveState {
     orderSwap: orderSwap,
     payjoin: payjoin,
   );
-}
-
-class AmountException extends BullException {
-  AmountException(super.message);
-}
-
-class BelowSwapLimitAmountException extends AmountException {
-  final int limitAmountSat;
-  BelowSwapLimitAmountException(this.limitAmountSat)
-    : super('Amount below swap limit of ${FormatAmount.sats(limitAmountSat)}');
-}
-
-class AboveSwapLimitAmountException extends AmountException {
-  final int limitAmountSat;
-  AboveSwapLimitAmountException(this.limitAmountSat)
-    : super('Amount above swap limit of ${FormatAmount.sats(limitAmountSat)}');
-}
-
-class AboveBitcoinProtocolLimitAmountException extends AmountException {
-  final int limitAmountSat;
-  AboveBitcoinProtocolLimitAmountException(this.limitAmountSat)
-    : super(
-        'Amount above Bitcoin protocol limit of ${FormatAmount.sats(limitAmountSat)}',
-      );
 }

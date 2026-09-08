@@ -326,14 +326,6 @@
   "receivePaymentNormally": "Recevoir le paiement normalement",
   "receiveContinue": "Continuer",
   "receiveCopyAddressOnly": "Copier ou scanner l'adresse uniquement",
-  "receiveError": "Erreur : {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Ces frais seront déduits du montant envoyé",
   "receiveReceiveAmount": "Montant à recevoir",
   "receiveSendNetworkFee": "Frais de réseau d'envoi",
@@ -5028,5 +5020,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "Le montant dépasse le montant maximal possible en Bitcoin de {max}",
+  "receiveErrorNoteNotSaved": "Votre note n’a pas pu être enregistrée. Veuillez réessayer.",
+  "receiveErrorAddressUnavailable": "Impossible de préparer une adresse de réception. Veuillez réessayer.",
+  "receiveErrorBroadcastOriginal": "Nous n’avons pas pu diffuser la transaction. Vérifiez votre connexion Internet et réessayez."
 }

@@ -3215,14 +3215,6 @@
   "fundExchangeRestrictedTitle": "Financiamento indisponível",
   "fundExchangeRestrictedMessage": "O financiamento não está disponível na sua conta. Contacte o suporte para mais informações.",
   "fundExchangeWarningTitle": "Cuidado com os scammers",
-  "receiveError": "Erro: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Contagem de Restrições",
   "walletDetailsDescriptorLabel": "Descritores",
   "importQrDeviceSeedsignerInstructionsTitle": "Instruções do SeedSigner",
@@ -5028,5 +5020,9 @@
   "limitOrderInvalidAmountError": "Enter an amount greater than zero and no more than your available balance.",
   "limitOrdersLoadError": "Limit orders could not be loaded. Please try again.",
   "limitOrderCreationError": "The limit order could not be created. Please try again.",
-  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again."
+  "limitOrderCancellationError": "The limit order could not be cancelled. Please try again.",
+  "receiveErrorAmountAboveProtocolLimit": "O valor está acima do valor máximo possível de Bitcoin de {max}",
+  "receiveErrorNoteNotSaved": "Não foi possível guardar a sua nota. Tente novamente.",
+  "receiveErrorAddressUnavailable": "Não foi possível preparar um endereço de receção. Tente novamente.",
+  "receiveErrorBroadcastOriginal": "Não foi possível transmitir a transação. Verifique a sua ligação à Internet e tente novamente."
 }
