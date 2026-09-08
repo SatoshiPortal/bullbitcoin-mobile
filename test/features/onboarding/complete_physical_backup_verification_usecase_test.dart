@@ -74,7 +74,7 @@ void main() {
       expect(captured, ['requested', 'liquid']);
       final getWallets = _MockGetWalletsUsecase();
       when(
-        () => getWallets.execute(onlyBitcoin: true),
+        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
       ).thenAnswer((_) async => wallets);
       final check = CheckPhysicalBackupVerifiedUsecase(getWallets);
       expect(await check.execute('deadbeef'), isTrue);
