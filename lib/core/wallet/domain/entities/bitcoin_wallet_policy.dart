@@ -27,6 +27,10 @@ final class BitcoinWalletPolicy {
       _containsTimeBasedTimelock(external.root) ||
       _containsTimeBasedTimelock(internal.root);
 
+  bool get hasRelativeTimeTimelock =>
+      _containsRelativeTimeTimelock(external.root) ||
+      _containsRelativeTimeTimelock(internal.root);
+
   List<BitcoinPolicyPathRequirement> pathRequirements(
     BitcoinPolicySelection selection,
   ) => _rawPathSelectors(selection)
@@ -780,6 +784,17 @@ bool _containsTimeBasedTimelock(BitcoinPolicyNode node) => switch (node) {
     true,
   BitcoinThresholdPolicyNode(:final children) => children.any(
     _containsTimeBasedTimelock,
+  ),
+  _ => false,
+};
+
+bool _containsRelativeTimeTimelock(BitcoinPolicyNode node) => switch (node) {
+  BitcoinRelativeTimelockPolicyNode(
+    type: BitcoinRelativeTimelockType.seconds,
+  ) =>
+    true,
+  BitcoinThresholdPolicyNode(:final children) => children.any(
+    _containsRelativeTimeTimelock,
   ),
   _ => false,
 };

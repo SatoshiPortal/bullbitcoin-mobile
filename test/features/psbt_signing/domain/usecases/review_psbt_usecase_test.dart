@@ -134,6 +134,7 @@ void main() {
         () => signingPort.getPolicyMaturity(
           walletId: wallet.id,
           includeTimeBasedLocks: false,
+          includeRelativeTimeLocks: false,
         ),
       ).thenAnswer((_) async => Ok(psbtPolicyMaturity()));
 
@@ -170,6 +171,7 @@ void main() {
       () => signingPort.getPolicyMaturity(
         walletId: wallet.id,
         includeTimeBasedLocks: false,
+        includeRelativeTimeLocks: false,
       ),
     ).thenAnswer((_) async => Ok(psbtPolicyMaturity(confirmations: 9)));
 
