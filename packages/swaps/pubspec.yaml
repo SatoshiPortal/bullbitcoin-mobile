@@ -30,6 +30,7 @@ dependencies:
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
   dio: ^5.9.0
   freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
   meta: ^1.17.0
   primitives:
   synchronized: ^3.4.0
