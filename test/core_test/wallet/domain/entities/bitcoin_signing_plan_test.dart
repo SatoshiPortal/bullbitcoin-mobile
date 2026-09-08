@@ -4,25 +4,21 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test(
-    'counts a ten-of-twenty policy without expanding signer combinations',
-    () {
-      final signers = [
-        for (var index = 0; index < 20; index++)
-          _signer(index.toRadixString(16).padLeft(8, '0'), SignerEntity.remote),
-      ];
-      final plan = BitcoinSigningPlan.fromPolicy(
-        policy: _thresholdPolicy(
-          threshold: 10,
-          keyIds: signers.map((signer) => signer.descriptorKeys.single.id),
-        ),
-        signers: signers,
-      );
-      expect(plan.signersNeeded, 10);
-      expect(plan.requiresExternalSigning, isTrue);
-      expect(plan.signersNeeded, 10);
-    },
-  );
+  test('requires ten signers for a ten-of-twenty policy', () {
+    final signers = [
+      for (var index = 0; index < 20; index++)
+        _signer(index.toRadixString(16).padLeft(8, '0'), SignerEntity.remote),
+    ];
+    final plan = BitcoinSigningPlan.fromPolicy(
+      policy: _thresholdPolicy(
+        threshold: 10,
+        keyIds: signers.map((signer) => signer.descriptorKeys.single.id),
+      ),
+      signers: signers,
+    );
+    expect(plan.signersNeeded, 10);
+    expect(plan.requiresExternalSigning, isTrue);
+  });
   test('stops at the minimum signer set for a threshold policy', () {
     final signers = [
       _signer('aaaaaaaa', SignerEntity.local),

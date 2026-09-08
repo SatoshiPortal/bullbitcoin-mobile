@@ -161,12 +161,15 @@ final class BitcoinPsbtReview {
 
   bool get hasTimeBasedTimingConstraint =>
       (_hasAbsoluteTimingConstraint && lockTime >= 500000000) ||
+      hasRelativeTimeConstraint;
+
+  bool get hasRelativeTimeConstraint =>
       (version >= 2 &&
-          inputs.any(
-            (input) =>
-                _relativeValue(input.sequence) > 0 &&
-                input.sequence & _sequenceTypeFlag != 0,
-          ));
+      inputs.any(
+        (input) =>
+            _relativeValue(input.sequence) > 0 &&
+            input.sequence & _sequenceTypeFlag != 0,
+      ));
 
   bool timingIsSatisfied(BitcoinPolicyMaturity maturity) {
     if (!hasTimingConstraint) return true;
