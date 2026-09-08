@@ -87,17 +87,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final context = await _publicWalletContext(walletId);
     final wallet = context.wallet;
 
-    // A frozen coin must never be spendable. Read the frozen store at build
-    // time so the invariant holds for every caller and does not depend on an
-    // earlier UTXO snapshot. Payjoin exclusions remain supplied by the use
-    // case because they come from a separate repository.
-    //
-    // The frozen set read here is:
-    //  * merged into `unspendable`, so BDK's automatic selection can
-    //    never pick a frozen coin even when the caller passed no
-    //    exclusion list at all;
-    //  * checked against `selected` by the datasource, so a frozen coin
-    //    causes manual selection to fail instead of being substituted.
+    // Read current frozen coins so neither automatic nor manual selection relies on an earlier UTXO snapshot. The use case supplies Payjoin exclusions.
     final frozenRows = await _frozenUtxos.getAllFrozen();
     final unspendableKeys = {
       for (final row in frozenRows) '${row.txId}:${row.vout}',
@@ -436,16 +426,19 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
   getPolicyMaturity({
     required String walletId,
     required bool includeTimeBasedLocks,
+    bool includeRelativeTimeLocks = true,
   }) => _guardSigning(
     () => _getPolicyMaturity(
       walletId: walletId,
       includeTimeBasedLocks: includeTimeBasedLocks,
+      includeRelativeTimeLocks: includeRelativeTimeLocks,
     ),
   );
 
   Future<BitcoinPolicyMaturity> _getPolicyMaturity({
     required String walletId,
     required bool includeTimeBasedLocks,
+    required bool includeRelativeTimeLocks,
   }) async {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
@@ -453,6 +446,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final cachedModel = await _bdkWallet.getPolicyMaturity(
       wallet: wallet,
       includeTimeBasedLocks: includeTimeBasedLocks,
+      includeRelativeTimeLocks: includeRelativeTimeLocks,
     );
     final servers = electrumServers;
     if (servers == null) {
@@ -469,11 +463,12 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
           wallet: wallet,
           electrumServer: connection,
           includeTimeBasedLocks: includeTimeBasedLocks,
+          includeRelativeTimeLocks: includeRelativeTimeLocks,
         ),
       );
       return BitcoinPolicyMaturityMapper.toEntity(model);
     } on Exception {
-      // Cached height remains safe: stale data only keeps a path hidden longer.
+      // Cached maturity is an estimate and can lag the chain or a reorg.
       // Time-based paths stay unavailable until median-time-past is known.
       return BitcoinPolicyMaturityMapper.toEntity(cachedModel);
     }
@@ -504,15 +499,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
     final wallet = context.wallet;
-    _bdkWallet.validateExternalPartialPsbt(
-      currentPsbtBase64: currentPsbt,
-      signedPsbtBase64: signedPsbt,
-    );
     final String combined;
     try {
-      combined = _bdkWallet.combinePsbts(
-        first: currentPsbt,
-        second: signedPsbt,
+      combined = _bdkWallet.validateExternalPartialPsbt(
+        currentPsbtBase64: currentPsbt,
+        signedPsbtBase64: signedPsbt,
       );
     } on bdk.PsbtException {
       throw const InvalidBitcoinPsbtException();

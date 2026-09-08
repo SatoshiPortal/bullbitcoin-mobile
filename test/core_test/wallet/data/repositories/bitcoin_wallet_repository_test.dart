@@ -754,9 +754,6 @@ void main() {
         currentPsbtBase64: 'current',
         signedPsbtBase64: 'unrelated',
       ),
-    ).thenReturn(null);
-    when(
-      () => datasource.combinePsbts(first: 'current', second: 'unrelated'),
     ).thenThrow(bdk.UnexpectedUnsignedTxPsbtException());
     when(
       () => datasource.verifyFinalTransaction(
@@ -876,9 +873,6 @@ void main() {
         currentPsbtBase64: 'current',
         signedPsbtBase64: 'signed',
       ),
-    ).thenReturn(null);
-    when(
-      () => datasource.combinePsbts(first: 'current', second: 'signed'),
     ).thenReturn('combined');
     when(
       () => datasource.validateWalletPsbtInputs(

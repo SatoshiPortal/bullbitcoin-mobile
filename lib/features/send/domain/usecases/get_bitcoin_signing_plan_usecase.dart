@@ -64,6 +64,9 @@ class GetBitcoinSigningPlanUsecase {
             includeTimeBasedLocks:
                 policy.hasTimeBasedTimelock ||
                 (review?.hasTimeBasedTimingConstraint ?? false),
+            includeRelativeTimeLocks:
+                policy.hasRelativeTimeTimelock ||
+                (review?.hasRelativeTimeConstraint ?? false),
           )
         : const Ok<BitcoinPolicyMaturity, BitcoinSigningFailure>(
             BitcoinPolicyMaturity.empty(),
