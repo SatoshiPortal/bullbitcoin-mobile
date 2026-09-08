@@ -1283,70 +1283,54 @@ class BoltzDatasource {
     String? transactionId,
   }) async {
     try {
-      var swapModel = await _boltzStore.fetch(swapId);
-      if (swapModel == null) {
-        unsubscribeToSwaps([swapId]);
-        return;
-      }
-
-      var mapping = _mapper.map(
-        swap: swapModel,
-        boltzStatus: boltzStatus,
-        transactionId: transactionId,
-        now: DateTime.now(),
-      );
-
-      // The watcher writes concurrently with this event chain; re-fetch and
-      // re-map if the row moved, so a store can't lose a txid or regress a
-      // terminal status by writing back a stale row.
-      if (mapping is! SwapUnchanged) {
-        final latest = await _boltzStore.fetch(swapId);
-        if (latest == null) {
+      // The repository writers hold the same per-swap lock, so a store here
+      // can never write back a row that predates a concurrent field update.
+      await _boltzStore.mutate(swapId, () async {
+        final swapModel = await _boltzStore.fetch(swapId);
+        if (swapModel == null) {
           unsubscribeToSwaps([swapId]);
           return;
         }
-        if (latest != swapModel) {
-          swapModel = latest;
-          mapping = _mapper.map(
-            swap: swapModel,
-            boltzStatus: boltzStatus,
-            transactionId: transactionId,
-            now: DateTime.now(),
-          );
+
+        final mapping = _mapper.map(
+          swap: swapModel,
+          boltzStatus: boltzStatus,
+          transactionId: transactionId,
+          now: DateTime.now(),
+        );
+
+        switch (mapping) {
+          case SwapStale():
+            swapsLog.info(
+              '[Boltz] deleting stale pending swap $swapId '
+              '(no funds at risk, expired upstream)',
+            );
+            unsubscribeToSwaps([swapId]);
+            await _boltzStore.trash(swapId);
+            await _boltzStore.deleteFromSecureStorage(swapId);
+
+          case SwapUnchanged():
+            if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
+              _swapUpdatesController.add(swapModel);
+              unsubscribeToSwaps([swapId]);
+            } else if (_swapNeedsProcessing(swapModel)) {
+              // Status unchanged but the swap still needs a claim, refund or coop
+              // close: re-emit so reconciliation un-sticks a missed action.
+              _swapUpdatesController.add(swapModel);
+            }
+
+          case SwapUpdated(:final swap):
+            await _boltzStore.store(swap);
+            swapsLog.info(
+              '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
+              '(event ${boltzStatus.name})',
+            );
+            _swapUpdatesController.add(swap);
+            if (_isSettled(swap) && !_swapNeedsProcessing(swap)) {
+              unsubscribeToSwaps([swapId]);
+            }
         }
-      }
-
-      switch (mapping) {
-        case SwapStale():
-          swapsLog.info(
-            '[Boltz] deleting stale pending swap $swapId '
-            '(no funds at risk, expired upstream)',
-          );
-          unsubscribeToSwaps([swapId]);
-          await _boltzStore.trash(swapId);
-          await _boltzStore.deleteFromSecureStorage(swapId);
-
-        case SwapUnchanged():
-          if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
-            _swapUpdatesController.add(swapModel);
-            unsubscribeToSwaps([swapId]);
-          } else if (_swapNeedsProcessing(swapModel)) {
-            // Status unchanged but the swap still needs a claim, refund or coop
-            // close: re-emit so reconciliation un-sticks a missed action.
-            _swapUpdatesController.add(swapModel);
-          }
-
-        case SwapUpdated(:final swap):
-          await _boltzStore.store(swap);
-          swapsLog.info(
-            '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
-            '(event ${boltzStatus.name})',
-          );
-          _swapUpdatesController.add(swap);
-          if (_isSettled(swap) && !_swapNeedsProcessing(swap)) {
-            unsubscribeToSwaps([swapId]);
-          }
-      }
+      });
     } catch (e, st) {
       swapsLog.severe(
         '[Boltz] failed to process event for swap $swapId',

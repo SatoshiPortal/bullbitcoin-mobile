@@ -96,6 +96,13 @@ void main() {
     when(() => boltz.storage).thenReturn(storage);
     when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
     when(() => storage.store(any())).thenAnswer((_) async {});
+    // The per-swap write lock is a pass-through here: run the closure.
+    when(() => storage.mutate<Swap>(any(), any())).thenAnswer(
+      (inv) => (inv.positionalArguments[1] as Future<Swap> Function())(),
+    );
+    when(() => storage.mutate<void>(any(), any())).thenAnswer(
+      (inv) => (inv.positionalArguments[1] as Future<void> Function())(),
+    );
     when(
       () => boltz.getChainRefundTxSize(
         swapId: any(named: 'swapId'),
@@ -116,6 +123,10 @@ void main() {
     registerFallbackValue(SwapType.liquidToBitcoin);
     registerFallbackValue(Network.liquidMainnet);
     registerFallbackValue(SwapDirection.liquidToBitcoin);
+    Future<Swap> swapWrite() async => throw UnimplementedError();
+    Future<void> voidWrite() async {}
+    registerFallbackValue(swapWrite);
+    registerFallbackValue(voidWrite);
   });
 
   group('refund', () {

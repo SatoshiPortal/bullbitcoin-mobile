@@ -6,6 +6,8 @@ import 'package:swaps/src/log.dart';
 
 import 'package:swaps/src/data/models/swap_master_key_model.dart';
 import 'package:swaps/src/data/models/swap_model.dart';
+import 'package:swaps/src/util.dart';
+import 'package:synchronized/synchronized.dart';
 
 /// Key prefixes are wire format for existing installs — they must never
 /// change. `swapKeyIndex` deliberately differs from the historical
@@ -41,8 +43,16 @@ abstract class SecretStore {
 class SwapStorage {
   final SwapRowStore _rows;
   final SecretStore _secrets;
+  final Map<String, Lock> _writeLocks = {};
 
   SwapStorage({required this._rows, required this._secrets});
+
+  /// Serializes a fetch→merge→store critical section per swap, so the event
+  /// pipeline and a repository writer can never interleave and drop each
+  /// other's fields. Non-reentrant: [write] must not call [mutate] for the
+  /// same swap.
+  Future<T> mutate<T>(String swapId, Future<T> Function() write) =>
+      (_writeLocks[swapId] ??= Lock()).synchronized(write);
 
   // LOCAL ROWS
   Future<void> store(SwapModel swap) => _rows.store(swap);
@@ -128,11 +138,15 @@ class SwapStorage {
     BoltzNetwork network, {
     required String walletFingerprint,
   }) async {
-    final jsonString =
-        await _secrets.read(
-              _swapMasterKeyStorageKey(network, walletFingerprint),
-            )
-            as String;
+    final jsonString = await _secrets.read(
+      _swapMasterKeyStorageKey(network, walletFingerprint),
+    );
+    if (jsonString == null) {
+      throw SwapsException(
+        'no swap master key in secure storage for wallet $walletFingerprint '
+        'on ${network.value}',
+      );
+    }
     return SwapMasterKeyModel.fromJson(
       jsonDecode(jsonString) as Map<String, dynamic>,
     );
@@ -195,18 +209,26 @@ class SwapStorage {
     await _secrets.write('${_Keys.swap}${swap.id}', await swap.toJson());
   }
 
+  Future<String> _readSwapBlob(String swapId) async {
+    final jsonSwap = await _secrets.read('${_Keys.swap}$swapId');
+    if (jsonSwap == null) {
+      throw SwapsException(
+        'no secure-storage blob for swap $swapId — the row exists but its '
+        'key material is gone (keychain cleared or partial delete)',
+      );
+    }
+    return jsonSwap;
+  }
+
   Future<BtcLnSwap> fetchBtcLnSwap(String swapId) async {
-    final jsonSwap = await _secrets.read('${_Keys.swap}$swapId') as String;
-    return BtcLnSwap.fromJson(jsonStr: jsonSwap);
+    return BtcLnSwap.fromJson(jsonStr: await _readSwapBlob(swapId));
   }
 
   Future<LbtcLnSwap> fetchLbtcLnSwap(String swapId) async {
-    final jsonSwap = await _secrets.read('${_Keys.swap}$swapId') as String;
-    return LbtcLnSwap.fromJson(jsonStr: jsonSwap);
+    return LbtcLnSwap.fromJson(jsonStr: await _readSwapBlob(swapId));
   }
 
   Future<ChainSwap> fetchChainSwap(String swapId) async {
-    final jsonSwap = await _secrets.read('${_Keys.swap}$swapId') as String;
-    return ChainSwap.fromJson(jsonStr: jsonSwap);
+    return ChainSwap.fromJson(jsonStr: await _readSwapBlob(swapId));
   }
 }

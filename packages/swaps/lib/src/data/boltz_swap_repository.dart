@@ -420,7 +420,7 @@ class BoltzSwapRepository implements SwapRepository {
     required String swapId,
     required String txid,
     int? absoluteFees,
-  }) async {
+  }) => _boltz.storage.mutate(swapId, () async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap model found";
@@ -453,12 +453,12 @@ class BoltzSwapRepository implements SwapRepository {
     };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
+  });
 
   Future<Swap> updateSendSwapLockupFees({
     required String swapId,
     required int lockupFees,
-  }) async {
+  }) => _boltz.storage.mutate(swapId, () async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap model found";
@@ -477,45 +477,46 @@ class BoltzSwapRepository implements SwapRepository {
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
     return updatedSwap;
-  }
+  });
 
   /// PRIVATE
-  Future<void> _updateCompletedSendSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.fetch(swapId);
-    if (swapModel == null) {
-      throw "No swap model found";
-    }
+  Future<void> _updateCompletedSendSwap({required String swapId}) =>
+      _boltz.storage.mutate(swapId, () async {
+        final swapModel = await _boltz.storage.fetch(swapId);
+        if (swapModel == null) {
+          throw "No swap model found";
+        }
 
-    final swap = swapModel.toEntity();
-    if (!(swap.status == SwapStatus.paid ||
-        swap.status == SwapStatus.canCoop)) {
-      throw "Can only update status of a paid or canCoop swap";
-    }
+        final swap = swapModel.toEntity();
+        if (!(swap.status == SwapStatus.paid ||
+            swap.status == SwapStatus.canCoop)) {
+          throw "Can only update status of a paid or canCoop swap";
+        }
 
-    // Handle each type separately
-    final updatedSwap = switch (swap) {
-      LnReceiveSwap() =>
-        swap.receiveTxid != null
-            ? swap.copyWith(
-                completionTime: DateTime.now(),
-                status: SwapStatus.completed,
-              )
-            : swap,
-      LnSendSwap() => swap.copyWith(
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
-      ChainSwap() =>
-        (swap.receiveTxid != null || swap.refundTxid != null)
-            ? swap.copyWith(
-                completionTime: DateTime.now(),
-                status: SwapStatus.completed,
-              )
-            : swap,
-    };
+        // Handle each type separately
+        final updatedSwap = switch (swap) {
+          LnReceiveSwap() =>
+            swap.receiveTxid != null
+                ? swap.copyWith(
+                    completionTime: DateTime.now(),
+                    status: SwapStatus.completed,
+                  )
+                : swap,
+          LnSendSwap() => swap.copyWith(
+            completionTime: DateTime.now(),
+            status: SwapStatus.completed,
+          ),
+          ChainSwap() =>
+            (swap.receiveTxid != null || swap.refundTxid != null)
+                ? swap.copyWith(
+                    completionTime: DateTime.now(),
+                    status: SwapStatus.completed,
+                  )
+                : swap,
+        };
 
-    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
+        await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
+      });
 
   /// Binds the swap master key to [walletFingerprint] for reads and reports
   /// whether it already exists — cheap, so the caller can skip decrypting the
@@ -625,7 +626,7 @@ class BoltzSwapRepository implements SwapRepository {
     // Null means "keep" for every field above, so retracting a recorded
     // claim tx (un-wedging a mis-settled swap) needs an explicit flag.
     bool clearReceiveTxid = false,
-  }) async {
+  }) => _boltz.storage.mutate(swapId, () async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw 'No swap model found';
@@ -679,7 +680,7 @@ class BoltzSwapRepository implements SwapRepository {
 
     await _boltz.storage.store(SwapModel.fromEntity(updated));
     return updated;
-  }
+  });
 
   Future<int> getSwapClaimTxSize({
     required String swapId,
@@ -1512,7 +1513,11 @@ class BoltzSwapRepository implements SwapRepository {
     };
     if (existing != null) return existing;
     if (swap is LnReceiveSwap && swap.wasDirectPayment) {
-      return swap.receiveTxid ?? '';
+      // Paid directly on-chain via MRH — there is nothing to claim and no
+      // claim txid to report; an empty-string "txid" would only mislead.
+      throw SwapsException(
+        'swap ${swap.id} was a direct payment — nothing to claim',
+      );
     }
 
     final claimAddress = await _resolveClaimAddress(swap);
@@ -2008,6 +2013,12 @@ class BoltzSwapRepository implements SwapRepository {
     }
   }
 
+  // Substring classification is a known tradeoff: bull_sdk surfaces remote
+  // errors as free text, and electrum implementations word them differently.
+  // Misrouting fails safe in both directions — an unmatched non-final error
+  // skips outspend recovery and retries later; an unmatched server failure
+  // just skips the extra server walk. Typed error codes from bull_sdk are
+  // the eventual fix.
   bool _isNonFinalError(Object error) {
     final message = _errorMessage(error).toLowerCase();
     return message.contains('non-final') ||
@@ -2038,6 +2049,14 @@ class BoltzSwapRepository implements SwapRepository {
   /// unconditionally; the engine now self-ensures instead of trusting a
   /// startup hook that can be refactored away.
   Future<void> _ensureMasterKey() async {
+    // Readiness is checked before touching the seed source: the seed source
+    // decrypts the wallet mnemonic, which must only happen on the one first
+    // derivation, never on every create/restore/rescue.
+    final fingerprint = await defaultBitcoinFingerprint();
+    if (fingerprint != null &&
+        await swapMasterKeyReady(walletFingerprint: fingerprint)) {
+      return;
+    }
     final source = await _masterSeedSource(isTestnet: _isTestnet);
     if (source == null) {
       throw SwapsException(
