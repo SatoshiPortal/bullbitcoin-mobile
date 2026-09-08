@@ -1,7 +1,7 @@
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 typedef SignedBitcoinTransaction = ({
   String signedPsbt,
@@ -14,7 +14,7 @@ class SignBitcoinTxUsecase {
 
   SignBitcoinTxUsecase(this._bitcoinSigningPort);
 
-  Future<Result<SignedBitcoinTransaction, BitcoinSigningFailure>> execute({
+  Future<Result<SignedBitcoinTransaction, SendFailure>> execute({
     required String psbt,
     required String walletId,
     String? externalPsbt,
@@ -42,12 +42,10 @@ class SignBitcoinTxUsecase {
       case Ok(:final value):
         signed = value;
       case Err(:final failure):
-        return Err(failure);
+        return Err(SendFailure.fromBitcoinSigning(failure));
     }
     if (requireFinalized && !signed.isFinalized) {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.incomplete),
-      );
+      return const Err(SendTransactionSigningFailure('incomplete'));
     }
     try {
       final size = await _bitcoinSigningPort.getTxSize(
@@ -65,9 +63,7 @@ class SignBitcoinTxUsecase {
         error: error,
         trace: stackTrace,
       );
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.unexpected),
-      );
+      return const Err(SendUnexpectedFailure());
     }
   }
 }

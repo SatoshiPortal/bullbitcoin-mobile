@@ -6482,9 +6482,9 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
-  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for swaps.",
+  "sendErrorHardwareWalletCannotSwap": "This wallet cannot be used for swaps. Select a standard Bull wallet.",
   "@sendErrorHardwareWalletCannotSwap": {
-    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+    "description": "Error when the selected wallet does not support swaps and a standard Bull wallet is required"
   },
   "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
   "@sendErrorInvoiceMustContainAmount": {
@@ -17442,5 +17442,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@sendPendingBroadcast": {
+    "description": "Status of a saved Bitcoin transaction whose broadcast outcome needs to be checked"
+  },
+  "sendPendingBroadcast": "Broadcast pending",
+  "@sendPendingSubmissionMessage": {
+    "description": "Explanation on an immutable payment submission recovery screen"
+  },
+  "@sendPendingPayjoin": {
+    "description": "Status of a saved payment handed off to Payjoin"
+  },
+  "sendPendingSubmissionMessage": "This payment may already have been sent. Continue to check its status or retry the same payment. Its recipient, amount and coins cannot be changed.",
+  "sendPendingPayjoin": "Payjoin pending"
 }

@@ -1,5 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/data/models/pending_bitcoin_transaction_model.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_mapper.dart';
@@ -18,6 +19,19 @@ class PendingBitcoinTransactionRepositoryImpl
     PendingBitcoinTransaction transaction, {
     int? expectedRevision,
   }) async {
+    if (transaction.isDraft) {
+      try {
+        final request = await PaymentRequest.parse(transaction.recipient);
+        if (request is! BitcoinPaymentRequest &&
+            !(request is Bip21PaymentRequest && request.network.isBitcoin)) {
+          return const Err(SendInvalidPaymentRequestFailure());
+        }
+      } on Exception {
+        return const Err(SendInvalidPaymentRequestFailure());
+      } on String {
+        return const Err(SendInvalidPaymentRequestFailure());
+      }
+    }
     try {
       final saved = await _datasource.save(
         PendingBitcoinTransactionMapper.toModel(transaction),

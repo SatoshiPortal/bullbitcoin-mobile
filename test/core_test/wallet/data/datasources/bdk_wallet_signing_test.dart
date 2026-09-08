@@ -1372,7 +1372,7 @@ void main() {
         datasource.analyzePolicy(wallet: wallet),
       );
       final hashlock = policy
-          .requiredHashlocks(const BitcoinPolicySelection.empty())
+          .hashlocksForSelection(const BitcoinPolicySelection.empty())
           .single;
       final preimage = BitcoinPolicyPreimage(
         type: hashlock.type,

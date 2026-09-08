@@ -1,14 +1,6 @@
-// Behavioral proof for two audit findings on SendCubit:
-//
-// 1. `_invalidateSignedTransaction()` (added by `fix(send)`) only clears
-//    `signedBitcoinTx`. The BDK path stores its signed payload in
-//    `signedBitcoinPsbt`, which survives every payment edit and is the value
-//    `onConfirmTransactionClicked()` broadcasts.
-// 2. `broadcastTransaction()` guards its `emit`s with `isClosed` but still
-//    dereferences `state.txId!` for the post-broadcast bookkeeping, so a cubit
-//    closed mid-broadcast throws instead of recording the send.
 import 'dart:async';
 
+import 'package:bb_mobile/features/send/domain/usecases/refresh_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -68,6 +60,7 @@ import 'package:bb_mobile/features/send/domain/usecases/validate_sp_amount_for_s
 import 'package:bb_mobile/features/send/domain/usecases/validate_sp_recipient_for_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/delete_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/save_pending_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_pending_bitcoin_submission_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_pending_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -199,6 +192,9 @@ class _MockGetSendPayjoinEnabledUsecase extends Mock
 class _MockSavePendingBitcoinTransactionUsecase extends Mock
     implements SavePendingBitcoinTransactionUsecase {}
 
+class _MockPreparePendingBitcoinSubmissionUsecase extends Mock
+    implements PreparePendingBitcoinSubmissionUsecase {}
+
 class _MockGetPendingBitcoinTransactionUsecase extends Mock
     implements GetPendingBitcoinTransactionUsecase {}
 
@@ -282,10 +278,12 @@ class _TestSendCubit extends SendCubit {
     required super.sendSpPaymentForSendUsecase,
     required super.refreshSpWalletForSendUsecase,
     required super.savePendingBitcoinTransactionUsecase,
+    required super.preparePendingBitcoinSubmissionUsecase,
     required super.getPendingBitcoinTransactionUsecase,
     required super.restorePendingBitcoinTransactionUsecase,
     required super.deletePendingBitcoinTransactionUsecase,
     required super.validatePendingBitcoinTransactionUsecase,
+    required super.refreshBitcoinSigningPlanUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -405,12 +403,18 @@ void main() {
       refreshSpWalletForSendUsecase: _MockRefreshSpWalletForSendUsecase(),
       savePendingBitcoinTransactionUsecase:
           _MockSavePendingBitcoinTransactionUsecase(),
+      preparePendingBitcoinSubmissionUsecase:
+          _MockPreparePendingBitcoinSubmissionUsecase(),
       getPendingBitcoinTransactionUsecase:
           _MockGetPendingBitcoinTransactionUsecase(),
       restorePendingBitcoinTransactionUsecase:
           _MockRestorePendingBitcoinTransactionUsecase(),
       deletePendingBitcoinTransactionUsecase:
           _MockDeletePendingBitcoinTransactionUsecase(),
+      refreshBitcoinSigningPlanUsecase: RefreshBitcoinSigningPlanUsecase(
+        _MockValidatePendingBitcoinTransactionUsecase(),
+        _MockGetBitcoinSigningPlanUsecase(),
+      ),
       validatePendingBitcoinTransactionUsecase:
           _MockValidatePendingBitcoinTransactionUsecase(),
     );
@@ -551,9 +555,13 @@ void main() {
   group('broadcast bookkeeping', () {
     test('a cubit closed mid-broadcast still records the send', () async {
       final broadcast = Completer<String>();
+      final broadcastStarted = Completer<void>();
       when(
         () => broadcastBitcoinTx.execute(any(), isPsbt: any(named: 'isPsbt')),
-      ).thenAnswer((_) => broadcast.future);
+      ).thenAnswer((_) {
+        broadcastStarted.complete();
+        return broadcast.future;
+      });
       when(() => labelsFacade.store(any())).thenAnswer(
         (invocation) async =>
             Ok(Label.tx(id: 1, transactionId: 'broadcast-txid', label: 'rent')),
@@ -572,6 +580,7 @@ void main() {
       );
 
       final pending = cubit.broadcastTransaction();
+      await broadcastStarted.future;
       await cubit.close();
       broadcast.complete('broadcast-txid');
 

@@ -105,28 +105,38 @@ void main() {
     expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
   });
 
-  test('rejects hardware wallets before creating an order', () async {
-    when(() => getWallet.execute('wallet-1')).thenAnswer(
-      (_) async => _wallet(
-        Network.liquidTestnet,
-        signerDevice: SignerDeviceEntity.ledgerNanoX,
-      ),
-    );
+  for (final hardware in [true, false]) {
+    test(
+      'rejects unsupported swap signing before creating an order (hardware: $hardware)',
+      () async {
+        when(() => getWallet.execute('wallet-1')).thenAnswer(
+          (_) async => hardware
+              ? _wallet(
+                  Network.liquidTestnet,
+                  signerDevice: SignerDeviceEntity.ledgerNanoX,
+                )
+              : _wallet(
+                  Network.bitcoinTestnet,
+                ).copyWith(scriptType: null, publicDescriptor: 'tr(...)'),
+        );
 
-    final result = await usecase.execute(
-      walletId: 'wallet-1',
-      destinationAddress: 'tb1-destination',
-      destinationIsTestnet: true,
-      amountSat: 100000,
-      isInAmountFixed: false,
-      quotedCounterpartAmountSat: BigInt.from(101000),
-    );
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          destinationAddress: 'tb1-destination',
+          destinationIsTestnet: true,
+          amountSat: 100000,
+          isInAmountFixed: false,
+          quotedCounterpartAmountSat: BigInt.from(101000),
+        );
 
-    expect(result, isA<Err<OrderSwapRecord, SendFailure>>());
-    verifyNever(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+        expect(result, isA<Err<OrderSwapRecord, SendFailure>>());
+        verifyNever(
+          () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+        );
+        verifyZeroInteractions(swapFacade);
+      },
     );
-  });
+  }
 }
 
 Wallet _wallet(Network network, {SignerDeviceEntity? signerDevice}) => Wallet(
@@ -137,6 +147,8 @@ Wallet _wallet(Network network, {SignerDeviceEntity? signerDevice}) => Wallet(
       masterFingerprint: '00000000',
       xpubFingerprint: '00000000',
       xpub: '',
+      derivationPath: "m/84'/${network.coinType}'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
       signer: SignerEntity.local,
       signerDevice: signerDevice,
     ),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
@@ -18,7 +19,7 @@ class GetBitcoinSigningPlanUsecase {
   GetBitcoinSigningPlanUsecase(this._bitcoinSigningPort);
 
   @useResult
-  Future<Result<BitcoinSigningPlanDetails, BitcoinSigningFailure>> execute({
+  Future<Result<BitcoinSigningPlanDetails, SendFailure>> execute({
     required Wallet wallet,
     String? psbt,
     BitcoinPolicySelection selection = const BitcoinPolicySelection.empty(),
@@ -27,16 +28,14 @@ class GetBitcoinSigningPlanUsecase {
     bool allowFrozenWalletInputs = false,
   }) async {
     if (!wallet.isBitcoin) {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.unexpected),
-      );
+      return const Err(SendUnexpectedFailure());
     }
     final BitcoinWalletPolicy policy;
     switch (await _bitcoinSigningPort.getPolicy(walletId: wallet.id)) {
       case Ok(:final value):
         policy = value;
       case Err(:final failure):
-        return Err(failure);
+        return Err(SendFailure.fromBitcoinSigning(failure));
     }
     final BitcoinPsbtReview? review;
     if (psbt == null) {
@@ -52,7 +51,7 @@ class GetBitcoinSigningPlanUsecase {
         case Ok(:final value):
           review = value;
         case Err(:final failure):
-          return Err(failure);
+          return Err(SendFailure.fromBitcoinSigning(failure));
       }
     }
     final maturityResult =
@@ -76,7 +75,7 @@ class GetBitcoinSigningPlanUsecase {
       case Ok(:final value):
         maturity = value;
       case Err(:final failure):
-        return Err(failure);
+        return Err(SendFailure.fromBitcoinSigning(failure));
     }
     final reviewInputs = review?.inputs ?? const <BitcoinPsbtInputReview>[];
     final effectivePreimageKeys = {
@@ -106,9 +105,7 @@ class GetBitcoinSigningPlanUsecase {
         ),
       ));
     } on ArgumentError {
-      return const Err(
-        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
-      );
+      return const Err(SendTransactionSigningFailure('unsupportedPolicyPath'));
     }
   }
 }

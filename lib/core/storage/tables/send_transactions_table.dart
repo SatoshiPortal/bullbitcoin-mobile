@@ -34,7 +34,7 @@ class SendTransactions extends Table {
   @override
   List<String> get customConstraints => [
     'FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE',
-    "CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast'))",
+    "CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending'))",
     "CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative'))",
     'CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL))',
     "CHECK(stage = 'draft' OR psbt IS NOT NULL)",

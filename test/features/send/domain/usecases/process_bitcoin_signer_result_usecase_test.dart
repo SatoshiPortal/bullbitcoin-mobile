@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_bitcoin_signing_plan_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/process_bitcoin_signer_result_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
@@ -68,8 +68,7 @@ void main() {
       );
 
       final transaction =
-          (result as Ok<ProcessedBitcoinSignerResult, BitcoinSigningFailure>)
-                  .value
+          (result as Ok<ProcessedBitcoinSignerResult, SendFailure>).value
               as ProcessedBitcoinTransaction;
       expect(transaction.transaction, 'verified-transaction');
       expect(transaction.txSize, 123);
@@ -85,10 +84,7 @@ void main() {
       selection: const BitcoinPolicySelection.empty(),
     );
 
-    expect(
-      result,
-      isA<Err<ProcessedBitcoinSignerResult, BitcoinSigningFailure>>(),
-    );
+    expect(result, isA<Err<ProcessedBitcoinSignerResult, SendFailure>>());
     verifyNever(
       () => signingPort.verifyFinalTransaction(
         psbt: any(named: 'psbt'),
@@ -106,10 +102,7 @@ void main() {
       selection: const BitcoinPolicySelection.empty(),
     );
 
-    expect(
-      result,
-      isA<Err<ProcessedBitcoinSignerResult, BitcoinSigningFailure>>(),
-    );
+    expect(result, isA<Err<ProcessedBitcoinSignerResult, SendFailure>>());
   });
 
   test('combines and reviews a partial PSBT', () async {
@@ -157,8 +150,7 @@ void main() {
     );
 
     final psbt =
-        (result as Ok<ProcessedBitcoinSignerResult, BitcoinSigningFailure>)
-                .value
+        (result as Ok<ProcessedBitcoinSignerResult, SendFailure>).value
             as ProcessedBitcoinPsbt;
     expect(psbt.psbt, 'combined-psbt');
     expect(psbt.isFinalized, isFalse);
@@ -218,8 +210,7 @@ void main() {
     );
 
     final psbt =
-        (result as Ok<ProcessedBitcoinSignerResult, BitcoinSigningFailure>)
-                .value
+        (result as Ok<ProcessedBitcoinSignerResult, SendFailure>).value
             as ProcessedBitcoinPsbt;
     expect(psbt.psbt, 'final-psbt');
     expect(psbt.isFinalized, isTrue);

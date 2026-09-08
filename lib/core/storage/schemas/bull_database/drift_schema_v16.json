@@ -2910,7 +2910,7 @@
         "without_rowid": false,
         "constraints": [
           "FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE",
-          "CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast'))",
+          "CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending'))",
           "CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative'))",
           "CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL))",
           "CHECK(stage = 'draft' OR psbt IS NOT NULL)"
@@ -3384,7 +3384,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"send_transactions\" (\"id\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"stage\" TEXT NOT NULL, \"label\" TEXT NULL, \"recipient\" TEXT NOT NULL, \"amount\" TEXT NOT NULL, \"amount_currency_code\" TEXT NOT NULL, \"send_max\" INTEGER NOT NULL CHECK (\"send_max\" IN (0, 1)), \"fee_selection\" TEXT NOT NULL, \"custom_fee_kind\" TEXT NULL, \"custom_fee_value\" INTEGER NULL, \"replace_by_fee\" INTEGER NOT NULL CHECK (\"replace_by_fee\" IN (0, 1)), \"payjoin_opted_out\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_opted_out\" IN (0, 1)), \"psbt\" TEXT NULL, \"final_transaction\" TEXT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast')), CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative')), CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL)), CHECK(stage = 'draft' OR psbt IS NOT NULL));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"send_transactions\" (\"id\" TEXT NOT NULL, \"wallet_id\" TEXT NOT NULL, \"stage\" TEXT NOT NULL, \"label\" TEXT NULL, \"recipient\" TEXT NOT NULL, \"amount\" TEXT NOT NULL, \"amount_currency_code\" TEXT NOT NULL, \"send_max\" INTEGER NOT NULL CHECK (\"send_max\" IN (0, 1)), \"fee_selection\" TEXT NOT NULL, \"custom_fee_kind\" TEXT NULL, \"custom_fee_value\" INTEGER NULL, \"replace_by_fee\" INTEGER NOT NULL CHECK (\"replace_by_fee\" IN (0, 1)), \"payjoin_opted_out\" INTEGER NOT NULL DEFAULT 0 CHECK (\"payjoin_opted_out\" IN (0, 1)), \"psbt\" TEXT NULL, \"final_transaction\" TEXT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"revision\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"), FOREIGN KEY(wallet_id) REFERENCES wallet_metadatas(id) ON DELETE CASCADE, CHECK(stage IN ('draft', 'needsSignatures', 'readyToBroadcast', 'broadcastPending', 'payjoinPending')), CHECK(custom_fee_kind IS NULL OR custom_fee_kind IN ('absolute', 'relative')), CHECK((custom_fee_kind IS NULL) = (custom_fee_value IS NULL)), CHECK(stage = 'draft' OR psbt IS NOT NULL));"
         }
       ]
     },

@@ -1,7 +1,7 @@
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
 
 class ValidateBitcoinPolicyPreimageUsecase {
@@ -10,7 +10,7 @@ class ValidateBitcoinPolicyPreimageUsecase {
   ValidateBitcoinPolicyPreimageUsecase(this._bitcoinSigningPort);
 
   @useResult
-  Future<Result<BitcoinPolicyPreimage?, BitcoinSigningFailure>> execute({
+  Future<Result<BitcoinPolicyPreimage?, SendFailure>> execute({
     required BitcoinHashlockPolicyNode hashlock,
     required String preimageHex,
   }) async {
@@ -24,7 +24,7 @@ class ValidateBitcoinPolicyPreimageUsecase {
         preimage,
       )) {
         Ok(:final value) => Ok(value ? preimage : null),
-        Err(:final failure) => Err(failure),
+        Err(:final failure) => Err(SendFailure.fromBitcoinSigning(failure)),
       };
     } on ArgumentError {
       return const Ok(null);
