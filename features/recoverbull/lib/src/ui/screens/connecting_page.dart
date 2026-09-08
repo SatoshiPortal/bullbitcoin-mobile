@@ -60,11 +60,14 @@ class _ConnectingPageState extends State<ConnectingPage> {
   /// each repetition pushed another route, stacking duplicate pages behind the
   /// one the user sees.
   bool _hasNavigated = false;
+  bool _hasSeenReady = false;
 
   @override
   void initState() {
     super.initState();
     _startedAt = widget.now();
+    _hasSeenReady =
+        context.read<RecoverBullBloc>().state.torConnection is tor.TorReady;
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       setState(() => _elapsed = widget.now().difference(_startedAt));
@@ -91,6 +94,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
 
     final connection = state.torConnection;
     final now = widget.now();
+    if (connection is tor.TorReady) _hasSeenReady = true;
 
     final diagnostic = switch (connection) {
       tor.TorConnecting(:final diagnostic) => diagnostic,
@@ -180,6 +184,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
                     ),
                     child: _Body(
                       state: state,
+                      reconnecting: _hasSeenReady,
                       elapsed: _elapsed,
                       showBlockage: _blockageIsSettled,
                       onRetry: _onRetry,
@@ -203,12 +208,14 @@ class _Body extends StatelessWidget {
   final Duration elapsed;
   final bool showBlockage;
   final VoidCallback onRetry;
+  final bool reconnecting;
 
   const _Body({
     required this.state,
     required this.elapsed,
     required this.showBlockage,
     required this.onRetry,
+    required this.reconnecting,
   });
 
   tor.TorConnectionState get _tor => state.torConnection;
@@ -300,6 +307,10 @@ class _Body extends StatelessWidget {
     if (_tor is tor.TorReady &&
         state.keyServerStatus != KeyServerStatus.online) {
       return context.loc.recoverbullConnectedTorCheckingServer;
+    }
+
+    if (reconnecting && _tor is tor.TorConnecting) {
+      return context.loc.recoverbullReconnecting;
     }
 
     return switch (_mascotState) {
@@ -478,19 +489,16 @@ class _Body extends StatelessWidget {
   }
 
   String? _torCaption(BuildContext context) {
-    if (_torPhase != _PhaseState.active && state.torRefreshProgress == null) {
+    if (_torPhase != _PhaseState.active) {
       return null;
     }
-    final progress = switch (_tor) {
-      tor.TorConnecting(:final progress) => progress,
-      _ => state.torRefreshProgress,
+    final (progress, transport) = switch (_tor) {
+      tor.TorConnecting(:final progress, :final transport) => (
+        progress,
+        transport,
+      ),
+      _ => (null, null),
     };
-    final transport = switch (_tor) {
-      tor.TorConnecting(:final transport) => transport,
-      _ => state.torRefreshTransport,
-    };
-    // Arti can report a transient drop during a directory refresh; showing the
-    // raw value is expected and honest, rather than hiding a real Tor state.
     final percentage = progress == null ? null : '${(progress * 100).round()}%';
     return [
       context.loc.recoverbullPhaseNetworkInfo,

@@ -728,6 +728,10 @@
     }
   },
   "recoverbullConnecting": "Connecting",
+  "recoverbullReconnecting": "Reconnecting",
+  "@recoverbullReconnecting": {
+    "description": "Status shown when Tor loses readiness after it was already ready."
+  },
   "@recoverbullConnecting": {
     "description": "Status label indicating connection in progress"
   },

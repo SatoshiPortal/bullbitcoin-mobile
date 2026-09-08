@@ -65,6 +65,12 @@ class _OnTorConnectionChanged extends RecoverBullEvent {
   const _OnTorConnectionChanged(this.state);
 }
 
+class _OnTorReadinessGraceExpired extends RecoverBullEvent {
+  final int token;
+
+  const _OnTorReadinessGraceExpired(this.token);
+}
+
 class OnClearError extends RecoverBullEvent {
   const OnClearError();
 }

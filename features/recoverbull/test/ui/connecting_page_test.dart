@@ -196,7 +196,7 @@ void main() {
     expect(find.text('Connecting to Key Server over Tor.'), findsNothing);
   });
 
-  testWidgets('keeps the connected verdict while showing refresh progress', (
+  testWidgets('does not show refresh progress beside the connected verdict', (
     tester,
   ) async {
     final route = tor.TorRoute(
@@ -211,8 +211,6 @@ void main() {
       RecoverBullState(
         flow: RecoverBullFlow.recoverVault,
         torConnection: tor.TorReady(route),
-        torRefreshProgress: 0.42,
-        torRefreshTransport: tor.TorTransport.direct,
       ),
     );
 
@@ -220,8 +218,60 @@ void main() {
       const Locale('en'),
     );
     expect(find.text(l10n.recoverbullConnected), findsOneWidget);
-    expect(find.textContaining('42%'), findsOneWidget);
-    expect(find.textContaining('direct'), findsOneWidget);
+    expect(find.textContaining('42%'), findsNothing);
+    expect(find.textContaining('direct'), findsNothing);
+  });
+
+  testWidgets('shows reconnection and current progress after a durable loss', (
+    tester,
+  ) async {
+    final route = tor.TorRoute(
+      source: tor.TorSource.embedded,
+      endpoint: tor.TorProxyEndpoint(host: '127.0.0.1', port: 41001),
+      evidence: tor.TorReadinessEvidence.embeddedBootstrap,
+      transport: tor.TorTransport.direct,
+    );
+    final ready = RecoverBullState(
+      flow: RecoverBullFlow.recoverVault,
+      torConnection: tor.TorReady(route),
+    );
+    final bloc = _MutableBloc(
+      const RecoverBullState(
+        flow: RecoverBullFlow.recoverVault,
+        torConnection: tor.TorConnecting(source: tor.TorSource.embedded),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: BlocProvider<RecoverBullBloc>.value(
+          value: bloc,
+          child: const ConnectingPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    bloc.pushState(ready);
+    await tester.pump();
+    bloc.pushState(
+      ready.copyWith(
+        torConnection: const tor.TorConnecting(
+          source: tor.TorSource.embedded,
+          progress: 0.45,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(find.text(l10n.recoverbullReconnecting), findsOneWidget);
+    expect(find.textContaining('45%'), findsOneWidget);
+    await bloc.close();
   });
 
   testWidgets('keeps one elapsed clock across an Arti republication', (

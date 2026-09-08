@@ -333,8 +333,6 @@ void main() {
         await pumpEventQueue();
 
         expect(bloc.state.torConnection, isA<TorReady>());
-        expect(bloc.state.torRefreshProgress, 0.42);
-        expect(bloc.state.torRefreshTransport, TorTransport.direct);
         expect(
           log.entries.map((entry) => entry.message),
           contains('recoverbull.tor.directory_refresh'),
@@ -349,6 +347,96 @@ void main() {
         await pumpEventQueue();
         expect(bloc.state.torConnection, isA<TorUnavailable>());
 
+        await states.close();
+        await bloc.close();
+      },
+    );
+
+    test('publishes a durable loss after the readiness grace period', () async {
+      final states = StreamController<TorConnectionState>();
+      final log = TestLogSink.recording();
+      when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+      var now = DateTime(2026, 1, 1);
+      void Function()? expire;
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        log: log,
+        now: () => now,
+        scheduleTimer: (_, callback) {
+          expire = callback;
+          return Timer(const Duration(hours: 1), callback);
+        },
+      );
+      final route = testRoute().route;
+
+      states.add(TorReady(route));
+      await pumpEventQueue();
+      states.add(
+        const TorConnecting(
+          source: TorSource.embedded,
+          progress: 0.45,
+          transport: TorTransport.direct,
+        ),
+      );
+      await pumpEventQueue();
+      expect(bloc.state.torConnection, isA<TorReady>());
+
+      now = now.add(const Duration(seconds: 5));
+      expire!();
+      await pumpEventQueue();
+
+      expect(bloc.state.torConnection, isA<TorConnecting>());
+      expect(
+        log.entries,
+        contains(
+          isA<TestLogEntry>()
+              .having((entry) => entry.level, 'level', 'warning')
+              .having(
+                (entry) => entry.message,
+                'message',
+                'recoverbull.tor.readiness_lost',
+              ),
+        ),
+      );
+      await states.close();
+      await bloc.close();
+    });
+
+    test(
+      'returns to ready during the grace period without publishing loss',
+      () async {
+        final states = StreamController<TorConnectionState>();
+        final log = TestLogSink.recording();
+        when(() => watchTor.execute()).thenAnswer((_) => states.stream);
+        void Function()? expire;
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          log: log,
+          scheduleTimer: (_, callback) {
+            expire = callback;
+            return Timer(const Duration(hours: 1), callback);
+          },
+        );
+        final route = testRoute().route;
+
+        states.add(TorReady(route));
+        await pumpEventQueue();
+        states.add(const TorConnecting(source: TorSource.embedded));
+        await pumpEventQueue();
+        states.add(TorReady(route));
+        await pumpEventQueue();
+        expire!();
+        await pumpEventQueue();
+
+        expect(bloc.state.torConnection, isA<TorReady>());
+        expect(
+          log.entries.map((entry) => entry.message),
+          contains('recoverbull.tor.directory_refresh'),
+        );
+        expect(
+          log.entries.map((entry) => entry.message),
+          isNot(contains('recoverbull.tor.readiness_lost')),
+        );
         await states.close();
         await bloc.close();
       },

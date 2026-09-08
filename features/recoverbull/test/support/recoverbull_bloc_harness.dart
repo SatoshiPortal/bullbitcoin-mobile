@@ -139,6 +139,8 @@ RecoverBullBloc buildBloc({
   EncryptedVault? preSelectedVault,
   Future<void> Function()? onWalletUpdated,
   VerifyDecryptedVaultUsecase? verifyDecryptedVaultUsecase,
+  DateTime Function()? now,
+  Timer Function(Duration, void Function())? scheduleTimer,
 }) => RecoverBullBloc(
   log: log ?? const TestLogSink(),
   flow: flow,
@@ -168,4 +170,6 @@ RecoverBullBloc buildBloc({
   watchTorConnectionUsecase: watchTor,
   lifecycle: lifecycle,
   verifyDecryptedVaultUsecase: verifyDecryptedVaultUsecase ?? verifyVault,
+  now: now,
+  scheduleTimer: scheduleTimer,
 );

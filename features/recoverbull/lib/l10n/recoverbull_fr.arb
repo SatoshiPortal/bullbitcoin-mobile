@@ -281,6 +281,7 @@
     }
   },
   "recoverbullConnecting": "Connexion en cours",
+  "recoverbullReconnecting": "Reconnexion en cours",
   "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
   "recoverbullRetry": "Réessayer",
   "recoverbullConnectedTorCheckingServer": "Connecté à Tor. Vérification du serveur de sauvegarde.",

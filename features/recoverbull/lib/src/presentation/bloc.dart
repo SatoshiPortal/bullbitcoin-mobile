@@ -60,6 +60,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final tor.WatchTorConnectionUsecase _watchTorConnectionUsecase;
   final RecoverBullLifecyclePort? lifecycle;
   final VerifyDecryptedVaultUsecase verifyDecryptedVaultUsecase;
+  final DateTime Function() _now;
+  final Timer Function(Duration, void Function()) _scheduleTimer;
 
   StreamSubscription<tor.TorConnectionState>? _torSubscription;
   Future<Result<RecoverBullTorRoute, core.RecoverBullFailure>>?
@@ -70,6 +72,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   EncryptedVault? _pendingProviderVault;
   bool _serverCheckInFlight = false;
   bool _serverCheckRequested = false;
+  Timer? _torReadinessGraceTimer;
+  tor.TorConnecting? _pendingTorConnecting;
+  DateTime? _torReadinessLostAt;
+  int _torReadinessGraceToken = 0;
 
   void _requestServerCheck() {
     _serverCheckRequested = true;
@@ -101,7 +107,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._watchTorConnectionUsecase,
     this.lifecycle,
     required this.verifyDecryptedVaultUsecase,
-  }) : super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
+    DateTime Function()? now,
+    Timer Function(Duration, void Function())? scheduleTimer,
+  }) : _now = now ?? DateTime.now,
+       _scheduleTimer = scheduleTimer ?? Timer.new,
+       super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(
       _onVaultProviderSelection,
       transformer: droppable(),
@@ -114,6 +124,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnTorInitialization>(_onTorInitialization, transformer: droppable());
     on<OnClearError>(_onClearError);
     on<_OnTorConnectionChanged>(_onTorConnectionChanged);
+    on<_OnTorReadinessGraceExpired>(_onTorReadinessGraceExpired);
 
     // Tor readiness is pushed, so follow it for as long as this flow is open.
     // Taking a single snapshot in `_onServerCheck` reported whatever the status
@@ -131,6 +142,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   @override
   Future<void> close() async {
     _closingBloc = true;
+    _torReadinessGraceTimer?.cancel();
+    _torReadinessGraceTimer = null;
     _pendingProviderVault = null;
     await _torSubscription?.cancel();
     final pending = _pendingRoutePreparation;
@@ -154,11 +167,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     _OnTorConnectionChanged event,
     Emitter<RecoverBullState> emit,
   ) async {
-    // Arti's directory fraction is not monotonic after traffic becomes usable:
-    // a background refresh can report Connecting again while the established
-    // SOCKS route remains valid. RecoverBull only needs that route, so keep its
-    // local readiness latched until Tor reports an actual blockage or a
-    // terminal state. A diagnostic means this is not a benign refresh.
     final next = event.state;
     final nextIsExternal = switch (next) {
       tor.TorReady(:final route) => route.source == tor.TorSource.external,
@@ -184,19 +192,13 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     if (state.torConnection is tor.TorReady &&
         next is tor.TorConnecting &&
         next.diagnostic == null) {
-      // Keep the verdict latched while exposing Arti's raw refresh details.
-      // A directory refresh can lower progress without invalidating the
-      // already usable route; hiding it would make support diagnostics and the
-      // secondary UI detail disagree with the actual Tor stream.
+      _pendingTorConnecting = next;
+      _torReadinessLostAt ??= _now();
       log.fine('recoverbull.tor.directory_refresh');
-      emit(
-        state.copyWith(
-          torRefreshProgress: next.progress,
-          torRefreshTransport: next.transport,
-        ),
-      );
+      _scheduleTorReadinessGrace();
       return;
     }
+    _cancelTorReadinessGrace();
     emit(state.copyWith(torConnection: next));
 
     // An external proxy has no embedded lifecycle to restart. Let the real
@@ -216,6 +218,46 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         _route != null) {
       _requestServerCheck();
     }
+  }
+
+  void _scheduleTorReadinessGrace() {
+    if (_torReadinessGraceTimer != null) return;
+    // Five seconds covers the observed 0.9-second and 173-millisecond dips
+    // while still revealing a readiness loss when Arti stops emitting.
+    final lostAt = _torReadinessLostAt!;
+    final remaining = const Duration(seconds: 5) - _now().difference(lostAt);
+    _torReadinessGraceTimer = _scheduleTimer(
+      remaining.isNegative ? Duration.zero : remaining,
+      () => add(_OnTorReadinessGraceExpired(_torReadinessGraceToken)),
+    );
+  }
+
+  Future<void> _onTorReadinessGraceExpired(
+    _OnTorReadinessGraceExpired event,
+    Emitter<RecoverBullState> emit,
+  ) async {
+    if (event.token != _torReadinessGraceToken) return;
+    _torReadinessGraceTimer = null;
+    final lostAt = _torReadinessLostAt;
+    if (lostAt == null || _pendingTorConnecting == null) return;
+    final remaining = const Duration(seconds: 5) - _now().difference(lostAt);
+    if (remaining > Duration.zero) {
+      _scheduleTorReadinessGrace();
+      return;
+    }
+    final next = _pendingTorConnecting!;
+    _pendingTorConnecting = null;
+    _torReadinessLostAt = null;
+    log.warning('recoverbull.tor.readiness_lost');
+    emit(state.copyWith(torConnection: next));
+  }
+
+  void _cancelTorReadinessGrace() {
+    _torReadinessGraceToken++;
+    _torReadinessGraceTimer?.cancel();
+    _torReadinessGraceTimer = null;
+    _pendingTorConnecting = null;
+    _torReadinessLostAt = null;
   }
 
   Future<void> _onTorInitialization(
