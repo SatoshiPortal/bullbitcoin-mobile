@@ -7622,15 +7622,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Грешка: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "walletDetailsDescriptorLabel": "Дескриптор",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
@@ -10215,5 +10206,9 @@
   "autoBuyAccountUnavailableError": "Вашата Bull Bitcoin сметка не е налична. Опитайте отново по-късно.",
   "autoBuyWalletRequiredError": "Добавете поне един Bitcoin, Lightning или Liquid адрес по подразбиране.",
   "autoBuyUpdateError": "Автоматичната покупка не можа да бъде актуализирана. Опитайте отново по-късно.",
-  "withdrawUnexpectedError": "Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката."
+  "withdrawUnexpectedError": "Вашето теглене не можа да бъде завършено в момента. Моля, опитайте отново или се свържете с поддръжката.",
+  "receiveErrorAmountAboveProtocolLimit": "Сумата надвишава максимално възможната сума в Bitcoin от {max}",
+  "receiveErrorNoteNotSaved": "Бележката ви не можа да бъде запазена. Опитайте отново.",
+  "receiveErrorAddressUnavailable": "Не можа да бъде подготвен адрес за получаване. Опитайте отново.",
+  "receiveErrorBroadcastOriginal": "Не успяхме да излъчим транзакцията. Проверете интернет връзката си и опитайте отново."
 }

@@ -9646,15 +9646,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "Chyba: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry Počet",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12179,5 +12170,9 @@
   "autoBuyAccountUnavailableError": "Váš účet Bull Bitcoin není dostupný. Zkuste to prosím později.",
   "autoBuyWalletRequiredError": "Přidejte alespoň jednu výchozí adresu Bitcoin, Lightning nebo Liquid.",
   "autoBuyUpdateError": "Automatický nákup se nepodařilo aktualizovat. Zkuste to prosím později.",
-  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu."
+  "withdrawUnexpectedError": "Váš výběr se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
+  "receiveErrorAmountAboveProtocolLimit": "Částka je vyšší než maximální možná částka Bitcoinu {max}",
+  "receiveErrorNoteNotSaved": "Vaši poznámku nebylo možné uložit. Zkuste to prosím znovu.",
+  "receiveErrorAddressUnavailable": "Nepodařilo se připravit přijímací adresu. Zkuste to prosím znovu.",
+  "receiveErrorBroadcastOriginal": "Transakci se nepodařilo odeslat. Zkontrolujte připojení k internetu a zkuste to znovu."
 }

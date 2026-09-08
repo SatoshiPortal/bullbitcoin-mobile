@@ -9840,15 +9840,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "त्रुटि: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "Retry गिनती",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12369,5 +12360,9 @@
   "autoBuyAccountUnavailableError": "आपका Bull Bitcoin खाता उपलब्ध नहीं है। बाद में फिर कोशिश करें।",
   "autoBuyWalletRequiredError": "कम से कम एक डिफ़ॉल्ट Bitcoin, Lightning या Liquid पता जोड़ें।",
   "autoBuyUpdateError": "स्वचालित खरीद अपडेट नहीं की जा सकी। बाद में फिर कोशिश करें।",
-  "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।"
+  "withdrawUnexpectedError": "आपकी निकासी अभी पूरी नहीं की जा सकी। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
+  "receiveErrorAmountAboveProtocolLimit": "राशि बिटकॉइन की अधिकतम संभव राशि {max} से अधिक है",
+  "receiveErrorNoteNotSaved": "आपका नोट सहेजा नहीं जा सका। कृपया फिर से प्रयास करें।",
+  "receiveErrorAddressUnavailable": "प्राप्ति पता तैयार नहीं किया जा सका। कृपया फिर से प्रयास करें।",
+  "receiveErrorBroadcastOriginal": "हम लेनदेन प्रसारित नहीं कर सके। अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।"
 }

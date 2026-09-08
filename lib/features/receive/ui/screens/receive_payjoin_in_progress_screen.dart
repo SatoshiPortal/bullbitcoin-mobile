@@ -8,8 +8,9 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/timers/countdown.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -328,10 +329,10 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
     final isBroadcasting = context.select(
       (ReceiveBloc bloc) => bloc.state.isBroadcastingOriginalTransaction,
     );
-    final broadcastOriginalTransactionException = context.select(
+    final broadcastFailure = context.select(
       (ReceiveBloc bloc) =>
-          bloc.state.error is BroadcastOriginalTransactionException
-          ? bloc.state.error! as BroadcastOriginalTransactionException
+          bloc.state.failure is ReceiveBroadcastOriginalTxFailure
+          ? bloc.state.failure
           : null,
     );
     return Padding(
@@ -358,11 +359,9 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
             textColor: context.appColors.onSecondary,
           ),
           const Gap(16),
-          if (broadcastOriginalTransactionException != null) ...[
+          if (broadcastFailure != null) ...[
             Text(
-              context.loc.receiveError(
-                broadcastOriginalTransactionException.message,
-              ),
+              broadcastFailure.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),

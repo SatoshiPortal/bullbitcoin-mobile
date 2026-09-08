@@ -288,14 +288,6 @@
   "receivePaymentNormally": "Vastaanota maksu normaalisti",
   "receiveContinue": "Jatka",
   "receiveCopyAddressOnly": "Kopioi tai skannaa vain osoite",
-  "receiveError": "Virhe: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Tämä kulu vähennetään lähetetystä summasta",
   "receiveReceiveAmount": "Vastaanotettava määrä",
   "receiveSendNetworkFee": "Lähetyksen verkkokulu",
@@ -4901,5 +4893,9 @@
   "autoBuyAccountUnavailableError": "Bull Bitcoin -tilisi ei ole käytettävissä. Yritä myöhemmin uudelleen.",
   "autoBuyWalletRequiredError": "Lisää vähintään yksi Bitcoin-, Lightning- tai Liquid-oletusosoite.",
   "autoBuyUpdateError": "Automaattista ostoa ei voitu päivittää. Yritä myöhemmin uudelleen.",
-  "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen."
+  "withdrawUnexpectedError": "Nostoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
+  "receiveErrorAmountAboveProtocolLimit": "Summa ylittää suurimman mahdollisen Bitcoin-määrän {max}",
+  "receiveErrorNoteNotSaved": "Muistiinpanoasi ei voitu tallentaa. Yritä uudelleen.",
+  "receiveErrorAddressUnavailable": "Vastaanotto-osoitetta ei voitu valmistella. Yritä uudelleen.",
+  "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen."
 }

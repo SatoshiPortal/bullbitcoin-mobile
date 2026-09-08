@@ -1141,7 +1141,6 @@
   "receivePaymentNormally": "გადახდის ჩვეულებრივად მიღება",
   "receiveContinue": "გაგრძელება",
   "receiveCopyAddressOnly": "მხოლოდ მისამართის კოპირება ან სკანირება",
-  "receiveError": "შეცდომა: {error}",
   "receiveFeeExplanation": "ეს საკომისიო გამოაკლდება გამოგზავნილ თანხას",
   "receiveReceiveAmount": "მისაღები თანხა",
   "receiveSendNetworkFee": "გამგზავნის ქსელის საკომისიო",
@@ -3749,5 +3748,9 @@
   "autoBuyAccountUnavailableError": "თქვენი Bull Bitcoin ანგარიში მიუწვდომელია. სცადეთ მოგვიანებით.",
   "autoBuyWalletRequiredError": "დაამატეთ სულ მცირე ერთი ნაგულისხმევი Bitcoin, Lightning ან Liquid მისამართი.",
   "autoBuyUpdateError": "ავტომატური ყიდვის განახლება ვერ მოხერხდა. სცადეთ მოგვიანებით.",
-  "withdrawUnexpectedError": "თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას."
+  "withdrawUnexpectedError": "თქვენი გატანის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
+  "receiveErrorAmountAboveProtocolLimit": "თანხა აღემატება Bitcoin-ის მაქსიმალურ შესაძლო თანხას — {max}",
+  "receiveErrorNoteNotSaved": "თქვენი შენიშვნა ვერ შეინახა. სცადეთ ხელახლა.",
+  "receiveErrorAddressUnavailable": "მიღების მისამართის მომზადება ვერ მოხერხდა. სცადეთ ხელახლა.",
+  "receiveErrorBroadcastOriginal": "ტრანზაქციის გავრცელება ვერ მოხერხდა. შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა."
 }

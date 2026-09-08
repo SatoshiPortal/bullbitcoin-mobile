@@ -9840,15 +9840,6 @@
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
   },
-  "receiveError": "ข้อผิดพลาด: {error}",
-  "@receiveError": {
-    "description": "Generic error message with error details",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "ระยะเวลา",
   "@electrumRetryCount": {
     "description": "Retry Count field label and hint in advanced options"
@@ -12183,5 +12174,9 @@
   "autoBuyAccountUnavailableError": "บัญชี Bull Bitcoin ของคุณไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง",
   "autoBuyWalletRequiredError": "เพิ่มที่อยู่เริ่มต้นของ Bitcoin, Lightning หรือ Liquid อย่างน้อยหนึ่งรายการ",
   "autoBuyUpdateError": "ไม่สามารถอัปเดตการซื้ออัตโนมัติได้ โปรดลองอีกครั้งในภายหลัง",
-  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน"
+  "withdrawUnexpectedError": "ไม่สามารถดำเนินการถอนเงินของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
+  "receiveErrorAmountAboveProtocolLimit": "จำนวนเงินสูงกว่าจำนวนบิตคอยน์สูงสุดที่เป็นไปได้ {max}",
+  "receiveErrorNoteNotSaved": "ไม่สามารถบันทึกหมายเหตุของคุณได้ โปรดลองอีกครั้ง",
+  "receiveErrorAddressUnavailable": "ไม่สามารถเตรียมที่อยู่รับได้ โปรดลองอีกครั้ง",
+  "receiveErrorBroadcastOriginal": "เราไม่สามารถกระจายธุรกรรมได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง"
 }
