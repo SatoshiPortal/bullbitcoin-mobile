@@ -114,23 +114,8 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             )
             as PublicBdkWalletModel;
 
-      // D7 defense in depth: a frozen coin must never be spendable. BDK's
-      // documented semantics are the opposite — a manually added utxo
-      // (TxBuilder.addUtxos) overrides the unspendable filter — and the
-      // datasource deliberately preserves those raw semantics. Enforce the
-      // app-level invariant here at the repository boundary, reading the
-      // frozen store LIVE at build time, so it holds for ANY caller and
-      // any staleness of the caller's earlier utxo fetch — not only for
-      // callers going through PrepareBitcoinSendUsecase (which reads the
-      // same store plus the payjoin-derived set; payjoin exclusion stays
-      // at the usecase because it comes from another repository).
-      //
-      // The frozen set read here is:
-      //  * merged into `unspendable`, so BDK's automatic selection can
-      //    never pick a frozen coin even when the caller passed no
-      //    exclusion list at all;
-      //  * used to strip `selected`, so a frozen coin can't be forced in
-      //    as a mandatory input either (the addUtxos override above).
+      // Read current frozen coins so neither automatic nor manual selection
+      // relies on an earlier UTXO snapshot. The use case supplies Payjoin exclusions.
       final frozenRows = await _frozenUtxos.getAllFrozen();
       final unspendableKeys = {
         for (final row in frozenRows) '${row.txId}:${row.vout}',
@@ -489,16 +474,19 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
   getPolicyMaturity({
     required String walletId,
     required bool includeTimeBasedLocks,
+    bool includeRelativeTimeLocks = true,
   }) => _guardSigning(
     () => _getPolicyMaturity(
       walletId: walletId,
       includeTimeBasedLocks: includeTimeBasedLocks,
+      includeRelativeTimeLocks: includeRelativeTimeLocks,
     ),
   );
 
   Future<BitcoinPolicyMaturity> _getPolicyMaturity({
     required String walletId,
     required bool includeTimeBasedLocks,
+    required bool includeRelativeTimeLocks,
   }) async {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
@@ -506,6 +494,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final cachedModel = await _bdkWallet.getPolicyMaturity(
       wallet: wallet,
       includeTimeBasedLocks: includeTimeBasedLocks,
+      includeRelativeTimeLocks: includeRelativeTimeLocks,
     );
     final servers = electrumServers;
     if (servers == null) {
@@ -522,11 +511,12 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
           wallet: wallet,
           electrumServer: connection,
           includeTimeBasedLocks: includeTimeBasedLocks,
+          includeRelativeTimeLocks: includeRelativeTimeLocks,
         ),
       );
       return BitcoinPolicyMaturityMapper.toEntity(model);
     } on Exception {
-      // Cached height remains safe: stale data only keeps a path hidden longer.
+      // Cached maturity is an estimate and can lag the chain or a reorg.
       // Time-based paths stay unavailable until median-time-past is known.
       return BitcoinPolicyMaturityMapper.toEntity(cachedModel);
     }
@@ -557,15 +547,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
     final wallet = context.wallet;
-    _bdkWallet.validateExternalPartialPsbt(
-      currentPsbtBase64: currentPsbt,
-      signedPsbtBase64: signedPsbt,
-    );
     final String combined;
     try {
-      combined = _bdkWallet.combinePsbts(
-        first: currentPsbt,
-        second: signedPsbt,
+      combined = _bdkWallet.validateExternalPartialPsbt(
+        currentPsbtBase64: currentPsbt,
+        signedPsbtBase64: signedPsbt,
       );
     } on bdk.PsbtException {
       throw const InvalidBitcoinPsbtException();
