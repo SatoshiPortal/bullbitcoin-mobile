@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
@@ -48,7 +49,12 @@ class UpdateBullVaultSetupUsecase {
     };
     var hardwareSetupComplete = record.hardwareSetupComplete;
     if (completedHardwareSignerId != null) {
-      final wallet = await _getWalletUsecase.execute(walletId);
+      final Wallet? wallet;
+      try {
+        wallet = await _getWalletUsecase.execute(walletId);
+      } on Exception {
+        return const Err(BullVaultRenewalFailure());
+      }
       if (wallet == null) return const Err(BullVaultRenewalFailure());
       final requiredSignerIds = {
         for (final signer in wallet.signers)

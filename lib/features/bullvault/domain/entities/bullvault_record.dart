@@ -2,13 +2,7 @@ import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 
-enum BullVaultLifecycleStatus {
-  pending,
-  activating,
-  active,
-  migrating,
-  cancelled,
-}
+enum BullVaultLifecycleStatus { pending, active, migrating, cancelled }
 
 final class BullVaultRecord {
   final String walletId;

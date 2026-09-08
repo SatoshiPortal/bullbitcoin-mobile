@@ -17,7 +17,13 @@ class WatchBullVaultDetailsUsecase {
     String walletId,
   ) async* {
     await for (final wallet in _watchSyncsUsecase.execute()) {
-      if (wallet.isBitcoin) yield await _getDetailsUsecase.execute(walletId);
+      if (!wallet.isBitcoin) continue;
+      final result = await _getDetailsUsecase.execute(
+        walletId,
+        syncedWalletId: wallet.id,
+      );
+      if (result case Ok(value: null)) continue;
+      yield result;
     }
   }
 }

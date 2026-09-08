@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
@@ -23,7 +24,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
@@ -50,11 +50,12 @@ import '../../../../core_test/wallet/bdk_wallet_test_fixture.dart';
 
 const _fourthMnemonic = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong';
 
-final class _TestRepository implements BullVaultRepository {
+final class _TestRepository extends Fake implements BullVaultRepository {
   final BullVaultRecoveryPackageCodec _codec;
   final Map<String, BullVaultRecord> records = {};
   BullVaultFailure? saveFailure;
-  BullVaultFailure? deleteFailure;
+  BullVaultFailure? readFailure;
+  final Set<String> publishedWalletIds = {};
 
   _TestRepository(this._codec);
 
@@ -76,7 +77,7 @@ final class _TestRepository implements BullVaultRepository {
   @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getByWalletId(
     String walletId,
-  ) async => Ok(records[walletId]);
+  ) async => readFailure == null ? Ok(records[walletId]) : Err(readFailure!);
 
   @override
   Future<Result<void, BullVaultFailure>> save(BullVaultRecord record) async {
@@ -87,16 +88,18 @@ final class _TestRepository implements BullVaultRepository {
 
   @override
   Future<Result<void, BullVaultFailure>> delete(String walletId) async {
-    if (deleteFailure case final failure?) return Err(failure);
     records.remove(walletId);
     return const Ok(null);
   }
 
   @override
-  Future<Result<void, BullVaultFailure>> activateRenewal({
-    required BullVaultRecord previous,
-    required BullVaultRecord replacement,
-  }) => throw UnimplementedError();
+  Future<Result<void, BullVaultFailure>> publishRestored(
+    BullVaultRecord record,
+  ) async {
+    final result = await save(record);
+    if (result case Ok()) publishedWalletIds.add(record.walletId);
+    return result;
+  }
 
   @override
   Future<Result<void, BullVaultFailure>> linkRestoredRenewal({
@@ -112,34 +115,11 @@ final class _TestRepository implements BullVaultRepository {
   }
 
   @override
-  Future<Result<void, BullVaultFailure>> cancelRenewal({
-    required String previousWalletId,
-    required String replacementWalletId,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
-    Network network,
-  ) => throw UnimplementedError();
-
-  @override
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getLineage(
     String lineageId,
-  ) async => Ok([
-    for (final record in records.values)
-      if (record.lineageId == lineageId) record,
-  ]);
-
-  @override
-  Future<Result<int, BullVaultFailure>> reserveNextGeneration(
-    BullVaultRecord current,
-  ) => throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> releaseGeneration({
-    required String lineageId,
-    required int generation,
-  }) => throw UnimplementedError();
+  ) async => Ok(
+    records.values.where((record) => record.lineageId == lineageId).toList(),
+  );
 }
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
@@ -184,13 +164,11 @@ class _MockReserveBip48AccountUsecase extends Mock
 
 class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
-class _MockSetWalletHiddenUsecase extends Mock
-    implements SetWalletHiddenUsecase {}
-
 class _MockWalletSignerOwnershipPort extends Mock
     implements WalletSignerOwnershipPort {}
 
-final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
+final class _ParsingDescriptorPort extends Fake
+    implements BitcoinDescriptorPort {
   WalletAlreadyExistsException? duplicate;
   Wallet? importedWallet;
 
@@ -205,13 +183,6 @@ final class _ParsingDescriptorPort implements BitcoinDescriptorPort {
     required String descriptor,
     required Network network,
   }) => parseTestBullVaultDescriptor(descriptor: descriptor, network: network);
-
-  @override
-  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
-  analyzeBitcoinPolicyDescriptor({
-    required String descriptor,
-    required Network network,
-  }) => throw UnimplementedError();
 
   @override
   Future<Wallet> importDescriptor({
@@ -247,7 +218,6 @@ void main() {
   late _MockGetWalletUsecase getWallet;
   late _MockReserveBip48AccountUsecase reserveAccount;
   late _MockDeleteWalletUsecase deleteWallet;
-  late _MockSetWalletHiddenUsecase setWalletHidden;
   late _MockWalletSignerOwnershipPort walletSignerOwnership;
   late RestoreBullVaultUsecase usecase;
   late _MemorySeedDatasource seedDatasource;
@@ -268,7 +238,6 @@ void main() {
     getWallet = _MockGetWalletUsecase();
     reserveAccount = _MockReserveBip48AccountUsecase();
     deleteWallet = _MockDeleteWalletUsecase();
-    setWalletHidden = _MockSetWalletHiddenUsecase();
     walletSignerOwnership = _MockWalletSignerOwnershipPort();
     seedDatasource = _MemorySeedDatasource();
     seedRepository = SeedRepository(source: seedDatasource);
@@ -282,7 +251,6 @@ void main() {
       getWallet,
       reserveAccount,
       deleteWallet,
-      setWalletHidden,
       walletSignerOwnership,
       getAllSeeds,
       ensureCanonicalSeed,
@@ -352,12 +320,6 @@ void main() {
     when(
       () => deleteWallet.execute(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async {});
-    when(
-      () => setWalletHidden.execute(
-        walletId: any(named: 'walletId'),
-        isHidden: any(named: 'isHidden'),
-      ),
-    ).thenAnswer((_) async {});
   });
 
   test(
@@ -390,12 +352,7 @@ void main() {
         ),
       ).called(1);
       expect(descriptorPort.importedWallet!.isHidden, isTrue);
-      verify(
-        () => setWalletHidden.execute(
-          walletId: restored.wallet.id,
-          isHidden: false,
-        ),
-      ).called(1);
+      expect(repository.publishedWalletIds, contains(restored.wallet.id));
     },
   );
 
@@ -434,7 +391,6 @@ void main() {
       getWallet,
       reserveAccount,
       deleteWallet,
-      setWalletHidden,
       walletSignerOwnership,
       getAllSeeds,
       ensureCanonicalSeed,
@@ -462,54 +418,6 @@ void main() {
     expect(maxActiveSettingsCalls, 1);
     expect(repository.records, hasLength(1));
   });
-
-  test(
-    'keeps a staged restore resumable when publication is interrupted',
-    () async {
-      final package = BullVaultRecoveryPackage(policy: policy);
-      var attempts = 0;
-      when(
-        () => setWalletHidden.execute(
-          walletId: 'bullvault-wallet',
-          isHidden: false,
-        ),
-      ).thenAnswer((_) async {
-        if (attempts++ == 0) throw Exception('interrupted publication');
-      });
-
-      final first = await usecase.execute(
-        kind: BullVaultRestoreInputKind.recoveryPackage,
-        source: codec.encode(package),
-        label: 'Restored vault',
-      );
-
-      expect(first, isA<Err<BullVaultRestoreResult, BullVaultFailure>>());
-      expect(repository.records, contains('bullvault-wallet'));
-      verifyNever(() => deleteWallet.execute(walletId: 'bullvault-wallet'));
-
-      final stagedWallet = descriptorPort.importedWallet!;
-      descriptorPort.duplicate = const WalletAlreadyExistsException(
-        'bullvault-wallet',
-      );
-      when(
-        () => getWallet.execute('bullvault-wallet'),
-      ).thenAnswer((_) async => stagedWallet);
-
-      final retried = await usecase.execute(
-        kind: BullVaultRestoreInputKind.recoveryPackage,
-        source: codec.encode(package),
-        label: 'Restored vault',
-      );
-
-      expect(retried, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
-      verify(
-        () => setWalletHidden.execute(
-          walletId: 'bullvault-wallet',
-          isHidden: false,
-        ),
-      ).called(2);
-    },
-  );
 
   test('does not infer schedule metadata absent from a descriptor', () async {
     final result = await usecase.execute(
@@ -644,6 +552,45 @@ void main() {
     );
   });
 
+  test(
+    'preserves assigned hardware when restoring an external everyday key',
+    () async {
+      final externalPolicy = _hardwarePolicy(descriptorPort: descriptorPort);
+      final source = externalPolicy.descriptor;
+      final first = await usecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: source,
+        label: 'Hardware vault',
+      );
+      final wallet =
+          (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value.wallet;
+      final assigned = wallet.copyWith(
+        signers: [
+          for (final signer in wallet.signers)
+            signer.copyWith(
+              signer: SignerEntity.remote,
+              signerDevice: SignerDeviceEntity.ledgerNanoX,
+            ),
+        ],
+      );
+      descriptorPort.duplicate = WalletAlreadyExistsException(wallet.id);
+      when(
+        () => getWallet.execute(wallet.id),
+      ).thenAnswer((_) async => assigned);
+
+      final result = await usecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: source,
+        label: 'Hardware vault',
+      );
+      final restored =
+          (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+      expect(restored.wallet.signers, assigned.signers);
+      expect(restored.mobileAccess, BullVaultMobileAccess.unavailable);
+      verifyZeroInteractions(walletSignerOwnership);
+    },
+  );
+
   test('recognizes every supported BullVault profile exactly', () async {
     final allSigners = [
       _signer(BullVaultSignerRole.everyday, deriveSignerKeys(testMnemonics[0])),
@@ -720,6 +667,7 @@ void main() {
     expect(result, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
     final restored =
         (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(restored.mobileAccess, BullVaultMobileAccess.unavailable);
     expect(
       restored.record.recoveryPackage.policy.everydayKey.signer,
       SignerEntity.none,
@@ -775,6 +723,12 @@ void main() {
         );
         final restored =
             (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+        expect(
+          restored.mobileAccess,
+          passphrase == null
+              ? BullVaultMobileAccess.recoveryOnly
+              : BullVaultMobileAccess.available,
+        );
         final canonical = SeedModel.mnemonic(
           mnemonicWords: original.mnemonicWords,
         );
@@ -1165,10 +1119,6 @@ void main() {
         repository.records[previousWalletId]!.successorWalletId,
         wallet.id,
       );
-      verify(
-        () =>
-            setWalletHidden.execute(walletId: previousWalletId, isHidden: true),
-      ).called(1);
     },
   );
 
@@ -1347,12 +1297,7 @@ void main() {
 
       expect(result, isA<Err<BullVaultRestoreResult, BullVaultFailure>>());
     }
-    verifyNever(
-      () => setWalletHidden.execute(
-        walletId: any(named: 'walletId'),
-        isHidden: any(named: 'isHidden'),
-      ),
-    );
+    expect(repository.publishedWalletIds, isEmpty);
   });
 
   test('does not delete an adopted wallet when metadata save fails', () async {
@@ -1426,7 +1371,7 @@ void main() {
   test(
     'preserves the account when a restored wallet cannot be removed',
     () async {
-      repository.saveFailure = const BullVaultCreationFailure();
+      repository.readFailure = const BullVaultCreationFailure();
       when(
         () => deleteWallet.execute(walletId: any(named: 'walletId')),
       ).thenThrow(Exception('wallet deletion failed'));
@@ -1472,27 +1417,6 @@ void main() {
       ).called(1);
     },
   );
-
-  test('keeps a new wallet when metadata rollback fails', () async {
-    repository.deleteFailure = const BullVaultCreationFailure();
-    when(
-      () => reserveAccount.execute(
-        seedFingerprint: any(named: 'seedFingerprint'),
-        coinType: any(named: 'coinType'),
-        account: any(named: 'account'),
-      ),
-    ).thenAnswer((_) async => const Err(Bip48AccountAllocationFailure()));
-
-    final result = await usecase.execute(
-      kind: BullVaultRestoreInputKind.descriptor,
-      source: policy.descriptor,
-      label: 'Restored vault',
-    );
-
-    expect(result, isA<Err<BullVaultRestoreResult, BullVaultFailure>>());
-    expect(repository.records, contains('bullvault-wallet'));
-    verifyNever(() => deleteWallet.execute(walletId: any(named: 'walletId')));
-  });
 }
 
 BullVaultPolicy _policyAtGeneration({

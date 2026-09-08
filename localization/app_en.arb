@@ -16450,7 +16450,7 @@
   },
   "bullVaultScheduleDescription": "Choose when each recovery option becomes available.",
   "bullVaultAdvancedSetup": "Advanced setup",
-  "bullVaultRestorePackageDescription": "This restores the wallet details, keys, and original recovery schedule.",
+  "bullVaultRestorePackageDescription": "Restores the wallet details and recovery schedule. The recovery package contains no private keys.",
   "@bullVaultPhysicalBackupVerified": {
     "description": "BullVault status for a verified physical Bull mnemonic backup"
   },
@@ -16488,7 +16488,7 @@
   "@bullVaultRestoreEntry": {
     "description": "Settings entry for restoring a BullVault"
   },
-  "bullVaultRestoreDescriptorDescription": "Use this only when the recovery package is unavailable. Bull will verify that the descriptor matches a BullVault and your mobile key.",
+  "bullVaultRestoreDescriptorDescription": "Use this when the recovery package is unavailable. Bull checks the vault policy and which keys are available on this phone.",
   "bullVaultRestoreTitle": "Restore BullVault",
   "@bullVaultWalletLabel": {
     "description": "Default label for a newly created BullVault wallet"
@@ -16612,7 +16612,7 @@
   "@bullVaultExtraInheritanceChoiceDescription": {
     "description": "Inheritance choice explanation for the two-cold-key setup."
   },
-  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for this phone and network.",
+  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for the selected network.",
   "@bullVaultRestoreDescriptorAction": {
     "description": "Action to restore BullVault from a descriptor"
   },
@@ -17191,5 +17191,15 @@
   },
   "@sendPendingPayjoin": {
     "description": "Status of a saved payment handed off to Payjoin"
-  }
+  },
+  "@bullVaultRestoreRecoveryOnly": {},
+  "bullVaultRestoreCompleteTitle": "BullVault restored",
+  "bullVaultRestoreHardwareSetup": "Register the vault on your hardware wallets again before using them to sign.",
+  "bullVaultRestoreRecoveryOnly": "Delayed mobile recovery is available. To use your mobile key before that date, enter its original passphrase when signing.",
+  "@bullVaultRestoreWatchOnly": {},
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "@bullVaultRestoreCompleteTitle": {},
+  "@bullVaultRestoreMobileAvailable": {},
+  "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
+  "@bullVaultRestoreHardwareSetup": {}
 }

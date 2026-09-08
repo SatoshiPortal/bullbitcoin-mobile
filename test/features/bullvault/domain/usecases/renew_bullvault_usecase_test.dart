@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
@@ -32,13 +31,10 @@ class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
 
 class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
 
-class _MockSetWalletHiddenUsecase extends Mock
-    implements SetWalletHiddenUsecase {}
-
 class _MockPrepareBullVaultTimeReferenceUsecase extends Mock
     implements PrepareBullVaultTimeReferenceUsecase {}
 
-final class _RenewDescriptorPort implements BitcoinDescriptorPort {
+final class _RenewDescriptorPort extends Fake implements BitcoinDescriptorPort {
   Wallet? importedWallet;
   int importCount = 0;
 
@@ -58,13 +54,6 @@ final class _RenewDescriptorPort implements BitcoinDescriptorPort {
     keyIdPrefix: 'replacement-key',
     signerIdPrefix: 'unassigned',
   );
-
-  @override
-  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
-  analyzeBitcoinPolicyDescriptor({
-    required String descriptor,
-    required Network network,
-  }) => throw UnimplementedError();
 
   @override
   Future<Wallet> importDescriptor({
@@ -89,7 +78,7 @@ final class _RenewDescriptorPort implements BitcoinDescriptorPort {
   }
 }
 
-final class _RenewRepository implements BullVaultRepository {
+final class _RenewRepository extends Fake implements BullVaultRepository {
   final Map<String, BullVaultRecord> records;
   BullVaultRecord? saved;
   BullVaultFailure? saveFailure;
@@ -98,33 +87,6 @@ final class _RenewRepository implements BullVaultRepository {
 
   _RenewRepository(BullVaultRecord current)
     : records = {current.walletId: current};
-
-  @override
-  Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
-    String source,
-  ) => throw UnimplementedError();
-
-  @override
-  String encodeRecoveryPackage(BullVaultRecoveryPackage recoveryPackage) =>
-      throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> activateRenewal({
-    required BullVaultRecord previous,
-    required BullVaultRecord replacement,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> linkRestoredRenewal({
-    required BullVaultRecord previous,
-    required BullVaultRecord successor,
-  }) => throw UnimplementedError();
-
-  @override
-  Future<Result<void, BullVaultFailure>> cancelRenewal({
-    required String previousWalletId,
-    required String replacementWalletId,
-  }) => throw UnimplementedError();
 
   @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getByWalletId(
@@ -139,9 +101,10 @@ final class _RenewRepository implements BullVaultRepository {
   );
 
   @override
-  Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
-    Network network,
-  ) => throw UnimplementedError();
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getWalletLineage(
+    String walletId, {
+    String? memberWalletId,
+  }) async => getLineage(records[walletId]!.lineageId);
 
   @override
   Future<Result<int, BullVaultFailure>> reserveNextGeneration(
@@ -440,7 +403,6 @@ _RenewFixture _renewFixture({
   final descriptorPort = _RenewDescriptorPort();
   final getWallet = _MockGetWalletUsecase();
   final deleteWallet = _MockDeleteWalletUsecase();
-  final setWalletHidden = _MockSetWalletHiddenUsecase();
   final reference = DateTime.utc(2027, 1, 15, 12);
   final everyday = _signer(
     BullVaultSignerRole.everyday,
@@ -530,12 +492,6 @@ _RenewFixture _renewFixture({
         ? currentWallet
         : descriptorPort.importedWallet;
   });
-  when(
-    () => setWalletHidden.execute(
-      walletId: any(named: 'walletId'),
-      isHidden: any(named: 'isHidden'),
-    ),
-  ).thenAnswer((_) async {});
   final prepareTimeReference = _MockPrepareBullVaultTimeReferenceUsecase();
   when(
     () => prepareTimeReference.execute(isTestnet: true),
@@ -545,7 +501,7 @@ _RenewFixture _renewFixture({
     descriptorPort,
     getWallet,
     deleteWallet,
-    ResumeBullVaultRenewalUsecase(repository, getWallet, setWalletHidden),
+    ResumeBullVaultRenewalUsecase(repository, getWallet),
     prepareTimeReference,
   );
   return _RenewFixture(
