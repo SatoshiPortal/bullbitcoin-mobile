@@ -1,8 +1,19 @@
 import 'package:bb_mobile/core/failures/failure.dart';
 import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 sealed class SendFailure extends Failure {
   const SendFailure([super.logMessage]);
+
+  factory SendFailure.fromBitcoinSigning(BitcoinSigningFailure failure) =>
+      switch (failure.kind) {
+        BitcoinSigningFailureKind.passphraseMismatch =>
+          SendSignerPassphraseMismatchFailure(failure.logMessage),
+        BitcoinSigningFailureKind.unexpected => SendUnexpectedFailure(
+          failure.logMessage,
+        ),
+        _ => SendTransactionSigningFailure(failure.logMessage),
+      };
 }
 
 final class SendInvalidPaymentRequestFailure extends SendFailure {
@@ -22,8 +33,8 @@ final class SendInvoiceAmountRequiredFailure extends SendFailure {
   const SendInvoiceAmountRequiredFailure([super.logMessage]);
 }
 
-final class SendHardwareWalletFailure extends SendFailure {
-  const SendHardwareWalletFailure([super.logMessage]);
+final class SendSwapWalletFailure extends SendFailure {
+  const SendSwapWalletFailure([super.logMessage]);
 }
 
 final class SendInsufficientBalanceFailure extends SendFailure {

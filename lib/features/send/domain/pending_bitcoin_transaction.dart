@@ -1,7 +1,13 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy_path.dart';
 
-enum PendingBitcoinTransactionStage { draft, needsSignatures, readyToBroadcast }
+enum PendingBitcoinTransactionStage {
+  draft,
+  needsSignatures,
+  readyToBroadcast,
+  broadcastPending,
+  payjoinPending,
+}
 
 final class PendingBitcoinTransaction {
   final String id;
@@ -25,6 +31,7 @@ final class PendingBitcoinTransaction {
   final int revision;
   final bool isConflict;
   final bool isPolicyReady;
+  final bool isValidationUnavailable;
   final int signersNeeded;
 
   PendingBitcoinTransaction({
@@ -49,6 +56,7 @@ final class PendingBitcoinTransaction {
     this.revision = 0,
     this.isConflict = false,
     this.isPolicyReady = true,
+    this.isValidationUnavailable = false,
     this.signersNeeded = 0,
   }) : selectedOutpoints = Set.unmodifiable(selectedOutpoints) {
     if (id.isEmpty) throw ArgumentError.value(id, 'id');
@@ -90,7 +98,11 @@ final class PendingBitcoinTransaction {
 
   bool get isDraft => stage == PendingBitcoinTransactionStage.draft;
   bool get isReadyToBroadcast =>
-      stage == PendingBitcoinTransactionStage.readyToBroadcast;
+      stage == PendingBitcoinTransactionStage.readyToBroadcast ||
+      stage == PendingBitcoinTransactionStage.broadcastPending;
+  bool get isSubmission =>
+      stage == PendingBitcoinTransactionStage.broadcastPending ||
+      stage == PendingBitcoinTransactionStage.payjoinPending;
 
   PendingBitcoinTransaction copyWith({
     PendingBitcoinTransactionStage? stage,
@@ -115,6 +127,7 @@ final class PendingBitcoinTransaction {
     int? revision,
     bool? isConflict,
     bool? isPolicyReady,
+    bool? isValidationUnavailable,
     int? signersNeeded,
   }) => PendingBitcoinTransaction(
     id: id,
@@ -140,6 +153,8 @@ final class PendingBitcoinTransaction {
     revision: revision ?? this.revision,
     isConflict: isConflict ?? this.isConflict,
     isPolicyReady: isPolicyReady ?? this.isPolicyReady,
+    isValidationUnavailable:
+        isValidationUnavailable ?? this.isValidationUnavailable,
     signersNeeded: signersNeeded ?? this.signersNeeded,
   );
 }

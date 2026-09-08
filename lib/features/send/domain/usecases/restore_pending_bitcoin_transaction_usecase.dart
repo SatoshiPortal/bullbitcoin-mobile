@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -121,25 +120,33 @@ class RestorePendingBitcoinTransactionUsecase {
         return const Err(SendStoredTransactionInvalidFailure());
       }
 
-      final PendingBitcoinTransaction validated;
+      final ValidatedPendingBitcoinTransaction validation;
       switch (await _validatePendingBitcoinTransactionUsecase.execute(stored)) {
         case Ok(:final value):
-          validated = value;
+          validation = value;
         case Err(:final failure):
           return Err(failure);
       }
+      final validated = validation.transaction;
       final BitcoinSigningPlanDetails signingPlanDetails;
-      switch (await _getBitcoinSigningPlanUsecase.execute(
-        wallet: wallet,
-        psbt: validated.psbt,
-        selection: validated.policySelection,
-        allowSpentWalletInputs: true,
-        allowFrozenWalletInputs: true,
-      )) {
+      final details = validation.details == null
+          ? await _getBitcoinSigningPlanUsecase.execute(
+              wallet: wallet,
+              psbt: validated.psbt,
+              selection: validated.policySelection,
+              allowSpentWalletInputs: true,
+              allowFrozenWalletInputs: true,
+            )
+          : Ok<BitcoinSigningPlanDetails, SendFailure>(validation.details!);
+      switch (details) {
         case Ok(:final value):
           signingPlanDetails = value;
         case Err(:final failure):
-          return Err(_mapSigningFailure(failure));
+          return Err(
+            failure is SendUnexpectedFailure
+                ? failure
+                : const SendStoredTransactionInvalidFailure(),
+          );
       }
       final absoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
           .execute(psbt: validated.psbt!);
@@ -185,9 +192,3 @@ class RestorePendingBitcoinTransactionUsecase {
     return (currencyCode, exchangeRate);
   }
 }
-
-SendFailure _mapSigningFailure(BitcoinSigningFailure failure) =>
-    switch (failure.kind) {
-      BitcoinSigningFailureKind.unexpected => const SendUnexpectedFailure(),
-      _ => const SendStoredTransactionInvalidFailure(),
-    };

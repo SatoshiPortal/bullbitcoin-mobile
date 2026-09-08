@@ -15,6 +15,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
+import 'package:bb_mobile/features/send/domain/swap_wallet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -191,6 +193,7 @@ abstract class SendState with _$SendState {
     @Default(false) bool isSigningConflict,
     @Default(false) bool isSigningPolicyReady,
     @Default(false) bool persistingPendingTransaction,
+    PendingBitcoinTransactionStage? pendingTransactionStage,
     @Default(false) bool hasUnsavedDraftChanges,
     @Default('') String balanceApproximatedAmount,
     // Set when a Liquid build fails because the wallet has too many UTXOs to
@@ -209,13 +212,23 @@ abstract class SendState with _$SendState {
 
   bool get supportsBitcoinDraft =>
       selectedWallet?.isBitcoin == true &&
-      (paymentRequest == null ||
-          paymentRequest is BitcoinPaymentRequest ||
+      (paymentRequest is BitcoinPaymentRequest ||
           (paymentRequest is Bip21PaymentRequest &&
               (paymentRequest! as Bip21PaymentRequest).network.isBitcoin)) &&
       lightningOrder == null &&
       chainSwap == null &&
+      !signingTransaction &&
+      !broadcastingTransaction &&
+      txId == null &&
       !isSigningSession;
+
+  bool get isPendingSubmission =>
+      pendingTransactionStage ==
+          PendingBitcoinTransactionStage.broadcastPending ||
+      isPendingPayjoin;
+
+  bool get isPendingPayjoin =>
+      pendingTransactionStage == PendingBitcoinTransactionStage.payjoinPending;
 
   /// Whether a payjoin is structurally possible for this send: the setting
   /// is on, the wallet is a standard local single-signature wallet that the
@@ -241,7 +254,9 @@ abstract class SendState with _$SendState {
   /// which unifies a control's state and its action guard. Used BOTH to
   /// gate `signTransaction`'s payjoin branch and as the confirm screen's
   /// toggle value, so the two can never disagree.
-  bool get willAttemptPayjoin => isPayjoinAvailable && !payjoinOptedOut;
+  bool get willAttemptPayjoin =>
+      isPendingPayjoin ||
+      (!isPendingSubmission && isPayjoinAvailable && !payjoinOptedOut);
 
   bool get requiresExternalBitcoinSigning =>
       bitcoinSigningPlan?.requiresExternalSigning ??
@@ -342,7 +357,7 @@ abstract class SendState with _$SendState {
     if (policy == null || policy.pathRequirements(selection).isNotEmpty) {
       return const [];
     }
-    return policy.requiredHashlocks(selection);
+    return policy.hashlocksForSelection(selection);
   }
 
   List<BitcoinHashlockPolicyNode> get missingBitcoinPolicyHashlocks =>
@@ -355,7 +370,11 @@ abstract class SendState with _$SendState {
           .toList(growable: false);
 
   bool get requiresBitcoinPolicyPreimage =>
-      missingBitcoinPolicyHashlocks.isNotEmpty;
+      bitcoinSigningPlan != null &&
+      !bitcoinSigningPlan!.policy.hasRequiredPreimages(
+        bitcoinPolicySelection ?? const BitcoinPolicySelection.empty(),
+        satisfiedBitcoinPolicyPreimages,
+      );
 
   BitcoinPolicyActivation? get nextBitcoinPolicyActivation {
     final plan = bitcoinSigningPlan;
@@ -674,17 +693,17 @@ abstract class SendState with _$SendState {
       signingTransaction ||
       broadcastingTransaction ||
       persistingPendingTransaction ||
-      requiresBitcoinPolicySelection ||
-      requiresBitcoinPolicyPreimage;
+      (!isPendingSubmission &&
+          (requiresBitcoinPolicySelection || requiresBitcoinPolicyPreimage));
 
-  bool get blocksSwapDueToHardwareWallet {
+  bool get blocksSwapForSelectedWallet {
     final wallet = selectedWallet;
     if (wallet == null) return false;
     final isSwap =
         sendType == SendType.lightning ||
         (sendType == SendType.liquid && !wallet.isLiquid) ||
         (sendType == SendType.bitcoin && wallet.isLiquid);
-    return isSwap && wallet.isHardwareWallet;
+    return isSwap && !supportsSwapWallet(wallet);
   }
 
   bool get requireChainSwap {

@@ -28,6 +28,9 @@ class SendPendingTransactionsSection extends StatelessWidget {
     final failure = context.select(
       (SendPendingTransactionsCubit cubit) => cubit.state.failure,
     );
+    final hasUnavailable = transactions.any(
+      (transaction) => transaction.isValidationUnavailable,
+    );
     if (transactions.isEmpty && invalidCount == 0 && failure == null) {
       return const SliverToBoxAdapter();
     }
@@ -43,13 +46,15 @@ class SendPendingTransactionsSection extends StatelessWidget {
               color: context.appColors.secondary,
             ),
             const Gap(8),
-            if (failure != null) ...[
-              InfoCard(
-                description: context.loc.oopsSomethingWentWrong,
-                tagColor: context.appColors.error,
-                bgColor: context.appColors.errorContainer,
-              ),
-              const Gap(8),
+            if (failure != null || hasUnavailable) ...[
+              if (failure != null) ...[
+                InfoCard(
+                  description: context.loc.oopsSomethingWentWrong,
+                  tagColor: context.appColors.error,
+                  bgColor: context.appColors.errorContainer,
+                ),
+                const Gap(8),
+              ],
               BBButton.small(
                 label: context.loc.retry,
                 onPressed: context.read<SendPendingTransactionsCubit>().retry,
@@ -126,7 +131,7 @@ class _PendingTransactionTile extends StatelessWidget {
                 BBText(
                   _status(context),
                   style: context.font.bodySmall,
-                  color: transaction.isConflict
+                  color: transaction.isConflict && !transaction.isSubmission
                       ? context.appColors.error
                       : context.appColors.textMuted,
                 ),
@@ -152,13 +157,25 @@ class _PendingTransactionTile extends StatelessWidget {
   }
 
   String _status(BuildContext context) {
-    if (transaction.isConflict) return context.loc.sendPendingConflict;
+    if (!transaction.isSubmission) {
+      if (transaction.isValidationUnavailable) {
+        return context.loc.transactionDetailLoadError;
+      }
+      if (transaction.isConflict) return context.loc.sendPendingConflict;
+      if (!transaction.isDraft && !transaction.isPolicyReady) {
+        return context.loc.sendSigningUnavailableTitle;
+      }
+    }
     return switch (transaction.stage) {
       PendingBitcoinTransactionStage.draft => context.loc.sendPendingDraft,
       PendingBitcoinTransactionStage.needsSignatures =>
         context.loc.sendSignersNeeded(transaction.signersNeeded),
       PendingBitcoinTransactionStage.readyToBroadcast =>
         context.loc.sendSigningReady,
+      PendingBitcoinTransactionStage.broadcastPending =>
+        context.loc.sendPendingBroadcast,
+      PendingBitcoinTransactionStage.payjoinPending =>
+        context.loc.sendPendingPayjoin,
     };
   }
 

@@ -57,13 +57,11 @@ class SendError extends StatelessWidget {
         ),
       );
     }
-    if (failure is SendPersistenceFailure ||
-        failure is SendPendingTransactionChangedFailure ||
-        failure is SendStoredTransactionInvalidFailure) {
+    if (failure != null) {
       return Padding(
         padding: const EdgeInsets.all(8),
         child: BBText(
-          failure!.toTranslated(context),
+          failure.toTranslated(context),
           style: context.font.bodyMedium,
           color: context.appColors.error,
           maxLines: 3,

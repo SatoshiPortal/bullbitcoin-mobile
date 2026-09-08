@@ -4,6 +4,12 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
 import 'package:bb_mobile/features/send/data/models/pending_bitcoin_transaction_model.dart';
+import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_mapper.dart';
+import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_repository_impl.dart';
+import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_pending_bitcoin_submission_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -107,6 +113,86 @@ void main() {
     await datasource.delete('pending-id', expectedRevision: 1);
     expect(await datasource.get('pending-id'), isNull);
   });
+
+  for (final stage in ['broadcastPending', 'payjoinPending']) {
+    test(
+      '$stage survives failed cleanup and cannot become editable again',
+      () async {
+        await datasource.save(_transaction());
+        final repository = PendingBitcoinTransactionRepositoryImpl(datasource);
+        final prepared =
+            await PreparePendingBitcoinSubmissionUsecase(repository).execute(
+              PendingBitcoinTransactionMapper.toEntity(
+                _transaction(policyChoices: const {}).copyWith(stage: stage),
+              ),
+              expectedRevision: 0,
+              containsPreimages: false,
+            );
+        final submitted =
+            (prepared as Ok<PendingBitcoinTransaction?, SendFailure>).value!;
+        final cleanup = await repository.delete(
+          submitted.id,
+          expectedRevision: 0,
+        );
+        expect(cleanup, isA<Err<void, SendFailure>>());
+        final reloaded = await datasource.get(submitted.id);
+        expect(reloaded?.stage, stage);
+        expect(reloaded?.psbt, submitted.psbt);
+        final reopened =
+            (await PendingBitcoinTransactionRepositoryImpl(
+                      datasource,
+                    ).get(submitted.id)
+                    as Ok<PendingBitcoinTransaction?, SendFailure>)
+                .value!;
+        expect(reopened.isDraft, isFalse);
+        expect(reopened.isSubmission, isTrue);
+        for (final replacement in [
+          reloaded!.copyWith(stage: 'draft', psbt: null),
+          reloaded.copyWith(psbt: 'different-payment'),
+        ]) {
+          await expectLater(
+            datasource.save(replacement, expectedRevision: submitted.revision),
+            throwsA(isA<PendingBitcoinTransactionChangedException>()),
+          );
+        }
+        expect(await datasource.get(submitted.id), reloaded);
+      },
+    );
+  }
+
+  test(
+    'hashlock submission removes its draft before exposing preimages',
+    () async {
+      final original = await datasource.save(
+        _transaction(policyChoices: const {}),
+      );
+      final repository = PendingBitcoinTransactionRepositoryImpl(datasource);
+      final usecase = PreparePendingBitcoinSubmissionUsecase(repository);
+      final transaction = PendingBitcoinTransactionMapper.toEntity(
+        original.copyWith(
+          stage: 'broadcastPending',
+          psbt: 'contains-preimages',
+        ),
+      );
+      final failed = await usecase.execute(
+        transaction,
+        expectedRevision: 1,
+        containsPreimages: true,
+      );
+      expect(failed, isA<Err<PendingBitcoinTransaction?, SendFailure>>());
+      expect(await datasource.get(original.id), original);
+      final ready = await usecase.execute(
+        transaction,
+        expectedRevision: 0,
+        containsPreimages: true,
+      );
+      expect(
+        (ready as Ok<PendingBitcoinTransaction?, SendFailure>).value,
+        isNull,
+      );
+      expect(await datasource.get(original.id), isNull);
+    },
+  );
 
   test('deletes pending transactions with their wallet', () async {
     final emissions = StreamIterator(datasource.watchWallet('wallet-id'));
