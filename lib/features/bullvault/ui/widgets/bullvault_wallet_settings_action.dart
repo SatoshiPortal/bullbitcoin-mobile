@@ -22,7 +22,6 @@ final class BullVaultWalletSettingsAction extends StatelessWidget {
       BullVaultLifecycleStatus.active ||
       BullVaultLifecycleStatus.migrating => details.record.walletId,
       BullVaultLifecycleStatus.pending ||
-      BullVaultLifecycleStatus.activating ||
       BullVaultLifecycleStatus.cancelled => details.record.previousVaultId,
     };
     if (routeWalletId == null) return const SizedBox.shrink();

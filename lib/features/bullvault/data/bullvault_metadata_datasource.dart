@@ -1,70 +1,105 @@
-import 'dart:convert';
-
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/features/bullvault/data/bullvault_record_model.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:drift/drift.dart';
 
 final class BullVaultMetadataDatasource {
-  static const _generationReservationPrefix =
-      'bullvault_generation_reservations_';
-  static const _recordPrefix = 'bullvault_record_';
+  final SqliteDatabase _database;
 
-  final KeyValueStorageDatasource<String> _storage;
+  const BullVaultMetadataDatasource(this._database);
 
-  const BullVaultMetadataDatasource(this._storage);
+  Future<T> transaction<T>(Future<T> Function() action) =>
+      _database.transaction(action);
 
-  Future<void> save(BullVaultRecordModel model) => _storage.saveValue(
-    key: '$_recordPrefix${model.walletId}',
-    value: jsonEncode(model.toJson()),
-  );
-
-  Future<void> delete(String walletId) =>
-      _storage.deleteValue('$_recordPrefix$walletId');
-
-  Future<BullVaultRecordModel?> load(String walletId) async {
-    final value = await _storage.getValue('$_recordPrefix$walletId');
-    if (value == null) return null;
-    return BullVaultRecordModel.fromJson(
-      jsonDecode(value) as Map<String, dynamic>,
-    );
+  Future<void> save(BullVaultRecordModel model) async {
+    await _database
+        .into(_database.bullVaultRecords)
+        .insertOnConflictUpdate(model);
   }
 
-  Future<List<BullVaultRecordModel>> loadLineage(String lineageId) async {
-    final records = await loadAll();
-    return records.where((record) => record.lineageId == lineageId).toList()
-      ..sort(
-        (first, second) =>
-            first.vaultGeneration.compareTo(second.vaultGeneration),
-      );
+  Future<void> delete(String walletId) async {
+    await (_database.delete(
+      _database.bullVaultRecords,
+    )..where((row) => row.walletId.equals(walletId))).go();
   }
 
-  Future<List<BullVaultRecordModel>> loadAll() async {
-    final values = await _storage.getAll();
-    return [
-      for (final entry in values.entries)
-        if (entry.key.startsWith(_recordPrefix))
-          BullVaultRecordModel.fromJson(
-            jsonDecode(entry.value) as Map<String, dynamic>,
-          ),
-    ];
+  Future<BullVaultRecordModel?> load(String walletId) => (_database.select(
+    _database.bullVaultRecords,
+  )..where((row) => row.walletId.equals(walletId))).getSingleOrNull();
+
+  Future<List<BullVaultRecordModel>> loadLineage(String lineageId) =>
+      (_database.select(_database.bullVaultRecords)
+            ..where((row) => row.lineageId.equals(lineageId))
+            ..orderBy([(row) => OrderingTerm.asc(row.vaultGeneration)]))
+          .get();
+
+  Future<List<BullVaultRecordModel>> loadPendingInitial() =>
+      (_database.select(_database.bullVaultRecords)..where(
+            (row) =>
+                row.vaultGeneration.equals(0) & row.status.equals('pending'),
+          ))
+          .get();
+
+  Future<Map<String, String>> migrationDestinations(
+    Set<String> walletIds,
+  ) async {
+    if (walletIds.isEmpty) return const {};
+    final previous = _database.alias(_database.bullVaultRecords, 'previous');
+    final active = _database.alias(_database.bullVaultRecords, 'active');
+    final rows =
+        await (_database.selectOnly(previous)
+              ..addColumns([previous.walletId, active.walletId])
+              ..join([
+                innerJoin(
+                  active,
+                  active.lineageId.equalsExp(previous.lineageId),
+                ),
+              ])
+              ..where(
+                active.walletId.isIn(walletIds) &
+                    active.status.equals('active') &
+                    previous.status.isIn(['migrating', 'cancelled']),
+              ))
+            .get();
+    return {
+      for (final row in rows)
+        row.read(previous.walletId)!: row.read(active.walletId)!,
+    };
   }
 
-  Future<Set<int>> loadGenerationReservations(String lineageId) async {
-    final value = await _storage.getValue(
-      '$_generationReservationPrefix$lineageId',
-    );
-    if (value == null) return {};
-    final decoded = jsonDecode(value);
-    if (decoded is! List<dynamic> || decoded.any((value) => value is! int)) {
-      throw const FormatException('Invalid BullVault generation reservations');
-    }
-    return decoded.cast<int>().toSet();
-  }
+  Future<Set<int>> loadGenerationReservations(String lineageId) async => {
+    for (final row in await (_database.select(
+      _database.bullVaultGenerationReservations,
+    )..where((row) => row.lineageId.equals(lineageId))).get())
+      row.generation,
+  };
 
   Future<void> saveGenerationReservations(
     String lineageId,
     Set<int> generations,
-  ) => _storage.saveValue(
-    key: '$_generationReservationPrefix$lineageId',
-    value: jsonEncode(generations.toList()..sort()),
-  );
+  ) => transaction(() async {
+    await (_database.delete(
+      _database.bullVaultGenerationReservations,
+    )..where((row) => row.lineageId.equals(lineageId))).go();
+    for (final generation in generations) {
+      await _database
+          .into(_database.bullVaultGenerationReservations)
+          .insert(
+            BullVaultGenerationReservationsCompanion.insert(
+              lineageId: lineageId,
+              generation: generation,
+            ),
+          );
+    }
+  });
+
+  Future<void> setWalletHidden(String walletId, bool hidden) async {
+    final changed =
+        await (_database.update(_database.walletMetadatas)
+              ..where((row) => row.id.equals(walletId)))
+            .write(WalletMetadatasCompanion(isHidden: Value(hidden)));
+    if (changed != 1) throw const BullVaultWalletNotFoundException();
+  }
+}
+
+final class BullVaultWalletNotFoundException implements Exception {
+  const BullVaultWalletNotFoundException();
 }

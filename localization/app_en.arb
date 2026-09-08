@@ -16177,7 +16177,7 @@
   "@bullVaultRestorePackageTitle": {
     "description": "Heading for BullVault recovery package restore"
   },
-  "bullVaultRestorePackageDescription": "This restores the wallet details, keys, and original recovery schedule.",
+  "bullVaultRestorePackageDescription": "Restores the wallet details and recovery schedule. The recovery package contains no private keys.",
   "@bullVaultRestorePackageDescription": {
     "description": "Explains recovery package restore"
   },
@@ -16193,7 +16193,7 @@
   "@bullVaultCompatibleDescriptorTitle": {
     "description": "Heading for descriptor fallback restore"
   },
-  "bullVaultRestoreDescriptorDescription": "Use this only when the recovery package is unavailable. Bull will verify that the descriptor matches a BullVault and your mobile key.",
+  "bullVaultRestoreDescriptorDescription": "Use this when the recovery package is unavailable. Bull checks the vault policy and which keys are available on this phone.",
   "@bullVaultRestoreDescriptorDescription": {
     "description": "Explains descriptor fallback restore"
   },
@@ -16205,7 +16205,7 @@
   "@bullVaultRestoreDescriptorAction": {
     "description": "Action to restore BullVault from a descriptor"
   },
-  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for this phone and network.",
+  "bullVaultFailureInvalidRecovery": "This recovery file or descriptor is not a valid BullVault for the selected network.",
   "@bullVaultFailureInvalidRecovery": {
     "description": "BullVault restore validation failure"
   },
@@ -16498,6 +16498,16 @@
   "@sendDraftKeptForLater": {
     "description": "Notice after switching a saved Bitcoin draft to another payment type"
   },
+  "bullVaultRestoreCompleteTitle": "BullVault restored",
+  "@bullVaultRestoreCompleteTitle": {},
+  "bullVaultRestoreMobileAvailable": "Your mobile key is available. Spending still requires the keys shown in your vault policy.",
+  "@bullVaultRestoreMobileAvailable": {},
+  "bullVaultRestoreRecoveryOnly": "Delayed mobile recovery is available. To use your mobile key before that date, enter its original passphrase when signing.",
+  "@bullVaultRestoreRecoveryOnly": {},
+  "bullVaultRestoreWatchOnly": "You can view this vault, but its mobile key is not available on this phone. Restore the matching seed and passphrase to use mobile signing, or use the other keys allowed by the vault policy.",
+  "@bullVaultRestoreWatchOnly": {},
+  "bullVaultRestoreHardwareSetup": "Register the vault on your hardware wallets again before using them to sign.",
+  "@bullVaultRestoreHardwareSetup": {},
   "sendPendingBroadcast": "Broadcast pending",
   "@sendPendingBroadcast": {
     "description": "Status of a saved Bitcoin transaction whose broadcast outcome needs to be checked"

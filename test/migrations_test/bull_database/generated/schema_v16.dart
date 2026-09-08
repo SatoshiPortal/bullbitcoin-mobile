@@ -12380,6 +12380,1098 @@ class SendTransactionPolicyChoicesCompanion
   }
 }
 
+class BullVaultRecords extends Table
+    with TableInfo<BullVaultRecords, BullVaultRecordsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  BullVaultRecords(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> lineageId = GeneratedColumn<String>(
+    'lineage_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> vaultGeneration = GeneratedColumn<int>(
+    'vault_generation',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> mobileAccount = GeneratedColumn<int>(
+    'mobile_account',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> mobileSeedFingerprint =
+      GeneratedColumn<String>(
+        'mobile_seed_fingerprint',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<int> mobilePassphraseRequired =
+      GeneratedColumn<int>(
+        'mobile_passphrase_required',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints:
+            'NOT NULL DEFAULT 0 CHECK (mobile_passphrase_required IN (0, 1))',
+        defaultValue: const CustomExpression('0'),
+      );
+  late final GeneratedColumn<int> birthHeight = GeneratedColumn<int>(
+    'birth_height',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> recoveryPackage = GeneratedColumn<String>(
+    'recovery_package',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> previousVaultId = GeneratedColumn<String>(
+    'previous_vault_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> successorWalletId =
+      GeneratedColumn<String>(
+        'successor_wallet_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> hardwareSetupComplete = GeneratedColumn<int>(
+    'hardware_setup_complete',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (hardware_setup_complete IN (0, 1))',
+  );
+  late final GeneratedColumn<int> hardwareSetupDeferred = GeneratedColumn<int>(
+    'hardware_setup_deferred',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (hardware_setup_deferred IN (0, 1))',
+  );
+  late final GeneratedColumn<String> completedHardwareSignerIdsJson =
+      GeneratedColumn<String>(
+        'completed_hardware_signer_ids_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        $customConstraints: 'NOT NULL',
+      );
+  late final GeneratedColumn<int> recoveryPackageConfirmed =
+      GeneratedColumn<int>(
+        'recovery_package_confirmed',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+        $customConstraints:
+            'NOT NULL CHECK (recovery_package_confirmed IN (0, 1))',
+      );
+  late final GeneratedColumn<int> mobileBackupDeferred = GeneratedColumn<int>(
+    'mobile_backup_deferred',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (mobile_backup_deferred IN (0, 1))',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    walletId,
+    lineageId,
+    vaultGeneration,
+    mobileAccount,
+    mobileSeedFingerprint,
+    mobilePassphraseRequired,
+    birthHeight,
+    recoveryPackage,
+    previousVaultId,
+    successorWalletId,
+    status,
+    hardwareSetupComplete,
+    hardwareSetupDeferred,
+    completedHardwareSignerIdsJson,
+    recoveryPackageConfirmed,
+    mobileBackupDeferred,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bull_vault_records';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {lineageId, vaultGeneration},
+  ];
+  @override
+  BullVaultRecordsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BullVaultRecordsData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      lineageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lineage_id'],
+      )!,
+      vaultGeneration: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vault_generation'],
+      )!,
+      mobileAccount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mobile_account'],
+      ),
+      mobileSeedFingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mobile_seed_fingerprint'],
+      ),
+      mobilePassphraseRequired: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mobile_passphrase_required'],
+      )!,
+      birthHeight: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}birth_height'],
+      ),
+      recoveryPackage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recovery_package'],
+      )!,
+      previousVaultId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_vault_id'],
+      ),
+      successorWalletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}successor_wallet_id'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      hardwareSetupComplete: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hardware_setup_complete'],
+      )!,
+      hardwareSetupDeferred: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hardware_setup_deferred'],
+      )!,
+      completedHardwareSignerIdsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}completed_hardware_signer_ids_json'],
+      )!,
+      recoveryPackageConfirmed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recovery_package_confirmed'],
+      )!,
+      mobileBackupDeferred: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mobile_backup_deferred'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  BullVaultRecords createAlias(String alias) {
+    return BullVaultRecords(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id)',
+    'UNIQUE(lineage_id, vault_generation)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class BullVaultRecordsData extends DataClass
+    implements Insertable<BullVaultRecordsData> {
+  final String walletId;
+  final String lineageId;
+  final int vaultGeneration;
+  final int? mobileAccount;
+  final String? mobileSeedFingerprint;
+  final int mobilePassphraseRequired;
+  final int? birthHeight;
+  final String recoveryPackage;
+  final String? previousVaultId;
+  final String? successorWalletId;
+  final String status;
+  final int hardwareSetupComplete;
+  final int hardwareSetupDeferred;
+  final String completedHardwareSignerIdsJson;
+  final int recoveryPackageConfirmed;
+  final int mobileBackupDeferred;
+  final String createdAt;
+  const BullVaultRecordsData({
+    required this.walletId,
+    required this.lineageId,
+    required this.vaultGeneration,
+    this.mobileAccount,
+    this.mobileSeedFingerprint,
+    required this.mobilePassphraseRequired,
+    this.birthHeight,
+    required this.recoveryPackage,
+    this.previousVaultId,
+    this.successorWalletId,
+    required this.status,
+    required this.hardwareSetupComplete,
+    required this.hardwareSetupDeferred,
+    required this.completedHardwareSignerIdsJson,
+    required this.recoveryPackageConfirmed,
+    required this.mobileBackupDeferred,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['lineage_id'] = Variable<String>(lineageId);
+    map['vault_generation'] = Variable<int>(vaultGeneration);
+    if (!nullToAbsent || mobileAccount != null) {
+      map['mobile_account'] = Variable<int>(mobileAccount);
+    }
+    if (!nullToAbsent || mobileSeedFingerprint != null) {
+      map['mobile_seed_fingerprint'] = Variable<String>(mobileSeedFingerprint);
+    }
+    map['mobile_passphrase_required'] = Variable<int>(mobilePassphraseRequired);
+    if (!nullToAbsent || birthHeight != null) {
+      map['birth_height'] = Variable<int>(birthHeight);
+    }
+    map['recovery_package'] = Variable<String>(recoveryPackage);
+    if (!nullToAbsent || previousVaultId != null) {
+      map['previous_vault_id'] = Variable<String>(previousVaultId);
+    }
+    if (!nullToAbsent || successorWalletId != null) {
+      map['successor_wallet_id'] = Variable<String>(successorWalletId);
+    }
+    map['status'] = Variable<String>(status);
+    map['hardware_setup_complete'] = Variable<int>(hardwareSetupComplete);
+    map['hardware_setup_deferred'] = Variable<int>(hardwareSetupDeferred);
+    map['completed_hardware_signer_ids_json'] = Variable<String>(
+      completedHardwareSignerIdsJson,
+    );
+    map['recovery_package_confirmed'] = Variable<int>(recoveryPackageConfirmed);
+    map['mobile_backup_deferred'] = Variable<int>(mobileBackupDeferred);
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  BullVaultRecordsCompanion toCompanion(bool nullToAbsent) {
+    return BullVaultRecordsCompanion(
+      walletId: Value(walletId),
+      lineageId: Value(lineageId),
+      vaultGeneration: Value(vaultGeneration),
+      mobileAccount: mobileAccount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mobileAccount),
+      mobileSeedFingerprint: mobileSeedFingerprint == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mobileSeedFingerprint),
+      mobilePassphraseRequired: Value(mobilePassphraseRequired),
+      birthHeight: birthHeight == null && nullToAbsent
+          ? const Value.absent()
+          : Value(birthHeight),
+      recoveryPackage: Value(recoveryPackage),
+      previousVaultId: previousVaultId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(previousVaultId),
+      successorWalletId: successorWalletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(successorWalletId),
+      status: Value(status),
+      hardwareSetupComplete: Value(hardwareSetupComplete),
+      hardwareSetupDeferred: Value(hardwareSetupDeferred),
+      completedHardwareSignerIdsJson: Value(completedHardwareSignerIdsJson),
+      recoveryPackageConfirmed: Value(recoveryPackageConfirmed),
+      mobileBackupDeferred: Value(mobileBackupDeferred),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory BullVaultRecordsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BullVaultRecordsData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      lineageId: serializer.fromJson<String>(json['lineageId']),
+      vaultGeneration: serializer.fromJson<int>(json['vaultGeneration']),
+      mobileAccount: serializer.fromJson<int?>(json['mobileAccount']),
+      mobileSeedFingerprint: serializer.fromJson<String?>(
+        json['mobileSeedFingerprint'],
+      ),
+      mobilePassphraseRequired: serializer.fromJson<int>(
+        json['mobilePassphraseRequired'],
+      ),
+      birthHeight: serializer.fromJson<int?>(json['birthHeight']),
+      recoveryPackage: serializer.fromJson<String>(json['recoveryPackage']),
+      previousVaultId: serializer.fromJson<String?>(json['previousVaultId']),
+      successorWalletId: serializer.fromJson<String?>(
+        json['successorWalletId'],
+      ),
+      status: serializer.fromJson<String>(json['status']),
+      hardwareSetupComplete: serializer.fromJson<int>(
+        json['hardwareSetupComplete'],
+      ),
+      hardwareSetupDeferred: serializer.fromJson<int>(
+        json['hardwareSetupDeferred'],
+      ),
+      completedHardwareSignerIdsJson: serializer.fromJson<String>(
+        json['completedHardwareSignerIdsJson'],
+      ),
+      recoveryPackageConfirmed: serializer.fromJson<int>(
+        json['recoveryPackageConfirmed'],
+      ),
+      mobileBackupDeferred: serializer.fromJson<int>(
+        json['mobileBackupDeferred'],
+      ),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'lineageId': serializer.toJson<String>(lineageId),
+      'vaultGeneration': serializer.toJson<int>(vaultGeneration),
+      'mobileAccount': serializer.toJson<int?>(mobileAccount),
+      'mobileSeedFingerprint': serializer.toJson<String?>(
+        mobileSeedFingerprint,
+      ),
+      'mobilePassphraseRequired': serializer.toJson<int>(
+        mobilePassphraseRequired,
+      ),
+      'birthHeight': serializer.toJson<int?>(birthHeight),
+      'recoveryPackage': serializer.toJson<String>(recoveryPackage),
+      'previousVaultId': serializer.toJson<String?>(previousVaultId),
+      'successorWalletId': serializer.toJson<String?>(successorWalletId),
+      'status': serializer.toJson<String>(status),
+      'hardwareSetupComplete': serializer.toJson<int>(hardwareSetupComplete),
+      'hardwareSetupDeferred': serializer.toJson<int>(hardwareSetupDeferred),
+      'completedHardwareSignerIdsJson': serializer.toJson<String>(
+        completedHardwareSignerIdsJson,
+      ),
+      'recoveryPackageConfirmed': serializer.toJson<int>(
+        recoveryPackageConfirmed,
+      ),
+      'mobileBackupDeferred': serializer.toJson<int>(mobileBackupDeferred),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  BullVaultRecordsData copyWith({
+    String? walletId,
+    String? lineageId,
+    int? vaultGeneration,
+    Value<int?> mobileAccount = const Value.absent(),
+    Value<String?> mobileSeedFingerprint = const Value.absent(),
+    int? mobilePassphraseRequired,
+    Value<int?> birthHeight = const Value.absent(),
+    String? recoveryPackage,
+    Value<String?> previousVaultId = const Value.absent(),
+    Value<String?> successorWalletId = const Value.absent(),
+    String? status,
+    int? hardwareSetupComplete,
+    int? hardwareSetupDeferred,
+    String? completedHardwareSignerIdsJson,
+    int? recoveryPackageConfirmed,
+    int? mobileBackupDeferred,
+    String? createdAt,
+  }) => BullVaultRecordsData(
+    walletId: walletId ?? this.walletId,
+    lineageId: lineageId ?? this.lineageId,
+    vaultGeneration: vaultGeneration ?? this.vaultGeneration,
+    mobileAccount: mobileAccount.present
+        ? mobileAccount.value
+        : this.mobileAccount,
+    mobileSeedFingerprint: mobileSeedFingerprint.present
+        ? mobileSeedFingerprint.value
+        : this.mobileSeedFingerprint,
+    mobilePassphraseRequired:
+        mobilePassphraseRequired ?? this.mobilePassphraseRequired,
+    birthHeight: birthHeight.present ? birthHeight.value : this.birthHeight,
+    recoveryPackage: recoveryPackage ?? this.recoveryPackage,
+    previousVaultId: previousVaultId.present
+        ? previousVaultId.value
+        : this.previousVaultId,
+    successorWalletId: successorWalletId.present
+        ? successorWalletId.value
+        : this.successorWalletId,
+    status: status ?? this.status,
+    hardwareSetupComplete: hardwareSetupComplete ?? this.hardwareSetupComplete,
+    hardwareSetupDeferred: hardwareSetupDeferred ?? this.hardwareSetupDeferred,
+    completedHardwareSignerIdsJson:
+        completedHardwareSignerIdsJson ?? this.completedHardwareSignerIdsJson,
+    recoveryPackageConfirmed:
+        recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
+    mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  BullVaultRecordsData copyWithCompanion(BullVaultRecordsCompanion data) {
+    return BullVaultRecordsData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      lineageId: data.lineageId.present ? data.lineageId.value : this.lineageId,
+      vaultGeneration: data.vaultGeneration.present
+          ? data.vaultGeneration.value
+          : this.vaultGeneration,
+      mobileAccount: data.mobileAccount.present
+          ? data.mobileAccount.value
+          : this.mobileAccount,
+      mobileSeedFingerprint: data.mobileSeedFingerprint.present
+          ? data.mobileSeedFingerprint.value
+          : this.mobileSeedFingerprint,
+      mobilePassphraseRequired: data.mobilePassphraseRequired.present
+          ? data.mobilePassphraseRequired.value
+          : this.mobilePassphraseRequired,
+      birthHeight: data.birthHeight.present
+          ? data.birthHeight.value
+          : this.birthHeight,
+      recoveryPackage: data.recoveryPackage.present
+          ? data.recoveryPackage.value
+          : this.recoveryPackage,
+      previousVaultId: data.previousVaultId.present
+          ? data.previousVaultId.value
+          : this.previousVaultId,
+      successorWalletId: data.successorWalletId.present
+          ? data.successorWalletId.value
+          : this.successorWalletId,
+      status: data.status.present ? data.status.value : this.status,
+      hardwareSetupComplete: data.hardwareSetupComplete.present
+          ? data.hardwareSetupComplete.value
+          : this.hardwareSetupComplete,
+      hardwareSetupDeferred: data.hardwareSetupDeferred.present
+          ? data.hardwareSetupDeferred.value
+          : this.hardwareSetupDeferred,
+      completedHardwareSignerIdsJson:
+          data.completedHardwareSignerIdsJson.present
+          ? data.completedHardwareSignerIdsJson.value
+          : this.completedHardwareSignerIdsJson,
+      recoveryPackageConfirmed: data.recoveryPackageConfirmed.present
+          ? data.recoveryPackageConfirmed.value
+          : this.recoveryPackageConfirmed,
+      mobileBackupDeferred: data.mobileBackupDeferred.present
+          ? data.mobileBackupDeferred.value
+          : this.mobileBackupDeferred,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultRecordsData(')
+          ..write('walletId: $walletId, ')
+          ..write('lineageId: $lineageId, ')
+          ..write('vaultGeneration: $vaultGeneration, ')
+          ..write('mobileAccount: $mobileAccount, ')
+          ..write('mobileSeedFingerprint: $mobileSeedFingerprint, ')
+          ..write('mobilePassphraseRequired: $mobilePassphraseRequired, ')
+          ..write('birthHeight: $birthHeight, ')
+          ..write('recoveryPackage: $recoveryPackage, ')
+          ..write('previousVaultId: $previousVaultId, ')
+          ..write('successorWalletId: $successorWalletId, ')
+          ..write('status: $status, ')
+          ..write('hardwareSetupComplete: $hardwareSetupComplete, ')
+          ..write('hardwareSetupDeferred: $hardwareSetupDeferred, ')
+          ..write(
+            'completedHardwareSignerIdsJson: $completedHardwareSignerIdsJson, ',
+          )
+          ..write('recoveryPackageConfirmed: $recoveryPackageConfirmed, ')
+          ..write('mobileBackupDeferred: $mobileBackupDeferred, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    walletId,
+    lineageId,
+    vaultGeneration,
+    mobileAccount,
+    mobileSeedFingerprint,
+    mobilePassphraseRequired,
+    birthHeight,
+    recoveryPackage,
+    previousVaultId,
+    successorWalletId,
+    status,
+    hardwareSetupComplete,
+    hardwareSetupDeferred,
+    completedHardwareSignerIdsJson,
+    recoveryPackageConfirmed,
+    mobileBackupDeferred,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BullVaultRecordsData &&
+          other.walletId == this.walletId &&
+          other.lineageId == this.lineageId &&
+          other.vaultGeneration == this.vaultGeneration &&
+          other.mobileAccount == this.mobileAccount &&
+          other.mobileSeedFingerprint == this.mobileSeedFingerprint &&
+          other.mobilePassphraseRequired == this.mobilePassphraseRequired &&
+          other.birthHeight == this.birthHeight &&
+          other.recoveryPackage == this.recoveryPackage &&
+          other.previousVaultId == this.previousVaultId &&
+          other.successorWalletId == this.successorWalletId &&
+          other.status == this.status &&
+          other.hardwareSetupComplete == this.hardwareSetupComplete &&
+          other.hardwareSetupDeferred == this.hardwareSetupDeferred &&
+          other.completedHardwareSignerIdsJson ==
+              this.completedHardwareSignerIdsJson &&
+          other.recoveryPackageConfirmed == this.recoveryPackageConfirmed &&
+          other.mobileBackupDeferred == this.mobileBackupDeferred &&
+          other.createdAt == this.createdAt);
+}
+
+class BullVaultRecordsCompanion extends UpdateCompanion<BullVaultRecordsData> {
+  final Value<String> walletId;
+  final Value<String> lineageId;
+  final Value<int> vaultGeneration;
+  final Value<int?> mobileAccount;
+  final Value<String?> mobileSeedFingerprint;
+  final Value<int> mobilePassphraseRequired;
+  final Value<int?> birthHeight;
+  final Value<String> recoveryPackage;
+  final Value<String?> previousVaultId;
+  final Value<String?> successorWalletId;
+  final Value<String> status;
+  final Value<int> hardwareSetupComplete;
+  final Value<int> hardwareSetupDeferred;
+  final Value<String> completedHardwareSignerIdsJson;
+  final Value<int> recoveryPackageConfirmed;
+  final Value<int> mobileBackupDeferred;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const BullVaultRecordsCompanion({
+    this.walletId = const Value.absent(),
+    this.lineageId = const Value.absent(),
+    this.vaultGeneration = const Value.absent(),
+    this.mobileAccount = const Value.absent(),
+    this.mobileSeedFingerprint = const Value.absent(),
+    this.mobilePassphraseRequired = const Value.absent(),
+    this.birthHeight = const Value.absent(),
+    this.recoveryPackage = const Value.absent(),
+    this.previousVaultId = const Value.absent(),
+    this.successorWalletId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.hardwareSetupComplete = const Value.absent(),
+    this.hardwareSetupDeferred = const Value.absent(),
+    this.completedHardwareSignerIdsJson = const Value.absent(),
+    this.recoveryPackageConfirmed = const Value.absent(),
+    this.mobileBackupDeferred = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BullVaultRecordsCompanion.insert({
+    required String walletId,
+    required String lineageId,
+    required int vaultGeneration,
+    this.mobileAccount = const Value.absent(),
+    this.mobileSeedFingerprint = const Value.absent(),
+    this.mobilePassphraseRequired = const Value.absent(),
+    this.birthHeight = const Value.absent(),
+    required String recoveryPackage,
+    this.previousVaultId = const Value.absent(),
+    this.successorWalletId = const Value.absent(),
+    required String status,
+    required int hardwareSetupComplete,
+    required int hardwareSetupDeferred,
+    required String completedHardwareSignerIdsJson,
+    required int recoveryPackageConfirmed,
+    required int mobileBackupDeferred,
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       lineageId = Value(lineageId),
+       vaultGeneration = Value(vaultGeneration),
+       recoveryPackage = Value(recoveryPackage),
+       status = Value(status),
+       hardwareSetupComplete = Value(hardwareSetupComplete),
+       hardwareSetupDeferred = Value(hardwareSetupDeferred),
+       completedHardwareSignerIdsJson = Value(completedHardwareSignerIdsJson),
+       recoveryPackageConfirmed = Value(recoveryPackageConfirmed),
+       mobileBackupDeferred = Value(mobileBackupDeferred),
+       createdAt = Value(createdAt);
+  static Insertable<BullVaultRecordsData> custom({
+    Expression<String>? walletId,
+    Expression<String>? lineageId,
+    Expression<int>? vaultGeneration,
+    Expression<int>? mobileAccount,
+    Expression<String>? mobileSeedFingerprint,
+    Expression<int>? mobilePassphraseRequired,
+    Expression<int>? birthHeight,
+    Expression<String>? recoveryPackage,
+    Expression<String>? previousVaultId,
+    Expression<String>? successorWalletId,
+    Expression<String>? status,
+    Expression<int>? hardwareSetupComplete,
+    Expression<int>? hardwareSetupDeferred,
+    Expression<String>? completedHardwareSignerIdsJson,
+    Expression<int>? recoveryPackageConfirmed,
+    Expression<int>? mobileBackupDeferred,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (lineageId != null) 'lineage_id': lineageId,
+      if (vaultGeneration != null) 'vault_generation': vaultGeneration,
+      if (mobileAccount != null) 'mobile_account': mobileAccount,
+      if (mobileSeedFingerprint != null)
+        'mobile_seed_fingerprint': mobileSeedFingerprint,
+      if (mobilePassphraseRequired != null)
+        'mobile_passphrase_required': mobilePassphraseRequired,
+      if (birthHeight != null) 'birth_height': birthHeight,
+      if (recoveryPackage != null) 'recovery_package': recoveryPackage,
+      if (previousVaultId != null) 'previous_vault_id': previousVaultId,
+      if (successorWalletId != null) 'successor_wallet_id': successorWalletId,
+      if (status != null) 'status': status,
+      if (hardwareSetupComplete != null)
+        'hardware_setup_complete': hardwareSetupComplete,
+      if (hardwareSetupDeferred != null)
+        'hardware_setup_deferred': hardwareSetupDeferred,
+      if (completedHardwareSignerIdsJson != null)
+        'completed_hardware_signer_ids_json': completedHardwareSignerIdsJson,
+      if (recoveryPackageConfirmed != null)
+        'recovery_package_confirmed': recoveryPackageConfirmed,
+      if (mobileBackupDeferred != null)
+        'mobile_backup_deferred': mobileBackupDeferred,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BullVaultRecordsCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? lineageId,
+    Value<int>? vaultGeneration,
+    Value<int?>? mobileAccount,
+    Value<String?>? mobileSeedFingerprint,
+    Value<int>? mobilePassphraseRequired,
+    Value<int?>? birthHeight,
+    Value<String>? recoveryPackage,
+    Value<String?>? previousVaultId,
+    Value<String?>? successorWalletId,
+    Value<String>? status,
+    Value<int>? hardwareSetupComplete,
+    Value<int>? hardwareSetupDeferred,
+    Value<String>? completedHardwareSignerIdsJson,
+    Value<int>? recoveryPackageConfirmed,
+    Value<int>? mobileBackupDeferred,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return BullVaultRecordsCompanion(
+      walletId: walletId ?? this.walletId,
+      lineageId: lineageId ?? this.lineageId,
+      vaultGeneration: vaultGeneration ?? this.vaultGeneration,
+      mobileAccount: mobileAccount ?? this.mobileAccount,
+      mobileSeedFingerprint:
+          mobileSeedFingerprint ?? this.mobileSeedFingerprint,
+      mobilePassphraseRequired:
+          mobilePassphraseRequired ?? this.mobilePassphraseRequired,
+      birthHeight: birthHeight ?? this.birthHeight,
+      recoveryPackage: recoveryPackage ?? this.recoveryPackage,
+      previousVaultId: previousVaultId ?? this.previousVaultId,
+      successorWalletId: successorWalletId ?? this.successorWalletId,
+      status: status ?? this.status,
+      hardwareSetupComplete:
+          hardwareSetupComplete ?? this.hardwareSetupComplete,
+      hardwareSetupDeferred:
+          hardwareSetupDeferred ?? this.hardwareSetupDeferred,
+      completedHardwareSignerIdsJson:
+          completedHardwareSignerIdsJson ?? this.completedHardwareSignerIdsJson,
+      recoveryPackageConfirmed:
+          recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
+      mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (lineageId.present) {
+      map['lineage_id'] = Variable<String>(lineageId.value);
+    }
+    if (vaultGeneration.present) {
+      map['vault_generation'] = Variable<int>(vaultGeneration.value);
+    }
+    if (mobileAccount.present) {
+      map['mobile_account'] = Variable<int>(mobileAccount.value);
+    }
+    if (mobileSeedFingerprint.present) {
+      map['mobile_seed_fingerprint'] = Variable<String>(
+        mobileSeedFingerprint.value,
+      );
+    }
+    if (mobilePassphraseRequired.present) {
+      map['mobile_passphrase_required'] = Variable<int>(
+        mobilePassphraseRequired.value,
+      );
+    }
+    if (birthHeight.present) {
+      map['birth_height'] = Variable<int>(birthHeight.value);
+    }
+    if (recoveryPackage.present) {
+      map['recovery_package'] = Variable<String>(recoveryPackage.value);
+    }
+    if (previousVaultId.present) {
+      map['previous_vault_id'] = Variable<String>(previousVaultId.value);
+    }
+    if (successorWalletId.present) {
+      map['successor_wallet_id'] = Variable<String>(successorWalletId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (hardwareSetupComplete.present) {
+      map['hardware_setup_complete'] = Variable<int>(
+        hardwareSetupComplete.value,
+      );
+    }
+    if (hardwareSetupDeferred.present) {
+      map['hardware_setup_deferred'] = Variable<int>(
+        hardwareSetupDeferred.value,
+      );
+    }
+    if (completedHardwareSignerIdsJson.present) {
+      map['completed_hardware_signer_ids_json'] = Variable<String>(
+        completedHardwareSignerIdsJson.value,
+      );
+    }
+    if (recoveryPackageConfirmed.present) {
+      map['recovery_package_confirmed'] = Variable<int>(
+        recoveryPackageConfirmed.value,
+      );
+    }
+    if (mobileBackupDeferred.present) {
+      map['mobile_backup_deferred'] = Variable<int>(mobileBackupDeferred.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultRecordsCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('lineageId: $lineageId, ')
+          ..write('vaultGeneration: $vaultGeneration, ')
+          ..write('mobileAccount: $mobileAccount, ')
+          ..write('mobileSeedFingerprint: $mobileSeedFingerprint, ')
+          ..write('mobilePassphraseRequired: $mobilePassphraseRequired, ')
+          ..write('birthHeight: $birthHeight, ')
+          ..write('recoveryPackage: $recoveryPackage, ')
+          ..write('previousVaultId: $previousVaultId, ')
+          ..write('successorWalletId: $successorWalletId, ')
+          ..write('status: $status, ')
+          ..write('hardwareSetupComplete: $hardwareSetupComplete, ')
+          ..write('hardwareSetupDeferred: $hardwareSetupDeferred, ')
+          ..write(
+            'completedHardwareSignerIdsJson: $completedHardwareSignerIdsJson, ',
+          )
+          ..write('recoveryPackageConfirmed: $recoveryPackageConfirmed, ')
+          ..write('mobileBackupDeferred: $mobileBackupDeferred, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class BullVaultGenerationReservations extends Table
+    with
+        TableInfo<
+          BullVaultGenerationReservations,
+          BullVaultGenerationReservationsData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  BullVaultGenerationReservations(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> lineageId = GeneratedColumn<String>(
+    'lineage_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> generation = GeneratedColumn<int>(
+    'generation',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [lineageId, generation];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bull_vault_generation_reservations';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {lineageId, generation};
+  @override
+  BullVaultGenerationReservationsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BullVaultGenerationReservationsData(
+      lineageId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lineage_id'],
+      )!,
+      generation: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}generation'],
+      )!,
+    );
+  }
+
+  @override
+  BullVaultGenerationReservations createAlias(String alias) {
+    return BullVaultGenerationReservations(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(lineage_id, generation)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class BullVaultGenerationReservationsData extends DataClass
+    implements Insertable<BullVaultGenerationReservationsData> {
+  final String lineageId;
+  final int generation;
+  const BullVaultGenerationReservationsData({
+    required this.lineageId,
+    required this.generation,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['lineage_id'] = Variable<String>(lineageId);
+    map['generation'] = Variable<int>(generation);
+    return map;
+  }
+
+  BullVaultGenerationReservationsCompanion toCompanion(bool nullToAbsent) {
+    return BullVaultGenerationReservationsCompanion(
+      lineageId: Value(lineageId),
+      generation: Value(generation),
+    );
+  }
+
+  factory BullVaultGenerationReservationsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BullVaultGenerationReservationsData(
+      lineageId: serializer.fromJson<String>(json['lineageId']),
+      generation: serializer.fromJson<int>(json['generation']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'lineageId': serializer.toJson<String>(lineageId),
+      'generation': serializer.toJson<int>(generation),
+    };
+  }
+
+  BullVaultGenerationReservationsData copyWith({
+    String? lineageId,
+    int? generation,
+  }) => BullVaultGenerationReservationsData(
+    lineageId: lineageId ?? this.lineageId,
+    generation: generation ?? this.generation,
+  );
+  BullVaultGenerationReservationsData copyWithCompanion(
+    BullVaultGenerationReservationsCompanion data,
+  ) {
+    return BullVaultGenerationReservationsData(
+      lineageId: data.lineageId.present ? data.lineageId.value : this.lineageId,
+      generation: data.generation.present
+          ? data.generation.value
+          : this.generation,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultGenerationReservationsData(')
+          ..write('lineageId: $lineageId, ')
+          ..write('generation: $generation')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(lineageId, generation);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BullVaultGenerationReservationsData &&
+          other.lineageId == this.lineageId &&
+          other.generation == this.generation);
+}
+
+class BullVaultGenerationReservationsCompanion
+    extends UpdateCompanion<BullVaultGenerationReservationsData> {
+  final Value<String> lineageId;
+  final Value<int> generation;
+  final Value<int> rowid;
+  const BullVaultGenerationReservationsCompanion({
+    this.lineageId = const Value.absent(),
+    this.generation = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BullVaultGenerationReservationsCompanion.insert({
+    required String lineageId,
+    required int generation,
+    this.rowid = const Value.absent(),
+  }) : lineageId = Value(lineageId),
+       generation = Value(generation);
+  static Insertable<BullVaultGenerationReservationsData> custom({
+    Expression<String>? lineageId,
+    Expression<int>? generation,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (lineageId != null) 'lineage_id': lineageId,
+      if (generation != null) 'generation': generation,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BullVaultGenerationReservationsCompanion copyWith({
+    Value<String>? lineageId,
+    Value<int>? generation,
+    Value<int>? rowid,
+  }) {
+    return BullVaultGenerationReservationsCompanion(
+      lineageId: lineageId ?? this.lineageId,
+      generation: generation ?? this.generation,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (lineageId.present) {
+      map['lineage_id'] = Variable<String>(lineageId.value);
+    }
+    if (generation.present) {
+      map['generation'] = Variable<int>(generation.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BullVaultGenerationReservationsCompanion(')
+          ..write('lineageId: $lineageId, ')
+          ..write('generation: $generation, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV16 extends GeneratedDatabase {
   DatabaseAtV16(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -12410,6 +13502,9 @@ class DatabaseAtV16 extends GeneratedDatabase {
       SendTransactionInputs(this);
   late final SendTransactionPolicyChoices sendTransactionPolicyChoices =
       SendTransactionPolicyChoices(this);
+  late final BullVaultRecords bullVaultRecords = BullVaultRecords(this);
+  late final BullVaultGenerationReservations bullVaultGenerationReservations =
+      BullVaultGenerationReservations(this);
   late final Index orderSwapsRequestId = Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -12474,6 +13569,8 @@ class DatabaseAtV16 extends GeneratedDatabase {
     sendTransactions,
     sendTransactionInputs,
     sendTransactionPolicyChoices,
+    bullVaultRecords,
+    bullVaultGenerationReservations,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,

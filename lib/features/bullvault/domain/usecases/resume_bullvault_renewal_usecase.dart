@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
@@ -12,13 +10,8 @@ import 'package:meta/meta.dart';
 class ResumeBullVaultRenewalUsecase {
   final BullVaultRepository _repository;
   final GetWalletUsecase _getWalletUsecase;
-  final SetWalletHiddenUsecase _setWalletHiddenUsecase;
 
-  const ResumeBullVaultRenewalUsecase(
-    this._repository,
-    this._getWalletUsecase,
-    this._setWalletHiddenUsecase,
-  );
+  const ResumeBullVaultRenewalUsecase(this._repository, this._getWalletUsecase);
 
   @useResult
   Future<Result<BullVaultRenewResult?, BullVaultFailure>> execute(
@@ -39,8 +32,7 @@ class ResumeBullVaultRenewalUsecase {
             current.status != BullVaultLifecycleStatus.active)) {
       return const Ok(null);
     }
-    if (current.status == BullVaultLifecycleStatus.pending ||
-        current.status == BullVaultLifecycleStatus.activating) {
+    if (current.status == BullVaultLifecycleStatus.pending) {
       final previousId = current.previousVaultId;
       if (previousId == null) return const Err(BullVaultRenewalFailure());
       switch (await _repository.getByWalletId(previousId)) {
@@ -87,49 +79,15 @@ class ResumeBullVaultRenewalUsecase {
                     record.successorWalletId == linkedSuccessor.walletId,
               )
               .singleOrNull;
-    if (linkedPrevious != null) {
-      try {
-        final successorWallet = await _getWalletUsecase.execute(
-          linkedSuccessor!.walletId,
-        );
-        final previousWallet = await _getWalletUsecase.execute(
-          linkedPrevious.walletId,
-        );
-        if (successorWallet == null || previousWallet == null) {
-          return const Err(BullVaultRenewalFailure());
-        }
-        await _setVisibility(
-          visibleWallet: successorWallet,
-          hiddenWallet: previousWallet,
-        );
-        current = linkedSuccessor;
-      } on Exception {
-        return const Err(BullVaultRenewalFailure());
-      }
-    }
+    if (linkedPrevious != null) current = linkedSuccessor!;
     final replacements = lineage
         .where(
           (record) =>
-              (record.status == BullVaultLifecycleStatus.pending ||
-                  record.status == BullVaultLifecycleStatus.activating) &&
+              record.status == BullVaultLifecycleStatus.pending &&
               record.previousVaultId == current.walletId,
         )
         .toList();
     if (replacements.isEmpty) {
-      if (current.status == BullVaultLifecycleStatus.active) {
-        try {
-          final wallet = await _getWalletUsecase.execute(current.walletId);
-          if (wallet == null) return const Err(BullVaultRenewalFailure());
-          if (wallet.isHidden) {
-            await _setWalletHiddenUsecase.execute(
-              walletId: wallet.id,
-              isHidden: false,
-            );
-          }
-        } on Exception {
-          return const Err(BullVaultRenewalFailure());
-        }
-      }
       return const Ok(null);
     }
     if (replacements.length > 1) {
@@ -149,19 +107,6 @@ class ResumeBullVaultRenewalUsecase {
           policy.network != wallet.network) {
         return const Err(BullVaultRenewalFailure());
       }
-      final currentWallet = await _getWalletUsecase.execute(current.walletId);
-      if (currentWallet == null) return const Err(BullVaultRenewalFailure());
-      if (replacement.status == BullVaultLifecycleStatus.pending) {
-        await _setVisibility(
-          visibleWallet: currentWallet,
-          hiddenWallet: wallet,
-        );
-      } else {
-        await _setVisibility(
-          visibleWallet: wallet,
-          hiddenWallet: currentWallet,
-        );
-      }
       return Ok(
         BullVaultRenewResult(
           previous: current,
@@ -173,36 +118,6 @@ class ResumeBullVaultRenewalUsecase {
       );
     } on Exception {
       return const Err(BullVaultRenewalFailure());
-    }
-  }
-
-  Future<void> _setVisibility({
-    required Wallet visibleWallet,
-    required Wallet hiddenWallet,
-  }) async {
-    final showVisibleWallet = visibleWallet.isHidden;
-    final hideHiddenWallet = !hiddenWallet.isHidden;
-    if (showVisibleWallet) {
-      await _setWalletHiddenUsecase.execute(
-        walletId: visibleWallet.id,
-        isHidden: false,
-      );
-    }
-    try {
-      if (hideHiddenWallet) {
-        await _setWalletHiddenUsecase.execute(
-          walletId: hiddenWallet.id,
-          isHidden: true,
-        );
-      }
-    } on Exception {
-      if (showVisibleWallet) {
-        await _setWalletHiddenUsecase.execute(
-          walletId: visibleWallet.id,
-          isHidden: true,
-        );
-      }
-      rethrow;
     }
   }
 }

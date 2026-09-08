@@ -36,10 +36,7 @@ void main() {
     final createdAt = DateTime.utc(2027, 1, 15, 12);
     final record = _record(createdAt);
     when(
-      () => repository.getByWalletId(record.walletId),
-    ).thenAnswer((_) async => Ok(record));
-    when(
-      () => repository.getLineage(record.lineageId),
+      () => repository.getWalletLineage(record.walletId),
     ).thenAnswer((_) async => Ok([record]));
     when(
       () => getAddress.execute(walletId: record.walletId, index: 0),
@@ -81,13 +78,7 @@ void main() {
       previousVaultId: previous.walletId,
     );
     when(
-      () => repository.getByWalletId(current.walletId),
-    ).thenAnswer((_) async => Ok(current));
-    when(
-      () => repository.getByWalletId(previous.walletId),
-    ).thenAnswer((_) async => Ok(previous));
-    when(
-      () => repository.getLineage(current.lineageId),
+      () => repository.getWalletLineage(previous.walletId),
     ).thenAnswer((_) async => Ok([previous, current]));
     when(
       () => getWallet.execute(previous.walletId),
@@ -127,10 +118,7 @@ void main() {
     );
     var cancelledBalance = 0;
     when(
-      () => repository.getByWalletId(current.walletId),
-    ).thenAnswer((_) async => Ok(current));
-    when(
-      () => repository.getLineage(current.lineageId),
+      () => repository.getWalletLineage(current.walletId),
     ).thenAnswer((_) async => Ok([current, cancelled]));
     when(() => getWallet.execute(cancelled.walletId)).thenAnswer(
       (_) async => _wallet(cancelled.walletId, balanceSat: cancelledBalance),

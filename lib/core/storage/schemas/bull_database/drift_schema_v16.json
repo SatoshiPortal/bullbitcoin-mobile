@@ -3028,6 +3028,257 @@
     },
     {
       "id": 23,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "bull_vault_records",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lineage_id",
+            "getter_name": "lineageId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "vault_generation",
+            "getter_name": "vaultGeneration",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_account",
+            "getter_name": "mobileAccount",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_seed_fingerprint",
+            "getter_name": "mobileSeedFingerprint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_passphrase_required",
+            "getter_name": "mobilePassphraseRequired",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"mobile_passphrase_required\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"mobile_passphrase_required\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "birth_height",
+            "getter_name": "birthHeight",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recovery_package",
+            "getter_name": "recoveryPackage",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_vault_id",
+            "getter_name": "previousVaultId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "successor_wallet_id",
+            "getter_name": "successorWalletId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hardware_setup_complete",
+            "getter_name": "hardwareSetupComplete",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"hardware_setup_complete\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"hardware_setup_complete\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hardware_setup_deferred",
+            "getter_name": "hardwareSetupDeferred",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"hardware_setup_deferred\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"hardware_setup_deferred\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "completed_hardware_signer_ids_json",
+            "getter_name": "completedHardwareSignerIdsJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recovery_package_confirmed",
+            "getter_name": "recoveryPackageConfirmed",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"recovery_package_confirmed\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"recovery_package_confirmed\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mobile_backup_deferred",
+            "getter_name": "mobileBackupDeferred",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"mobile_backup_deferred\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"mobile_backup_deferred\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "wallet_id"
+        ],
+        "unique_keys": [
+          [
+            "lineage_id",
+            "vault_generation"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "bull_vault_generation_reservations",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lineage_id",
+            "getter_name": "lineageId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "lineage_id",
+          "generation"
+        ]
+      }
+    },
+    {
+      "id": 25,
       "references": [
         19
       ],
@@ -3046,7 +3297,7 @@
       }
     },
     {
-      "id": 24,
+      "id": 26,
       "references": [
         19
       ],
@@ -3065,7 +3316,7 @@
       }
     },
     {
-      "id": 25,
+      "id": 27,
       "references": [
         19
       ],
@@ -3084,7 +3335,7 @@
       }
     },
     {
-      "id": 26,
+      "id": 28,
       "references": [
         19
       ],
@@ -3103,7 +3354,7 @@
       }
     },
     {
-      "id": 27,
+      "id": 29,
       "references": [
         19
       ],
@@ -3122,7 +3373,7 @@
       }
     },
     {
-      "id": 28,
+      "id": 30,
       "references": [
         19
       ],
@@ -3141,7 +3392,7 @@
       }
     },
     {
-      "id": 29,
+      "id": 31,
       "references": [
         19
       ],
@@ -3160,7 +3411,7 @@
       }
     },
     {
-      "id": 30,
+      "id": 32,
       "references": [
         20
       ],
@@ -3179,7 +3430,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 33,
       "references": [
         20
       ],
@@ -3403,6 +3654,24 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"send_transaction_policy_choices\" (\"transaction_id\" TEXT NOT NULL, \"node\" TEXT NOT NULL, \"option_index\" INTEGER NOT NULL, PRIMARY KEY (\"transaction_id\", \"node\", \"option_index\"), FOREIGN KEY(transaction_id) REFERENCES send_transactions(id) ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "bull_vault_records",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_records\" (\"wallet_id\" TEXT NOT NULL, \"lineage_id\" TEXT NOT NULL, \"vault_generation\" INTEGER NOT NULL, \"mobile_account\" INTEGER NULL, \"mobile_seed_fingerprint\" TEXT NULL, \"mobile_passphrase_required\" INTEGER NOT NULL DEFAULT 0 CHECK (\"mobile_passphrase_required\" IN (0, 1)), \"birth_height\" INTEGER NULL, \"recovery_package\" TEXT NOT NULL, \"previous_vault_id\" TEXT NULL, \"successor_wallet_id\" TEXT NULL, \"status\" TEXT NOT NULL, \"hardware_setup_complete\" INTEGER NOT NULL CHECK (\"hardware_setup_complete\" IN (0, 1)), \"hardware_setup_deferred\" INTEGER NOT NULL CHECK (\"hardware_setup_deferred\" IN (0, 1)), \"completed_hardware_signer_ids_json\" TEXT NOT NULL, \"recovery_package_confirmed\" INTEGER NOT NULL CHECK (\"recovery_package_confirmed\" IN (0, 1)), \"mobile_backup_deferred\" INTEGER NOT NULL CHECK (\"mobile_backup_deferred\" IN (0, 1)), \"created_at\" TEXT NOT NULL, PRIMARY KEY (\"wallet_id\"), UNIQUE (\"lineage_id\", \"vault_generation\"));"
+        }
+      ]
+    },
+    {
+      "name": "bull_vault_generation_reservations",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_generation_reservations\" (\"lineage_id\" TEXT NOT NULL, \"generation\" INTEGER NOT NULL, PRIMARY KEY (\"lineage_id\", \"generation\"));"
         }
       ]
     },

@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:drift/drift.dart' show Value;
+import 'package:drift/native.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
@@ -14,40 +17,36 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../bullvault_test_fixture.dart';
 
-final class _MemoryStorage implements KeyValueStorageDatasource<String> {
-  final Map<String, String> _values = {};
-  String? failNextSaveForKey;
-
-  @override
-  Future<void> deleteAll() async => _values.clear();
-
-  @override
-  Future<void> deleteValue(String key) async => _values.remove(key);
-
-  @override
-  Future<Map<String, String>> getAll() async => Map.of(_values);
-
-  @override
-  Future<String?> getValue(String key) async => _values[key];
-
-  @override
-  Future<bool> hasValue(String key) async => _values.containsKey(key);
-
-  @override
-  Future<void> saveValue({required String key, required String value}) async {
-    if (failNextSaveForKey == key) {
-      failNextSaveForKey = null;
-      throw Exception('storage unavailable');
-    }
-    _values[key] = value;
-  }
-}
-
 void main() {
+  late SqliteDatabase storage;
+  setUp(() async {
+    storage = SqliteDatabase(NativeDatabase.memory());
+    for (final id in [
+      'wallet-id',
+      'wallet-0',
+      'wallet-1',
+      'descriptor-wallet',
+    ]) {
+      await storage
+          .into(storage.walletMetadatas)
+          .insert(
+            WalletMetadatasCompanion.insert(
+              id: id,
+              network: Network.bitcoinTestnet,
+              publicDescriptor: '',
+              isEncryptedVaultTested: false,
+              isPhysicalBackupTested: false,
+              isDefault: false,
+              isHidden: Value(id != 'wallet-0'),
+            ),
+          );
+    }
+  });
+  tearDown(() => storage.close());
+
   test(
     'persists lineage and generation metadata with the wallet record',
     () async {
-      final storage = _MemoryStorage();
       final repository = _repository(storage);
 
       final result = await repository.save(
@@ -70,30 +69,31 @@ void main() {
           createdAt: DateTime.utc(2027, 1, 15),
         ),
       );
-      final stored =
-          jsonDecode((await storage.getValue('bullvault_record_wallet-id'))!)
-              as Map<String, dynamic>;
+      final stored = (await BullVaultMetadataDatasource(
+        storage,
+      ).load('wallet-id'))!;
 
       expect(switch (result) {
         Ok() => true,
         Err() => false,
       }, isTrue);
-      expect(stored['lineageId'], 'lineage-id');
-      expect(stored['vaultGeneration'], 1);
-      expect(stored['completedHardwareSignerIds'], ['cold', 'inheritance']);
-      expect(stored['recoveryPackageConfirmed'], isTrue);
-      expect(stored['hardwareSetupDeferred'], isTrue);
-      expect(stored['mobileBackupDeferred'], isTrue);
+      expect(stored.lineageId, 'lineage-id');
+      expect(stored.vaultGeneration, 1);
+      expect(jsonDecode(stored.completedHardwareSignerIdsJson), [
+        'cold',
+        'inheritance',
+      ]);
+      expect(stored.recoveryPackageConfirmed, isTrue);
+      expect(stored.hardwareSetupDeferred, isTrue);
+      expect(stored.mobileBackupDeferred, isTrue);
       final loaded = await repository.getByWalletId('wallet-id');
       final record = (loaded as Ok<BullVaultRecord?, BullVaultFailure>).value!;
       expect(record.hardwareSetupDeferred, isTrue);
       expect(record.mobileBackupDeferred, isTrue);
 
-      stored['recoveryPackage'] = '{}';
-      await storage.saveValue(
-        key: 'bullvault_record_wallet-id',
-        value: jsonEncode(stored),
-      );
+      await BullVaultMetadataDatasource(
+        storage,
+      ).save(stored.copyWith(recoveryPackage: '{}'));
       expect(
         await repository.getByWalletId(record.walletId),
         isA<Err<BullVaultRecord?, BullVaultFailure>>(),
@@ -105,8 +105,137 @@ void main() {
     },
   );
 
+  test('publishes restored metadata and wallet visibility atomically', () async {
+    final record = testBullVaultCreateResult(
+      walletId: 'wallet-id',
+      status: BullVaultLifecycleStatus.active,
+    ).record;
+    await storage.customStatement(
+      "CREATE TRIGGER fail_visibility BEFORE UPDATE ON wallet_metadatas "
+      "WHEN NEW.id = 'wallet-id' BEGIN SELECT RAISE(ABORT, 'unavailable'); END",
+    );
+
+    expect(
+      await _repository(storage).publishRestored(record),
+      isA<Err<void, BullVaultFailure>>(),
+    );
+    final reloaded = _repository(storage);
+    expect(
+      (await reloaded.getByWalletId(record.walletId)
+              as Ok<BullVaultRecord?, BullVaultFailure>)
+          .value,
+      isNull,
+    );
+    Future<bool> isHidden() async => (await (storage.select(
+      storage.walletMetadatas,
+    )..where((row) => row.id.equals(record.walletId))).getSingle()).isHidden;
+    expect(await isHidden(), isTrue);
+
+    await storage.customStatement('DROP TRIGGER fail_visibility');
+    expect(
+      await reloaded.publishRestored(record),
+      isA<Ok<void, BullVaultFailure>>(),
+    );
+    expect(
+      (await _repository(storage).getByWalletId(record.walletId)
+              as Ok<BullVaultRecord?, BullVaultFailure>)
+          .value
+          ?.status,
+      BullVaultLifecycleStatus.active,
+    );
+    expect(await isHidden(), isFalse);
+  });
+
+  for (final status in [
+    null,
+    BullVaultLifecycleStatus.pending,
+    BullVaultLifecycleStatus.cancelled,
+  ]) {
+    test(
+      'preserves the existing family during enrichment with $status renewal',
+      () async {
+        final repository = _repository(storage);
+        final enriched = testBullVaultCreateResult(
+          walletId: 'descriptor-wallet',
+          status: BullVaultLifecycleStatus.active,
+        ).record;
+        final current = _descriptorOnlyRecord(enriched.recoveryPackage);
+        expect(
+          current.recoveryPackage.canBeEnrichedBy(enriched.recoveryPackage),
+          isTrue,
+        );
+        await repository.save(current);
+        expect(
+          await repository.reserveNextGeneration(current),
+          isA<Ok<int, BullVaultFailure>>(),
+        );
+        if (status != null) {
+          final replacement = testBullVaultCreateResult(
+            walletId: 'wallet-1',
+            lineageId: current.lineageId,
+            previousVaultId: current.walletId,
+            generation: 1,
+            status: status,
+          ).record;
+          await repository.save(replacement);
+          await repository.releaseGeneration(
+            lineageId: current.lineageId,
+            generation: 1,
+          );
+        }
+
+        expect(
+          await repository.publishRestored(enriched),
+          isA<Err<void, BullVaultFailure>>(),
+        );
+        final reloaded = _repository(storage);
+        final stored =
+            (await reloaded.getByWalletId(current.walletId)
+                    as Ok<BullVaultRecord?, BullVaultFailure>)
+                .value!;
+        expect(stored.lineageId, current.lineageId);
+        expect(
+          (await reloaded.reserveNextGeneration(stored)
+                  as Ok<int, BullVaultFailure>)
+              .value,
+          2,
+        );
+        final family =
+            (await reloaded.getLineage(stored.lineageId)
+                    as Ok<List<BullVaultRecord>, BullVaultFailure>)
+                .value;
+        expect(family.length, status == null ? 1 : 2);
+        final related = await reloaded.getWalletLineage(
+          stored.walletId,
+          memberWalletId: status == null ? stored.walletId : 'wallet-1',
+        );
+        expect(
+          (related as Ok<List<BullVaultRecord>, BullVaultFailure>).value.map(
+            (record) => record.walletId,
+          ),
+          family.map((record) => record.walletId),
+        );
+        final unrelated = await reloaded.getWalletLineage(
+          stored.walletId,
+          memberWalletId: 'wallet-id',
+        );
+        expect(
+          (unrelated as Ok<List<BullVaultRecord>, BullVaultFailure>).value,
+          isEmpty,
+        );
+        if (status == BullVaultLifecycleStatus.cancelled) {
+          expect(
+            (await reloaded.getMigrationDestinations({stored.walletId})
+                    as Ok<Map<String, String>, BullVaultFailure>)
+                .value,
+            {'wallet-1': stored.walletId},
+          );
+        }
+      },
+    );
+  }
+
   test('round trips an unknown birth height', () async {
-    final storage = _MemoryStorage();
     final repository = _repository(storage);
     final package = testBullVaultRecoveryPackage();
     final record = BullVaultRecord(
@@ -130,7 +259,6 @@ void main() {
   });
 
   test('persists and releases generation reservations', () async {
-    final storage = _MemoryStorage();
     final current = BullVaultRecord(
       walletId: 'wallet-0',
       lineageId: 'lineage-id',
@@ -142,6 +270,7 @@ void main() {
     );
     final repository = _repository(storage);
 
+    await repository.save(current);
     final first = await repository.reserveNextGeneration(current);
     final restored = _repository(storage);
     final reservedAfterRestart = await restored.reserveNextGeneration(current);
@@ -176,7 +305,6 @@ void main() {
   });
 
   test('rejects a duplicate generation in the same lineage', () async {
-    final storage = _MemoryStorage();
     final repository = _repository(storage);
     final first = testBullVaultCreateResult(
       walletId: 'wallet-1',
@@ -216,7 +344,6 @@ void main() {
   });
 
   test('allows only one active wallet in a lineage', () async {
-    final storage = _MemoryStorage();
     final repository = _repository(storage);
     final first = testBullVaultCreateResult(
       walletId: 'wallet-0',
@@ -250,13 +377,13 @@ void main() {
   test(
     'cancels a pending replacement without reusing its generation',
     () async {
-      final storage = _MemoryStorage();
       final repository = _repository(storage);
       final previous = testBullVaultCreateResult(
         walletId: 'wallet-0',
         lineageId: 'lineage-id',
         status: BullVaultLifecycleStatus.active,
       ).record;
+      await repository.save(previous);
       final generation = switch (await repository.reserveNextGeneration(
         previous,
       )) {
@@ -271,19 +398,18 @@ void main() {
         status: BullVaultLifecycleStatus.pending,
       ).record;
       await repository.save(previous);
-      await repository.save(
-        replacement.copyWith(status: BullVaultLifecycleStatus.activating),
-      );
-
-      final refused = await repository.cancelRenewal(
-        previousWalletId: previous.walletId,
-        replacementWalletId: replacement.walletId,
-      );
       await repository.save(replacement);
 
       final cancelled = await repository.cancelRenewal(
         previousWalletId: previous.walletId,
         replacementWalletId: replacement.walletId,
+      );
+      final destinations = await repository.getMigrationDestinations({
+        previous.walletId,
+      });
+      expect(
+        (destinations as Ok<Map<String, String>, BullVaultFailure>).value,
+        {replacement.walletId: previous.walletId},
       );
       final staleSave = await repository.save(replacement);
       final next = await repository.reserveNextGeneration(previous);
@@ -292,7 +418,6 @@ void main() {
         replacement.walletId,
       );
 
-      expect(refused, isA<Err<void, BullVaultFailure>>());
       expect(cancelled, isA<Ok<void, BullVaultFailure>>());
       expect(staleSave, isA<Err<void, BullVaultFailure>>());
       expect((next as Ok<int, BullVaultFailure>).value, generation + 1);
@@ -312,17 +437,15 @@ void main() {
   );
 
   test('rejects stale lifecycle transitions', () async {
-    final storage = _MemoryStorage();
     final repository = _repository(storage);
     final pending = testBullVaultCreateResult(
       walletId: 'wallet-id',
       status: BullVaultLifecycleStatus.pending,
     ).record;
     final setupUpdated = pending.copyWith(recoveryPackageConfirmed: true);
-    final activating = setupUpdated.copyWith(
-      status: BullVaultLifecycleStatus.activating,
+    final active = setupUpdated.copyWith(
+      status: BullVaultLifecycleStatus.active,
     );
-    final active = activating.copyWith(status: BullVaultLifecycleStatus.active);
     final migrating = active.copyWith(
       successorWalletId: 'successor-id',
       status: BullVaultLifecycleStatus.migrating,
@@ -342,10 +465,11 @@ void main() {
     );
     expect(await repository.save(active), isA<Err<void, BullVaultFailure>>());
     expect(
-      await repository.save(activating),
+      await repository.activateInitial(
+        setupUpdated.copyWith(hardwareSetupDeferred: true),
+      ),
       isA<Ok<void, BullVaultFailure>>(),
     );
-    expect(await repository.save(active), isA<Ok<void, BullVaultFailure>>());
     expect(await repository.save(pending), isA<Err<void, BullVaultFailure>>());
     expect(await repository.save(migrating), isA<Ok<void, BullVaultFailure>>());
     expect(await repository.save(active), isA<Err<void, BullVaultFailure>>());
@@ -358,9 +482,8 @@ void main() {
   });
 
   test('advances from a restored newer generation', () async {
-    final storage = _MemoryStorage();
     final current = BullVaultRecord(
-      walletId: 'wallet-3',
+      walletId: 'wallet-id',
       lineageId: 'lineage-id',
       vaultGeneration: 3,
       mobileAccount: 0,
@@ -375,6 +498,7 @@ void main() {
     );
     final repository = _repository(storage);
 
+    await repository.save(current);
     final generation = await repository.reserveNextGeneration(current);
 
     expect((generation as Ok<int, BullVaultFailure>).value, 4);
@@ -383,7 +507,6 @@ void main() {
   test(
     'activates a configured replacement and marks its predecessor migrating',
     () async {
-      final storage = _MemoryStorage();
       final repository = _repository(storage);
       final previous = BullVaultRecord(
         walletId: 'wallet-0',
@@ -406,7 +529,7 @@ void main() {
           generation: 1,
         ),
         previousVaultId: previous.walletId,
-        status: BullVaultLifecycleStatus.activating,
+        status: BullVaultLifecycleStatus.pending,
         hardwareSetupComplete: true,
         recoveryPackageConfirmed: true,
         createdAt: DateTime.utc(2028, 1, 15),
@@ -414,9 +537,62 @@ void main() {
       await repository.save(previous);
       await repository.save(replacement);
 
+      await storage.customStatement(
+        "CREATE TRIGGER fail_visibility BEFORE UPDATE ON wallet_metadatas "
+        "WHEN NEW.id = 'wallet-1' BEGIN SELECT RAISE(ABORT, 'disk write failed'); END",
+      );
+      expect(
+        await repository.activateRenewal(
+          previous: previous,
+          replacement: replacement,
+        ),
+        isA<Err<void, BullVaultFailure>>(),
+      );
+      expect(
+        (await BullVaultMetadataDatasource(
+          storage,
+        ).load(previous.walletId))!.status,
+        'active',
+      );
+      expect(
+        (await BullVaultMetadataDatasource(
+          storage,
+        ).load(replacement.walletId))!.status,
+        'pending',
+      );
+      final unchangedWallets = await storage
+          .select(storage.walletMetadatas)
+          .get();
+      expect(
+        unchangedWallets
+            .singleWhere((row) => row.id == previous.walletId)
+            .isHidden,
+        isFalse,
+      );
+      expect(
+        unchangedWallets
+            .singleWhere((row) => row.id == replacement.walletId)
+            .isHidden,
+        isTrue,
+      );
+      await storage.customStatement('DROP TRIGGER fail_visibility');
+
       final result = await repository.activateRenewal(
         previous: previous,
         replacement: replacement,
+      );
+      final destinations = await repository.getMigrationDestinations({
+        replacement.walletId,
+      });
+      expect(
+        (destinations as Ok<Map<String, String>, BullVaultFailure>).value,
+        {previous.walletId: replacement.walletId},
+      );
+      expect(
+        (await repository.getMigrationDestinations({'unrelated'})
+                as Ok<Map<String, String>, BullVaultFailure>)
+            .value,
+        isEmpty,
       );
       final loadedPrevious = await repository.getByWalletId(previous.walletId);
       final loadedReplacement = await repository.getByWalletId(
@@ -424,6 +600,15 @@ void main() {
       );
 
       expect(result, isA<Ok<void, BullVaultFailure>>());
+      final wallets = await storage.select(storage.walletMetadatas).get();
+      expect(
+        wallets.singleWhere((row) => row.id == previous.walletId).isHidden,
+        isTrue,
+      );
+      expect(
+        wallets.singleWhere((row) => row.id == replacement.walletId).isHidden,
+        isFalse,
+      );
       expect(
         (loadedPrevious as Ok<BullVaultRecord?, BullVaultFailure>)
             .value!
@@ -448,7 +633,6 @@ void main() {
   );
 
   test('links restored renewal metadata to its active predecessor', () async {
-    final storage = _MemoryStorage();
     final repository = _repository(storage);
     final previous = testBullVaultCreateResult(
       walletId: 'wallet-0',
@@ -516,6 +700,33 @@ void main() {
       isA<Ok<void, BullVaultFailure>>(),
     );
 
+    final reserved =
+        (await repository.reserveNextGeneration(descriptorOnly)
+                as Ok<int, BullVaultFailure>)
+            .value;
+    expect(
+      await repository.linkRestoredRenewal(
+        previous: previous,
+        successor: restored,
+      ),
+      isA<Err<void, BullVaultFailure>>(),
+    );
+    final unchangedPrevious =
+        (await repository.getByWalletId(previous.walletId)
+                as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!;
+    final unchangedSuccessor =
+        (await repository.getByWalletId(restored.walletId)
+                as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!;
+    expect(unchangedPrevious.status, BullVaultLifecycleStatus.active);
+    expect(unchangedPrevious.successorWalletId, isNull);
+    expect(unchangedSuccessor.lineageId, descriptorOnly.lineageId);
+    await repository.releaseGeneration(
+      lineageId: descriptorOnly.lineageId,
+      generation: reserved,
+    );
+
     final result = await repository.linkRestoredRenewal(
       previous: previous,
       successor: restored,
@@ -540,9 +751,8 @@ void main() {
   });
 
   test(
-    'restores the predecessor when restored renewal linking fails',
+    'rolls back restored lineage and visibility when linking fails',
     () async {
-      final storage = _MemoryStorage();
       final repository = _repository(storage);
       final previous = testBullVaultCreateResult(
         walletId: 'wallet-0',
@@ -569,7 +779,7 @@ void main() {
       );
       await repository.save(previous);
       await repository.save(descriptorOnly);
-      storage.failNextSaveForKey = 'bullvault_record_${previous.walletId}';
+      await _failRecordUpdate(storage, previous.walletId);
 
       final result = await repository.linkRestoredRenewal(
         previous: previous,
@@ -595,77 +805,9 @@ void main() {
     },
   );
 
-  for (final readLineage in [false, true]) {
-    test('repairs an interrupted restored renewal link from '
-        '${readLineage ? 'the lineage' : 'a wallet'}', () async {
-      final storage = _MemoryStorage();
-      final codec = testBullVaultRecoveryPackageCodec();
-      final repository = _repository(storage);
-      final mapper = BullVaultRecordMapper(codec);
-      final datasource = BullVaultMetadataDatasource(storage);
-      final previous = testBullVaultCreateResult(
-        walletId: 'wallet-0',
-        lineageId: 'lineage-id',
-        status: BullVaultLifecycleStatus.active,
-      ).record;
-      final package = testBullVaultRecoveryPackage(
-        previousVaultId: previous.walletId,
-        lineageId: previous.lineageId,
-        generation: 1,
-      );
-      final descriptorOnly = _descriptorOnlyRecord(package);
-      final restored = BullVaultRecord(
-        walletId: descriptorOnly.walletId,
-        lineageId: package.policy.lineageId,
-        vaultGeneration: package.policy.vaultGeneration,
-        mobileAccount: descriptorOnly.mobileAccount,
-        birthHeight: package.policy.birthHeight,
-        recoveryPackage: package,
-        previousVaultId: previous.walletId,
-        status: BullVaultLifecycleStatus.active,
-        recoveryPackageConfirmed: true,
-        createdAt: DateTime.utc(2028),
-      );
-      await repository.save(previous);
-      await repository.save(descriptorOnly);
-      await datasource.save(mapper.toModel(restored));
-
-      final Result<BullVaultRecord?, BullVaultFailure> repairedPrevious;
-      if (readLineage) {
-        final lineage = await repository.getLineage(previous.lineageId);
-        repairedPrevious = lineage.map(
-          (records) => records.singleWhere(
-            (record) => record.walletId == previous.walletId,
-          ),
-        );
-      } else {
-        repairedPrevious = await repository.getByWalletId(previous.walletId);
-      }
-      final repairedSuccessor = await repository.getByWalletId(
-        restored.walletId,
-      );
-
-      expect(
-        (repairedPrevious as Ok<BullVaultRecord?, BullVaultFailure>)
-            .value!
-            .status,
-        BullVaultLifecycleStatus.migrating,
-      );
-      expect(repairedPrevious.value!.successorWalletId, restored.walletId);
-      expect(
-        (repairedSuccessor as Ok<BullVaultRecord?, BullVaultFailure>)
-            .value!
-            .recoveryPackageConfirmed,
-        isTrue,
-      );
-      expect(repairedSuccessor.value!.lineageId, previous.lineageId);
-    });
-  }
-
   test(
     'rejects a restored link that duplicates a lineage generation',
     () async {
-      final storage = _MemoryStorage();
       final repository = _repository(storage);
       final previous = testBullVaultCreateResult(
         walletId: 'wallet-0',
@@ -721,64 +863,77 @@ void main() {
     },
   );
 
-  test('restores the predecessor when replacement activation fails', () async {
-    final storage = _MemoryStorage();
-    final repository = _repository(storage);
-    final previous = BullVaultRecord(
-      walletId: 'wallet-0',
-      lineageId: 'lineage-id',
-      vaultGeneration: 0,
-      mobileAccount: 0,
-      birthHeight: 3_000_000,
-      recoveryPackage: testBullVaultRecoveryPackage(lineageId: 'lineage-id'),
-      createdAt: DateTime.utc(2027, 1, 15),
-    );
-    final replacement = BullVaultRecord(
-      walletId: 'wallet-1',
-      lineageId: 'lineage-id',
-      vaultGeneration: 1,
-      mobileAccount: 0,
-      birthHeight: 3_100_000,
-      recoveryPackage: testBullVaultRecoveryPackage(
-        previousVaultId: 'wallet-0',
+  test(
+    'rolls back renewal metadata and visibility when activation fails',
+    () async {
+      final repository = _repository(storage);
+      final previous = BullVaultRecord(
+        walletId: 'wallet-0',
         lineageId: 'lineage-id',
-        generation: 1,
-      ),
-      previousVaultId: previous.walletId,
-      status: BullVaultLifecycleStatus.activating,
-      hardwareSetupComplete: true,
-      recoveryPackageConfirmed: true,
-      createdAt: DateTime.utc(2028, 1, 15),
-    );
-    await repository.save(previous);
-    await repository.save(replacement);
-    storage.failNextSaveForKey = 'bullvault_record_wallet-1';
+        vaultGeneration: 0,
+        mobileAccount: 0,
+        birthHeight: 3_000_000,
+        recoveryPackage: testBullVaultRecoveryPackage(lineageId: 'lineage-id'),
+        createdAt: DateTime.utc(2027, 1, 15),
+      );
+      final replacement = BullVaultRecord(
+        walletId: 'wallet-1',
+        lineageId: 'lineage-id',
+        vaultGeneration: 1,
+        mobileAccount: 0,
+        birthHeight: 3_100_000,
+        recoveryPackage: testBullVaultRecoveryPackage(
+          previousVaultId: 'wallet-0',
+          lineageId: 'lineage-id',
+          generation: 1,
+        ),
+        previousVaultId: previous.walletId,
+        status: BullVaultLifecycleStatus.pending,
+        hardwareSetupComplete: true,
+        recoveryPackageConfirmed: true,
+        createdAt: DateTime.utc(2028, 1, 15),
+      );
+      await repository.save(previous);
+      await repository.save(replacement);
+      await _failRecordUpdate(storage, replacement.walletId);
 
-    final result = await repository.activateRenewal(
-      previous: previous,
-      replacement: replacement,
-    );
-    final loadedPrevious = await repository.getByWalletId(previous.walletId);
-    final loadedReplacement = await repository.getByWalletId(
-      replacement.walletId,
-    );
+      final result = await repository.activateRenewal(
+        previous: previous,
+        replacement: replacement,
+      );
+      final loadedPrevious = await repository.getByWalletId(previous.walletId);
+      final loadedReplacement = await repository.getByWalletId(
+        replacement.walletId,
+      );
 
-    expect(result, isA<Err<void, BullVaultFailure>>());
-    expect(
-      (loadedPrevious as Ok<BullVaultRecord?, BullVaultFailure>).value!.status,
-      BullVaultLifecycleStatus.active,
-    );
-    expect(loadedPrevious.value!.successorWalletId, isNull);
-    expect(
-      (loadedReplacement as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value!
-          .status,
-      BullVaultLifecycleStatus.activating,
-    );
-  });
+      expect(result, isA<Err<void, BullVaultFailure>>());
+      final wallets = await storage.select(storage.walletMetadatas).get();
+      expect(
+        wallets.singleWhere((row) => row.id == previous.walletId).isHidden,
+        isFalse,
+      );
+      expect(
+        wallets.singleWhere((row) => row.id == replacement.walletId).isHidden,
+        isTrue,
+      );
+      expect(
+        (loadedPrevious as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!
+            .status,
+        BullVaultLifecycleStatus.active,
+      );
+      expect(loadedPrevious.value!.successorWalletId, isNull);
+      expect(
+        (loadedReplacement as Ok<BullVaultRecord?, BullVaultFailure>)
+            .value!
+            .status,
+        BullVaultLifecycleStatus.pending,
+      );
+    },
+  );
 }
 
-BullVaultRepositoryImpl _repository(_MemoryStorage storage) {
+BullVaultRepositoryImpl _repository(SqliteDatabase storage) {
   final codec = testBullVaultRecoveryPackageCodec();
   return BullVaultRepositoryImpl(
     BullVaultMetadataDatasource(storage),
@@ -815,3 +970,11 @@ BullVaultRecord _descriptorOnlyRecord(BullVaultRecoveryPackage package) {
     createdAt: DateTime.utc(2028),
   );
 }
+
+Future<void> _failRecordUpdate(
+  SqliteDatabase database,
+  String walletId,
+) => database.customStatement(
+  "CREATE TRIGGER fail_record_update BEFORE UPDATE ON bull_vault_records "
+  "WHEN NEW.wallet_id = '$walletId' BEGIN SELECT RAISE(ABORT, 'write failed'); END",
+);
