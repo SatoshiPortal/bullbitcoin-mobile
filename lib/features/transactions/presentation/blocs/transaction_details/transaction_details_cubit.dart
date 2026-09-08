@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -492,7 +490,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required String walletId,
   }) async {
     try {
-      final swap = await _getSwapUsecase.execute(swapId);
+      final swap = await _getSwapUsecase.execute(swapId: swapId);
 
       String? txId;
       if (swap is ChainSwap) {

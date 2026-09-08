@@ -11,9 +11,11 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart'
+    hide Environment;
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart' as se;
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -31,7 +33,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+class _MockBoltzSwapRepository extends Mock implements SwapHistoryRepository {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -97,7 +99,7 @@ void main() {
 
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
-        environment: Environment.mainnet,
+        environment: se.Environment.mainnet,
         bitcoinUnit: BitcoinUnit.sats,
         currencyCode: 'CAD',
       ),

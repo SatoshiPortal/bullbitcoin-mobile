@@ -21,9 +21,7 @@ import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/refund_rescued_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
@@ -51,6 +49,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_rout
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -214,7 +213,7 @@ class SettingsRouter {
           return BlocProvider(
             create: (_) => SwapRescueCubit(
               rescueSwapUsecase: locator<RescueSwapUsecase>(),
-              refundRescuedSwapUsecase: locator<RefundRescuedSwapUsecase>(),
+              getWalletsUsecase: locator<GetWalletsUsecase>(),
               restored: restorable.swap,
             ),
             child: SwapRescueDetailsScreen(restorable: restorable),

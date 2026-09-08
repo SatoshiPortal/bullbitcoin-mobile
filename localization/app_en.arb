@@ -14582,5 +14582,17 @@
   "sendErrorTransactionChanged": "The transaction details changed. Review the amount, destination, and fees, then confirm again.",
   "@sendErrorTransactionChanged": {
     "description": "Message shown when a transaction must be rebuilt because its details changed."
+  },
+  "swapServerTitle": "Swap server",
+  "@swapServerTitle": {
+    "description": "Bitcoin settings row: the user-configurable Boltz swap server"
+  },
+  "swapServerSubtitle": "The Boltz server used for trustless swaps. Leave empty for the default. Takes effect after restarting the app.",
+  "@swapServerSubtitle": {
+    "description": "Dialog helper text for the swap server setting"
+  },
+  "swapServerReset": "Reset to default",
+  "@swapServerReset": {
+    "description": "Button resetting the swap server to the default"
   }
 }

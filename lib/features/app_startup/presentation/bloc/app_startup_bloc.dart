@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/refund_rescued_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -36,8 +34,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._isTorRequiredUsecase,
     required this._initTorUsecase,
     required this._logSwapCensusUsecase,
-    required this._verifyChainSwapCompletionsUsecase,
-    required this._refundRescuedSwapUsecase,
+    required this._swapWatcher,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -52,8 +49,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
   final LogSwapCensusUsecase _logSwapCensusUsecase;
-  final VerifyChainSwapCompletionsUsecase _verifyChainSwapCompletionsUsecase;
-  final RefundRescuedSwapUsecase _refundRescuedSwapUsecase;
+  final SwapWatcher _swapWatcher;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -125,14 +121,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
         // outspend recovery) so the restore screen can offer the rescue.
         log.fine('[Startup] running swap census');
         await _logSwapCensusUsecase.execute();
-        await _verifyChainSwapCompletionsUsecase.execute();
-        log.fine('[Startup] swap census + completion verification done');
-
-        // Drive refunds for locally refundable swaps in the background —
-        // reads only local storage + electrum, so it works with the Boltz
-        // API down (where the restore/rescue screen cannot). Never throws;
-        // must not delay startup.
-        unawaited(_refundRescuedSwapUsecase.executeAllRefundable());
+        // The watcher is the only driver in the system: it verifies
+        // recorded completions, then claims/refunds/coop-signs every
+        // ongoing swap, with live events, reconcile and a heartbeat.
+        // Never throws; must not delay startup.
+        unawaited(_swapWatcher.start());
       } else {
         // This is a fresh install, so reset the app data that might still be
         //  there from a previous install.

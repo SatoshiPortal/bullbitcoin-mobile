@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/swaps/domain/usecases/log_swap_census_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/refund_rescued_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_completions_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -36,11 +34,7 @@ class _MockInitTorUsecase extends Mock implements InitTorUsecase {}
 
 class _MockLogSwapCensusUsecase extends Mock implements LogSwapCensusUsecase {}
 
-class _MockVerifyChainSwapCompletionsUsecase extends Mock
-    implements VerifyChainSwapCompletionsUsecase {}
-
-class _MockRefundRescuedSwapUsecase extends Mock
-    implements RefundRescuedSwapUsecase {}
+class _MockSwapWatcher extends Mock implements SwapWatcher {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -58,8 +52,7 @@ void main() {
   late _MockCheckLegacyInstallUsecase checkLegacyInstall;
   late _MockIsTorRequiredUsecase isTorRequired;
   late _MockLogSwapCensusUsecase logSwapCensus;
-  late _MockVerifyChainSwapCompletionsUsecase verifyChainSwapCompletions;
-  late _MockRefundRescuedSwapUsecase refundRescuedSwap;
+  late _MockSwapWatcher swapWatcher;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -70,8 +63,7 @@ void main() {
     isTorRequiredUsecase: isTorRequired,
     initTorUsecase: _MockInitTorUsecase(),
     logSwapCensusUsecase: logSwapCensus,
-    verifyChainSwapCompletionsUsecase: verifyChainSwapCompletions,
-    refundRescuedSwapUsecase: refundRescuedSwap,
+    swapWatcher: swapWatcher,
   );
 
   setUp(() {
@@ -81,16 +73,12 @@ void main() {
     checkLegacyInstall = _MockCheckLegacyInstallUsecase();
     isTorRequired = _MockIsTorRequiredUsecase();
     logSwapCensus = _MockLogSwapCensusUsecase();
-    verifyChainSwapCompletions = _MockVerifyChainSwapCompletionsUsecase();
-    refundRescuedSwap = _MockRefundRescuedSwapUsecase();
+    swapWatcher = _MockSwapWatcher();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
     when(() => isTorRequired.execute()).thenAnswer((_) async => false);
     when(() => logSwapCensus.execute()).thenAnswer((_) async {});
-    when(() => verifyChainSwapCompletions.execute()).thenAnswer((_) async {});
-    when(
-      () => refundRescuedSwap.executeAllRefundable(),
-    ).thenAnswer((_) async {});
+    when(() => swapWatcher.start()).thenAnswer((_) async {});
   });
 
   test(

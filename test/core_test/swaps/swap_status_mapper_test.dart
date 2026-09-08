@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
-import 'package:bb_mobile/core/swaps/data/services/swap_status_mapper.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:flutter_test/flutter_test.dart';
 

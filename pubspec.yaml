@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.13.4+219
+version: 6.13.5+220
 
 environment:
   sdk: "3.12.2"
@@ -14,6 +14,7 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
+  - packages/swaps
 
 dependencies:
   flutter:
@@ -21,6 +22,7 @@ dependencies:
   bull_payjoin:
   bull_ui:
   primitives:
+  swaps:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1

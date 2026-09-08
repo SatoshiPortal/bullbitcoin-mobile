@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 
 abstract interface class SwapHistoryRepository {
   Future<List<Swap>> getAllSwaps({String? walletId});

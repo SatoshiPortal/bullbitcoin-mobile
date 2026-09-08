@@ -4979,5 +4979,8 @@
   "coreSwapsStatusUnknown": "Desconocido",
   "sendSwapExpiredTitle": "Orden expirada",
   "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera.",
-  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente."
+  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente.",
+  "swapServerTitle": "Servidor de swap",
+  "swapServerSubtitle": "El servidor Boltz utilizado para swaps sin confianza. Déjelo vacío para el predeterminado. Surte efecto tras reiniciar la aplicación.",
+  "swapServerReset": "Restablecer el valor predeterminado"
 }

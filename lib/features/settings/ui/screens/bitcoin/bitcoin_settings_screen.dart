@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/swap_server_dialog.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,6 +76,11 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   onTap: () {
                     context.pushNamed(SettingsRoute.swapRestore.name);
                   },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.swap_calls,
+                  title: context.loc.swapServerTitle,
+                  onTap: () => showSwapServerDialog(context),
                 ),
                 SettingsEntryItem(
                   icon: Icons.hub,

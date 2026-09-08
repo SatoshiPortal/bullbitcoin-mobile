@@ -21,7 +21,7 @@ void main() {
 
     test('repository lookup filters by wallet and swap type', () {
       final source = File(
-        'lib/core/swaps/data/repository/boltz_swap_repository.dart',
+        'packages/swaps/lib/src/boltz_swap_repository.dart',
       ).readAsStringSync();
       final start = source.indexOf('Future<LnSendSwap?> getSendSwapByInvoice');
       final end = source.indexOf('\n  Future<int> getSwapRefundTxSize', start);

@@ -4979,5 +4979,8 @@
   "coreSwapsStatusAwaitingClaim": "等待领取",
   "coreSwapsStatusUnknown": "未知",
   "sendSwapExpiredTitle": "订单已过期",
-  "sendSwapExpiredMessage": "此订单在发送任何资金前已过期。您的钱包未发送任何资金。"
+  "sendSwapExpiredMessage": "此订单在发送任何资金前已过期。您的钱包未发送任何资金。",
+  "swapServerTitle": "Swap 服务器",
+  "swapServerSubtitle": "用于无信任 Swap 的 Boltz 服务器。留空使用默认值。重启应用后生效。",
+  "swapServerReset": "恢复默认"
 }
