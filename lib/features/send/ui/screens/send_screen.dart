@@ -1014,6 +1014,10 @@ class _BottomButtons extends StatelessWidget {
     final isBitcoinWallet = context.select(
       (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
     );
+    final isOnchainSend = context.select(
+      (SendCubit cubit) => !cubit.state.isLightning && !cubit.state.isChainSwap,
+    );
+    final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
     final wallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
@@ -1027,7 +1031,9 @@ class _BottomButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
-          if (isBitcoinWallet && !hasFinalizedTx && !isSpMode) ...[
+          if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
+              !hasFinalizedTx &&
+              !isSpMode) ...[
             BBButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
@@ -1286,6 +1292,12 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
+    final selectedCoins = context.select(
+      (SendCubit cubit) => (
+        count: cubit.state.selectedUtxos.length,
+        totalSat: cubit.state.selectedSpendableBalanceSat,
+      ),
+    );
 
     final label = context.select((SendCubit cubit) => cubit.state.label);
     return CommonOnchainSendInfoSection(
@@ -1295,6 +1307,12 @@ class _LiquidOnchainSendInfoSection extends StatelessWidget {
       formattedFiatEquivalent: '~$formattedFiatEquivalent',
       absoluteFees: formattedAbsoluteFees,
       selectedFeeOptionTitle: '',
+      selectedCoinsDetails: selectedCoins.count == 0
+          ? null
+          : _SelectedCoinsDetails(
+              count: selectedCoins.count,
+              totalSat: selectedCoins.totalSat,
+            ),
       note: label,
       // Liquid has fixed fees — no fee priority selector
       onFeePriorityTap: null,

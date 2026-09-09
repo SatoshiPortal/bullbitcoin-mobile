@@ -19,6 +19,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
       (SendCubit cubit) => cubit.state.replaceByFee,
     );
     final isSweep = context.select((SendCubit cubit) => cubit.state.isSweep);
+    final isLiquid = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -49,22 +52,24 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(32),
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              BBText(
-                context.loc.sendReplaceByFeeActivated,
-                style: context.font.headlineMedium,
-                color: context.appColors.secondary,
-              ),
-              Switch(
-                value: isRBFEnabled,
-                onChanged: (val) async =>
-                    await context.read<SendCubit>().replaceByFeeChanged(val),
-              ),
-            ],
-          ),
-          const Gap(24),
+          if (!isLiquid) ...[
+            Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                BBText(
+                  context.loc.sendReplaceByFeeActivated,
+                  style: context.font.headlineMedium,
+                  color: context.appColors.secondary,
+                ),
+                Switch(
+                  value: isRBFEnabled,
+                  onChanged: (val) async =>
+                      await context.read<SendCubit>().replaceByFeeChanged(val),
+                ),
+              ],
+            ),
+            const Gap(24),
+          ],
           if (!isSweep) ...[
             ListTile(
               title: BBText(

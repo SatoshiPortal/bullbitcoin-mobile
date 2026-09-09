@@ -18,7 +18,10 @@ class ResolveSelectedInputsUsecase {
     if (outpoints.isEmpty) {
       return const Err(SendSelectedCoinsUnavailableFailure());
     }
-    final reservedResult = await _payjoinSessions.reservedOutpoints();
+    final reservedResult =
+        availableUtxos.every((utxo) => utxo is LiquidWalletUtxo)
+        ? const Ok<Set<Outpoint>, PayjoinFailure>({})
+        : await _payjoinSessions.reservedOutpoints();
     final Set<Outpoint> reservedOutpoints;
     switch (reservedResult) {
       case Ok(:final value):
