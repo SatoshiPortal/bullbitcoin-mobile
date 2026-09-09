@@ -1,5 +1,18 @@
 import 'entities/tor_route.dart';
 
+enum TorRoutePoolEventType { opened, attached, closed }
+
+final class TorRoutePoolEvent {
+  final TorRoutePoolEventType type;
+  final TorSource source;
+  final int holders;
+
+  const TorRoutePoolEvent(this.type, this.source, this.holders);
+
+  String get logMessage =>
+      'recoverbull.tor.route.${type.name} source=${source.name} holders=$holders';
+}
+
 final class TorRouteLease {
   final TorRoute route;
   final Future<void> Function() _onRelease;
@@ -15,21 +28,56 @@ final class TorRouteLease {
 final class TorRoutePool {
   final Map<String, _Entry> _entries = {};
   final Map<String, Future<_Entry>> _acquisitions = {};
+  final Map<String, Future<void>> _closures = {};
 
   Future<TorRouteLease> acquire({
     required String key,
     required Future<TorRoute> Function() open,
     required Future<void> Function() close,
+    void Function(TorRoutePoolEvent event)? onEvent,
   }) async {
     final existing = _entries[key];
     if (existing != null) {
       existing.references++;
-      return TorRouteLease(existing.route, () => _release(key, existing));
+      _emit(
+        onEvent,
+        TorRoutePoolEvent(
+          TorRoutePoolEventType.attached,
+          existing.route.source,
+          existing.references,
+        ),
+      );
+      return TorRouteLease(
+        existing.route,
+        () => _release(key, existing, onEvent),
+      );
     }
-    final pending = _acquisitions[key] ??= _openAndStore(key, open, close);
+    final acquisition = _acquisitions[key];
+    final previousClose = _closures[key];
+    if (previousClose != null) {
+      await previousClose;
+      return acquire(key: key, open: open, close: close, onEvent: onEvent);
+    }
+    late final Future<_Entry> pending;
+    if (acquisition == null) {
+      pending = _openAndStore(key, open, close);
+      _acquisitions[key] = pending;
+    } else {
+      pending = acquisition;
+    }
     final entry = await pending;
     entry.references++;
-    return TorRouteLease(entry.route, () => _release(key, entry));
+    _emit(
+      onEvent,
+      TorRoutePoolEvent(
+        acquisition == null
+            ? TorRoutePoolEventType.opened
+            : TorRoutePoolEventType.attached,
+        entry.route.source,
+        entry.references,
+      ),
+    );
+    return TorRouteLease(entry.route, () => _release(key, entry, onEvent));
   }
 
   Future<_Entry> _openAndStore(
@@ -48,10 +96,35 @@ final class TorRoutePool {
     }
   }
 
-  Future<void> _release(String key, _Entry entry) async {
+  Future<void> _release(
+    String key,
+    _Entry entry,
+    void Function(TorRoutePoolEvent event)? onEvent,
+  ) async {
     if (--entry.references > 0) return;
     if (identical(_entries[key], entry)) _entries.remove(key);
-    await entry.close();
+    final closing = entry.close();
+    _closures[key] = closing;
+    try {
+      await closing;
+      _emit(
+        onEvent,
+        TorRoutePoolEvent(TorRoutePoolEventType.closed, entry.route.source, 0),
+      );
+    } finally {
+      if (identical(_closures[key], closing)) _closures.remove(key);
+    }
+  }
+
+  void _emit(
+    void Function(TorRoutePoolEvent event)? onEvent,
+    TorRoutePoolEvent event,
+  ) {
+    try {
+      onEvent?.call(event);
+    } catch (_) {
+      // Pool diagnostics must never alter route ownership.
+    }
   }
 }
 

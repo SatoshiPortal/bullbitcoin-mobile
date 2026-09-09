@@ -152,6 +152,7 @@ final class RecoverBullFeature {
       timing: core.dependencies.timing,
       torHttpClientFactory: const TorHttpClientFactory(),
       routePool: routePool,
+      routePoolEvent: (event) => log.fine(event.logMessage),
     );
     final decryptVault = DecryptVaultUsecase(recoverBullRepository: repository);
     final restoreVault = RestoreVaultUsecase(

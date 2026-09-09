@@ -45,6 +45,14 @@ SettingsEntity _settings({required bool useTorProxy, int port = 9050}) =>
       torProxyPort: port,
     );
 
+TorRoute _route(TorSource source) => TorRoute(
+  source: source,
+  endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9050),
+  evidence: source == TorSource.embedded
+      ? TorReadinessEvidence.embeddedBootstrap
+      : TorReadinessEvidence.externalSocksHandshake,
+);
+
 void main() {
   setUpAll(() {
     registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
@@ -426,32 +434,63 @@ void main() {
   test(
     'opens one route during a complete check with both probes active',
     () async {
-      final external = _MockExternalTor();
-      final tor = _MockTor();
-      when(() => tor.external).thenReturn(external);
-      when(() => external.verify(any())).thenAnswer(
-        (_) async => TorReady(
-          TorRoute(
-            source: TorSource.external,
-            endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9050),
-            evidence: TorReadinessEvidence.externalSocksHandshake,
-          ),
-        ),
-      );
-      final recoverBullStatus = Completer<RecoverBullStatus>();
+      final pool = TorRoutePool();
+      final events = <TorRoutePoolEvent>[];
+      final callsStarted = Completer<void>();
+      final leasesAcquired = Completer<void>();
+      final routeOpen = Completer<TorRoute>();
+      var probeCalls = 0;
+      var leaseCount = 0;
+      var closes = 0;
+      Future<TorRouteLease> acquireProbe() async {
+        probeCalls++;
+        if (probeCalls == 2) callsStarted.complete();
+        final lease = await pool.acquire(
+          key: 'embedded',
+          open: () async {
+            await callsStarted.future;
+            return routeOpen.future;
+          },
+          close: () async => closes++,
+          onEvent: events.add,
+        );
+        leaseCount++;
+        if (leaseCount == 2) leasesAcquired.complete();
+        return lease;
+      }
+
       final usecase = _usecase(
-        settings: _settings(useTorProxy: true),
-        tor: tor,
-        routePool: TorRoutePool(),
-        recoverBullHealthProbe: () async => RecoverBullHealth.online,
-        recoverBullStatusProbe: () => recoverBullStatus.future,
+        settings: _settings(useTorProxy: false),
+        routePool: pool,
+        recoverBullHealthProbe: () async {
+          final lease = await acquireProbe();
+          await leasesAcquired.future;
+          await lease.release();
+          return RecoverBullHealth.online;
+        },
+        recoverBullStatusProbe: () async {
+          final lease = await acquireProbe();
+          await leasesAcquired.future;
+          await lease.release();
+          return const RecoverBullStatus.unavailable();
+        },
       );
 
       final resultFuture = usecase.execute(network: Network.bitcoinMainnet);
-      recoverBullStatus.complete(const RecoverBullStatus.unavailable());
+      await callsStarted.future;
+      routeOpen.complete(_route(TorSource.embedded));
       await resultFuture;
 
-      verify(() => external.verify(any())).called(1);
+      expect(
+        events.where((event) => event.type == TorRoutePoolEventType.opened),
+        hasLength(1),
+      );
+      expect(
+        events.where((event) => event.type == TorRoutePoolEventType.attached),
+        hasLength(1),
+      );
+      expect(events.map((event) => event.holders), containsAll([1, 2]));
+      expect(closes, 1);
     },
   );
 
