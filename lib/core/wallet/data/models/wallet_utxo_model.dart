@@ -24,6 +24,7 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required String standardAddress,
     required String confidentialAddress,
     @Default(0) int confirmations,
+    int? blockHeight,
   }) = LiquidWalletUtxoModel;
 
   const WalletUtxoModel._();

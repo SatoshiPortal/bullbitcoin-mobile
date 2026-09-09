@@ -280,6 +280,7 @@ abstract class SendState with _$SendState {
 
   bool get canAddRecipient =>
       !selectedInputsUnavailable &&
+      !(usesSelectedInputsOnly && selectedWallet?.isLiquid == true) &&
       (supportsRecipientList ||
           (paymentRequest == null &&
               copiedRawPaymentRequest.trim().isNotEmpty));
@@ -521,14 +522,10 @@ abstract class SendState with _$SendState {
   }
 
   /// Amount (sats) locked in user-frozen coins ([WalletUtxo.isFrozen], which is
-  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded, and zero in
-  /// practice for Liquid because freeze isn't surfaced there (the Coins entry is
-  /// Bitcoin-only) — not because the network is intrinsically exempt.
+  /// scoped to `origin = 'user'`). Zero until [utxos] are loaded.
   ///
-  /// Note: this intentionally excludes payjoin-derived locks, which the spend
-  /// path also treats as unspendable. So with an active payjoin the real drain
-  /// may produce slightly less than [spendableBalanceSat] reports — it never
-  /// over-spends (the build re-excludes both sets), only fails closed.
+  /// Payjoin reservations are also excluded when building, so the final drain
+  /// amount can be lower than [spendableBalanceSat].
   int get frozenBalanceSat => utxos
       .where((u) => u.isFrozen)
       .fold(0, (sum, u) => sum + u.amountSat.toInt());
@@ -641,6 +638,7 @@ abstract class SendState with _$SendState {
       failure is SendTransactionBuildFailure ||
       failure is SendInsufficientBalanceFailure ||
       failure is SendInsufficientFundsForFeesFailure ||
+      failure is SendSelectedCoinsInsufficientFailure ||
       failure is SendSelectedCoinsUnavailableFailure;
 
   bool get blocksSwapDueToHardwareWallet {

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
-import 'package:bb_mobile/features/send/domain/usecases/validate_sweep_payment_request_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final _wallet = Wallet(
@@ -20,7 +20,38 @@ final _wallet = Wallet(
 );
 
 void main() {
-  final usecase = ValidateSweepPaymentRequestUsecase();
+  final usecase = ValidateCoinControlPaymentRequestUsecase();
+
+  test('accepts a Liquid destination on the selected wallet network', () {
+    expect(
+      usecase.execute(
+        wallet: _wallet.copyWith(network: Network.liquidMainnet),
+        paymentRequest: const PaymentRequest.liquid(
+          address: 'lq1recipient',
+          isTestnet: false,
+        ),
+      ),
+      isA<Ok<void, SendFailure>>(),
+    );
+  });
+
+  test('allows an embedded Liquid amount for Send but not Sweep', () {
+    final wallet = _wallet.copyWith(network: Network.liquidMainnet);
+    const request = PaymentRequest.bip21(
+      network: Network.liquidMainnet,
+      uri: 'liquidnetwork:lq1recipient?amount=0.0005',
+      address: 'lq1recipient',
+      amountSat: 50000,
+    );
+    expect(
+      usecase.execute(wallet: wallet, paymentRequest: request, isSweep: false),
+      isA<Ok<void, SendFailure>>(),
+    );
+    expect(
+      usecase.execute(wallet: wallet, paymentRequest: request),
+      isA<Err<void, SendFailure>>(),
+    );
+  });
 
   test('accepts a Bitcoin address on the wallet network', () {
     final result = usecase.execute(
