@@ -105,9 +105,9 @@ Replay is complete. The table was reconciled against the actual 31-commit Git hi
 
 - I2 host regression gate: preserved durability tests passed in the 3,191-test root run on the merged schema. This is not the remaining I8 device/fidelity gate.
 - I3: implemented and reviewed in the continuation below; all 3,380 workspace tests pass. Represented fields are wallet reference, lineage, generation, status and encoded recovery package; labels retain the existing wallet-preference path. This does not close I4/I5/I7/I8.
-- I4: verify canonical seed ownership throughout signing and backup callers. Exercise lock during awaited signing work and invocation of an already-created Payjoin signing callback after lock; the current callback retains a native signer and is not covered by testing only construction after lock.
+- I4: private-signing revocation is implemented and reviewed in the continuation below; all 3,391 workspace tests pass. The broader canonical-ownership/secret-type audit and device checks are not closed by this substep.
 - I5: prove restore status/ownership/lineage behavior against actual SQLite, review remaining privacy lifecycle races, and remove the recovery dependency cycle through app composition.
-- Concrete remaining privacy sites: `lib/core/wallet/data/payjoin_wallet_adapter.dart:66` returns the native signing callback directly after loading private material; callback invocation after lock needs its own test and capability check. `lib/features/bullvault/ui/bullvault_onboarding_screen.dart:813` still enables protection without waiting before building the mobile-passphrase input. Neither site was changed by the post-replay fixes recorded here.
+- Concrete privacy follow-up: the retained Payjoin callback is now guarded and tested by the I4 continuation below. `lib/features/bullvault/ui/bullvault_onboarding_screen.dart:813` still enables protection without waiting before building the mobile-passphrase input; that I5 finding remains open.
 - I8: full host checks, fidelity/scope review and isolated device checks before creating the distributed child branch. No app installation, public publication, backend record implementation or production readiness is claimed by this log.
 
 ## Additional integration findings and corrections
@@ -178,3 +178,51 @@ Verification:
 - The graph now documents the already-existing WalletBackup → BullVault edge. The historical RecoverBull → WalletBackup → BullVault → RecoverBull cycle and old facade read methods that bypass use cases remain the separately planned I5 composition/refactor work. This change does not add a reverse BullVault → WalletBackup import or claim the entire graph is acyclic.
 - Final full-suite log: /tmp/bbm-i3-unit-tests-final.log. Other logs: /tmp/bbm-i3-before.log, /tmp/bbm-i3-storage-tests.log, /tmp/bbm-i3-focused-final.log, /tmp/bbm-i3-unit-tests.log (interrupted unsuccessful first run), /tmp/bbm-i3-static.log, /tmp/bbm-i3-fix-check.log and /tmp/bbm-i3-format-check.log.
 - The requested thorough follow-up review is recorded in [integration-i3-review.md](integration-i3-review.md). It applied the seven Bull Bitcoin review lenses and security checks solo, in accordance with the user's no-subagent instruction. No additional I3 blocker was found; existing signing/privacy/composition findings and untested device paths remain explicit. This is a scoped implementation review, not the final two-way stack-fidelity audit or an independent security audit.
+
+## I4 continuation — revoke signing work when its private session ends
+
+Scope: the retained Payjoin callback and awaited Bitcoin/Payjoin signing paths identified by the I3 review. Work remains on the same isolated integration branch, with no backend, protocol, schema, settings, or UI changes.
+
+Implementation commit: `385e59c6a` (`fix(wallet): revoke signing work when the private session ends`). Normal pre-commit analysis, fix dry-run, and formatting passed without bypassing hooks. No push or deployment.
+
+Three tests reproduced the old behavior before implementation: a retained processor still returned a signature after lock, still returned it after lock/re-unlock of the same wallet, and escaped successfully when lock occurred during processor creation. These tests used the real adapter and a counted fake native callback. A subsequent regression uses real BDK signing: the callback finalizes a synthetic PSBT while unlocked, then refuses that same signable PSBT after lock/re-unlock. No persistent seed-store interactions occur for these private-wallet tests.
+
+### Implementation and simplification decisions
+
+- The existing `WalletUnlockSession` owns a signing generation that changes whenever its loaded seed is cleared or replaced. Its guard captures the generation and wallet ID, not a copy of the seed. It rejects an ended unlock session permanently, including when the same wallet is opened again.
+- This generation is separate from the existing mount generation: starting/cancelling an asynchronous mount and replacing a loaded signing session are different events. Replacing a seed under the same accepted mount generation must still revoke the old signer. No token registry, extra stream, subscription, manager, or lease class was added.
+- The existing resolver supplies the guard only for `defaultSeedPassphrase` wallets; persistent signers retain their existing behavior. Callers capture permission after resolving public wallet metadata and before resolving private material. This is a signing-capability boundary, not a global cancellation mechanism for every earlier UI or metadata operation.
+- Bitcoin signing rechecks after awaited preparation/material resolution and immediately before its synchronous descriptor-signing call. The existing exception mapper returns `walletLocked`. Ben's per-key selection, full derived-xpub comparison, protected-key handling, PSBT checks, sighash restrictions, and finalization behavior are unchanged.
+- Payjoin carries the guard with its private wallet model, checks after asynchronous processor construction and on every returned callback invocation, and supplies the guard to ordinary datasource signing. That datasource checks before parsing and after native wallet creation, inside the existing disposal boundary.
+- The follow-up review found another window in fee bumping: the old code could prepare a replacement in one session and then enter signing in a newly opened session. Fee bumping now carries its original guard across replacement preparation and the subsequent metadata read in `_signPsbt`. Unsigned replacement preparation now needs only the public wallet, not a mnemonic-bearing model.
+
+### Review and adversarial checks
+
+Review is solo, using the Kumulynja checklist with the current repository architecture as the source of truth, and checking architecture, evidence, async correctness, UX, simplification, scope, repository rules, and security. No multi-agent or independent security review is claimed.
+
+- A simple `isUnlocked(walletId)` recheck is insufficient: reopening the same wallet would reactivate an old callback. The generation guard and regression tests cover that case.
+- Checking only before an await is insufficient. Real BDK preparation is interrupted through the test path-provider boundary; the post-await check rejects signing, and the same PSBT signs successfully without the revoked guard. The test does not use a malformed PSBT to obtain a false-positive failure.
+- Checking only after unsigned fee-bump preparation is insufficient: signing fetches metadata again. Separate tests lock/re-unlock during preparation and during that later fetch. Both must throw before a signature is produced.
+- The new callback does not expose a datasource, native object, or seed through a feature facade. It uses the existing wallet/Payjoin port contract. No new cross-feature edge or dependency was added, so `FEATURES.md` is unchanged.
+- Existing wallet business logic under `lib/core/wallet` and the concrete repository's `data/repositories` location predate this fix and do not match the current infrastructure-only core/directory conventions. A separate wallet-boundary extraction can address that legacy layout; moving signing ownership across features is deliberately not bundled with this security correction.
+- Tests for regular persistent signing, multiple local signers, mixed/repeated/originless descriptor keys, protected keys, Taproot policy paths, and hostile PSBTs retain their existing assertions. Only mock argument matching was extended for the new guard parameter; it does not relax account, network, passphrase, finalized-input, or signed-content expectations.
+- The current private-wallet creation path explicitly selects Bitcoin (`prepare_passphrase_wallet_usecase.dart`, `isLiquid: false`). This change does not invent Liquid passphrase-wallet support. Liquid's existing ordinary signing path is unchanged; a claim that all Liquid signing now uses this guard would be false.
+- The only `EnsureCanonicalSeedUsecase` production consumer found is BullVault restore. Its candidate seeds come from the default/stored-seed use cases, not the private session, and `ensureCanonicalSeed` removes a mnemonic passphrase from the persisted canonical representation. That source trace does not replace the remaining restore/ownership integration audit.
+- The guard authorizes an operation; it cannot retract signatures already produced before lock. It does not promise zeroization of Dart strings or immediate destruction of the native wallet captured by an old callback. An old callback is unusable after revocation, but comprehensive native-handle lifetime work remains distinct from this tested authorization fix.
+- Existing secret-type concerns are not silently marked fixed: `SeedModel` has a redacted `toString` but still generated value equality/hash, unlike the identity-based signing material. The broader I4 secret-type audit must decide and verify that boundary without adding a parallel secret-type hierarchy.
+
+### Verification
+
+- Red reproduction: three failures in `/tmp/bbm-i4-red.log`, before the implementation.
+- Initial targeted suite: 91 passed in `/tmp/bbm-i4-focused.log`.
+- Expanded targeted run: 102 passed in `/tmp/bbm-i4-focused-final.log`; the final two-window fee-bump suite separately passed all 12 tests in `/tmp/bbm-i4-rbf-final.log`.
+- Existing native fee-bump and use-case suites: 10 passed in `/tmp/bbm-i4-rbf-native.log`, including a real finalized replacement transaction after switching unsigned preparation to the public wallet model.
+- Whole-project analysis and bull_ui boundary pass in `/tmp/bbm-i4-analyze-final.log`. Fix dry-run and tracked-source formatting are checked through the makefile and normal commit hook.
+- The first full run was deliberately interrupted after the review found the fee-bump window; it is not a completed verification result. The complete rerun covering the final source, `/tmp/bbm-i4-unit-tests-final.log`, exited 0: 3,212 root tests plus all seven package suites (bull_logger 7, bull_payjoin 77, bull_tor 27, bull_ui 40, bull_ui_catalogue 1, primitives 17, screen_privacy 10). Total: 3,391 passed, zero failed; 11 new regression tests compared with the I3 baseline.
+- These are offline host tests with synthetic transaction data. No broadcast, external publication, emulator installation, or hardware signing was performed. Native host signing is not a substitute for the remaining app-background/device and real Payjoin protocol checks.
+
+### Scoped review verdict
+
+Approve this private-signing revocation substep for continued integration. The review found one additional important defect, the fee-bump session switch described above; it was fixed and retested before the final full run. No further blocker was found in this change. This is a solo implementation review, not independent security approval, completion of all I4 work, or approval of the entire branch.
+
+Next: continue canonical ownership/secret-type checks and I5 restore/privacy/composition work. The branch is not release-ready and the distributed-recovery implementation remains pending.

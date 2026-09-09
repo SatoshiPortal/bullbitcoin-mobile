@@ -14,6 +14,8 @@ These predate I3 and are not regressions introduced by the backup-change notific
 
 ### High: a retained Payjoin signing callback can outlive the private session
 
+Follow-up: fixed in `385e59c6a`, including same-wallet re-unlock and awaited signing/fee-bump races. See the [I4 execution record](integration-execution.md#i4-continuation--revoke-signing-work-when-its-private-session-ends) for reproduction, native signing tests, final 3,391-test workspace result, and remaining limits. The evidence below describes the original I3 review baseline.
+
 Evidence: `lib/core/wallet/data/payjoin_wallet_adapter.dart:66` obtains private material and returns the datasource callback. `lib/core/wallet/data/datasources/bdk_wallet_datasource.dart:204` captures a private BDK wallet and signs when that callback is later invoked, without consulting the session again.
 
 Scenario: a passphrase wallet creates the callback while unlocked, the app locks or backgrounds, and the already-created callback is subsequently invoked with a signable proposal. Clearing the Dart session does not revoke the captured native signing wallet. Testing callback construction after lock does not test this scenario.
