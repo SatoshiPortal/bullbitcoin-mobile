@@ -72,6 +72,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   EncryptedVault? _pendingProviderVault;
   bool _serverCheckInFlight = false;
   bool _serverCheckRequested = false;
+  Future<void>? _serverCheckCompletion;
   Timer? _torReadinessGraceTimer;
   tor.TorConnecting? _pendingTorConnecting;
   DateTime? _torReadinessLostAt;
@@ -272,6 +273,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('recoverbull.tor.initialization.reused_route');
       emit(state.copyWith(torConnection: tor.TorReady(_route!.route)));
       _requestServerCheck();
+      if (_serverCheckInFlight) {
+        unawaited(_requestServerCheckAfter(generation));
+      }
       return;
     }
     final oldRoute = _route;
@@ -315,6 +319,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         }
         emit(state.copyWith(torConnection: connection));
         _requestServerCheck();
+        if (_serverCheckInFlight) {
+          unawaited(_requestServerCheckAfter(generation));
+        }
       case Err(:final failure):
         final torFailure = failure is core.ExternalTorProxyUnavailableFailure
             ? tor.TorExternalProxyUnavailableFailure(failure.logMessage)
@@ -339,6 +346,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     _serverCheckInFlight = true;
+    final completion = Completer<void>();
+    _serverCheckCompletion = completion.future;
     _serverCheckRequested = false;
     final generation = _routeGeneration;
     final route = _route;
@@ -440,10 +449,23 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         'duration_ms=${checkTimer.elapsedMilliseconds}',
       );
       _serverCheckInFlight = false;
-      if (_serverCheckRequested && !isClosed && !_closingBloc) {
+      if (_serverCheckRequested &&
+          generation != _routeGeneration &&
+          !isClosed &&
+          !_closingBloc) {
         _serverCheckRequested = false;
         add(const OnServerCheck());
       }
+      completion.complete();
+    }
+  }
+
+  Future<void> _requestServerCheckAfter(int generation) async {
+    final completion = _serverCheckCompletion;
+    if (completion == null) return;
+    await completion;
+    if (generation == _routeGeneration && !isClosed && !_closingBloc) {
+      _requestServerCheck();
     }
   }
 
