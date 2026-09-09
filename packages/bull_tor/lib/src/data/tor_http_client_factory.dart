@@ -37,7 +37,7 @@ final class TorHttpClientFactory {
     final client = HttpClient();
     final recorder = failureRecorder;
     final proxy = ProxySettings(address, endpoint.port, password: null);
-    client.connectionFactory = (uri, _, _) {
+    client.connectionFactory = (uri, _, _) async {
       Future<ConnectionTask<Socket>> delegate() async {
         final socket = SocksTCPClient.connect(
           [proxy],
@@ -45,11 +45,26 @@ final class TorHttpClientFactory {
           uri.port,
         );
         if (uri.scheme == 'https') {
-          final Future<SecureSocket> secureSocket;
-          return ConnectionTask.fromSocket(
-            secureSocket = (await socket).secure(uri.host),
-            () async => (await secureSocket).close().ignore(),
+          Socket? underlying;
+          final secureSocket = socket.then((raw) {
+            underlying = raw;
+            return raw.secure(uri.host);
+          });
+          unawaited(
+            secureSocket.then<void>(
+              (_) {},
+              onError: (Object error, StackTrace trace) {
+                underlying?.destroy();
+              },
+            ),
           );
+          return ConnectionTask.fromSocket(secureSocket, () async {
+            try {
+              await (await secureSocket).close();
+            } catch (_) {
+              await underlying?.close();
+            }
+          });
         }
         return ConnectionTask.fromSocket(
           socket,
@@ -57,9 +72,21 @@ final class TorHttpClientFactory {
         );
       }
 
-      return recorder == null
-          ? delegate()
-          : recorder.wrap((_, _, _) => delegate())(uri, null, null);
+      try {
+        final task = await delegate();
+        if (recorder == null) return task;
+        final socket = task.socket.then(
+          (value) => value,
+          onError: (Object error, StackTrace trace) {
+            recorder.record(error);
+            Error.throwWithStackTrace(error, trace);
+          },
+        );
+        return ConnectionTask.fromSocket(socket, task.cancel);
+      } catch (error) {
+        recorder?.record(error);
+        rethrow;
+      }
     };
     return client;
   }

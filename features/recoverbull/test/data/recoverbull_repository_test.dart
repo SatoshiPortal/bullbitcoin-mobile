@@ -88,42 +88,123 @@ void main() {
   Future<Result<String, RecoverBullFailure>> fetch() =>
       repository.fetchVaultKey('00', 'password', '00', route);
 
-  test('maps SOCKS causes to distinct safe failures and log fields', () async {
-    final causes = <CommandReplyCode, Type>{
-      CommandReplyCode.networkUnreachable: KeyServerTorFailure,
-      CommandReplyCode.hostUnreachable: KeyServerOnionUnreachableFailure,
-      CommandReplyCode.connectionRefused: KeyServerServiceRefusedFailure,
-      CommandReplyCode.ttlExpired: KeyServerConnectionBudgetFailure,
-      CommandReplyCode.serverError: KeyServerConnectionUnknownFailure,
-    };
+  test(
+    'maps stable connection causes to distinct safe failures and log fields',
+    () async {
+      final causes = <SocksConnectionFailureCause, Type>{
+        SocksConnectionFailureCause.tor: KeyServerTorFailure,
+        SocksConnectionFailureCause.onionServiceUnreachable:
+            KeyServerOnionUnreachableFailure,
+        SocksConnectionFailureCause.serviceRefused:
+            KeyServerServiceRefusedFailure,
+        SocksConnectionFailureCause.connectionBudgetExceeded:
+            KeyServerConnectionBudgetFailure,
+        SocksConnectionFailureCause.unknown: KeyServerConnectionUnknownFailure,
+      };
 
-    for (final entry in causes.entries) {
-      logSink = TestLogSink.recording();
-      repository = RecoverBullRepositoryImpl(
+      for (final entry in causes.entries) {
+        logSink = TestLogSink.recording();
+        repository = RecoverBullRepositoryImpl(
+          log: logSink,
+          remoteDatasource: remote,
+          recoverbullSettingsDatasource: _MockSettings(),
+        );
+        when(() => remote.checkConnection(any())).thenAnswer((_) async {
+          route.connectionFailureRecorder.recordCause(entry.key);
+          throw Exception('transport failure');
+        });
+
+        final result = await repository.checkConnection(route);
+
+        expect(result, isA<Err<Null, RecoverBullFailure>>());
+        expect(
+          (result as Err<Null, RecoverBullFailure>).failure.runtimeType,
+          entry.value,
+        );
+        final message = logSink.entries.single.message;
+        expect(message, contains('cause='));
+        expect(message, isNot(contains('127.0.0.1')));
+        expect(message, isNot(contains('.onion')));
+        expect(message, isNot(contains('endpoint')));
+        expect(message, isNot(contains('payload')));
+        expect(
+          message,
+          'recoverbull.health.connection_failed cause=${entry.key.logValue}',
+        );
+      }
+    },
+  );
+
+  test(
+    'integrates the factory recorder with repository connection mapping',
+    () async {
+      final proxy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(proxy.close);
+      proxy.listen((socket) {
+        var greeted = false;
+        final bytes = <int>[];
+        socket.listen((chunk) {
+          bytes.addAll(chunk);
+          if (!greeted && bytes.length >= 3) {
+            greeted = true;
+            bytes.clear();
+            socket.add([0x05, 0x00]);
+          } else if (greeted && bytes.length >= 7) {
+            socket.add([0x05, 0x04, 0x00, 0x01, 0, 0, 0, 0, 0, 0]);
+            socket.close();
+          }
+        });
+      });
+      final settings = _MockSettings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://destination.onion/'));
+      final remote = RecoverBullRemoteDatasource(
+        recoverbullSettingsDatasource: settings,
+        log: logSink,
+        infoRequest: (url, client) async {
+          final request = await client.getUrl(url);
+          await request.close();
+        },
+      );
+      final recorder = TorConnectionFailureRecorder();
+      final integrationRoute = RecoverBullTorRoute(
+        TorRoute(
+          source: TorSource.external,
+          endpoint: TorProxyEndpoint(
+            host: InternetAddress.loopbackIPv4.address,
+            port: proxy.port,
+          ),
+          evidence: TorReadinessEvidence.externalSocksHandshake,
+        ),
+        () async {},
+        const TorHttpClientFactory().create(
+          TorProxyEndpoint(
+            host: InternetAddress.loopbackIPv4.address,
+            port: proxy.port,
+          ),
+          failureRecorder: recorder,
+        ),
+        connectionFailureRecorder: recorder,
+      );
+      addTearDown(() => integrationRoute.closeQuietly());
+      final integrationRepository = RecoverBullRepositoryImpl(
         log: logSink,
         remoteDatasource: remote,
-        recoverbullSettingsDatasource: _MockSettings(),
+        recoverbullSettingsDatasource: settings,
       );
-      when(
-        () => remote.checkConnection(any()),
-      ).thenThrow(SocksClientConnectionCommandFailedException(entry.key));
 
-      final result = await repository.checkConnection(route);
+      final result = await integrationRepository.checkConnection(
+        integrationRoute,
+      );
 
       expect(result, isA<Err<Null, RecoverBullFailure>>());
       expect(
-        (result as Err<Null, RecoverBullFailure>).failure.runtimeType,
-        entry.value,
+        (result as Err<Null, RecoverBullFailure>).failure,
+        isA<KeyServerOnionUnreachableFailure>(),
       );
-      final message = logSink.entries.single.message;
-      expect(message, contains('cause='));
-      expect(message, isNot(contains('127.0.0.1')));
-      expect(message, isNot(contains('.onion')));
-      expect(message, isNot(contains('endpoint')));
-      expect(message, isNot(contains('payload')));
-      expect(message, isNot(contains(entry.key.name)));
-    }
-  });
+    },
+  );
 
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
     test('503 preserves Retry-After as a busy failure', () async {
@@ -305,13 +386,12 @@ void main() {
   });
 
   test('opaque key-server failure uses a fresh SOCKS cause', () async {
-    final error = const SocksClientConnectionCommandFailedException(
-      CommandReplyCode.hostUnreachable,
-    );
     when(
       () => remote.fetch(any(), any(), any(), route: any(named: 'route')),
     ).thenAnswer((_) async {
-      route.connectionFailureRecorder.record(error);
+      route.connectionFailureRecorder.recordCause(
+        SocksConnectionFailureCause.onionServiceUnreachable,
+      );
       throw recoverbull.KeyServerException();
     });
 
@@ -328,10 +408,8 @@ void main() {
   });
 
   test('a stale SOCKS cause is invalidated before an opaque failure', () async {
-    route.connectionFailureRecorder.record(
-      const SocksClientConnectionCommandFailedException(
-        CommandReplyCode.hostUnreachable,
-      ),
+    route.connectionFailureRecorder.recordCause(
+      SocksConnectionFailureCause.onionServiceUnreachable,
     );
     stubFetchThrows(recoverbull.KeyServerException());
 
@@ -765,11 +843,10 @@ void main() {
     });
 
     test('maps opaque health failure using the fresh SOCKS cause', () async {
-      final error = const SocksClientConnectionCommandFailedException(
-        CommandReplyCode.hostUnreachable,
-      );
       when(() => remote.checkConnection(any())).thenAnswer((_) async {
-        route.connectionFailureRecorder.record(error);
+        route.connectionFailureRecorder.recordCause(
+          SocksConnectionFailureCause.onionServiceUnreachable,
+        );
         throw recoverbull.KeyServerException();
       });
 

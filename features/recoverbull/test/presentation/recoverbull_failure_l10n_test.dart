@@ -65,6 +65,11 @@ void main() {
       const PasswordNotSetFailure(),
       const VaultNotSetFailure(),
       const KeyServerConnectionFailure(),
+      const KeyServerTorFailure(),
+      const KeyServerOnionUnreachableFailure(),
+      const KeyServerServiceRefusedFailure(),
+      const KeyServerConnectionBudgetFailure(),
+      const KeyServerConnectionUnknownFailure(),
       const VaultCreationFailure(),
       const VaultProviderSaveFailure(),
       const TorNotStartedFailure(),
@@ -113,6 +118,64 @@ void main() {
     expect(messages, hasLength(failures.length));
     expect(messages, everyElement(isNot(contains(diagnostic))));
     expect(messages, everyElement(isNotEmpty));
+  });
+
+  testWidgets('translates every connection cause exactly in English and French', (
+    tester,
+  ) async {
+    const failures = [
+      KeyServerTorFailure(),
+      KeyServerOnionUnreachableFailure(),
+      KeyServerServiceRefusedFailure(),
+      KeyServerConnectionBudgetFailure(),
+      KeyServerConnectionUnknownFailure(),
+    ];
+    late List<String> english;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            english = [
+              for (final failure in failures) failure.toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    expect(english, [
+      'The network connection could not be established. Please try again.',
+      'The key server could not be reached. Please try again later.',
+      'The key server refused the connection. Please try again later.',
+      'The key server took too long to respond. Please try again.',
+      'The key server could not be reached. Please try again.',
+    ]);
+
+    late List<String> french;
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            french = [
+              for (final failure in failures) failure.toTranslated(context),
+            ];
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    expect(french, [
+      'La connexion réseau n’a pas pu être établie. Veuillez réessayer.',
+      'Le serveur de clés est inaccessible. Veuillez réessayer plus tard.',
+      'Le serveur de clés a refusé la connexion. Veuillez réessayer plus tard.',
+      'Le serveur de clés a mis trop de temps à répondre. Veuillez réessayer.',
+      'Le serveur de clés n’a pas pu être joint. Veuillez réessayer.',
+    ]);
   });
 
   testWidgets('retry delays are rendered exactly in English', (tester) async {

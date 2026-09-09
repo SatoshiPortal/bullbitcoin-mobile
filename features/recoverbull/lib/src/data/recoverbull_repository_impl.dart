@@ -119,27 +119,34 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String vaultKey,
     RecoverBullTorRoute route,
   ) async {
-    route.connectionFailureRecorder.invalidate();
+    final attempt = route.connectionFailureRecorder.begin();
     try {
-      await _remoteDatasource.store(
-        convert.hex.decode(_normalizeHex(identifier)),
-        utf8.encode(password),
-        convert.hex.decode(_normalizeHex(salt)),
-        convert.hex.decode(_normalizeHex(vaultKey)),
-        route: route,
+      await attempt.run(
+        () => _remoteDatasource.store(
+          convert.hex.decode(_normalizeHex(identifier)),
+          utf8.encode(password),
+          convert.hex.decode(_normalizeHex(salt)),
+          convert.hex.decode(_normalizeHex(vaultKey)),
+          route: route,
+        ),
       );
       log.fine('recoverbull.key.store.succeeded');
       return const Ok(null);
-    } on SocksClientConnectionCommandFailedException catch (e) {
-      return Err(_logAndMapSocksFailure('store', e));
     } on recoverbull.KeyServerException catch (e, st) {
-      final cause = route.connectionFailureRecorder.take();
+      final cause = attempt.take();
       _logKeyServer('store', e, st, cause: cause);
       return Err(_mapKeyServer(e, cause: cause));
     } on TimeoutException {
       log.warning('recoverbull.key.store.timeout');
       return const Err(KeyServerUnavailableFailure());
     } catch (e, st) {
+      final cause = attempt.take();
+      if (cause != null) {
+        log.warning(
+          'recoverbull.key.store.connection_failed cause=${cause.logValue}',
+        );
+        return Err(_mapSocksConnectionFailure(cause));
+      }
       _logUnexpected('store', e, st);
       return const Err(
         RecoverBullUnexpectedFailure('Vault key processing failed'),
@@ -154,26 +161,33 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     RecoverBullTorRoute route,
   ) async {
-    route.connectionFailureRecorder.invalidate();
+    final attempt = route.connectionFailureRecorder.begin();
     try {
-      final vaultKey = await _remoteDatasource.fetch(
-        convert.hex.decode(_normalizeHex(identifier)),
-        utf8.encode(password),
-        convert.hex.decode(_normalizeHex(salt)),
-        route: route,
+      final vaultKey = await attempt.run(
+        () => _remoteDatasource.fetch(
+          convert.hex.decode(_normalizeHex(identifier)),
+          utf8.encode(password),
+          convert.hex.decode(_normalizeHex(salt)),
+          route: route,
+        ),
       );
       log.fine('recoverbull.key.fetch.succeeded');
       return Ok(convert.hex.encode(vaultKey));
-    } on SocksClientConnectionCommandFailedException catch (e) {
-      return Err(_logAndMapSocksFailure('fetch', e));
     } on recoverbull.KeyServerException catch (e, st) {
-      final cause = route.connectionFailureRecorder.take();
+      final cause = attempt.take();
       _logKeyServer('fetch', e, st, cause: cause);
       return Err(_mapKeyServer(e, cause: cause));
     } on TimeoutException {
       log.warning('recoverbull.key.fetch.timeout');
       return const Err(KeyServerUnavailableFailure());
     } catch (e, st) {
+      final cause = attempt.take();
+      if (cause != null) {
+        log.warning(
+          'recoverbull.key.fetch.connection_failed cause=${cause.logValue}',
+        );
+        return Err(_mapSocksConnectionFailure(cause));
+      }
       _logUnexpected('fetch', e, st);
       return const Err(
         RecoverBullUnexpectedFailure('Vault key processing failed'),
@@ -189,13 +203,15 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     RecoverBullTorRoute route,
   ) async {
-    route.connectionFailureRecorder.invalidate();
+    final attempt = route.connectionFailureRecorder.begin();
     try {
-      final result = await _remoteDatasource.fetchWithStatus(
-        convert.hex.decode(_normalizeHex(identifier)),
-        utf8.encode(password),
-        convert.hex.decode(_normalizeHex(salt)),
-        route: route,
+      final result = await attempt.run(
+        () => _remoteDatasource.fetchWithStatus(
+          convert.hex.decode(_normalizeHex(identifier)),
+          utf8.encode(password),
+          convert.hex.decode(_normalizeHex(salt)),
+          route: route,
+        ),
       );
       final attemptStatus = result.attemptStatus;
       log.fine(
@@ -207,13 +223,9 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       );
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      final cause = e is recoverbull.KeyServerException
-          ? route.connectionFailureRecorder.take()
-          : null;
+      final cause = attempt.take();
       if (e is recoverbull.KeyServerException) {
         _logKeyServer('fetch', e, st, cause: cause);
-      } else if (e is SocksClientConnectionCommandFailedException) {
-        _logAndMapSocksFailure('fetch', e);
       } else if (e is TimeoutException) {
         log.warning('recoverbull.key.fetch.timeout');
       } else {
@@ -222,8 +234,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return Err(
         e is recoverbull.KeyServerException
             ? _mapKeyServer(e, cause: cause)
-            : e is SocksClientConnectionCommandFailedException
-            ? _mapSocksConnectionFailure(classifySocksConnectionFailure(e))
+            : cause != null
+            ? _mapSocksConnectionFailure(cause)
             : e is TimeoutException
             ? const KeyServerUnavailableFailure()
             : const RecoverBullUnexpectedFailure('Vault key processing failed'),
@@ -238,17 +250,19 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     RecoverBullTorRoute route,
   ) async {
-    route.connectionFailureRecorder.invalidate();
+    final attempt = route.connectionFailureRecorder.begin();
     try {
-      await _remoteDatasource.trash(
-        convert.hex.decode(_normalizeHex(identifier)),
-        utf8.encode(password),
-        convert.hex.decode(_normalizeHex(salt)),
-        route: route,
+      await attempt.run(
+        () => _remoteDatasource.trash(
+          convert.hex.decode(_normalizeHex(identifier)),
+          utf8.encode(password),
+          convert.hex.decode(_normalizeHex(salt)),
+          route: route,
+        ),
       );
       log.fine('recoverbull.key.trash.succeeded');
     } on recoverbull.KeyServerException catch (e, st) {
-      final cause = route.connectionFailureRecorder.take();
+      final cause = attempt.take();
       _logKeyServer('trash', e, st, cause: cause);
       rethrow;
     } on TimeoutException {
@@ -268,24 +282,22 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     RecoverBullTorRoute route,
   ) async {
-    route.connectionFailureRecorder.invalidate();
+    final attempt = route.connectionFailureRecorder.begin();
     try {
-      final result = await _remoteDatasource.trashWithStatus(
-        convert.hex.decode(_normalizeHex(identifier)),
-        utf8.encode(password),
-        convert.hex.decode(_normalizeHex(salt)),
-        route: route,
+      final result = await attempt.run(
+        () => _remoteDatasource.trashWithStatus(
+          convert.hex.decode(_normalizeHex(identifier)),
+          utf8.encode(password),
+          convert.hex.decode(_normalizeHex(salt)),
+          route: route,
+        ),
       );
       log.fine('recoverbull.key.trash.succeeded');
       return Ok(_mapFetchResult(result));
     } catch (e, st) {
-      final cause = e is recoverbull.KeyServerException
-          ? route.connectionFailureRecorder.take()
-          : null;
+      final cause = e is recoverbull.KeyServerException ? attempt.take() : null;
       if (e is recoverbull.KeyServerException) {
         _logKeyServer('trash', e, st, cause: cause);
-      } else if (e is SocksClientConnectionCommandFailedException) {
-        _logAndMapSocksFailure('trash', e);
       } else if (e is TimeoutException) {
         log.warning('recoverbull.key.trash.timeout');
       } else {
@@ -294,8 +306,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return Err(
         e is recoverbull.KeyServerException
             ? _mapKeyServer(e, cause: cause)
-            : e is SocksClientConnectionCommandFailedException
-            ? _mapSocksConnectionFailure(classifySocksConnectionFailure(e))
+            : cause != null
+            ? _mapSocksConnectionFailure(cause)
             : e is TimeoutException
             ? const KeyServerUnavailableFailure()
             : const RecoverBullUnexpectedFailure('Vault key processing failed'),
@@ -325,22 +337,16 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   Future<Result<Null, RecoverBullFailure>> checkConnection(
     RecoverBullTorRoute route,
   ) async {
-    route.connectionFailureRecorder.invalidate();
+    final attempt = route.connectionFailureRecorder.begin();
     try {
-      await _remoteDatasource.checkConnection(route);
+      await attempt.run(() => _remoteDatasource.checkConnection(route));
       log.fine('recoverbull.health.succeeded');
       return const Ok(null);
     } on TimeoutException {
       log.warning('recoverbull.health.timeout');
       return const Err(KeyServerHealthCheckTimeoutFailure());
-    } on SocksClientConnectionCommandFailedException catch (error) {
-      final cause = classifySocksConnectionFailure(error);
-      log.warning(
-        'recoverbull.health.connection_failed cause=${cause.logValue}',
-      );
-      return Err(_mapSocksConnectionFailure(cause));
     } on recoverbull.KeyServerException catch (error) {
-      final cause = route.connectionFailureRecorder.take();
+      final cause = attempt.take();
       if (error.code == 503) {
         log.warning('recoverbull.health.temporarily_unavailable code=503');
       } else if (error.code == null && _isKnownCause(cause)) {
@@ -363,6 +369,13 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
             : const KeyServerUnavailableFailure(),
       );
     } catch (error, trace) {
+      final cause = attempt.take();
+      if (cause != null) {
+        log.warning(
+          'recoverbull.health.connection_failed cause=${cause.logValue}',
+        );
+        return Err(_mapSocksConnectionFailure(cause));
+      }
       log.error(
         'recoverbull.health.unexpected error_type=${error.runtimeType}',
         trace: trace,
@@ -387,17 +400,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
 
   bool _isKnownCause(SocksConnectionFailureCause? cause) =>
       cause != null && cause != SocksConnectionFailureCause.unknown;
-
-  RecoverBullFailure _logAndMapSocksFailure(
-    String operation,
-    SocksClientConnectionCommandFailedException error,
-  ) {
-    final cause = classifySocksConnectionFailure(error);
-    log.warning(
-      'recoverbull.key.$operation.connection_failed cause=${cause.logValue}',
-    );
-    return _mapSocksConnectionFailure(cause);
-  }
 
   void _logKeyServer(
     String operation,
