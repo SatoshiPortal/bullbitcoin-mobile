@@ -307,13 +307,20 @@ bool _definitionsDiffer(
   return previous == null ||
       previous.publicDescriptor != current.publicDescriptor ||
       !_sameSigners(previous.signers, current.signers) ||
-      previous.birthday != current.birthday ||
+      _birthdaySeconds(previous.birthday) !=
+          _birthdaySeconds(current.birthday) ||
       previous.provenance != current.provenance ||
       previous.seedPassphraseUsed != current.seedPassphraseUsed;
 }
 
 bool _isBackedUpDefinition(WalletMetadataModel metadata) =>
     metadata.isBitcoin && metadata.provenance.backedUpAsDefinition;
+
+// Match Drift's integer dateTime storage: UTC/local notation and subsecond
+// precision do not change the persisted wallet birthday.
+int? _birthdaySeconds(DateTime? birthday) => birthday == null
+    ? null
+    : birthday.millisecondsSinceEpoch ~/ Duration.millisecondsPerSecond;
 
 /// Signer rows are plain lists, so `!=` would compare identity and report every
 /// re-store as a change. Compare the facts a definition backs up instead.

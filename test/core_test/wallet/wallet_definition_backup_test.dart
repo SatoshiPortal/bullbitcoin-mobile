@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -148,6 +150,65 @@ void main() {
     },
   );
 
+  test(
+    'restores a seed-origin reference without replacing it with a hash',
+    () async {
+      const recordedRef = 'wpkh([86241f88/84h/0h/0h])';
+      final definition = WalletDefinition(
+        walletRef: recordedRef,
+        network: Network.bitcoinMainnet,
+        descriptor: descriptor,
+        provenance: WalletProvenance.defaultSeedPassphrase,
+      );
+
+      final restored = await wallets.restoreWalletDefinition(definition);
+      expect(restored.status, WalletDefinitionRestoreStatus.created);
+      expect(restored.walletRef, recordedRef);
+      expect((await metadata.fetchAll()).map((wallet) => wallet.id), [
+        recordedRef,
+      ]);
+      expect(
+        (await metadata.fetch(recordedRef))!.provenance,
+        WalletProvenance.defaultSeedPassphrase,
+      );
+      expect(
+        (await wallets.restoreWalletDefinition(definition)).status,
+        WalletDefinitionRestoreStatus.alreadyPresent,
+      );
+    },
+  );
+
+  for (final network in [Network.bitcoinMainnet, Network.bitcoinTestnet]) {
+    test(
+      'definition import rejects private descriptors on ${network.name}',
+      () async {
+        final privateKey = Bip32Derivation.getXprvFromSeed(
+          Uint8List.fromList(List.generate(32, (index) => index)),
+          network,
+        );
+        final privateDescriptor = 'wpkh($privateKey/<0;1>/*)';
+        await expectLater(
+          wallets.restoreWalletDefinition(
+            WalletDefinition(
+              walletRef: 'private-input',
+              network: network,
+              descriptor: privateDescriptor,
+              provenance: WalletProvenance.watchOnly,
+            ),
+          ),
+          throwsA(
+            isA<Exception>().having(
+              (error) => error.toString().contains(privateKey),
+              'does not expose the private key',
+              isFalse,
+            ),
+          ),
+        );
+        expect(await metadata.fetchAll(), isEmpty);
+      },
+    );
+  }
+
   test('reports a currently unsupported public descriptor as input failure', () {
     return expectLater(
       wallets.restoreWalletDefinition(
@@ -279,6 +340,29 @@ void main() {
     );
     expect(changes, 1);
   });
+
+  test(
+    'birthday comparison uses the persisted instant and precision',
+    () async {
+      final birthday = DateTime.utc(2026, 9, 9, 12, 0, 0, 123);
+      final source = (await importSource()).copyWith(birthday: birthday);
+      await metadata.store(source);
+      var changes = 0;
+      final subscription = metadata.catalogChanges.listen((_) => changes++);
+      addTearDown(subscription.cancel);
+
+      // Drift stores these timestamps as whole Unix seconds. Neither timezone
+      // notation nor subsecond precision changes the persisted definition.
+      await metadata.store(source.copyWith(birthday: birthday.toLocal()));
+      expect(changes, 0);
+      await metadata.store(
+        source.copyWith(birthday: birthday.add(const Duration(seconds: 1))),
+      );
+      expect(changes, 1);
+      await metadata.store(source.copyWith(birthday: null));
+      expect(changes, 2);
+    },
+  );
 
   test('hides a passphrase wallet until its session is unlocked', () async {
     final source = await importSource(
