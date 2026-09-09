@@ -154,7 +154,7 @@ void main() {
     expect(reporter.stackTrace, isNotNull);
   });
 
-  test('sanitizes secrets without hiding CamelCase failure types', () async {
+  test('sanitizes secrets and only preserves labeled failure types', () async {
     final directory = await Directory.systemTemp.createTemp('logger-sanitize-');
     addTearDown(() async {
       await log.flush();
@@ -163,22 +163,39 @@ void main() {
     log = Logger.replace(directory: directory);
 
     const typeName = 'RecoverBullTemporarilyUnavailableFailure';
+    const letterOnlyToken = 'AbcdefGhijklMnopqrStuvwxYzabcdef';
+    const uppercaseSecret = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef';
+    const base64Secret = 'QmFzZTY0U2VjcmV0VG9rZW4xMjM0NTY3ODkw';
+    const longTypeName = 'RecoverBullTemporarilyUnavailableFailure';
     const hex = '0123456789abcdef0123456789abcdef';
     const base64 = 'QmFzZTY0IHNlY3JldCBibG9iIHdpdGggMTIzNDU2Nzg=';
     const mnemonic =
         'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
     const token = 'token=super-secret-token-value';
     log.warning(typeName);
+    log.warning(letterOnlyToken);
+    log.warning('cause=$uppercaseSecret');
+    log.warning('failure_type=$base64Secret');
+    log.warning('failure_type=$longTypeName');
+    log.warning(longTypeName);
+    log.warning('failure_type=');
     log.warning(hex);
     log.warning(base64);
     log.warning(mnemonic);
     log.warning(token);
 
     final lines = await log.readLogs();
-    expect(lines[0], contains(typeName));
-    expect(lines[1], isNot(contains(hex)));
-    expect(lines[2], isNot(contains(base64)));
-    expect(lines[3], isNot(contains(mnemonic)));
-    expect(lines[4], isNot(contains('super-secret-token-value')));
+    expect(lines[0], isNot(contains(typeName)));
+    expect(lines[1], isNot(contains(letterOnlyToken)));
+    expect(lines[2], isNot(contains(uppercaseSecret)));
+    expect(lines[3], isNot(contains(base64Secret)));
+    expect(lines[4], contains('failure_type=$longTypeName'));
+    expect(lines[5], isNot(contains(longTypeName)));
+    expect(lines[6], contains('failure_type='));
+    expect(lines[6], isNot(contains('[REDACTED]')));
+    expect(lines[7], isNot(contains(hex)));
+    expect(lines[8], isNot(contains(base64)));
+    expect(lines[9], isNot(contains(mnemonic)));
+    expect(lines[10], isNot(contains('super-secret-token-value')));
   });
 }
