@@ -17,12 +17,15 @@ class SeedRepository {
     String? passphrase,
   }) async {
     try {
+      // The model retains its input list across the async isolate boundary.
       final model = SeedModel.mnemonic(
-        mnemonicWords: mnemonicWords,
+        mnemonicWords: List<String>.unmodifiable(mnemonicWords),
         passphrase: passphrase,
       );
-      await _source.store(fingerprint: model.masterFingerprint, seed: model);
-      return model.toEntity() as MnemonicSeed;
+      // PBKDF2 is CPU-bound; derive once, off the calling isolate.
+      final seed = await compute(_toEntityInIsolate, model) as MnemonicSeed;
+      await _source.store(fingerprint: seed.masterFingerprint, seed: model);
+      return seed;
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to create seed from mnemonic',
