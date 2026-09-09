@@ -36,14 +36,6 @@
   "@addressViewChangeAddressesDescription": {
     "description": "Description for the coming soon dialog when trying to view change addresses"
   },
-  "appStartupErrorMessageWithBackup": "نمی تواند شروع کند. حذف و نصب مجدد برای تعمیر.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "نمی تواند شروع کند. حذف و نصب مجدد برای تعمیر اگر بذر شما پشتیبانی نمی شود، می توانید آن را در تنظیمات > Bitcoin Settings >View مشاهده کنید. دانه ها بعد از نصب مجدد.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
-  },
   "appStartupContactSupportButton": "پشتیبانی تماس",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"

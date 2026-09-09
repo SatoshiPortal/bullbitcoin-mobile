@@ -1372,10 +1372,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "আরম্ভ করতে পারিনি। সমস্যাটি ঠিক করতে মুছে ফেলুন এবং পুনরায় ইনস্টল করুন।",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "চালান পেস্ট করুন",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4702,10 +4698,6 @@
   "buyKYCLevel3": "স্তর ৩ - পূর্ণ",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "আরম্ভ করতে পারিনি। সমস্যাটি ঠিক করতে মুছে ফেলুন এবং পুনরায় ইনস্টল করুন। যদি আপনার সিড ব্যাকআপ করা না থাকে, পুনরায় ইনস্টল করার পরে Settings->Bitcoin Settings->View Seeds-এ গিয়ে এটি দেখতে পারবেন।",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "হোমে যান",
   "@sellGoHome": {

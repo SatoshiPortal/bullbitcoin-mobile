@@ -3116,8 +3116,6 @@
   "addressViewChangeAddressesComingSoon": "Anwani za chenji zinakuja hivi karibuni",
   "addressViewChangeAddressesDescription": "Onyesha anwani za Chenji za pochi",
   "appStartupErrorTitle": "Hitilafu ya Kuanza",
-  "appStartupErrorMessageWithBackup": "Imeshindwa kuanzisha. Futa na usakinishe upya ili kurekebisha.",
-  "appStartupErrorMessageNoBackup": "Imeshindwa kuanzisha. Futa na usakinishe upya ili kurekebisha. Ikiwa mbegu yako haijahifadhiwa nakala rudufu, unaweza kuitazama chini ya Mipangilio->Mipangilio ya Bitcoin->Tazama Mbegu baada ya kusakinisha upya.",
   "appStartupContactSupportButton": "Wasiliana na Usaidizi",
   "ledgerImportTitle": "Ingiza Pochi ya Ledger",
   "ledgerSignTitle": "Saini Muamala",

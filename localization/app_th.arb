@@ -1386,10 +1386,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "ไม่สามารถเริ่มต้น ลบและติดตั้งง่าย.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "พิธีการศุลกากร",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4844,10 +4840,6 @@
   "buyKYCLevel3": "ระดับ 3 - เต็ม",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "ไม่สามารถเริ่มต้น ลบและติดตั้งง่าย หากเมล็ดของคุณไม่ได้ปิดคุณสามารถดูตามการตั้งค่า -> การตั้งค่าเซิร์ฟเวอร์ -> ดู เมล็ดหลังจากติดตั้ง.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "กลับบ้าน",
   "@sellGoHome": {

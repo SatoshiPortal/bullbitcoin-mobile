@@ -3103,8 +3103,6 @@
   "addressViewChangeAddressesComingSoon": "Địa chỉ tiền thối sắp ra mắt",
   "addressViewChangeAddressesDescription": "Hiển thị địa chỉ tiền thối của ví",
   "appStartupErrorTitle": "Lỗi khởi động",
-  "appStartupErrorMessageWithBackup": "Không thể khởi tạo. Gỡ cài đặt và cài lại để khắc phục.",
-  "appStartupErrorMessageNoBackup": "Không thể khởi tạo. Gỡ cài đặt và cài lại để khắc phục. Nếu seed của bạn chưa được sao lưu, bạn có thể xem nó tại Cài đặt->Cài đặt Bitcoin->Xem Seed sau khi cài lại.",
   "appStartupContactSupportButton": "Liên hệ hỗ trợ",
   "ledgerImportTitle": "Nhập ví Ledger",
   "ledgerSignTitle": "Ký giao dịch",

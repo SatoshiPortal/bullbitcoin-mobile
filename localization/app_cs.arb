@@ -1612,10 +1612,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "Nemohla iniciovat. Odstranit a přeinstalovat opravit.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "Vložte fakturu",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4880,10 +4876,6 @@
   "buyKYCLevel3": "Úroveň 3 - Plný",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "Nemohla iniciovat. Odstranit a přeinstalovat opravit. Pokud vaše semeno není zálohováno, můžete ji zobrazit pod Nastavení->Bitcoin Settings->View Semena po přeinstalaci.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "Přejděte domů",
   "@sellGoHome": {

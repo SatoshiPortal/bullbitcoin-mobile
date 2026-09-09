@@ -11181,14 +11181,6 @@
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
-  "appStartupErrorMessageWithBackup": "Could not initialize. Delete and reinstall to fix.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "Could not initialize. Delete and reinstall to fix. If your seed is not backed up, you can view it under Settings->Bitcoin Settings->View Seeds after reinstall.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
-  },
   "appStartupContactSupportButton": "Contact Support",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"

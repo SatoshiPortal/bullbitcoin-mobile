@@ -3376,8 +3376,6 @@
   "addressViewChangeAddressesDescription": "Exhiba direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
   "appStartupErrorMessage": "La aplicación no pudo iniciarse. Intenta cerrarla completamente y reiniciarla. Si el error persiste, contacta con soporte y comparte tus registros.",
-  "appStartupErrorMessageWithBackup": "No se pudo inicializar. Elimine y reinstale para solucionar.",
-  "appStartupErrorMessageNoBackup": "No se pudo inicializar. Elimine y reinstale para solucionar. Si su frase de recuperación no está respaldada, puede verla en Configuración->Configuración de Bitcoin->Ver frases después de reinstalar.",
   "appStartupContactSupportButton": "Contactar Soporte",
   "ledgerImportTitle": "Importar Billetera Ledger",
   "ledgerSignTitle": "Firmar Transacción",

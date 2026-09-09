@@ -7511,14 +7511,6 @@
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
-  "appStartupErrorMessageWithBackup": "আৰম্ভ কৰিব পৰা নগ'ল। সমাধানৰ বাবে মচক আৰু পুনৰস্থাপন কৰক।",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "আৰম্ভ কৰিব পৰা নগ'ল। সমাধানৰ বাবে মচক আৰু পুনৰস্থাপন কৰক। আপোনাৰ seed-ৰ বেকআপ নাথাকিলে, পুনৰস্থাপনৰ পিছত Settings->Bitcoin Settings->View Seeds-ত চাব পাৰিব।",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
-  },
   "appStartupContactSupportButton": "সহায়ৰ সৈতে যোগাযোগ কৰক",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"
