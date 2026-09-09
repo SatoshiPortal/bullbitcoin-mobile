@@ -168,6 +168,7 @@ void main() {
         any(),
         wallet: any(named: 'wallet'),
         allowFinalizedForeignInputs: any(named: 'allowFinalizedForeignInputs'),
+        checkSigningSession: any(named: 'checkSigningSession'),
       ),
     ).thenAnswer((_) async => (psbt: 'signed', isFinalized: true));
     when(

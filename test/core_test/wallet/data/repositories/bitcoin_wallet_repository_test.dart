@@ -28,6 +28,9 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.da
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
+import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
@@ -230,6 +233,72 @@ void main() {
       verifyZeroInteractions(seedDatasource);
     },
   );
+
+  for (final payjoin in [false, true]) {
+    test(
+      'revokes ${payjoin ? 'native Payjoin callback' : 'awaited Bitcoin signing'} on lock and re-unlock',
+      () async {
+        MnemonicSeed seed() =>
+            SeedModel.mnemonic(
+                  mnemonicWords: testMnemonics.first.split(' '),
+                  passphrase: 'private-session-test',
+                ).toEntity()
+                as MnemonicSeed;
+        final metadata = await WalletMetadataService.deriveFromSeed(
+          seed: seed(),
+          network: Network.bitcoinTestnet,
+          scriptType: ScriptType.bip84,
+          provenance: WalletProvenance.defaultSeedPassphrase,
+          isDefault: false,
+        );
+        stubWallet(metadata, const []);
+        void unlock() => privateSession.unlockIfCurrent(
+          generation: privateSession.beginMount(),
+          walletId: metadata.id,
+          seed: seed(),
+        );
+        unlock();
+        final psbt = buildUnsignedPsbt(descriptor: metadata.publicDescriptor);
+        if (payjoin) {
+          final adapter = PayjoinWalletAdapter(
+            bdkDatasource,
+            metadataDatasource,
+            WalletSigningMaterialResolver(
+              seedDatasource: seedDatasource,
+              session: privateSession,
+            ),
+          );
+          final sign = await adapter.createPsbtProcessor(
+            walletId: metadata.id,
+            network: BitcoinNetwork.testnet,
+          );
+          final signed = bdk.Psbt(psbtBase64: sign(psbt));
+          try {
+            expect(signed.input().single.finalScriptWitness, isNotNull);
+          } finally {
+            signed.dispose();
+          }
+          privateSession.lockForBackground();
+          unlock();
+          expect(
+            () => sign(psbt),
+            throwsA(isA<PassphraseWalletLockedException>()),
+          );
+        } else {
+          when(() => frozenWalletUtxoDatasource.getAllFrozen()).thenAnswer((
+            _,
+          ) async {
+            privateSession.lockForBackground();
+            unlock();
+            return const [];
+          });
+          final result = await repository.signPsbt(psbt, walletId: metadata.id);
+          expect(_failureKind(result), BitcoinSigningFailureKind.walletLocked);
+        }
+        verifyZeroInteractions(seedDatasource);
+      },
+    );
+  }
 
   test('private wallet reconstruction rejects nonstandard keychains', () async {
     final signer = _singleSignatureFixture(testMnemonics.first);

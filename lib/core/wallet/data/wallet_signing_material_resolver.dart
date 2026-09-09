@@ -75,6 +75,13 @@ final class WalletSigningMaterialResolver {
     }
   }
 
+  /// Call before resolving material, then after awaits and immediately before
+  /// signing. A session change permanently invalidates this operation's guard.
+  void Function() captureSigningGuard(WalletMetadataModel metadata) =>
+      metadata.provenance == WalletProvenance.defaultSeedPassphrase
+      ? _session.captureSigningGuard(metadata.id)
+      : _persistentSigningGuard;
+
   int beginPrivateCapabilityMount() => _session.beginMount();
 
   void cancelPrivateCapabilityMount() => _session.cancelMount();
@@ -146,3 +153,5 @@ final class WalletSigningMaterialResolver {
     return _seedDatasource.get(masterFingerprint);
   }
 }
+
+void _persistentSigningGuard() {}

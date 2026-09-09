@@ -198,20 +198,20 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     String? signerId,
     String? passphrase,
     String? replacingTxid,
+    void Function()? signingSession,
   }) async {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
     final publicWallet = context.wallet;
     // A locked passphrase wallet fails here, before the PSBT is touched.
-    _signingMaterial.requirePrivateCapability(
-      provenance: metadata.provenance,
-      walletId: walletId,
-    );
+    signingSession?.call();
+    final checkSigningSession = _signingMaterial.captureSigningGuard(metadata);
     await _validateWalletPsbtInputs(
       psbt: psbt,
       wallet: publicWallet,
       replacingTxid: replacingTxid,
     );
+    checkSigningSession();
 
     var descriptor = _withoutDescriptorChecksum(metadata.publicDescriptor);
     var injectedKey = false;
@@ -241,6 +241,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final selectedLocalDescriptorKeyIds = review.inputs
         .expand((input) => input.localDescriptorKeyIds)
         .toSet();
+    checkSigningSession();
     var skippedPassphraseKey = false;
     for (final signer in localSigners) {
       for (final key in signer.descriptorKeys) {
@@ -265,6 +266,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             metadata,
             masterFingerprint: seedFingerprint,
           );
+          checkSigningSession();
           if (storedSeed is! MnemonicSeedModel) {
             throw const BitcoinSignerPassphraseMismatchException();
           }
@@ -277,6 +279,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             metadata,
             masterFingerprint: key.masterFingerprint,
           );
+          checkSigningSession();
         }
         final rootKey = _descriptorSecretKey(seed, network: metadata.network);
         try {
@@ -338,6 +341,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     }
     if (!injectedKey) throw const BitcoinPsbtMissingLocalOriginException();
 
+    checkSigningSession();
     return _bdkWallet.signPsbtWithDescriptor(
       psbt,
       descriptor: descriptor,
@@ -706,16 +710,21 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
-    final wallet = await getPrivateWallet(walletId: walletId);
+    final context = await _publicWalletContext(walletId);
+    final checkSigningSession = _signingMaterial.captureSigningGuard(
+      context.metadata,
+    );
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
-      wallet: wallet,
+      wallet: context.wallet,
       txid: txid,
       feeRate: newFeeRate,
     );
+    checkSigningSession();
     final signed = await _signPsbt(
       psbt,
       walletId: walletId,
       replacingTxid: txid,
+      signingSession: checkSigningSession,
     );
     if (!signed.isFinalized) {
       throw StateError('Replacement transaction is not fully signed');

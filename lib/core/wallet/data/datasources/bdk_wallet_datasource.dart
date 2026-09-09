@@ -667,7 +667,9 @@ class BdkWalletDatasource {
     String unsignedPsbt, {
     required PrivateBdkWalletModel wallet,
     bool allowFinalizedForeignInputs = false,
+    void Function()? checkSigningSession,
   }) async {
+    checkSigningSession?.call();
     final psbt = _parsePsbt(unsignedPsbt);
     try {
       final inputs = psbt.input();
@@ -687,6 +689,7 @@ class BdkWalletDatasource {
       final signWithTapInternalKey = _shouldSignWithTapInternalKey(inputs);
       final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
       try {
+        checkSigningSession?.call();
         if (allowFinalizedForeignInputs) {
           _rejectFinalizedWalletInputs(psbt, inputs, bdkWallet);
         }

@@ -70,6 +70,7 @@ void main() {
           'psbt',
           wallet: any(named: 'wallet'),
           allowFinalizedForeignInputs: true,
+          checkSigningSession: any(named: 'checkSigningSession'),
         ),
       ).thenAnswer((_) async => (psbt: 'signed', isFinalized: true));
       final adapter = PayjoinWalletAdapter(
@@ -94,6 +95,7 @@ void main() {
                   'psbt',
                   wallet: captureAny(named: 'wallet'),
                   allowFinalizedForeignInputs: true,
+                  checkSigningSession: any(named: 'checkSigningSession'),
                 ),
               ).captured.single
               as PrivateBdkWalletModel;

@@ -17,12 +17,27 @@ final class WalletUnlockSession {
   MnemonicSeed? _seed;
   bool _pendingResumeNavigation = false;
   var _mountGeneration = 0;
+  var _signingGeneration = 0;
 
   String? get unlockedWalletId => _walletId;
 
   Stream<void> get changes => _changes.stream;
 
   bool isUnlocked(String walletId) => _walletId == walletId && _seed != null;
+
+  /// Binds work to this unlock, without retaining the seed in the guard.
+  /// Reopening the same wallet must not revive previously authorized work.
+  void Function() captureSigningGuard(String walletId) {
+    final generation = _signingGeneration;
+    void check() {
+      if (generation != _signingGeneration || !isUnlocked(walletId)) {
+        throw PassphraseWalletLockedException(walletId);
+      }
+    }
+
+    check();
+    return check;
+  }
 
   MnemonicSeed seedFor(String walletId) {
     final seed = _seed;
@@ -80,6 +95,7 @@ final class WalletUnlockSession {
   }
 
   void _clearSeedBytes() {
+    _signingGeneration++;
     final seed = _seed;
     _seed = null;
     seed?.bytes.fillRange(0, seed.bytes.length, 0);

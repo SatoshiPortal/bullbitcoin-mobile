@@ -168,6 +168,67 @@ void main() {
   });
 
   group('capability', () {
+    test('signing guard belongs to one unlock, not just the wallet ID', () {
+      final metadata = _metadata(
+        id: 'passphrase',
+        provenance: WalletProvenance.defaultSeedPassphrase,
+      );
+      expect(
+        () => resolver.captureSigningGuard(metadata),
+        throwsA(isA<PassphraseWalletLockedException>()),
+      );
+      void unlock() => resolver.loadPrivateCapabilityIfCurrent(
+        generation: resolver.beginPrivateCapabilityMount(),
+        walletId: metadata.id,
+        seed: _seed(_passphrase),
+      );
+      unlock();
+      final check = resolver.captureSigningGuard(metadata);
+      check();
+      resolver.clearPrivateCapability();
+      expect(check, throwsA(isA<PassphraseWalletLockedException>()));
+      unlock();
+      expect(check, throwsA(isA<PassphraseWalletLockedException>()));
+      resolver.captureSigningGuard(metadata)();
+      verifyZeroInteractions(seeds);
+    });
+
+    test('replacing a loaded seed invalidates the old signing guard', () {
+      final generation = session.beginMount();
+      session.unlockIfCurrent(
+        generation: generation,
+        walletId: 'same',
+        seed: _seed('first'),
+      );
+      final check = resolver.captureSigningGuard(
+        _metadata(
+          id: 'same',
+          provenance: WalletProvenance.defaultSeedPassphrase,
+        ),
+      );
+      session.unlockIfCurrent(
+        generation: generation,
+        walletId: 'same',
+        seed: _seed('replacement'),
+      );
+      expect(check, throwsA(isA<PassphraseWalletLockedException>()));
+    });
+
+    test('persistent signers are independent of the private session', () {
+      final check = resolver.captureSigningGuard(
+        _metadata(id: 'normal', provenance: WalletProvenance.defaultSeed),
+      );
+      resolver.clearPrivateCapability();
+      check();
+      resolver.loadPrivateCapabilityIfCurrent(
+        generation: resolver.beginPrivateCapabilityMount(),
+        walletId: 'other',
+        seed: _seed('other'),
+      );
+      check();
+      verifyZeroInteractions(seeds);
+    });
+
     test('a locked passphrase wallet has none, any other wallet does', () {
       expect(
         resolver.hasPrivateCapability(

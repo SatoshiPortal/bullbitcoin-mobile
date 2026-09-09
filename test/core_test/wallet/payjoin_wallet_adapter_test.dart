@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
@@ -57,6 +58,7 @@ void main() {
       seedDatasource: seeds,
       session: WalletUnlockSession(),
     );
+    addTearDown(signingMaterial.close);
     adapter = PayjoinWalletAdapter(bdk, metadata, signingMaterial);
 
     when(() => metadata.fetch(_walletId)).thenAnswer(
@@ -85,6 +87,77 @@ void main() {
     );
   });
 
+  void unlock() {
+    expect(
+      signingMaterial.loadPrivateCapabilityIfCurrent(
+        generation: signingMaterial.beginPrivateCapabilityMount(),
+        walletId: _walletId,
+        seed:
+            Seed.mnemonic(
+                  mnemonicWords: const ['abandon'],
+                  passphrase: 'secret',
+                  bytes: Uint8List.fromList([1]),
+                  masterFingerprint: '73c5da0a',
+                )
+                as MnemonicSeed,
+      ),
+      isTrue,
+    );
+  }
+
+  for (final reopen in [false, true]) {
+    test('retained processor refuses after lock (reopen: $reopen)', () async {
+      unlock();
+      var signatures = 0;
+      when(() => bdk.createPsbtSigner(wallet: any(named: 'wallet'))).thenAnswer(
+        (_) async => (_) {
+          signatures++;
+          return 'signed';
+        },
+      );
+      final sign = await adapter.createPsbtProcessor(
+        walletId: _walletId,
+        network: BitcoinNetwork.testnet,
+      );
+      expect(sign('before lock'), 'signed');
+      expect(signatures, 1);
+      signingMaterial.clearPrivateCapabilityForBackground();
+      if (reopen) unlock();
+      expect(
+        () => sign('after lock'),
+        throwsA(isA<PassphraseWalletLockedException>()),
+      );
+      expect(signatures, 1);
+      verifyNever(() => seeds.get(any()));
+    });
+  }
+
+  test('lock during native processor creation rejects the result', () async {
+    unlock();
+    final entered = Completer<void>();
+    final ready = Completer<String Function(String)>();
+    when(() => bdk.createPsbtSigner(wallet: any(named: 'wallet'))).thenAnswer((
+      _,
+    ) {
+      entered.complete();
+      return ready.future;
+    });
+    final pending = adapter.createPsbtProcessor(
+      walletId: _walletId,
+      network: BitcoinNetwork.testnet,
+    );
+    final rejected = expectLater(
+      pending,
+      throwsA(isA<PassphraseWalletLockedException>()),
+    );
+    await entered.future;
+    signingMaterial.clearPrivateCapability();
+    unlock();
+    ready.complete((_) => 'must not escape');
+    await rejected;
+    verifyNever(() => seeds.get(any()));
+  });
+
   test('requires the volatile unlock session', () async {
     await expectLater(
       adapter.signPsbt(
@@ -101,6 +174,7 @@ void main() {
         any(),
         wallet: any(named: 'wallet'),
         allowFinalizedForeignInputs: any(named: 'allowFinalizedForeignInputs'),
+        checkSigningSession: any(named: 'checkSigningSession'),
       ),
     );
   });
@@ -125,6 +199,7 @@ void main() {
           'unsigned',
           wallet: any(named: 'wallet'),
           allowFinalizedForeignInputs: true,
+          checkSigningSession: any(named: 'checkSigningSession'),
         ),
       ).thenAnswer((_) async => (psbt: 'signed', isFinalized: true));
 

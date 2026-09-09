@@ -339,6 +339,63 @@ void main() {
     });
   });
 
+  for (final duringPreparation in [true, false]) {
+    test(
+      'fee bump cannot resume in a later private session (preparation: $duringPreparation)',
+      () async {
+        void unlock() => signingMaterial.loadPrivateCapabilityIfCurrent(
+          generation: signingMaterial.beginPrivateCapabilityMount(),
+          walletId: _walletId,
+          seed:
+              Seed.mnemonic(
+                    mnemonicWords: const ['abandon'],
+                    passphrase: 'fixture',
+                    bytes: Uint8List.fromList([1]),
+                    masterFingerprint: '73c5da0a',
+                  )
+                  as MnemonicSeed,
+        );
+        unlock();
+        var fetches = 0;
+        when(() => metadataDatasource.fetch(_walletId)).thenAnswer((_) async {
+          if (++fetches == 2 && !duringPreparation) {
+            signingMaterial.clearPrivateCapabilityForBackground();
+            unlock();
+          }
+          return metadata.copyWith(
+            provenance: WalletProvenance.defaultSeedPassphrase,
+          );
+        });
+        when(
+          () => bdkDatasource.createUnsignedReplaceByFeePsbt(
+            txid: 'previous',
+            feeRate: any(named: 'feeRate'),
+            wallet: any(named: 'wallet'),
+          ),
+        ).thenAnswer((invocation) async {
+          expect(
+            invocation.namedArguments[#wallet],
+            isA<PublicBdkWalletModel>(),
+          );
+          if (duringPreparation) {
+            signingMaterial.clearPrivateCapabilityForBackground();
+            unlock();
+          }
+          return 'unsigned';
+        });
+        await expectLater(
+          repository.bumpFee(
+            walletId: _walletId,
+            txid: 'previous',
+            newFeeRate: const NetworkFee.relativeSatPerKwu(1000) as RelativeFee,
+          ),
+          throwsA(isA<PassphraseWalletLockedException>()),
+        );
+        verifyNever(() => seedDatasource.get(any()));
+      },
+    );
+  }
+
   test('private wallet reconstruction preserves a higher account', () async {
     when(() => metadataDatasource.fetch(_walletId)).thenAnswer(
       (_) async => metadata.copyWith(

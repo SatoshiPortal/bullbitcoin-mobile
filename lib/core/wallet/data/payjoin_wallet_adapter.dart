@@ -32,8 +32,9 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     final wallet = await _loadPrivateWallet(walletId, network);
     final signed = await _wallet.signPsbt(
       psbt,
-      wallet: wallet,
+      wallet: wallet.wallet,
       allowFinalizedForeignInputs: true,
+      checkSigningSession: wallet.checkSigningSession,
     );
     if (!signed.isFinalized) {
       throw StateError('Payjoin PSBT is not fully signed');
@@ -47,7 +48,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
   }) async {
     final wallet = await _loadPrivateWallet(walletId, network);
-    return _wallet.createIsMineChecker(wallet: wallet);
+    return _wallet.createIsMineChecker(wallet: wallet.wallet);
   }
 
   @override
@@ -68,7 +69,13 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
   }) async {
     final wallet = await _loadPrivateWallet(walletId, network);
-    return _wallet.createPsbtSigner(wallet: wallet);
+    final sign = await _wallet.createPsbtSigner(wallet: wallet.wallet);
+    final checkSigningSession = wallet.checkSigningSession;
+    checkSigningSession();
+    return (psbt) {
+      checkSigningSession();
+      return sign(psbt);
+    };
   }
 
   @override
@@ -103,10 +110,8 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     return metadata;
   }
 
-  Future<PrivateBdkWalletModel> _loadPrivateWallet(
-    String walletId,
-    BitcoinNetwork network,
-  ) async {
+  Future<({PrivateBdkWalletModel wallet, void Function() checkSigningSession})>
+  _loadPrivateWallet(String walletId, BitcoinNetwork network) async {
     final metadata = await _loadMetadata(walletId, network);
     final scriptType = metadata.inferredScriptType;
     if (metadata.signers.length != 1 || scriptType == null) {
@@ -128,15 +133,21 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     }
     // Material comes from the resolver, never the seed store directly: a
     // passphrase wallet's mnemonic lives only in the volatile session.
+    final checkSigningSession = _signingMaterial.captureSigningGuard(metadata);
     final material = await _signingMaterial.resolve(metadata);
-    return WalletModel.privateBdk(
-          id: walletId,
-          scriptType: scriptType,
-          mnemonic: material.mnemonic,
-          passphrase: material.passphrase,
-          account: account,
-          isTestnet: metadata.isTestnet,
-        )
-        as PrivateBdkWalletModel;
+    checkSigningSession();
+    return (
+      wallet:
+          WalletModel.privateBdk(
+                id: walletId,
+                scriptType: scriptType,
+                mnemonic: material.mnemonic,
+                passphrase: material.passphrase,
+                account: account,
+                isTestnet: metadata.isTestnet,
+              )
+              as PrivateBdkWalletModel,
+      checkSigningSession: checkSigningSession,
+    );
   }
 }
