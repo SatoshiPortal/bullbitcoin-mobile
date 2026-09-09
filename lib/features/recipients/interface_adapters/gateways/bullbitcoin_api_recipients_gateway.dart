@@ -1,12 +1,14 @@
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/cad_biller.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/cad_biller_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_details_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/models/recipient_model.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 
 class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
@@ -19,47 +21,48 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   // These methods ignore `isTestnet` because this instance is bound to one environment
   // and the Dio client is already authenticated via interceptor.
   @override
-  Future<Recipient> saveRecipient(
+  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
     RecipientDetails recipientDetails, {
     bool isFiatRecipient = true,
     required bool isTestnet,
   }) async {
-    final detailsModel = RecipientDetailsModel.fromDomain(recipientDetails);
-
-    final resp = await _authenticatedApiClient.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'createRecipientFiat',
-        'params': {'element': detailsModel.toJson()},
-      },
-      options: Options(headers: {'x-api-version': _apiVersion}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to create fiat recipient');
-    }
-
-    final error = resp.data['error'];
-    if (error != null) {
-      throw Exception('Failed to create fiat recipient: $error');
-    }
-
     try {
-      final result = resp.data['result']['element'] as Map<String, dynamic>;
-      return RecipientModel.fromJson(result).toDomain;
-    } catch (e, stackTrace) {
-      log.severe(
-        message: 'Error parsing RecipientModel.fromJson',
-        error: e,
-        trace: stackTrace,
+      final detailsModel = RecipientDetailsModel.fromDomain(recipientDetails);
+
+      final resp = await _authenticatedApiClient.post(
+        _recipientsPath,
+        data: {
+          'jsonrpc': '2.0',
+          'id': '0',
+          'method': 'createRecipientFiat',
+          'params': {'element': detailsModel.toJson()},
+        },
+        options: Options(headers: {'x-api-version': _apiVersion}),
       );
-      rethrow;
+
+      final rejection = _rejectionOf(resp);
+      if (rejection != null) {
+        _logRejection('create fiat recipient', rejection);
+        return const Err(RecipientsSaveFailure());
+      }
+
+      final result = resp.data['result']['element'] as Map<String, dynamic>;
+      return Ok(RecipientModel.fromJson(result).toDomain);
+    } on Object catch (e, st) {
+      return Err(
+        _failureFrom(e, st, 'create fiat recipient', RecipientsSaveFailure.new),
+      );
     }
   }
 
   @override
-  Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
+  Future<
+    Result<
+      ({List<Recipient> recipients, int totalRecipients}),
+      RecipientsFailure
+    >
+  >
+  listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,
     int page = 1,
@@ -68,154 +71,205 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
     bool? isOwner,
     String? search,
   }) async {
-    final filters = <String, dynamic>{
-      if (recipientTypes != null && recipientTypes.isNotEmpty)
-        'recipientTypeFiat': recipientTypes.map((t) => t.value).toList(),
-      'isOwner': ?isOwner,
-      if (search != null && search.isNotEmpty) 'search': search,
-    };
+    try {
+      final filters = <String, dynamic>{
+        if (recipientTypes != null && recipientTypes.isNotEmpty)
+          'recipientTypeFiat': recipientTypes.map((t) => t.value).toList(),
+        'isOwner': ?isOwner,
+        if (search != null && search.isNotEmpty) 'search': search,
+      };
 
-    final resp = await _authenticatedApiClient.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': fiatOnly ? 'listRecipientsFiat' : 'listRecipients',
-        'params': {
-          'paginator': {'page': page, 'pageSize': pageSize},
-          if (filters.isNotEmpty) 'filters': filters,
+      final resp = await _authenticatedApiClient.post(
+        _recipientsPath,
+        data: {
+          'jsonrpc': '2.0',
+          'id': '0',
+          'method': fiatOnly ? 'listRecipientsFiat' : 'listRecipients',
+          'params': {
+            'paginator': {'page': page, 'pageSize': pageSize},
+            if (filters.isNotEmpty) 'filters': filters,
+          },
         },
-      },
-      options: Options(headers: {'x-api-version': _apiVersion}),
-    );
+        options: Options(headers: {'x-api-version': _apiVersion}),
+      );
 
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to list fiat recipients');
-    }
+      final rejection = _rejectionOf(resp);
+      if (rejection != null) {
+        _logRejection('list fiat recipients', rejection);
+        return const Err(RecipientsLoadFailure());
+      }
 
-    final error = resp.data['error'];
-    if (error != null) {
-      throw Exception('Failed to list fiat recipients: $error');
-    }
+      final result = resp.data['result'] as Map<String, dynamic>?;
+      final totalElementsRaw = result?['totalElements'];
+      if (result == null || totalElementsRaw is! num) {
+        log.warning(
+          'Malformed listRecipients response: '
+          '${result == null ? 'missing result' : 'invalid totalElements'}',
+        );
+        return const Err(RecipientsLoadFailure());
+      }
 
-    final result = resp.data['result'] as Map<String, dynamic>?;
-    if (result == null) {
-      throw Exception('Failed to list fiat recipients: missing result');
-    }
+      final totalElements = totalElementsRaw.toInt();
+      final elements = result['elements'] as List<dynamic>?;
+      if (elements == null) {
+        return Ok((recipients: <Recipient>[], totalRecipients: totalElements));
+      }
 
-    final totalElementsRaw = result['totalElements'];
-    if (totalElementsRaw is! num) {
-      throw Exception('Failed to list fiat recipients: invalid totalElements');
+      final recipients = elements
+          .map((e) {
+            // A single malformed element must not fail the whole list: the
+            // API can return recipient types this app build does not know
+            // yet, and dropping one row is better than showing none. Nulls
+            // are filtered out below.
+            try {
+              return RecipientModel.fromJson(
+                e as Map<String, dynamic>,
+              ).toDomain;
+            } catch (err) {
+              // warning, not severe: severe uploads the exception to the
+              // crash reporter, and a parse error over a recipient payload
+              // can quote the account details it choked on.
+              log.warning('Skipping unparseable recipient element: $err');
+              return null;
+            }
+          })
+          .whereType<Recipient>()
+          .toList();
+      return Ok((recipients: recipients, totalRecipients: totalElements));
+    } on Object catch (e, st) {
+      return Err(
+        _failureFrom(e, st, 'list fiat recipients', RecipientsLoadFailure.new),
+      );
     }
-    final totalElements = totalElementsRaw.toInt();
-    final elements = result['elements'] as List<dynamic>?;
-    if (elements == null) {
-      return (recipients: <Recipient>[], totalRecipients: totalElements);
-    }
-
-    final recipients = elements
-        .map((e) {
-          // Wrap each transformation in try/catch so a single malformed element
-          // doesn't fail the entire list. Nulls are filtered out below.
-          // This also helps when the api supports recipient types that the app
-          // doesn't support yet, which without does would cause the user not
-          // to see any recipients at all.
-          try {
-            log.info('Parsing recipient: $e');
-            return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
-          } catch (err, stackTrace) {
-            log.severe(
-              message: 'Error parsing recipient element',
-              error: err,
-              trace: stackTrace,
-            );
-            return null;
-          }
-        })
-        .whereType<Recipient>()
-        .toList();
-    return (recipients: recipients, totalRecipients: totalElements);
   }
 
   @override
-  Future<String> checkSinpe({
+  Future<Result<String, RecipientsFailure>> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,
   }) async {
-    final resp = await _authenticatedApiClient.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'checkSinpe',
-        'params': {'phoneNumber': phoneNumber},
-      },
-    );
+    try {
+      final resp = await _authenticatedApiClient.post(
+        _recipientsPath,
+        data: {
+          'jsonrpc': '2.0',
+          'id': '0',
+          'method': 'checkSinpe',
+          'params': {'phoneNumber': phoneNumber},
+        },
+      );
 
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to check SINPE');
+      final rejection = _rejectionOf(resp);
+      if (rejection != null) {
+        _logRejection('check SINPE', rejection);
+        return const Err(RecipientsSinpeLookupFailure());
+      }
+
+      final result = resp.data['result'] as Map<String, dynamic>;
+      return Ok(result['ownerName'] as String);
+    } on Object catch (e, st) {
+      return Err(
+        _failureFrom(e, st, 'check SINPE', RecipientsSinpeLookupFailure.new),
+      );
     }
-
-    final error = resp.data['error'];
-    if (error != null) {
-      throw Exception('Failed to check SINPE: $error');
-    }
-
-    final result = resp.data['result'] as Map<String, dynamic>;
-    final ownerName = result['ownerName'] as String;
-
-    return ownerName;
   }
 
   @override
-  Future<List<CadBiller>> listCadBillers({
+  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
     required String searchTerm,
     required bool isTestnet,
   }) async {
-    final params = <String, dynamic>{
-      'filters': {'search': searchTerm},
-    };
+    try {
+      final resp = await _authenticatedApiClient.post(
+        _recipientsPath,
+        data: {
+          'jsonrpc': '2.0',
+          'id': '0',
+          'method': 'listAplBillers',
+          'params': {
+            'filters': {'search': searchTerm},
+          },
+        },
+      );
 
-    final resp = await _authenticatedApiClient.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'listAplBillers',
-        'params': params,
-      },
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to list CAD billers');
+      final rejection = _rejectionOf(resp);
+      if (rejection != null) {
+        _logRejection('list CAD billers', rejection);
+        return const Err(RecipientsCadBillerSearchFailure());
+      }
+
+      final elements = resp.data['result']['elements'] as List<dynamic>?;
+      if (elements == null) return const Ok(<CadBiller>[]);
+
+      final billers = elements
+          .map((e) {
+            // Same per-element tolerance as listRecipients.
+            try {
+              return CadBillerModel.fromJson(
+                e as Map<String, dynamic>,
+              ).toDomain;
+            } catch (err) {
+              log.warning('Skipping unparseable CAD biller element: $err');
+              return null;
+            }
+          })
+          .whereType<CadBiller>()
+          .toList();
+      return Ok(billers);
+    } on Object catch (e, st) {
+      return Err(
+        _failureFrom(
+          e,
+          st,
+          'list CAD billers',
+          RecipientsCadBillerSearchFailure.new,
+        ),
+      );
     }
+  }
 
-    final error = resp.data['error'];
-    if (error != null) {
-      throw Exception('Failed to list CAD billers: $error');
+  /// Why the API refused, or null when the response is usable.
+  ///
+  /// Covers both refusal shapes in one place: a non-200 status, and a 200
+  /// carrying a JSON-RPC `error` object. The returned string is for logs
+  /// only — the `error` object holds server internals.
+  String? _rejectionOf(Response<dynamic> resp) {
+    if (resp.statusCode != 200) return 'HTTP ${resp.statusCode}';
+    final error = resp.data is Map ? resp.data['error'] : null;
+    return error == null ? null : 'JSON-RPC error: $error';
+  }
+
+  void _logRejection(String operation, String rejection) {
+    // warning, not severe: the JSON-RPC error object is server-supplied and
+    // can echo the recipient payload that was rejected, so it stays on-device.
+    log.warning('API refused to $operation — $rejection');
+  }
+
+  /// Maps a thrown error to a typed failure, logging the raw reason here at
+  /// the boundary. [onApiFailure] builds the operation-specific failure used
+  /// for anything that is not a connectivity problem.
+  RecipientsFailure _failureFrom(
+    Object e,
+    StackTrace st,
+    String operation,
+    RecipientsFailure Function([String?]) onApiFailure,
+  ) {
+    if (e is DioException) {
+      final isConnectivity = switch (e.type) {
+        DioExceptionType.connectionTimeout ||
+        DioExceptionType.sendTimeout ||
+        DioExceptionType.receiveTimeout ||
+        DioExceptionType.connectionError => true,
+        _ => false,
+      };
+      if (isConnectivity) {
+        log.warning('Could not reach the API to $operation: ${e.type}');
+        return const RecipientsNetworkFailure();
+      }
     }
-
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
-
-    return elements
-        .map((e) {
-          // Wrap each transformation in try/catch so a single malformed element
-          // doesn't fail the entire list. Nulls are filtered out below.
-          // This also helps when the api supports recipient types that the app
-          // doesn't support yet, which without does would cause the user not
-          // to see any recipients at all.
-          try {
-            return CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain;
-          } catch (err, stackTrace) {
-            log.severe(
-              message: 'Error parsing CAD biller element',
-              error: err,
-              trace: stackTrace,
-            );
-            return null;
-          }
-        })
-        .whereType<CadBiller>()
-        .toList();
+    // warning, not severe: a Dio error carries the request body, and for this
+    // API that body is the recipient's bank details.
+    log.warning('Failed to $operation', error: e, trace: st);
+    return onApiFailure();
   }
 }

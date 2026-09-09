@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "मानचित्र",
-  "recipientsListLoadError": "प्राप्तकर्ता लोड नहीं हो सके। पुनः प्रयास के लिए नीचे खींचें।",
   "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
   "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
   "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
@@ -12422,5 +12421,12 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "recipientsErrorLoadFailed": "आपके प्राप्तकर्ता लोड नहीं किए जा सके। कृपया फिर से प्रयास करें।",
+  "recipientsErrorSaveFailed": "यह प्राप्तकर्ता सहेजा नहीं जा सका। कृपया जानकारी जाँचें और फिर से प्रयास करें।",
+  "recipientsErrorSinpeLookupFailed": "हम इस फ़ोन नंबर की पुष्टि नहीं कर सके। कृपया इसे जाँचें और फिर से प्रयास करें।",
+  "recipientsErrorBillerSearchFailed": "बिलर खोजे नहीं जा सके। कृपया फिर से प्रयास करें।",
+  "recipientsErrorNetwork": "अपना इंटरनेट कनेक्शन जाँचें और फिर से प्रयास करें।",
+  "recipientsListPullToRetry": "पुनः प्रयास के लिए नीचे खींचें।",
+  "recipientsErrorSavedButNotSelected": "यह प्राप्तकर्ता सहेजा गया, लेकिन हम आगे नहीं बढ़ सके। जारी रखने के लिए इसे अपनी सूची में खोजें।"
 }

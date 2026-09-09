@@ -4200,7 +4200,6 @@
   "recipientsPayoutMethod": "Método de pago",
   "recipientsFilterByJurisdiction": "Filtrar por jurisdicción:",
   "recipientsListEmpty": "No se encontraron destinatarios.",
-  "recipientsListLoadError": "No se pudieron cargar los destinatarios. Desliza hacia abajo para reintentar.",
   "recipientsContinue": "Continuar",
   "recipientsJurisdictionAll": "Todas las jurisdicciones",
   "recipientsJurisdictionCanada": "🇨🇦 Canadá",
@@ -4911,5 +4910,12 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "recipientsErrorLoadFailed": "No se pudieron cargar tus destinatarios. Inténtalo de nuevo.",
+  "recipientsErrorSaveFailed": "No se pudo guardar este destinatario. Revisa los datos e inténtalo de nuevo.",
+  "recipientsErrorSinpeLookupFailed": "No pudimos verificar este número de teléfono. Revísalo e inténtalo de nuevo.",
+  "recipientsErrorBillerSearchFailed": "No se pudo buscar entre los emisores de facturas. Inténtalo de nuevo.",
+  "recipientsErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "recipientsListPullToRetry": "Desliza hacia abajo para reintentar.",
+  "recipientsErrorSavedButNotSelected": "Este destinatario se guardó, pero no pudimos continuar. Búscalo en tu lista para seguir."
 }

@@ -8912,7 +8912,6 @@
   "recipientsPayoutMethod": "Метод на плащане",
   "recipientsFilterByJurisdiction": "Филтър по юрисдикция:",
   "recipientsListEmpty": "Не са намерени получатели.",
-  "recipientsListLoadError": "Получателите не можаха да се заредят. Издърпайте надолу, за да опитате отново.",
   "recipientsContinue": "Продължи",
   "recipientsJurisdictionAll": "Всички юрисдикции",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",
@@ -10233,5 +10232,12 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "recipientsErrorLoadFailed": "Получателите ви не можаха да бъдат заредени. Опитайте отново.",
+  "recipientsErrorSaveFailed": "Този получател не можа да бъде запазен. Проверете данните и опитайте отново.",
+  "recipientsErrorSinpeLookupFailed": "Не успяхме да проверим този телефонен номер. Проверете го и опитайте отново.",
+  "recipientsErrorBillerSearchFailed": "Търсенето на получатели на плащания не бе успешно. Опитайте отново.",
+  "recipientsErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
+  "recipientsListPullToRetry": "Плъзнете надолу, за да опитате отново.",
+  "recipientsErrorSavedButNotSelected": "Този получател е запазен, но не успяхме да продължим. Намерете го в списъка си, за да продължите."
 }

@@ -4183,7 +4183,6 @@
   "recipientsPayoutMethod": "Méthode de paiement",
   "recipientsFilterByJurisdiction": "Filtrer par juridiction :",
   "recipientsListEmpty": "Aucun destinataire trouvé.",
-  "recipientsListLoadError": "Impossible de charger les destinataires. Tirez vers le bas pour réessayer.",
   "recipientsContinue": "Continuer",
   "recipientsJurisdictionAll": "Toutes les juridictions",
   "recipientsJurisdictionCanada": "🇨🇦 Canada",
@@ -4960,5 +4959,12 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "recipientsErrorLoadFailed": "Vos bénéficiaires n’ont pas pu être chargés. Veuillez réessayer.",
+  "recipientsErrorSaveFailed": "Ce bénéficiaire n’a pas pu être enregistré. Vérifiez les informations et réessayez.",
+  "recipientsErrorSinpeLookupFailed": "Nous n’avons pas pu vérifier ce numéro de téléphone. Vérifiez-le et réessayez.",
+  "recipientsErrorBillerSearchFailed": "La recherche de facturiers a échoué. Veuillez réessayer.",
+  "recipientsErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
+  "recipientsListPullToRetry": "Tirez vers le bas pour réessayer.",
+  "recipientsErrorSavedButNotSelected": "Ce bénéficiaire a été enregistré, mais nous n’avons pas pu continuer. Retrouvez-le dans votre liste pour poursuivre."
 }

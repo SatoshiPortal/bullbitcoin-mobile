@@ -12731,10 +12731,6 @@
   "@recipientsListEmpty": {
     "description": "Empty state message when no recipients match the current filters."
   },
-  "recipientsListLoadError": "Could not load recipients. Pull down to retry.",
-  "@recipientsListLoadError": {
-    "description": "Shown when loading the recipients list fails. Prompts the user to pull to refresh."
-  },
   "recipientsContinue": "Continue",
   "@recipientsContinue": {
     "description": "Continue button label used on recipient forms and the recipients list."
@@ -14693,5 +14689,33 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "recipientsErrorLoadFailed": "Your recipients could not be loaded. Please try again.",
+  "@recipientsErrorLoadFailed": {
+    "description": "Shown when the recipient list cannot be loaded from the API."
+  },
+  "recipientsErrorSaveFailed": "This recipient could not be saved. Please check the details and try again.",
+  "@recipientsErrorSaveFailed": {
+    "description": "Shown when creating a recipient fails."
+  },
+  "recipientsErrorSinpeLookupFailed": "We could not verify this phone number. Please check it and try again.",
+  "@recipientsErrorSinpeLookupFailed": {
+    "description": "Shown when the SINPE phone number lookup fails."
+  },
+  "recipientsErrorBillerSearchFailed": "Billers could not be searched. Please try again.",
+  "@recipientsErrorBillerSearchFailed": {
+    "description": "Shown when searching the CAD biller directory fails."
+  },
+  "recipientsErrorNetwork": "Check your internet connection and try again.",
+  "@recipientsErrorNetwork": {
+    "description": "Shown when a recipients request could not reach the server or timed out."
+  },
+  "recipientsListPullToRetry": "Pull down to retry.",
+  "@recipientsListPullToRetry": {
+    "description": "Hint under a recipients load failure. A pull-to-refresh affordance of the list screen, kept separate from the failure message itself."
+  },
+  "recipientsErrorSavedButNotSelected": "This recipient was saved, but we could not continue. Find them in your list to carry on.",
+  "@recipientsErrorSavedButNotSelected": {
+    "description": "Shown when a recipient saved successfully but the calling flow could not continue. Must not imply the save failed, or the user retries and creates a duplicate."
   }
 }

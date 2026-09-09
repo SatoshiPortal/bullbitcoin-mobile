@@ -4075,7 +4075,6 @@
   "recipientsPayoutMethod": "Auszahlungsmethode",
   "recipientsFilterByJurisdiction": "Nach Land filtern:",
   "recipientsListEmpty": "Keine Empfänger gefunden.",
-  "recipientsListLoadError": "Empfänger konnten nicht geladen werden. Zum erneuten Versuch nach unten ziehen.",
   "recipientsContinue": "Weiter",
   "recipientsJurisdictionAll": "Alle Länder",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -4899,5 +4898,12 @@
   "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
   "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
   "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
-  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "recipientsErrorLoadFailed": "Deine Empfänger konnten nicht geladen werden. Bitte versuche es erneut.",
+  "recipientsErrorSaveFailed": "Dieser Empfänger konnte nicht gespeichert werden. Bitte überprüfe die Angaben und versuche es erneut.",
+  "recipientsErrorSinpeLookupFailed": "Wir konnten diese Telefonnummer nicht überprüfen. Bitte prüfe sie und versuche es erneut.",
+  "recipientsErrorBillerSearchFailed": "Die Suche nach Zahlungsempfängern ist fehlgeschlagen. Bitte versuche es erneut.",
+  "recipientsErrorNetwork": "Überprüfe deine Internetverbindung und versuche es erneut.",
+  "recipientsListPullToRetry": "Zum Wiederholen nach unten ziehen.",
+  "recipientsErrorSavedButNotSelected": "Dieser Empfänger wurde gespeichert, aber wir konnten nicht fortfahren. Du findest ihn in deiner Liste."
 }

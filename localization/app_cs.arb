@@ -11469,7 +11469,6 @@
   "recipientsPayoutMethod": "Způsob platby",
   "recipientsFilterByJurisdiction": "Filtrovat podle jurisdikce:",
   "recipientsListEmpty": "Nenalezeni žádní příjemci.",
-  "recipientsListLoadError": "Příjemce se nepodařilo načíst. Zatažením dolů to zkuste znovu.",
   "recipientsContinue": "Pokračovat",
   "recipientsJurisdictionAll": "Všechny jurisdikce",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -12232,5 +12231,12 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "recipientsErrorLoadFailed": "Vaše příjemce se nepodařilo načíst. Zkuste to prosím znovu.",
+  "recipientsErrorSaveFailed": "Tohoto příjemce se nepodařilo uložit. Zkontrolujte údaje a zkuste to znovu.",
+  "recipientsErrorSinpeLookupFailed": "Toto telefonní číslo se nepodařilo ověřit. Zkontrolujte je a zkuste to znovu.",
+  "recipientsErrorBillerSearchFailed": "Vyhledávání inkasních subjektů se nezdařilo. Zkuste to prosím znovu.",
+  "recipientsErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
+  "recipientsListPullToRetry": "Zkuste to znovu přetažením dolů.",
+  "recipientsErrorSavedButNotSelected": "Tento příjemce byl uložen, ale nepodařilo se pokračovat. Najděte jej ve svém seznamu."
 }

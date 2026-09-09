@@ -1,16 +1,17 @@
 import 'dart:async';
-
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 String? validateSinpeMovilPhone(String? value, AppLocalizations loc) {
   if (value == null || value.trim().isEmpty) {
@@ -128,6 +129,24 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                   RecipientsEvent.sinpeChecked(value.trim()),
                 );
               }
+            },
+          ),
+          // A failed lookup used to just stop the spinner, leaving the owner
+          //  field blank with no explanation. Shown under the phone field
+          //  because that is what the message asks the user to check.
+          BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
+            selector: (state) => state.failedToCheckSinpe,
+            builder: (context, failure) {
+              if (failure == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  failure.toTranslated(context),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+              );
             },
           ),
           const Gap(8.0),

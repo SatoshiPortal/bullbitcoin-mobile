@@ -4195,7 +4195,6 @@
   "recipientsPayoutMethod": "Спосіб виплати",
   "recipientsFilterByJurisdiction": "Фільтр за юрисдикцією:",
   "recipientsListEmpty": "Одержувачів не знайдено.",
-  "recipientsListLoadError": "Не вдалося завантажити отримувачів. Потягніть вниз, щоб повторити.",
   "recipientsContinue": "Продовжити",
   "recipientsJurisdictionAll": "Усі юрисдикції",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",
@@ -4911,5 +4910,12 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "recipientsErrorLoadFailed": "Не вдалося завантажити ваших одержувачів. Спробуйте ще раз.",
+  "recipientsErrorSaveFailed": "Не вдалося зберегти цього одержувача. Перевірте дані та спробуйте ще раз.",
+  "recipientsErrorSinpeLookupFailed": "Не вдалося перевірити цей номер телефону. Перевірте його та спробуйте ще раз.",
+  "recipientsErrorBillerSearchFailed": "Не вдалося виконати пошук отримувачів платежів. Спробуйте ще раз.",
+  "recipientsErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
+  "recipientsListPullToRetry": "Потягніть вниз, щоб повторити.",
+  "recipientsErrorSavedButNotSelected": "Одержувача збережено, але продовжити не вдалося. Знайдіть його у списку, щоб продовжити."
 }

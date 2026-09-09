@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "خريطة",
-  "recipientsListLoadError": "تعذّر تحميل المستلمين. اسحب للأسفل لإعادة المحاولة.",
   "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
   "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
   "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
@@ -12235,5 +12234,12 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "recipientsErrorLoadFailed": "تعذّر تحميل المستفيدين لديك. حاول مرة أخرى.",
+  "recipientsErrorSaveFailed": "تعذّر حفظ هذا المستفيد. تحقق من البيانات وحاول مرة أخرى.",
+  "recipientsErrorSinpeLookupFailed": "لم نتمكن من التحقق من رقم الهاتف هذا. تحقق منه وحاول مرة أخرى.",
+  "recipientsErrorBillerSearchFailed": "تعذّر البحث عن جهات الفوترة. حاول مرة أخرى.",
+  "recipientsErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "recipientsListPullToRetry": "اسحب للأسفل لإعادة المحاولة.",
+  "recipientsErrorSavedButNotSelected": "تم حفظ هذا المستفيد، لكن لم نتمكن من المتابعة. ابحث عنه في قائمتك للمتابعة."
 }

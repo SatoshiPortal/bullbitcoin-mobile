@@ -6,7 +6,6 @@
   "buyPayoutMethodBitcoin": "BTC Bitcoin-ի շղթայում",
   "fundExchangeRestrictedTitle": "Ֆինանսավորումն անհասանելի է",
   "fundExchangeRestrictedMessage": "Ֆինանսավորումն անհասանելի է ձեր հաշվի համար։ Լրացուցիչ տեղեկությունների համար խնդրում ենք կապվել աջակցման ծառայության հետ։",
-  "recipientsListLoadError": "Չհաջողվեց բեռնել ստացողներին։ Քաշեք ներքև՝ կրկին փորձելու համար։",
   "backupWarningDescription": "Առանց պահուստային պատճենի՝ դուք կկորցնեք ձեր bitcoin-ի հասանելիությունը, եթե՝",
   "exchangeTestnetBasicAuthTitle": "Testnet փոխանակման հավատարմագրեր",
   "exchangeTestnetBasicAuthDescription": "HTTP basic auth՝ testnet փոխանակման վեբ էջերի համար (մուտք և KYC):",
@@ -3596,5 +3595,12 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "recipientsErrorLoadFailed": "Ձեր ստացողները չհաջողվեց բեռնել։ Փորձեք կրկին։",
+  "recipientsErrorSaveFailed": "Այս ստացողը չհաջողվեց պահել։ Ստուգեք տվյալները և փորձեք կրկին։",
+  "recipientsErrorSinpeLookupFailed": "Չհաջողվեց հաստատել այս հեռախոսահամարը։ Ստուգեք այն և փորձեք կրկին։",
+  "recipientsErrorBillerSearchFailed": "Չհաջողվեց որոնել վճարման կազմակերպությունները։ Փորձեք կրկին։",
+  "recipientsErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
+  "recipientsListPullToRetry": "Կրկին փորձելու համար քաշեք ներքև։",
+  "recipientsErrorSavedButNotSelected": "Այս ստացողը պահվեց, բայց չհաջողվեց շարունակել։ Գտեք նրան ձեր ցանկում՝ շարունակելու համար։"
 }
