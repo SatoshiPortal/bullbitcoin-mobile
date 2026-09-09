@@ -127,7 +127,15 @@ class SwapWatcher {
           await _repo.refund(swap);
           _clearRetries(swap.id);
         case SwapStatus.canCoop:
-          await _repo.coopSign(swap);
+          // Only submarine swaps have a coop close; for a receive-side swap
+          // parked here (restore maps claim.pending to canCoop) the pending
+          // action is OUR claim — coopSign would silently no-op and strand
+          // the row.
+          if (swap is LnSendSwap) {
+            await _repo.coopSign(swap);
+          } else {
+            await _repo.claim(swap);
+          }
           _clearRetries(swap.id);
         case SwapStatus.completed:
           // Completed without a recorded claim means the claim never
@@ -143,11 +151,26 @@ class SwapWatcher {
             await _repo.claim(swap);
             _clearRetries(swap.id);
           }
+        case SwapStatus.expired:
+        case SwapStatus.failed:
+          // Funds locked with no refund recorded: drive the refund directly
+          // instead of waiting for Boltz to flip the status to refundable —
+          // with the API down that flip never comes, while the refund itself
+          // is Boltz-free. Premature attempts fail non-final and back off.
+          final refundNeeded = switch (swap) {
+            LnSendSwap(:final sendTxid, :final refundTxid) =>
+              sendTxid != null && refundTxid == null,
+            ChainSwap(:final sendTxid, :final refundTxid, :final receiveTxid) =>
+              sendTxid != null && refundTxid == null && receiveTxid == null,
+            LnReceiveSwap() => false,
+          };
+          if (refundNeeded) {
+            await _repo.refund(swap);
+            _clearRetries(swap.id);
+          }
         case SwapStatus.pending:
         case SwapStatus.paid:
         case SwapStatus.refunded:
-        case SwapStatus.expired:
-        case SwapStatus.failed:
           break;
       }
     } catch (e) {
