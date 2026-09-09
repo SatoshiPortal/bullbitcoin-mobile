@@ -239,14 +239,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Falhado para carregar carteiras: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "País de conta bancária",
   "walletAddressTypeNestedSegwit": "Segwit aninhado",
   "exchangeLandingFeature2": "DCA, Limite de ordens e Auto-compra",
@@ -1084,14 +1076,6 @@
   "recoverbullSelectDriveBackups": "Drive Backups",
   "exchangeAuthOk": "ESTÁ BEM",
   "settingsSecurityPinTitle": "Pin de segurança",
-  "testBackupErrorFailedToFetch": "Falhado para buscar backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Se você tiver problemas de digitalização:",
   "importQrDeviceJadeStep9": "Analise o código QR que você vê no seu dispositivo.",
   "transactionDetailLabelPayjoinCompleted": "Completada",
@@ -1450,14 +1434,6 @@
   "sellNoInvoiceData": "Não existem dados de fatura disponíveis",
   "ledgerInstructionsIos": "Certifique-se de que seu Ledger está desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
   "replaceByFeeScreenTitle": "Substituir por taxa",
-  "testBackupErrorWriteFailed": "Escrever para armazenamento falhou: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "Rede de relâmpago",
   "sendType": "Tipo: ",
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
@@ -2427,14 +2403,6 @@
   "urProcessingFailedMessage": "UR processamento falhou",
   "backupWalletChooseVaultLocationTitle": "Escolha a localização do vault",
   "receiveCopyAddressOnly": "Copiar ou escanear endereço somente",
-  "testBackupErrorTestFailed": "Falhado para testar backup: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Taxa de iluminação",
   "payLabelOptional": "Etiqueta (opcional)",
   "recoverbullGoogleDriveDeleteButton": "Excluir",
@@ -2470,14 +2438,6 @@
   "sendPaymentProcessing": "O pagamento está sendo processado. Pode demorar até um minuto",
   "electrumDefaultServersInfo": "Para proteger sua privacidade, os servidores padrão não são usados quando os servidores personalizados são configurados.",
   "transactionDetailLabelPayoutMethod": "Método de pagamento",
-  "testBackupErrorLoadMnemonic": "Carga mnemônica: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "Preço irá refrescar-se ",
   "passportStep3": "Digitalizar o código QR mostrado na carteira Bull",
   "jadeStep5": "Se você tiver problemas de digitalização:",
@@ -3034,14 +2994,6 @@
   "coldcardStep11": "O Coldcard Q irá então mostrar-lhe o seu próprio código QR.",
   "fundExchangeLabelIban": "Número de conta IBAN",
   "swapDoNotUninstallWarning": "Não desinstale o aplicativo até que a transferência seja concluída!",
-  "testBackupErrorVerificationFailed": "Verificação falhada: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "Ver detalhes",
   "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
   "sendSubmarineSwap": "Swap Submarino",
@@ -4960,5 +4912,11 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "testBackupErrorWalletsUnavailable": "Não foi possível carregar as suas carteiras. Tente novamente.",
+  "testBackupErrorNoWallets": "Não existe nenhuma carteira cuja cópia de segurança possa ser testada.",
+  "testBackupErrorNoWalletSelected": "Selecione uma carteira antes de testar a sua cópia de segurança.",
+  "testBackupErrorSeedUnavailable": "Não foi possível ler a sua frase de recuperação. Tente novamente.",
+  "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
+  "testBackupErrorCompletionFailed": "A sua frase de recuperação estava correta, mas não foi possível guardar o resultado. Tente novamente."
 }

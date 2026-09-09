@@ -2330,57 +2330,9 @@
   "testBackupErrorNoMnemonic": "No se cargó ninguna mnemónica",
   "testBackupErrorSelectAllWords": "Por favor seleccione todas las palabras",
   "testBackupErrorIncorrectOrder": "Orden de palabras incorrecto. Por favor intente nuevamente.",
-  "testBackupErrorVerificationFailed": "Verificación fallida: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Error al obtener respaldo: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Contenido del archivo inválido",
   "testBackupErrorUnexpectedSuccess": "Logro inesperado: el respaldo debería coincidir con la billetera existente",
   "testBackupErrorWalletMismatch": "El respaldo no coincide con la billetera existente",
-  "testBackupErrorWriteFailed": "Error al escribir en el almacenamiento: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Error al probar respaldo: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Error al cargar billeteras: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Error al cargar mnemónica: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveCancelButton": "Cancelar",
   "recoverbullGoogleDriveDeleteButton": "Eliminar",
   "recoverbullGoogleDriveDeleteConfirmation": "¿Está seguro de que desea eliminar esta copia de seguridad del cofre? Esta acción no se puede deshacer.",
@@ -4911,5 +4863,11 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "testBackupErrorWalletsUnavailable": "No se pudieron cargar tus billeteras. Inténtalo de nuevo.",
+  "testBackupErrorNoWallets": "No hay ninguna billetera cuya copia de seguridad se pueda probar.",
+  "testBackupErrorNoWalletSelected": "Selecciona una billetera antes de probar su copia de seguridad.",
+  "testBackupErrorSeedUnavailable": "No se pudo leer tu frase de recuperación. Inténtalo de nuevo.",
+  "testBackupErrorSeedNotMnemonic": "Esta billetera no tiene una frase de recuperación para probar.",
+  "testBackupErrorCompletionFailed": "Tu frase de recuperación era correcta, pero no pudimos guardar el resultado. Inténtalo de nuevo."
 }

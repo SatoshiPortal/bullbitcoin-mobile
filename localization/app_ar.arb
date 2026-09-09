@@ -633,15 +633,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "عدم تحميل المحافظ: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "بلد الحساب المصرفي",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3067,15 +3058,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "فشل في جلب الدعم: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "إذا كان لديك مشكلة في المسح",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4244,15 +4226,6 @@
   "replaceByFeeScreenTitle": "يستعاض عنه بالرسوم",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "دفتر خزن فاشل: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "شبكة البرق",
   "@exchangeDcaNetworkLightning": {
@@ -7023,15 +6996,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "فشل في اختبار الدعم: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Lightning Fee",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7121,15 +7085,6 @@
   "transactionDetailLabelPayoutMethod": "طريقة الدفع",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "لم تُحمّل مينمونيك: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "ستنعش الأسعار ",
   "@payPriceRefreshIn": {
@@ -8707,15 +8662,6 @@
   "swapDoNotUninstallWarning": "لا تبطل التطبيق حتى يكتمل النقل!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "فشل التحقق: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "التفاصيل",
   "@sendViewDetails": {
@@ -12235,5 +12181,11 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "testBackupErrorWalletsUnavailable": "تعذّر تحميل محافظك. حاول مرة أخرى.",
+  "testBackupErrorNoWallets": "لا توجد محفظة لاختبار نسختها الاحتياطية.",
+  "testBackupErrorNoWalletSelected": "اختر محفظة قبل اختبار نسختها الاحتياطية.",
+  "testBackupErrorSeedUnavailable": "تعذّرت قراءة عبارة الاسترداد الخاصة بك. حاول مرة أخرى.",
+  "testBackupErrorSeedNotMnemonic": "لا تحتوي هذه المحفظة على عبارة استرداد لاختبارها.",
+  "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى."
 }

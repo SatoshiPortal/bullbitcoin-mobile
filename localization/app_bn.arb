@@ -669,15 +669,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "ওয়ালেট লোড করতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "ব্যাংক অ্যাকাউন্টের দেশ",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3199,15 +3190,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "ব্যাকআপ আনতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "স্ক্যান করতে সমস্যা হলে:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4382,15 +4364,6 @@
   "replaceByFeeScreenTitle": "ফি দ্বারা প্রতিস্থাপন করুন",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "স্টোরেজে লিখতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "লাইটনিং নেটওয়ার্ক",
   "@exchangeDcaNetworkLightning": {
@@ -7315,15 +7288,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "ব্যাকআপ পরীক্ষা করতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "লাইটনিং শুল্ক",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7409,15 +7373,6 @@
   "transactionDetailLabelPayoutMethod": "পাওআউট পদ্ধতি",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "মেনোমিক লোড করতে ব্যর্থ হয়েছে: {error}।",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "দাম আপডেট হবে ",
   "@payPriceRefreshIn": {
@@ -9103,15 +9058,6 @@
   "swapDoNotUninstallWarning": "স্থানান্তর সম্পূর্ণ না হওয়া পর্যন্ত অ্যাপটি আনইনস্টল করবেন না!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "যাচাইকরণ ব্যর্থ: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "বিস্তারিত দেখুন",
   "@sendViewDetails": {
@@ -12442,5 +12388,11 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "testBackupErrorWalletsUnavailable": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আবার চেষ্টা করুন।",
+  "testBackupErrorNoWallets": "ব্যাকআপ পরীক্ষা করার মতো কোনো ওয়ালেট নেই।",
+  "testBackupErrorNoWalletSelected": "ব্যাকআপ পরীক্ষা করার আগে একটি ওয়ালেট নির্বাচন করুন।",
+  "testBackupErrorSeedUnavailable": "আপনার পুনরুদ্ধার বাক্যাংশ পড়া যায়নি। আবার চেষ্টা করুন।",
+  "testBackupErrorSeedNotMnemonic": "এই ওয়ালেটে পরীক্ষা করার মতো কোনো পুনরুদ্ধার বাক্যাংশ নেই।",
+  "testBackupErrorCompletionFailed": "আপনার পুনরুদ্ধার বাক্যাংশ সঠিক ছিল, কিন্তু আমরা ফলাফল সংরক্ষণ করতে পারিনি। আবার চেষ্টা করুন।"
 }

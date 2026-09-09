@@ -5,7 +5,7 @@ enum BackupVerificationStatus { idle, success, failure }
 @freezed
 abstract class TestWalletBackupState with _$TestWalletBackupState {
   const factory TestWalletBackupState({
-    @Default('') String statusError,
+    TestWalletBackupFailure? failure,
     @Default([]) List<Wallet> wallets,
     @Default(null) Wallet? selectedWallet,
     @Default(BackupVerificationStatus.idle)

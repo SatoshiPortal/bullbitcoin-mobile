@@ -665,15 +665,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "โหลดกระเป๋าสตางค์ไม่สำเร็จ: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "ธนาคารธนาคาร",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3277,15 +3268,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "ดึงข้อมูลสำรองไม่สำเร็จ: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "หากคุณมีปัญหา:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4511,15 +4493,6 @@
   "replaceByFeeScreenTitle": "แทนที่ค่าธรรมเนียม",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "เขียนข้อมูลลงที่จัดเก็บไม่สำเร็จ: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "เครือข่ายไร้สาย",
   "@exchangeDcaNetworkLightning": {
@@ -7532,15 +7505,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "ทดสอบข้อมูลสำรองไม่สำเร็จ: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "ค่าธรรมเนียม",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7630,15 +7594,6 @@
   "transactionDetailLabelPayoutMethod": "วิธีการชําระเงิน",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "โหลด mnemonic ไม่สำเร็จ: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "ราคาจะผ่อนคลาย ",
   "@payPriceRefreshIn": {
@@ -9354,15 +9309,6 @@
   "swapDoNotUninstallWarning": "อย่าถอนการติดตั้งแอปจนกว่าจะโอนเสร็จสมบูรณ์!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "การตรวจสอบล้มเหลว: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "รายละเอียด",
   "@sendViewDetails": {
@@ -12236,5 +12182,11 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "testBackupErrorWalletsUnavailable": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ โปรดลองอีกครั้ง",
+  "testBackupErrorNoWallets": "ไม่มีกระเป๋าเงินที่จะทดสอบข้อมูลสำรอง",
+  "testBackupErrorNoWalletSelected": "เลือกกระเป๋าเงินก่อนทดสอบข้อมูลสำรอง",
+  "testBackupErrorSeedUnavailable": "ไม่สามารถอ่านวลีกู้คืนของคุณได้ โปรดลองอีกครั้ง",
+  "testBackupErrorSeedNotMnemonic": "กระเป๋าเงินนี้ไม่มีวลีกู้คืนให้ทดสอบ",
+  "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง"
 }

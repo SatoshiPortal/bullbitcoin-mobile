@@ -139,18 +139,22 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     } catch (e, st) {
       log.severe(message: 'App startup failed', error: e, trace: st);
 
-      bool hasBackup;
-      try {
-        // Check if there is a backup available
-        hasBackup = await _checkBackupUsecase.execute();
-      } catch (_) {
-        log.severe(
-          message: 'Failed to check for backup availability during app startup',
-          error: e,
-          trace: StackTrace.current,
-        );
-        hasBackup = false;
-      }
+      // An unreadable backup state is reported as "no backup", matching
+      //  develop. Note this is not the same fail-closed direction as
+      //  pin_code, where false gates the user INTO backing up; here false
+      //  only describes what the failure screen may offer. It has no
+      //  user-visible effect today either way: AppStartupFailureScreen takes
+      //  hasBackup but never reads it (app_startup_widget.dart:96), so
+      //  picking a direction is deferred to whoever wires it up.
+      //
+      //  CheckBackupUsecase returns the failure instead of throwing, so the
+      //  try/catch that used to wrap this call is gone — it logged the OUTER
+      //  exception `e` rather than the backup check's own, and could not
+      //  have fired anyway once the check swallowed its errors.
+      final hasBackup = switch (await _checkBackupUsecase.execute()) {
+        Ok(:final value) => value,
+        Err() => false,
+      };
       emit(AppStartupState.failure(e, hasBackup: hasBackup));
     }
   }

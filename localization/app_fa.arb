@@ -1563,15 +1563,6 @@
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
   },
-  "testBackupErrorLoadWallets": "شکست در بارگیری کیف پول: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "بانک کشور",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3755,15 +3746,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "دریافت پشتیبان ممکن نشد: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceJadeStep9": "کد QR را که در دستگاه خود می بینید، اسکن کنید.",
   "@importQrDeviceJadeStep9": {
     "description": "Jade instruction step 9"
@@ -4803,15 +4785,6 @@
   "replaceByFeeScreenTitle": "جایگزین با هزینه",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "نوشتن برای ذخیره سازی شکست خورد: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendType": "نوع: ",
   "@sendType": {
@@ -7270,15 +7243,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "شکست در تست پشتیبان: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "هزینه رعد و برق",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7360,15 +7324,6 @@
   "transactionDetailLabelPayoutMethod": "روش پرداخت",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "شکست خورده برای بارگذاری mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "قیمت در ",
   "@payPriceRefreshIn": {
@@ -8794,15 +8749,6 @@
   "swapDoNotUninstallWarning": "برنامه را تا زمانی که انتقال کامل شود، حذف نکنید!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "عدم موفقیت: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "مشاهده جزئیات",
   "@sendViewDetails": {
@@ -12232,5 +12178,11 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "testBackupErrorWalletsUnavailable": "کیف‌پول‌های شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "testBackupErrorNoWallets": "هیچ کیف‌پولی برای آزمایش نسخهٔ پشتیبان وجود ندارد.",
+  "testBackupErrorNoWalletSelected": "پیش از آزمایش نسخهٔ پشتیبان، یک کیف‌پول انتخاب کنید.",
+  "testBackupErrorSeedUnavailable": "عبارت بازیابی شما خوانده نشد. لطفاً دوباره تلاش کنید.",
+  "testBackupErrorSeedNotMnemonic": "این کیف‌پول عبارت بازیابی برای آزمایش ندارد.",
+  "testBackupErrorCompletionFailed": "عبارت بازیابی شما درست بود، اما نتوانستیم نتیجه را ذخیره کنیم. لطفاً دوباره تلاش کنید."
 }

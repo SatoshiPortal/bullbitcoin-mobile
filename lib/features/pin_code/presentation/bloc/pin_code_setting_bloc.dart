@@ -60,7 +60,16 @@ class PinCodeSettingBloc
     switch (result) {
       case Ok(:final value):
         if (!value) {
-          final hasBackup = await _checkBackupUsecase.execute();
+          // Fails closed: an unreadable backup state routes to
+          //  backupRequired, so the user is asked to back up rather than
+          //  wrongly told they already have. The failure belongs to another
+          //  feature and is not shown here — it is a routing input, not
+          //  something the user can act on from this screen.
+          final backupResult = await _checkBackupUsecase.execute();
+          final hasBackup = switch (backupResult) {
+            Ok(:final value) => value,
+            Err() => false,
+          };
           final status = hasBackup
               ? PinCodeSettingStatus.choose
               : PinCodeSettingStatus.backupRequired;
@@ -115,7 +124,12 @@ class PinCodeSettingBloc
     PinCodeCreate event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    final hasBackup = await _checkBackupUsecase.execute();
+    // Fails closed, same as _onInitialized: an unreadable backup state must
+    //  route to backupRequired, never to choose.
+    final hasBackup = switch (await _checkBackupUsecase.execute()) {
+      Ok(:final value) => value,
+      Err() => false,
+    };
     var status = PinCodeSettingStatus.choose;
     if (!hasBackup) status = PinCodeSettingStatus.backupRequired;
     emit(state.copyWith(status: status));

@@ -18,6 +18,6 @@ class VerifyPhysicalBackup extends TestWalletBackupEvent {
   final List<String> reorderedWords;
 }
 
-class ClearError extends TestWalletBackupEvent {
-  const ClearError();
+class ClearFailure extends TestWalletBackupEvent {
+  const ClearFailure();
 }

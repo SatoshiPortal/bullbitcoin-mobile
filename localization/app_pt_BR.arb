@@ -488,15 +488,6 @@
   "@jadeStep8": {
     "description": "Jade troubleshooting tip 3"
   },
-  "testBackupErrorLoadWallets": "Falhado para carregar carteiras: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "paySecurityQuestionLength": "{count}/40 caracteres",
   "@paySecurityQuestionLength": {
     "description": "Character count for security question",
@@ -3120,15 +3111,6 @@
   "@backupInstruction3": {
     "description": "Third backup instruction warning about backup security"
   },
-  "testBackupErrorFailedToFetch": "Falhado para buscar backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payMediumPriority": "Média",
   "@payMediumPriority": {
     "description": "Medium fee priority option"
@@ -4489,15 +4471,6 @@
   "exchangeAmountInputTitle": "Digite o valor",
   "@exchangeAmountInputTitle": {
     "description": "Title for the amount input field"
-  },
-  "testBackupErrorWriteFailed": "Escrever para armazenamento falhou: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "testBackupVaultSuccessMessage": "Seu cofre foi importado com sucesso",
   "@testBackupVaultSuccessMessage": {
@@ -6705,15 +6678,6 @@
   "@pinConfirmHeadline": {
     "description": "Headline text on PIN confirmation screen"
   },
-  "testBackupErrorTestFailed": "Falhado para testar backup: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Taxa de iluminação",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7478,15 +7442,6 @@
   "coreSwapsActionClose": "Fechar",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
-  },
-  "testBackupErrorLoadMnemonic": "Carga mnemônica: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "testCompletedSuccessTitle": "Teste concluído com sucesso!",
   "@testCompletedSuccessTitle": {
@@ -9601,15 +9556,6 @@
   "payViewDetails": "Ver detalhes",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "testBackupErrorVerificationFailed": "Verificação falhada: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "swapProgressRefunded": "Transferência reembolsada",
   "@swapProgressRefunded": {
@@ -12244,5 +12190,11 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "testBackupErrorWalletsUnavailable": "Não foi possível carregar suas carteiras. Tente novamente.",
+  "testBackupErrorNoWallets": "Não há nenhuma carteira cujo backup possa ser testado.",
+  "testBackupErrorNoWalletSelected": "Selecione uma carteira antes de testar seu backup.",
+  "testBackupErrorSeedUnavailable": "Não foi possível ler sua frase de recuperação. Tente novamente.",
+  "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
+  "testBackupErrorCompletionFailed": "Sua frase de recuperação estava correta, mas não conseguimos salvar o resultado. Tente novamente."
 }

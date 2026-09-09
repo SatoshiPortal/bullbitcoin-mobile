@@ -665,15 +665,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "지갑로드 실패 : {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "은행 계좌",
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
@@ -3277,15 +3268,6 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "백업에 실패: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "문제가 있는 경우:",
   "@psbtFlowTroubleScanningTitle": {
     "description": "Header for troubleshooting scanning issues"
@@ -4511,15 +4493,6 @@
   "replaceByFeeScreenTitle": "결제 방법",
   "@replaceByFeeScreenTitle": {
     "description": "Screen title for replace by fee feature"
-  },
-  "testBackupErrorWriteFailed": "저장 실패에 쓰기: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "exchangeDcaNetworkLightning": "Lightning 네트워크",
   "@exchangeDcaNetworkLightning": {
@@ -7528,15 +7501,6 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "백업 테스트 실패: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "지불 방법",
   "@payLightningFee": {
     "description": "Label for Lightning Network routing fee"
@@ -7630,15 +7594,6 @@
   "transactionDetailLabelPayoutMethod": "Payout 방법",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
-  },
-  "testBackupErrorLoadMnemonic": "Mnemonic 부하 실패: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "payPriceRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceRefreshIn": {
@@ -9354,15 +9309,6 @@
   "swapDoNotUninstallWarning": "전송이 완료 될 때까지 앱을 제거하지 마십시오!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
-  },
-  "testBackupErrorVerificationFailed": "검증 실패: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "sendViewDetails": "더 보기",
   "@sendViewDetails": {
@@ -12232,5 +12178,11 @@
   "sendErrorExchangeOrderMismatch": "이 결제가 주문과 더 이상 일치하지 않습니다. 결제를 다시 시작하세요.",
   "sellUnexpectedError": "판매 주문을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
   "sellErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
-  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요."
+  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "testBackupErrorWalletsUnavailable": "지갑을 불러올 수 없습니다. 다시 시도해 주세요.",
+  "testBackupErrorNoWallets": "백업을 테스트할 지갑이 없습니다.",
+  "testBackupErrorNoWalletSelected": "백업을 테스트하기 전에 지갑을 선택하세요.",
+  "testBackupErrorSeedUnavailable": "복구 문구를 읽을 수 없습니다. 다시 시도해 주세요.",
+  "testBackupErrorSeedNotMnemonic": "이 지갑에는 테스트할 복구 문구가 없습니다.",
+  "testBackupErrorCompletionFailed": "복구 문구는 정확했지만 결과를 저장하지 못했습니다. 다시 시도해 주세요."
 }

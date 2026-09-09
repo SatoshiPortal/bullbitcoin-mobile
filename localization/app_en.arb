@@ -7952,24 +7952,6 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "testBackupErrorVerificationFailed": "Verification failed: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "description": "Generic error message for verification failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorFailedToFetch": "Failed to fetch backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "description": "Error when backup fetch fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Invalid file content",
   "@testBackupErrorInvalidFile": {
     "description": "Error when selected file has invalid content"
@@ -7981,42 +7963,6 @@
   "testBackupErrorWalletMismatch": "Backup does not match existing wallet",
   "@testBackupErrorWalletMismatch": {
     "description": "Error when backup doesn't match current wallet"
-  },
-  "testBackupErrorWriteFailed": "Write to storage failed: {error}",
-  "@testBackupErrorWriteFailed": {
-    "description": "Error when writing verification status to storage fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorTestFailed": "Failed to test backup: {error}",
-  "@testBackupErrorTestFailed": {
-    "description": "Generic error message for backup test failure",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadWallets": "Failed to load wallets: {error}",
-  "@testBackupErrorLoadWallets": {
-    "description": "Error when loading wallets fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "testBackupErrorLoadMnemonic": "Failed to load mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "description": "Error when loading mnemonic fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "recoverbullGoogleDriveCancelButton": "Cancel",
   "@recoverbullGoogleDriveCancelButton": {
@@ -14693,5 +14639,29 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "testBackupErrorWalletsUnavailable": "Your wallets could not be loaded. Please try again.",
+  "@testBackupErrorWalletsUnavailable": {
+    "description": "Shown when the wallet list cannot be read while starting a backup test."
+  },
+  "testBackupErrorNoWallets": "There is no wallet to test a backup for.",
+  "@testBackupErrorNoWallets": {
+    "description": "Shown when no wallet exists to run a backup test against."
+  },
+  "testBackupErrorNoWalletSelected": "Select a wallet before testing its backup.",
+  "@testBackupErrorNoWalletSelected": {
+    "description": "Shown when a backup verification is requested before a wallet was selected."
+  },
+  "testBackupErrorSeedUnavailable": "Your recovery phrase could not be read. Please try again.",
+  "@testBackupErrorSeedUnavailable": {
+    "description": "Shown when the stored seed for the selected wallet cannot be read."
+  },
+  "testBackupErrorSeedNotMnemonic": "This wallet has no recovery phrase to test.",
+  "@testBackupErrorSeedNotMnemonic": {
+    "description": "Shown when the stored seed is not a mnemonic, so a physical backup test does not apply."
+  },
+  "testBackupErrorCompletionFailed": "Your recovery phrase was correct, but we could not save the result. Please try again.",
+  "@testBackupErrorCompletionFailed": {
+    "description": "Shown when the mnemonic matched but recording the successful verification failed."
   }
 }

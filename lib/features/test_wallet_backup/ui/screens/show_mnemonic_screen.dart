@@ -6,7 +6,10 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
+import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -97,7 +100,8 @@ class _MnemonicDisplay extends StatefulWidget {
 
 class _MnemonicDisplayState extends State<_MnemonicDisplay> {
   String? _fingerprint;
-  Future<(List<String>, String?)>? _secretFuture;
+  Future<Result<(List<String>, String?), TestWalletBackupFailure>>?
+  _secretFuture;
 
   @override
   void didChangeDependencies() {
@@ -123,11 +127,26 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
         .selectedWallet;
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
-    return FutureBuilder<(List<String>, String?)>(
+    return FutureBuilder<
+      Result<(List<String>, String?), TestWalletBackupFailure>
+    >(
       future: _secretFuture,
       builder: (context, snapshot) {
-        final mnemonic = snapshot.data?.$1 ?? const <String>[];
-        final passphrase = snapshot.data?.$2 ?? '';
+        final result = snapshot.data;
+        final (mnemonic, passphrase) = switch (result) {
+          Ok(:final value) => (value.$1, value.$2 ?? ''),
+          _ => (const <String>[], ''),
+        };
+        // The future no longer throws — a failure comes back as an Err — but
+        // snapshot.hasError is still honoured so an unexpected throw degrades
+        // to the generic message instead of an empty phrase list.
+        final failure = switch (result) {
+          Err(:final failure) => failure,
+          _ =>
+            snapshot.hasError
+                ? const TestWalletBackupUnexpectedFailure()
+                : null,
+        };
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -173,9 +192,9 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    if (snapshot.hasError)
+                    if (failure != null)
                       BBText(
-                        context.loc.oopsSomethingWentWrong,
+                        failure.toTranslated(context),
                         textAlign: .center,
                         style: context.font.bodyLarge?.copyWith(
                           color: context.appColors.error,

@@ -240,14 +240,6 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "Не удалось загрузить кошельки: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "Страна с банковским счетом",
   "walletAddressTypeNestedSegwit": "Nested Segwit",
   "exchangeLandingFeature2": "DCA, лимитные заказы и автоматическая покупка",
@@ -1084,14 +1076,6 @@
   "recoverbullSelectDriveBackups": "Привод",
   "exchangeAuthOk": "ХОРОШО",
   "settingsSecurityPinTitle": "Блок безопасности",
-  "testBackupErrorFailedToFetch": "{error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "Если у вас есть проблемы с сканированием:",
   "importQrDeviceJadeStep9": "Сканируйте QR-код, который вы видите на своем устройстве.",
   "transactionDetailLabelPayjoinCompleted": "Завершено",
@@ -1450,14 +1434,6 @@
   "sellNoInvoiceData": "Данные счетов отсутствуют",
   "ledgerInstructionsIos": "Убедитесь, что ваш Ledger разблокирован с открытым приложением Bitcoin и включенным Bluetooth.",
   "replaceByFeeScreenTitle": "Заменить:",
-  "testBackupErrorWriteFailed": "Написать на хранение не удалось: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "Сеть освещения",
   "sendType": "Тип: ",
   "buyBitcoinAddressHint": "BC1QYL7J673H...6Y6ALV70M0",
@@ -2444,14 +2420,6 @@
   "urProcessingFailedMessage": "UR-обработка потерпела неудачу",
   "backupWalletChooseVaultLocationTitle": "Выберите местоположение хранилища",
   "receiveCopyAddressOnly": "Скопировать или сканировать только",
-  "testBackupErrorTestFailed": "{error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "Молния",
   "payLabelOptional": "Маркировка (факультативно)",
   "recoverbullGoogleDriveDeleteButton": "Удалить",
@@ -2487,14 +2455,6 @@
   "sendPaymentProcessing": "Платежи обрабатываются. Это может занять до минуты",
   "electrumDefaultServersInfo": "Для защиты вашей конфиденциальности серверы по умолчанию не используются, когда настроены пользовательские серверы.",
   "transactionDetailLabelPayoutMethod": "Метод выплаты",
-  "testBackupErrorLoadMnemonic": "{error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "Цена освежится ",
   "passportStep3": "Сканировать код QR, показанный в кошельке Bull",
   "jadeStep5": "Если у вас есть проблемы с сканированием:",
@@ -3055,14 +3015,6 @@
   "coldcardStep11": "The Coldcard Затем Q покажет вам свой собственный QR-код.",
   "fundExchangeLabelIban": "Номер счета IBAN",
   "swapDoNotUninstallWarning": "Не удаляйте приложение до завершения передачи!",
-  "testBackupErrorVerificationFailed": "Проверка провалилась: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "Просмотр деталей",
   "recoverbullErrorUnexpected": "Неожиданная ошибка, см. журналы",
   "sendSubmarineSwap": "Submarine Swap",
@@ -4920,5 +4872,11 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "testBackupErrorWalletsUnavailable": "Не удалось загрузить ваши кошельки. Попробуйте ещё раз.",
+  "testBackupErrorNoWallets": "Нет кошелька, резервную копию которого можно проверить.",
+  "testBackupErrorNoWalletSelected": "Выберите кошелёк, прежде чем проверять его резервную копию.",
+  "testBackupErrorSeedUnavailable": "Не удалось прочитать вашу фразу восстановления. Попробуйте ещё раз.",
+  "testBackupErrorSeedNotMnemonic": "У этого кошелька нет фразы восстановления для проверки.",
+  "testBackupErrorCompletionFailed": "Ваша фраза восстановления верна, но нам не удалось сохранить результат. Попробуйте ещё раз."
 }
