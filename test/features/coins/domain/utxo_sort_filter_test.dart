@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/coins/domain/utxo_sort_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -6,6 +7,33 @@ import '../wallet_utxo_fixture.dart';
 
 void main() {
   group('sortAndFilterUtxos — sorting', () {
+    test('orders Liquid coins by confirmation height with pending newest', () {
+      WalletUtxo coin(int? height) => WalletUtxo.liquid(
+        walletId: 'liquid',
+        txId: '$height',
+        vout: 0,
+        amountSat: BigInt.from(10000),
+        scriptPubkey: '',
+        standardAddress: '',
+        confidentialAddress: '',
+        blockHeight: height,
+      );
+      final coins = [coin(100), coin(null), coin(200)];
+      expect(
+        sortAndFilterUtxos(
+          coins,
+          const CoinsFilter(sort: CoinsSort.dateNewest),
+        ).map((coin) => coin.txId),
+        ['null', '200', '100'],
+      );
+      expect(
+        sortAndFilterUtxos(
+          coins,
+          const CoinsFilter(sort: CoinsSort.dateOldest),
+        ).map((coin) => coin.txId),
+        ['100', '200', 'null'],
+      );
+    });
     test('amountDesc orders largest first', () {
       final utxos = [
         walletUtxoFixture(sats: 100, vout: 0),
