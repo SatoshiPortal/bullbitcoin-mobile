@@ -1,3 +1,8 @@
+// These scenarios run several real encrypted publications; full-suite CPU
+// contention can exceed the default 30-second unit-test deadline.
+@Timeout(Duration(minutes: 2))
+library;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
