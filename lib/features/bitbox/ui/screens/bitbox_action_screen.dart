@@ -4,11 +4,15 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_account_key_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/register_wallet_policy_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/sign_psbt_bitbox_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/sign_wallet_psbt_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
+import 'package:bb_mobile/core/bitbox/domain/usecases/verify_wallet_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
@@ -26,6 +30,7 @@ import 'package:bb_mobile/features/bitbox/bitbox_action.dart';
 import 'package:bb_mobile/features/bitbox/presentation/bitbox_failure_l10n.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_cubit.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
+import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/locator.dart';
@@ -43,6 +48,8 @@ class BitBoxRouteParams {
   final String? address;
   final SignerDeviceEntity? requestedDeviceType;
   final ScriptType? scriptType;
+  final BitBoxWalletPolicyRequest? walletPolicy;
+  final ReadBitBoxAccountKeyRequest? accountKey;
 
   const BitBoxRouteParams({
     this.psbt,
@@ -50,6 +57,8 @@ class BitBoxRouteParams {
     this.address,
     this.requestedDeviceType,
     this.scriptType,
+    this.walletPolicy,
+    this.accountKey,
   });
 }
 
@@ -105,7 +114,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
               widget.action.toSuccessText(context),
             );
             if (widget.action == const BitBoxAction.importWallet()) {
-              if (state.result is WatchOnlyWalletEntity &&
+              if (widget.parameters?.accountKey != null) {
+                Navigator.of(context).pop(state.result);
+              } else if (state.result is WatchOnlyWalletEntity &&
                   state.connectedDevice != null) {
                 _navigateToImportPage(
                   context,
@@ -113,9 +124,12 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                 );
               }
             } else if (widget.action == const BitBoxAction.verifyAddress()) {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
             } else if (widget.action == const BitBoxAction.signTransaction()) {
               Navigator.of(context).pop(state.result);
+            } else if (widget.action ==
+                const BitBoxAction.registerWalletPolicy()) {
+              Navigator.of(context).pop(true);
             }
           }
         },
@@ -159,6 +173,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           style: context.font.bodyMedium,
         ),
         if (widget.action == const BitBoxAction.importWallet() &&
+            widget.parameters?.accountKey == null &&
             state.isInitial) ...[
           const Gap(24),
           _buildScriptTypeButton(context),
@@ -252,6 +267,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
     if (widget.action == const BitBoxAction.importWallet()) {
       await _executeImportWithPairing(context, cubit);
+    } else if (widget.action == const BitBoxAction.registerWalletPolicy()) {
+      await _executeRegisterWalletPolicy(cubit);
     } else if (widget.action == const BitBoxAction.verifyAddress()) {
       await _executeVerifyAddress(context, cubit);
     } else if (widget.action == const BitBoxAction.signTransaction()) {
@@ -272,7 +289,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   }
 
   Widget _buildAddressDisplay(BuildContext context) {
-    String? address = widget.parameters?.address;
+    String? address = switch (widget.parameters?.walletPolicy) {
+      VerifyBitBoxWalletPolicyAddressRequest(:final address) => address,
+      _ => widget.parameters?.address,
+    };
 
     if (widget.action == const BitBoxAction.verifyAddress() &&
         context
@@ -347,6 +367,18 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       }
 
       final device = cubit.state.connectedDevice!;
+      final walletPolicy = widget.parameters?.walletPolicy;
+      if (walletPolicy is VerifyBitBoxWalletPolicyAddressRequest) {
+        cubit.showAddressVerification(walletPolicy.address);
+        return locator<VerifyWalletAddressBitBoxUsecase>().execute(
+          device: device,
+          wallet: walletPolicy.wallet,
+          address: walletPolicy.address,
+          keychain: walletPolicy.keychain,
+          index: walletPolicy.index,
+          signerId: walletPolicy.signerId,
+        );
+      }
       final address = widget.parameters?.address;
       final derivationPath = widget.parameters?.derivationPath;
       final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
@@ -380,6 +412,15 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       }
 
       final device = cubit.state.connectedDevice!;
+      final walletPolicy = widget.parameters?.walletPolicy;
+      if (walletPolicy is SignBitBoxWalletPolicyRequest) {
+        return locator<SignWalletPsbtBitBoxUsecase>().execute(
+          device: device,
+          wallet: walletPolicy.wallet,
+          signerId: walletPolicy.signerId,
+          psbt: walletPolicy.psbt,
+        );
+      }
       final psbt = widget.parameters?.psbt;
       final derivationPath = widget.parameters?.derivationPath;
       final scriptType = widget.parameters?.scriptType ?? ScriptType.bip84;
@@ -397,6 +438,27 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         psbt: psbt,
         derivationPath: derivationPath,
         scriptType: scriptType,
+      );
+    });
+  }
+
+  Future<void> _executeRegisterWalletPolicy(BitBoxOperationCubit cubit) async {
+    await cubit.executeOperation(() async {
+      if (await _ensureDeviceReady(cubit) case Err(:final failure)) {
+        return Err(failure);
+      }
+      final request = widget.parameters?.walletPolicy;
+      if (request is! RegisterBitBoxWalletPolicyRequest) {
+        return const Err(
+          InvalidParametersBitBoxFailure(
+            'registration requested without wallet policy',
+          ),
+        );
+      }
+      return locator<RegisterWalletPolicyBitBoxUsecase>().execute(
+        device: cubit.state.connectedDevice!,
+        wallet: request.wallet,
+        signerId: request.signerId,
       );
     });
   }
@@ -442,6 +504,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       }
 
       final device = cubit.state.connectedDevice!;
+
+      if (widget.parameters?.accountKey case final request?) {
+        return locator<GetBitBoxAccountKeyUsecase>().execute(
+          device: device,
+          derivationPath: request.derivationPath,
+          isTestnet: request.isTestnet,
+        );
+      }
 
       return locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
         device: device,

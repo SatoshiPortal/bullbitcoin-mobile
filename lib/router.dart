@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
@@ -26,18 +28,21 @@ import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/psbt_signing/ui/psbt_signing_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
+import 'package:bb_mobile/features/send/public/send_pending_transactions_contribution.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
@@ -63,6 +68,7 @@ class AppRouter {
     // error-reporting scope (consent-gated) rather than perf tracing.
     observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
     routes: [
+      GoRoute(path: '/', redirect: (_, _) => WalletRoute.walletHome.path),
       ShellRoute(
         notifyRootObserver: true,
         builder: (context, state, child) {
@@ -154,13 +160,43 @@ class AppRouter {
             ),
           );
         },
-        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
+        routes: [
+          WalletRouter.walletHomeRoute(
+            featureWarningsBuilder: (context, wallets) =>
+                BullVaultHomeContribution(wallets: wallets),
+          ),
+          ...ExchangeRouter.routes,
+        ],
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,
-      WalletRouter.walletDetailRoute,
+      WalletRouter.walletDetailRoute(
+        featureSliverBuilder: (context, wallet) => wallet.isBitcoin
+            ? SendPendingTransactionsContribution(
+                walletId: wallet.id,
+                walletRefreshes: context
+                    .read<WalletBloc>()
+                    .stream
+                    .map((state) => state.isRefreshing)
+                    .distinct()
+                    .where((isRefreshing) => !isRefreshing)
+                    .map((_) {}),
+              )
+            : const SliverToBoxAdapter(),
+      ),
       ConsolidationRouter.route,
-      SettingsRouter.route,
+      SettingsRouter.route(
+        walletDetailsActionsBuilder: (context, wallet) => [
+          BullVaultWalletSettingsContribution(wallet: wallet),
+        ],
+        walletDeletionGuard: (walletId) async =>
+            switch (await locator<BullVaultFacade>().canDeleteWallet(
+              walletId,
+            )) {
+              Ok(:final value) => value,
+              Err() => false,
+            },
+      ),
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
@@ -177,7 +213,9 @@ class AppRouter {
       ImportWatchOnlyRouter.route,
       BroadcastSignedTxRouter.route,
       PsbtRouterConfig.route,
+      PsbtSigningRouter.route,
       ImportWalletRouter.route,
+      ...BullVaultRouter.routes,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,

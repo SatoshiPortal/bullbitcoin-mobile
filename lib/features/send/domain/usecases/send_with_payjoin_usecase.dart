@@ -7,8 +7,10 @@ import 'package:primitives/primitives.dart';
 
 class SendWithPayjoinUsecase {
   final PayjoinSender _sender;
+  final PayjoinSessions _sessions;
+  final PayjoinLifecycle _lifecycle;
 
-  const SendWithPayjoinUsecase(this._sender);
+  const SendWithPayjoinUsecase(this._sender, this._sessions, this._lifecycle);
 
   @useResult
   Future<core.Result<PayjoinSenderSession, SendFailure>> execute({
@@ -20,6 +22,38 @@ class SendWithPayjoinUsecase {
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
+    // A previous start can have succeeded before its caller lost the result.
+    // The persisted session is authoritative, including terminal outcomes.
+    switch (await _sessions.byId(bip21)) {
+      case Ok(value: final PayjoinSenderSession session):
+        if (session.walletId != walletId ||
+            session.isTestnet != isTestnet ||
+            session.amountSat != amountSat) {
+          return const core.Err(SendPendingTransactionChangedFailure());
+        }
+        if (session.isExpired) break;
+        if (session.isCompleted || session.isAborted) return core.Ok(session);
+        // Persistence precedes publication, so a failed start may have left
+        // a session without its polling/fallback workers.
+        if (await _lifecycle.resume() case Err()) {
+          return const core.Err(SendTransactionConfirmationFailure());
+        }
+        switch (await _sessions.byId(bip21)) {
+          case Ok(value: final PayjoinSenderSession resumed)
+              when resumed.walletId == walletId &&
+                  resumed.isTestnet == isTestnet &&
+                  resumed.amountSat == amountSat:
+            return core.Ok(resumed);
+          case _:
+            return const core.Err(SendPersistenceFailure());
+        }
+      case Ok(value: null):
+        break;
+      case Ok():
+        return const core.Err(SendPendingTransactionChangedFailure());
+      case Err():
+        return const core.Err(SendPersistenceFailure());
+    }
     final result = await _sender.start(
       StartPayjoinSender(
         walletId: walletId,

@@ -4100,10 +4100,6 @@
   "@bitboxActionImportWalletProcessingSubtext": {
     "description": "Processing subtext for import wallet"
   },
-  "psbtFlowDone": "من انجام دادم",
-  "@psbtFlowDone": {
-    "description": "Button to complete psbt flow signing process"
-  },
   "testBackupRecoverWallet": "بازیابی کیف پول",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"

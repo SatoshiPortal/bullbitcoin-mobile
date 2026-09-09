@@ -427,7 +427,7 @@ m.Widget bullPasteInputUseCase(m.BuildContext context) {
     context,
     m.SizedBox(
       width: 360,
-      child: BullPasteInput(text: '', onChanged: (_) {}),
+      child: BullPasteInput(text: '', hint: 'Paste text', onChanged: (_) {}),
     ),
   );
 }

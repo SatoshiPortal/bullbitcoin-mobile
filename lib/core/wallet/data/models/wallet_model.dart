@@ -8,8 +8,7 @@ part 'wallet_model.freezed.dart';
 sealed class WalletModel with _$WalletModel {
   const factory WalletModel.publicBdk({
     required String id,
-    required String externalDescriptor,
-    required String internalDescriptor,
+    required String descriptor,
     required bool isTestnet,
   }) = PublicBdkWalletModel;
   const factory WalletModel.publicLwk({
@@ -22,6 +21,7 @@ sealed class WalletModel with _$WalletModel {
     required ScriptType scriptType,
     required String mnemonic,
     String? passphrase,
+    required int account,
     required bool isTestnet,
   }) = PrivateBdkWalletModel;
   const factory WalletModel.privateLwk({
@@ -45,14 +45,13 @@ sealed class WalletModel with _$WalletModel {
     if (metadata.isBitcoin) {
       return WalletModel.publicBdk(
         id: metadata.id,
-        externalDescriptor: metadata.externalPublicDescriptor,
-        internalDescriptor: metadata.internalPublicDescriptor,
+        descriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
       );
     } else {
       return WalletModel.publicLwk(
         id: metadata.id,
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        combinedCtDescriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
       );
     }

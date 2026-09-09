@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -104,40 +105,56 @@ void main() {
     expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
   });
 
-  test('rejects hardware wallets before creating an order', () async {
-    when(() => getWallet.execute('wallet-1')).thenAnswer(
-      (_) async => _wallet(
-        Network.liquidTestnet,
-        signerDevice: SignerDeviceEntity.ledgerNanoX,
-      ),
-    );
+  for (final hardware in [true, false]) {
+    test(
+      'rejects unsupported swap signing before creating an order (hardware: $hardware)',
+      () async {
+        when(() => getWallet.execute('wallet-1')).thenAnswer(
+          (_) async => hardware
+              ? _wallet(
+                  Network.liquidTestnet,
+                  signerDevice: SignerDeviceEntity.ledgerNanoX,
+                )
+              : _wallet(
+                  Network.bitcoinTestnet,
+                ).copyWith(scriptType: null, publicDescriptor: 'tr(...)'),
+        );
 
-    final result = await usecase.execute(
-      walletId: 'wallet-1',
-      destinationAddress: 'tb1-destination',
-      destinationIsTestnet: true,
-      amountSat: 100000,
-      isInAmountFixed: false,
-      quotedCounterpartAmountSat: BigInt.from(101000),
-    );
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          destinationAddress: 'tb1-destination',
+          destinationIsTestnet: true,
+          amountSat: 100000,
+          isInAmountFixed: false,
+          quotedCounterpartAmountSat: BigInt.from(101000),
+        );
 
-    expect(result, isA<Err<OrderSwapRecord, SendFailure>>());
-    verifyNever(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+        expect(result, isA<Err<OrderSwapRecord, SendFailure>>());
+        verifyNever(
+          () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+        );
+        verifyZeroInteractions(swapFacade);
+      },
     );
-  });
+  }
 }
 
 Wallet _wallet(Network network, {SignerDeviceEntity? signerDevice}) => Wallet(
   origin: 'wallet-1',
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/${network.coinType}'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: signerDevice,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: signerDevice,
+  publicDescriptor: '',
   balanceSat: BigInt.from(200000),
 );
 

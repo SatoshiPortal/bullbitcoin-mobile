@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/sign_sell_payin_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockBitcoinSigningPort extends Mock implements BitcoinSigningPort {}
 
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
@@ -16,15 +16,15 @@ class _MockLiquidWalletRepository extends Mock
 const _rawReason = 'BdkError: cannot sign wpkh([aabbccdd]xpub6Secret/0/*)';
 
 void main() {
-  late _MockBitcoinWalletRepository bitcoin;
+  late _MockBitcoinSigningPort bitcoin;
   late _MockLiquidWalletRepository liquid;
   late SignSellPayinUsecase usecase;
 
   setUp(() {
-    bitcoin = _MockBitcoinWalletRepository();
+    bitcoin = _MockBitcoinSigningPort();
     liquid = _MockLiquidWalletRepository();
     usecase = SignSellPayinUsecase(
-      bitcoinWalletRepository: bitcoin,
+      bitcoinSigningPort: bitcoin,
       liquidWalletRepository: liquid,
     );
   });
@@ -33,9 +33,14 @@ void main() {
     test('returns the signed psbt with its vsize', () async {
       when(
         () => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 'signed-psbt');
+      ).thenAnswer(
+        (_) async => const Ok((psbt: 'signed-psbt', isFinalized: true)),
+      );
       when(
-        () => bitcoin.getTxSize(psbt: any(named: 'psbt')),
+        () => bitcoin.getTxSize(
+          psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
+        ),
       ).thenAnswer((_) async => 110);
 
       final result = await usecase.bitcoin(
@@ -54,7 +59,14 @@ void main() {
       () async {
         when(
           () => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')),
-        ).thenThrow(Exception(_rawReason));
+        ).thenAnswer(
+          (_) async => const Err(
+            BitcoinSigningFailure(
+              BitcoinSigningFailureKind.unexpected,
+              _rawReason,
+            ),
+          ),
+        );
 
         final result = await usecase.bitcoin(
           psbt: 'unsigned',

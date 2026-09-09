@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
@@ -7,6 +8,8 @@ import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_u
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
@@ -83,6 +86,43 @@ void main() {
   });
 
   tearDown(() => cubit.close());
+
+  test(
+    'keeps the canonical seed of a protected wallet out of old seeds',
+    () async {
+      final wallet = Wallet(
+        origin: 'protected-wallet',
+        network: Network.bitcoinTestnet,
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: 'cafebabe',
+            xpubFingerprint: '12345678',
+            xpub: 'xpub',
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ).copyWith(localSeedFingerprint: aSeed.masterFingerprint),
+        ],
+        scriptType: null,
+        publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
+        balanceSat: BigInt.zero,
+      );
+      when(() => getWalletsUsecase.execute()).thenAnswer((_) async => [wallet]);
+      await cubit.close();
+      cubit = AllSeedViewCubit(
+        getAllSeedsUsecase: getAllSeedsUsecase,
+        getWalletsUsecase: getWalletsUsecase,
+        deleteSeedUsecase: _MockDeleteSeedUsecase(),
+        processAndSeparateSeedsUsecase: ProcessAndSeparateSeedsUsecase(),
+        getSwapMasterKeyUsecase: getSwapMasterKeyUsecase,
+        deleteSwapMasterKeyUsecase: _MockDeleteSwapMasterKeyUsecase(),
+      );
+
+      await cubit.unlock(issueGrant());
+
+      expect(cubit.state.existingWallets, [aSeed]);
+      expect(cubit.state.oldWallets, isEmpty);
+    },
+  );
 
   group('AllSeedViewCubit — re-authentication gate (audit)', () {
     test('audit reproducer: seeds are never read from secure storage before '

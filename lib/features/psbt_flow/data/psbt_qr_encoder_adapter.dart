@@ -10,6 +10,15 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 /// The data boundary of the flow: the only place that catches what the BBQr and
 /// UR encoders throw, and the only place that names their exception types.
 class PsbtQrEncoderAdapter implements PsbtQrEncoderPort {
+  final List<String> Function(String psbt, {required int fragmentLength})
+  _generatePsbtUr;
+
+  PsbtQrEncoderAdapter({
+    List<String> Function(String psbt, {required int fragmentLength})
+        urGenerator =
+        UrQrGenerator.generatePsbtUr,
+  }) : _generatePsbtUr = urGenerator;
+
   @override
   Future<Result<List<String>, PsbtFlowFailure>> encode({
     required String psbt,
@@ -19,10 +28,7 @@ class PsbtQrEncoderAdapter implements PsbtQrEncoderPort {
     try {
       final parts = switch (qrType) {
         QrType.bbqr => await Bbqr.splitPsbt(psbt),
-        QrType.urqr => UrQrGenerator.generatePsbtUr(
-          psbt,
-          fragmentLength: fragmentLength,
-        ),
+        QrType.urqr => _generateUrParts(psbt, fragmentLength),
         // The caller returns before reaching here for a device that does not
         // sign over QR; present so the switch stays exhaustive.
         QrType.none => const <String>[],
@@ -58,6 +64,15 @@ class PsbtQrEncoderAdapter implements PsbtQrEncoderPort {
         trace: st,
       );
       return Err(PsbtFlowQrEncodingFailure(e.toString()));
+    }
+  }
+
+  List<String> _generateUrParts(String psbt, int fragmentLength) {
+    try {
+      return _generatePsbtUr(psbt, fragmentLength: fragmentLength);
+    } on UrSequenceLimitExceeded {
+      if (fragmentLength >= 200) rethrow;
+      return _generatePsbtUr(psbt, fragmentLength: 200);
     }
   }
 }

@@ -10,15 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// into the translated string.
 const _rawReason = 'BdkException: secret-detail xprv9s21ZrQH143K3';
 
-/// One instance of every [SendFailure] the send flow can surface, including the
-/// field combinations that select a different l10n arm (`isUnsupportedQr`,
-/// min vs max bound, `isBroadcastFailure`, known vs unknown swap networks).
-///
-/// The `sealed` switch in `toTranslated` already gives compile-time coverage:
-/// add a variant and the switch stops compiling. What the compiler cannot check
-/// is that each arm resolves to a real, non-empty `.arb` value and that no arm
-/// echoes the raw reason — that is what this table locks in.
-final _everyFailure = <SendFailure>[
+/// Representative failures and field combinations that select distinct messages.
+final _failureCases = <SendFailure>[
   const SendInvalidPaymentRequestFailure(logMessage: _rawReason),
   const SendInvalidPaymentRequestFailure(
     isUnsupportedQr: true,
@@ -26,7 +19,7 @@ final _everyFailure = <SendFailure>[
   ),
   const SendInvoiceExpiredFailure(_rawReason),
   const SendInvoiceAmountRequiredFailure(_rawReason),
-  const SendHardwareWalletFailure(_rawReason),
+  const SendSwapWalletFailure(_rawReason),
   const SendInsufficientBalanceFailure(_rawReason),
   const SendInsufficientFundsForFeesFailure(_rawReason),
   const SendSelectedCoinsUnavailableFailure(_rawReason),
@@ -87,7 +80,7 @@ Future<String> _translate(
 
 void main() {
   group('SendFailureL10n.toTranslated', () {
-    for (final failure in _everyFailure) {
+    for (final failure in _failureCases) {
       testWidgets('${failure.runtimeType} resolves to a user-safe message', (
         tester,
       ) async {
@@ -189,7 +182,7 @@ void main() {
     });
   });
 
-  // The table above proves every variant resolves to *something* safe. These
+  // The table above checks safe translations. These
   // pin the exact wording of the coin-selection messages in both shipped
   // locales, so a careless .arb edit is caught rather than silently reworded.
   testWidgets('selected coin failures use the English messages', (

@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -36,14 +37,17 @@ final _testnetWallet = Wallet(
   label: 'Secure Bitcoin',
   network: Network.bitcoinTestnet,
   isDefault: true,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      xpub: 'tpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'tpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'desc',
   balanceSat: BigInt.zero,
 );
 

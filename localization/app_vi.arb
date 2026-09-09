@@ -2518,7 +2518,6 @@
   "psbtImDone": "Tôi đã xong",
   "psbtFlowSignTransaction": "Ký giao dịch",
   "psbtFlowInstructions": "Hướng dẫn",
-  "psbtFlowDone": "Tôi đã xong",
   "psbtFlowSignViaNfc": "Ký qua NFC",
   "psbtFlowSignViaNfcSheetTitle": "Chạm thiết bị {deviceName} của bạn để gửi PSBT qua NFC",
   "psbtFlowPartProgress": "Phần {current} trên {total}",

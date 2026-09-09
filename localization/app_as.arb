@@ -5226,6 +5226,19 @@
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
   },
+  "psbtFlowError": "ত্ৰুটি: {error}",
+  "@psbtFlowError": {
+    "description": "Error message in psbt flow",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "প্ৰদৰ্শন কৰিবলৈ কোনো অংশ নাই",
+  "@psbtFlowNoPartsToDisplay": {
+    "description": "Message when there are no QR code parts to show"
+  },
   "psbtFlowPartProgress": "অংশ {current} / {total}",
   "@psbtFlowPartProgress": {
     "description": "Progress indicator for animated QR code parts",

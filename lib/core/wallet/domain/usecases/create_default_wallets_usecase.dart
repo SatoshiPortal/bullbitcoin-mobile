@@ -53,22 +53,24 @@ class CreateDefaultWalletsUsecase {
 
       final created = <Wallet>[];
       try {
-        if (!hasBitcoin) {
+        // Bitcoin creation may reuse an imported descriptor wallet. Do it
+        // last so rollback contains only wallets created by this operation.
+        if (!hasLiquid) {
           created.add(
             await _wallet.createWallet(
               seed: seed,
-              network: bitcoinNetwork,
+              network: liquidNetwork,
               scriptType: scriptType,
               isDefault: true,
               birthday: birthday,
             ),
           );
         }
-        if (!hasLiquid) {
+        if (!hasBitcoin) {
           created.add(
             await _wallet.createWallet(
               seed: seed,
-              network: liquidNetwork,
+              network: bitcoinNetwork,
               scriptType: scriptType,
               isDefault: true,
               birthday: birthday,

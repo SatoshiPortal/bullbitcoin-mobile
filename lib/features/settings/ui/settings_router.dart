@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -19,7 +21,14 @@ import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_export_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_registration_screen.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
+import 'package:bb_mobile/features/settings/public/wallet_registration_request.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/account_info_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/app_settings_screen.dart';
@@ -51,7 +60,10 @@ import 'package:bull_logs/bull_logs.dart';
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
-  static final route = GoRoute(
+  static GoRoute route({
+    WalletDetailsActionsBuilder? walletDetailsActionsBuilder,
+    WalletDeletionGuard? walletDeletionGuard,
+  }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
@@ -148,6 +160,14 @@ class SettingsRouter {
         builder: (context, state) => const WalletSettingsScreen(),
       ),
       GoRoute(
+        name: SettingsRoute.signingKeyExport.name,
+        path: SettingsRoute.signingKeyExport.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<SigningKeyExportCubit>()..load(),
+          child: const SigningKeyExportScreen(),
+        ),
+      ),
+      GoRoute(
         name: SettingsRoute.payjoinSettings.name,
         path: SettingsRoute.payjoinSettings.path,
         builder: (context, state) => const PayjoinSettingsScreen(),
@@ -195,31 +215,101 @@ class SettingsRouter {
         name: SettingsRoute.walletDetailsSelectedWallet.name,
         builder: (context, state) {
           final walletId = state.pathParameters['walletId']!;
-          return MultiBlocListener(
-            listeners: [
-              BlocListener<WalletBloc, WalletState>(
-                listenWhen: (previous, current) {
-                  return previous.wallets.length > current.wallets.length;
-                },
-                listener: (context, state) {
-                  context.goNamed(WalletRoute.walletHome.name);
-                },
-              ),
-              BlocListener<WalletBloc, WalletState>(
-                listenWhen: (previous, current) {
-                  // Listen for wallet deletion error to show a sheet.
-                  return previous.walletDeletionError == null &&
-                      current.walletDeletionError != null;
-                },
-                listener: (context, state) {
-                  WalletDeletionFailedSheet.show(
+          final wallet = context
+              .read<WalletBloc>()
+              .state
+              .wallets
+              .where((wallet) => wallet.id == walletId)
+              .firstOrNull;
+          return BlocProvider(
+            create: (_) {
+              final cubit = locator<WalletDetailsCubit>();
+              if (wallet?.isBitcoin ?? false) {
+                cubit.loadPolicy(walletId);
+              }
+              return cubit;
+            },
+            child: MultiBlocListener(
+              listeners: [
+                BlocListener<WalletDetailsCubit, WalletDetailsState>(
+                  listenWhen: (previous, current) =>
+                      previous.updatedWallet != current.updatedWallet,
+                  listener: (context, state) {
+                    if (state.updatedWallet case final wallet?) {
+                      context.read<WalletBloc>().add(WalletUpdated(wallet));
+                    }
+                  },
+                ),
+                BlocListener<WalletDetailsCubit, WalletDetailsState>(
+                  listenWhen: (previous, current) =>
+                      previous.signerUpdateFailure !=
+                          current.signerUpdateFailure &&
+                      current.signerUpdateFailure != null,
+                  listener: (context, state) => SnackBarUtils.showSnackBar(
                     context,
-                    error: state.walletDeletionError!,
-                  );
-                },
+                    state.signerUpdateFailure!.toTranslated(context),
+                  ),
+                ),
+                BlocListener<WalletBloc, WalletState>(
+                  listenWhen: (previous, current) {
+                    return previous.wallets.length > current.wallets.length;
+                  },
+                  listener: (context, state) {
+                    context.goNamed(WalletRoute.walletHome.name);
+                  },
+                ),
+                BlocListener<WalletBloc, WalletState>(
+                  listenWhen: (previous, current) {
+                    // Listen for wallet deletion error to show a sheet.
+                    return previous.walletDeletionError == null &&
+                        current.walletDeletionError != null;
+                  },
+                  listener: (context, state) {
+                    WalletDeletionFailedSheet.show(
+                      context,
+                      error: state.walletDeletionError!,
+                    );
+                  },
+                ),
+              ],
+              child: WalletDetailsScreen(
+                walletId: walletId,
+                featureActionsBuilder: walletDetailsActionsBuilder,
+                deletionGuard: walletDeletionGuard,
               ),
-            ],
-            child: WalletDetailsScreen(walletId: walletId),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: SettingsRoute.walletRegistration.path,
+        name: SettingsRoute.walletRegistration.name,
+        builder: (context, state) {
+          final walletId = state.pathParameters['walletId']!;
+          final request = state.extra is WalletRegistrationRequest
+              ? state.extra! as WalletRegistrationRequest
+              : null;
+          final wallet =
+              request?.wallet ??
+              (state.extra is Wallet
+                  ? state.extra! as Wallet
+                  : context
+                        .read<WalletBloc>()
+                        .state
+                        .wallets
+                        .where((wallet) => wallet.id == walletId)
+                        .firstOrNull);
+          if (wallet == null) {
+            return const WalletRegistrationWalletNotFoundScreen();
+          }
+          return BlocProvider(
+            create: (_) =>
+                locator<WalletRegistrationCubit>()
+                  ..load(wallet, signerId: request?.signerId),
+            child: WalletRegistrationScreen(
+              wallet: wallet,
+              signerId: request?.signerId,
+            ),
           );
         },
       ),

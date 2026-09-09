@@ -21,6 +21,8 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'bdk_wallet_test_fixture.dart';
+
 // The canonical BIP39 test mnemonic ("abandon" x11 + "about"). Public
 // knowledge, no funds, safe to hardcode.
 const _testMnemonic =
@@ -141,8 +143,10 @@ void main() {
     walletModel =
         WalletModel.publicBdk(
               id: 'bdk-self-send-test',
-              externalDescriptor: external.toString(),
-              internalDescriptor: internal.toString(),
+              descriptor: twoPathDescriptor(
+                external.toString(),
+                internal.toString(),
+              ),
               isTestnet: true,
             )
             as PublicBdkWalletModel;
