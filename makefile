@@ -71,6 +71,7 @@ build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit --delete-conflicting-outputs
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
+	@(cd packages/boltz_swaps && fvm dart run build_runner build --force-jit --delete-conflicting-outputs)
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"

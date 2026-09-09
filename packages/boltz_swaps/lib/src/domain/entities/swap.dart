@@ -1,0 +1,453 @@
+import 'package:bolt11_decoder/bolt11_decoder.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:boltz_swaps/src/util.dart';
+
+part 'swap.freezed.dart';
+
+/// The network environment a swap lives on. Mirrors the app's settings
+/// environment; mapped at the app boundary.
+enum Environment {
+  mainnet,
+  testnet;
+
+  factory Environment.fromName(String name) {
+    return Environment.values.firstWhere(
+      (environment) => environment.name == name,
+    );
+  }
+
+  bool get isMainnet => this == Environment.mainnet;
+  bool get isTestnet => this == Environment.testnet;
+}
+
+/// Clash-free alias for app code that also imports another `Environment`.
+typedef SwapEnvironment = Environment;
+
+enum SwapType {
+  lightningToBitcoin,
+  lightningToLiquid,
+  liquidToLightning,
+  bitcoinToLightning,
+  liquidToBitcoin,
+  bitcoinToLiquid,
+}
+
+extension SwapTypeX on SwapType {
+  bool get isReverse =>
+      this == SwapType.lightningToBitcoin || this == SwapType.lightningToLiquid;
+
+  bool get isSubmarine =>
+      this == SwapType.bitcoinToLightning || this == SwapType.liquidToLightning;
+
+  bool get isChain =>
+      this == SwapType.bitcoinToLiquid || this == SwapType.liquidToBitcoin;
+}
+
+enum SwapStatus {
+  pending,
+  paid,
+  claimable,
+  refundable,
+  canCoop,
+  completed,
+  refunded,
+  expired,
+  failed;
+
+  /// Done states: no further watcher action will ever run for this swap.
+  bool get isTerminal =>
+      this == SwapStatus.completed ||
+      this == SwapStatus.refunded ||
+      this == SwapStatus.expired ||
+      this == SwapStatus.failed;
+}
+
+@freezed
+abstract class SwapFees with _$SwapFees {
+  const factory SwapFees({
+    double? boltzPercent,
+    int? boltzFee,
+    int? lockupFee,
+    int? claimFee,
+    int? refundFee,
+    int? serverNetworkFees,
+  }) = _SwapFees;
+
+  const SwapFees._();
+
+  int totalFees(int? amount) {
+    int total = 0;
+    // Always use percentage-based calculation for Boltz fees to ensure proper rounding
+    if (boltzPercent != null) {
+      final boltzFee = boltzFeeFromPercent(amount ?? 0);
+      total += boltzFee;
+    } else if (boltzFee != null) {
+      total += boltzFee!;
+    }
+    if (lockupFee != null) total += lockupFee!;
+    // The user's spend of the locked output is one leg: a claim on success or
+    // a refund on failure — never both. When the refund happened, its actual
+    // fee replaces the claim estimate.
+    if (refundFee != null) {
+      total += refundFee!;
+    } else if (claimFee != null) {
+      total += claimFee!;
+    }
+    if (serverNetworkFees != null) total += serverNetworkFees!;
+    return total;
+  }
+
+  int totalFeesMinusLockup(int? amount) {
+    return totalFees(amount) - (lockupFee ?? 0);
+  }
+
+  int boltzFeeFromPercent(int amount) {
+    if (boltzPercent == null) {
+      return 0;
+    }
+    return ((amount * boltzPercent!) / 100).ceil();
+  }
+
+  double boltzPercentFromFees(int amount) {
+    if (boltzFee == null) {
+      return 0;
+    }
+    return double.parse(((boltzFee! / amount) * 100).toStringAsFixed(2));
+  }
+
+  double totalFeeAsPercentOfAmount(int amount) {
+    final fees = totalFees(amount);
+    return calculatePercentage(amount, fees);
+  }
+
+  int calculateSwapAmountFromReceivableAmount(int receivableAmount) {
+    final claimFee = this.claimFee ?? 0;
+    final serverNetworkFees = this.serverNetworkFees ?? 0;
+
+    if (boltzPercent == null) {
+      final boltzFee = this.boltzFee ?? 0;
+      return receivableAmount + boltzFee + claimFee + serverNetworkFees;
+    }
+
+    final baseAmount = receivableAmount + claimFee + serverNetworkFees;
+    final rate = 1.0 - (boltzPercent! / 100.0);
+
+    int paymentAmount = (baseAmount / rate).ceil();
+
+    int calculatedReceivable =
+        paymentAmount -
+        boltzFeeFromPercent(paymentAmount) -
+        claimFee -
+        serverNetworkFees;
+
+    while (calculatedReceivable < receivableAmount) {
+      paymentAmount++;
+      calculatedReceivable =
+          paymentAmount -
+          boltzFeeFromPercent(paymentAmount) -
+          claimFee -
+          serverNetworkFees;
+    }
+
+    return paymentAmount;
+  }
+}
+
+@freezed
+sealed class Swap with _$Swap {
+  const factory Swap.lnReceive({
+    required String id,
+    required int keyIndex,
+    required SwapType type,
+    required SwapStatus status,
+    required Environment environment,
+    required DateTime creationTime,
+    required String receiveWalletId,
+    required String invoice,
+    String? receiveAddress,
+    String? receiveTxid,
+    @Default(false) bool wasDirectPayment,
+    SwapFees? fees,
+    DateTime? completionTime,
+    // Reconstructed by the restore/rescue flow rather than created in-app.
+    //
+    // For a recovered swap the following are NOT trustworthy — they aren't in
+    // the Boltz restore response and weren't produced by our own creation flow
+    // — so the UI hides them rather than show a guess:
+    //  - the counterpart wallet: the send/receive side the user did NOT pick is
+    //    a default-of-chain guess (rescue only asks for one wallet);
+    //  - `fees.lockupFee`: the original on-chain lockup tx fee (paid on the old
+    //    device, unknowable here);
+    //  - `fees.serverNetworkFees`: Boltz's server miner fee from the original
+    //    quote (only a *current* estimate is fetchable, not what was paid).
+    //
+    // What IS trustworthy: the locked amount, the actual received amount
+    // (on-chain), the Boltz % service fee (the rate is stable, so we recompute
+    // it from the live fees), the claim we performed + its fee, status, dates.
+    // TODO: recover the uncertain fields accurately later — e.g. query Boltz
+    // for the historical swap, and read the original lockup tx fee on-chain.
+    @Default(false) bool recovered,
+  }) = LnReceiveSwap;
+
+  const factory Swap.lnSend({
+    required String id,
+    required int keyIndex,
+    required SwapType type,
+    required SwapStatus status,
+    required Environment environment,
+    required DateTime creationTime,
+    required String sendWalletId,
+    required String invoice,
+    required String paymentAddress,
+    required int paymentAmount,
+    String? sendTxid,
+    String? preimage,
+    String? refundAddress,
+    String? refundTxid,
+    SwapFees? fees,
+    DateTime? completionTime,
+    @Default(false) bool recovered,
+  }) = LnSendSwap;
+
+  const factory Swap.chain({
+    required String id,
+    required int keyIndex,
+    required SwapType type,
+    required SwapStatus status,
+    required Environment environment,
+    required DateTime creationTime,
+    required String sendWalletId,
+    required String paymentAddress,
+    required int paymentAmount,
+    String? sendTxid,
+    String? receiveWalletId,
+    String? receiveAddress,
+    String? receiveTxid,
+    String? refundAddress,
+    String? refundTxid,
+    SwapFees? fees,
+    DateTime? completionTime,
+    @Default(false) bool recovered,
+  }) = ChainSwap;
+
+  const Swap._();
+
+  bool get isLnReceiveSwap => this is LnReceiveSwap;
+  bool get isLnSendSwap => this is LnSendSwap;
+  bool get isChainSwap => this is ChainSwap;
+
+  bool get requiresAction => switch (this) {
+    LnReceiveSwap(:final status) => status == SwapStatus.claimable,
+    LnSendSwap(:final status) =>
+      status == SwapStatus.canCoop ||
+          status == SwapStatus.failed ||
+          status == SwapStatus.refundable,
+    ChainSwap(:final status) =>
+      status == SwapStatus.claimable || status == SwapStatus.refundable,
+  };
+
+  String? get txId => switch (this) {
+    LnReceiveSwap(:final receiveTxid) => receiveTxid,
+    LnSendSwap(:final sendTxid) => sendTxid,
+    ChainSwap(:final sendTxid) => sendTxid,
+  };
+
+  String get abbreviatedReceiveTxid => switch (this) {
+    final LnReceiveSwap swap => StringFormatting.truncateMiddle(
+      swap.receiveTxid ?? '',
+    ),
+    final ChainSwap swap => StringFormatting.truncateMiddle(
+      swap.receiveTxid ?? '',
+    ),
+    _ => '',
+  };
+
+  String get abbreviatedInvoice => switch (this) {
+    final LnReceiveSwap swap => StringFormatting.truncateMiddle(swap.invoice),
+    final LnSendSwap swap => StringFormatting.truncateMiddle(swap.invoice),
+    _ => '',
+  };
+
+  @override
+  String get id => switch (this) {
+    LnReceiveSwap(:final id) => id,
+    LnSendSwap(:final id) => id,
+    ChainSwap(:final id) => id,
+  };
+
+  @override
+  SwapType get type => switch (this) {
+    LnReceiveSwap(:final type) => type,
+    LnSendSwap(:final type) => type,
+    ChainSwap(:final type) => type,
+  };
+
+  @override
+  SwapStatus get status => switch (this) {
+    LnReceiveSwap(:final status) => status,
+    LnSendSwap(:final status) => status,
+    ChainSwap(:final status) => status,
+  };
+
+  @override
+  SwapFees? get fees => switch (this) {
+    LnReceiveSwap(:final fees) => fees,
+    LnSendSwap(:final fees) => fees,
+    ChainSwap(:final fees) => fees,
+  };
+
+  int get amountSat => switch (this) {
+    LnReceiveSwap(:final invoice) => _invoiceAmountSat(invoice),
+    LnSendSwap(:final invoice) => _invoiceAmountSat(invoice),
+    ChainSwap(:final paymentAmount) => paymentAmount,
+  };
+
+  // Restored/rescued LN swaps can carry an empty invoice (Boltz's restore
+  // response doesn't return it), so parse defensively instead of crashing the
+  // bolt11 bech32 decoder ("separator '1' at invalid position: -1").
+  static int _invoiceAmountSat(String invoice) {
+    if (invoice.isEmpty) return 0;
+    try {
+      // Exact conversion without package:decimal — the BTC amount as a
+      // rational, sats = numerator * 10^8 / denominator, truncated toward
+      // zero exactly like the previous Decimal.toBigInt() call.
+      final amount = Bolt11PaymentRequest(invoice).amount.toRational();
+      return ((amount.numerator * ConversionConstants.satsAmountOfOneBitcoin) ~/
+              amount.denominator)
+          .toInt();
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  String? get sendTxId => switch (this) {
+    LnReceiveSwap() => null,
+    LnSendSwap(:final sendTxid) => sendTxid,
+    ChainSwap(:final sendTxid) => sendTxid,
+  };
+
+  String? get receiveTxId => switch (this) {
+    LnReceiveSwap(:final receiveTxid) => receiveTxid,
+    LnSendSwap() => null,
+    ChainSwap(:final receiveTxid) => receiveTxid,
+  };
+
+  String? get refundTxId => switch (this) {
+    LnReceiveSwap() => null,
+    LnSendSwap(:final refundTxid) => refundTxid,
+    ChainSwap(:final refundTxid) => refundTxid,
+  };
+
+  String get walletId => switch (this) {
+    LnReceiveSwap(:final receiveWalletId) => receiveWalletId,
+    LnSendSwap(:final sendWalletId) => sendWalletId,
+    ChainSwap(:final sendWalletId) => sendWalletId,
+  };
+
+  bool get swapInProgress =>
+      status == SwapStatus.paid ||
+      status == SwapStatus.canCoop ||
+      status == SwapStatus.claimable ||
+      status == SwapStatus.refundable;
+
+  bool get swapRefunded =>
+      status == SwapStatus.refunded ||
+      (status == SwapStatus.completed &&
+          ((this is ChainSwap && (this as ChainSwap).refundTxid != null) ||
+              (this is LnSendSwap && (this as LnSendSwap).refundTxid != null)));
+
+  bool get isChainSwapInternal =>
+      this is ChainSwap && (this as ChainSwap).receiveWalletId != null;
+
+  bool get isChainSwapExternal =>
+      this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
+
+  bool get swapCompleted => status == SwapStatus.completed;
+
+  bool get isBitcoin =>
+      [
+        SwapType.bitcoinToLightning,
+        SwapType.lightningToBitcoin,
+      ].contains(type) ||
+      (type == SwapType.liquidToBitcoin && isChainSwapInternal ||
+          type == SwapType.bitcoinToLiquid && !isChainSwapInternal);
+
+  bool get isLiquid => [
+    SwapType.liquidToLightning,
+    SwapType.lightningToLiquid,
+    SwapType.liquidToBitcoin,
+    SwapType.bitcoinToLiquid,
+  ].contains(type);
+  String? get receiveAddress => switch (this) {
+    LnReceiveSwap(:final receiveAddress) => receiveAddress,
+    ChainSwap(:final receiveAddress) => receiveAddress,
+    _ => null,
+  };
+
+  int? get receieveAmount => switch (this) {
+    ChainSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final totalSwapFees = fees.totalFeesMinusLockup(paymentAmount);
+      return paymentAmount - totalSwapFees;
+    }(),
+    LnSendSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      final totalSwapFees = fees.totalFeesMinusLockup(paymentAmount);
+      return paymentAmount - totalSwapFees;
+    }(),
+    LnReceiveSwap(:final invoice, :final fees) => () {
+      if (fees == null) return null;
+      final invoiceAmount = _invoiceAmountSat(invoice);
+      final totalFees = fees.totalFees(invoiceAmount);
+      return invoiceAmount - totalFees;
+    }(),
+  };
+
+  int? get sendAmount => switch (this) {
+    ChainSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      return paymentAmount;
+    }(),
+    LnSendSwap(:final paymentAmount, :final fees) => () {
+      if (fees == null) return null;
+      return paymentAmount;
+    }(),
+    LnReceiveSwap(:final invoice) => _invoiceAmountSat(invoice),
+  };
+}
+
+extension SwapFeePercent on Swap {
+  double getFeeAsPercentOfAmount() {
+    final fees = this.fees;
+    final amount = amountSat;
+    if (fees == null || amount == 0) return 0.0;
+    final totalFees = fees.totalFees(amount);
+    return calculatePercentage(amount, totalFees);
+  }
+
+  bool showFeeWarning() {
+    final feePercent = getFeeAsPercentOfAmount();
+    return feePercent > 5.0;
+  }
+}
+
+class SwapLimits {
+  final int min;
+  final int max;
+
+  const SwapLimits({required this.min, required this.max});
+}
+
+class Invoice {
+  final int sats;
+  final bool isExpired;
+  final String? magicBip21;
+  final String? description;
+
+  const Invoice({
+    required this.sats,
+    required this.isExpired,
+    this.magicBip21,
+    this.description,
+  });
+}

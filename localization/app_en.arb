@@ -14582,5 +14582,41 @@
   "sendErrorTransactionChanged": "The transaction details changed. Review the amount, destination, and fees, then confirm again.",
   "@sendErrorTransactionChanged": {
     "description": "Message shown when a transaction must be rebuilt because its details changed."
+  },
+  "swapServerTitle": "Swap server",
+  "@swapServerTitle": {
+    "description": "Bitcoin settings row: the user-configurable Boltz swap server"
+  },
+  "swapServerSubtitle": "The Boltz server used for trustless swaps. Leave empty for the default. Takes effect after restarting the app.",
+  "@swapServerSubtitle": {
+    "description": "Dialog helper text for the swap server setting"
+  },
+  "swapServerReset": "Reset to default",
+  "@swapServerReset": {
+    "description": "Button resetting the swap server to the default"
+  },
+  "swapsFailureMasterKeyUnavailable": "This wallet cannot restore swaps: no bitcoin seed is available to derive the swap key.",
+  "@swapsFailureMasterKeyUnavailable": {
+    "description": "Rescue failure: watch-only or hardware-only wallet"
+  },
+  "swapsFailureNotRestorable": "This swap could not be rebuilt from the server. Contact support with your swap ID.",
+  "@swapsFailureNotRestorable": {
+    "description": "Rescue failure: restore endpoint could not rebuild the swap"
+  },
+  "swapsFailureRefundNotFinal": "The refund is not spendable yet (timelock). Try again later.",
+  "@swapsFailureRefundNotFinal": {
+    "description": "Rescue failure: refund timelock not passed"
+  },
+  "swapsFailureNetwork": "Could not reach any server. Check your connection and try again.",
+  "@swapsFailureNetwork": {
+    "description": "Rescue failure: no server reachable"
+  },
+  "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
+  "@swapsFailureUnexpected": {
+    "description": "Rescue failure: generic catch-all, never shows raw details"
+  },
+  "swapServerInvalid": "Enter a valid server address (e.g. api.boltz.exchange/v2)",
+  "@swapServerInvalid": {
+    "description": "Validation error when the swap server URL is not a valid host"
   }
 }

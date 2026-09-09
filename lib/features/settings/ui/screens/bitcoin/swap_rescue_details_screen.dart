@@ -1,10 +1,11 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +31,10 @@ class SwapRescueDetailsScreen extends StatelessWidget {
               context.pop();
             } else if (state.status == SwapRescueStatus.error &&
                 state.error != null) {
-              SnackBarUtils.showSnackBar(context, state.error!);
+              SnackBarUtils.showSnackBar(
+                context,
+                state.error!.toTranslated(context),
+              );
             }
           },
           builder: (context, state) {

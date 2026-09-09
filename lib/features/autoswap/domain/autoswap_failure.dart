@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/failures/failure.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/features/autoswap/domain/auto_swap.dart';
 
 sealed class AutoswapFailure extends Failure {
   const AutoswapFailure([super.logMessage]);
