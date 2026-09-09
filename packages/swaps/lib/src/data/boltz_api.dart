@@ -379,6 +379,7 @@ class BoltzDatasource {
     required String claimAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
@@ -387,6 +388,7 @@ class BoltzDatasource {
         outAddress: claimAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -459,6 +461,7 @@ class BoltzDatasource {
     required String claimAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
@@ -467,6 +470,7 @@ class BoltzDatasource {
         outAddress: claimAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -481,13 +485,17 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
       return broadcastViaBoltz
           ? btcLnSwap.broadcastBoltz(signedHex: signedTxHex)
-          : btcLnSwap.broadcastLocal(signedHex: signedTxHex);
+          : btcLnSwap.broadcastLocal(
+              signedHex: signedTxHex,
+              electrumSettings: _electrumOverride(electrum),
+            );
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -501,13 +509,17 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
       return broadcastViaBoltz
           ? lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex)
-          : lbtcLnSwap.broadcastLocal(signedHex: signedTxHex);
+          : lbtcLnSwap.broadcastLocal(
+              signedHex: signedTxHex,
+              electrumSettings: _electrumOverride(electrum),
+            );
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -666,6 +678,7 @@ class BoltzDatasource {
     required String refundAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
@@ -673,6 +686,7 @@ class BoltzDatasource {
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -688,6 +702,7 @@ class BoltzDatasource {
     required String refundAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
@@ -695,6 +710,7 @@ class BoltzDatasource {
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -899,13 +915,16 @@ class BoltzDatasource {
     required String claimLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      // The claim spends the server lockup on the RECEIVING chain (Liquid).
       return await chainSwap.claim(
         outAddress: claimLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        lbtcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -921,13 +940,16 @@ class BoltzDatasource {
     required String claimBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      // The claim spends the server lockup on the RECEIVING chain (Bitcoin).
       return await chainSwap.claim(
         outAddress: claimBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -942,6 +964,7 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumConnection? electrum,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -953,6 +976,7 @@ class BoltzDatasource {
           : chainSwap.broadcastLocal(
               signedHex: signedTxHex,
               kind: SwapTxKind.claim,
+              electrumSettings: _electrumOverride(electrum),
             ));
     } catch (e) {
       if (e is BoltzError) {
@@ -1084,18 +1108,26 @@ class BoltzDatasource {
   Future<int> getBtcLnClaimTxSize({
     required String swapId,
     bool isCooperative = true,
+    ElectrumConnection? electrum,
   }) async {
     final lnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
-    final size = await lnSwap.claimTxSize(isCooperative: isCooperative);
+    final size = await lnSwap.claimTxSize(
+      isCooperative: isCooperative,
+      electrumSettings: _electrumOverride(electrum),
+    );
     return size.toInt();
   }
 
   Future<int> getLbtcLnClaimTxSize({
     required String swapId,
     bool isCooperative = true,
+    ElectrumConnection? electrum,
   }) async {
     final lnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
-    final size = await lnSwap.claimTxSize(isCooperative: isCooperative);
+    final size = await lnSwap.claimTxSize(
+      isCooperative: isCooperative,
+      electrumSettings: _electrumOverride(electrum),
+    );
     return size.toInt();
   }
 
@@ -1115,18 +1147,26 @@ class BoltzDatasource {
   Future<int> getLbtLnRefundTxSize({
     required String swapId,
     bool isCooperative = true,
+    ElectrumConnection? electrum,
   }) async {
     final lnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
-    final size = await lnSwap.refundTxSize(isCooperative: isCooperative);
+    final size = await lnSwap.refundTxSize(
+      isCooperative: isCooperative,
+      electrumSettings: _electrumOverride(electrum),
+    );
     return size.toInt();
   }
 
   Future<int> getBtcLnRefundTxSize({
     required String swapId,
     bool isCooperative = true,
+    ElectrumConnection? electrum,
   }) async {
     final lnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
-    final size = await lnSwap.refundTxSize(isCooperative: isCooperative);
+    final size = await lnSwap.refundTxSize(
+      isCooperative: isCooperative,
+      electrumSettings: _electrumOverride(electrum),
+    );
     return size.toInt();
   }
 

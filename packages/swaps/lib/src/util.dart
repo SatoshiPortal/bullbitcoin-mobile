@@ -54,15 +54,23 @@ class ElectrumConnection {
   });
 }
 
-/// The one wallet fact the engine acts on: a transaction's presence and
-/// direction. `isIncoming` is load-bearing — an on-chain settle is only
+/// The wallet facts the engine acts on: a transaction's presence, direction
+/// and inputs. `isIncoming` is load-bearing — an on-chain settle is only
 /// accepted when the spender PAYS the wallet, never for the wallet's own
-/// outgoing/change spend.
+/// outgoing/change spend. `spendsTxIds` (the previous txids of the tx's
+/// inputs) lets a refund-side settle additionally require that the candidate
+/// actually spends OUR lockup transaction, not some other tx a hostile
+/// backend pointed at.
 class SwapWalletTx {
   final String txId;
   final bool isIncoming;
+  final List<String> spendsTxIds;
 
-  const SwapWalletTx({required this.txId, required this.isIncoming});
+  const SwapWalletTx({
+    required this.txId,
+    required this.isIncoming,
+    this.spendsTxIds = const [],
+  });
 }
 
 class SwapWalletInfo {

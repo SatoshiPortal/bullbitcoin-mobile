@@ -72,7 +72,11 @@ class SwapsLocator {
               walletId: walletId,
             );
             if (tx == null) return null;
-            return SwapWalletTx(txId: tx.txId, isIncoming: tx.isIncoming);
+            return SwapWalletTx(
+              txId: tx.txId,
+              isIncoming: tx.isIncoming,
+              spendsTxIds: [for (final i in tx.inputs) i.previousTxId],
+            );
           },
           walletTxs: (walletId, {bool sync = false}) async {
             final txs = await walletTxs.getWalletTransactions(
@@ -81,7 +85,11 @@ class SwapsLocator {
             );
             return [
               for (final tx in txs)
-                SwapWalletTx(txId: tx.txId, isIncoming: tx.isIncoming),
+                SwapWalletTx(
+                  txId: tx.txId,
+                  isIncoming: tx.isIncoming,
+                  spendsTxIds: [for (final i in tx.inputs) i.previousTxId],
+                ),
             ];
           },
           fastestFee:

@@ -16,12 +16,16 @@ import 'package:bull_sdk/boltz.dart' as boltz;
 /// Fresh receive address on [walletId], for claim/refund destinations.
 typedef NewAddressFor = Future<String> Function(String walletId);
 
-/// Look up one wallet transaction (null when absent). [sync] freshens the
-/// wallet first; implementations must throw — not return stale data — when
-/// freshening was requested but failed.
+/// Look up one wallet transaction (null when absent) from the wallet's
+/// current view — the caller is responsible for any freshening it needs
+/// (app-level syncs converge; the outspend recovery reads whatever the
+/// wallet knows at that moment and fails closed on absence).
 typedef WalletTxLookup =
     Future<SwapWalletTx?> Function(String txid, {required String walletId});
 
+/// All of a wallet's transactions. [sync] freshens the wallet first;
+/// implementations must throw — not return stale data — when freshening was
+/// requested but failed.
 typedef WalletTxsLookup =
     Future<List<SwapWalletTx>> Function(String walletId, {bool sync});
 
@@ -111,18 +115,21 @@ class BoltzSwapRepository implements SwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final txid = await _boltz.claimBtcReverseSwap(
       swapId: swapId,
       claimAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastBtcLnSwap(
       swapId: swapId,
       signedTxHex: txid,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -156,18 +163,21 @@ class BoltzSwapRepository implements SwapRepository {
     required String liquidAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       swapId: swapId,
       claimAddress: liquidAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -203,18 +213,21 @@ class BoltzSwapRepository implements SwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.refundBtcSubmarineSwap(
       swapId: swapId,
       refundAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastBtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -250,18 +263,21 @@ class BoltzSwapRepository implements SwapRepository {
     required String liquidAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.refundLbtcSubmarineSwap(
       swapId: swapId,
       refundAddress: liquidAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -320,18 +336,21 @@ class BoltzSwapRepository implements SwapRepository {
     required String bitcoinClaimAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
       swapId: swapId,
       claimBitcoinAddress: bitcoinClaimAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastChainSwapClaim(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -340,18 +359,21 @@ class BoltzSwapRepository implements SwapRepository {
     required String liquidClaimAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumConnection? electrum,
   }) async {
     final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
       swapId: swapId,
       claimLiquidAddress: liquidClaimAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrum: electrum,
     );
 
     return await _boltz.broadcastChainSwapClaim(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrum: electrum,
     );
   }
 
@@ -578,11 +600,18 @@ class BoltzSwapRepository implements SwapRepository {
     final int current;
     if (stored == null) {
       // Seed past boltz's highest known index (-1 when none) so a new swap
-      // can't re-derive an in-use key on a recovered seed.
+      // can't re-derive an in-use key on a recovered seed. Boltz's restore
+      // endpoint is gap-limited and can under-report, so also seed past the
+      // highest index of every locally stored swap (chain swaps use 2).
       final highest = await _boltz.restoreSwapIndex(
         swapMasterKey: swapMasterKey,
       );
-      current = highest + 1;
+      var localHighest = -1;
+      for (final swap in await getAllSwaps()) {
+        final top = swap is ChainSwap ? swap.keyIndex + 1 : swap.keyIndex;
+        if (top > localHighest) localHighest = top;
+      }
+      current = (highest > localHighest ? highest : localHighest) + 1;
     } else {
       current = stored;
     }
@@ -687,17 +716,20 @@ class BoltzSwapRepository implements SwapRepository {
     required SwapType swapType,
     bool isCooperative = true,
     String? claimAddressForChainSwaps,
+    ElectrumConnection? electrum,
   }) async {
     switch (swapType) {
       case SwapType.lightningToBitcoin:
         return await _boltz.getBtcLnClaimTxSize(
           swapId: swapId,
           isCooperative: isCooperative,
+          electrum: electrum,
         );
       case SwapType.lightningToLiquid:
         return await _boltz.getLbtcLnClaimTxSize(
           swapId: swapId,
           isCooperative: isCooperative,
+          electrum: electrum,
         );
       case SwapType.liquidToBitcoin:
       case SwapType.bitcoinToLiquid:
@@ -1241,11 +1273,13 @@ class BoltzSwapRepository implements SwapRepository {
         return await _boltz.getLbtLnRefundTxSize(
           swapId: swapId,
           isCooperative: isCooperative,
+          electrum: electrum,
         );
       case SwapType.bitcoinToLightning:
         return await _boltz.getBtcLnRefundTxSize(
           swapId: swapId,
           isCooperative: isCooperative,
+          electrum: electrum,
         );
       case SwapType.liquidToBitcoin:
       case SwapType.bitcoinToLiquid:
@@ -1553,6 +1587,7 @@ class BoltzSwapRepository implements SwapRepository {
                 claimAddressForChainSwaps: swap is ChainSwap
                     ? claimAddress
                     : null,
+                electrum: connection,
               );
             } catch (_) {
               txSize = await getSwapClaimTxSize(
@@ -1562,6 +1597,7 @@ class BoltzSwapRepository implements SwapRepository {
                 claimAddressForChainSwaps: swap is ChainSwap
                     ? claimAddress
                     : null,
+                electrum: connection,
               );
             }
             absoluteFees = await _resolveFees(
@@ -1578,6 +1614,7 @@ class BoltzSwapRepository implements SwapRepository {
               claimAddress: claimAddress,
               absoluteFees: absoluteFees,
               cooperate: true,
+              electrum: connection,
             );
           } catch (e) {
             swapsLog.severe(
@@ -1590,6 +1627,7 @@ class BoltzSwapRepository implements SwapRepository {
               claimAddress: claimAddress,
               absoluteFees: absoluteFees,
               cooperate: false,
+              electrum: connection,
             );
           }
           await updateSwapFields(
@@ -1743,6 +1781,7 @@ class BoltzSwapRepository implements SwapRepository {
             liquidAddress: refundAddress,
             absoluteFees: fees,
             cooperate: cooperate,
+            electrum: connection,
           );
         case SwapType.bitcoinToLightning:
           return refundBitcoinToLightningSwap(
@@ -1750,6 +1789,7 @@ class BoltzSwapRepository implements SwapRepository {
             bitcoinAddress: refundAddress,
             absoluteFees: fees,
             cooperate: cooperate,
+            electrum: connection,
           );
         case SwapType.lightningToBitcoin:
         case SwapType.lightningToLiquid:
@@ -1763,7 +1803,7 @@ class BoltzSwapRepository implements SwapRepository {
         swapType: swap.type,
         isCooperative: cooperative,
         refundAddressForChainSwaps: swap is ChainSwap ? refundAddress : null,
-        electrum: swap is ChainSwap ? connection : null,
+        electrum: connection,
       ),
       isLiquid: isLiquid,
       amountSat: _amountSatOrNull(swap),
@@ -1879,6 +1919,7 @@ class BoltzSwapRepository implements SwapRepository {
     required String claimAddress,
     required int absoluteFees,
     required bool cooperate,
+    ElectrumConnection? electrum,
   }) {
     switch (swap.type) {
       case SwapType.lightningToBitcoin:
@@ -1887,6 +1928,7 @@ class BoltzSwapRepository implements SwapRepository {
           absoluteFees: absoluteFees,
           bitcoinAddress: claimAddress,
           cooperate: cooperate,
+          electrum: electrum,
         );
       case SwapType.lightningToLiquid:
         return claimLightningToLiquidSwap(
@@ -1894,6 +1936,7 @@ class BoltzSwapRepository implements SwapRepository {
           absoluteFees: absoluteFees,
           liquidAddress: claimAddress,
           cooperate: cooperate,
+          electrum: electrum,
         );
       case SwapType.bitcoinToLiquid:
         return claimBitcoinToLiquidSwap(
@@ -1901,6 +1944,7 @@ class BoltzSwapRepository implements SwapRepository {
           absoluteFees: absoluteFees,
           liquidClaimAddress: claimAddress,
           cooperate: cooperate,
+          electrum: electrum,
         );
       case SwapType.liquidToBitcoin:
         return claimLiquidToBitcoinSwap(
@@ -1908,6 +1952,7 @@ class BoltzSwapRepository implements SwapRepository {
           absoluteFees: absoluteFees,
           bitcoinClaimAddress: claimAddress,
           cooperate: cooperate,
+          electrum: electrum,
         );
       case SwapType.bitcoinToLightning:
       case SwapType.liquidToLightning:
@@ -1985,6 +2030,36 @@ class BoltzSwapRepository implements SwapRepository {
           swapsLog.fine(
             'SWAPS: ${swap.id} spender $txid is in our wallet but not '
             'incoming (change/self spend) — ignoring',
+          );
+          continue;
+        }
+        // A txid already recorded on ANOTHER swap row can never be this
+        // swap's settlement — rejects a backend replaying a historical
+        // claim/refund of ours as evidence for a different swap.
+        final recordedOn = await _boltz.storage.fetchByTxId(txid);
+        if (recordedOn != null && recordedOn.id != swap.id) {
+          swapsLog.warning(
+            'SWAPS: ${swap.id} spender $txid already belongs to swap '
+            '${recordedOn.id} — ignoring',
+          );
+          continue;
+        }
+        // Refund side: OUR lockup txid is locally known (we broadcast it),
+        // so the candidate must actually spend it. The claim side cannot be
+        // bound this way — the server's lockup txid only comes from the
+        // server itself.
+        final lockupTxid = switch (swap) {
+          LnSendSwap(:final sendTxid) => sendTxid,
+          ChainSwap(:final sendTxid) => sendTxid,
+          LnReceiveSwap() => null,
+        };
+        if (!isClaim &&
+            lockupTxid != null &&
+            tx.spendsTxIds.isNotEmpty &&
+            !tx.spendsTxIds.contains(lockupTxid)) {
+          swapsLog.warning(
+            'SWAPS: ${swap.id} spender $txid does not spend our lockup '
+            '$lockupTxid — ignoring',
           );
           continue;
         }
@@ -2131,8 +2206,10 @@ class BoltzSwapRepository implements SwapRepository {
     );
   }
 
-  /// Re-verifies recorded chain-swap completions against the receiving
-  /// wallet and reopens the ones that never paid us as refundable.
+  /// Re-verifies recorded completions against the receiving wallet and
+  /// reopens the ones that never paid us: chain swaps as refundable (our
+  /// lockup is recoverable), reverse swaps as claimable (the claim never
+  /// happened — MRH direct payments excepted, they have no claim to verify).
   /// Cache-first: the wallet is only force-synced when the recorded claim is
   /// MISSING from the cached view, so the common all-good launch does no
   /// network work per swap.
@@ -2141,20 +2218,40 @@ class BoltzSwapRepository implements SwapRepository {
     try {
       final swaps = await getAllSwaps();
       for (final swap in swaps) {
-        if (swap is! ChainSwap) continue;
         if (swap.status != SwapStatus.completed) continue;
-        if (swap.refundTxid != null) continue;
-        if (swap.sendTxid == null) continue;
-        final receiveTxid = swap.receiveTxid;
-        if (receiveTxid == null) {
-          swapsLog.warning(
-            'SWAPS: ${swap.id} completed with funds locked and no txid '
-            'recorded — reopening as refundable',
-          );
-          await updateSwapFields(swap.id, status: SwapStatus.refundable);
+        final (
+          String? receiveTxid,
+          String? walletId,
+          SwapStatus reopenAs,
+        ) = switch (swap) {
+          ChainSwap(:final refundTxid, :final sendTxid)
+              when refundTxid == null && sendTxid != null =>
+            (swap.receiveTxid, swap.receiveWalletId, SwapStatus.refundable),
+          LnReceiveSwap(:final wasDirectPayment) when !wasDirectPayment => (
+            swap.receiveTxid,
+            swap.receiveWalletId,
+            SwapStatus.claimable,
+          ),
+          _ => (null, null, SwapStatus.completed),
+        };
+        if (reopenAs == SwapStatus.completed) continue;
+        // A completion recorded moments ago may not be visible to electrum
+        // yet — never judge it on this launch; the next one will.
+        final completedAt = swap.completionTime;
+        if (completedAt != null &&
+            DateTime.now().difference(completedAt) <
+                const Duration(minutes: 10)) {
           continue;
         }
-        final walletId = swap.receiveWalletId;
+        if (receiveTxid == null) {
+          if (swap is! ChainSwap) continue; // reverse: the watcher re-claims
+          swapsLog.warning(
+            'SWAPS: ${swap.id} completed with funds locked and no txid '
+            'recorded — reopening as ${reopenAs.name}',
+          );
+          await updateSwapFields(swap.id, status: reopenAs);
+          continue;
+        }
         if (walletId == null) continue;
         try {
           var txs = await _walletTxs(walletId);
@@ -2168,12 +2265,16 @@ class BoltzSwapRepository implements SwapRepository {
           swapsLog.warning(
             'SWAPS: ${swap.id} completed but recorded claim $receiveTxid is '
             'not in wallet $walletId — retracting and reopening as '
-            'refundable',
+            '${reopenAs.name}',
           );
+          // claimFee 0 = "no trustworthy stored fee": a vanished claim means
+          // the pinned creation-time fee failed (possibly evicted), so the
+          // re-claim estimates live instead of repeating it.
           await updateSwapFields(
             swap.id,
-            status: SwapStatus.refundable,
+            status: reopenAs,
             clearReceiveTxid: true,
+            claimFee: 0,
           );
         } catch (e) {
           swapsLog.warning('SWAPS: verify failed for ${swap.id}: $e');

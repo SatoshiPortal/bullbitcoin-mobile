@@ -113,6 +113,7 @@ void main() {
     ).thenAnswer((_) async => 200);
     when(() => boltz.unsubscribeToSwaps(any())).thenAnswer((_) {});
     when(() => boltz.subscribeToSwaps(any())).thenAnswer((_) {});
+    when(() => storage.fetchByTxId(any())).thenAnswer((_) async => null);
   });
 
   setUpAll(() {
@@ -313,5 +314,160 @@ void main() {
           verify(() => storage.store(captureAny())).captured.last as SwapModel;
       expect(stored.status, SwapStatus.refundable.name);
     });
+
+    test('retracts a reverse completion whose claim vanished — reopens '
+        'claimable with the pinned claim fee cleared', () async {
+      final reverse = SwapModel.lnReceive(
+        id: 'reverse-1',
+        type: SwapType.lightningToBitcoin.name,
+        status: 'completed',
+        keyIndex: 1,
+        creationTime: DateTime(2026, 7).millisecondsSinceEpoch,
+        receiveWalletId: 'w-btc',
+        invoice: 'lnbc1',
+        receiveTxid: 'evicted-claim',
+        claimFees: 3000,
+      );
+      when(
+        () => storage.fetchAll(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((_) async => [reverse]);
+      when(() => storage.fetch(any())).thenAnswer((_) async => reverse);
+      walletTxs['unrelated'] = const SwapWalletTx(
+        txId: 'unrelated',
+        isIncoming: true,
+      );
+
+      await repo().verifyCompletions();
+
+      final stored =
+          verify(() => storage.store(captureAny())).captured.last as SwapModel;
+      expect(stored.status, SwapStatus.claimable.name);
+      expect((stored as LnReceiveSwapModel).receiveTxid, isNull);
+      expect(stored.claimFees, 0);
+    });
+
+    test('never touches an MRH direct payment', () async {
+      final direct = SwapModel.lnReceive(
+        id: 'mrh-1',
+        type: SwapType.lightningToLiquid.name,
+        status: 'completed',
+        keyIndex: 2,
+        creationTime: DateTime(2026, 7).millisecondsSinceEpoch,
+        receiveWalletId: 'w-liquid',
+        invoice: 'lnbc1',
+        receiveTxid: 'direct-payment',
+        wasDirectPayment: true,
+      );
+      when(
+        () => storage.fetchAll(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((_) async => [direct]);
+
+      await repo().verifyCompletions();
+
+      verifyNever(() => storage.store(any()));
+    });
+  });
+
+  group('outspend recovery evidence binding', () {
+    void stubFailedRefund() {
+      when(
+        () => boltz.refundLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          refundLiquidAddress: any(named: 'refundLiquidAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: any(named: 'tryCooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenThrow(Exception('broadcast failed'));
+    }
+
+    void stubOutspends(String spenderTxid) {
+      when(
+        () => boltz.checkLockupOutspends(
+          swapId: any(named: 'swapId'),
+          swapType: any(named: 'swapType'),
+          network: any(named: 'network'),
+          swapDirection: any(named: 'swapDirection'),
+          isClaim: any(named: 'isClaim'),
+        ),
+      ).thenAnswer((_) async => [SwapTxOutspendModel(txid: spenderTxid)]);
+    }
+
+    test('rejects an incoming candidate already recorded on another swap '
+        '(hostile-backend replay)', () async {
+      stubFailedRefund();
+      stubOutspends('historical-claim');
+      walletTxs['historical-claim'] = const SwapWalletTx(
+        txId: 'historical-claim',
+        isIncoming: true,
+        spendsTxIds: ['lockup-txid'],
+      );
+      when(() => storage.fetchByTxId('historical-claim')).thenAnswer(
+        (_) async => SwapModel.chain(
+          id: 'other-swap',
+          type: SwapType.liquidToBitcoin.name,
+          status: 'completed',
+          keyIndex: 9,
+          creationTime: DateTime(2026, 5).millisecondsSinceEpoch,
+          sendWalletId: 'w-liquid',
+          paymentAddress: 'lq1old',
+          paymentAmount: 50000,
+          receiveTxid: 'historical-claim',
+        ),
+      );
+
+      await expectLater(
+        repo().refund(chainSwap()),
+        throwsA(isA<SwapsException>()),
+      );
+      verifyNever(() => storage.store(any()));
+    });
+
+    test(
+      'rejects an incoming candidate that does not spend our lockup',
+      () async {
+        stubFailedRefund();
+        stubOutspends('foreign-incoming');
+        walletTxs['foreign-incoming'] = const SwapWalletTx(
+          txId: 'foreign-incoming',
+          isIncoming: true,
+          spendsTxIds: ['someone-elses-tx'],
+        );
+
+        await expectLater(
+          repo().refund(chainSwap()),
+          throwsA(isA<SwapsException>()),
+        );
+        verifyNever(() => storage.store(any()));
+      },
+    );
+
+    test(
+      'settles on an incoming candidate that DOES spend our lockup',
+      () async {
+        stubFailedRefund();
+        stubOutspends('true-refund');
+        walletTxs['true-refund'] = const SwapWalletTx(
+          txId: 'true-refund',
+          isIncoming: true,
+          spendsTxIds: ['lockup-txid'],
+        );
+
+        final txid = await repo().refund(chainSwap());
+
+        expect(txid, 'true-refund');
+        final stored =
+            verify(() => storage.store(captureAny())).captured.last
+                as SwapModel;
+        expect(stored.status, SwapStatus.refunded.name);
+        expect((stored as ChainSwapModel).refundTxid, 'true-refund');
+      },
+    );
   });
 }
