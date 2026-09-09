@@ -44,6 +44,7 @@ class WalletUtxoMapper {
           addressLabels: addressLabels,
           isFrozen: isFrozen,
           confirmations: model.confirmations,
+          blockHeight: model.blockHeight,
         );
     }
   }
@@ -69,6 +70,7 @@ class WalletUtxoMapper {
           scriptPubkey: entity.scriptPubkey,
           standardAddress: entity.standardAddress,
           confidentialAddress: entity.confidentialAddress,
+          blockHeight: entity.blockHeight,
         );
     }
   }
