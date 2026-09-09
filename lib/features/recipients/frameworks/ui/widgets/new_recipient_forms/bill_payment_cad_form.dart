@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class BillPaymentCadForm extends StatefulWidget {
   const BillPaymentCadForm({super.key, this.hookError});
@@ -118,6 +121,23 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
                     textInputAction: .next,
                   );
                 },
+          ),
+          // A failed search used to leave an empty dropdown that reads as
+          //  "no such biller" rather than "the search did not run".
+          BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
+            selector: (state) => state.failedToSearchCadBillers,
+            builder: (context, failure) {
+              if (failure == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  failure.toTranslated(context),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+              );
+            },
           ),
           const Gap(12.0),
           BBTextFormField(

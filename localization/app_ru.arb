@@ -4204,7 +4204,6 @@
   "recipientsPayoutMethod": "Способ выплаты",
   "recipientsFilterByJurisdiction": "Фильтр по юрисдикции:",
   "recipientsListEmpty": "Получатели не найдены.",
-  "recipientsListLoadError": "Не удалось загрузить получателей. Потяните вниз, чтобы повторить.",
   "recipientsContinue": "Продолжить",
   "recipientsJurisdictionAll": "Все юрисдикции",
   "recipientsJurisdictionCanada": "🇨🇦 Канада",
@@ -4920,5 +4919,12 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "recipientsErrorLoadFailed": "Не удалось загрузить ваших получателей. Попробуйте ещё раз.",
+  "recipientsErrorSaveFailed": "Не удалось сохранить этого получателя. Проверьте данные и попробуйте ещё раз.",
+  "recipientsErrorSinpeLookupFailed": "Не удалось проверить этот номер телефона. Проверьте его и попробуйте ещё раз.",
+  "recipientsErrorBillerSearchFailed": "Не удалось выполнить поиск получателей платежей. Попробуйте ещё раз.",
+  "recipientsErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
+  "recipientsListPullToRetry": "Потяните вниз, чтобы повторить.",
+  "recipientsErrorSavedButNotSelected": "Получатель сохранён, но продолжить не удалось. Найдите его в списке, чтобы продолжить."
 }

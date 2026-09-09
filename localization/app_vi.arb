@@ -6,7 +6,6 @@
   "buyPayoutMethodBitcoin": "BTC trên chuỗi Bitcoin",
   "fundExchangeRestrictedTitle": "Nạp tiền không khả dụng",
   "fundExchangeRestrictedMessage": "Nạp tiền không khả dụng trên tài khoản của bạn. Vui lòng liên hệ bộ phận hỗ trợ để biết thêm thông tin.",
-  "recipientsListLoadError": "Không thể tải danh sách người nhận. Kéo xuống để thử lại.",
   "backupWarningDescription": "Nếu không có bản sao lưu, bạn sẽ mất quyền truy cập vào bitcoin của mình nếu:",
   "exchangeTestnetBasicAuthTitle": "Thông tin đăng nhập sàn testnet",
   "exchangeTestnetBasicAuthDescription": "Xác thực HTTP basic cho các trang web của sàn testnet (đăng nhập và KYC).",
@@ -3596,5 +3595,12 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "recipientsErrorLoadFailed": "Không thể tải danh sách người nhận của bạn. Vui lòng thử lại.",
+  "recipientsErrorSaveFailed": "Không thể lưu người nhận này. Vui lòng kiểm tra thông tin và thử lại.",
+  "recipientsErrorSinpeLookupFailed": "Chúng tôi không thể xác minh số điện thoại này. Vui lòng kiểm tra và thử lại.",
+  "recipientsErrorBillerSearchFailed": "Không thể tìm kiếm đơn vị thanh toán. Vui lòng thử lại.",
+  "recipientsErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
+  "recipientsListPullToRetry": "Kéo xuống để thử lại.",
+  "recipientsErrorSavedButNotSelected": "Người nhận này đã được lưu, nhưng chúng tôi không thể tiếp tục. Hãy tìm trong danh sách của bạn để tiếp tục."
 }

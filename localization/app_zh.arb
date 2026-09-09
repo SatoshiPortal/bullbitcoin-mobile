@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "地图",
-  "recipientsListLoadError": "无法加载收款人。下拉以重试。",
   "backupWarningDescription": "如果没有备份，在以下情况下您将无法访问您的比特币：",
   "backupWarningLoseReasonLostPhone": "您丢失手机",
   "backupWarningLoseReasonDeletedApp": "您删除应用程序",
@@ -4914,5 +4913,12 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "recipientsErrorLoadFailed": "无法加载您的收款人。请重试。",
+  "recipientsErrorSaveFailed": "无法保存此收款人。请检查信息后重试。",
+  "recipientsErrorSinpeLookupFailed": "我们无法验证此电话号码。请检查后重试。",
+  "recipientsErrorBillerSearchFailed": "无法搜索账单机构。请重试。",
+  "recipientsErrorNetwork": "请检查您的网络连接后重试。",
+  "recipientsListPullToRetry": "下拉以重试。",
+  "recipientsErrorSavedButNotSelected": "该收款人已保存，但我们无法继续。请在列表中找到它以继续。"
 }

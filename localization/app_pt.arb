@@ -4244,7 +4244,6 @@
   "recipientsPayoutMethod": "Método de pagamento",
   "recipientsFilterByJurisdiction": "Filtrar por jurisdição:",
   "recipientsListEmpty": "Não foram encontrados destinatários.",
-  "recipientsListLoadError": "Não foi possível carregar os destinatários. Puxe para baixo para tentar novamente.",
   "recipientsContinue": "Continuar",
   "recipientsJurisdictionAll": "Todas as jurisdições",
   "recipientsJurisdictionCanada": "🇨🇦 Canadá",
@@ -4960,5 +4959,12 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "recipientsErrorLoadFailed": "Não foi possível carregar os seus destinatários. Tente novamente.",
+  "recipientsErrorSaveFailed": "Não foi possível guardar este destinatário. Verifique os dados e tente novamente.",
+  "recipientsErrorSinpeLookupFailed": "Não foi possível verificar este número de telefone. Verifique-o e tente novamente.",
+  "recipientsErrorBillerSearchFailed": "Não foi possível pesquisar entidades de pagamento. Tente novamente.",
+  "recipientsErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
+  "recipientsListPullToRetry": "Puxe para baixo para tentar novamente.",
+  "recipientsErrorSavedButNotSelected": "Este destinatário foi guardado, mas não foi possível continuar. Encontre-o na sua lista para prosseguir."
 }

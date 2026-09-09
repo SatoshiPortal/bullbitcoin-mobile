@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "মানচিত্ৰ",
-  "recipientsListLoadError": "প্ৰাপকসকল ল’ড কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
   "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
   "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
   "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
@@ -9344,5 +9343,12 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorLoadFailed": "আপোনাৰ প্ৰাপকসকলক ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorSaveFailed": "এই প্ৰাপকজনক সংৰক্ষণ কৰিব পৰা নগ'ল। তথ্য পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorSinpeLookupFailed": "আমি এই ফোন নম্বৰটো সত্যাপন কৰিব নোৱাৰিলোঁ। ইয়াক পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorBillerSearchFailed": "বিলাৰ বিচাৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "recipientsListPullToRetry": "পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
+  "recipientsErrorSavedButNotSelected": "এই প্ৰাপকজনক সংৰক্ষণ কৰা হৈছে, কিন্তু আমি আগবাঢ়িব নোৱাৰিলোঁ। আগবাঢ়িবলৈ তালিকাত বিচাৰক।"
 }

@@ -6,7 +6,6 @@
   "buyPayoutMethodBitcoin": "BTC kwenye chaini ya Bitcoin",
   "fundExchangeRestrictedTitle": "Ufadhili haupatikani",
   "fundExchangeRestrictedMessage": "Ufadhili haupatikani kwenye akaunti yako. Tafadhali wasiliana na usaidizi kwa maelezo zaidi.",
-  "recipientsListLoadError": "Imeshindwa kupakia wapokeaji. Vuta chini ili ujaribu tena.",
   "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
   "exchangeTestnetBasicAuthTitle": "Kitambulisho cha testnet exchange",
   "exchangeTestnetBasicAuthDescription": "Uthibitishaji wa msingi wa HTTP kwa kurasa za wavuti za testnet exchange (kuingia na KYC).",
@@ -3608,5 +3607,12 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "recipientsErrorLoadFailed": "Wapokeaji wako hawakuweza kupakiwa. Tafadhali jaribu tena.",
+  "recipientsErrorSaveFailed": "Mpokeaji huyu hakuweza kuhifadhiwa. Angalia maelezo na ujaribu tena.",
+  "recipientsErrorSinpeLookupFailed": "Hatukuweza kuthibitisha nambari hii ya simu. Iangalie na ujaribu tena.",
+  "recipientsErrorBillerSearchFailed": "Haikuwezekana kutafuta watoza bili. Tafadhali jaribu tena.",
+  "recipientsErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
+  "recipientsListPullToRetry": "Vuta chini ili ujaribu tena.",
+  "recipientsErrorSavedButNotSelected": "Mpokeaji huyu amehifadhiwa, lakini hatukuweza kuendelea. Mtafute kwenye orodha yako ili kuendelea."
 }

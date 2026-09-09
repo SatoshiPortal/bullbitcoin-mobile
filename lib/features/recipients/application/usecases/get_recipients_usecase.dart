@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
@@ -33,21 +36,28 @@ class GetRecipientsResult {
 
 class GetRecipientsUsecase {
   final RecipientsGatewayPort _recipientsGateway;
-  // TODO: The settings repository should not be used directly here, since it is
-  // from another domain. We should use a settings port that gets the settings
-  // facade injected so no business logic is skipped from the settings domain.
-  final SettingsRepository _settingsRepository;
+  final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   GetRecipientsUsecase({
     required this._recipientsGateway,
-    required this._settingsRepository,
+    required this._getRecipientsEnvironmentUsecase,
   });
 
-  Future<GetRecipientsResult> execute(GetRecipientsParams params) async {
-    final settings = await _settingsRepository.fetch();
-    final isTestnet = settings.environment.isTestnet;
+  @useResult
+  Future<Result<GetRecipientsResult, RecipientsFailure>> execute(
+    GetRecipientsParams params,
+  ) async {
+    final bool isTestnet;
+    switch (await _getRecipientsEnvironmentUsecase.execute()) {
+      case Ok(:final value):
+        isTestnet = value.isTestnet;
+      case Err(:final failure):
+        return Err(failure);
+    }
 
-    final recipientsResult = await _recipientsGateway.listRecipients(
+    // Orchestration only: the gateway already mapped its own failure, so
+    // this forwards it untouched rather than re-wrapping it.
+    return (await _recipientsGateway.listRecipients(
       isTestnet: isTestnet,
       fiatOnly: params.fiatOnly,
       page: params.page,
@@ -55,12 +65,13 @@ class GetRecipientsUsecase {
       recipientTypes: params.recipientTypes,
       isOwner: params.isOwner,
       search: params.search,
-    );
-    return GetRecipientsResult(
-      recipients: recipientsResult.recipients
-          .map((e) => RecipientDto.fromDomain(e))
-          .toList(),
-      totalRecipients: recipientsResult.totalRecipients,
+    )).map(
+      (value) => GetRecipientsResult(
+        recipients: value.recipients
+            .map((e) => RecipientDto.fromDomain(e))
+            .toList(),
+        totalRecipients: value.totalRecipients,
+      ),
     );
   }
 }

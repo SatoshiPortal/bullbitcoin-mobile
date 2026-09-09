@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "نقشه",
-  "recipientsListLoadError": "بارگیری گیرندگان ممکن نشد. برای تلاش مجدد به پایین بکشید.",
   "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
   "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
   "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
@@ -12232,5 +12231,12 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "recipientsErrorLoadFailed": "گیرندگان شما بارگذاری نشدند. لطفاً دوباره تلاش کنید.",
+  "recipientsErrorSaveFailed": "این گیرنده ذخیره نشد. اطلاعات را بررسی کنید و دوباره تلاش کنید.",
+  "recipientsErrorSinpeLookupFailed": "نتوانستیم این شماره تلفن را تأیید کنیم. آن را بررسی کنید و دوباره تلاش کنید.",
+  "recipientsErrorBillerSearchFailed": "جست‌وجوی صادرکنندگان صورت‌حساب انجام نشد. لطفاً دوباره تلاش کنید.",
+  "recipientsErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
+  "recipientsListPullToRetry": "برای تلاش دوباره به پایین بکشید.",
+  "recipientsErrorSavedButNotSelected": "این گیرنده ذخیره شد، اما نتوانستیم ادامه دهیم. برای ادامه او را در فهرست خود پیدا کنید."
 }

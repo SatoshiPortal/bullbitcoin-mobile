@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/get_preferred_jurisdiction_usecase.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
@@ -42,28 +44,42 @@ class RecipientsLocator {
 
   static void registerApplicationServicesAndUseCases(GetIt locator) {
     // Register application services and use cases here
+    // One boundary for the throwing core settings read, shared by the four
+    // recipient use-cases.
+    locator.registerFactory<GetRecipientsEnvironmentUsecase>(
+      () => GetRecipientsEnvironmentUsecase(locator<SettingsRepository>()),
+    );
     locator.registerFactory<AddRecipientUsecase>(
       () => AddRecipientUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
       ),
     );
     locator.registerFactory<GetRecipientsUsecase>(
       () => GetRecipientsUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
       ),
     );
     locator.registerFactory<CheckSinpeUsecase>(
       () => CheckSinpeUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetPreferredJurisdictionUsecase>(
+      () => GetPreferredJurisdictionUsecase(
+        locator<GetExchangeUserSummaryUsecase>(),
       ),
     );
     locator.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
-        settingsRepository: locator<SettingsRepository>(),
+        getRecipientsEnvironmentUsecase:
+            locator<GetRecipientsEnvironmentUsecase>(),
       ),
     );
   }
@@ -81,7 +97,8 @@ class RecipientsLocator {
       (allowedRecipientFilters, onRecipientSelected) => RecipientsBloc(
         allowedRecipientFilters: allowedRecipientFilters,
         onRecipientSelectedHook: onRecipientSelected,
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        getPreferredJurisdictionUsecase:
+            locator<GetPreferredJurisdictionUsecase>(),
         addRecipientUsecase: locator<AddRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),

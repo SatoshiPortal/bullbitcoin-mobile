@@ -4198,7 +4198,6 @@
   "recipientsPayoutMethod": "Metodo di pagamento",
   "recipientsFilterByJurisdiction": "Filtra per giurisdizione:",
   "recipientsListEmpty": "Nessun destinatario trovato.",
-  "recipientsListLoadError": "Impossibile caricare i destinatari. Trascina verso il basso per riprovare.",
   "recipientsContinue": "Continua",
   "recipientsJurisdictionAll": "Tutte le giurisdizioni",
   "recipientsJurisdictionCanada": "🇨🇦 Canada",
@@ -4914,5 +4913,12 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "recipientsErrorLoadFailed": "Non è stato possibile caricare i tuoi destinatari. Riprova.",
+  "recipientsErrorSaveFailed": "Non è stato possibile salvare questo destinatario. Controlla i dati e riprova.",
+  "recipientsErrorSinpeLookupFailed": "Non è stato possibile verificare questo numero di telefono. Controllalo e riprova.",
+  "recipientsErrorBillerSearchFailed": "Non è stato possibile cercare gli emittenti di fatture. Riprova.",
+  "recipientsErrorNetwork": "Controlla la connessione a Internet e riprova.",
+  "recipientsListPullToRetry": "Trascina verso il basso per riprovare.",
+  "recipientsErrorSavedButNotSelected": "Questo destinatario è stato salvato, ma non è stato possibile continuare. Lo trovi nella tua lista."
 }

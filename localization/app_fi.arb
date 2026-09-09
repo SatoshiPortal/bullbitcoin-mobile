@@ -4186,7 +4186,6 @@
   "recipientsPayoutMethod": "Maksutapa",
   "recipientsFilterByJurisdiction": "Suodata lainkäyttöalueen mukaan:",
   "recipientsListEmpty": "Vastaanottajia ei löytynyt.",
-  "recipientsListLoadError": "Vastaanottajien lataaminen epäonnistui. Päivitä vetämällä alaspäin.",
   "recipientsContinue": "Jatka",
   "recipientsJurisdictionAll": "Kaikki lainkäyttöalueet",
   "recipientsJurisdictionCanada": "🇨🇦 Kanada",
@@ -4902,5 +4901,12 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "recipientsErrorLoadFailed": "Vastaanottajiasi ei voitu ladata. Yritä uudelleen.",
+  "recipientsErrorSaveFailed": "Tätä vastaanottajaa ei voitu tallentaa. Tarkista tiedot ja yritä uudelleen.",
+  "recipientsErrorSinpeLookupFailed": "Emme voineet vahvistaa tätä puhelinnumeroa. Tarkista se ja yritä uudelleen.",
+  "recipientsErrorBillerSearchFailed": "Laskuttajien haku epäonnistui. Yritä uudelleen.",
+  "recipientsErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
+  "recipientsListPullToRetry": "Vedä alas yrittääksesi uudelleen.",
+  "recipientsErrorSavedButNotSelected": "Vastaanottaja tallennettiin, mutta emme voineet jatkaa. Etsi hänet listaltasi jatkaaksesi."
 }

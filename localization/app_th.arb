@@ -1,6 +1,5 @@
 {
   "settingsBtcMapTitle": "แผนที่",
-  "recipientsListLoadError": "ไม่สามารถโหลดผู้รับได้ ดึงลงเพื่อลองใหม่",
   "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
   "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
   "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
@@ -12236,5 +12235,12 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "recipientsErrorLoadFailed": "ไม่สามารถโหลดผู้รับของคุณได้ โปรดลองอีกครั้ง",
+  "recipientsErrorSaveFailed": "ไม่สามารถบันทึกผู้รับรายนี้ได้ โปรดตรวจสอบข้อมูลแล้วลองอีกครั้ง",
+  "recipientsErrorSinpeLookupFailed": "เราไม่สามารถยืนยันหมายเลขโทรศัพท์นี้ได้ โปรดตรวจสอบแล้วลองอีกครั้ง",
+  "recipientsErrorBillerSearchFailed": "ไม่สามารถค้นหาผู้เรียกเก็บเงินได้ โปรดลองอีกครั้ง",
+  "recipientsErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
+  "recipientsListPullToRetry": "ดึงลงเพื่อลองอีกครั้ง",
+  "recipientsErrorSavedButNotSelected": "บันทึกผู้รับรายนี้แล้ว แต่เราไม่สามารถดำเนินการต่อได้ ค้นหาในรายการของคุณเพื่อดำเนินการต่อ"
 }

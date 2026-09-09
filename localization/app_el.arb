@@ -11469,7 +11469,6 @@
   "recipientsPayoutMethod": "Μέθοδος πληρωμής",
   "recipientsFilterByJurisdiction": "Φιλτράρισμα ανά δικαιοδοσία:",
   "recipientsListEmpty": "Δεν βρέθηκαν παραλήπτες.",
-  "recipientsListLoadError": "Δεν ήταν δυνατή η φόρτωση των παραληπτών. Τραβήξτε προς τα κάτω για επανάληψη.",
   "recipientsContinue": "Συνέχεια",
   "recipientsJurisdictionAll": "Όλες οι δικαιοδοσίες",
   "recipientsJurisdictionCanada": "🇨🇦 Καναδάς",
@@ -12232,5 +12231,12 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "recipientsErrorLoadFailed": "Δεν ήταν δυνατή η φόρτωση των παραληπτών σας. Δοκιμάστε ξανά.",
+  "recipientsErrorSaveFailed": "Δεν ήταν δυνατή η αποθήκευση αυτού του παραλήπτη. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
+  "recipientsErrorSinpeLookupFailed": "Δεν μπορέσαμε να επαληθεύσουμε αυτόν τον αριθμό τηλεφώνου. Ελέγξτε τον και δοκιμάστε ξανά.",
+  "recipientsErrorBillerSearchFailed": "Δεν ήταν δυνατή η αναζήτηση φορέων πληρωμών. Δοκιμάστε ξανά.",
+  "recipientsErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+  "recipientsListPullToRetry": "Τραβήξτε προς τα κάτω για επανάληψη.",
+  "recipientsErrorSavedButNotSelected": "Αυτός ο παραλήπτης αποθηκεύτηκε, αλλά δεν μπορέσαμε να συνεχίσουμε. Βρείτε τον στη λίστα σας."
 }

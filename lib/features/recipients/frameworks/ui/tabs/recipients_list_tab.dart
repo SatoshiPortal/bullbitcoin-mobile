@@ -2,13 +2,15 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class RecipientsListTab extends StatefulWidget {
   const RecipientsListTab({this.hookError, super.key});
@@ -138,15 +140,15 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               ),
             ),
           ),
-        BlocSelector<RecipientsBloc, RecipientsState, Exception?>(
+        BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
           selector: (state) => state.failedToSelectRecipient,
-          builder: (context, e) {
-            if (e == null) return const SizedBox.shrink();
+          builder: (context, failure) {
+            if (failure == null) return const SizedBox.shrink();
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 16.0),
               child: Text(
-                '$e',
+                failure.toTranslated(context),
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.error,
                 ),
@@ -178,15 +180,31 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         return const Center(child: CircularProgressIndicator());
       }
 
-      final message = state.failedToLoadRecipients != null
-          ? context.loc.recipientsListLoadError
-          : context.loc.recipientsListEmpty;
+      // Translated from the failure rather than one static string:
+      //  RecipientsNetworkFailure exists to tell the user to check their
+      //  connection, and this is the only place a load failure is shown, so a
+      //  static message would throw that advice away. The pull-to-retry hint
+      //  the static string used to carry is kept as its own line, since it is
+      //  an affordance of THIS screen rather than something a failure knows.
+      final failure = state.failedToLoadRecipients;
+      final message =
+          failure?.toTranslated(context) ?? context.loc.recipientsListEmpty;
       // Wrap in a scrollable so pull-to-refresh works while empty.
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const Gap(96.0),
           Center(child: Text(message, style: context.font.bodyLarge)),
+          if (failure != null) ...[
+            const Gap(8.0),
+            Center(
+              child: Text(
+                context.loc.recipientsListPullToRetry,
+                style: context.font.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ],
       );
     }
