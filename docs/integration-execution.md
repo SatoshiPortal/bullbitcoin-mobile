@@ -104,7 +104,7 @@ Replay is complete. The table was reconciled against the actual 31-commit Git hi
 ## Next core gates (not completed)
 
 - I2 host regression gate: preserved durability tests passed in the 3,191-test root run on the merged schema. This is not the remaining I8 device/fidelity gate.
-- I3: BullVault SQL writes still need atomic backup-revision recording and a post-commit publication wake-up. Represented fields are wallet reference, lineage, generation, status and encoded recovery package; labels already have the wallet-preference path. Internal generation reservations/setup flags should not cause uploads unless they change a represented value.
+- I3: implemented and reviewed in the continuation below; all 3,380 workspace tests pass. Represented fields are wallet reference, lineage, generation, status and encoded recovery package; labels retain the existing wallet-preference path. This does not close I4/I5/I7/I8.
 - I4: verify canonical seed ownership throughout signing and backup callers. Exercise lock during awaited signing work and invocation of an already-created Payjoin signing callback after lock; the current callback retains a native signer and is not covered by testing only construction after lock.
 - I5: prove restore status/ownership/lineage behavior against actual SQLite, review remaining privacy lifecycle races, and remove the recovery dependency cycle through app composition.
 - Concrete remaining privacy sites: `lib/core/wallet/data/payjoin_wallet_adapter.dart:66` returns the native signing callback directly after loading private material; callback invocation after lock needs its own test and capability check. `lib/features/bullvault/ui/bullvault_onboarding_screen.dart:813` still enables protection without waiting before building the mobile-passphrase input. Neither site was changed by the post-replay fixes recorded here.
@@ -143,4 +143,38 @@ Results:
 
 Core restack and the five post-replay corrections are committed locally. The donor mapping was checked programmatically against Git history (31 retained, one deliberate exclusion). All three copied planning documents still match their original hashes. Original donor HEADs remain `eaa5696f0` and `7cf8694e6`; the new backend worktree remains clean at its verified baseline.
 
-This completes the restack/host-regression milestone, not the full integration or distributed recovery implementation. Next: atomic BullVault backup-change tracking (I3), private capability lifecycle (I4), remaining restore/privacy/composition seams (I5), and the core device/fidelity gate. Do not transplant distributed production entry points or claim release readiness before those gates. Final published-schema convergence (I7) also remains mandatory before release. No emulator build/install, external synthetic publication, backend record API or new recovery UI was completed in this milestone.
+That completed the restack/host-regression milestone, not the full integration or distributed recovery implementation. I3 follows below. Private capability lifecycle (I4), remaining restore/privacy/composition seams (I5), and the core device/fidelity gate remain next. Do not transplant distributed production entry points or claim release readiness before those gates. Final published-schema convergence (I7) also remains mandatory before release. No emulator build/install, external synthetic publication, backend record API or new recovery UI was completed in this milestone.
+
+## I3 continuation — atomic BullVault backup changes
+
+Implementation commit: `cf8490d44` (`fix(bullvault): record and publish committed backup changes`); test-timeout follow-up: `3a675491f`. Normal pre-commit checks passed for both. No push or deployment.
+
+Reproduced the missing dirty revision before implementation: saving a vault left `wallet_backup_states` absent (expected revision 1, actual null). The targeted test now passes.
+
+The existing BullVault SQL datasource now calls the existing storage revision recorder inside its save/delete transactions. Nested operations remain inside Ben's outer lifecycle transaction. A Drift query watches a sorted projection of the same represented fields and compares record values before emitting. Its first snapshot wakes the existing runner as well, avoiding a subscribe/initial-query race; later notifications see only committed state. The notification is passed through the owning repository, a small watch use case, and BullVault's public facade into `recordedChanges`. It does not increment the revision again.
+
+| Mutation | Backup behavior |
+| --- | --- |
+| Create/save/delete a represented vault record | Record the revision with the SQL write; a missing-row delete is a no-op. |
+| Initial activation / cancelled renewal | Status change records a revision. |
+| Renewal activation / restored lineage linking | Each changed record records a revision inside the shared outer transaction; publication sees both generations together. |
+| Restored record / recovery-package enrichment | Existing save path records changed package/lineage/generation facts. |
+| Wallet label | Existing wallet-preference recorder and trigger remain responsible. |
+| Setup confirmations, hardware setup flags, local ownership, generation reservations | Not serialized in the vault contribution; do not dirty it. |
+| Internal wallet visibility | Not the backed-up `hideOnHome` preference; derived from vault lifecycle, and committed with the lifecycle status change. |
+
+Backup triggers now start after BullVault registration in the app composition root. The new stream resolves the public facade lazily after graph construction. No new scheduler, event bus, schema revision, dependency, wire format, backup destination or UI was introduced.
+
+Verification:
+
+- Existing BullVault persistence suite plus new storage tests: 23 passed.
+- Final focused storage/automatic-publication/durability baseline suites: 42 passed.
+- Whole-project analysis, bull_ui import boundary and full tracked-source formatting passed; dart fix reports Nothing to fix. The final complete `make unit-test` exited 0: 3,201 root tests and 179 package tests, 3,380 total.
+- Tests cover each represented field independently, no-op/setup-only changes, outer rollback, revision-write failure, renewal visibility rollback, automatic creation/activation/renewal/cancellation/deletion, restart of the application graph after an unobserved committed change, and a later change during an upload. The latter produces a second publication containing the newer status.
+- Automatic-publication tests use real SQLite vault records, the real vault parser/codec, real backup serialization/encryption and the existing runner; the server and unrelated metadata/definition section owners remain test fakes. This is not a process-kill, emulator or live-server test.
+- One new test initially compared an unchecked fixture descriptor with the parser's checksummed persisted descriptor. Its assertion now compares the published package with the canonical persisted package; existing expectations were not weakened.
+- The first full run hit the default 30-second timeout in the new multi-publication lifecycle test, which had passed in the focused run. That run was interrupted after the failure rather than reported as passing. The encrypted-publication test file now declares a bounded two-minute timeout for its real crypto work under parallel-suite contention; all content/revision assertions remain unchanged. Its four scenarios passed in 31 seconds total on the follow-up run. A fresh complete workspace run uses /tmp/bbm-i3-unit-tests-final.log.
+- Review used the Kumulynja checklist solo, with current repository architecture taking precedence over the skill's older conventions. It kept the change on the existing recorder/runner path and caught a transitive `collection` import; that import was removed in favor of direct value comparison, not made a new dependency.
+- The graph now documents the already-existing WalletBackup → BullVault edge. The historical RecoverBull → WalletBackup → BullVault → RecoverBull cycle and old facade read methods that bypass use cases remain the separately planned I5 composition/refactor work. This change does not add a reverse BullVault → WalletBackup import or claim the entire graph is acyclic.
+- Final full-suite log: /tmp/bbm-i3-unit-tests-final.log. Other logs: /tmp/bbm-i3-before.log, /tmp/bbm-i3-storage-tests.log, /tmp/bbm-i3-focused-final.log, /tmp/bbm-i3-unit-tests.log (interrupted unsuccessful first run), /tmp/bbm-i3-static.log, /tmp/bbm-i3-fix-check.log and /tmp/bbm-i3-format-check.log.
+- The requested thorough follow-up review is recorded in [integration-i3-review.md](integration-i3-review.md). It applied the seven Bull Bitcoin review lenses and security checks solo, in accordance with the user's no-subagent instruction. No additional I3 blocker was found; existing signing/privacy/composition findings and untested device paths remain explicit. This is a scoped implementation review, not the final two-way stack-fidelity audit or an independent security audit.
