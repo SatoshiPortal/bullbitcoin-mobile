@@ -44,6 +44,18 @@ void main() {
   });
   tearDown(() => storage.close());
 
+  test('saving a vault durably records its backup revision', () async {
+    final record = testBullVaultCreateResult(walletId: 'wallet-id').record;
+    expect(
+      await _repository(storage).save(record),
+      isA<Ok<void, BullVaultFailure>>(),
+    );
+    final state = await storage
+        .select(storage.walletBackupStates)
+        .getSingleOrNull();
+    expect(state?.localRevision, 1);
+  });
+
   test(
     'persists lineage and generation metadata with the wallet record',
     () async {

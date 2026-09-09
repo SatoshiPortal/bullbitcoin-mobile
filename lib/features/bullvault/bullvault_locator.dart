@@ -50,6 +50,7 @@ import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_backup_changes_usecase.dart';
 
 abstract final class BullVaultLocator {
   static void setup(GetIt locator) {
@@ -197,6 +198,7 @@ abstract final class BullVaultLocator {
         locator(),
         locator<BullVaultRepository>(),
         locator<RestoreBullVaultUsecase>(),
+        WatchBullVaultBackupChangesUsecase(locator<BullVaultRepository>()),
       ),
     );
     locator.registerFactory<BullVaultOnboardingCubit>(

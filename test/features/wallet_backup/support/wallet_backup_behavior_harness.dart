@@ -59,6 +59,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_r
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/watch_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_vaults_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
@@ -340,6 +341,9 @@ final class WalletBackupBehaviorHarness {
     List<SeedDerivedWalletRecoveryFact> seedDerivedWallets = const [],
     SqliteDatabase? database,
     DateTime Function()? now,
+    BullVaultBackupSection? vaultSection,
+    InspectVaultRecoveryPackage inspectVault = fakeVaultInspector,
+    Stream<void> recordedChanges = const Stream.empty(),
   }) async {
     final walletSeed = seed ?? backupSeed();
     final settings = _Settings();
@@ -369,13 +373,14 @@ final class WalletBackupBehaviorHarness {
     final codec = WalletBackupSnapshotCodec(
       encodeManifest: keychainManifest.encodeManifestFilePayload,
       decodeManifest: keychainManifest.parseManifestFilePayload,
-      vaults: const WalletBackupVaultsCodec(inspect: fakeVaultInspector),
+      vaults: WalletBackupVaultsCodec(inspect: inspectVault),
     );
     final encryption = RecoverBullWalletBackupEncryptionRepository(codec);
     final state = DriftWalletBackupStateRepository(walletDatabase);
     final backupRemote = remote ?? FakeWalletBackupRemote();
     final definitions = FakeWalletDefinitionsSection();
     final vaults = FakeBullVaultBackupSection();
+    final backedUpVaults = vaultSection ?? vaults;
     final metadata = FakeWalletMetadataSection();
 
     final nostrIdentity = _nostrIdentity(settings, defaultSeed);
@@ -401,7 +406,7 @@ final class WalletBackupBehaviorHarness {
     final buildSnapshot = BuildWalletBackupSnapshotUsecase(
       keychainManifest,
       definitions,
-      vaults,
+      backedUpVaults,
       metadata.localSnapshot,
     );
     final registerRecoveryMaterial =
@@ -436,7 +441,10 @@ final class WalletBackupBehaviorHarness {
       now: now,
     );
     final triggers = WalletBackupTriggers(
-      recordedChanges: keychainManifest.watchCommittedChanges(),
+      recordedChanges: _mergeChanges([
+        keychainManifest.watchCommittedChanges(),
+        recordedChanges,
+      ]),
       unrecordedChanges: _mergeChanges([definitions.changes, metadata.changes]),
       syncResults: const Stream.empty(),
       runner: runner,
@@ -445,7 +453,7 @@ final class WalletBackupBehaviorHarness {
     final applySnapshot = ApplyBackupSnapshotUsecase(
       state,
       definitions,
-      vaults,
+      backedUpVaults,
       restoreManifest: RestoreWalletBackupManifestUsecase(
         ({
           required walletId,
@@ -481,8 +489,8 @@ final class WalletBackupBehaviorHarness {
         () async => const <WalletDefinition>[],
         () async => const <String>{},
         metadata.localSnapshot,
-        vaults: vaults,
-        inspectVault: fakeVaultInspector,
+        vaults: backedUpVaults,
+        inspectVault: inspectVault,
       ),
       WatchWalletBackupStateUsecase(state),
       SetWalletBackupEnabledUsecase(
@@ -537,7 +545,7 @@ final class WalletBackupBehaviorHarness {
       GetRemoteWalletBackupContentsUsecase(
         fetchRemote: fetchRemote.execute,
         fetchImport: fetchImport.execute,
-        inspectVault: fakeVaultInspector,
+        inspectVault: inspectVault,
       ),
     );
 

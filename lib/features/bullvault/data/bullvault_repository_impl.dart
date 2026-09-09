@@ -22,6 +22,9 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   );
 
   @override
+  Stream<void> watchBackupChanges() => _datasource.watchBackupChanges();
+
+  @override
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
     String source,
   ) {

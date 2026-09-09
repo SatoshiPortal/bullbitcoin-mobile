@@ -188,14 +188,14 @@ class AppLocator {
     PassphraseWalletLocator.setup(locator);
     WalletBackupLocator.setup(locator);
     BackupSettingsLocator.setup(locator);
-    if (startWalletBackupTriggers) {
-      WalletBackupLocator.start(locator);
-    }
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
     BullVaultLocator.setup(locator);
+    if (startWalletBackupTriggers) {
+      WalletBackupLocator.start(locator);
+    }
   }
 }
 

@@ -123,6 +123,11 @@ final class _WalletBackupGraph {
     // never depends on registration order, and only through its public
     // surface (forbidden edge: wallet_backup -> bullvault internals).
     BullVaultFacade bullVault() => locator<BullVaultFacade>();
+    Stream<void> vaultChanges() async* {
+      // Resolve after this graph has been constructed, not during peer DI.
+      yield* bullVault().watchBackupChanges();
+    }
+
     WalletBackupVaultPackageFacts? inspectVault(String source) {
       final package = bullVault().decodeRecoveryPackage(source);
       if (package == null) return null;
@@ -290,6 +295,7 @@ final class _WalletBackupGraph {
       // These owners commit the backup revision with their data. Their events
       // only wake publication; recording them again would double-count writes.
       recordedChanges: _mergeChanges([
+        vaultChanges(),
         keychainManifest.watchCommittedChanges(),
         definitions.changes,
         locator<WatchWalletPreferenceChangesUsecase>().execute(),

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/can_delete_bullvaul
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_backup_changes_usecase.dart';
 
 export 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
@@ -27,12 +28,17 @@ class BullVaultFacade {
   final CanDeleteBullVaultWalletUsecase _canDeleteWalletUsecase;
   final BullVaultRepository _repository;
   final RestoreBullVaultUsecase _restoreUsecase;
+  final WatchBullVaultBackupChangesUsecase _watchBackupChanges;
 
   const BullVaultFacade(
     this._canDeleteWalletUsecase,
     this._repository,
     this._restoreUsecase,
+    this._watchBackupChanges,
   );
+
+  /// Initial wake-up and committed changes whose revisions are already saved.
+  Stream<void> watchBackupChanges() => _watchBackupChanges.execute();
 
   /// Every vault record on this device, for the backup's vaults section.
   @useResult
