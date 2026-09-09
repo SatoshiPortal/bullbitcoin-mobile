@@ -226,9 +226,21 @@ class SwapStatusMapper {
                   ? swap_entity.SwapStatus.claimable.name
                   : swap_entity.SwapStatus.paid.name,
             );
+          // These events carry OUR lockup's txid as Boltz saw it. The
+          // app-recorded broadcast txid stays authoritative; the event's is
+          // taken only when none was recorded (app killed between broadcast
+          // and store) — without it the row would read as "no funds moved"
+          // and be excluded from refund, watch and rescue forever.
           case LnSendSwapModel():
+            return swap.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+              sendTxid: swap.sendTxid ?? transactionId,
+            );
           case ChainSwapModel():
-            return swap.copyWith(status: swap_entity.SwapStatus.paid.name);
+            return swap.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+              sendTxid: swap.sendTxid ?? transactionId,
+            );
         }
 
       case boltz.SwapStatus.txnConfirmed:
@@ -236,8 +248,15 @@ class SwapStatusMapper {
           case LnReceiveSwapModel():
             return swap.copyWith(status: swap_entity.SwapStatus.claimable.name);
           case LnSendSwapModel():
+            return swap.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+              sendTxid: swap.sendTxid ?? transactionId,
+            );
           case ChainSwapModel():
-            return swap.copyWith(status: swap_entity.SwapStatus.paid.name);
+            return swap.copyWith(
+              status: swap_entity.SwapStatus.paid.name,
+              sendTxid: swap.sendTxid ?? transactionId,
+            );
         }
 
       case boltz.SwapStatus.txnClaimed:

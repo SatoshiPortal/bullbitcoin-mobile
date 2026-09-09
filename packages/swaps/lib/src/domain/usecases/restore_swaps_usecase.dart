@@ -23,7 +23,10 @@ class RestoreSwapsUsecase {
             existsLocally: localSwaps.containsKey(swap.id),
             locallyUnresolved: switch (localSwaps[swap.id]) {
               null => false,
-              final local => !_isLocallySettled(local),
+              final local => !_isLocallySettled(
+                local,
+                onChainRecoverable: swap.recoverable,
+              ),
             },
           ),
       ];
@@ -46,8 +49,11 @@ class RestoreSwapsUsecase {
 
   /// Whether the local row records a resolution we can trust: a terminal
   /// status alone is not enough when funds were locked — there must be a
-  /// proving txid (or an MRH direct payment) behind it.
-  bool _isLocallySettled(Swap swap) {
+  /// proving txid (or an MRH direct payment) behind it. [onChainRecoverable]
+  /// is Boltz's restore verdict that a lockup exists and is unresolved: it
+  /// beats the local "no sendTxid means nothing ever moved" inference, which
+  /// is false when the app died between broadcast and store.
+  bool _isLocallySettled(Swap swap, {required bool onChainRecoverable}) {
     switch (swap.status) {
       case SwapStatus.completed:
         return switch (swap) {
@@ -60,8 +66,12 @@ class RestoreSwapsUsecase {
       case SwapStatus.expired:
       case SwapStatus.failed:
         return switch (swap) {
-          LnSendSwap() => swap.sendTxid == null || swap.refundTxid != null,
-          ChainSwap() => swap.sendTxid == null || swap.refundTxid != null,
+          LnSendSwap() =>
+            swap.refundTxid != null ||
+                (swap.sendTxid == null && !onChainRecoverable),
+          ChainSwap() =>
+            swap.refundTxid != null ||
+                (swap.sendTxid == null && !onChainRecoverable),
           LnReceiveSwap() => true,
         };
       case SwapStatus.pending:
