@@ -40,10 +40,12 @@ class UpdateLatestEncryptedVaultTestUsecase {
         environment: settings.environment,
       );
 
-      if (availableWallets.isEmpty ||
-          availableWallets.any(
-            (wallet) => wallet.singleLocalSeedFingerprint != decodedFingerprint,
-          )) {
+      final matchingWallets = availableWallets
+          .where(
+            (wallet) => wallet.singleLocalSeedFingerprint == decodedFingerprint,
+          )
+          .toList();
+      if (matchingWallets.isEmpty) {
         return const Err(
           InvalidVaultFileFailure(
             'The vault does not belong to the current wallet.',
@@ -51,7 +53,7 @@ class UpdateLatestEncryptedVaultTestUsecase {
         );
       }
 
-      for (final wallet in availableWallets) {
+      for (final wallet in matchingWallets) {
         await _walletRepository.updateEncryptedBackupTime(
           time: DateTime.now(),
           walletId: wallet.id,

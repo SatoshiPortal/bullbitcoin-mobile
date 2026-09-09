@@ -40,10 +40,7 @@ void main() {
     'rejects a vault for another seed without changing test history',
     () async {
       when(
-        () => wallets.getWallets(
-          onlyDefaults: true,
-          environment: Environment.mainnet,
-        ),
+        () => wallets.getWallets(environment: Environment.mainnet),
       ).thenAnswer((_) async => [_wallet(masterFingerprint: '00000000')]);
 
       final result = await usecase.execute(decryptedVault: _vault());
