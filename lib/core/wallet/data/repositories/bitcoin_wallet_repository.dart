@@ -792,7 +792,8 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     } on Exception catch (error, stackTrace) {
       log.severe(
         message: 'Bitcoin signing operation failed',
-        error: error,
+        // Native/parser exceptions may include the descriptor or key input.
+        error: error.runtimeType,
         trace: stackTrace,
       );
       return const Err(

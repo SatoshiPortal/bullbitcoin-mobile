@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:drift_dev/api/migrations_native.dart';
@@ -13,6 +15,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -30,6 +33,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
@@ -99,6 +103,7 @@ void main() {
   late BdkWalletDatasource bdkDatasource;
   late FrozenWalletUtxoDatasource frozenWalletUtxoDatasource;
   late BitcoinWalletRepository repository;
+  late WalletUnlockSession privateSession;
   late Directory tempDirectory;
   late PathProviderPlatform originalPathProvider;
 
@@ -110,6 +115,8 @@ void main() {
     PathProviderPlatform.instance = _TestPathProvider(tempDirectory.path);
     metadataDatasource = _MockWalletMetadataDatasource();
     seedDatasource = _MockSeedDatasource();
+    privateSession = WalletUnlockSession();
+    addTearDown(privateSession.close);
     bdkDatasource = _SigningTestBdkWalletDatasource();
     frozenWalletUtxoDatasource = _MockFrozenWalletUtxoDatasource();
     when(
@@ -119,7 +126,7 @@ void main() {
       walletMetadataDatasource: metadataDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
         seedDatasource: seedDatasource,
-        session: WalletUnlockSession(),
+        session: privateSession,
       ),
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
@@ -159,6 +166,7 @@ void main() {
             network: Network.bitcoinTestnet,
             scriptType: scriptType,
             isDefault: true,
+            provenance: WalletProvenance.defaultSeed,
           );
           if (migrated) metadata = await _migrateMetadata(metadata, signer);
           expect(
@@ -177,6 +185,51 @@ void main() {
       );
     }
   }
+
+  test(
+    'signs a passphrase wallet through its session without seed-store access',
+    () async {
+      final seed =
+          SeedModel.mnemonic(
+                mnemonicWords: testMnemonics.first.split(' '),
+                passphrase: 'private-session-test',
+              ).toEntity()
+              as MnemonicSeed;
+      final metadata = await WalletMetadataService.deriveFromSeed(
+        seed: seed,
+        network: Network.bitcoinTestnet,
+        scriptType: ScriptType.bip84,
+        provenance: WalletProvenance.defaultSeedPassphrase,
+        isDefault: false,
+      );
+      stubWallet(metadata, const []);
+      privateSession.unlockIfCurrent(
+        generation: privateSession.beginMount(),
+        walletId: metadata.id,
+        seed: seed,
+      );
+      final psbt = buildUnsignedPsbt(descriptor: metadata.publicDescriptor);
+
+      final signed = _unwrapSigning(
+        await repository.signPsbt(psbt, walletId: metadata.id),
+      );
+      expect(signed.isFinalized, isTrue);
+      verifyZeroInteractions(seedDatasource);
+
+      privateSession.lock();
+      final locked = await repository.signPsbt(psbt, walletId: metadata.id);
+      expect(
+        locked,
+        isA<Err<({String psbt, bool isFinalized}), BitcoinSigningFailure>>()
+            .having(
+              (result) => result.failure.kind,
+              'failure kind',
+              BitcoinSigningFailureKind.walletLocked,
+            ),
+      );
+      verifyZeroInteractions(seedDatasource);
+    },
+  );
 
   test('private wallet reconstruction rejects nonstandard keychains', () async {
     final signer = _singleSignatureFixture(testMnemonics.first);
@@ -695,6 +748,11 @@ void main() {
   });
 
   test('does not report wallet storage failures as invalid PSBTs', () async {
+    const sensitiveInput = 'sensitive-signing-input-fixture';
+    final captured = <String>[];
+    final originalDebugPrint = debugPrint;
+    debugPrint = (message, {wrapWidth}) => captured.add(message ?? '');
+    addTearDown(() => debugPrint = originalDebugPrint);
     final signer = _singleSignatureFixture(testMnemonics.first);
     final descriptor = twoPathDescriptor(
       signer.externalPublic,
@@ -729,7 +787,7 @@ void main() {
         wallet: wallet,
         walletFingerprints: any(named: 'walletFingerprints'),
       ),
-    ).thenThrow(Exception('wallet database unavailable'));
+    ).thenThrow(Exception('wallet database unavailable: $sensitiveInput'));
     final reviewRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       signingMaterialResolver: WalletSigningMaterialResolver(
@@ -747,6 +805,11 @@ void main() {
     );
 
     expect(_failureKind(result), BitcoinSigningFailureKind.unexpected);
+    expect(
+      captured.any((line) => line.contains('Bitcoin signing operation failed')),
+      isTrue,
+    );
+    expect(captured.join('\n'), isNot(contains(sensitiveInput)));
   });
 
   test('maps mismatching external signer results to invalid PSBT', () async {
@@ -1090,7 +1153,9 @@ Future<WalletMetadataModel> _migrateMetadata(
   await legacy.close();
   final database = SqliteDatabase(schema.newConnection());
   try {
-    await verifier.migrateAndValidate(database, 16);
+    // Exercise legacy signer normalization through the complete current
+    // migration before reading with the current metadata datasource.
+    await verifier.migrateAndValidate(database, database.schemaVersion);
     return (await WalletMetadataDatasource(
       sqlite: database,
     ).fetch(metadata.id))!;
