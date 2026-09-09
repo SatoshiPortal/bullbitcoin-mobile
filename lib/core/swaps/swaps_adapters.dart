@@ -4,12 +4,33 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/swap_model_sqlite.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:drift/drift.dart';
-import 'package:swaps/swaps.dart' as swaps;
+import 'package:drift_flutter/drift_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:boltz_swaps/boltz_swaps.dart' as swaps;
+
+/// Opens the engine's own database file. Same platform choices as the app
+/// database (documents dir, WAL, busy timeout, cross-isolate sharing) — the
+/// package itself stays pure Dart and just takes the executor.
+QueryExecutor openBoltzSwapsDbConnection() {
+  return driftDatabase(
+    name: swaps.BoltzSwapsDatabase.name,
+    native: DriftNativeOptions(
+      databaseDirectory: getApplicationDocumentsDirectory,
+      shareAcrossIsolates: true,
+      setup: (database) {
+        // busy_timeout first so the WAL switch retries instead of failing
+        // with SQLITE_BUSY when another isolate holds the file (same
+        // rationale as the app database's setup).
+        database.execute('PRAGMA busy_timeout = 2000;');
+        database.execute('PRAGMA journal_mode = WAL;');
+        database.execute('PRAGMA synchronous = FULL;');
+      },
+    ),
+  );
+}
 
 /// App logger behind the package's silent-by-default log seam.
 class AppSwapsLog implements swaps.SwapsLog {
@@ -29,74 +50,6 @@ class AppSwapsLog implements swaps.SwapsLog {
   );
   @override
   Future<void> flush() => log.flush();
-}
-
-/// Drift-backed row store: the dumb sqlite half of the engine's persistence.
-class DriftSwapRowStore implements swaps.SwapRowStore {
-  final SqliteDatabase _db;
-
-  DriftSwapRowStore(this._db);
-
-  @override
-  Future<void> store(swaps.SwapModel swapModel) async {
-    await _db.into(_db.swaps).insertOnConflictUpdate(swapModel.toSqlite());
-  }
-
-  @override
-  Future<swaps.SwapModel?> fetch(String swapId) async {
-    final row = await _db.managers.swaps
-        .filter((f) => f.id(swapId))
-        .getSingleOrNull();
-    if (row == null) return null;
-    return SwapModelSqliteMapper.fromSqlite(row);
-  }
-
-  @override
-  Stream<swaps.SwapModel> watch(String swapId) => _db.managers.swaps
-      .filter((f) => f.id(swapId))
-      .watchSingleOrNull()
-      .where((row) => row != null)
-      .map((row) => SwapModelSqliteMapper.fromSqlite(row!));
-
-  @override
-  Future<List<swaps.SwapModel>> fetchAll({
-    String? walletId,
-    bool? isTestnet,
-  }) async {
-    final all = await _db.managers.swaps.filter((f) {
-      Expression<bool> expr = const Constant(true);
-      if (walletId != null) {
-        expr =
-            expr &
-            (f.sendWalletId.equals(walletId) |
-                f.receiveWalletId.equals(walletId));
-      }
-      if (isTestnet != null) {
-        expr = expr & f.isTestnet.equals(isTestnet);
-      }
-      return expr;
-    }).get();
-    return all.map(SwapModelSqliteMapper.fromSqlite).toList();
-  }
-
-  @override
-  Future<swaps.SwapModel?> fetchByTxId(String txId) async {
-    final row = await _db.managers.swaps
-        .filter(
-          (f) =>
-              f.sendTxid.equals(txId) |
-              f.receiveTxid.equals(txId) |
-              f.refundTxid.equals(txId),
-        )
-        .getSingleOrNull();
-    if (row == null) return null;
-    return SwapModelSqliteMapper.fromSqlite(row);
-  }
-
-  @override
-  Future<void> trash(String swapId) async {
-    await _db.managers.swaps.filter((f) => f.id(swapId)).delete();
-  }
 }
 
 /// Platform secure storage behind the engine's secret-store contract.

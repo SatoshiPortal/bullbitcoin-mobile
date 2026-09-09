@@ -14,7 +14,7 @@ workspace:
   # dependency, so it is not compiled into the APK (zero build impact).
   - packages/bull_ui_catalogue
   - packages/primitives
-  - packages/swaps
+  - packages/boltz_swaps
 
 dependencies:
   flutter:
@@ -22,7 +22,7 @@ dependencies:
   bull_payjoin:
   bull_ui:
   primitives:
-  swaps:
+  boltz_swaps:
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -51,17 +51,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: a4dd62d881675ef1f3065dfcd9f72fc3f6206820
+      ref: 2ba73bdca3390a1d01b47174818034e08376cd73
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: a4dd62d881675ef1f3065dfcd9f72fc3f6206820
+      ref: 2ba73bdca3390a1d01b47174818034e08376cd73
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: a4dd62d881675ef1f3065dfcd9f72fc3f6206820
+      ref: 2ba73bdca3390a1d01b47174818034e08376cd73
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -115,7 +115,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: a4dd62d881675ef1f3065dfcd9f72fc3f6206820
+      ref: 2ba73bdca3390a1d01b47174818034e08376cd73
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0

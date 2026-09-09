@@ -1,4 +1,4 @@
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

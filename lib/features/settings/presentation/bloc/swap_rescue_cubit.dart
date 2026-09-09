@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 
 enum SwapRescueStatus { loading, ready, rescuing, success, error }
 

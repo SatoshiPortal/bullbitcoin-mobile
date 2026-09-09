@@ -1,4 +1,4 @@
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';

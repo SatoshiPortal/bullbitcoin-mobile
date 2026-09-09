@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_expire_a
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amount_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';

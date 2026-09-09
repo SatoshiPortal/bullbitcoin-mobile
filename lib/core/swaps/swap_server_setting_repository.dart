@@ -36,19 +36,28 @@ class SwapServerSettingRepository {
     if (trimmed.isEmpty) return true;
     if (trimmed.contains(RegExp(r'\s'))) return false;
     final normalized = trimmed
-        .replaceFirst(RegExp('^https?://'), '')
+        .replaceFirst(RegExp('^(https?|wss?)://'), '')
         .replaceFirst(RegExp(r'/+$'), '');
     final uri = Uri.tryParse('https://$normalized');
     return uri != null && uri.host.isNotEmpty;
   }
+
+  /// True when the stored value opts into plaintext (explicit http://).
+  static bool isPlaintext(String url) => url.startsWith('http://');
 
   Future<void> reset() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
   }
 
-  /// The engine expects a bare host path (it prefixes https:// itself).
-  String _normalize(String url) => url
-      .replaceFirst(RegExp('^https?://'), '')
-      .replaceFirst(RegExp(r'/+$'), '');
+  /// The engine expects a bare host path and prefixes https:// and wss://
+  /// itself. One deliberate exception: an explicitly typed `http://` is kept
+  /// (and the websocket follows it as ws://) so a local dev/staging backend
+  /// through an SSH tunnel works — the production default can never be
+  /// downgraded because it carries no scheme.
+  String _normalize(String url) {
+    final trimmed = url.replaceFirst(RegExp(r'/+$'), '');
+    if (trimmed.startsWith('http://')) return trimmed;
+    return trimmed.replaceFirst(RegExp('^(https|wss?)://'), '');
+  }
 }

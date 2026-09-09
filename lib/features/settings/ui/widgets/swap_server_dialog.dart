@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
@@ -9,6 +10,8 @@ import 'package:flutter/material.dart';
 Future<void> showSwapServerDialog(BuildContext context) async {
   final repository = locator<SwapServerSettingRepository>();
   final current = await repository.fetch();
+  final isTestnet =
+      (await locator<SettingsRepository>().fetch()).environment.isTestnet;
   if (!context.mounted) return;
 
   final controller = TextEditingController(
@@ -54,7 +57,12 @@ Future<void> showSwapServerDialog(BuildContext context) async {
             ),
             TextButton(
               onPressed: () async {
-                if (!SwapServerSettingRepository.isValid(controller.text)) {
+                // Plaintext servers are a testnet-only dev affordance.
+                if (!SwapServerSettingRepository.isValid(controller.text) ||
+                    (!isTestnet &&
+                        SwapServerSettingRepository.isPlaintext(
+                          controller.text.trim(),
+                        ))) {
                   setState(
                     () => errorText = dialogContext.loc.swapServerInvalid,
                   );

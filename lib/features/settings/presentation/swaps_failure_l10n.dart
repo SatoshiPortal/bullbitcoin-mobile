@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/widgets.dart';
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 
 extension SwapsFailureL10n on SwapsFailure {
   String toTranslated(BuildContext context) => switch (this) {

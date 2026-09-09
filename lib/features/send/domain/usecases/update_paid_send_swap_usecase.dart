@@ -1,4 +1,4 @@
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 
 class UpdatePaidSendSwapUsecase {
   final BoltzSwapRepository _swapRepository;

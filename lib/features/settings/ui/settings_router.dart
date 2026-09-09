@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';

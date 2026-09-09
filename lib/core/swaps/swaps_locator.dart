@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
 import 'package:bb_mobile/core/swaps/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -12,7 +13,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' as wallet;
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:get_it/get_it.dart';
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 
 /// Wires the self-contained `swaps` engine package to the app: storage
 /// backends, wallet/fee/electrum callbacks, the watcher, and the usecases
@@ -26,12 +27,13 @@ class SwapsLocator {
     locator.registerLazySingleton<SwapServerSettingRepository>(
       SwapServerSettingRepository.new,
     );
-    // Read once here (setup is async); a changed server takes effect on the
-    // next launch.
-    final boltzUrl = await locator<SwapServerSettingRepository>().fetch();
+    locator.registerLazySingleton<BoltzSwapsDatabase>(
+      () => BoltzSwapsDatabase(openBoltzSwapsDbConnection()),
+    );
+    final rowStore = DriftSwapRowStore(locator<BoltzSwapsDatabase>());
     locator.registerLazySingleton<SwapStorage>(
       () => SwapStorage(
-        rows: DriftSwapRowStore(locator<SqliteDatabase>()),
+        rows: rowStore,
         secrets: SecureSecretStore(
           locator<KeyValueStorageDatasource<String>>(
             instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
@@ -39,12 +41,34 @@ class SwapsLocator {
         ),
       ),
     );
+    // The engine's rows moved out of the app database into its own file;
+    // copy anything the app database still holds. Transactional and
+    // insert-if-absent: the copy and its completion marker commit together,
+    // and a retried import can never overwrite rows the engine has since
+    // written.
+    await BoltzSwapsDbMigration(
+      appDb: locator<SqliteDatabase>(),
+      swapsDb: locator<BoltzSwapsDatabase>(),
+      rows: rowStore,
+    ).run();
+  }
+
+  static Future<void> registerRepositories(GetIt locator) async {
+    // Environment and server URL are read once at startup: switching either
+    // takes effect on the next launch.
+    final environment =
+        (await locator<SettingsRepository>().fetch()).environment;
+    var boltzUrl = await locator<SwapServerSettingRepository>().fetch();
+    // A plaintext (http://) server is a dev/staging affordance and is only
+    // honored on testnet; on mainnet the scheme is stripped so the same
+    // host is reached over https instead.
+    if (!environment.isTestnet &&
+        SwapServerSettingRepository.isPlaintext(boltzUrl)) {
+      boltzUrl = boltzUrl.substring('http://'.length);
+    }
     locator.registerLazySingleton<BoltzDatasource>(
       () => BoltzDatasource(url: boltzUrl, boltzStore: locator<SwapStorage>()),
     );
-  }
-
-  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<SwapsAppGlue>(
       () => SwapsAppGlue(
         walletRepository: locator<WalletRepository>(),
@@ -60,7 +84,7 @@ class SwapsLocator {
         final walletTxs = locator<WalletTransactionRepository>();
         return BoltzSwapRepository(
           boltz: locator<BoltzDatasource>(),
-          isTestnet: false,
+          isTestnet: environment.isTestnet,
           electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
           newAddressFor: (walletId) async =>
               (await addresses.generateNewReceiveAddress(

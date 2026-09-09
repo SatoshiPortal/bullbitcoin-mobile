@@ -19,7 +19,7 @@ void main() {
 
     test('legacy recovery still stores upstream magic-routing data', () {
       final source = File(
-        'packages/swaps/lib/src/data/boltz_swap_repository.dart',
+        'packages/boltz_swaps/lib/src/data/boltz_swap_repository.dart',
       ).readAsStringSync();
 
       expect(source, contains('magicBip21: bip21'));

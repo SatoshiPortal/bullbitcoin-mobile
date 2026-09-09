@@ -1,4 +1,4 @@
-import 'package:swaps/swaps.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRestoreStatus { initial, loading, success, error }
