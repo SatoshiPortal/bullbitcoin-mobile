@@ -832,7 +832,7 @@ void main() {
       seedDatasource.seeds[imported.masterFingerprint] = imported;
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer((_) async => imported.toEntity());
+      ).thenAnswer((_) async => Ok(imported.toEntity()));
       seedDatasource.failWrites = true;
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,

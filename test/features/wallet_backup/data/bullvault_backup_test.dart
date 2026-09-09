@@ -120,7 +120,11 @@ void main() {
             generation: 0,
           );
           return Ok(
-            BullVaultRestoreResult(wallet: _wallet(label), record: record),
+            BullVaultRestoreResult(
+              wallet: _wallet(label),
+              record: record,
+              mobileAccess: BullVaultMobileAccess.unavailable,
+            ),
           );
         },
       );
@@ -208,6 +212,7 @@ void main() {
           BullVaultRestoreResult(
             wallet: _wallet(label),
             record: _record(walletId: label, lineageId: 'x', generation: 0),
+            mobileAccess: BullVaultMobileAccess.unavailable,
           ),
         );
       },

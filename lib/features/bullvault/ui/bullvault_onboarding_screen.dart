@@ -40,7 +40,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:screen_privacy/screen_privacy.dart';
-import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
 
 final class BullVaultOnboardingScreen extends StatelessWidget {
   const BullVaultOnboardingScreen({super.key});

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
