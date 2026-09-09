@@ -119,15 +119,10 @@ final class _ImportInheritanceMnemonicScreen extends StatefulWidget {
 final class _ImportInheritanceMnemonicScreenState
     extends State<_ImportInheritanceMnemonicScreen>
     with PrivacyScreen {
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
   late final _InheritanceMnemonicCubit _cubit = _InheritanceMnemonicCubit(
     widget.network,
   );
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
 
   @override
   void dispose() {
@@ -146,7 +141,13 @@ final class _ImportInheritanceMnemonicScreenState
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => PrivacyGate(
+    protection: _privacyFuture,
+    unprotected: const PrivacyUnavailableNotice(),
+    builder: (context) => _buildImport(context),
+  );
+
+  Widget _buildImport(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(context.loc.bullVaultInheritanceImportMnemonic)),
     body: SafeArea(
       child: Column(

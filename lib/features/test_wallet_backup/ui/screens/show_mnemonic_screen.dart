@@ -151,6 +151,11 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
     return FutureBuilder<(List<String>, String?)>(
       future: _secretFuture,
       builder: (context, snapshot) {
+        // FutureBuilder retains the previous data while a new future loads.
+        // Never show that wallet's words under the newly selected wallet.
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final mnemonic = snapshot.data?.$1 ?? const <String>[];
         final passphrase = snapshot.data?.$2 ?? '';
 

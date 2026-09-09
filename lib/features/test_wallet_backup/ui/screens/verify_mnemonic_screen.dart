@@ -43,6 +43,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   List<String> _shuffled = [];
   List<int> _selectedIndices = [];
   String? _fingerprint;
+  var _loadGeneration = 0;
   bool _isLoading = true;
   bool _loadFailed = false;
 
@@ -68,18 +69,23 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         .state
         .selectedWallet
         ?.singleLocalSeedFingerprint;
-    if (fingerprint == null || fingerprint == _fingerprint) return;
+    if (fingerprint == _fingerprint) return;
 
+    final generation = ++_loadGeneration;
     _fingerprint = fingerprint;
     setState(() {
-      _isLoading = true;
-      _loadFailed = false;
+      _mnemonic = [];
+      _shuffled = [];
+      _selectedIndices = [];
+      _isLoading = fingerprint != null;
+      _loadFailed = fingerprint == null;
     });
+    if (fingerprint == null) return;
     try {
       final (mnemonic, _) = await context
           .read<TestWalletBackupBloc>()
           .loadSelectedWalletMnemonic();
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _mnemonic = mnemonic;
         _shuffled = [...mnemonic]..shuffle();
@@ -87,7 +93,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         _isLoading = false;
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _isLoading = false;
         _loadFailed = true;
@@ -155,7 +161,8 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               previous.verificationStatus != current.verificationStatus ||
               (previous.statusError.isEmpty && current.statusError.isNotEmpty),
           listener: (context, state) {
-            if (state.selectedWallet?.singleLocalSeedFingerprint != _fingerprint) {
+            if (state.selectedWallet?.singleLocalSeedFingerprint !=
+                _fingerprint) {
               unawaited(_loadSecret());
             }
             if (state.statusError.isNotEmpty) {
