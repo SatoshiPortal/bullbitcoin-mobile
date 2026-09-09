@@ -5,8 +5,9 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/liquid_send_port.dart';
 
-class LiquidWalletRepository {
+class LiquidWalletRepository implements LiquidSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final LwkWalletDatasource _lwkWallet;
@@ -18,6 +19,7 @@ class LiquidWalletRepository {
   }) : _seed = seedDatasource,
        _lwkWallet = lwkWalletDatasource;
 
+  @override
   Future<String> buildPset({
     required String walletId,
     required String address,
