@@ -1,5 +1,8 @@
 import 'package:bull_tor/tor.dart';
 import 'package:test/test.dart';
+import 'package:socks5_proxy/enums.dart';
+import 'package:socks5_proxy/exceptions.dart';
+import 'package:bull_tor/src/data/tor_connection_failure_classifier.dart';
 
 void main() {
   test('classifies SOCKS command replies without exposing the destination', () {

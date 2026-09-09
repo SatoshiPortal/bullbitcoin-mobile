@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:socks5_proxy/socks_client.dart';
 
 import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/tor_failure.dart';
-import '../domain/tor_connection_failure_recorder.dart';
+import 'tor_connection_failure_recorder.dart';
 
 /// Builds an HTTP client for an already-selected Tor route.
 ///
