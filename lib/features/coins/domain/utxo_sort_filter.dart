@@ -165,11 +165,20 @@ int _primaryCompare(WalletUtxo a, WalletUtxo b, CoinsSort sort) {
     case CoinsSort.amountAsc:
       return a.amountSat.compareTo(b.amountSat);
     case CoinsSort.dateNewest:
-      // Fewer confirmations = newer; pending (0) is newest.
-      return a.confirmations.compareTo(b.confirmations);
+      return -_compareAge(a, b);
     case CoinsSort.dateOldest:
-      return b.confirmations.compareTo(a.confirmations);
+      return _compareAge(a, b);
   }
+}
+
+int _compareAge(WalletUtxo a, WalletUtxo b) {
+  if (a is LiquidWalletUtxo && b is LiquidWalletUtxo) {
+    if (!a.isConfirmed || !b.isConfirmed) {
+      return (a.isConfirmed ? 0 : 1).compareTo(b.isConfirmed ? 0 : 1);
+    }
+    return a.blockHeight!.compareTo(b.blockHeight!);
+  }
+  return b.confirmations.compareTo(a.confirmations);
 }
 
 /// Deterministic tie-break: amount descending, then outpoint key.

@@ -21,13 +21,6 @@ final class SendRouteArgs {
   }
 
   void _validate() {
-    if (!wallet.isBitcoin) {
-      throw ArgumentError.value(
-        wallet.id,
-        'wallet',
-        'must be a Bitcoin wallet',
-      );
-    }
     if (selectedOutpoints.isEmpty) {
       throw ArgumentError.value(
         selectedOutpoints,
