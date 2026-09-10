@@ -836,10 +836,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     //  message straight into state.
     //
     //  Re-implementing the rules here instead would duplicate them and let
-    //  receive drift the day one is added. The proper fix is to make
-    //  NoteValidator return a typed violation that each feature maps and
-    //  translates; that lands with the labels migration, and receive picks it
-    //  up then.
+    //  receive drift the day one is added. NoteValidator returns a typed
+    //  NoteViolation that the sheet maps and translates, so the rules live in
+    //  one place.
     emit(state.copyWith(note: event.note.trim()));
   }
 
