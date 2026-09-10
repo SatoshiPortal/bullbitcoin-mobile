@@ -5922,10 +5922,6 @@
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
   },
-  "labelInputLabel": "Label",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "requiredHint": "Required",
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
@@ -13464,37 +13460,6 @@
       }
     }
   },
-  "labelErrorNotFound": "Label \"{label}\" not found.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "This type {type} is not supported",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Unexpected error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels cannot be deleted.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "logsShareOptionExport": "Export",
   "@logsShareOptionExport": {
     "description": "Option in the bottom sheet to export logs as a file to Downloads or iCloud Drive"
@@ -14693,5 +14658,56 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "labelsErrorNoteTooLong": "Note must be {max} characters or fewer",
+  "@labelsErrorNoteTooLong": {
+    "description": "Shown under the note field when the typed note exceeds the maximum length.",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "labelsErrorNoteForbiddenCharacter": "Note cannot contain the character {character}",
+  "@labelsErrorNoteForbiddenCharacter": {
+    "description": "Shown when the typed note contains a character that cannot be carried in a BIP21 URI.",
+    "placeholders": {
+      "character": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorFileTooLarge": "That file is too large. Labels files must be under {max}.",
+  "@labelsErrorFileTooLarge": {
+    "description": "Shown when the chosen labels file exceeds the import size limit.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "labelsErrorFileUnreadable": "This does not look like a BIP-329 labels file. Check you picked the right file.",
+  "@labelsErrorFileUnreadable": {
+    "description": "Shown when the chosen labels file cannot be parsed as BIP-329."
+  },
+  "labelsErrorFileEmpty": "That file contains no labels to import.",
+  "@labelsErrorFileEmpty": {
+    "description": "Shown when the labels file parses correctly but holds no labels."
+  },
+  "labelsErrorExportFailed": "Your labels could not be saved. Please try again.",
+  "@labelsErrorExportFailed": {
+    "description": "Shown when writing the exported labels file fails. Not used when the user cancels the save dialog."
+  },
+  "labelsErrorFileReservedName": "That file uses a label name reserved by the app. Rename it in the file and try again.",
+  "@labelsErrorFileReservedName": {
+    "description": "Shown when an imported labels file contains a label matching one of the app's system label names."
+  },
+  "labelsErrorNoteForbiddenWhitespace": "Note cannot contain line breaks or tabs",
+  "@labelsErrorNoteForbiddenWhitespace": {
+    "description": "Shown when the note contains a control character. Used instead of the forbidden-character message, which would render the character itself and so show nothing visible."
+  },
+  "labelsErrorFileInvalidEntry": "Some entries in that file could not be read. Check the file and try again.",
+  "@labelsErrorFileInvalidEntry": {
+    "description": "Shown when an imported labels file is structurally valid BIP-329 but an entry carries an invalid reference (txid, outpoint or xpub)."
   }
 }

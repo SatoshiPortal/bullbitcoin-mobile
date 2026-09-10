@@ -517,10 +517,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "लेबल",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "प्रारंभ करना",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11769,37 +11765,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "विनिमय दर अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
   "priceChartLoadFailed": "मूल्य चार्ट डेटा लोड नहीं हो सका। कृपया पुनः प्रयास करें।",
-  "labelErrorUnexpected": "Unexpected त्रुटि: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "सिस्टम लेबल को हटाया नहीं जा सकता है।।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "इस प्रकार {type} समर्थित नहीं है",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "लेबल \"{label}\" नहीं मिला।।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "घंटे",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -12422,5 +12387,14 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "labelsErrorNoteTooLong": "नोट {max} अक्षरों से अधिक नहीं होना चाहिए",
+  "labelsErrorNoteForbiddenCharacter": "नोट में {character} वर्ण नहीं हो सकता",
+  "labelsErrorFileTooLarge": "यह फ़ाइल बहुत बड़ी है। लेबल फ़ाइलें {max} से छोटी होनी चाहिए।",
+  "labelsErrorFileUnreadable": "यह BIP-329 लेबल फ़ाइल नहीं लगती। जाँचें कि आपने सही फ़ाइल चुनी है।",
+  "labelsErrorFileEmpty": "इस फ़ाइल में आयात करने के लिए कोई लेबल नहीं है।",
+  "labelsErrorExportFailed": "आपके लेबल सहेजे नहीं जा सके। कृपया फिर से प्रयास करें।",
+  "labelsErrorFileReservedName": "यह फ़ाइल ऐप द्वारा आरक्षित लेबल नाम का उपयोग करती है। फ़ाइल में इसका नाम बदलें और फिर से प्रयास करें।",
+  "labelsErrorNoteForbiddenWhitespace": "नोट में लाइन ब्रेक या टैब नहीं हो सकते",
+  "labelsErrorFileInvalidEntry": "उस फ़ाइल की कुछ प्रविष्टियाँ पढ़ी नहीं जा सकीं। फ़ाइल जाँचें और फिर से प्रयास करें।"
 }

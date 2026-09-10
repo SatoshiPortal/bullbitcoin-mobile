@@ -189,7 +189,6 @@
   "swapReceiveExactAmountLabel": "Receber quantidade exata",
   "swapInsufficientFunds": "Fundos insuficientes",
   "ledgerImportButton": "Importação de início",
-  "labelInputLabel": "Etiqueta",
   "bitboxActionPairDeviceButton": "Iniciar emparelhamento",
   "importQrDeviceSpecterName": "Espectro",
   "transactionDetailLabelSwapFees": "Taxas de swap",
@@ -4411,31 +4410,6 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "labelErrorUnexpected": "Erro inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
-  "labelErrorUnsupportedType": "Este tipo {type} não é suportado",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Label \"{label}\" não encontrado.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "horas",
   "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
   "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
@@ -4960,5 +4934,14 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "labelsErrorNoteTooLong": "A nota não pode ter mais de {max} caracteres",
+  "labelsErrorNoteForbiddenCharacter": "A nota não pode conter o caractere {character}",
+  "labelsErrorFileTooLarge": "Esse ficheiro é demasiado grande. Os ficheiros de etiquetas devem ter menos de {max}.",
+  "labelsErrorFileUnreadable": "Isto não parece ser um ficheiro de etiquetas BIP-329. Verifique se escolheu o ficheiro certo.",
+  "labelsErrorFileEmpty": "Esse ficheiro não contém etiquetas para importar.",
+  "labelsErrorExportFailed": "Não foi possível guardar as suas etiquetas. Tente novamente.",
+  "labelsErrorFileReservedName": "Esse ficheiro usa um nome de etiqueta reservado pela aplicação. Mude-o no ficheiro e tente novamente.",
+  "labelsErrorNoteForbiddenWhitespace": "A nota não pode conter quebras de linha nem tabulações",
+  "labelsErrorFileInvalidEntry": "Não foi possível ler algumas entradas desse ficheiro. Verifique o ficheiro e tente novamente."
 }

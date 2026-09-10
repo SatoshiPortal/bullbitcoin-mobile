@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -735,13 +734,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    final validationResult = NoteValidator.validate(event.note);
-
-    if (validationResult.isValid) {
-      emit(state.copyWith(note: event.note.trim(), error: null));
-    } else {
-      emit(state.copyWith(error: validationResult.errorMessage));
-    }
+    // No validation here. The only dispatcher is the note bottom sheet,
+    //  which refuses to pop while NoteValidator rejects the text — so the
+    //  branch this replaces was unreachable, and it put NoteValidator's
+    //  hardcoded English straight into state.
+    //
+    //  Receive's own error handling is a separate change; this keeps the
+    //  reachable behaviour identical.
+    emit(state.copyWith(note: event.note.trim(), error: null));
   }
 
   Future<void> _onNoteSaved(

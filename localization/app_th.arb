@@ -517,10 +517,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "ป้ายฉลาก",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "เริ่มต้นคู่",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11513,40 +11509,9 @@
   "bitcoinPriceExchangeRateUnavailable": "ไม่สามารถดึงข้อมูลอัตราแลกเปลี่ยนได้ โปรดลองอีกครั้งในภายหลัง",
   "priceChartLoadFailed": "ไม่สามารถโหลดข้อมูลกราฟราคาได้ โปรดลองอีกครั้ง",
   "mempoolErrorInvalidUrl": "URL ของเซิร์ฟเวอร์ไม่ถูกต้อง โปรดป้อนโดเมนหรือที่อยู่ IP ที่ถูกต้อง",
-  "labelErrorUnexpected": "แก้ไขข้อผิดพลาด: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "จำเป็นต้องมีป้ายกำกับเพื่อนำเข้ามเนโมนิก",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "ระบบฉลากไม่สามารถลบ.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "ประเภทนี้ {type} ไม่ได้สนับสนุน",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "ไม่พบป้ายชื่อ \"{label}\"",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "ชั่วโมง",
   "@sendEstimatedDeliveryHours": {
@@ -12236,5 +12201,14 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "labelsErrorNoteTooLong": "หมายเหตุต้องมีความยาวไม่เกิน {max} ตัวอักษร",
+  "labelsErrorNoteForbiddenCharacter": "หมายเหตุไม่สามารถมีอักขระ {character} ได้",
+  "labelsErrorFileTooLarge": "ไฟล์นี้ใหญ่เกินไป ไฟล์ป้ายกำกับต้องมีขนาดน้อยกว่า {max}",
+  "labelsErrorFileUnreadable": "ไฟล์นี้ดูเหมือนจะไม่ใช่ไฟล์ป้ายกำกับ BIP-329 โปรดตรวจสอบว่าคุณเลือกไฟล์ถูกต้อง",
+  "labelsErrorFileEmpty": "ไฟล์นี้ไม่มีป้ายกำกับให้นำเข้า",
+  "labelsErrorExportFailed": "ไม่สามารถบันทึกป้ายกำกับของคุณได้ โปรดลองอีกครั้ง",
+  "labelsErrorFileReservedName": "ไฟล์นี้ใช้ชื่อป้ายกำกับที่แอปสงวนไว้ โปรดเปลี่ยนชื่อในไฟล์แล้วลองอีกครั้ง",
+  "labelsErrorNoteForbiddenWhitespace": "หมายเหตุไม่สามารถมีการขึ้นบรรทัดใหม่หรือแท็บได้",
+  "labelsErrorFileInvalidEntry": "ไม่สามารถอ่านบางรายการในไฟล์นี้ได้ โปรดตรวจสอบไฟล์แล้วลองอีกครั้ง"
 }

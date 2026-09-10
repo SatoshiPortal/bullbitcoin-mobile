@@ -1621,7 +1621,6 @@
   },
   "submitButton": "Enviar",
   "optionalPassphraseHint": "Frase de contraseña opcional",
-  "labelInputLabel": "Etiqueta",
   "requiredHint": "Requerido",
   "wordsDropdownSuffix": " palabras",
   "emptyMnemonicWordsError": "Ingrese todas las palabras de su mnemónico",
@@ -4368,31 +4367,6 @@
     "description": "Error shown when seed deletion fails"
   },
   "sendEstimatedDeliveryHours": "horas",
-  "labelErrorNotFound": "Etiqueta \"{label}\" no encontrada.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Este tipo {type} no es compatible",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Error inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Las etiquetas del sistema no se pueden eliminar.",
   "mempoolErrorUnexpected": "Ocurrió un error inesperado",
   "mempoolErrorUpdateSettingsFailed": "Error al actualizar la configuración: {error}",
   "coreScreensUnexpectedError": "Error inesperado: {message}.",
@@ -4911,5 +4885,14 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "labelsErrorNoteTooLong": "La nota no debe tener más de {max} caracteres",
+  "labelsErrorNoteForbiddenCharacter": "La nota no puede contener el carácter {character}",
+  "labelsErrorFileTooLarge": "Ese archivo es demasiado grande. Los archivos de etiquetas deben pesar menos de {max}.",
+  "labelsErrorFileUnreadable": "Esto no parece un archivo de etiquetas BIP-329. Comprueba que elegiste el archivo correcto.",
+  "labelsErrorFileEmpty": "Ese archivo no contiene etiquetas para importar.",
+  "labelsErrorExportFailed": "No se pudieron guardar tus etiquetas. Inténtalo de nuevo.",
+  "labelsErrorFileReservedName": "Ese archivo usa un nombre de etiqueta reservado por la aplicación. Cámbialo en el archivo e inténtalo de nuevo.",
+  "labelsErrorNoteForbiddenWhitespace": "La nota no puede contener saltos de línea ni tabulaciones",
+  "labelsErrorFileInvalidEntry": "Algunas entradas de ese archivo no se pudieron leer. Revisa el archivo e inténtalo de nuevo."
 }

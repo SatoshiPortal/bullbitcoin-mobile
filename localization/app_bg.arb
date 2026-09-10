@@ -629,10 +629,6 @@
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
-  "labelInputLabel": "Етикет",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "Започнете сдвояване.",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -10120,10 +10116,6 @@
   "sendErrorInsufficientBalanceFrozenHint": "Няма достатъчно наличен баланс — {amount} е замразен. Размразете монетите в „Управление на монетите“, за да го използвате.",
   "importWalletBitBox": "BitBox02",
   "importWalletBitBoxNova": "BitBox02 Nova",
-  "labelErrorNotFound": "Етикетът „{label}“ не е намерен.",
-  "labelErrorUnsupportedType": "Този тип {type} не се поддържа",
-  "labelErrorUnexpected": "Неочаквана грешка: {message}",
-  "labelErrorSystemCannotDelete": "Системните етикети не могат да бъдат изтрити.",
   "consolidationDone": "Готово",
   "consolidationFailedBody": "Възникна неочаквана грешка. Средствата ви са в безопасност: не беше излъчена транзакция. Моля, опитайте отново.",
   "consolidationFailedTitle": "Консолидацията е неуспешна",
@@ -10233,5 +10225,14 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "labelsErrorNoteTooLong": "Бележката не може да е по-дълга от {max} знака",
+  "labelsErrorNoteForbiddenCharacter": "Бележката не може да съдържа знака {character}",
+  "labelsErrorFileTooLarge": "Този файл е твърде голям. Файловете с етикети трябва да са под {max}.",
+  "labelsErrorFileUnreadable": "Това не изглежда като файл с етикети BIP-329. Проверете дали сте избрали правилния файл.",
+  "labelsErrorFileEmpty": "Този файл не съдържа етикети за импортиране.",
+  "labelsErrorExportFailed": "Етикетите ви не можаха да бъдат запазени. Опитайте отново.",
+  "labelsErrorFileReservedName": "Този файл използва име на етикет, запазено от приложението. Преименувайте го във файла и опитайте отново.",
+  "labelsErrorNoteForbiddenWhitespace": "Бележката не може да съдържа нови редове или табулации",
+  "labelsErrorFileInvalidEntry": "Някои записи в този файл не можаха да бъдат прочетени. Проверете файла и опитайте отново."
 }

@@ -190,7 +190,6 @@
   "swapReceiveExactAmountLabel": "Получить точную сумму",
   "swapInsufficientFunds": "Недостаточно средств",
   "ledgerImportButton": "Начало",
-  "labelInputLabel": "Этикетки",
   "bitboxActionPairDeviceButton": "Путеводитель",
   "importQrDeviceSpecterName": "Specter",
   "transactionDetailLabelSwapFees": "Плата за смывку",
@@ -4371,31 +4370,6 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "labelErrorUnexpected": "Неожиданная ошибка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Системные этикетки нельзя удалить.",
-  "labelErrorUnsupportedType": "Этот тип {type} не поддерживается",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Лейбл «{label}» не найден.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "часы",
   "mempoolErrorUnexpected": "Произошла непредвиденная ошибка",
   "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
@@ -4920,5 +4894,14 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "labelsErrorNoteTooLong": "Заметка должна содержать не более {max} символов",
+  "labelsErrorNoteForbiddenCharacter": "Заметка не может содержать символ {character}",
+  "labelsErrorFileTooLarge": "Этот файл слишком большой. Файлы меток должны быть меньше {max}.",
+  "labelsErrorFileUnreadable": "Похоже, это не файл меток BIP-329. Проверьте, что выбрали нужный файл.",
+  "labelsErrorFileEmpty": "В этом файле нет меток для импорта.",
+  "labelsErrorExportFailed": "Не удалось сохранить ваши метки. Попробуйте ещё раз.",
+  "labelsErrorFileReservedName": "В этом файле используется имя метки, зарезервированное приложением. Переименуйте его в файле и попробуйте снова.",
+  "labelsErrorNoteForbiddenWhitespace": "Заметка не может содержать переносы строк или табуляции",
+  "labelsErrorFileInvalidEntry": "Некоторые записи в этом файле не удалось прочитать. Проверьте файл и попробуйте снова."
 }

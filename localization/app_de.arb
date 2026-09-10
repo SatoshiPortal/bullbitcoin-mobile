@@ -188,7 +188,6 @@
   "swapReceiveExactAmountLabel": "Genauen Betrag erhalten",
   "swapInsufficientFunds": "Unzureichendes Guthaben",
   "ledgerImportButton": "Import starten",
-  "labelInputLabel": "Bezeichnung",
   "bitboxActionPairDeviceButton": "Kopplung starten",
   "importQrDeviceSpecterName": "Specter",
   "transactionDetailLabelSwapFees": "Swap-Gebühren",
@@ -4319,31 +4318,6 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "labelErrorUnexpected": "Unerwarteter Fehler: {message}.",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Systemlabels können nicht gelöscht werden.",
-  "labelErrorUnsupportedType": "Der Typ {type} wird nicht unterstützt.",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Label „{label}“ nicht gefunden.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "Stunden",
   "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
   "logsShareOptionExport": "Exportieren",
@@ -4952,5 +4926,14 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet."
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "labelsErrorNoteTooLong": "Die Notiz darf höchstens {max} Zeichen lang sein",
+  "labelsErrorNoteForbiddenCharacter": "Die Notiz darf das Zeichen {character} nicht enthalten",
+  "labelsErrorFileTooLarge": "Diese Datei ist zu groß. Etikettendateien müssen kleiner als {max} sein.",
+  "labelsErrorFileUnreadable": "Dies scheint keine BIP-329-Etikettendatei zu sein. Prüfe, ob du die richtige Datei gewählt hast.",
+  "labelsErrorFileEmpty": "Diese Datei enthält keine Etiketten zum Importieren.",
+  "labelsErrorExportFailed": "Deine Etiketten konnten nicht gespeichert werden. Bitte versuche es erneut.",
+  "labelsErrorFileReservedName": "Diese Datei verwendet einen von der App reservierten Etikettennamen. Benenne ihn in der Datei um und versuche es erneut.",
+  "labelsErrorNoteForbiddenWhitespace": "Die Notiz darf keine Zeilenumbrüche oder Tabulatoren enthalten",
+  "labelsErrorFileInvalidEntry": "Einige Einträge in dieser Datei konnten nicht gelesen werden. Prüfe die Datei und versuche es erneut."
 }
