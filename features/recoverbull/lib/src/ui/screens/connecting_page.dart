@@ -311,7 +311,7 @@ class _Body extends StatelessWidget {
   String _connectionNarrative(BuildContext context) {
     if (_tor is tor.TorReady &&
         state.keyServerStatus != KeyServerStatus.online) {
-      return context.loc.recoverbullConnectedTorCheckingServer;
+      return context.loc.recoverbullConnectingTor;
     }
 
     if (reconnecting && _tor is tor.TorConnecting) {

@@ -285,6 +285,7 @@
   "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
   "recoverbullRetry": "Réessayer",
   "recoverbullConnectedTorCheckingServer": "Connecté à Tor. Vérification du serveur de sauvegarde.",
+  "recoverbullConnectingTor": "Connexion au serveur de clés via Tor. Cela peut prendre jusqu'à une minute.",
   "recoverbullElapsedSinceStart": "Temps écoulé depuis le début de la tentative : {duration}",
   "@recoverbullElapsedSinceStart": {
     "description": "Temps écoulé depuis le début de la tentative de connexion en cours"

@@ -355,11 +355,8 @@ void main() {
     );
     expect(find.byKey(const ValueKey('tor-bull-ready')), findsOneWidget);
     expect(find.byKey(const ValueKey('tor-bull-direct')), findsNothing);
-    expect(
-      find.text(l10n.recoverbullConnectedTorCheckingServer),
-      findsOneWidget,
-    );
-    expect(find.text('Connecting to Key Server over Tor.'), findsNothing);
+    expect(find.text(l10n.recoverbullConnectingTor), findsOneWidget);
+    expect(find.text(l10n.recoverbullConnectingTor), findsOneWidget);
   });
 
   testWidgets('does not show refresh progress beside the connected verdict', (

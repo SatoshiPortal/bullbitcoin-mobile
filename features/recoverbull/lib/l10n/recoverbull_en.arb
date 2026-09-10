@@ -744,6 +744,7 @@
     "description": "Button text to retry failed operation"
   },
   "recoverbullConnectedTorCheckingServer": "Connected to Tor. Checking the backup server.",
+  "recoverbullConnectingTor": "Connecting to Key Server over Tor. This can take up to a minute.",
   "recoverbullElapsedSinceStart": "Elapsed since attempt started: {duration}",
   "@recoverbullElapsedSinceStart": {
     "description": "Elapsed time since the current connection attempt started"
