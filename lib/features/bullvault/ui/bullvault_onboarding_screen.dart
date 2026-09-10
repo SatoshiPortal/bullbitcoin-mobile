@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_inheritance_mnemonic_flow.dart';
@@ -812,14 +813,9 @@ final class _MobilePassphrase extends StatefulWidget {
 
 final class _MobilePassphraseState extends State<_MobilePassphrase>
     with PrivacyScreen {
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
   var _passphrase = '';
   var _confirmation = '';
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
 
   @override
   void dispose() {
@@ -838,7 +834,13 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => PrivacyGate(
+    protection: _privacyFuture,
+    unprotected: const PrivacyUnavailableNotice(standalone: false),
+    builder: _buildForm,
+  );
+
+  Widget _buildForm(BuildContext context) {
     final cubit = context.read<BullVaultOnboardingCubit>();
     final mismatch = _confirmation.isNotEmpty && _passphrase != _confirmation;
     return Column(
@@ -861,15 +863,17 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
           style: context.font.titleSmall,
         ),
         const Gap(8),
-        BullInputText(
-          value: _passphrase,
-          onChanged: (value) => _update(passphrase: value),
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
+        ExcludeSemantics(
+          child: BullInputText(
+            value: _passphrase,
+            onChanged: (value) => _update(passphrase: value),
+            obscure: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            smartQuotesType: SmartQuotesType.disabled,
+            smartDashesType: SmartDashesType.disabled,
+            maxLines: 1,
+          ),
         ),
         const Gap(16),
         Text(
@@ -877,15 +881,17 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
           style: context.font.titleSmall,
         ),
         const Gap(8),
-        BullInputText(
-          value: _confirmation,
-          onChanged: (value) => _update(confirmation: value),
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
+        ExcludeSemantics(
+          child: BullInputText(
+            value: _confirmation,
+            onChanged: (value) => _update(confirmation: value),
+            obscure: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            smartQuotesType: SmartQuotesType.disabled,
+            smartDashesType: SmartDashesType.disabled,
+            maxLines: 1,
+          ),
         ),
         if (mismatch) ...[
           const Gap(8),

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +17,17 @@ class _MockRestoreBullVaultUsecase extends Mock
 
 void main() {
   testWidgets('fills the descriptor field from a QR scan', (tester) async {
+    const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      channel,
+      (_) async => true,
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        null,
+      ),
+    );
     const descriptor = 'tr(test-descriptor)';
     final cubit = BullVaultRestoreCubit(_MockRestoreBullVaultUsecase());
     addTearDown(cubit.close);
@@ -54,6 +66,7 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
     await tester.drag(find.byType(ListView), const Offset(0, -600));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.qr_code_scanner));
