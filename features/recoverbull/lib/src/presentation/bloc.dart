@@ -861,18 +861,22 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     final result = await verifyDecryptedVaultUsecase.execute(
       decryptedVault: decryptedVault,
     );
-    if (result case Ok(value: VaultVerificationResult.match)) return true;
-    if (state.flow == RecoverBullFlow.recoverVault) {
-      switch (result) {
-        case Ok(value: VaultVerificationResult.noCurrentWallet):
-          return true;
-        case Ok():
-        case Err():
-          break;
-      }
+    switch (result) {
+      case Ok(value: VaultVerificationResult.match):
+        return true;
+      case Ok(value: VaultVerificationResult.noCurrentWallet)
+          when state.flow == RecoverBullFlow.recoverVault:
+        return true;
+      case Ok(value: VaultVerificationResult.mismatch):
+        emit(
+          state.copyWith(failure: const VaultBelongsToAnotherWalletFailure()),
+        );
+        return false;
+      case Ok():
+      case Err():
+        emit(state.copyWith(failure: const VaultDecryptionFailure()));
+        return false;
     }
-    emit(state.copyWith(failure: const VaultDecryptionFailure()));
-    return false;
   }
 
   // Persists the recovered wallets, kicks off the real WalletBloc sync, and

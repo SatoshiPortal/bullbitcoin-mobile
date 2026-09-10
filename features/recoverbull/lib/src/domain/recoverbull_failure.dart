@@ -87,6 +87,10 @@ final class VaultDecryptionFailure extends RecoverBullFailure {
   const VaultDecryptionFailure();
 }
 
+final class VaultBelongsToAnotherWalletFailure extends RecoverBullFailure {
+  const VaultBelongsToAnotherWalletFailure();
+}
+
 final class VaultRecoveryFailure extends RecoverBullFailure {
   const VaultRecoveryFailure();
 }

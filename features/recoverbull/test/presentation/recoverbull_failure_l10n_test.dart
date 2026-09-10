@@ -30,6 +30,45 @@ void main() {
     expect(messages[1], contains('key server'));
   });
 
+  testWidgets('explains that a decrypted vault belongs to another wallet', (
+    tester,
+  ) async {
+    late String english;
+    late String french;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            english = const VaultBelongsToAnotherWalletFailure().toTranslated(
+              context,
+            );
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            french = const VaultBelongsToAnotherWalletFailure().toTranslated(
+              context,
+            );
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+
+    expect(english, 'This vault does not belong to this wallet.');
+    expect(french, 'Ce coffre ne correspond pas à ce portefeuille.');
+  });
+
   testWidgets('distinguishes Tor from an unavailable key server in French', (
     tester,
   ) async {
