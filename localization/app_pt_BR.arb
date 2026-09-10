@@ -1271,10 +1271,6 @@
   "@payMemo": {
     "description": "Label for optional payment note"
   },
-  "appStartupErrorMessageWithBackup": "Não podia inicializar. Excluir e reinstalar para corrigir.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "passportStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Passaporte. Analisa-o.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
@@ -5253,10 +5249,6 @@
   "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
   "@recoverbullErrorServiceUnavailable": {
     "description": "Error message when key server service is unavailable"
-  },
-  "appStartupErrorMessageNoBackup": "Não podia inicializar. Excluir e reinstalar para corrigir. Se sua semente não for apoiada, você pode visualizá-la em Configurações->Bitcoin Settings->View Sementes após reinstalar.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "dcaLightningAddressEmptyError": "Digite um endereço de Lightning",
   "@dcaLightningAddressEmptyError": {

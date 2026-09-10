@@ -3252,8 +3252,6 @@
   "addressViewChangeAddressesComingSoon": "ხურდის მისამართები მალე დაემატება",
   "addressViewChangeAddressesDescription": "საფულის ხურდის მისამართების ჩვენება",
   "appStartupErrorTitle": "გაშვების შეცდომა",
-  "appStartupErrorMessageWithBackup": "ინიციალიზაცია ვერ მოხერხდა. გამოსასწორებლად წაშალეთ და ხელახლა დააინსტალირეთ.",
-  "appStartupErrorMessageNoBackup": "ინიციალიზაცია ვერ მოხერხდა. გამოსასწორებლად წაშალეთ და ხელახლა დააინსტალირეთ. თუ თქვენი სახარის სარეზერვო ასლი არ გაქვთ, ხელახლა ინსტალაციის შემდეგ შეგიძლიათ ნახოთ ის Settings → Bitcoin Settings → View Seeds-ში.",
   "appStartupContactSupportButton": "მხარდაჭერასთან დაკავშირება",
   "ledgerImportTitle": "Ledger საფულის იმპორტი",
   "ledgerSignTitle": "ტრანზაქციაზე ხელმოწერა",

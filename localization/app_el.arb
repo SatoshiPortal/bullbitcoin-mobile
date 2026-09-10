@@ -1208,10 +1208,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "Δεν θα μπορούσε να αρχικά. Διαγράψτε και επανεγκατεστηθείτε για να διορθώσετε.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "Paste Invoice",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4108,10 +4104,6 @@
   "buyKYCLevel3": "Επίπεδο 3 - Πλήρης",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "Δεν θα μπορούσε να αρχικά. Διαγράψτε και επανεγκατεστηθείτε για να διορθώσετε. Εάν ο σπόρος σας δεν υποστηρίζεται, μπορείτε να το δείτε σύμφωνα με τις ρυθμίσεις ->Bitcoin Ρυθμίσεις ->View Οι σπόροι μετά την επανεγκατάσταση.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "Πήγαινε σπίτι",
   "@sellGoHome": {

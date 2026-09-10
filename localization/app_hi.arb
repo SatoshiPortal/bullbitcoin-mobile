@@ -1386,10 +1386,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "आरंभ नहीं हो सका। ठीक करने के लिए हटाएं और पुनर्स्थापित करें।।",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "Invoice",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4844,10 +4840,6 @@
   "buyKYCLevel3": "स्तर 3 - पूर्ण",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "आरंभ नहीं हो सका। ठीक करने के लिए हटाएं और पुनर्स्थापित करें। यदि आपका बीज वापस नहीं किया जाता है, तो आप इसे सेटिंग->Bitcoin सेटिंग्स-> व्यू के तहत देख सकते हैं फिर से स्थापित होने के बाद बीज।।",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "होम पर जाएं",
   "@sellGoHome": {

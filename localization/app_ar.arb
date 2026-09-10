@@ -1300,10 +1300,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "لا يمكن البدء. تحذف وتعيد تركيبها.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "فاتورة القس",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4539,10 +4535,6 @@
   "buyKYCLevel3": "المستوى 3 - الكامل",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "لا يمكن البدء. تحذف وتعيد تركيبها إن لم تكن بذورك مدعمة، يمكنك أن تراها تحت \"ستينغز\" البذور بعد إعادة الاستقرار.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "عودي للمنزل",
   "@sellGoHome": {

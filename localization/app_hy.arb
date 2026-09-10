@@ -3155,8 +3155,6 @@
   "addressViewChangeAddressesComingSoon": "Մանրադրամի հասցեները շուտով",
   "addressViewChangeAddressesDescription": "Ցուցադրել դրամապանակի մանրադրամի հասցեները",
   "appStartupErrorTitle": "Գործարկման սխալ",
-  "appStartupErrorMessageWithBackup": "Չհաջողվեց սկզբնավորել։ Ջնջեք և վերատեղադրեք՝ ուղղելու համար։",
-  "appStartupErrorMessageNoBackup": "Չհաջողվեց սկզբնավորել։ Ջնջեք և վերատեղադրեք՝ ուղղելու համար։ Եթե ձեր սերմը պահուստավորված չէ, կարող եք դիտել այն Կարգավորումներ->Bitcoin կարգավորումներ->Դիտել սերմերը բաժնում՝ վերատեղադրումից հետո։",
   "appStartupContactSupportButton": "Կապվել աջակցության հետ",
   "ledgerImportTitle": "Ներմուծել Ledger դրամապանակ",
   "ledgerProcessingVerify": "Հասցեն ցուցադրվում է Ledger-ի վրա...",

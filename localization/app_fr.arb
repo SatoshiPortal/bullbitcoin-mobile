@@ -3365,8 +3365,6 @@
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
   "appStartupErrorMessage": "L'application n'a pas pu démarrer. Essayez de la fermer complètement puis de la relancer. Si l'erreur persiste, contactez le support et partagez vos journaux.",
-  "appStartupErrorMessageWithBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger.",
-  "appStartupErrorMessageNoBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger. Si votre phrase de récupération n'est pas sauvegardée, vous pouvez la consulter dans Paramètres->Paramètres Bitcoin->Voir les phrases après la réinstallation.",
   "appStartupContactSupportButton": "Contacter le support",
   "ledgerImportTitle": "Importer un portefeuille Ledger",
   "ledgerSignTitle": "Signer la transaction",

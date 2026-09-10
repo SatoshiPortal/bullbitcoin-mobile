@@ -1386,10 +1386,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "초기화 할 수 없습니다. 수정 및 재설치.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "페이스 북",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4844,10 +4840,6 @@
   "buyKYCLevel3": "레벨 3 - 전체",
   "@buyKYCLevel3": {
     "description": "Full verification tier"
-  },
-  "appStartupErrorMessageNoBackup": "초기화 할 수 없습니다. 수정 및 재설치. 씨앗이 백업되지 않은 경우 Settings->Bitcoin Settings->View에서 볼 수 있습니다. 재설치 후 씨앗.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "오시는 길",
   "@sellGoHome": {

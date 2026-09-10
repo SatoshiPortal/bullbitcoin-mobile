@@ -9610,14 +9610,6 @@
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
-  "appStartupErrorMessageWithBackup": "Initialize nahi ho saka. Fix karne ke liye delete karke reinstall karo.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "Initialize nahi ho saka. Fix karne ke liye delete karke reinstall karo. Agar aapka seed backed up nahi hai, toh reinstall ke baad Settings->Bitcoin Settings->View Seeds mein dekh sakte hain.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
-  },
   "appStartupContactSupportButton": "Support se Contact Karo",
   "@appStartupContactSupportButton": {
     "description": "Button label to contact support when app startup fails"

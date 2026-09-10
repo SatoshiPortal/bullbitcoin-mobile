@@ -9850,8 +9850,6 @@
   "addressViewChangeAddressesComingSoon": "Ресто адресите очаквайте скоро",
   "addressViewChangeAddressesDescription": "Показва ресто адресите на портфейла",
   "appStartupErrorTitle": "Грешка при стартиране",
-  "appStartupErrorMessageWithBackup": "Инициализацията не бе успешна. Изтрийте и преинсталирайте приложението, за да коригирате проблема.",
-  "appStartupErrorMessageNoBackup": "Инициализацията не бе успешна. Изтрийте и преинсталирайте приложението, за да коригирате проблема. Ако seed фразата ви не е архивирана, можете да я видите в Настройки -> Настройки на Bitcoin -> Виж seed фразите след преинсталиране.",
   "appStartupContactSupportButton": "Свържи се с поддръжката",
   "ledgerImportTitle": "Импортирай Ledger портфейл",
   "ledgerSignTitle": "Подпиши транзакция",
