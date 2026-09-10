@@ -1013,6 +1013,190 @@ void main() {
     ).called(1);
   });
 
+  test(
+    'repairs a saved vault record referencing the passphrase seed',
+    () async {
+      const passphrase = 'vault passphrase';
+      final protectedPolicy = _passphrasePolicy(
+        descriptorPort: descriptorPort,
+        passphrase: passphrase,
+        includeRecoveryKey: true,
+      );
+      final first = await usecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: protectedPolicy.descriptor,
+        label: 'Protected vault',
+        mobilePassphrase: passphrase,
+      );
+      final original =
+          (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+      final record = original.record;
+      // The old record constructor defaults to the everyday (passphrase) seed
+      // when no canonical reference was recorded.
+      repository.records[record.walletId] = BullVaultRecord(
+        walletId: record.walletId,
+        lineageId: record.lineageId,
+        vaultGeneration: record.vaultGeneration,
+        mobileAccount: record.mobileAccount,
+        birthHeight: record.birthHeight,
+        recoveryPackage: record.recoveryPackage,
+        createdAt: record.createdAt,
+      );
+      expect(
+        repository.records[record.walletId]!.mobileSeedFingerprint,
+        isNot(record.mobileSeedFingerprint),
+      );
+      descriptorPort.duplicate = WalletAlreadyExistsException(record.walletId);
+      when(
+        () => getWallet.execute(record.walletId),
+      ).thenAnswer((_) async => original.wallet);
+      clearInteractions(reserveAccount);
+      repository.publishedWalletIds.clear();
+
+      final result = await usecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: protectedPolicy.descriptor,
+        label: 'Protected vault',
+        mobilePassphrase: passphrase,
+      );
+      final restored =
+          (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+      expect(
+        restored.record.mobileSeedFingerprint,
+        record.mobileSeedFingerprint,
+      );
+      expect(
+        repository.records[record.walletId]!.mobileSeedFingerprint,
+        record.mobileSeedFingerprint,
+      );
+      expect(repository.publishedWalletIds, {record.walletId});
+      expect(restored.wallet.signers, original.wallet.signers);
+      verify(
+        () => reserveAccount.execute(
+          seedFingerprint: record.mobileSeedFingerprint!,
+          coinType: 1,
+          account: record.mobileAccount!,
+        ),
+      ).called(1);
+      verifyZeroInteractions(walletSignerOwnership);
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
+
+  for (final defect in ['missing owner', 'wrong owner', 'passphrase flag']) {
+    for (final recovery in [false, true]) {
+      test(
+        'repairs a local signer with $defect (recovery key: $recovery)',
+        () async {
+          const passphrase = 'vault passphrase';
+          final protectedPolicy = _passphrasePolicy(
+            descriptorPort: descriptorPort,
+            passphrase: passphrase,
+            includeRecoveryKey: recovery,
+          );
+          final first = await usecase.execute(
+            kind: BullVaultRestoreInputKind.descriptor,
+            source: protectedPolicy.descriptor,
+            label: 'Protected vault',
+            mobilePassphrase: passphrase,
+          );
+          final original =
+              (first as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+          final broken = original.wallet.copyWith(
+            signers: [
+              for (final signer in original.wallet.signers)
+                if (signer.signer == SignerEntity.local)
+                  WalletSigner(
+                    id: signer.id,
+                    signer: signer.signer,
+                    signerDevice: signer.signerDevice,
+                    localSeedFingerprint: switch (defect) {
+                      'missing owner' => null,
+                      'wrong owner' => 'deadbeef',
+                      _ => signer.localSeedFingerprint,
+                    },
+                    descriptorKeys: [
+                      for (final key in signer.descriptorKeys)
+                        defect == 'passphrase flag'
+                            ? key.copyWith(
+                                requiresPassphrase: !key.requiresPassphrase,
+                              )
+                            : key,
+                    ],
+                  )
+                else
+                  signer,
+            ],
+          );
+          descriptorPort.duplicate = WalletAlreadyExistsException(broken.id);
+          when(
+            () => getWallet.execute(broken.id),
+          ).thenAnswer((_) async => broken);
+          when(
+            () => walletSignerOwnership.markSignerLocal(
+              walletId: broken.id,
+              signerId: any(named: 'signerId'),
+              seedFingerprint: any(named: 'seedFingerprint'),
+              passphraseProtectedKeyIds: any(
+                named: 'passphraseProtectedKeyIds',
+              ),
+            ),
+          ).thenAnswer((call) async {
+            final signerId = call.namedArguments[#signerId] as String;
+            final protectedIds =
+                call.namedArguments[#passphraseProtectedKeyIds] as Set<String>;
+            return broken.copyWith(
+              signers: [
+                for (final signer in broken.signers)
+                  if (signer.id == signerId)
+                    WalletSigner(
+                      id: signer.id,
+                      signer: SignerEntity.local,
+                      signerDevice: null,
+                      localSeedFingerprint:
+                          call.namedArguments[#seedFingerprint] as String,
+                      descriptorKeys: [
+                        for (final key in signer.descriptorKeys)
+                          key.copyWith(
+                            requiresPassphrase: protectedIds.contains(key.id),
+                          ),
+                      ],
+                    )
+                  else
+                    signer,
+              ],
+            );
+          });
+          final result = await usecase.execute(
+            kind: BullVaultRestoreInputKind.descriptor,
+            source: protectedPolicy.descriptor,
+            label: 'Protected vault',
+            mobilePassphrase: passphrase,
+          );
+          final restored =
+              (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+          expect(restored.wallet.signers, original.wallet.signers);
+          expect(restored.mobileAccess, BullVaultMobileAccess.available);
+          expect(repository.records, hasLength(1));
+          verify(
+            () => walletSignerOwnership.markSignerLocal(
+              walletId: broken.id,
+              signerId: BullVaultSignerRole.everyday.name,
+              seedFingerprint: original.record.mobileSeedFingerprint!,
+              passphraseProtectedKeyIds: original.wallet.signers
+                  .singleWhere((signer) => signer.signer == SignerEntity.local)
+                  .descriptorKeys
+                  .where((key) => key.requiresPassphrase)
+                  .map((key) => key.id)
+                  .toSet(),
+            ),
+          ).called(1);
+        },
+        timeout: const Timeout(Duration(minutes: 2)),
+      );
+    }
+  }
+
   test('rejects inconsistent predecessor metadata in a package', () async {
     final package = BullVaultRecoveryPackage(
       previousVaultId: 'unexpected-predecessor',
@@ -1627,6 +1811,7 @@ Wallet _compatibleExistingWallet({
         id: 'existing-local-signer',
         signer: SignerEntity.local,
         signerDevice: null,
+        localSeedFingerprint: signers[0].accountKey.masterFingerprint,
         descriptorKeys: [
           for (final key in parsed.descriptorKeys.where(
             (key) => key.xpub == signers[0].accountKey.xpub,

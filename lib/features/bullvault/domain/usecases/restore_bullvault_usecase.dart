@@ -261,7 +261,11 @@ class RestoreBullVaultUsecase {
         }
         if (policy.everydayKey.signer == SignerEntity.local) {
           shouldMarkEverydaySignerLocal = !_descriptorService
-              .matchesEverydaySignerOwnership(importedWallet, policy);
+              .matchesEverydaySignerOwnership(
+                importedWallet,
+                policy,
+                seedFingerprint: mobileSeedFingerprint!,
+              );
         }
       }
       var wallet = importedWallet;
@@ -343,11 +347,22 @@ class RestoreBullVaultUsecase {
             if (!_descriptorService.matchesEverydaySignerOwnership(
               wallet,
               policy,
+              seedFingerprint: mobileSeedFingerprint,
             )) {
               return const Err(BullVaultInvalidRecoveryFailure());
             }
           }
-          if (mobileAccount != null && restoredRecord.mobileAccount == null) {
+          if (mobileAccount != null &&
+              (restoredRecord.mobileAccount != mobileAccount ||
+                  restoredRecord.mobileSeedFingerprint?.toLowerCase() !=
+                      mobileSeedFingerprint?.toLowerCase() ||
+                  restoredRecord
+                          .recoveryPackage
+                          .policy
+                          .everydayKey
+                          .accountKey
+                          .requiresPassphrase !=
+                      policy.everydayKey.accountKey.requiresPassphrase)) {
             final restoredPolicy = restoredRecord.recoveryPackage.policy
                 .withEverydayOwnership(
                   SignerEntity.local,
@@ -454,6 +469,7 @@ class RestoreBullVaultUsecase {
         if (!_descriptorService.matchesEverydaySignerOwnership(
           wallet,
           policy,
+          seedFingerprint: mobileSeedFingerprint,
         )) {
           await rollbackImportedWallet();
           return const Err(BullVaultInvalidRecoveryFailure());
@@ -530,7 +546,6 @@ class RestoreBullVaultUsecase {
       throw const WalletSignerOwnershipUpdateException();
     }
     final signer = matchingSigners.single;
-    if (signer.signer == SignerEntity.local) return wallet;
     final passphraseProtectedKeyIds =
         policy.everydayKey.accountKey.requiresPassphrase
         ? {
