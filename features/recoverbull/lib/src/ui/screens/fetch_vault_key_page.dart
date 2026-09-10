@@ -145,7 +145,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                     child: ProgressScreen(
                       isLoading: true,
                       title: context.loc.recoverbullFetchingVaultKey,
-                      description: context.loc.recoverbullConnectingTor,
+                      description:
+                          context.loc.recoverbullConnectedTorCheckingServer,
                     ),
                   )
                 : const SizedBox.shrink(),

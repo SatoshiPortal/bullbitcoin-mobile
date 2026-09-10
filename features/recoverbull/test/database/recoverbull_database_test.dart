@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import '../support/log_sink.dart';
 
 final class _DatabaseTestRemote
     implements RecoverBullAttemptMonitoringRemotePort {
@@ -119,6 +120,41 @@ void main() {
     expect(recoverBullDefaultServerUrl, contains('.onion'));
   });
 
+  test('composition imports a legacy custom server URL', () async {
+    final directory = await Directory.systemTemp.createTemp('recoverbull-url-');
+    final core = RecoverBullCore(
+      config: RecoverBullConfig(
+        databasePath: p.join(directory.path, 'state.sqlite'),
+        initialServerUrlOverride: Uri.parse('http://custom-server.onion'),
+        initialPermissionGranted: true,
+      ),
+      dependencies: const RecoverBullDependencies(),
+    );
+
+    try {
+      final settings = await core.serverSettings();
+
+      expect(settings.server, Uri.parse('http://custom-server.onion'));
+      expect(settings.permissionGranted, isTrue);
+    } finally {
+      await core.lifecycle.dispose();
+      await directory.delete(recursive: true);
+    }
+  });
+
+  test('composition does not replace an existing server override', () async {
+    final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    await database.ensureState(
+      initialServerUrlOverride: 'http://existing.onion',
+    );
+    await database.ensureState(initialServerUrlOverride: 'http://legacy.onion');
+
+    final state = await database.select(database.recoverbullState).getSingle();
+
+    expect(state.serverUrlOverride, 'http://existing.onion');
+    await database.close();
+  });
+
   test(
     'fresh settings fetch uses the configured effective default server',
     () async {
@@ -134,18 +170,28 @@ void main() {
     },
   );
 
-  test('corruption recovery deletes only the explicit database file', () async {
+  test('corruption recovery archives the database and sidecars', () async {
     final directory = await Directory.systemTemp.createTemp(
       'recoverbull-corrupt-',
     );
     final path = p.join(directory.path, 'state.sqlite');
     await File(path).writeAsString('not sqlite');
+    await File('$path-wal').writeAsString('wal');
+    await File('$path-shm').writeAsString('shm');
     await File('$path-other').writeAsString('keep sibling');
 
     final lifecycle = RecoverBullLifecycle();
     await lifecycle.openDatabase(path);
 
     expect(await File(path).exists(), isTrue);
+    final archived = directory
+        .listSync()
+        .whereType<File>()
+        .where((file) => file.path.contains('.sqlite.corrupt-'))
+        .map((file) => file.path)
+        .toList();
+    expect(archived, hasLength(1));
+    expect(await File(archived.single).readAsString(), 'not sqlite');
     expect(await File('$path-other').readAsString(), 'keep sibling');
     await lifecycle.dispose();
     await directory.delete(recursive: true);
@@ -162,6 +208,36 @@ void main() {
     await expectLater(lifecycle.openDatabase(path), throwsA(isA<Exception>()));
     expect(await Directory(path).exists(), isTrue);
     await directory.delete(recursive: true);
+  });
+
+  test('corruption recovery keeps only the newest archive', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'recoverbull-archive-',
+    );
+    final path = p.join(directory.path, 'state.sqlite');
+    final firstLifecycle = RecoverBullLifecycle();
+    final secondLog = TestLogSink.recording();
+    final secondLifecycle = RecoverBullLifecycle(log: secondLog);
+    addTearDown(() async {
+      await firstLifecycle.dispose();
+      await secondLifecycle.dispose();
+      await directory.delete(recursive: true);
+    });
+
+    await File(path).writeAsString('first');
+    await firstLifecycle.openDatabase(path);
+    await firstLifecycle.dispose();
+    await File(path).writeAsString('second');
+    await secondLifecycle.openDatabase(path);
+
+    final archives = directory.listSync().whereType<File>().where(
+      (file) => file.path.contains('.sqlite.corrupt-'),
+    );
+    expect(archives, hasLength(1));
+    expect(
+      secondLog.entries.map((entry) => entry.message),
+      contains('recoverbull.database.corrupt_archived'),
+    );
   });
 
   test(

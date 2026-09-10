@@ -10,6 +10,7 @@ import 'package:bull_recoverbull/src/router/flow_type.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../support/recoverbull_bloc_harness.dart';
+import '../support/log_sink.dart';
 import 'package:mocktail/mocktail.dart';
 
 void main() {
@@ -75,6 +76,48 @@ void main() {
   });
 
   group('OnVaultProviderSelection (secureVault) guard', () {
+    test(
+      'records the stable provider selection event without legacy text',
+      () async {
+        final logs = TestLogSink.recording();
+        final vault = MockEncryptedVault();
+        when(
+          () => createVault.execute(),
+        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+        when(
+          () => storeKey.execute(password: 'pw', vault: vault, vaultKey: 'key'),
+        ).thenAnswer((_) async => const Ok(null));
+        when(
+          () => saveFile.execute(
+            content: any(named: 'content'),
+            filename: any(named: 'filename'),
+          ),
+        ).thenAnswer((_) async => const Ok(null));
+
+        final bloc = buildBloc(flow: RecoverBullFlow.secureVault, log: logs);
+        bloc.add(const OnVaultPasswordSet(password: 'pw'));
+        await pumpEventQueue();
+        bloc.add(
+          const OnVaultProviderSelection(
+            provider: VaultProvider.customLocation,
+          ),
+        );
+        await pumpEventQueue();
+
+        expect(
+          logs.entries.map((entry) => entry.message),
+          contains(
+            'recoverbull.vault.provider.selected provider=customLocation',
+          ),
+        );
+        expect(
+          logs.entries.map((entry) => entry.message),
+          isNot(contains('Vault provider customLocation selected')),
+        );
+        await bloc.close();
+      },
+    );
+
     test(
       'no password set -> PasswordNotSetFailure, creation never started',
       () async {

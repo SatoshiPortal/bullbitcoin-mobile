@@ -101,6 +101,7 @@ final class RecoverBullFeature {
     required RecoverBullDefaultWalletsPort defaultWallets,
     required RecoverBullSettingsPort settings,
     required Tor tor,
+    TorRoutePool? routePool,
     required LogSink log,
     RecoverBullTiming? timing,
     Future<void> Function()? onWalletUpdated,
@@ -108,10 +109,12 @@ final class RecoverBullFeature {
     final core = RecoverBullCore(
       config: config,
       dependencies: RecoverBullDependencies(timing: timing),
+      log: log,
     );
     final database = await core.lifecycle.openDatabase(
       config.databasePath,
       initialPermissionGranted: config.initialPermissionGranted,
+      initialServerUrlOverride: config.initialServerUrlOverride,
     );
     final attemptMonitoringStore = RecoverBullAttemptMonitoringStore(database);
     final settingsDatasource = RecoverbullSettingsDatasource(
@@ -150,6 +153,8 @@ final class RecoverBullFeature {
       tor,
       timing: core.dependencies.timing,
       torHttpClientFactory: const TorHttpClientFactory(),
+      routePool: routePool,
+      routePoolEvent: (event) => log.fine(event.logMessage),
     );
     final decryptVault = DecryptVaultUsecase(recoverBullRepository: repository);
     final restoreVault = RestoreVaultUsecase(

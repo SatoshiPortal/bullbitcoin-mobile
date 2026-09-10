@@ -324,6 +324,95 @@ void main() {
     },
   );
 
+  for (final status in [404, 429, 500]) {
+    test('monitoring adapter propagates non-503 status $status', () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        attemptsRequest: (_, _, _, _) async =>
+            throw KeyServerException(code: status, message: 'not available'),
+      );
+      final adapter = RecoverBullAttemptMonitoringRemoteAdapter(
+        datasource: datasource,
+        routeFactory: () async => routeFor(_Client()),
+      );
+
+      await expectLater(
+        adapter.poll(etag: null, backupDigests: const []),
+        throwsA(isA<KeyServerException>()),
+      );
+    });
+  }
+
+  test(
+    'monitoring adapter classifies only 503 as shared service pressure',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('http://key.onion'));
+      final datasource = RecoverBullRemoteDatasource(
+        log: const TestLogSink(),
+        recoverbullSettingsDatasource: settings,
+        attemptsRequest: (_, _, _, _) async => throw KeyServerException(
+          code: 503,
+          retryAfter: const Duration(seconds: 12),
+          message: 'busy',
+        ),
+      );
+      final adapter = RecoverBullAttemptMonitoringRemoteAdapter(
+        datasource: datasource,
+        routeFactory: () async => routeFor(_Client()),
+      );
+
+      final snapshot = await adapter.poll(etag: null, backupDigests: const []);
+
+      expect(snapshot, isNotNull);
+      expect(snapshot!.serviceBusy, isTrue);
+      expect(snapshot.notModified, isFalse);
+      expect(snapshot.totalAttempts, isEmpty);
+      expect(
+        snapshot.collectionStartedAt,
+        DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      );
+    },
+  );
+
+  test(
+    'attempt configuration failures emit a stable timing event without details',
+    () async {
+      final settings = _Settings();
+      when(
+        () => settings.fetch(),
+      ).thenAnswer((_) async => Uri.parse('https://example.com/invalid'));
+      final timings = <({String phase, String outcome})>[];
+      final log = TestLogSink.recording();
+      final datasource = RecoverBullRemoteDatasource(
+        log: log,
+        recoverbullSettingsDatasource: settings,
+        timing: (phase, _, outcome) =>
+            timings.add((phase: phase, outcome: outcome)),
+      );
+
+      await expectLater(
+        datasource.attempts(route: routeFor(_Client())),
+        throwsA(isA<ArgumentError>()),
+      );
+
+      expect(timings, [(phase: 'attempts_poll', outcome: 'failure')]);
+      expect(
+        log.entries.single.message,
+        'recoverbull.attempts.poll.unexpected error_type=ArgumentError',
+      );
+      expect(log.entries.single.message, isNot(contains('example.com')));
+      expect(log.entries.single.message, isNot(contains('invalid')));
+    },
+  );
+
   test(
     'attempts classifies expected and unexpected failures without raw details',
     () async {

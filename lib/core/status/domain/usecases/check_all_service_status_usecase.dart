@@ -28,6 +28,9 @@ class CheckAllServiceStatusUsecase {
   final RecoverBullFeature? _recoverBull;
   final SettingsRepository _settingsRepository;
   final Tor _tor;
+  final TorRoutePool? routePool;
+  final Future<RecoverBullHealth> Function()? recoverBullHealthProbe;
+  final Future<RecoverBullStatus> Function()? recoverBullStatusProbe;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -39,6 +42,9 @@ class CheckAllServiceStatusUsecase {
     this._recoverBull,
     required this._settingsRepository,
     required this._tor,
+    this.routePool,
+    this.recoverBullHealthProbe,
+    this.recoverBullStatusProbe,
   });
 
   Future<AllServicesStatus> execute({
@@ -121,6 +127,17 @@ class CheckAllServiceStatusUsecase {
           serviceName: 'Recoverbull',
         ),
       ]);
+
+      // A successful key-server probe is stronger evidence than a concurrent
+      // Tor probe that lost a race while the shared route was being acquired.
+      // Therefore a verdict follows the strongest proof: RecoverBull online
+      // makes Tor available, while any RecoverBull failure leaves Tor unchanged.
+      if (current.recoverbull.status == ServiceStatus.online &&
+          current.tor.status != ServiceStatus.online) {
+        current = current.copyWith(
+          tor: current.tor.copyWith(status: ServiceStatus.online),
+        );
+      }
 
       final completed = current.copyWith(lastChecked: now);
       onUpdate?.call(completed);
@@ -266,27 +283,49 @@ class CheckAllServiceStatusUsecase {
       } on ArgumentError {
         return status.copyWith(status: ServiceStatus.offline);
       }
-      final external = await _tor.external.verify(endpoint);
-      return status.copyWith(
-        status: external is TorReady
-            ? ServiceStatus.online
-            : ServiceStatus.offline,
-      );
+      try {
+        final lease =
+            await (routePool?.acquire(
+                  key: 'external:${endpoint.host}:${endpoint.port}',
+                  open: () async {
+                    final result = await _tor.external.verify(endpoint);
+                    if (result case TorReady(:final route)) return route;
+                    throw StateError('External Tor unavailable');
+                  },
+                  close: () async {},
+                ) ??
+                Future<TorRouteLease>.error(StateError('No route pool')));
+        await lease.release();
+        return status.copyWith(status: ServiceStatus.online);
+      } catch (_) {
+        if (routePool == null) {
+          final external = await _tor.external.verify(endpoint);
+          return status.copyWith(
+            status: external is TorReady
+                ? ServiceStatus.online
+                : ServiceStatus.offline,
+          );
+        }
+        return status.copyWith(status: ServiceStatus.offline);
+      }
     }
     return status.copyWith(status: await _checkEmbeddedTorIfRequired());
   }
 
   Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
     final recoverBullStatus =
-        await _recoverBull?.status() ?? const RecoverBullStatus.unavailable();
+        await (recoverBullStatusProbe?.call() ??
+            _recoverBull?.status() ??
+            Future.value(const RecoverBullStatus.unavailable()));
     if (!recoverBullStatus.isKnown || !recoverBullStatus.hasEncryptedBackup) {
       return ServiceStatus.unknown;
     }
     return _checkEmbeddedTorConnection();
   }
 
-  Future<ServiceStatus> _checkEmbeddedTorConnection() async =>
-      switch (await _ensureTorReadyUsecase.execute().timeout(
+  Future<ServiceStatus> _checkEmbeddedTorConnection() async {
+    if (routePool == null) {
+      return switch (await _ensureTorReadyUsecase.execute().timeout(
         _torStatusTimeout,
         onTimeout: () => const TorUninitialized(),
       )) {
@@ -294,6 +333,39 @@ class CheckAllServiceStatusUsecase {
           ServiceStatus.online,
         _ => ServiceStatus.offline,
       };
+    }
+    try {
+      TorSession? session;
+      final lease = await routePool!.acquire(
+        key: 'embedded',
+        open: () async {
+          final state = await _ensureTorReadyUsecase.execute().timeout(
+            _torStatusTimeout,
+            onTimeout: () => const TorUninitialized(),
+          );
+          if (state case TorReady(
+            :final route,
+          ) when route.source == TorSource.embedded) {
+            session = await _tor.embedded.sessions.open();
+            return TorRoute(
+              source: route.source,
+              endpoint: session!.endpoint,
+              evidence: route.evidence,
+              transport: session!.transport,
+            );
+          }
+          throw StateError('Embedded Tor unavailable');
+        },
+        close: () async {
+          await session?.close();
+        },
+      );
+      await lease.release();
+      return ServiceStatus.online;
+    } catch (_) {
+      return ServiceStatus.offline;
+    }
+  }
 
   Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
     final status = ServiceStatusInfo(
@@ -303,7 +375,8 @@ class CheckAllServiceStatusUsecase {
     );
 
     final health =
-        await (_recoverBull?.checkService() ??
+        await (recoverBullHealthProbe?.call() ??
+                _recoverBull?.checkService() ??
                 Future.value(RecoverBullHealth.timeout))
             .timeout(
               _torStatusTimeout,

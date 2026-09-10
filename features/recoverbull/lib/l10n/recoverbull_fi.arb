@@ -85,6 +85,7 @@
   "recoverbullPasswordRequired": "Salasana on pakollinen",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} sekuntia",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -274,7 +275,7 @@
   "recoverbullConnecting": "Yhdistetään",
   "recoverbullErrorVaultCreatedKeyNotStored": "Epäonnistui: Holvitiedosto luotu mutta avainta ei tallennettu palvelimelle",
   "recoverbullRetry": "Yritä uudelleen",
-  "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
+  "recoverbullConnectedTorCheckingServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "recoverbullSelectCustomLocationError": "Tiedoston valinta mukautetusta sijainnista epäonnistui",
   "torSettingsDescDisconnected": "Tor-välityspalvelin ei ole käynnissä",
   "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",

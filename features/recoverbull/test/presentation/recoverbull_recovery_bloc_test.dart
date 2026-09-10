@@ -225,7 +225,31 @@ void main() {
     verifyNever(
       () => restore.execute(decryptedVault: any(named: 'decryptedVault')),
     );
+    expect(bloc.state.failure, isA<VaultBelongsToAnotherWalletFailure>());
     expect(bloc.state.isFlowFinished, isFalse);
+    await bloc.close();
+  });
+
+  test('vault verification errors remain decryption failures', () async {
+    final verifier = MockVerifyVault();
+    final vault = MockEncryptedVault();
+    final decrypted = const DecryptedVault(masterFingerprint: 'another-wallet');
+    when(
+      () => decrypt.execute(vault: vault, vaultKey: 'vault-key'),
+    ).thenReturn(Ok(decrypted));
+    when(
+      () => verifier.execute(decryptedVault: decrypted),
+    ).thenAnswer((_) async => const Err(core.RecoverBullUnexpectedFailure()));
+    final bloc = buildBloc(
+      flow: RecoverBullFlow.recoverVault,
+      preSelectedVault: vault,
+      verifyDecryptedVaultUsecase: verifier,
+    );
+
+    bloc.add(const OnVaultDecryption(vaultKey: 'vault-key'));
+    await pumpEventQueue();
+
+    expect(bloc.state.failure, isA<VaultDecryptionFailure>());
     await bloc.close();
   });
 }

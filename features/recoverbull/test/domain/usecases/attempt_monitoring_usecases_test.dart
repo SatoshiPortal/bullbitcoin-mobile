@@ -17,6 +17,7 @@ import 'dart:convert';
 
 class _Remote implements RecoverBullAttemptMonitoringRemotePort {
   RecoverBullAttemptsSnapshot? response;
+  Object? error;
   int calls = 0;
   String? lastEtag;
 
@@ -27,6 +28,7 @@ class _Remote implements RecoverBullAttemptMonitoringRemotePort {
   }) async {
     calls++;
     lastEtag = etag;
+    if (error != null) throw error!;
     return response;
   }
 }
@@ -126,7 +128,7 @@ void main() {
     final alerts = await CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: remote,
-      clock: () => DateTime.utc(2026, 8, 5, 16),
+      clock: () => DateTime.utc(2027, 1, 1, 16),
     ).execute(forceRefresh: true);
 
     expect(
@@ -137,6 +139,54 @@ void main() {
     );
     await db.close();
   });
+
+  test(
+    'identifier saturation includes full and over-capacity collections',
+    () async {
+      for (final totalEntries in [10, 11]) {
+        final (db, store) = await build();
+        await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
+        final alerts = await CheckBackupAttemptMonitoringUsecase(
+          store: store,
+          remote: _Remote()
+            ..response = RecoverBullAttemptsSnapshot(
+              collectionStartedAt: window,
+              totalAttempts: const {},
+              totalEntries: totalEntries,
+              maxAttemptIdentifiers: 10,
+            ),
+          clock: () => DateTime.utc(2027, 1, 1, 16),
+        ).execute(forceRefresh: true);
+        expect(
+          alerts,
+          contains(
+            const ServicePressureAlert(
+              ServicePressureKind.identifierSaturation,
+            ),
+          ),
+        );
+        await db.close();
+      }
+    },
+  );
+
+  test(
+    'a failed poll does not break local recovery and marks monitoring pending',
+    () async {
+      final (db, store) = await build();
+      final remote = _Remote()..error = StateError('poll failed');
+      final usecase = RecordLocalAttemptUsecase(store, remote: remote);
+
+      final result = await usecase.execute(
+        backupIdHex: '000102030405060708090a0b0c0d0e0f',
+      );
+
+      expect(result, isNull);
+      expect(await store.monitoredBackups(), hasLength(1));
+      expect((await store.state()).lastSuccessfulCheckAt, isNull);
+      await db.close();
+    },
+  );
 
   test(
     'identifier saturation is silent below or without a positive capacity',
@@ -164,13 +214,25 @@ void main() {
           totalEntries: 9,
           maxAttemptIdentifiers: 0,
         ),
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          totalEntries: -1,
+          maxAttemptIdentifiers: 10,
+        ),
+        RecoverBullAttemptsSnapshot(
+          collectionStartedAt: window,
+          totalAttempts: const {},
+          totalEntries: 10,
+          maxAttemptIdentifiers: -1,
+        ),
       ]) {
         final (db, store) = await build();
         await store.registerBackup(id, origin: MonitoredBackupOrigin.adopted);
         final alerts = await CheckBackupAttemptMonitoringUsecase(
           store: store,
           remote: _Remote()..response = snapshot,
-          clock: () => DateTime.utc(2026, 8, 5, 16),
+          clock: () => DateTime.utc(2027, 1, 1, 16),
         ).execute(forceRefresh: true);
         expect(alerts.whereType<ServicePressureAlert>(), isEmpty);
         await db.close();
@@ -191,7 +253,7 @@ void main() {
           totalEntries: 9,
           maxAttemptIdentifiers: 10,
         ),
-      clock: () => DateTime.utc(2026, 8, 5, 16),
+      clock: () => DateTime.utc(2027, 1, 1, 16),
     ).execute(forceRefresh: true);
     expect(alerts.whereType<ServicePressureAlert>(), hasLength(2));
     await db.close();
@@ -278,7 +340,7 @@ void main() {
       window: attemptWindowIdentity(window),
     );
     final digest = (await store.monitoredBackups()).single.digest;
-    var now = DateTime.now().toUtc();
+    var now = DateTime.utc(2027, 1, 1, 16);
     final check = CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: _Remote()
@@ -426,7 +488,7 @@ void main() {
           totalAttempts: {digest: 2},
         ),
       );
-      final now = DateTime.now().toUtc().add(const Duration(minutes: 2));
+      final now = DateTime.utc(2027, 1, 1, 16, 2);
       final remote = _Remote()
         ..response = RecoverBullAttemptsSnapshot(
           collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -461,7 +523,7 @@ void main() {
       );
       final previousSuccessfulCheck =
           (await store.state()).lastSuccessfulCheckAt;
-      final now = DateTime.now().toUtc().add(const Duration(minutes: 2));
+      final now = DateTime.utc(2027, 1, 1, 16, 2);
       final remote = _Remote()
         ..response = RecoverBullAttemptsSnapshot(
           collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -498,7 +560,7 @@ void main() {
           totalAttempts: const {},
         ),
       );
-      final now = DateTime.now().toUtc().add(const Duration(minutes: 2));
+      final now = DateTime.utc(2027, 1, 1, 16, 2);
       final remote = _Remote()
         ..response = RecoverBullAttemptsSnapshot(
           collectionStartedAt: window.add(const Duration(microseconds: 123)),
@@ -548,7 +610,7 @@ void main() {
   test('ETag is sent on the next poll and not-modified is advisory', () async {
     final (db, store) = await build();
     await store.registerBackup(id);
-    var now = DateTime.now().toUtc();
+    var now = DateTime.utc(2027, 1, 1, 16);
     final remote = _Remote()
       ..response = RecoverBullAttemptsSnapshot(
         collectionStartedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -868,7 +930,7 @@ void main() {
       final alerts = await CheckBackupAttemptMonitoringUsecase(
         store: store,
         remote: remote,
-        clock: () => DateTime.now().toUtc().add(const Duration(minutes: 2)),
+        clock: () => DateTime.utc(2027, 1, 1, 16, 2),
       ).execute();
       expect(alerts, isEmpty);
       expect(alerts.whereType<SuspiciousActivityAlert>(), isEmpty);
@@ -889,7 +951,7 @@ void main() {
     final alerts = await CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: remote,
-      clock: () => DateTime.now().toUtc().add(const Duration(days: 4)),
+      clock: () => DateTime.utc(2027, 1, 5, 16),
     ).execute();
     expect(alerts.single, isA<AttemptMonitoringUnavailableAlert>());
     await db.close();
@@ -1055,7 +1117,7 @@ void main() {
         totalAttempts: {digest: 2},
         windowStartedAt: {digest: window},
       );
-    var now = DateTime.now().toUtc();
+    var now = DateTime.utc(2027, 1, 1, 16);
     final check = CheckBackupAttemptMonitoringUsecase(
       store: store,
       remote: remote,

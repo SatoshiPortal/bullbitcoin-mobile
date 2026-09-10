@@ -215,6 +215,7 @@
   },
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} 초",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
@@ -607,8 +608,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Tor에 키 서버 연결.\n1 분까지 걸릴 수 있습니다.",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Tor에 키 서버 연결.\n1 분까지 걸릴 수 있습니다.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "사용자 정의 위치에서 파일을 선택 해제",

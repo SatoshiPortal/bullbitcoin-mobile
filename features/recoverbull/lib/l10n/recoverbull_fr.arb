@@ -87,6 +87,8 @@
   "recoverbullAttemptMonitoringLockoutBody": "Cela peut indiquer une attaque potentielle. Reconnaissez-vous ces tentatives ? Consultez les détails pour connaître les mesures recommandées. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé.",
   "recoverbullAttemptMonitoringLockoutAnnouncement": "Le serveur a temporairement limité l’accès après trop de tentatives échouées. Si vous les reconnaissez, attendez le délai puis réessayez ; sinon, transférez vos fonds vers un nouveau portefeuille avec une nouvelle phrase mnémotechnique, sécurisez chaque copie de la sauvegarde et contactez le support. Ne révélez aucun secret.",
   "durationSeconds": "{seconds} secondes",
+  "durationSecond": "{seconds} seconde",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -279,9 +281,19 @@
     }
   },
   "recoverbullConnecting": "Connexion en cours",
+  "recoverbullReconnecting": "Reconnexion en cours",
   "recoverbullErrorVaultCreatedKeyNotStored": "Échec : Fichier de coffre-fort créé mais clé non stockée sur le serveur",
   "recoverbullRetry": "Réessayer",
-  "recoverbullConnectingTor": "Connexion au serveur de clés via Tor.\nCela peut prendre jusqu'à une minute.",
+  "recoverbullConnectedTorCheckingServer": "Connecté à Tor. Vérification du serveur de sauvegarde.",
+  "recoverbullConnectingTor": "Connexion au serveur de clés via Tor. Cela peut prendre jusqu'à une minute.",
+  "recoverbullElapsedSinceStart": "Temps écoulé depuis le début de la tentative : {duration}",
+  "@recoverbullElapsedSinceStart": {
+    "description": "Temps écoulé depuis le début de la tentative de connexion en cours"
+  },
+  "recoverbullWaitingForTor": "En attente de Tor",
+  "recoverbullChecking": "Vérification en cours",
+  "recoverbullReachable": "Accessible",
+  "recoverbullUnreachable": "Inaccessible",
   "recoverbullSelectCustomLocationError": "Échec de la sélection du fichier depuis l'emplacement personnalisé",
   "torSettingsDescDisconnected": "Le proxy Tor n'est pas actif",
   "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
@@ -310,11 +322,21 @@
   "recoverbullMonitoringLastCheck": "Dernier contrôle réussi : {date}",
   "recoverbullMonitoringUncovered": "Aucune sauvegarde n’est actuellement couverte.",
   "recoverbullMonitoringExplanation": "RecoverBull utilise une requête globale des tentatives et filtre localement vos sauvegardes surveillées.",
+  "recoverbullErrorVaultBelongsToAnotherWallet": "Ce coffre ne correspond pas à ce portefeuille.",
+  "recoverbullMonitoringDisableTitle": "Désactiver la surveillance des sauvegardes ?",
+  "recoverbullMonitoringDisableWarning": "Vos sauvegardes surveillées seront oubliées. Les réactiver ne les restaurera pas.",
+  "recoverbullMonitoringDisableCancel": "Annuler",
+  "recoverbullMonitoringDisableConfirm": "Désactiver",
   "recoverbullAttemptAlertDetailsTitle": "Détails de la surveillance",
   "recoverbullAttemptAlertReference": "Référence de sauvegarde : {reference}",
   "recoverbullAttemptAlertAttempts": "Tentatives : {observed} / attendu : {expected}",
   "recoverbullAttemptAlertWindow": "Début de la fenêtre : {date}",
   "recoverbullAttemptAlertAction": "Si vous reconnaissez ces tentatives, aucune action urgente n’est nécessaire. Sinon, considérez une compromission possible : transférez vos fonds vers un nouveau portefeuille avec une nouvelle phrase mnémotechnique, sécurisez chaque copie de la sauvegarde et contactez le support.",
   "recoverbullAttemptAlertLockoutGuidance": "Si vous reconnaissez les tentatives échouées, attendez la fin de la limitation puis réessayez. Sinon, envisagez une migration : transférez vos fonds vers un nouveau portefeuille avec une nouvelle phrase mnémotechnique, sécurisez chaque copie de la sauvegarde et contactez le support. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé.",
-  "recoverbullAttemptAlertInformational": "Cette notification est informative et n’indique pas à elle seule un incident de sécurité. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé."
+  "recoverbullAttemptAlertInformational": "Cette notification est informative et n’indique pas à elle seule un incident de sécurité. Ne révélez jamais votre seed, phrase mnémotechnique, mot de passe, code PIN ou matériel de clé.",
+  "recoverbullErrorTorConnection": "La connexion réseau n’a pas pu être établie. Veuillez réessayer.",
+  "recoverbullErrorOnionUnavailable": "Le serveur de clés est inaccessible. Veuillez réessayer plus tard.",
+  "recoverbullErrorServiceRefused": "Le serveur de clés a refusé la connexion. Veuillez réessayer plus tard.",
+  "recoverbullErrorConnectionBudget": "Le serveur de clés a mis trop de temps à répondre. Veuillez réessayer.",
+  "recoverbullErrorConnectionUnknown": "Le serveur de clés n’a pas pu être joint. Veuillez réessayer."
 }

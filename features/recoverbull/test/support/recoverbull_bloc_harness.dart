@@ -135,11 +135,15 @@ Future<void> tearDownRecoverBullBloc() => database.close();
 
 RecoverBullBloc buildBloc({
   required RecoverBullFlow flow,
+  TestLogSink? log,
   EncryptedVault? preSelectedVault,
   Future<void> Function()? onWalletUpdated,
   VerifyDecryptedVaultUsecase? verifyDecryptedVaultUsecase,
+  DateTime Function()? now,
+  Timer Function(Duration, void Function())? scheduleTimer,
+  int maxAttempts = ConnectToKeyServerUsecase.maxAttempts,
 }) => RecoverBullBloc(
-  log: const TestLogSink(),
+  log: log ?? const TestLogSink(),
   flow: flow,
   preSelectedVault: preSelectedVault,
   pickVaultUsecase: pickVault,
@@ -155,6 +159,7 @@ RecoverBullBloc buildBloc({
     ensureTor: ensureRecoverBullTorSession,
     log: const TestLogSink(),
     wait: (_) async {},
+    maxAttempts: maxAttempts,
   ),
   fetchVaultKeyFromServerUsecase: fetchKey,
   decryptVaultUsecase: decrypt,
@@ -167,4 +172,6 @@ RecoverBullBloc buildBloc({
   watchTorConnectionUsecase: watchTor,
   lifecycle: lifecycle,
   verifyDecryptedVaultUsecase: verifyDecryptedVaultUsecase ?? verifyVault,
+  now: now,
+  scheduleTimer: scheduleTimer,
 );

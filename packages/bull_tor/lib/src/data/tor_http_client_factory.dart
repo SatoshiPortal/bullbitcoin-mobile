@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:socks5_proxy/socks_client.dart';
 
 import '../domain/entities/tor_proxy_endpoint.dart';
 import '../domain/tor_failure.dart';
+import 'tor_connection_failure_recorder.dart';
 
 /// Builds an HTTP client for an already-selected Tor route.
 ///
@@ -16,7 +18,10 @@ import '../domain/tor_failure.dart';
 final class TorHttpClientFactory {
   const TorHttpClientFactory();
 
-  HttpClient create(TorProxyEndpoint endpoint) {
+  HttpClient create(
+    TorProxyEndpoint endpoint, {
+    TorConnectionFailureRecorder? failureRecorder,
+  }) {
     // The proxy endpoint is loopback by product contract. The destination
     // hostname is intentionally left to socks5_proxy so SOCKS5 can send it as
     // ATYP DOMAINNAME instead of resolving it on the device.
@@ -30,9 +35,59 @@ final class TorHttpClientFactory {
     }
 
     final client = HttpClient();
-    SocksTCPClient.assignToHttpClient(client, [
-      ProxySettings(address, endpoint.port, password: null),
-    ]);
+    final recorder = failureRecorder;
+    final proxy = ProxySettings(address, endpoint.port, password: null);
+    client.connectionFactory = (uri, _, _) async {
+      Future<ConnectionTask<Socket>> delegate() async {
+        final socket = SocksTCPClient.connect(
+          [proxy],
+          InternetAddress(uri.host, type: InternetAddressType.unix),
+          uri.port,
+        );
+        if (uri.scheme == 'https') {
+          Socket? underlying;
+          final secureSocket = socket.then((raw) {
+            underlying = raw;
+            return raw.secure(uri.host);
+          });
+          unawaited(
+            secureSocket.then<void>(
+              (_) {},
+              onError: (Object error, StackTrace trace) {
+                underlying?.destroy();
+              },
+            ),
+          );
+          return ConnectionTask.fromSocket(secureSocket, () async {
+            try {
+              await (await secureSocket).close();
+            } catch (_) {
+              await underlying?.close();
+            }
+          });
+        }
+        return ConnectionTask.fromSocket(
+          socket,
+          () async => (await socket).close().ignore(),
+        );
+      }
+
+      try {
+        final task = await delegate();
+        if (recorder == null) return task;
+        final socket = task.socket.then(
+          (value) => value,
+          onError: (Object error, StackTrace trace) {
+            recorder.record(error);
+            Error.throwWithStackTrace(error, trace);
+          },
+        );
+        return ConnectionTask.fromSocket(socket, task.cancel);
+      } catch (error) {
+        recorder?.record(error);
+        rethrow;
+      }
+    };
     return client;
   }
 }

@@ -85,7 +85,7 @@ class CreateEncryptedVaultUsecase {
         (created) => (vault: created.vault, vaultKey: created.vaultKey),
       );
     } catch (_, st) {
-      log.error('createEncryptedVault failed', trace: st);
+      log.error('recoverbull.vault.create.failed', trace: st);
       return const Err(RecoverBullUnexpectedFailure('Unable to create vault'));
     }
   }

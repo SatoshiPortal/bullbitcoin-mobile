@@ -21,7 +21,11 @@ class DismissAnnouncementUsecase {
   ) async {
     try {
       if (announcement case final RecoverBullAnnouncement recoverBull) {
-        await dismissRecoverBull!.execute(recoverBull);
+        final dismiss = dismissRecoverBull;
+        if (dismiss == null) {
+          return const Err(AnnouncementRecoverBullUnavailableFailure());
+        }
+        await dismiss.execute(recoverBull);
       } else {
         await _dismissalRepository.dismiss(announcement.id);
       }

@@ -85,6 +85,7 @@
   "recoverbullPasswordRequired": "Требуется пароль",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} секунд",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -274,7 +275,7 @@
   "recoverbullConnecting": "Соединение",
   "recoverbullErrorVaultCreatedKeyNotStored": "Не удалось: файл Vault создан, но ключ не хранится на сервере",
   "recoverbullRetry": "Retry",
-  "recoverbullConnectingTor": "Подключение к Key Server через Tor.\nЭто может занять до минуты.",
+  "recoverbullConnectedTorCheckingServer": "Подключение к Key Server через Tor.\nЭто может занять до минуты.",
   "recoverbullSelectCustomLocationError": "Не удалось выбрать файл из пользовательского местоположения",
   "torSettingsDescDisconnected": "Tor proxy не работает",
   "oopsSomethingWentWrong": "Упс! Что-то не так",

@@ -50,19 +50,34 @@ final class TrashVaultKeyUsecase {
         vault.salt,
         route,
       );
-      if (result case Ok(:final value) when value.attemptStatus != null) {
-        try {
-          final alert = await recordAttempt?.execute(
-            backupIdHex: vault.id,
-            attemptStatus: value.attemptStatus,
-          );
-          if (alert != null) alertPort?.publish(alert);
-        } catch (error, _) {
-          log.warning(
-            'recoverbull.attempts.monitoring.update.failed '
-            'error_type=${error.runtimeType}',
-          );
-        }
+      switch (result) {
+        case Ok(:final value) when value.attemptStatus != null:
+          try {
+            final alert = await recordAttempt?.execute(
+              backupIdHex: vault.id,
+              attemptStatus: value.attemptStatus,
+            );
+            if (alert != null) alertPort?.publish(alert);
+          } catch (error, _) {
+            log.warning(
+              'recoverbull.attempts.monitoring.update.failed '
+              'error_type=${error.runtimeType}',
+            );
+          }
+        case Err(:final failure) when failure is KeyServerRateLimitedFailure:
+          try {
+            final alert = await recordAttempt?.recordTargetedLockout(
+              backupIdHex: vault.id,
+            );
+            if (alert != null) alertPort?.publish(alert);
+          } catch (error, _) {
+            log.warning(
+              'recoverbull.attempts.monitoring.update.failed '
+              'error_type=${error.runtimeType}',
+            );
+          }
+        case Ok():
+        case Err():
       }
       if (result case Ok()) {
         await recordAttempt?.store.removeBackup(vault.id);

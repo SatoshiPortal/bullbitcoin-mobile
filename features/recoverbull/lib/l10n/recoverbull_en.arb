@@ -257,6 +257,8 @@
   "recoverbullAttemptMonitoringLockoutBody": "This may indicate a potential attack. Do you recognize these attempts? Open the details for recommended next steps. Never reveal your seed, mnemonic, password, PIN, or key material.",
   "recoverbullAttemptMonitoringLockoutAnnouncement": "The server temporarily limited access after too many failed attempts. If you recognize them, wait and try again; otherwise, move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support. Never reveal a secret.",
   "durationSeconds": "{seconds} seconds",
+  "durationSecond": "{seconds} second",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
@@ -726,6 +728,10 @@
     }
   },
   "recoverbullConnecting": "Connecting",
+  "recoverbullReconnecting": "Reconnecting",
+  "@recoverbullReconnecting": {
+    "description": "Status shown when Tor loses readiness after it was already ready."
+  },
   "@recoverbullConnecting": {
     "description": "Status label indicating connection in progress"
   },
@@ -737,9 +743,18 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Connecting to Key Server over Tor.\nThis can take up to a minute.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
+  "recoverbullConnectedTorCheckingServer": "Connected to Tor. Checking the backup server.",
+  "recoverbullConnectingTor": "Connecting to Key Server over Tor. This can take up to a minute.",
+  "recoverbullElapsedSinceStart": "Elapsed since attempt started: {duration}",
+  "@recoverbullElapsedSinceStart": {
+    "description": "Elapsed time since the current connection attempt started"
+  },
+  "recoverbullWaitingForTor": "Waiting for Tor",
+  "recoverbullChecking": "Checking",
+  "recoverbullReachable": "Reachable",
+  "recoverbullUnreachable": "Unreachable",
+  "@recoverbullConnectedTorCheckingServer": {
+    "description": "Message shown after Tor connects while the backup server is being checked"
   },
   "recoverbullSelectCustomLocationError": "Failed to select file from custom location",
   "@recoverbullSelectCustomLocationError": {
@@ -755,11 +770,21 @@
   "recoverbullMonitoringLastCheck": "Last successful check: {date}",
   "recoverbullMonitoringUncovered": "No backups are currently covered.",
   "recoverbullMonitoringExplanation": "RecoverBull uses one global attempts request and filters your monitored backups locally.",
+  "recoverbullErrorVaultBelongsToAnotherWallet": "This vault does not belong to this wallet.",
+  "recoverbullMonitoringDisableTitle": "Turn off backup monitoring?",
+  "recoverbullMonitoringDisableWarning": "Your monitored backups will be forgotten. Turning monitoring back on will not restore them.",
+  "recoverbullMonitoringDisableCancel": "Cancel",
+  "recoverbullMonitoringDisableConfirm": "Turn off",
   "recoverbullAttemptAlertDetailsTitle": "Backup monitoring details",
   "recoverbullAttemptAlertReference": "Backup reference: {reference}",
   "recoverbullAttemptAlertAttempts": "Attempts: {observed} / expected: {expected}",
   "recoverbullAttemptAlertWindow": "Window started: {date}",
   "recoverbullAttemptAlertAction": "If you recognize these attempts, no urgent action is needed. If you do not, treat this as a possible compromise: move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support.",
   "recoverbullAttemptAlertLockoutGuidance": "If you recognize the failed attempts, wait for the limit to expire and try again. If you do not, consider migration: move funds to a new wallet with a new mnemonic, secure every backup copy, and contact support. Never reveal your seed, mnemonic, password, PIN, or key material.",
-  "recoverbullAttemptAlertInformational": "This notification is informational and does not by itself indicate a security incident. Never reveal your seed, mnemonic, password, PIN, or key material."
+  "recoverbullAttemptAlertInformational": "This notification is informational and does not by itself indicate a security incident. Never reveal your seed, mnemonic, password, PIN, or key material.",
+  "recoverbullErrorTorConnection": "The network connection could not be established. Please try again.",
+  "recoverbullErrorOnionUnavailable": "The key server could not be reached. Please try again later.",
+  "recoverbullErrorServiceRefused": "The key server refused the connection. Please try again later.",
+  "recoverbullErrorConnectionBudget": "The key server took too long to respond. Please try again.",
+  "recoverbullErrorConnectionUnknown": "The key server could not be reached. Please try again."
 }

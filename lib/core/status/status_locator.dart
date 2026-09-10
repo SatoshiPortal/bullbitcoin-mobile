@@ -35,6 +35,7 @@ class StatusLocator {
         recoverBull: locator<RecoverBullFeature>(),
         settingsRepository: locator<SettingsRepository>(),
         tor: locator<Tor>(),
+        routePool: locator<TorRoutePool>(),
       ),
     );
   }

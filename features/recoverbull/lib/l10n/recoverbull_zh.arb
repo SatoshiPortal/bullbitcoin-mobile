@@ -85,6 +85,7 @@
   "recoverbullPasswordRequired": "需要密码",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds}秒",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -274,7 +275,7 @@
   "recoverbullConnecting": "连接",
   "recoverbullErrorVaultCreatedKeyNotStored": "失败:制造了Vault文档,但钥匙没有储存在服务器上",
   "recoverbullRetry": "学历",
-  "recoverbullConnectingTor": "连接Tor。\n时间可长达一分钟.",
+  "recoverbullConnectedTorCheckingServer": "连接Tor。\n时间可长达一分钟.",
   "recoverbullSelectCustomLocationError": "未能从海关地点选择档案",
   "torSettingsDescDisconnected": "委托代理公司没有运行",
   "oopsSomethingWentWrong": "Oops! 某些错误",

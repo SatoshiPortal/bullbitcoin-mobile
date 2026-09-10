@@ -215,6 +215,7 @@
   },
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} সেকেন্ড",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -604,8 +605,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Tor-এর মাধ্যমে Key Server-এ সংযোগ হচ্ছে।\nএতে এক মিনিট পর্যন্ত লাগতে পারে।",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Tor-এর মাধ্যমে Key Server-এ সংযোগ হচ্ছে।\nএতে এক মিনিট পর্যন্ত লাগতে পারে।",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "কাস্টম অবস্থান থেকে ফাইল নির্বাচন করতে ব্যর্থ হয়েছে",

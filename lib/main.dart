@@ -96,16 +96,6 @@ void resumePayjoinsOnAppResume(
   }
 }
 
-@visibleForTesting
-void checkRecoverBullOnAppResume(
-  AppLifecycleState state,
-  RecoverBullAttemptMonitoringController monitoring,
-) {
-  if (state == AppLifecycleState.resumed) {
-    unawaited(monitoring.checkOnForeground());
-  }
-}
-
 class Bull {
   static final _diagnosticRuntime = DiagnosticRuntimeContext();
   static Future<void> init({String? payjoinDatabasePath}) async {
@@ -368,12 +358,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     log.info(state.name);
     if (locator.isRegistered<PayjoinLifecycle>()) {
       resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
-    }
-    if (locator.isRegistered<RecoverBullFeature>()) {
-      checkRecoverBullOnAppResume(
-        state,
-        locator<RecoverBullFeature>().attemptMonitoring,
-      );
     }
     // iOS lifecycle is `active → inactive → hidden → paused`. The user can
     // force-quit from the app switcher during `inactive` and skip both the

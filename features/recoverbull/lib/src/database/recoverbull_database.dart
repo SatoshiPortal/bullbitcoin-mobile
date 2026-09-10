@@ -82,15 +82,18 @@ class RecoverbullDriveBackupCache extends Table {
 final class RecoverBullDatabase extends _$RecoverBullDatabase {
   static const schema = 1;
   final bool initialPermissionGranted;
+  final String? initialServerUrlOverride;
 
   RecoverBullDatabase._(
     super.executor, {
     this.initialPermissionGranted = false,
+    this.initialServerUrlOverride,
   });
 
   factory RecoverBullDatabase.open(
     String path, {
     bool initialPermissionGranted = false,
+    String? initialServerUrlOverride,
   }) => RecoverBullDatabase._(
     NativeDatabase.createInBackground(
       File(path),
@@ -102,6 +105,7 @@ final class RecoverBullDatabase extends _$RecoverBullDatabase {
       },
     ),
     initialPermissionGranted: initialPermissionGranted,
+    initialServerUrlOverride: initialServerUrlOverride,
   );
 
   factory RecoverBullDatabase.forTesting(QueryExecutor executor) =
@@ -110,22 +114,39 @@ final class RecoverBullDatabase extends _$RecoverBullDatabase {
   @override
   int get schemaVersion => schema;
 
-  Future<void> ensureState({bool initialPermissionGranted = false}) async {
+  Future<void> ensureState({
+    bool initialPermissionGranted = false,
+    String? initialServerUrlOverride,
+  }) async {
     await transaction(() async {
       await into(recoverbullState).insert(
         RecoverbullStateCompanion(
           id: const Value(1),
           permissionGranted: Value(initialPermissionGranted),
+          serverUrlOverride: Value(initialServerUrlOverride),
           attemptMonitoringEnabled: const Value(true),
         ),
         mode: InsertMode.insertOrIgnore,
       );
+      if (initialServerUrlOverride != null) {
+        await (update(recoverbullState)..where(
+              (state) => state.id.equals(1) & state.serverUrlOverride.isNull(),
+            ))
+            .write(
+              RecoverbullStateCompanion(
+                serverUrlOverride: Value(initialServerUrlOverride),
+              ),
+            );
+      }
     });
   }
 
   Future<void> forceOpen() async {
     await customSelect('SELECT 1').get();
-    await ensureState(initialPermissionGranted: initialPermissionGranted);
+    await ensureState(
+      initialPermissionGranted: initialPermissionGranted,
+      initialServerUrlOverride: initialServerUrlOverride,
+    );
     final result = await customSelect('PRAGMA integrity_check').getSingle();
     if (result.read<String>('integrity_check') != 'ok') {
       throw StateError('database integrity check failed');

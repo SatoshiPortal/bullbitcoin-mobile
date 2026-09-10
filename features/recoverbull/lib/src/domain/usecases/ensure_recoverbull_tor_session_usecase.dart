@@ -23,6 +23,8 @@ class EnsureRecoverBullTorSessionUsecase {
   final RecoverBullSettingsPort _settingsRepository;
   final Tor _tor;
   final TorHttpClientFactory _torHttpClientFactory;
+  final TorRoutePool? routePool;
+  final void Function(TorRoutePoolEvent event)? routePoolEvent;
   final RecoverBullTiming? timing;
 
   const EnsureRecoverBullTorSessionUsecase(
@@ -31,6 +33,8 @@ class EnsureRecoverBullTorSessionUsecase {
     this._tor, {
     this.timing,
     TorHttpClientFactory? torHttpClientFactory,
+    this.routePool,
+    this.routePoolEvent,
   }) : _torHttpClientFactory =
            torHttpClientFactory ?? const TorHttpClientFactory();
 
@@ -38,6 +42,14 @@ class EnsureRecoverBullTorSessionUsecase {
     bool restartEmbedded = false,
   }) async {
     final stopwatch = Stopwatch()..start();
+    var routeOutcome = 'opened';
+    void reportRouteEvent(TorRoutePoolEvent event) {
+      if (event.type == TorRoutePoolEventType.attached) {
+        routeOutcome = 'attached';
+      }
+      routePoolEvent?.call(event);
+    }
+
     void reportTiming(String outcome) {
       try {
         timing?.call(
@@ -63,23 +75,56 @@ class EnsureRecoverBullTorSessionUsecase {
           reportTiming('failure');
           return const Err(ExternalTorProxyUnavailableFailure());
         }
-        switch (await _tor.external.verify(endpoint)) {
-          case TorReady(:final route):
-            final value = Ok<RecoverBullTorRoute, RecoverBullFailure>(
-              RecoverBullTorRoute(
-                route,
-                () async {},
-                _torHttpClientFactory.create(route.endpoint),
-              ),
-            );
-            reportTiming('success');
-            return value;
-          case TorUnavailable(:final failure):
-            reportTiming('failure');
-            return Err(ExternalTorProxyUnavailableFailure(failure.logMessage));
-          case _:
-            reportTiming('failure');
-            return const Err(ExternalTorProxyUnavailableFailure());
+        final shared = routePool == null
+            ? null
+            : await routePool!.acquire(
+                key: 'external:${endpoint.host}:${endpoint.port}',
+                open: () async {
+                  final verified = await _tor.external.verify(endpoint);
+                  if (verified case TorReady(:final route)) return route;
+                  throw const TorBackendException(
+                    TorUnexpectedFailure('External Tor unavailable'),
+                  );
+                },
+                close: () async {},
+                onEvent: reportRouteEvent,
+              );
+        final routeState = routePool == null
+            ? await _tor.external.verify(endpoint)
+            : TorReady(shared!.route);
+        try {
+          switch (routeState) {
+            case TorReady(:final route):
+              final failureRecorder = TorConnectionFailureRecorder();
+              final value = Ok<RecoverBullTorRoute, RecoverBullFailure>(
+                RecoverBullTorRoute(
+                  shared?.route ?? route,
+                  shared?.release ?? (() async {}),
+                  _torHttpClientFactory.create(
+                    route.endpoint,
+                    failureRecorder: failureRecorder,
+                  ),
+                  connectionFailureRecorder: failureRecorder,
+                ),
+              );
+              // Keep each caller's wait duration, but only call a shared wait an
+              // attachment in the timing log rather than a route acquisition.
+              reportTiming(routePool == null ? 'success' : routeOutcome);
+              return value;
+            case TorUnavailable(:final failure):
+              reportTiming('failure');
+              return Err(
+                ExternalTorProxyUnavailableFailure(failure.logMessage),
+              );
+            case _:
+              reportTiming('failure');
+              return const Err(ExternalTorProxyUnavailableFailure());
+          }
+        } catch (_) {
+          try {
+            await shared?.release();
+          } catch (_) {}
+          rethrow;
         }
       }
 
@@ -89,7 +134,7 @@ class EnsureRecoverBullTorSessionUsecase {
       final Result<RecoverBullTorRoute, RecoverBullFailure>
       result = await switch (readiness) {
         TorReady(:final route) when route.source == TorSource.embedded =>
-          _openSession(),
+          _openSession(onEvent: reportRouteEvent),
         TorUnavailable(:final failure) => Err(
           KeyServerUnavailableFailure(failure.logMessage),
         ),
@@ -99,7 +144,13 @@ class EnsureRecoverBullTorSessionUsecase {
           ),
         ),
       };
-      reportTiming(result is Ok ? 'success' : 'failure');
+      reportTiming(
+        result is! Ok
+            ? 'failure'
+            : routePool == null
+            ? 'success'
+            : routeOutcome,
+      );
       return result;
     } on TorBackendException catch (error) {
       reportTiming('failure');
@@ -110,25 +161,52 @@ class EnsureRecoverBullTorSessionUsecase {
     }
   }
 
-  Future<Result<RecoverBullTorRoute, RecoverBullFailure>> _openSession() async {
+  Future<Result<RecoverBullTorRoute, RecoverBullFailure>> _openSession({
+    required void Function(TorRoutePoolEvent event) onEvent,
+  }) async {
+    TorSession? session;
     try {
-      final session = await _embeddedTor.sessions.open();
+      final shared = routePool == null
+          ? null
+          : await routePool!.acquire(
+              key: 'embedded',
+              open: () async {
+                session = await _embeddedTor.sessions.open();
+                return TorRoute(
+                  source: TorSource.embedded,
+                  endpoint: session!.endpoint,
+                  evidence: TorReadinessEvidence.embeddedBootstrap,
+                  transport: session!.transport,
+                );
+              },
+              close: () async => session?.close(),
+              onEvent: onEvent,
+            );
+      if (shared == null) session = await _embeddedTor.sessions.open();
       try {
-        return Ok(
-          RecoverBullTorRoute(
+        final failureRecorder = TorConnectionFailureRecorder();
+        final route =
+            shared?.route ??
             TorRoute(
               source: TorSource.embedded,
-              endpoint: session.endpoint,
+              endpoint: session!.endpoint,
               evidence: TorReadinessEvidence.embeddedBootstrap,
-              transport: session.transport,
+              transport: session!.transport,
+            );
+        return Ok(
+          RecoverBullTorRoute(
+            route,
+            shared?.release ?? session!.close,
+            _torHttpClientFactory.create(
+              route.endpoint,
+              failureRecorder: failureRecorder,
             ),
-            session.close,
-            _torHttpClientFactory.create(session.endpoint),
+            connectionFailureRecorder: failureRecorder,
           ),
         );
       } catch (_) {
         try {
-          await session.close();
+          await (shared?.release() ?? session?.close());
         } catch (_) {}
         rethrow;
       }

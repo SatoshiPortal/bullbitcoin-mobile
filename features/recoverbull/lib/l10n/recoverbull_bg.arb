@@ -203,6 +203,7 @@
   },
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} секунди",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
@@ -589,8 +590,8 @@
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
   },
-  "recoverbullConnectingTor": "Свързване към сървъра за ключове през Tor. Това може да отнеме до минута.",
-  "@recoverbullConnectingTor": {
+  "recoverbullConnectedTorCheckingServer": "Свързване към сървъра за ключове през Tor. Това може да отнеме до минута.",
+  "@recoverbullConnectedTorCheckingServer": {
     "description": "Message shown while establishing Tor connection"
   },
   "recoverbullSelectCustomLocationError": "Неуспешно избиране на файл от персонализирано местоположение",

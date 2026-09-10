@@ -12,6 +12,15 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     VaultNotSetFailure() => context.loc.recoverbullErrorVaultNotSet,
     KeyServerConnectionFailure() =>
       context.loc.recoverbullErrorConnectionFailed,
+    KeyServerTorFailure() => context.loc.recoverbullErrorTorConnection,
+    KeyServerOnionUnreachableFailure() =>
+      context.loc.recoverbullErrorOnionUnavailable,
+    KeyServerServiceRefusedFailure() =>
+      context.loc.recoverbullErrorServiceRefused,
+    KeyServerConnectionBudgetFailure() =>
+      context.loc.recoverbullErrorConnectionBudget,
+    KeyServerConnectionUnknownFailure() =>
+      context.loc.recoverbullErrorConnectionUnknown,
     VaultCreationFailure() => context.loc.recoverbullErrorVaultCreationFailed,
     VaultProviderSaveFailure() => context.loc.recoverbullProviderSaveFailed,
     TorNotStartedFailure() => context.loc.recoverbullTorNotStarted,
@@ -19,6 +28,8 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.torSettingsExternalProxyUnavailableDescription,
     VaultKeyFetchFailure() => context.loc.recoverbullErrorFetchKeyFailed,
     VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,
+    VaultBelongsToAnotherWalletFailure() =>
+      context.loc.recoverbullErrorVaultBelongsToAnotherWallet,
     VaultRecoveryFailure() => context.loc.walletSetupErrorTryAgain,
     InvalidVaultCredentialsFailure() =>
       context.loc.recoverbullErrorInvalidCredentials,
@@ -66,12 +77,23 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     // remaining duration) to 1s so the UI never shows "0 seconds" or a
     // negative value.
     final seconds = retryIn.inSeconds < 1 ? 1 : retryIn.inSeconds;
-    if (seconds < 60 || seconds % 60 != 0) {
-      return context.loc.durationSeconds(seconds.toString());
+    if (seconds < 60) {
+      return seconds == 1
+          ? context.loc.durationSecond(seconds.toString())
+          : context.loc.durationSeconds(seconds.toString());
     }
     final minutes = seconds ~/ 60;
-    return minutes == 1
+    final minuteText = minutes == 1
         ? context.loc.durationMinute(minutes.toString())
         : context.loc.durationMinutes(minutes.toString());
+    final remainder = seconds % 60;
+    if (remainder == 0) return minuteText;
+    final secondText = remainder == 1
+        ? context.loc.durationSecond(remainder.toString())
+        : context.loc.durationSeconds(remainder.toString());
+    return context.loc.recoverbullDurationMinutesSeconds(
+      minuteText,
+      secondText,
+    );
   }
 }

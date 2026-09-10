@@ -203,6 +203,32 @@ void main() {
     },
   );
 
+  test(
+    'reports an attachment separately from a shared route opening',
+    () async {
+      final timings = <String>[];
+      when(
+        () => settingsRepository.fetch(),
+      ).thenAnswer((_) async => _settings(useTorProxy: true));
+      usecase = EnsureRecoverBullTorSessionUsecase(
+        embeddedTor,
+        settingsRepository,
+        tor,
+        routePool: TorRoutePool(),
+        timing: (phase, duration, outcome) => timings.add(outcome),
+      );
+
+      final routes = await Future.wait([usecase.execute(), usecase.execute()]);
+
+      expect(timings, hasLength(2));
+      expect(timings, containsAll(['opened', 'attached']));
+      for (final result in routes) {
+        await (result as Ok<RecoverBullTorRoute, RecoverBullFailure>).value
+            .close();
+      }
+    },
+  );
+
   test('rechecks external proxy instead of restarting embedded Tor', () async {
     when(
       () => settingsRepository.fetch(),

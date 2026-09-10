@@ -1,11 +1,11 @@
 import '../repositories/recoverbull_repository.dart';
 
 class FetchRecoverbullUrlUsecase {
-  final RecoverBullRepository _recoverBullRepository;
+  final RecoverBullRepository recoverBullRepository;
 
-  FetchRecoverbullUrlUsecase({required this._recoverBullRepository});
+  FetchRecoverbullUrlUsecase({required this.recoverBullRepository});
 
   Future<Uri> execute() async {
-    return await _recoverBullRepository.fetchUrl();
+    return await recoverBullRepository.fetchUrl();
   }
 }

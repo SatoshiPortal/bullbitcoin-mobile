@@ -85,6 +85,7 @@
   "recoverbullPasswordRequired": "La password è richiesta",
   "recoverbullAttemptMonitoringLockoutBody": "Backup access is temporarily limited. Never enter your seed or password because of this alert.",
   "durationSeconds": "{seconds} secondi",
+  "recoverbullDurationMinutesSeconds": "{minutes} {seconds}",
   "@durationSeconds": {
     "placeholders": {
       "seconds": {
@@ -274,7 +275,7 @@
   "recoverbullConnecting": "Collegamento",
   "recoverbullErrorVaultCreatedKeyNotStored": "Non riuscita: file Vault creato ma chiave non memorizzata nel server",
   "recoverbullRetry": "Reazione",
-  "recoverbullConnectingTor": "Collegamento a Key Server tramite Tor.\nCi vorra' un minuto.",
+  "recoverbullConnectedTorCheckingServer": "Collegamento a Key Server tramite Tor.\nCi vorra' un minuto.",
   "recoverbullSelectCustomLocationError": "Non selezionare il file dalla posizione personalizzata",
   "torSettingsDescDisconnected": "Tor proxy non è in esecuzione",
   "oopsSomethingWentWrong": "Ops! Qualcosa non va",

@@ -13,6 +13,9 @@ import '../domain/recoverbull_attempt_alert_port.dart';
 import '../domain/recoverbull_lifecycle_port.dart';
 import '../domain/recoverbull_server_url.dart';
 
+export '../domain/recoverbull_server_url.dart'
+    show validateRecoverBullServerUrl;
+
 /// The production key server. Kept in the package so shell configuration is
 /// not able to accidentally drift from the protocol default.
 const recoverBullDefaultServerUrl =
@@ -25,11 +28,13 @@ typedef RecoverBullTiming =
 final class RecoverBullConfig {
   final String databasePath;
   final Uri? defaultServer;
+  final Uri? initialServerUrlOverride;
   final bool initialPermissionGranted;
 
   const RecoverBullConfig({
     required this.databasePath,
     this.defaultServer,
+    this.initialServerUrlOverride,
     this.initialPermissionGranted = false,
   });
 
@@ -292,7 +297,18 @@ final class RecoverBullAttemptMonitoring
         'recoverbull.attempts.monitoring.failed '
         'error_type=${error.runtimeType}',
       );
-      return const [];
+      final unavailable = _publicAlert(
+        const domain_alert.AttemptMonitoringUnavailableAlert(since: null),
+      );
+      if (!_visibleAlerts.any(
+        (alert) => alert.identity == unavailable.identity,
+      )) {
+        _visibleAlerts.add(unavailable);
+        if (!_alertUpdates.isClosed) {
+          _alertUpdates.add(List.unmodifiable(_visibleAlerts));
+        }
+      }
+      return [unavailable];
     }
   }
 
@@ -389,28 +405,39 @@ final class _CallbackAttemptMonitoringRemote
 }
 
 final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
+  final LogSink? _log;
   RecoverBullDatabase? _database;
   String? _path;
   bool _disposed = false;
 
+  RecoverBullLifecycle({this._log});
+
   Future<void> open(
     String path, {
     bool initialPermissionGranted = false,
+    Uri? initialServerUrlOverride,
   }) async {
     await _openDatabase(
       path,
       initialPermissionGranted: initialPermissionGranted,
+      initialServerUrlOverride: initialServerUrlOverride?.toString(),
     );
   }
 
   Future<RecoverBullDatabase> openDatabase(
     String path, {
     bool initialPermissionGranted = false,
-  }) => _openDatabase(path, initialPermissionGranted: initialPermissionGranted);
+    Uri? initialServerUrlOverride,
+  }) => _openDatabase(
+    path,
+    initialPermissionGranted: initialPermissionGranted,
+    initialServerUrlOverride: initialServerUrlOverride?.toString(),
+  );
 
   Future<RecoverBullDatabase> _openDatabase(
     String path, {
     bool initialPermissionGranted = false,
+    String? initialServerUrlOverride,
   }) async {
     if (_disposed) throw StateError('RecoverBull lifecycle is disposed');
     if (_database != null && _path == path) return _database!;
@@ -423,6 +450,7 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       final database = RecoverBullDatabase.open(
         path,
         initialPermissionGranted: initialPermissionGranted,
+        initialServerUrlOverride: initialServerUrlOverride,
       );
       await database.forceOpen();
       _database = database;
@@ -432,10 +460,12 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       if (!_isCorruption(error)) rethrow;
       await _database?.close();
       _database = null;
-      await _deleteFiles(path);
+      await _archiveCorruptFiles(path);
+      _log?.warning('recoverbull.database.corrupt_archived');
       final database = RecoverBullDatabase.open(
         path,
         initialPermissionGranted: initialPermissionGranted,
+        initialServerUrlOverride: initialServerUrlOverride,
       );
       await database.forceOpen();
       _database = database;
@@ -495,6 +525,24 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       } catch (_) {}
     }
   }
+
+  static Future<void> _archiveCorruptFiles(String path) async {
+    final timestamp = DateTime.now().toUtc().millisecondsSinceEpoch;
+    final archivePath = '$path.corrupt-$timestamp';
+    final directory = Directory(File(path).parent.path);
+    final prefix = '${File(path).uri.pathSegments.last}.corrupt-';
+    if (await directory.exists()) {
+      await for (final entity in directory.list()) {
+        if (entity is File && entity.uri.pathSegments.last.startsWith(prefix)) {
+          await entity.delete();
+        }
+      }
+    }
+    for (final suffix in ['', '-wal', '-shm', '-journal', '.sqlite-journal']) {
+      final file = File('$path$suffix');
+      if (await file.exists()) await file.rename('$archivePath$suffix');
+    }
+  }
 }
 
 final class RecoverBullCore {
@@ -506,13 +554,15 @@ final class RecoverBullCore {
     required this.config,
     required this.dependencies,
     RecoverBullLifecycle? lifecycle,
-  }) : lifecycle = lifecycle ?? RecoverBullLifecycle();
+    LogSink? log,
+  }) : lifecycle = lifecycle ?? RecoverBullLifecycle(log: log);
 
   Future<RecoverBullStatus> status() async {
     try {
       final db = await lifecycle._openDatabase(
         config.databasePath,
         initialPermissionGranted: config.initialPermissionGranted,
+        initialServerUrlOverride: config.initialServerUrlOverride?.toString(),
       );
       final row = await db.select(db.recoverbullState).getSingle();
       return RecoverBullStatus(
@@ -528,6 +578,7 @@ final class RecoverBullCore {
     final db = await lifecycle._openDatabase(
       config.databasePath,
       initialPermissionGranted: config.initialPermissionGranted,
+      initialServerUrlOverride: config.initialServerUrlOverride?.toString(),
     );
     final row = await db.select(db.recoverbullState).getSingle();
     return RecoverBullServerSettings(

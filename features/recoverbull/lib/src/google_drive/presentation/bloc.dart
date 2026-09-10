@@ -49,7 +49,9 @@ class RecoverBullGoogleDriveBloc
       switch (await _fetchAllDriveFileMetadataUsecase.execute()) {
         case Ok(:final value):
           emit(state.copyWith(driveMetadata: value));
-          log.fine('$OnFetchDriveVaults ${value.length} metadata found');
+          log.fine(
+            'recoverbull.drive.fetch_metadata.succeeded count=${value.length}',
+          );
         case Err(:final failure):
           emit(
             state.copyWith(
@@ -95,7 +97,7 @@ class RecoverBullGoogleDriveBloc
               .where((file) => file.id != event.fileMetadata.id)
               .toList();
           emit(state.copyWith(driveMetadata: updatedMetadata));
-          log.fine('$OnDeleteDriveFile succeed');
+          log.fine('recoverbull.drive.delete.succeeded');
         case Err(:final failure):
           emit(
             state.copyWith(
@@ -116,7 +118,7 @@ class RecoverBullGoogleDriveBloc
       emit(state.copyWith(isLoading: true));
       switch (await _exportDriveFileUsecase.execute(event.fileMetadata)) {
         case Ok():
-          log.fine('$OnExportDriveFile succeed');
+          log.fine('recoverbull.drive.export.succeeded');
         case Err(:final failure):
           emit(
             state.copyWith(
