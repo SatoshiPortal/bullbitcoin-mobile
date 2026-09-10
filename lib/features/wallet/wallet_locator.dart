@@ -50,7 +50,7 @@ class WalletLocator {
       ),
     );
     // Bloc
-    locator.registerFactory<WalletBloc>(
+    locator.registerLazySingleton<WalletBloc>(
       () => WalletBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
