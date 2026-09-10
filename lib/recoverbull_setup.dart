@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
@@ -29,10 +30,15 @@ final class RecoverBullSetup {
     required bool startAttemptMonitoring,
   }) async {
     final documents = await getApplicationDocumentsDirectory();
-    final legacySettings = await _readLegacySettings(database);
+    final recoverBullLog = log.scoped('recoverbull');
+    final legacySettings = await readRecoverBullLegacySettings(
+      database,
+      onReadFailure: () => recoverBullLog.warning(
+        'recoverbull.migration.legacy_settings_read_failed',
+      ),
+    );
     final settingsRepository = locator<SettingsRepository>();
     final walletRepository = locator<WalletRepository>();
-    final recoverBullLog = log.scoped('recoverbull');
     final composed = await RecoverBullFeature.create(
       config: RecoverBullConfig(
         databasePath: '${documents.path}/recoverbull.sqlite',
@@ -63,48 +69,52 @@ final class RecoverBullSetup {
     // Advisory only: an attempt monitoring outage must never delay app startup. The
     // background composition passes false and therefore does not open this DB.
     if (startAttemptMonitoring) {
-      unawaited(
-        checkRecoverBullOnAppLaunch(
-          composed.attemptMonitoring,
-        ).catchError((_) => const <RecoverBullAttemptAlert>[]),
-      );
+      unawaited(checkRecoverBullOnAppLaunch(composed.attemptMonitoring));
     }
   }
 }
 
-final class _LegacyRecoverBullSettings {
+@visibleForTesting
+final class RecoverBullLegacySettings {
   final Uri? serverUrl;
   final bool permissionGranted;
+  final bool readFailed;
 
-  const _LegacyRecoverBullSettings({
+  const RecoverBullLegacySettings({
     required this.serverUrl,
     required this.permissionGranted,
+    this.readFailed = false,
   });
 
   bool get wasImported => serverUrl != null || permissionGranted;
 }
 
-Future<_LegacyRecoverBullSettings> _readLegacySettings(
-  SqliteDatabase database,
-) async {
+@visibleForTesting
+Future<RecoverBullLegacySettings> readRecoverBullLegacySettings(
+  SqliteDatabase database, {
+  void Function()? onReadFailure,
+}) async {
   try {
     final row = await (database.select(
       database.recoverbull,
     )..where((table) => table.id.equals(1))).getSingleOrNull();
     Uri? serverUrl;
-    if (row?.url case final rawUrl?) {
+    if (row?.url case final rawUrl?
+        when rawUrl != SettingsConstants.recoverbullUrl) {
       try {
         serverUrl = validateRecoverBullServerUrl(Uri.parse(rawUrl));
       } catch (_) {}
     }
-    return _LegacyRecoverBullSettings(
+    return RecoverBullLegacySettings(
       serverUrl: serverUrl,
       permissionGranted: row?.isPermissionGranted ?? false,
     );
   } catch (_) {
-    return const _LegacyRecoverBullSettings(
+    onReadFailure?.call();
+    return const RecoverBullLegacySettings(
       serverUrl: null,
       permissionGranted: false,
+      readFailed: true,
     );
   }
 }
