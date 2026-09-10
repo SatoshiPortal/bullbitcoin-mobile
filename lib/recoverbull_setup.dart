@@ -12,6 +12,12 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
+
+@visibleForTesting
+Future<void> checkRecoverBullOnAppLaunch(
+  RecoverBullAttemptMonitoringController monitoring,
+) => monitoring.checkOnForeground();
 
 /// Composition root for RecoverBull. The package owns its storage and policy;
 /// this adapter only supplies already-composed wallet, seed, settings and Tor
@@ -58,9 +64,9 @@ final class RecoverBullSetup {
     // background composition passes false and therefore does not open this DB.
     if (startAttemptMonitoring) {
       unawaited(
-        composed.attemptMonitoring.checkOnForeground().catchError(
-          (_) => const <RecoverBullAttemptAlert>[],
-        ),
+        checkRecoverBullOnAppLaunch(
+          composed.attemptMonitoring,
+        ).catchError((_) => const <RecoverBullAttemptAlert>[]),
       );
     }
   }

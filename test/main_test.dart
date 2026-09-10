@@ -1,4 +1,5 @@
 import 'package:bb_mobile/main.dart';
+import 'package:bb_mobile/recoverbull_setup.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:primitives/primitives.dart';
@@ -23,14 +24,21 @@ void main() {
     verify(lifecycle.resume).called(1);
   });
 
-  test('checks RecoverBull monitoring without blocking app resume', () {
+  test('checks RecoverBull monitoring exactly once at app launch', () async {
     final monitoring = _MockRecoverBullMonitoring();
     when(monitoring.checkOnForeground).thenAnswer((_) async => const []);
 
-    checkRecoverBullOnAppResume(AppLifecycleState.paused, monitoring);
-    verifyNever(monitoring.checkOnForeground);
-
-    checkRecoverBullOnAppResume(AppLifecycleState.resumed, monitoring);
+    await checkRecoverBullOnAppLaunch(monitoring);
     verify(monitoring.checkOnForeground).called(1);
+  });
+
+  test('does not check RecoverBull monitoring when app resumes', () {
+    final monitoring = _MockRecoverBullMonitoring();
+    final lifecycle = _MockPayjoinLifecycle();
+    when(lifecycle.resume).thenAnswer((_) async => const Ok(null));
+    when(monitoring.checkOnForeground).thenAnswer((_) async => const []);
+
+    resumePayjoinsOnAppResume(AppLifecycleState.resumed, lifecycle);
+    verifyNever(monitoring.checkOnForeground);
   });
 }
