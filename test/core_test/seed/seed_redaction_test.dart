@@ -48,6 +48,24 @@ void main() {
   );
 
   group('seed persistence model', () {
+    test('keeps identity equality and hashing for both secret variants', () {
+      for (final model in [
+        SeedModel.mnemonic(
+          mnemonicWords: _mnemonicWords,
+          passphrase: _passphrase,
+        ),
+        SeedModel.bytes(bytes: seedBytes()),
+      ]) {
+        final restored = SeedModel.fromJson(model.toJson());
+        expect(restored.toJson(), model.toJson());
+        expect(model == restored, isFalse);
+        expect(model == model, isTrue);
+        expect(model.hashCode, identityHashCode(model));
+        expect(model, isNot(isA<Diagnosticable>()));
+        expect(DiagnosticsProperty('seed', model).toStringDeep(), redacted());
+      }
+    });
+
     test('toString redacts the words and the passphrase', () {
       final model = SeedModel.mnemonic(
         mnemonicWords: _mnemonicWords,

@@ -8,10 +8,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'seed_model.freezed.dart';
 part 'seed_model.g.dart';
 
-/// `toString` is written by hand and redacts everything: a Freezed dump of
-/// this model would print the mnemonic, the passphrase or the raw seed bytes
-/// into whatever log, test failure or exception picked it up. See [Seed].
-@Freezed(toStringOverride: false)
+/// Secret fields are serialized only for storage, not inspected by generated
+/// diagnostics, equality or hashing. See [Seed].
+@Freezed(toStringOverride: false, equal: false)
 sealed class SeedModel with _$SeedModel {
   const SeedModel._();
 

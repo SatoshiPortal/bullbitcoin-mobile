@@ -703,6 +703,7 @@ void main() {
       () => metadataDatasource.fetch(metadata.id),
     ).thenAnswer((_) async => metadata);
     final storedSeeds = {protected.fingerprint: protected.seed};
+    registerFallbackValue(canonical.seed);
     when(() => seedDatasource.exists(any())).thenAnswer(
       (call) async => storedSeeds.containsKey(call.positionalArguments.single),
     );
@@ -712,10 +713,20 @@ void main() {
     when(
       () => seedDatasource.store(
         fingerprint: canonical.fingerprint,
-        seed: canonical.seed,
+        seed: any(
+          named: 'seed',
+          that: isA<MnemonicSeedModel>()
+              .having(
+                (seed) => seed.mnemonicWords,
+                'words',
+                testMnemonics.first.split(' '),
+              )
+              .having((seed) => seed.passphrase, 'passphrase', isNull),
+        ),
       ),
-    ).thenAnswer((_) async {
-      storedSeeds[canonical.fingerprint] = canonical.seed;
+    ).thenAnswer((call) async {
+      storedSeeds[canonical.fingerprint] =
+          call.namedArguments[#seed] as SeedModel;
     });
     await SeedRepository(
       source: seedDatasource,
