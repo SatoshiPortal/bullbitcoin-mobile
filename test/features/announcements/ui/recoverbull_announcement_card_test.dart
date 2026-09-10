@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/announcements/ui/announcement_navigation.dart
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_card.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bull_recoverbull/src/ui/screens/attempt_alert_detail_page.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -115,8 +114,12 @@ void main() {
     await tester.tap(find.byType(BullInfoCard));
     await tester.pumpAndSettle();
 
-    final l10n = RecoverBullLocalizations.of(
-      tester.element(find.byType(RecoverBullAttemptAlertDetailPage)),
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(
+      find.bySemanticsLabel(l10n.recoverbullAttemptAlertDetailsTitle),
+      findsOneWidget,
     );
     expect(
       find.text(l10n.recoverbullAttemptAlertAttempts(3, 7)),
@@ -219,8 +222,8 @@ void main() {
     await tester.tap(find.byType(BullInfoCard));
     await tester.pumpAndSettle();
 
-    final l10n = RecoverBullLocalizations.of(
-      tester.element(find.byType(RecoverBullAttemptAlertDetailPage)),
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('fr'),
     );
     expect(
       find.text(l10n.recoverbullAttemptAlertAttempts(3, 7)),
