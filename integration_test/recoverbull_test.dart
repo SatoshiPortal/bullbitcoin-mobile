@@ -106,6 +106,7 @@ Future<void> main({bool isInitialized = false}) async {
         final decryptedVault =
             (decryptedResult as Ok<DecryptedVault, RecoverBullCoreFailure>)
                 .value;
+        final existingWalletIds = await walletRepository.getStoredWalletIds();
         final restored = await restoreVaultUsecase.execute(
           decryptedVault: decryptedVault,
         );
@@ -118,7 +119,11 @@ Future<void> main({bool isInitialized = false}) async {
 
         expect(
           (restored as Ok<List<String>, RecoverBullCoreFailure>).value,
-          unorderedEquals(wallets.map((wallet) => wallet.id)),
+          unorderedEquals(
+            wallets
+                .map((wallet) => wallet.id)
+                .where((id) => !existingWalletIds.contains(id)),
+          ),
         );
         final wallet = wallets.singleWhere((wallet) => wallet.isBitcoin);
         expect(wallet.masterFingerprint, isNotEmpty);

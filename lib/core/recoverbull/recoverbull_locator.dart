@@ -141,6 +141,7 @@ class RecoverbullLocator {
       () => RestoreVaultUsecase(
         walletRepository: locator<WalletRepository>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
