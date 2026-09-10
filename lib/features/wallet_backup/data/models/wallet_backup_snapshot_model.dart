@@ -212,10 +212,10 @@ final class WalletBackupSnapshotCodec {
   List<WalletDefinition> _decodeDefinitionsSection(Object? value) {
     if (value == null) return const [];
     final section = _object(value);
-    _expectVersion(
-      _int(section, 'version'),
-      WalletDefinitionsCodec.currentVersion,
-    );
+    final version = _int(section, 'version');
+    if (version != 2) {
+      _expectVersion(version, WalletDefinitionsCodec.currentVersion);
+    }
     final definitions = _definitions.decode(jsonEncode(section));
     if (definitions.isEmpty) throw _malformed('empty definitions section');
     return definitions;

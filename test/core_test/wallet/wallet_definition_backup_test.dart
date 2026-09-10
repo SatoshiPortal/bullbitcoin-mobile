@@ -22,6 +22,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_definitions_model.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -151,6 +152,37 @@ void main() {
       expect(changed.status, WalletDefinitionRestoreStatus.conflict);
     },
   );
+
+  test('restores signer recovery facts through the codec and SQLite', () async {
+    final source = await importSource(provenance: WalletProvenance.descriptor);
+    final signer = source.signers.single;
+    final annotated = source.copyWith(
+      signers: [
+        signer.copyWith(
+          signer: Signer.local,
+          registrationName: 'My registered policy',
+          localSeedFingerprint: 'aabbccdd',
+          descriptorKeys: [
+            signer.descriptorKeys.single.copyWith(requiresPassphrase: true),
+          ],
+        ),
+      ],
+    );
+    await metadata.store(annotated);
+    const codec = WalletDefinitionsCodec();
+    final payload = codec.encode(await wallets.getWalletDefinitions());
+    await metadata.delete(source.id);
+    expect(await metadata.fetchAll(), isEmpty);
+
+    final restored = await wallets.restoreWalletDefinition(
+      codec.decode(payload).single,
+    );
+
+    expect(restored.status, WalletDefinitionRestoreStatus.created);
+    final stored = (await metadata.fetch(source.id))!;
+    expect(stored.signers, annotated.signers);
+    expect(codec.encode(await wallets.getWalletDefinitions()), payload);
+  });
 
   test(
     'restores a seed-origin reference without replacing it with a hash',
@@ -431,6 +463,46 @@ void main() {
     );
     expect(changes, 1);
   });
+
+  test(
+    'a registration name change dirties a backed-up definition once',
+    () async {
+      final source = await importSource(
+        provenance: WalletProvenance.externalSigner,
+      );
+      var changes = 0;
+      final subscription = metadata.catalogChanges.listen((_) => changes++);
+      addTearDown(subscription.cancel);
+      final signerId = source.signers.single.id;
+      expect(
+        await metadata.updateSignerRegistrationName(
+          walletId: source.id,
+          signerId: signerId,
+          registrationName: 'My hardware policy',
+        ),
+        isTrue,
+      );
+      expect(changes, 1);
+      expect(
+        await metadata.updateSignerRegistrationName(
+          walletId: source.id,
+          signerId: signerId,
+          registrationName: 'My hardware policy',
+        ),
+        isTrue,
+      );
+      expect(changes, 1);
+      expect(
+        await metadata.updateSignerRegistrationName(
+          walletId: source.id,
+          signerId: 'not-present',
+          registrationName: 'Other',
+        ),
+        isFalse,
+      );
+      expect(changes, 1);
+    },
+  );
 
   test(
     'birthday comparison uses the persisted instant and precision',

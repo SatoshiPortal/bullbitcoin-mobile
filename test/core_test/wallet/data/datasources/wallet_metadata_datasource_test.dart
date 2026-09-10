@@ -96,6 +96,7 @@ void main() {
     'storeAll',
     'delete',
     'signer',
+    'registration',
     'preferences',
   ]) {
     test(
@@ -125,6 +126,11 @@ void main() {
             signerId: _hardware.id,
             signer: Signer.remote,
             signerDevice: SignerDevice.ledgerFlex,
+          ),
+          'registration' => failing.updateSignerRegistrationName(
+            walletId: metadata.id,
+            signerId: _hardware.id,
+            registrationName: 'New hardware policy',
           ),
           _ => failing.storeRecoveredPreferencesConditionally([
             WalletMetadataPreferenceRecoveryUpdate(

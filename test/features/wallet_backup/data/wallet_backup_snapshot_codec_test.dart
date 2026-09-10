@@ -18,6 +18,15 @@ void main() {
   final codec = canonicalCodec();
 
   group('golden fixtures', () {
+    test('reads the archived version-2 definitions and writes version 3', () {
+      final legacy = File(
+        'test/features/wallet_backup/fixtures/canonical_v1_full.json',
+      ).readAsStringSync();
+      final decoded = _decode(codec, legacy);
+      expect(codec.differences(decoded, canonicalFullSnapshot()), isEmpty);
+      expect(codec.encode(decoded), _fixture('full'));
+    });
+
     test('a full backup encodes to the frozen bytes', () {
       expect(codec.encode(canonicalFullSnapshot()), _fixture('full'));
     });
@@ -125,6 +134,20 @@ void main() {
       );
     });
 
+    test(
+      'a newer definitions version retains the unsupported-version fence',
+      () {
+        final document = jsonDecode(_fixture('full')) as Map<String, dynamic>;
+        (document['definitions'] as Map)['version'] = 4;
+        expect(
+          () => _decode(codec, jsonEncode(document)),
+          _throwsReason(
+            WalletBackupSnapshotCodecFailureReason.unsupportedVersion,
+          ),
+        );
+      },
+    );
+
     test('an unknown top-level field is malformed', () {
       expect(
         () => _decode(
@@ -158,14 +181,10 @@ void main() {
     });
 
     test('an empty definitions section is malformed, never an empty list', () {
+      final document = jsonDecode(_fixture('full')) as Map<String, dynamic>;
+      document['definitions'] = {'version': 3, 'definitions': []};
       expect(
-        () => _decode(
-          codec,
-          _fixture('full').replaceFirst(
-            RegExp(r'"definitions":\{.*?\}\]\},'),
-            '"definitions":{"version":1,"definitions":[]},',
-          ),
-        ),
+        () => _decode(codec, jsonEncode(document)),
         _throwsReason(WalletBackupSnapshotCodecFailureReason.malformed),
       );
     });
@@ -243,9 +262,12 @@ void main() {
   });
 }
 
-String _fixture(String name) => File(
-  'test/features/wallet_backup/fixtures/canonical_v1_$name.json',
-).readAsStringSync();
+String _fixture(String name) {
+  final suffix = name == 'full' ? 'full_signers_v3' : name;
+  return File(
+    'test/features/wallet_backup/fixtures/canonical_v1_$suffix.json',
+  ).readAsStringSync().trimRight();
+}
 
 WalletBackupSnapshot _decode(WalletBackupSnapshotCodec codec, String payload) =>
     codec.decode(

@@ -73,6 +73,43 @@ void main() {
     expect(() => codec.decode(legacy), throwsA(isA<FormatException>()));
   });
 
+  test('reads existing version-2 files without inventing signer facts', () {
+    final original = _definition('saved-v2', descriptor);
+    final document =
+        jsonDecode(codec.encode([original])) as Map<String, dynamic>;
+    document['version'] = 2;
+    for (final definition in document['definitions'] as List) {
+      for (final signer in definition['signers'] as List) {
+        (signer as Map).remove('registrationName');
+        signer.remove('localSeedFingerprint');
+        for (final key in signer['descriptorKeys'] as List) {
+          (key as Map).remove('requiresPassphrase');
+        }
+      }
+    }
+    final restored = codec.decode(jsonEncode(document)).single;
+    expect(restored.signers, original.signers);
+    expect(restored.signers.single.registrationName, isNull);
+    expect(restored.signers.single.localSeedFingerprint, isNull);
+    expect(
+      restored.signers.single.descriptorKeys.single.requiresPassphrase,
+      isFalse,
+    );
+    expect(jsonDecode(codec.encode([restored]))['version'], 3);
+  });
+
+  test('rejects non-integer versions and missing version-3 signer facts', () {
+    final encoded = codec.encode([_definition('wallet', descriptor)]);
+    final document = jsonDecode(encoded) as Map<String, dynamic>;
+    document['version'] = 3.0;
+    expect(() => codec.decode(jsonEncode(document)), throwsFormatException);
+    document['version'] = 3;
+    final definition = (document['definitions'] as List).single as Map;
+    final signer = (definition['signers'] as List).single as Map;
+    signer.remove('registrationName');
+    expect(() => codec.decode(jsonEncode(document)), throwsFormatException);
+  });
+
   test('rejects seed-recoverable wallets from the definitions section', () {
     final definition = WalletDefinition(
       walletRef: 'mnemonic',
@@ -82,6 +119,30 @@ void main() {
     );
 
     expect(() => codec.encode([definition]), throwsA(isA<FormatException>()));
+  });
+
+  test('rejects malformed signer recovery facts', () {
+    final encoded = codec.encode([_definition('wallet', descriptor)]);
+    for (final invalid in <Map<String, Object?>>[
+      {'registrationName': 123},
+      {'registrationName': '  '},
+      {'localSeedFingerprint': 'not-a-fingerprint', 'signer': 'local'},
+      {'localSeedFingerprint': 'aabbccdd', 'signer': 'remote'},
+    ]) {
+      final document = jsonDecode(encoded) as Map<String, dynamic>;
+      final definition = (document['definitions'] as List).single as Map;
+      final signer = (definition['signers'] as List).single as Map;
+      signer.addAll(invalid);
+      expect(() => codec.decode(jsonEncode(document)), throwsFormatException);
+    }
+    for (final invalid in <Object?>[null, 'true', 1]) {
+      final document = jsonDecode(encoded) as Map<String, dynamic>;
+      final definition = (document['definitions'] as List).single as Map;
+      final signer = (definition['signers'] as List).single as Map;
+      final key = (signer['descriptorKeys'] as List).single as Map;
+      key['requiresPassphrase'] = invalid;
+      expect(() => codec.decode(jsonEncode(document)), throwsFormatException);
+    }
   });
 
   test('rejects a descriptor containing private key material', () {
@@ -179,6 +240,8 @@ void main() {
           id: 'signer-0',
           signer: SignerEntity.local,
           signerDevice: null,
+          registrationName: 'Saved policy name',
+          localSeedFingerprint: '12345678',
           descriptorKeys: [
             WalletDescriptorKey(
               id: 'key-0',
@@ -188,6 +251,7 @@ void main() {
               xpub: 'xpub-local',
               derivationPath: "m/48'/0'/0'/2'",
               descriptorPath: '/<0;1>/*',
+              requiresPassphrase: true,
             ),
           ],
         ),
@@ -221,6 +285,24 @@ void main() {
     );
     expect(decoded.hasRemoteSigner, isTrue);
     expect(decoded.provenance, WalletProvenance.descriptor);
+  });
+
+  test('does not write a seed reference that its reader would reject', () {
+    final source = _definition('wallet', descriptor);
+    final signer = source.signers.single;
+    final invalid = WalletDefinition(
+      walletRef: source.walletRef,
+      network: source.network,
+      descriptor: source.descriptor,
+      provenance: source.provenance,
+      signers: [
+        signer.copyWith(
+          signer: SignerEntity.local,
+          localSeedFingerprint: 'invalid',
+        ),
+      ],
+    );
+    expect(() => codec.encode([invalid]), throwsFormatException);
   });
 }
 

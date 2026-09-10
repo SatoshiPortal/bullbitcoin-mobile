@@ -28,6 +28,9 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.da
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
+import 'package:bb_mobile/features/wallet_backup/data/models/wallet_definitions_model.dart';
 import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
@@ -662,101 +665,137 @@ void main() {
     });
   });
 
-  test('requires the matching passphrase for a protected local key', () async {
-    const passphrase = 'vault passphrase';
-    final canonical = _bip48Fixture(testMnemonics.first);
-    final protected = _bip48Fixture(
-      testMnemonics.first,
-      passphrase: passphrase,
-    );
-    final descriptor =
-        "wsh(pk([${protected.fingerprint}/48'/1'/0'/2']${protected.xpub}/<0;1>/*))";
-    final metadata = WalletMetadataModel(
-      id: 'wallet',
-      network: Network.bitcoinTestnet,
-      signers: [
-        WalletSignerModel(
-          id: 'signer-0',
-          signer: Signer.local,
-          signerDevice: null,
-          localSeedFingerprint: canonical.fingerprint,
-          descriptorKeys: [
-            WalletDescriptorKeyModel(
-              id: 'key-0',
-              signerId: 'signer-0',
-              masterFingerprint: protected.fingerprint,
-              xpubFingerprint: protected.fingerprint,
-              xpub: protected.xpub,
-              derivationPath: "m/48'/1'/0'/2'",
-              descriptorPath: '/<0;1>/*',
-              requiresPassphrase: true,
+  for (final fromBackup in [false, true]) {
+    test(
+      'requires the matching passphrase for a protected local key (backup: $fromBackup)',
+      () async {
+        const passphrase = 'vault passphrase';
+        final canonical = _bip48Fixture(testMnemonics.first);
+        final protected = _bip48Fixture(
+          testMnemonics.first,
+          passphrase: passphrase,
+        );
+        final descriptor =
+            "wsh(pk([${protected.fingerprint}/48'/1'/0'/2']${protected.xpub}/<0;1>/*))";
+        var metadata = WalletMetadataModel(
+          id: 'wallet',
+          network: Network.bitcoinTestnet,
+          signers: [
+            WalletSignerModel(
+              id: 'signer-0',
+              signer: Signer.local,
+              signerDevice: null,
+              localSeedFingerprint: canonical.fingerprint,
+              descriptorKeys: [
+                WalletDescriptorKeyModel(
+                  id: 'key-0',
+                  signerId: 'signer-0',
+                  masterFingerprint: protected.fingerprint,
+                  xpubFingerprint: protected.fingerprint,
+                  xpub: protected.xpub,
+                  derivationPath: "m/48'/1'/0'/2'",
+                  descriptorPath: '/<0;1>/*',
+                  requiresPassphrase: true,
+                ),
+              ],
             ),
           ],
-        ),
-      ],
-      isEncryptedVaultTested: false,
-      isPhysicalBackupTested: false,
-      publicDescriptor: descriptor,
-      isDefault: false,
-    );
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
-    final storedSeeds = {protected.fingerprint: protected.seed};
-    registerFallbackValue(canonical.seed);
-    when(() => seedDatasource.exists(any())).thenAnswer(
-      (call) async => storedSeeds.containsKey(call.positionalArguments.single),
-    );
-    when(
-      () => seedDatasource.get(any()),
-    ).thenAnswer((call) async => storedSeeds[call.positionalArguments.single]!);
-    when(
-      () => seedDatasource.store(
-        fingerprint: canonical.fingerprint,
-        seed: any(
-          named: 'seed',
-          that: isA<MnemonicSeedModel>()
-              .having(
-                (seed) => seed.mnemonicWords,
-                'words',
-                testMnemonics.first.split(' '),
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          publicDescriptor: descriptor,
+          isDefault: false,
+        );
+        if (fromBackup) {
+          const codec = WalletDefinitionsCodec();
+          final recovered = codec
+              .decode(
+                codec.encode([
+                  WalletDefinition(
+                    walletRef: metadata.id,
+                    network: metadata.network,
+                    descriptor: descriptor,
+                    signers: metadata.signers
+                        .map((signer) => signer.toEntity())
+                        .toList(),
+                    provenance: WalletProvenance.descriptor,
+                  ),
+                ]),
               )
-              .having((seed) => seed.passphrase, 'passphrase', isNull),
-        ),
-      ),
-    ).thenAnswer((call) async {
-      storedSeeds[canonical.fingerprint] =
-          call.namedArguments[#seed] as SeedModel;
-    });
-    await SeedRepository(
-      source: seedDatasource,
-    ).ensureCanonicalSeed(protected.seed.toEntity());
-    final unsignedPsbt = buildUnsignedPsbt(descriptor: descriptor);
+              .single;
+          metadata = metadata.copyWith(
+            publicDescriptor: recovered.descriptor,
+            signers: recovered.signers
+                .map((signer) => signer.toModel())
+                .toList(),
+          );
+        }
+        when(
+          () => metadataDatasource.fetch(metadata.id),
+        ).thenAnswer((_) async => metadata);
+        final storedSeeds = {protected.fingerprint: protected.seed};
+        registerFallbackValue(canonical.seed);
+        when(() => seedDatasource.exists(any())).thenAnswer(
+          (call) async =>
+              storedSeeds.containsKey(call.positionalArguments.single),
+        );
+        when(() => seedDatasource.get(any())).thenAnswer(
+          (call) async => storedSeeds[call.positionalArguments.single]!,
+        );
+        when(
+          () => seedDatasource.store(
+            fingerprint: canonical.fingerprint,
+            seed: any(
+              named: 'seed',
+              that: isA<MnemonicSeedModel>()
+                  .having(
+                    (seed) => seed.mnemonicWords,
+                    'words',
+                    testMnemonics.first.split(' '),
+                  )
+                  .having((seed) => seed.passphrase, 'passphrase', isNull),
+            ),
+          ),
+        ).thenAnswer((call) async {
+          storedSeeds[canonical.fingerprint] =
+              call.namedArguments[#seed] as SeedModel;
+        });
+        await SeedRepository(
+          source: seedDatasource,
+        ).ensureCanonicalSeed(protected.seed.toEntity());
+        final unsignedPsbt = buildUnsignedPsbt(descriptor: descriptor);
 
-    final missing = await repository.signPsbt(
-      unsignedPsbt,
-      walletId: metadata.id,
-      tryFinalize: false,
-    );
-    final wrong = await repository.signPsbt(
-      unsignedPsbt,
-      walletId: metadata.id,
-      tryFinalize: false,
-      passphrase: 'wrong passphrase',
-    );
-    final signed = await repository.signPsbt(
-      unsignedPsbt,
-      walletId: metadata.id,
-      tryFinalize: false,
-      passphrase: passphrase,
-    );
+        final missing = await repository.signPsbt(
+          unsignedPsbt,
+          walletId: metadata.id,
+          tryFinalize: false,
+        );
+        final wrong = await repository.signPsbt(
+          unsignedPsbt,
+          walletId: metadata.id,
+          tryFinalize: false,
+          passphrase: 'wrong passphrase',
+        );
+        final signed = await repository.signPsbt(
+          unsignedPsbt,
+          walletId: metadata.id,
+          tryFinalize: false,
+          passphrase: passphrase,
+        );
 
-    expect(_failureKind(missing), BitcoinSigningFailureKind.passphraseRequired);
-    expect(_failureKind(wrong), BitcoinSigningFailureKind.passphraseMismatch);
-    expect(signedFingerprints(_unwrapSigning(signed).psbt), {
-      protected.fingerprint.toLowerCase(),
-    });
-  });
+        expect(
+          _failureKind(missing),
+          BitcoinSigningFailureKind.passphraseRequired,
+        );
+        expect(
+          _failureKind(wrong),
+          BitcoinSigningFailureKind.passphraseMismatch,
+        );
+        expect(signedFingerprints(_unwrapSigning(signed).psbt), {
+          protected.fingerprint.toLowerCase(),
+        });
+      },
+    );
+  }
 
   test('maps wallet input validation failures to invalid PSBT', () async {
     final signer = _singleSignatureFixture(testMnemonics.first);

@@ -174,9 +174,30 @@ class WalletMetadataDatasource {
     required String signerId,
     required Signer signer,
     required SignerDevice? signerDevice,
+  }) => _updateSigner(
+    walletId: walletId,
+    signerId: signerId,
+    changes: WalletSignersCompanion(
+      signer: Value(signer),
+      signerDevice: Value(signerDevice),
+    ),
+  );
+
+  Future<bool> updateSignerRegistrationName({
+    required String walletId,
+    required String signerId,
+    required String registrationName,
+  }) => _updateSigner(
+    walletId: walletId,
+    signerId: signerId,
+    changes: WalletSignersCompanion(registrationName: Value(registrationName)),
+  );
+
+  Future<bool> _updateSigner({
+    required String walletId,
+    required String signerId,
+    required WalletSignersCompanion changes,
   }) async {
-    // Signer facts are part of a backed-up definition, so a change here has
-    // to reach the catalog stream like any other definition change.
     var changed = false;
     final updatedRows = await _sqlite.transaction(() async {
       final previous = await fetch(walletId);
@@ -185,12 +206,7 @@ class WalletMetadataDatasource {
                 (row) =>
                     row.walletId.equals(walletId) & row.id.equals(signerId),
               ))
-              .write(
-                WalletSignersCompanion(
-                  signer: Value(signer),
-                  signerDevice: Value(signerDevice),
-                ),
-              );
+              .write(changes);
       if (updatedRows == 1 && previous != null) {
         final current = await fetch(walletId);
         if (current != null && _definitionsDiffer(previous, current)) {
@@ -201,21 +217,6 @@ class WalletMetadataDatasource {
       return updatedRows;
     });
     if (changed) _catalogChanges.add(null);
-    return updatedRows == 1;
-  }
-
-  Future<bool> updateSignerRegistrationName({
-    required String walletId,
-    required String signerId,
-    required String registrationName,
-  }) async {
-    final updatedRows =
-        await (_sqlite.update(_sqlite.walletSigners)..where(
-              (row) => row.walletId.equals(walletId) & row.id.equals(signerId),
-            ))
-            .write(
-              WalletSignersCompanion(registrationName: Value(registrationName)),
-            );
     return updatedRows == 1;
   }
 
