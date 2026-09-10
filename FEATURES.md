@@ -106,7 +106,8 @@ graph TB
     BACKUP_SETTINGS --> BACKUPS
     PASSPHRASE_WALLETS --> KEYCHAIN_MANIFEST
     PASSPHRASE_WALLETS --> WALLETS
-    RECOVERBULL --> WALLET_BACKUP
+    %% Metadata follow-up after seed recovery is composed by the app router;
+    %% RecoverBull receives a completion callback, not a WalletBackup dependency.
     WIZARD --> WALLET_BACKUP
     ONBOARDING --> WIZARD
     BACKUPS --> BIP85

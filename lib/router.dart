@@ -55,6 +55,8 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/seed_recovery_completion.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -251,7 +253,12 @@ class AppRouter {
       ElectrumSettingsRouter.route,
       MempoolSettingsRoute.route,
       ...ImportQrDeviceRouter.routes,
-      RecoverBullRouter.route,
+      RecoverBullRouter.route(
+        onSeedRecovered: (walletIds) => recoverWalletDataAfterSeedRestore(
+          locator<WalletBackupFacade>(),
+          defaultCreatedWalletIds: walletIds,
+        ),
+      ),
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,

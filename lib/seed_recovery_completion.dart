@@ -1,13 +1,12 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 
-class RecoverBullRemoteKeychainUsecase {
-  final WalletBackupFacade _walletBackup;
-
-  const RecoverBullRemoteKeychainUsecase(this._walletBackup);
-
-  Future<bool> execute({required Set<String> defaultCreatedWalletIds}) async {
-    final result = await _walletBackup.recover(
+Future<bool> recoverWalletDataAfterSeedRestore(
+  WalletBackupFacade walletBackup, {
+  required Set<String> defaultCreatedWalletIds,
+}) async {
+  try {
+    final result = await walletBackup.recover(
       defaultCreatedWalletIds: defaultCreatedWalletIds,
     );
     final complete =
@@ -20,5 +19,12 @@ class RecoverBullRemoteKeychainUsecase {
       );
     }
     return complete;
+  } on Exception catch (error, stackTrace) {
+    log.warning(
+      'Optional wallet backup recovery failed',
+      error: error.runtimeType,
+      trace: stackTrace,
+    );
+    return false;
   }
 }

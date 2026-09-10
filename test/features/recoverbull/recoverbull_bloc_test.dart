@@ -24,7 +24,6 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,9 +34,6 @@ class _MockPickVault extends Mock implements PickVaultUsecase {}
 class _MockSaveFile extends Mock implements SaveFileToSystemUsecase {}
 
 class _MockCreateVault extends Mock implements CreateEncryptedVaultUsecase {}
-
-class _MockRemoteRecovery extends Mock
-    implements RecoverBullRemoteKeychainUsecase {}
 
 class _MockStoreKey extends Mock implements StoreVaultKeyIntoServerUsecase {}
 
@@ -77,7 +73,8 @@ void main() {
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
-  late _MockRemoteRecovery remoteRecovery;
+  late Future<bool> Function(Set<String>) onSeedRecovered;
+  final completionCalls = <Set<String>>[];
   late _MockStoreKey storeKey;
   late _MockRecordBackupCreated recordBackupCreated;
   late _MockCheckConnection checkConnection;
@@ -100,7 +97,8 @@ void main() {
     pickVault = _MockPickVault();
     saveFile = _MockSaveFile();
     createVault = _MockCreateVault();
-    remoteRecovery = _MockRemoteRecovery();
+    completionCalls.clear();
+    onSeedRecovered = (_) async => throw StateError('Unexpected completion');
     storeKey = _MockStoreKey();
     recordBackupCreated = _MockRecordBackupCreated();
     checkConnection = _MockCheckConnection();
@@ -153,7 +151,10 @@ void main() {
     fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
     restoreVaultUsecase: restore,
-    recoverRemoteKeychainUsecase: remoteRecovery,
+    onSeedRecovered: (walletIds) {
+      completionCalls.add(walletIds);
+      return onSeedRecovered(walletIds);
+    },
     connectToGoogleDriveUsecase: connectDrive,
     saveToGoogleDriveUsecase: saveDrive,
     ensureRecoverBullTorSessionUsecase: ensureRecoverBullTorSession,
@@ -191,11 +192,7 @@ void main() {
         when(
           () => restore.execute(decryptedVault: decrypted),
         ).thenAnswer((_) async => const Ok(['bitcoin', 'liquid']));
-        when(
-          () => remoteRecovery.execute(
-            defaultCreatedWalletIds: {'bitcoin', 'liquid'},
-          ),
-        ).thenAnswer((_) async => dataRecovered);
+        onSeedRecovered = (_) async => dataRecovered;
         final bloc = buildBloc(
           flow: RecoverBullFlow.recoverVault,
           preSelectedVault: vault,
@@ -209,11 +206,9 @@ void main() {
         expect(bloc.state.dataBackupRecoveryIncomplete, !dataRecovered);
         expect(bloc.state.failure, isNull);
         verify(() => restore.execute(decryptedVault: decrypted)).called(1);
-        verify(
-          () => remoteRecovery.execute(
-            defaultCreatedWalletIds: {'bitcoin', 'liquid'},
-          ),
-        ).called(1);
+        expect(completionCalls, [
+          {'bitcoin', 'liquid'},
+        ]);
         verify(() => walletBloc.add(const WalletStarted())).called(1);
         verifyNever(() => updateLatest.execute(decryptedVault: decrypted));
       },
@@ -244,7 +239,7 @@ void main() {
       expect(bloc.state.failure, isA<VaultRecoveryFailure>());
       expect(bloc.state.isFlowFinished, isFalse);
       expect(bloc.state.isLoading, isFalse);
-      verifyZeroInteractions(remoteRecovery);
+      expect(completionCalls, isEmpty);
       verifyNever(() => walletBloc.add(const WalletStarted()));
     },
   );
@@ -286,11 +281,56 @@ void main() {
             expect(bloc.state.vaultKey, isNull);
           }
           verifyZeroInteractions(restore);
-          verifyZeroInteractions(remoteRecovery);
+          expect(completionCalls, isEmpty);
           verifyNever(() => walletBloc.add(const WalletStarted()));
         },
       );
     }
+  }
+
+  for (final duringFollowUp in [false, true]) {
+    test(
+      'closing seed recovery prevents late follow-up effects (during follow-up: $duringFollowUp)',
+      () async {
+        final vault = _MockEncryptedVault();
+        const decrypted = DecryptedVault();
+        final pendingRestore =
+            Completer<Result<List<String>, core.RecoverBullCoreFailure>>();
+        final pendingFollowUp = Completer<bool>();
+        when(
+          () => decrypt.execute(vault: vault, vaultKey: 'synthetic-key'),
+        ).thenReturn(const Ok(decrypted));
+        when(() => restore.execute(decryptedVault: decrypted)).thenAnswer(
+          (_) => duringFollowUp
+              ? Future.value(const Ok(['bitcoin', 'liquid']))
+              : pendingRestore.future,
+        );
+        onSeedRecovered = (_) => pendingFollowUp.future;
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+
+        bloc.add(const OnVaultDecryption(vaultKey: 'synthetic-key'));
+        await pumpEventQueue();
+        final closing = bloc.close();
+        await pumpEventQueue();
+        pendingRestore.complete(const Ok(['bitcoin', 'liquid']));
+        pendingFollowUp.complete(true);
+        await closing;
+
+        expect(
+          completionCalls,
+          duringFollowUp
+              ? [
+                  {'bitcoin', 'liquid'},
+                ]
+              : isEmpty,
+        );
+        verifyNever(() => walletBloc.add(const WalletStarted()));
+        expect(bloc.state.isFlowFinished, isFalse);
+      },
+    );
   }
 
   test('backs up the BullVault seed selected by fingerprint', () async {

@@ -24,7 +24,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/features/recoverbull/recover_remote_keychain_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,7 +54,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
-  final RecoverBullRemoteKeychainUsecase _recoverRemoteKeychainUsecase;
+  final Future<bool> Function(Set<String> walletIds) _onSeedRecovered;
   final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
@@ -83,7 +82,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._fetchVaultKeyFromServerUsecase,
     required this._decryptVaultUsecase,
     required this._restoreVaultUsecase,
-    required this._recoverRemoteKeychainUsecase,
+    required this._onSeedRecovered,
     required this._connectToGoogleDriveUsecase,
     required this._saveToGoogleDriveUsecase,
     required this._ensureRecoverBullTorSessionUsecase,
@@ -553,10 +552,11 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vaultKey: vaultKey));
       log.fine('Vault decrypted');
     } catch (e) {
+      if (isClosed || _closingBloc) return;
       log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(failure: const VaultDecryptionFailure()));
     } finally {
-      emit(state.copyWith(isLoading: false));
+      if (!isClosed && !_closingBloc) emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -572,9 +572,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       decryptedVault: decryptedVault,
     )) {
       case Ok(:final value):
-        final dataBackupRecovered = await _recoverRemoteKeychainUsecase.execute(
-          defaultCreatedWalletIds: value.toSet(),
-        );
+        if (isClosed || _closingBloc) return;
+        final dataBackupRecovered = await _onSeedRecovered(value.toSet());
+        if (isClosed || _closingBloc) return;
         _walletBloc.add(const WalletStarted());
         log.fine('Vault recovered');
         emit(
@@ -585,6 +585,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           ),
         );
       case Err():
+        if (isClosed || _closingBloc) return;
         emit(
           state.copyWith(
             failure: const VaultRecoveryFailure(),
