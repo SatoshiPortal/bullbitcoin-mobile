@@ -85,7 +85,7 @@ void main() {
           descriptor: descriptor,
           isTestnet: true,
         ),
-        throwsA(isA<bdk.DescriptorException>()),
+        throwsA(isA<FormatException>()),
       );
     });
 
@@ -115,7 +115,7 @@ void main() {
             descriptor: 'wpkh(${mismatch.extendedPublicKey}/0/*)',
             isTestnet: mismatch.isTestnet,
           ),
-          throwsA(isA<bdk.DescriptorException>()),
+          throwsA(isA<FormatException>()),
           reason: '${mismatch.network} must reject the other network key',
         );
       }

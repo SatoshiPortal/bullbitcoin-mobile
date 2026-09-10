@@ -214,6 +214,34 @@ void main() {
 
   for (final network in [Network.bitcoinMainnet, Network.bitcoinTestnet]) {
     test(
+      'malformed private definition is rejected without leaking or writing on ${network.name}',
+      () async {
+        final privateKey = Bip32Derivation.getXprvFromSeed(
+          Uint8List.fromList(List.generate(32, (index) => index)),
+          network,
+        );
+        await expectLater(
+          wallets.restoreWalletDefinition(
+            WalletDefinition(
+              walletRef: 'malformed-private-input',
+              network: network,
+              descriptor: 'wsh($privateKey())',
+              provenance: WalletProvenance.watchOnly,
+            ),
+          ),
+          throwsA(
+            isA<Exception>().having(
+              (error) => error.toString().contains(privateKey),
+              'private key appears in diagnostic',
+              isFalse,
+            ),
+          ),
+        );
+        expect(await metadata.fetchAll(), isEmpty);
+      },
+    );
+
+    test(
       'definition import rejects private descriptors on ${network.name}',
       () async {
         final privateKey = Bip32Derivation.getXprvFromSeed(
@@ -242,6 +270,30 @@ void main() {
       },
     );
   }
+
+  test(
+    'equivalent descriptor notation does not cause a restore conflict',
+    () async {
+      final source = await importSource();
+      final definition = (await wallets.getWalletDefinitions()).single;
+      for (final equivalent in [
+        descriptor.split('#').first,
+        descriptor.split('#').first.replaceFirst('84h/0h/0h', "84'/0'/0'"),
+        descriptor.split('#').first.replaceFirst('/<0;1>/*', '/0/*'),
+      ]) {
+        final restored = await wallets.restoreWalletDefinition(
+          WalletDefinition(
+            walletRef: definition.walletRef,
+            network: definition.network,
+            descriptor: equivalent,
+            provenance: definition.provenance,
+          ),
+        );
+        expect(restored.status, WalletDefinitionRestoreStatus.alreadyPresent);
+        expect(await metadata.fetchAll(), [source]);
+      }
+    },
+  );
 
   test('reports a currently unsupported public descriptor as input failure', () {
     return expectLater(
