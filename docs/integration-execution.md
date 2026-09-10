@@ -226,3 +226,384 @@ Review is solo, using the Kumulynja checklist with the current repository archit
 Approve this private-signing revocation substep for continued integration. The review found one additional important defect, the fee-bump session switch described above; it was fixed and retested before the final full run. No further blocker was found in this change. This is a solo implementation review, not independent security approval, completion of all I4 work, or approval of the entire branch.
 
 Next: continue canonical ownership/secret-type checks and I5 restore/privacy/composition work. The branch is not release-ready and the distributed-recovery implementation remains pending.
+
+## I5c continuation — protect BullVault passphrase input before rendering
+
+Implementation commit: `06a7034bb`. The mobile-passphrase onboarding step and
+BullVault restoration screen now reuse the existing `PrivacyGate` with the
+stored enable future. Pending, rejected, null and failed native responses cannot
+render their passphrase fields. Those inputs also exclude secret content from
+semantics. This closes the concrete onboarding finding recorded above; it does
+not change the existing user preference that can opt out of capture protection.
+
+Two tests failed against the previous implementation because the fields were
+visible while protection was still pending. The new twelve-case widget suite
+covers both screens, positive/refused/null/error responses, leaving while enable
+is pending, subsequent retry and overlapping protected references. It uses real
+Cubits and verifies successful passphrase entry and confirmation. The existing
+restore scan regression retains its descriptor assertion and now supplies a
+positive mocked native response before interacting with the screen.
+
+Verification: 29 BullVault UI tests passed in
+`/tmp/bbm-i5-privacy-tests-final.log`; after adding the final typing assertion,
+the twelve new cases passed again in `/tmp/bbm-i5-privacy-entry.log`.
+Whole-project analysis and normal pre-commit checks passed. The initial
+post-fix test run had a newly introduced channel-mock future-encoding error;
+that test harness was corrected, not the positive-response requirement.
+
+Solo source/caller review found no additional blocker in this narrow change.
+It adds no privacy service, state manager, dependency or copy changes. On-device
+capture/background verification remains pending, and this is not completion of
+the entire I5 privacy/device gate.
+
+## I4 continuation — seed diagnostics and canonical-owner checks
+
+Implementation commit: `5ee62f823`; normal pre-commit checks passed.
+
+The generated `SeedModel` now uses identity equality/hash, like the existing
+seed/signing entities; its storage JSON and redacted `toString` are unchanged.
+Malformed seed JSON previously leaked through retry logging, and raw storage
+exceptions also reached repository logs and the two Result-based seed failure
+messages. These sites now record only exception types, with sanitized typed
+failures. Five new tests failed before the fix, including a real malformed
+storage read through all five retries. Logging tests require the operation log
+to exist as well as requiring the synthetic secret marker to be absent.
+
+Three more tests exercise Ben's existing canonical owner: it stores the
+passphrase-free parent, does not rewrite a matching stored seed, and rejects a
+different seed under the same fingerprint using full byte comparison. No seed
+derivation, serialization, persistence ownership or signing rule was changed.
+An existing protected-key signing fixture depended on generated whole-model
+equality; its mock now explicitly matches the exact words and null passphrase,
+stores the actual supplied model, and retains all original missing/wrong/correct
+passphrase and signed-fingerprint assertions.
+
+Verification: code generation completed; whole-project analysis passed in
+`/tmp/bbm-i4-seed-analyze.log`; all 169 focused seed, native Bitcoin signing,
+BullVault restore, private-wallet and session-boundary tests passed in
+`/tmp/bbm-i4-seed-tests-final.log`. The first targeted run failed only on that
+seed-equality-dependent fixture; it is not a passing result. Red reproduction
+is `/tmp/bbm-i4-seed-red.log`.
+
+Solo review kept the existing model and storage contracts instead of adding a
+parallel secret hierarchy. This is a scoped leak correction, not a statement
+that all exceptions are secret-safe: the existing throwing repository APIs
+still rethrow failures, so downstream caller diagnostics remain part of the
+broader audit. No Dart-string zeroization, native memory erasure or device
+privacy guarantee is asserted. Full-workspace verification follows the next
+coherent integration checkpoint.
+
+## I5a continuation — descriptor-to-seed wallet upgrades
+
+Implementation commit: `ad1231246`; normal pre-commit checks passed.
+
+Ben's script-identity deduplication can upgrade a descriptor-imported wallet
+without changing its hashed ID. The old copy retained descriptor provenance and
+the previous passphrase fact despite replacing the signer with a verified local
+seed. Four real-SQLite tests reproduced that stale provenance for default and
+imported wallets, with and without a passphrase. A fifth test reproduced the
+backup inventory throwing when it tried to decode the hashed ID as a seed path.
+
+The upgrade now copies the derived provenance and passphrase fact together with
+the signer. Recovery inventory reads the normalized signer's account path and
+the descriptor's script type instead of decoding the retained ID. The existing
+ID, nondefault label, earlier birthday and script-identity deduplication are
+preserved. The tests check persisted state, inventory, removal from the generic
+definitions contribution, local-key inventory and recovery-identity matching.
+
+All 34 focused wallet-definition, descriptor-import and manifest-restore tests
+passed (`/tmp/bbm-i5-upgrade-tests.log`); five pre-fix failures are recorded in
+`/tmp/bbm-i5-upgrade-red-actual.log`. The earlier test-selection attempt matched
+no tests and is not red evidence. No schema change or new service was needed.
+
+Solo review: this fixes the upgraded wallet's current recovery facts. It does
+not prove a fresh seed restore can reconcile a previously hashed default-wallet
+reference with its newly created seed-origin reference; that remaining I5a
+cross-installation case needs an end-to-end test before claiming complete
+metadata recovery. Per-key BullVault ownership, restore lineage/visibility,
+physical-onboarding context and dependency-cycle work remain separate gates.
+
+## I5a continuation — preserve signer facts in wallet definitions
+
+The definitions codec dropped Ben's `registrationName`, `localSeedFingerprint`
+and per-key `requiresPassphrase`. Three pre-fix diagnostic tests reproduced the
+loss. A protected descriptor wallet could therefore lose its canonical seed
+lookup and passphrase prompt on recovery; hardware registration names were also
+absent. Definitions now write version 3 with all three facts. The envelope and
+other sections retain their versions; strict version-2 reading remains for saved
+files, with absent facts left unknown rather than invented. Version 1 remains
+rejected under the existing decision, and newer versions retain the recovery
+fence. This is not a database migration.
+
+The archived full version-2 golden is unchanged. A separate current golden
+includes the new null/false fields and definition version, with all other bytes
+preserved. Tests verify reading the archived document and canonical current
+output, exact current bytes, malformed facts and future-version rejection. An
+existing empty-definitions test had actually failed on its obsolete section
+version; it now uses the valid section version to exercise the empty-list rule.
+The first new golden accidentally normalized an unrelated `3.0` JSON number to
+`3`; the failing exact-byte assertions caught this and the fixture was corrected.
+
+The original native protected-key test still runs unchanged in behavior, plus a
+second case that round-trips its real signer through the codec before signing.
+Both require the exact missing/wrong/correct passphrase outcomes and actual
+signed key fingerprint. A real SQLite restore test verifies all signer fields
+and the re-exported payload after deleting the original wallet.
+
+The registration-name mutator also failed to dirty the backup. Its new
+regression failed before correction. It now shares the existing transactional
+signer-update path with device changes: one committed revision/wakeup for a real
+change, none for an identical write or nonexistent signer. An injected revision
+failure proves the registration write rolls back and emits no event.
+
+Implementation commit: `e15e1d047`. Verification: 92 focused codec, SQLite and native-signing tests passed
+(`/tmp/bbm-i5-roster-roundtrip-complete.log`), followed by all 16 codec tests
+after adding symmetric writer validation
+(`/tmp/bbm-i5-roster-writer-validation.log`). Whole-project analysis and normal
+commit hooks passed. All 304 WalletBackup/BackupSettings tests also passed
+(`/tmp/bbm-i5-backup-feature-gate.log`, concurrency 2), including the previously
+timed-out durability case with its unchanged timeout. The synthetic
+multi-signer serialization fixture alone is not proof of key ownership; the
+native test supplies the real-key signing check. Existing annotation validation
+and BullVault-local ownership are still reviewed separately.
+
+## Verification checkpoint — interrupted full suite is not a pass
+
+The full `make unit-test` attempt at `ad1231246` timed out in the existing
+`a change during a publication leaves one more pass to run` test after its
+30-second limit. The root run was subsequently interrupted. Flutter exited zero
+after the interrupt, so make continued its package suites; that exit status is
+not a successful full-workspace result. Evidence:
+`/tmp/bbm-i5-core-unit-tests.log`. The same durability test passed in isolation
+in ten seconds (`/tmp/bbm-i5-durability-isolated.log`), without changing its
+assertions or timeout. A complete clean run is still required.
+
+A new disposable Android AVD, `bullvault_integration_v2_20260909`, is booted on
+`emulator-5584`. The existing `bip138_prototype` on `emulator-5582` is untouched.
+No app build/install or device recovery result is claimed yet; Android native
+builds wait for host native tests to finish.
+
+## I5a continuation — re-verify existing BullVault ownership
+
+Implementation commit: `298818399`; normal pre-commit checks passed.
+
+Six tests reproduced already-local signers retaining a missing/wrong canonical
+seed reference or wrong passphrase flags on repeated descriptor recovery, both
+with and without a delayed mobile recovery key. The ownership check previously
+examined only xpub and `local` classification, and its repair helper returned
+early for any local signer. The check now also compares the verified canonical
+seed reference and each key's passphrase requirement; repair no longer skips
+incomplete local signers. Full seed/xpub verification still precedes this work,
+and the returned ownership update is checked before recovery reports success.
+
+A seventh test reproduced a persisted record defaulting to the protected
+everyday fingerprint rather than the canonical parent. Repeated restoration now
+repairs the saved record and account reservation from the verified key facts,
+even if its mobile account was already set. The descriptor, policy dates,
+lineage, external signer assignments and existing wallet identity stay intact.
+The compatible-wallet test fixture now explicitly supplies its canonical local
+seed reference; no existing expectation was weakened. Seven new two-restore
+crypto tests have a bounded two-minute timeout, not a changed assertion.
+
+Verification: the six signer cases failed before the fix in
+`/tmp/bbm-i5-existing-owner-red.log`; the saved-record case failed in
+`/tmp/bbm-i5-record-owner-red.log`. Final restoration and backup integration
+tests passed 40/40 in `/tmp/bbm-i5-ownership-verified-tests.log`.
+Whole-project analysis is clean in
+`/tmp/bbm-i5-existing-owner-analyze-final.log` after removing two redundant
+non-null assertions. A separate attempted test command named a nonexistent
+backup test file; it failed to load that file and was interrupted, and is not
+counted as a passing verification (`/tmp/bbm-i5-existing-owner-final-tests.log`).
+
+Solo review kept Ben's canonical owner and existing ownership port, without
+introducing another seed store or signing path. These tests do not substitute
+for hardware verification or close the remaining adversarial signer-annotation,
+fresh-ID remapping and on-device recovery gates.
+
+## I5 recovery continuation — fresh Encrypted Vault restoration
+
+Implementation commit: `7ef751407`; normal pre-commit checks passed.
+
+Source/caller review found the recovery BLoC invoked the existing-wallet backup
+verification helper before restoring the seed. That helper rejects a mnemonic
+when no matching wallet exists, so a fresh installation could never reach the
+actual restore operation. Two flow tests reproduced the failure, with optional
+metadata recovery both complete and incomplete.
+
+The restore branch now calls `RestoreVaultUsecase` directly after decryption.
+That use case already creates the wallets and records their encrypted-backup
+timestamps. The verification helper remains unchanged for testing an existing
+backup or viewing its key. No decryption validation or seed-restoration failure
+was bypassed. New tests verify seed failure never starts metadata recovery or
+wallet synchronization, and four test/view cases retain the existing matching
+wallet requirement. This is a concrete recovery fix, not the separate planned
+dependency-cycle refactor.
+
+Verification: two pre-fix failures in `/tmp/bbm-i5-fresh-seed-recovery-red.log`;
+all 86 feature/core RecoverBull tests passed in
+`/tmp/bbm-i5-fresh-seed-recovery-final-tests.log`. The flow tests exercise the
+real BLoC with port results; they do not claim a live RecoverBull-server or
+emulator recovery proof.
+
+## I5d — app-composed seed-recovery completion
+
+RecoverBull no longer imports WalletBackup. The app router supplies one
+completion callback with the existing wallet-ID context, and an app-level
+function calls the owning WalletBackup facade. The feature-local forwarding
+use case is removed, its tests move with the composition function, and
+`FEATURES.md` no longer claims the removed edge. This breaks the targeted
+BullVault → RecoverBull → WalletBackup → BullVault dependency path without a
+new manager, event bus, service registration or secret-bearing public input.
+It does not claim every legacy dependency cycle has been removed.
+
+Review reproduced two additional failures at this boundary. An exception from
+optional metadata recovery escaped and could report already successful seed
+recovery as a decryption failure. The app-level completion now reports incomplete
+metadata and logs only the exception type. Existing typed statuses retain their
+meaning: only `restored` and `noBackup` count as complete. Separately, closing
+the flow while seed restoration or metadata follow-up was pending still
+dispatched later follow-up/synchronization. The BLoC now guards those awaited
+boundaries and does not emit completion into a closed flow. It does not attempt
+to undo seed persistence or recall an already-dispatched metadata operation.
+
+One pre-fix exception test failed in `/tmp/bbm-i5-optional-completion-red.log`;
+two pre-fix closing tests failed in
+`/tmp/bbm-i5-completion-cancellation-red.log`. All 97 completion and feature/core
+RecoverBull tests passed in `/tmp/bbm-i5-completion-tests.log`, including every
+metadata status, exact ID forwarding, cancellation, seed failure and existing
+backup verification. All 24 startup/legacy-backup-route/backup-route tests passed
+in `/tmp/bbm-i5-completion-startup-tests.log`. Whole-project analysis is clean
+(`/tmp/bbm-i5-completion-analyze.log`). Commit `ac6bdf0d3` passed normal
+commit hooks (`/tmp/bbm-i5-completion-commit.log`).
+
+Solo source/caller review confirms the old feature-local use case and
+RecoverBull-to-WalletBackup imports are absent. Physical onboarding and the
+distinction between actually created and previously existing wallet IDs remain
+I5b work; this refactor deliberately preserves the existing context contract.
+Actual app initialization and recovery on the disposable emulator remain I8
+checks rather than claims inferred from these host tests.
+
+## I5b — physical recovery context and backup-status cancellation
+
+Physical onboarding discarded the default-wallet creation result. Home-page
+Data Backup then recovered without the IDs of newly created defaults and treated
+their backed-up preferences as conflicts. The creation result now distinguishes
+returned wallets from new identities using the stored inventory (including
+hidden wallets); existing defaults and adopted descriptor-wallet IDs are excluded.
+Rollback also excludes identities present before creation. Encrypted Vault
+recovery uses that same distinction instead of classifying every returned default
+as newly created. Seed-creation and onboarding failures no longer interpolate raw
+foreign exceptions into messages or log fields.
+
+Physical onboarding forwards the new IDs through its result/state and the home
+navigation payload to the existing banner → wizard → Data Backup enable/recover
+path. Home navigation still precedes network access. This adds no coordinator,
+durable recovery-context table, event bus or cross-feature dependency. The route
+payload is consumed once when the banner starts, including across remounts, and
+manual retries carry no stale permission to overwrite later local preferences.
+Existing local conflicts remain incomplete recovery and block publication.
+
+The combined test uses real onboarding orchestration, wizard application,
+metadata classification, backup facade/runner, SQLite backup state, codecs and
+encryption. Seed creation, preference storage, the remote transport and unrelated
+section owners are controlled boundaries. It verifies nonblocking home handoff,
+fresh-wallet preference restoration, preservation of a pre-existing label,
+enablement on success, and no replacement publication on conflict. Separate
+core tests cover fresh/adopted/existing default-ID classification and the real
+SQLite repository's inclusion of a locked, invisible wallet in the inventory.
+This is not an emulator seed restore or real-server recovery claim.
+
+The combined test also exposed a pre-existing lifecycle bug: cancelling an idle
+backup-state subscription waited for another database event. A standalone
+repository test reproduced it in `/tmp/bbm-i5-idle-watch-red.log`; the two combined
+tests timed out specifically at banner cleanup in
+`/tmp/bbm-i5-physical-continuity-diagnostic.log`. Replacing the `await for` forwarding
+loop with `yield*` lets cancellation reach the underlying Drift stream. No timer,
+polling, unawaited cleanup or timeout increase was used to hide the defect. The
+banner also guards duplicate starts and the interval while close is in progress.
+
+Verification so far: 118 core/onboarding/RecoverBull tests passed before the UI
+handoff change (`/tmp/bbm-i5-created-context-final-tests.log`); 38 combined-flow,
+wizard, banner, enablement and storage tests passed after the cancellation fix
+(`/tmp/bbm-i5-physical-continuity-verified-tests.log`). Whole-project analysis passed
+(`/tmp/bbm-i5-continuity-cancellation-analyze.log`). The final expanded focused run
+passed all 46 tests (`/tmp/bbm-i5-continuity-close-final-tests.log`), including the
+closing-while-subscription-cancels guard. Commit `1fa60514f` passed normal hooks
+(`/tmp/bbm-i5-physical-continuity-commit.log`); the full-workspace rerun remains
+pending.
+
+This remains a scoped integration adaptation. It does not fix the separately
+identified historical hashed-reference remapping, claim concurrency isolation for
+unrelated wallet imports during onboarding, or change Ben's existing default-wallet
+adoption label behavior. User edits occurring while initial remote recovery is
+in flight need a separate adversarial check; the existing preference CAS guards
+the classified-to-write interval, not every earlier network await. Offline retry
+conflict resolution and actual navigation/device lifecycle remain I8 checks.
+
+## I4 continuation — decrypted recovery models and failure diagnostics
+
+Two synthetic tests reproduced generated diagnostic strings containing the
+decrypted mnemonic, backup password and vault key
+(`/tmp/bbm-i4-recovery-secret-models-red.log`). `DecryptedVault` and
+`RecoverBullState` now use redacted diagnostics and identity equality/hash, matching
+the already-adopted private signing model convention. Copying and intentional
+JSON serialization still preserve recovery data. A guarded-list test throws if
+diagnostics, hashing or equality attempt to read any mnemonic word; nonsecret
+flow/loading/completion facts remain visible in the recovery-state diagnostic.
+
+A separate real-BLoC test reproduced a foreign creation exception copied into a
+failure's `logMessage` (`/tmp/bbm-i4-recovery-exception-red.log`). The three raw
+exception logging catches in RecoverBull now record only the exception type, and
+the two unexpected-failure wrappers no longer interpolate the raw message. Typed
+decryption failures are unchanged. The log-file test has a positive control that
+requires the exception type to appear; checking an empty/unconnected capture for
+absence of a secret is not accepted as evidence. Its logger is explicitly attached
+and the previous directory restored for subsequent tests.
+
+All 103 feature/core RecoverBull and app-completion tests passed in
+`/tmp/bbm-i4-recovery-secrets-final-tests.log`, and whole-project analysis passed
+in `/tmp/bbm-i4-recovery-secrets-analyze.log`. All 27 BLoC/model tests passed with
+the strengthened positive-control log capture in
+`/tmp/bbm-i4-recovery-secrets-capture-tests.log`. Two additional validation tests
+reproduced raw private input retained in `ArgumentError.invalidValue`
+(`/tmp/bbm-i4-backup-inputs-red.log`); backup encryption-key and ciphertext
+constructors now reject invalid input without echoing it. Valid normalization
+and encoding are unchanged. All 34 combined follow-up tests passed in
+`/tmp/bbm-i4-recovery-encryption-final-tests.log`. Commit `b502461fc` passed normal
+hooks (`/tmp/bbm-i4-recovery-secrets-commit.log`). The full `make unit-test` run at
+that commit is in progress (`/tmp/bbm-i5-complete-workspace-tests.log`).
+This does not claim memory
+zeroization, remove intentional seed serialization, or establish that every
+legacy external-service exception path in the repository has been audited.
+
+## I8 in progress — core fidelity checkpoint at b502461fc
+
+The replay range-diff is retained at `/tmp/bbm-i8-core-range-diff.log`: 19 patches
+are identical, 12 are adapted, and the share-sheet-was-shown-as-export-success
+patch is deliberately excluded. The latter is not an accidental dropped hunk:
+showing a share sheet does not establish the approved descriptor handoff.
+
+A structural comparison of Ben's pinned v16 JSON against current v17 JSON
+preserves all 34 upstream tables/indexes, every original column definition,
+constraint and resolved table/index reference. Only generated entity numbers
+were normalized. Additions are `hide_on_home`, `auto_sweep_enabled`, `provenance`
+and `seed_passphrase_used` on wallet metadata, plus the three keychain-manifest
+tables and `wallet_backup_states`. This confirms schema preservation, not the
+still-pending final published-schema consolidation or all migration paths.
+
+The full host suite passed at `b502461fc`: 3,292 application tests plus 179 tests
+in all seven packages, 3,471 total, with exit code zero and no interruption
+(`/tmp/bbm-i5-complete-workspace-tests.log`). Application/test source was held
+unchanged during that run. The owned emulator is confirmed booted as
+`bullvault_integration_v2_20260909` on `emulator-5584`; no Android build overlaps
+native host tests. Device recovery, signing and the full two-way source review
+are not marked complete by this checkpoint. The generated integration aggregator
+is now running on that emulator (`/tmp/bbm-i8-emulator-integration.log`), with
+funded-test mnemonic/enablement defines unset. No production backup publication
+is authorized by this device check.
+
+### Environment restart and evidence retention
+
+On 2026-09-10 the execution environment restarted before the device build produced a result. The prior process handle no longer existed, no integration-test process was running, its `/tmp` log was gone, and no APK existed at the expected output path. That interrupted attempt is not a successful device check. Source remained at `b502461fc`, with only this execution record uncommitted.
+
+The historical host-test and review results above were observed before the restart; their `/tmp` paths are historical references, not a claim those temporary files are still available. The owned AVD `bullvault_integration_v2_20260909` was restarted on port 5584 and its boot completion verified. The pinned Flutter 3.44.9/Dart 3.12.2 SDK and generated localization files remain present. A fresh integration-aggregator run is in progress, with its log outside `/tmp` at `/home/francis/bbm-i8-device-tests.log`. Application source remains unchanged for this run; funded-test environment defines remain unset.
