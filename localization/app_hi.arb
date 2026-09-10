@@ -129,15 +129,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "recoverbullGoogleDriveErrorDisplay": "त्रुटि: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "कस्टम सर्वर",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -248,10 +239,6 @@
   "satsSuffix": " साटन",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
-  },
-  "recoverbullErrorPasswordNotSet": "पासवर्ड सेट नहीं है",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "sellSendPaymentExchangeRate": "विनिमय दर",
   "@sellSendPaymentExchangeRate": {
@@ -390,15 +377,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "recoverbullReenterConfirm": "कृपया पुष्टि करने के लिए अपने {inputType} को फिर से दर्ज करें।।",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "कोपिड टू क्लिपबोर्ड",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -423,17 +401,9 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "recoverbullSelectVaultImportSuccess": "आपका वॉल्ट सफलतापूर्वक आयात किया गया था",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
   "mempoolServerNotUsed": "उपयोग नहीं हो रहा (कस्टम सर्वर सक्रिय)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
-  },
-  "recoverbullSelectErrorPrefix": "त्रुटि:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
   },
   "exchangeLandingRecommendedExchange": "बिटकॉइन एक्सचेंज",
   "@exchangeLandingRecommendedExchange": {
@@ -442,10 +412,6 @@
   "backupWalletHowToDecideVaultMoreInfo": "अधिक जानकारी के लिए getbull.com पर जाएं।।",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
-  },
-  "recoverbullGoBackEdit": "<< वापस जाओ और संपादित करें",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "receiveConfirming": "पुष्टिकरण... ({count}/{required})",
   "@receiveConfirming": {
@@ -536,15 +502,6 @@
   "broadcastSignedTxFee": "शुल्क",
   "@broadcastSignedTxFee": {
     "description": "Label for transaction fee"
-  },
-  "recoverbullRecoveryBalanceLabel": "शेष: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "buyFundYourAccount": "अपना खाता फंड करें",
   "@buyFundYourAccount": {
@@ -711,10 +668,6 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "recoverbullTorNetwork": "टोर नेटवर्क",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "transactionDetailLabelTransferStatus": "ट्रांसफर स्थिति",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -828,10 +781,6 @@
   "exchangeStatisticsTitle": "आँकड़े",
   "@exchangeStatisticsTitle": {
     "description": "Title for the statistics screen"
-  },
-  "recoverbullErrorConnectionFailed": "लक्ष्य कुंजी सर्वर से कनेक्ट करने में विफल रहा। बाद में फिर से प्रयास करें!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "डिजिटल कॉपी",
   "@testBackupDigitalCopy": {
@@ -1060,10 +1009,6 @@
   "@ledgerVerifyTitle": {
     "description": "Title for verifying an address on Ledger device"
   },
-  "recoverbullSwitchToPassword": "इसके बजाय पासवर्ड चुनें",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "exchangeDcaNetworkBitcoin": "बिटकॉइन नेटवर्क",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -1087,10 +1032,6 @@
   "transactionSwapDescLnSendDefault": "आपका swap प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "recoverbullErrorMissingBytes": "Tor प्रतिक्रिया से bytes लापता। लेकिन अगर मुद्दा जारी रहता है, तो यह टोर के साथ कुछ उपकरणों के लिए एक ज्ञात मुद्दा है।।",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "coreScreensReceiveNetworkFeeLabel": "प्राप्त नेटवर्क शुल्क",
   "@coreScreensReceiveNetworkFeeLabel": {
@@ -1139,10 +1080,6 @@
   "payPaymentInProgress": "भुगतान प्रगति में है!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "recoverbullFailed": "विफल",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "payOrderAlreadyConfirmed": "यह भुगतान आदेश पहले ही पुष्टि हो चुका है।",
   "@payOrderAlreadyConfirmed": {
@@ -1687,15 +1624,6 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "recoverbullEnterToDecrypt": "अपने वॉल्ट को डिक्रिप्ट करने के लिए कृपया अपना {inputType} दर्ज करें।।",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "स्थानांतरण",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
@@ -1703,10 +1631,6 @@
   "testBackupSuccessTitle": "परीक्षण सफलतापूर्वक पूरा किया!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "अपना समय ले लो",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "sendConfirmCustomFee": "कस्टम शुल्क की पुष्टि करें",
   "@sendConfirmCustomFee": {
@@ -1839,10 +1763,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Google ड्राइव से वॉल्ट पाने में विफल रहा",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "systemLabelExchangeBuy": "खरीदें",
   "@systemLabelExchangeBuy": {
     "description": "System label for exchange buy transactions"
@@ -1966,10 +1886,6 @@
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
-  "recoverbullErrorVaultCreationFailed": "वॉल्ट निर्माण विफल हो गया, यह फ़ाइल या कुंजी हो सकती है",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "sellSendPaymentFeePriority": "शुल्क प्राथमिकता",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
@@ -1986,10 +1902,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "कोई बैकअप नहीं मिला",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
   },
   "sellSelectNetwork": "नेटवर्क चुनें",
   "@sellSelectNetwork": {
@@ -2071,10 +1983,6 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "पहले से ही एक अलग डिफ़ॉल्ट वॉलेट मौजूद है। आपके पास केवल एक डिफ़ॉल्ट वॉलेट है।।",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "भुगतान के लिए कोई प्राप्तकर्ता नहीं मिला।",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -2082,10 +1990,6 @@
   "payNoInvoiceData": "कोई चालान डेटा उपलब्ध नहीं",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "recoverbullErrorInvalidCredentials": "इस बैकअप फ़ाइल के लिए गलत पासवर्ड",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "paySinpeMonto": "राशि",
   "@paySinpeMonto": {
@@ -2211,10 +2115,6 @@
   "@ledgerHelpStep4": {
     "description": "Fourth troubleshooting step for Ledger connection issues"
   },
-  "recoverbullPleaseWait": "कृपया प्रतीक्षा करें जबकि हम सुरक्षित कनेक्शन स्थापित करते हैं ..।",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "broadcastSignedTxBroadcast": "प्रसारण",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2257,10 +2157,6 @@
   "transactionLabelAmountReceived": "प्राप्त राशि",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault वसूली",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "broadcastSignedTxScanQR": "अपने हार्डवेयर वॉलेट से QR कोड स्कैन करें",
   "@broadcastSignedTxScanQR": {
@@ -2476,10 +2372,6 @@
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
-  "recoverbullVaultCreatedSuccess": "वॉल्ट ने सफलतापूर्वक बनाया",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "राशि",
   "@payAmount": {
     "description": "Label for amount"
@@ -2646,10 +2538,6 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "स्थानीय बैकअप कुंजी derivation विफल रहा।।",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "अपर्याप्त संतुलन",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2657,15 +2545,6 @@
   "transactionLabelFromWallet": "वॉलेट से",
   "@transactionLabelFromWallet": {
     "description": "Label for source wallet"
-  },
-  "recoverbullErrorRateLimited": "सीमित दरें {retryIn} में फिर से प्रयास करें",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
   },
   "importWatchOnlyExtendedPublicKey": "विस्तारित सार्वजनिक कुंजी",
   "@importWatchOnlyExtendedPublicKey": {
@@ -2694,15 +2573,6 @@
   "networkFeeLabel": "नेटवर्क शुल्क",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
-  },
-  "recoverbullMemorizeWarning": "आपको अपने वॉलेट तक पहुंच प्राप्त करने के लिए इस {inputType} को याद करना होगा। यह कम से कम 6 अंक होना चाहिए। यदि आप इसे खो देते हैं {inputType} तो आप अपने बैकअप को ठीक नहीं कर सकते।।",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadDocumentsTitle": "दस्तावेज़ अपलोड करें",
   "@exchangeFileUploadDocumentsTitle": {
@@ -2743,10 +2613,6 @@
   "importQrDeviceJadeFirmwareWarning": "सुनिश्चित करें कि आपका डिवाइस नवीनतम फर्मवेयर पर अपडेट किया गया है",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
-  },
-  "recoverbullSelectFileNotSelectedError": "नहीं चुना गया",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "buyInputContinue": "जारी",
   "@buyInputContinue": {
@@ -2808,15 +2674,6 @@
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "recoverbullEnterToTest": "अपने वॉल्ट का परीक्षण करने के लिए कृपया अपना {inputType} दर्ज करें।।",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescription1": "नीचे दिए गए विवरण का उपयोग करके अपने बैंक खाते से बैंक ट्रांसफर करें ",
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
@@ -2840,10 +2697,6 @@
   "importQrDeviceSpecterStep10": "अपने स्पेक्ट्रर वॉलेट और टैप आयात के लिए एक लेबल दर्ज करें",
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
-  },
-  "recoverbullSelectVaultSelected": "वॉल्ट चयनित",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "dcaWalletTypeBitcoin": "बिटकॉइन (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2880,10 +2733,6 @@
   "transactionOrderLabelPayoutAmount": "प्राप्ति राशि",
   "@transactionOrderLabelPayoutAmount": {
     "description": "Label for order payout amount"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "मैन्युअल रूप से बैकअप कुंजी दर्ज करें >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exportingVaultButton": "निर्यात..।",
   "@exportingVaultButton": {
@@ -2976,10 +2825,6 @@
   "swapYouReceive": "आप प्राप्त",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "recoverbullSelectCustomLocationProvider": "कस्टम स्थान",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "electrumInvalidRetryError": "Invalid Retry गणना मान: {value}",
   "@electrumInvalidRetryError": {
@@ -3118,10 +2963,6 @@
   "kruxStep16": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "चयनित बैकअप फ़ाइल भ्रष्ट है।।",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "buyVerifyIdentity": "पहचान",
   "@buyVerifyIdentity": {
@@ -3265,10 +3106,6 @@
   "@jadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "recoverbullSelectDriveBackups": "ड्राइव बैकअप",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "exchangeAuthOk": "ठीक",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -3321,14 +3158,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "कृपया अपने Bitbox डिवाइस पर जोड़ी कोड को सत्यापित करें।।",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
-  },
-  "recoverbullKeyServer": "कुंजी सर्वर ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "यह पासवर्ड बहुत आम है। कृपया एक अलग चुनें",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "backupInstruction3": "आपके 12 शब्द बैकअप तक पहुंच वाले कोई भी आपके बिटकॉइन को चोरी कर सकता है। इसे अच्छी तरह से छिपाएं।।",
   "@backupInstruction3": {
@@ -3450,10 +3279,6 @@
   "@walletNetworkBitcoinTestnet": {
     "description": "Network label for Bitcoin testnet"
   },
-  "recoverbullSeeMoreVaults": "अधिक वाल्ट देखें",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "sellPayFromWallet": "वॉलेट से भुगतान करें",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -3554,10 +3379,6 @@
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
-  "recoverbullSelectQuickAndEasy": "त्वरित और आसान",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
-  },
   "exchangeFileUploadTitle": "सुरक्षित फ़ाइल अपलोड",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -3597,10 +3418,6 @@
   "fundExchangeBankTransferSubtitle": "अपने बैंक खाते से एक बैंक ट्रांसफर भेजें",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
-  },
-  "recoverbullErrorInvalidVaultFile": "Invalid vault file।",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
   },
   "sellProcessingOrder": "प्रसंस्करण आदेश..।",
   "@sellProcessingOrder": {
@@ -3669,10 +3486,6 @@
   "sellBitcoinAmount": "Bitcoin राशि",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "recoverbullTestCompletedTitle": "परीक्षण सफलतापूर्वक पूरा किया!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
   },
   "transactionFilterReceive": "प्राप्त करें",
   "@transactionFilterReceive": {
@@ -3774,10 +3587,6 @@
   "fundExchangeWarningConfirmation": "मैं पुष्टि करता/करती हूं कि मुझे किसी और द्वारा Bitcoin खरीदने के लिए नहीं कहा जा रहा है।",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "कस्टम स्थान से फ़ाइल चुनने में विफल",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "कस्टम सर्वर हटाएं?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3906,10 +3715,6 @@
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
   },
-  "recoverbullPasswordTooShort": "पासवर्ड कम से कम 6 अक्षर लंबा होना चाहिए",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
-  },
   "payNetwork": "नेटवर्क",
   "@payNetwork": {
     "description": "Label for network"
@@ -4030,10 +3835,6 @@
   "payTransitNumberHint": "ट्रांज़िट संख्या दर्ज करें",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "इसके बजाय एक पिन चुनें",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "QR Code",
   "@payQrCode": {
@@ -4370,10 +4171,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "recoverbullSelectNoBackupsFound": "कोई बैकअप नहीं मिला",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "importMnemonicNestedSegwit": "नेस्टेड Segwit",
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
@@ -4462,15 +4259,6 @@
   "importColdcardButtonOpenCamera": "कैमरा खोलें",
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "recoverbullReenterRequired": "अपने फिर से प्रवेश करें {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payFeePriority": "शुल्क प्राथमिकता",
   "@payFeePriority": {
@@ -4564,10 +4352,6 @@
   "autoswapWarningExplanation": "जब आपका शेष अधिकतम शेष से अधिक हो जाता है, तो एक स्वैप शुरू हो जाएगा। लक्ष्य संतुलन आपके तत्काल भुगतान वॉलेट में रखा जाएगा और शेष राशि को आपके सुरक्षित बिटकॉइन वॉलेट में स्वैप किया जाएगा।।",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault वसूली",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "अब यह प्रसारण के लिए तैयार है! जैसे ही आप प्रसारण पर क्लिक करते हैं, लेनदेन Bitcoin नेटवर्क पर प्रकाशित किया जाएगा और धन भेजा जाएगा।।",
   "@passportStep14": {
@@ -4714,10 +4498,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "आपका वॉल्ट सफलतापूर्वक आयात किया गया था",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "यह गंभीर रूप से महत्वपूर्ण है कि आप बैकअप कुंजी को उसी स्थान पर नहीं बचाते हैं जहां आप अपनी बैकअप फ़ाइल को बचाते हैं। हमेशा उन्हें अलग-अलग उपकरणों या अलग क्लाउड प्रदाताओं पर स्टोर करें।।",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -4803,15 +4583,6 @@
   "keyServerLabel": "कुंजी सर्वर ",
   "@keyServerLabel": {
     "description": "Label for key server status"
-  },
-  "recoverbullEnterToView": "अपने वॉल्ट कुंजी देखने के लिए कृपया अपना {inputType} दर्ज करें।।",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payReviewPayment": "समीक्षा भुगतान",
   "@payReviewPayment": {
@@ -4948,10 +4719,6 @@
   "failedToDeriveBackupKey": "बैकअप कुंजी प्राप्त करने में विफल",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "Google ड्राइव से वॉल्ट निर्यात करने में विफल रहा",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "exchangeKycLevelLight": "प्रकाश",
   "@exchangeKycLevelLight": {
@@ -5247,17 +5014,9 @@
   "@sellSendPaymentCadBalance": {
     "description": "CAD balance payout method"
   },
-  "recoverbullConnectingTor": "Tor पर कुंजी सर्वर से जुड़ना।\nयह एक मिनट तक ले सकता है।।",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
   "fundExchangeCanadaPostStep2": "2. \"Loadhub\" QR कोड को स्कैन करने के लिए कैशियर से पूछें",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "recoverbullEnterVaultKeyInstead": "इसके बजाय एक वॉल्ट कुंजी दर्ज करें",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
   },
   "exchangeAccountInfoEmailLabel": "ईमेल",
   "@exchangeAccountInfoEmailLabel": {
@@ -5278,10 +5037,6 @@
   "electrumBitcoinServerInfo": "प्रारूप में सर्वर पता दर्ज करें: होस्ट:पोर्ट (उदाहरण के लिए, उदाहरण.कॉम:50001)",
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
-  },
-  "recoverbullErrorServiceUnavailable": "अनुपलब्ध सेवा कृपया अपने कनेक्शन की जांच करें।।",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
   },
   "sendErrorInsufficientBalanceForSwap": "लिक्विड के माध्यम से इस स्वैप का भुगतान करने के लिए पर्याप्त संतुलन नहीं है और बिटकॉइन के माध्यम से भुगतान करने के लिए स्वैप सीमा के भीतर नहीं है।।",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5425,10 +5180,6 @@
   "payCompletedDescription": "आपका भुगतान पूर्ण हो गया है और प्राप्तकर्ता को राशि मिल गई है।",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
-  },
-  "recoverbullConnecting": "कनेक्ट करना",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
   },
   "retry": "पुनः प्रयास करें",
   "@retry": {
@@ -5579,10 +5330,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "recoverbullSelectAppleIcloud": "सेब iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "keystoneStep13": "लेनदेन बुल बिटकॉइन वॉलेट में आयात किया जाएगा।।",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -5689,10 +5436,6 @@
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
   },
-  "recoverbullSelectVaultProvider": "वेल्ट प्रदाता का चयन करें",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "मूल लेनदेन",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -5708,10 +5451,6 @@
   "coreSwapsLnSendFailed": "Swap विफल।",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "recoverbullErrorDecryptFailed": "वॉल्ट को डिक्रिप्ट करने में विफल",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "keystoneStep9": "अपने कीस्टोन पर लेनदेन पर हस्ताक्षर करने के लिए बटन पर क्लिक करें।।",
   "@keystoneStep9": {
@@ -5762,10 +5501,6 @@
   "walletTypeWatchOnly": "Watch-Only",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "recoverbullDecryptVault": "डिक्रिप्ट वॉल्ट",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "connectHardwareWalletJade": "ब्लॉकस्ट्रीम जेड",
   "@connectHardwareWalletJade": {
@@ -5869,17 +5604,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "recoverbullFetchingVaultKey": "Fetching Vault कुंजी",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
   "dcaConfirmFrequency": "आवृत्ति",
   "@dcaConfirmFrequency": {
     "description": "Field label for frequency"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "डिलीट वॉल्ट",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
   },
   "advancedOptionsTitle": "उन्नत विकल्प",
   "@advancedOptionsTitle": {
@@ -5892,10 +5619,6 @@
   "payPriceWillRefreshIn": "कीमत इस समय में ताज़ा होगी ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Google ड्राइव से वॉल्ट को हटाने में विफल रहा",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "broadcastSignedTxTo": "करने के लिए",
   "@broadcastSignedTxTo": {
@@ -5933,10 +5656,6 @@
   "ledgerSignButton": "साइन करना शुरू करें",
   "@ledgerSignButton": {
     "description": "Button label to start signing transaction with Ledger"
-  },
-  "recoverbullPassword": "पासवर्ड",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "fundExchangeMethodSinpeTransfer": "SINPE स्थानांतरण",
   "@fundExchangeMethodSinpeTransfer": {
@@ -6147,15 +5866,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "पुष्टि करें {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "आपका swap सफलतापूर्वक पूर्ण हो गया! राशि अब आपके वॉलेट में उपलब्ध होनी चाहिए।",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
@@ -6286,10 +5996,6 @@
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "recoverbullGoogleDriveScreenTitle": "गूगल ड्राइव वॉल्ट",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "receiveQRCode": "QR कोड",
   "@receiveQRCode": {
     "description": "Section header for QR code display"
@@ -6367,10 +6073,6 @@
   "sendTransactionSignedLedger": "लेन-देन ने सफलतापूर्वक लेज़र के साथ हस्ताक्षर किए",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
-  },
-  "recoverbullRecoveryContinueButton": "जारी",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
   },
   "payTimeoutError": "भुगतान टाइमआउट कृपया स्थिति की जांच करें",
   "@payTimeoutError": {
@@ -6476,10 +6178,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "कनेक्शन विफल",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
-  },
   "transactionDetailLabelPayinMethod": "Payin विधि",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
@@ -6519,10 +6217,6 @@
   "sellCopBalance": "COP शेष",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "वॉल्ट चयनित",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "ट्रांसफर शुल्क",
   "@receiveTransferFee": {
@@ -6861,10 +6555,6 @@
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "recoverbullEncryptedVaultCreated": "एन्क्रिप्टेड वॉल्ट बनाया!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
-  },
   "addressViewChangeAddressesComingSoon": "जल्द ही आने वाले पते बदलें",
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
@@ -7124,10 +6814,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "recoverbullSelectDecryptVault": "डिक्रिप्ट वॉल्ट",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "buyUpgradeKYC": "KYC अपग्रेड स्तर",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
@@ -7231,10 +6917,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "recoverbullPasswordMismatch": "पासवर्ड मैच नहीं करते",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
-  },
   "fundExchangeCrIbanUsdTransferCodeWarning": "भुगतान करते समय आपको ट्रांसफर कोड को \"मेसेज\" या \"रेसन\" या \"डिस्क्रिप्शन\" के रूप में जोड़ना होगा। यदि आप इस कोड को शामिल करना चाहते हैं तो आपके भुगतान को अस्वीकार कर दिया जा सकता है।।",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
     "description": "Warning about including transfer code in payment for USD transfers"
@@ -7334,10 +7016,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "अब चलो यह सुनिश्चित करने के लिए अपने बैकअप का परीक्षण करें कि सब कुछ ठीक से किया गया है।।",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "SPEI ट्रांसफर (इंस्टेंट) का उपयोग करके जमा करें।।",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -7386,10 +7064,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "recoverbullContinue": "जारी",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
-  },
   "receiveAddressCopied": "पता क्लिपबोर्ड पर कॉपी",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -7427,10 +7101,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "recoverbullErrorVaultNotSet": "वॉल्ट सेट नहीं है",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "dcaSetupContinue": "जारी",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
@@ -7458,10 +7128,6 @@
   "walletDetailsWalletFingerprintLabel": "वॉलेट फ़िंगरप्रिंट",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "recoverbullTorNotStarted": "Tor शुरू नहीं किया गया है",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "transactionOrderLabelOrderStatus": "आदेश स्थिति",
   "@transactionOrderLabelOrderStatus": {
@@ -7544,10 +7210,6 @@
   "payLabelOptional": "लेबल (वैकल्पिक)",
   "@payLabelOptional": {
     "description": "Label for optional label field"
-  },
-  "recoverbullGoogleDriveDeleteButton": "डिलीट",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "exchangeDcaDeactivateTitle": "Recurring Buy",
   "@exchangeDcaDeactivateTitle": {
@@ -7743,10 +7405,6 @@
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
   },
-  "recoverbullUnexpectedError": "Unexpected त्रुटि",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "coreSwapsStatusFailed": "विफल",
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
@@ -7855,10 +7513,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "बैलेंस और लेनदेन की तलाश में..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "transactionSwapInfoChainDelay": "On-chain ट्रांसफर को blockchain पुष्टि समय के कारण पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
@@ -7878,10 +7532,6 @@
   "sellTitle": "Bitcoin बेचें",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "वॉल्ट कुंजी",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "transactionListToday": "आज",
   "@transactionListToday": {
@@ -7923,10 +7573,6 @@
   "autoswapRecipientWalletPlaceholderRequired": "Bitcoin Wallet",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "एक त्रुटि हुई। फिर से प्रयास करें।।",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "sellUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
   "@sellUnauthenticatedError": {
@@ -7995,10 +7641,6 @@
   "sellCalculating": "गणना हो रही है...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
-  },
-  "recoverbullPIN": "पिन",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "swapInternalTransferTitle": "आंतरिक स्थानांतरण",
   "@swapInternalTransferTitle": {
@@ -8083,10 +7725,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull बैकअप फ़ाइल मान्य नहीं है",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "लेन-देन का निर्माण नहीं कर सका। समान रूप से शुल्क और राशि को कवर करने के लिए अपर्याप्त धन के कारण।।",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -8102,10 +7740,6 @@
   "sellSendPaymentPriceRefresh": "मूल्य में ताज़ा होगा ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "recoverbullPasswordRequired": "पासवर्ड की आवश्यकता है",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
   },
   "receiveNoteLabel": "नोट",
   "@receiveNoteLabel": {
@@ -8269,10 +7903,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "प्रतीक्षा",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "टेस्ट नहीं",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -8386,10 +8016,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "recoverbullErrorVaultCreatedKeyNotStored": "विफल: वॉल्ट फ़ाइल बनाई गई लेकिन कुंजी सर्वर में संग्रहीत नहीं है",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
-  },
   "exchangeSupportChatWalletIssuesInfo": "यह चैट केवल फंडिंग/Buy/Sell/Withdraw/Pay में विनिमय सम्बंधित मुद्दों के लिए है।\nवॉलेट संबंधित मुद्दों के लिए, यहां क्लिक करके टेलीग्राम समूह में शामिल हों।।",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
@@ -8409,10 +8035,6 @@
   "coreScreensLogsTitle": "लॉग",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "recoverbullVaultKeyInput": "वॉल्ट कुंजी",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "testBackupErrorWalletMismatch": "बैकअप मौजूदा वॉलेट से मेल नहीं खाता है",
   "@testBackupErrorWalletMismatch": {
@@ -8640,10 +8262,6 @@
   "autoswapDefaultWalletLabel": "Bitcoin Wallet",
   "@autoswapDefaultWalletLabel": {
     "description": "Default label for unnamed Bitcoin wallet"
-  },
-  "recoverbullTestSuccessDescription": "आप एक खोए हुए बिटकॉइन वॉलेट तक पहुंच प्राप्त करने में सक्षम हैं",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
   },
   "exchangeAuthLoginFailedTitle": "लॉग इन करें",
   "@exchangeAuthLoginFailedTitle": {
@@ -8874,10 +8492,6 @@
   "@jadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "recoverbullRecoveryErrorWalletExists": "यह पहले से ही मौजूद है।।",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
-  },
   "payBillerNameValue": "चयनित बिलर का नाम",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -8933,10 +8547,6 @@
   "dcaSetupInsufficientBalanceMessage": "इस आदेश को बनाने के लिए आपके पास पर्याप्त संतुलन नहीं है।।",
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
-  },
-  "recoverbullGotIt": "यह",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
   },
   "sendAdvancedOptions": "उन्नत विकल्प",
   "@sendAdvancedOptions": {
@@ -9080,10 +8690,6 @@
   "importWalletLedger": "लेजर",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
-  },
-  "recoverbullCheckingConnection": "RecoverBull",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "exchangeLandingTitle": "BULL BITCOIN",
   "@exchangeLandingTitle": {
@@ -9368,10 +8974,6 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "recoverbullErrorUnexpected": "Unexpected त्रुटि, लॉग देखें",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "sendSubmarineSwap": "सबमरीन स्वैप",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
@@ -9408,10 +9010,6 @@
   "fundExchangeOnlineBillPaymentLabelBillerName": "इस नाम के लिए अपने बैंक की बिलर्स की सूची खोजें",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
     "description": "Label for biller name in online bill payment"
-  },
-  "recoverbullSelectFetchDriveFilesError": "सभी ड्राइव बैकअप प्राप्त करने में विफल",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "सीमित सत्यापन",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -9473,10 +9071,6 @@
   "payExternalWallet": "बाहरी वॉलेट",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "recoverbullConfirm": "पुष्टि",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "fundExchangeInfoBankCountryUk": "हमारा बैंक देश यूनाइटेड किंगडम है।।",
   "@fundExchangeInfoBankCountryUk": {
@@ -9562,15 +9156,6 @@
   "transactionOrderLabelOriginCedula": "मूल Cedula",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "recoverbullRecoveryTransactionsLabel": "लेनदेन: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "buyViewDetails": "विवरण देखें",
   "@buyViewDetails": {
@@ -9689,10 +9274,6 @@
   "backupWalletInstructionLosePhone": "बैकअप के बिना, यदि आप अपने फोन को खो देते हैं या तोड़ते हैं, या यदि आप बुल बिटकॉइन ऐप को अनइंस्टॉल करते हैं, तो आपके बिटकॉइन हमेशा के लिए खो जाएंगे।।",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "recoverbullConnected": "कनेक्ट",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
   },
   "dcaConfirmLightningAddress": "बिजली का पता",
   "@dcaConfirmLightningAddress": {
@@ -9861,19 +9442,6 @@
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
   },
-  "recoverbullSelectGoogleDrive": "गूगल ड्राइव",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "अपना {inputType} दर्ज करें",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapInfoDismissButton": "इसे फिर से न दिखाएं",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -9929,10 +9497,6 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "recoverbullGoogleDriveExportButton": "निर्यात",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "bip329LabelsDescription": "BIP329 मानक प्रारूप का उपयोग करके वॉलेट लेबल आयात या निर्यात करें।।",
   "@bip329LabelsDescription": {
     "description": "Description of BIP329 labels functionality"
@@ -9948,10 +9512,6 @@
   "autoswapMaxFeeInfoText": "यदि कुल हस्तांतरण शुल्क निर्धारित प्रतिशत से अधिक है, तो ऑटो ट्रांसफर को अवरुद्ध किया जाएगा",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "recoverbullGoogleDriveCancelButton": "रद्द करना",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "अब चलो यह सुनिश्चित करने के लिए अपने बैकअप का परीक्षण करें कि सब कुछ ठीक से किया गया है।।",
   "@backupWalletSuccessDescription": {
@@ -10077,10 +9637,6 @@
   "importQrDeviceKruxStep6": "यही है!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "बैकअप फ़ाइल लापता विचलन पथ।।",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "आप प्रमाणित नहीं हैं। जारी रखने के लिए कृपया लॉग इन करें।",
   "@payUnauthenticatedError": {
@@ -10237,10 +9793,6 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "recoverbullSecureBackup": "अपने बैकअप को सुरक्षित रखें",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "payDone": "हो गया",
   "@payDone": {
     "description": "Button to close bottom sheet"
@@ -10289,10 +9841,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "सर्वर से वॉल्ट कुंजी प्राप्त करने में विफल",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "sendSwapInProgressInvoice": "स्वैप प्रगति पर है। चालान कुछ सेकंड में भुगतान किया जाएगा।।",
   "@sendSwapInProgressInvoice": {
@@ -10358,10 +9906,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "recoverbullRetry": "Retry",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "receiveCopyInvoice": "Invoice",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -10381,10 +9925,6 @@
   "paySendMax": "मैक्स",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "क्या आप इस vault बैकअप को हटाना चाहते हैं? यह कार्रवाई नहीं की जा सकती है।।",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
   },
   "googleDriveSignInMessage": "आपको Google ड्राइव पर हस्ताक्षर करने की आवश्यकता होगी",
   "@googleDriveSignInMessage": {
@@ -10487,10 +10027,6 @@
   "payInstitutionCode": "संस्था कोड",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "recoverbullFetchVaultKey": "Fetch Vault कुंजी",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "coreSwapsActionClaim": "दावा करें",
   "@coreSwapsActionClaim": {
@@ -10698,10 +10234,6 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "recoverbullErrorRejected": "कुंजी सर्वर द्वारा अस्वीकार",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
-  },
   "sellEstimatedArrival": "अनुमानित आगमन: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -10897,10 +10429,6 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "recoverbullSelectRecoverWallet": "वॉलेट को पुनर्प्राप्त करें",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "receivePayjoinActivated": "Payjoin सक्रिय",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -10953,10 +10481,6 @@
   "swapAmountLabel": "राशि",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
-  },
-  "recoverbullSelectCustomLocation": "कस्टम स्थान",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
   },
   "sellConfirmOrder": "बिक्री आदेश की पुष्टि करें",
   "@sellConfirmOrder": {
@@ -11063,10 +10587,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "एन्क्रिप्टेड बनाना वॉल्ट",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "importWalletColdcardQ": "कोल्डकार्ड Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -11078,10 +10598,6 @@
   "sendReceiveAmount": "राशि प्राप्त करना",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "recoverbullTestRecovery": "टेस्ट रिकवरी",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
   },
   "sellNetAmount": "नेट राशि",
   "@sellNetAmount": {
@@ -11151,10 +10667,6 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "recoverbullRecoverBullServer": "RecoverBull सर्वर",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "satsBitcoinUnitSettingsLabel": "इकाई sats में प्रदर्शित करें",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -11190,10 +10702,6 @@
   "fundExchangeMethodCrIbanUsd": "कोस्टा रिका IBAN (USD)",
   "@fundExchangeMethodCrIbanUsd": {
     "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "recoverbullErrorSelectVault": "वॉल्ट चुनने में विफल",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
   },
   "exchangeStatisticsTotalAmount": "कुल राशि",
   "@exchangeStatisticsTotalAmount": {
@@ -11251,10 +10759,6 @@
   "walletAutoTransferBlockButton": "ब्लॉक",
   "@walletAutoTransferBlockButton": {
     "description": "Button to block auto-transfer until next execution"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "Google ड्राइव से वॉल्ट चुनने में विफल रहा",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
@@ -11739,22 +11243,6 @@
   "mempoolCustomServerNoSsl": "कोई SSL नहीं",
   "autoswapTargetBalanceLabel": "लक्षित Instant Wallet बैलेंस",
   "autoswapMaximumBalanceLabel": "अधिकतम Instant Wallet बैलेंस",
-  "recoverbullServerConfirmTitle": "Vault रिकवरी सर्वर",
-  "recoverbullServerUsingDefault": "डिफ़ॉल्ट सर्वर का उपयोग कर रहे हैं",
-  "recoverbullServerUsingCustom": "कस्टम सर्वर का उपयोग कर रहे हैं",
-  "recoverbullServerUrlLabel": "सर्वर URL:",
-  "recoverbullServerCustomWarning": "आप एक कस्टम Recoverbull सर्वर का उपयोग कर रहे हैं। सुनिश्चित करें कि आप इस सर्वर पर भरोसा करते हैं।",
-  "recoverbullServerTorNotice": "हम Tor के माध्यम से इस सर्वर से कनेक्ट करेंगे",
-  "recoverbullLearnMore": "Recoverbull के बारे में और जानें",
-  "recoverbullSettingsTitle": "Recoverbull सेटिंग्स",
-  "recoverbullSettingsKeyServerUrl": "की सर्वर URL",
-  "recoverbullSettingsEdit": "संपादित करें",
-  "recoverbullSettingsCancel": "रद्द करें",
-  "recoverbullSettingsSave": "सहेजें",
-  "recoverbullSettingsUrlRequired": "URL आवश्यक है",
-  "recoverbullSettingsUrlInvalid": "URL मान्य नहीं है",
-  "recoverbullSettingsUrlMustBeHttp": "URL HTTP होना चाहिए",
-  "recoverbullSettingsUrlMustBeOnion": ".onion से समाप्त होना चाहिए URL",
   "onboardingAdvancedOptionsTitle": "उन्नत विकल्प",
   "onboardingAdvancedOptionsDescription": "अपना वॉलेट बनाने या रिकवर करने से पहले उन्नत सेटिंग्स कॉन्फ़िगर करें",
   "onboardingAdvancedOptionsCustomElectrum": "कस्टम Electrum सर्वर",
@@ -12294,7 +11782,6 @@
   "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "1 sat/vB से कम वाले लेनदेन की पुष्टि होने में अधिक समय लग सकता है और हो सकता है कि वे सभी नोड्स तक प्रसारित न हों।",
   "sendBelowMinFeeRateError": "शुल्क दर कम से कम 0.1 sat/vB होनी चाहिए।",
@@ -12361,12 +11848,8 @@
   "torSettingsStatusCensored": "कनेक्शन फ़िल्टर किया हुआ लगता है",
   "torSettingsDescCensored": "Tor नेटवर्क तक नहीं पहुँच सका। आमतौर पर इसका मतलब है कि कनेक्शन फ़िल्टर किया जा रहा है।",
   "torSettingsBootstrapProgress": "कनेक्ट हो रहा है… {percent}%",
-  "recoverbullPhaseNetworkInfo": "नेटवर्क जानकारी प्राप्त की जा रही है",
-  "recoverbullLongestStep": "यह सबसे लंबा चरण है। पहली बार शुरू होने में एक मिनट से अधिक लग सकता है।",
   "recoverbullTorOffline": "ऐसा लगता है कि इंटरनेट कनेक्शन नहीं है।",
   "recoverbullTorClockSkewed": "आपके डिवाइस की घड़ी गलत है, इसलिए Tor रिले प्रमाणपत्र सत्यापित नहीं कर सकता। दिनांक और समय सेटिंग जाँचें।",
-  "recoverbullTorCantStart": "Tor अभी कनेक्ट नहीं हो सका। कृपया फिर कोशिश करें।",
-  "recoverbullServerUnreachableTorOk": "Tor काम कर रहा है, लेकिन बैकअप सर्वर ने उत्तर नहीं दिया। पहली बार शुरू करने के तुरंत बाद इसमें कुछ समय लग सकता है।",
   "torSettingsEmbeddedTitle": "अंतर्निहित Tor",
   "torSettingsEmbeddedDescription": "अंतर्निहित Tor का उपयोग RecoverBull और Bitcoin Electrum के .onion सर्वर करते हैं। ऐप का बाकी ट्रैफ़िक सीधा रहता है।",
   "torSettingsTransportMode": "कनेक्शन विधि",

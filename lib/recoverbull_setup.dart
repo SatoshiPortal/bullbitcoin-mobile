@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:get_it/get_it.dart';
@@ -19,6 +20,10 @@ import 'package:flutter/foundation.dart';
 Future<void> checkRecoverBullOnAppLaunch(
   RecoverBullAttemptMonitoringController monitoring,
 ) => monitoring.checkOnForeground();
+
+@visibleForTesting
+Future<void> Function() recoverBullWalletUpdatedCallback(GetIt locator) =>
+    () => locator<WalletBloc>().refresh();
 
 /// Composition root for RecoverBull. The package owns its storage and policy;
 /// this adapter only supplies already-composed wallet, seed, settings and Tor
@@ -56,6 +61,7 @@ final class RecoverBullSetup {
       log: recoverBullLog,
       timing: (phase, duration, outcome) =>
           _recordRecoverBullTiming(recoverBullLog, phase, duration, outcome),
+      onWalletUpdated: recoverBullWalletUpdatedCallback(locator),
     );
     locator.registerSingleton<RecoverBullFeature>(composed);
     // The feature facade is the only package service registered in the shell.

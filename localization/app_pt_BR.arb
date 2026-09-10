@@ -219,10 +219,6 @@
   "@fundExchangeCanadaPostStep6": {
     "description": "Step 6 for Canada Post payment process"
   },
-  "recoverbullErrorPasswordNotSet": "A senha não está definida",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
-  },
   "replaceByFeeErrorNoFeeRateSelected": "Por favor, selecione uma taxa de taxa",
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
@@ -323,10 +319,6 @@
   "@autoswapAlwaysBlockEnabledInfo": {
     "description": "Info text when always block is enabled"
   },
-  "recoverbullSelectErrorPrefix": "Erro:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
-  },
   "buyFundYourAccount": "Fina sua conta",
   "@buyFundYourAccount": {
     "description": "Button to fund exchange account"
@@ -406,10 +398,6 @@
   "approximateFiatPrefix": "~",
   "@approximateFiatPrefix": {
     "description": "Prefix indicating approximate fiat equivalent value"
-  },
-  "recoverbullGoBackEdit": "< Voltar e editar",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "payInstantPayments": "Pagamentos imediatos",
   "@payInstantPayments": {
@@ -532,10 +520,6 @@
       }
     }
   },
-  "recoverbullTorNetwork": "Rede de Torno",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "sendBroadcastingTransaction": "Transmitir a transação.",
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
@@ -548,31 +532,9 @@
   "@dcaLightningAddressInvalidError": {
     "description": "Validation error when Lightning address format is invalid"
   },
-  "recoverbullRecoveryBalanceLabel": "Equilíbrio: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxActionPairDeviceButton": "Iniciar emparelhamento",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
-  },
-  "recoverbullSelectVaultImportSuccess": "Seu cofre foi importado com sucesso",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
-  "recoverbullReenterConfirm": "Por favor, volte a entrar no seu {inputType} para confirmar.",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "importColdcardInstructionsTitle": "Instruções do Coldcard Q",
   "@importColdcardInstructionsTitle": {
@@ -962,10 +924,6 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "recoverbullSwitchToPassword": "Escolha uma senha em vez",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "buyCantBuyMoreThan": "Você não pode comprar mais do que",
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
@@ -1025,10 +983,6 @@
   "languageSettingsLabel": "Língua",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
-  },
-  "recoverbullFailed": "Falhado",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "importQrDeviceFingerprint": "Impressão digital",
   "@importQrDeviceFingerprint": {
@@ -1278,10 +1232,6 @@
   "passportStep12": "A carteira Bull Bitcoin irá pedir-lhe para digitalizar o código QR no Passaporte. Analisa-o.",
   "@passportStep12": {
     "description": "Passport instruction for scanning signed PSBT"
-  },
-  "recoverbullErrorMissingBytes": "Perdendo bytes da resposta Tor. Retira mas se o problema persistir, é um problema conhecido para alguns dispositivos com Tor.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "pinButtonChange": "Mudar PIN",
   "@pinButtonChange": {
@@ -1590,10 +1540,6 @@
   "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
     "description": "Help text for account number field"
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Falhado para buscar cofres do Google Drive",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "psbtFlowReadyToBroadcast": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "@psbtFlowReadyToBroadcast": {
     "description": "Final message that transaction is ready to broadcast"
@@ -1609,10 +1555,6 @@
   "backupSettingsFailedToDeriveKey": "Falhado para derivar a chave de backup",
   "@backupSettingsFailedToDeriveKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullSelectTakeYourTime": "Leve o seu tempo",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "totalFeeLabel": "Taxa total",
   "@totalFeeLabel": {
@@ -1798,10 +1740,6 @@
   "@currencySettingsDefaultFiatCurrencyLabel": {
     "description": "Label for the default fiat currency setting"
   },
-  "recoverbullGoogleDriveNoBackupsFound": "Nenhum backup encontrado",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
-  },
   "transactionDetailLabelTransferId": "ID de transferência",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
@@ -1875,14 +1813,6 @@
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
   },
-  "recoverbullErrorInvalidCredentials": "Senha errada para este arquivo de backup",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
-  },
-  "recoverbullErrorVaultCreationFailed": "A criação de falhas falhou, pode ser o arquivo ou a chave",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "broadcastSignedTxCameraButton": "Câmara",
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
@@ -1914,10 +1844,6 @@
   "transactionDetailAccelerate": "Acelerar",
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
-  },
-  "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "transactionListNoTransactions": "Ainda não há transações.",
   "@transactionListNoTransactions": {
@@ -2001,10 +1927,6 @@
   "ledgerErrorDeviceLocked": "O dispositivo Ledger está bloqueado. Por favor, desbloqueie o dispositivo e tente novamente.",
   "@ledgerErrorDeviceLocked": {
     "description": "Error message when Ledger device is locked (error code 5515)"
-  },
-  "recoverbullRecoveryErrorWalletMismatch": "Uma carteira padrão diferente já existe. Você só pode ter uma carteira padrão.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
   },
   "paySinpeMonto": "Montante",
   "@paySinpeMonto": {
@@ -2302,10 +2224,6 @@
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "recoverbullPleaseWait": "Espere enquanto estabelecemos uma ligação segura...",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "importQrDeviceError": "Falhado para importar carteira",
   "@importQrDeviceError": {
     "description": "Error message when import fails"
@@ -2390,23 +2308,6 @@
   "@fundExchangeTitle": {
     "description": "AppBar title for funding screen"
   },
-  "recoverbullSelectFileNotSelectedError": "Arquivo não selecionado",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
-  },
-  "recoverbullVaultCreatedSuccess": "Vault criado com sucesso",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
-  "recoverbullErrorRateLimited": "Taxa limitada. Por favor, tente novamente em {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
   "transferIdLabel": "ID de transferência",
   "@transferIdLabel": {
     "description": "Label for swap transfer ID"
@@ -2431,10 +2332,6 @@
   "@onboardingEncryptedVault": {
     "description": "Title for the encrypted vault recovery option in onboarding"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "A derivação da chave de backup local falhou.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "sendSigningFailed": "Assinar falhou",
   "@sendSigningFailed": {
     "description": "Error during hardware wallet signing"
@@ -2458,10 +2355,6 @@
   "logoutConfirmationTitle": "Confirme o logotipo",
   "@logoutConfirmationTitle": {
     "description": "Title for logout confirmation bottom sheet"
-  },
-  "recoverbullSelectVaultSelected": "Vault selecionado",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "importQrDeviceJadeFirmwareWarning": "Certifique-se de que seu dispositivo é atualizado para o firmware mais recente",
   "@importQrDeviceJadeFirmwareWarning": {
@@ -2562,10 +2455,6 @@
   "bitboxErrorDeviceNotPaired": "Dispositivo não emparelhado. Por favor, complete o processo de emparelhamento primeiro.",
   "@bitboxErrorDeviceNotPaired": {
     "description": "Error when BitBox device is not paired"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "Digite a tecla de backup manualmente >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exchangeAccountInfoTitle": "InformaÃ§Ã£o da conta",
   "@exchangeAccountInfoTitle": {
@@ -2760,15 +2649,6 @@
   "@exchangeFileUploadNoFilesSelected": {
     "description": "Message when no files are selected for upload"
   },
-  "recoverbullMemorizeWarning": "Você deve memorizar este {inputType} para recuperar o acesso à sua carteira. Deve ter pelo menos 6 dígitos. Se você perder este {inputType} você não pode recuperar seu backup.",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenTroubleshootingStep1": "Certifique-se de que tem o firmware mais recente instalado na sua BitBox.",
   "@bitboxScreenTroubleshootingStep1": {
     "description": "Troubleshooting step 1"
@@ -2920,10 +2800,6 @@
   "@importQrDeviceSeedsignerStep9": {
     "description": "SeedSigner instruction step 9"
   },
-  "recoverbullKeyServer": "Servidor chave ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
   "exchangeBitcoinWalletsDescription": "Definir endereços de carteira padrão para retiradas automáticas de Bitcoin.",
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
@@ -2968,10 +2844,6 @@
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
   },
-  "recoverbullSelectCustomLocationProvider": "Localização personalizada",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
-  },
   "bitboxActionPairDeviceProcessingSubtext": "Verifique o código de emparelhamento no seu dispositivo BitBox...",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
@@ -2999,10 +2871,6 @@
   "exchangeAmountInputValidationEmpty": "Por favor, insira um montante",
   "@exchangeAmountInputValidationEmpty": {
     "description": "Validation message when amount field is empty"
-  },
-  "recoverbullPasswordTooCommon": "Esta senha é muito comum. Por favor, escolha um diferente",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "importQrDeviceKeystoneStep5": "Selecione \"BULL\" na lista de carteiras",
   "@importQrDeviceKeystoneStep5": {
@@ -3072,29 +2940,13 @@
   "@fundExchangeSelectCountry": {
     "description": "Instruction text"
   },
-  "recoverbullSelectQuickAndEasy": "Rápido e fácil",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
-  },
   "fundExchangeLabelBankAddress": "Endereço do nosso banco",
   "@fundExchangeLabelBankAddress": {
     "description": "Label for bank address field"
   },
-  "recoverbullSelectDriveBackups": "Drive Backups",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "exchangeFileUploadTitle": "Upload de arquivo seguro",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
-  },
-  "recoverbullSeeMoreVaults": "Ver mais cofres",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "O arquivo de backup selecionado está corrompido.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "transactionDetailLabelPayjoinStatus": "Estado de Payjoin",
   "@transactionDetailLabelPayjoinStatus": {
@@ -3237,10 +3089,6 @@
   "@payCopied": {
     "description": "Success message after copying"
   },
-  "recoverbullTestCompletedTitle": "Teste concluído com sucesso!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
-  },
   "payClabeHint": "Digite o número CLABE",
   "@payClabeHint": {
     "description": "Hint for CLABE input"
@@ -3268,10 +3116,6 @@
   "fundExchangeLabelBankCountry": "Países Baixos",
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
-  },
-  "recoverbullErrorInvalidVaultFile": "Arquivo de cofre inválido.",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
   },
   "withdrawConfirmTitle": "Confirmação",
   "@withdrawConfirmTitle": {
@@ -3446,10 +3290,6 @@
   "@replaceByFeeSatsVbUnit": {
     "description": "Unit label for satoshis per virtual byte"
   },
-  "recoverbullSelectCustomLocationError": "Falhado para selecionar o arquivo do local personalizado",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
-  },
   "importQrDeviceSpecterStep3": "Digite sua semente/chave (cose que alguma vez a opção lhe convier)",
   "@importQrDeviceSpecterStep3": {
     "description": "Specter instruction step 3"
@@ -3525,10 +3365,6 @@
   "sendBuildFailed": "Falhado em construir a transação",
   "@sendBuildFailed": {
     "description": "Error during transaction construction"
-  },
-  "recoverbullPasswordTooShort": "Senha deve ter pelo menos 6 caracteres de comprimento",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
   },
   "fundExchangeArsBankTransferDescription": "Envie uma transferência bancária de sua conta bancária usando os detalhes exatos do banco Argentina abaixo.",
   "@fundExchangeArsBankTransferDescription": {
@@ -3617,10 +3453,6 @@
   "fundExchangeCrIbanUsdDescription": "Envie uma transferência bancária da sua conta bancária usando os detalhes abaixo ",
   "@fundExchangeCrIbanUsdDescription": {
     "description": "First part of description for CR IBAN USD transfer"
-  },
-  "recoverbullSwitchToPIN": "Escolha um PIN em vez",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payDecodingInvoice": "Fatura decodificação...",
   "@payDecodingInvoice": {
@@ -3773,10 +3605,6 @@
   "payDefaultCommentHint": "Insira o comentário padrão",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
-  },
-  "recoverbullSelectNoBackupsFound": "Nenhum backup encontrado",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
   },
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Você está confiante em suas próprias capacidades de segurança operacional para esconder e preservar suas palavras de semente Bitcoin.",
   "@backupWalletHowToDecideBackupPhysicalRecommendationText": {
@@ -4113,10 +3941,6 @@
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
   },
-  "recoverbullVaultRecoveryTitle": "Recuperação do vault do Recoverbull",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
-  },
   "systemLabelPayjoin": "Payjoin",
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
@@ -4320,15 +4144,6 @@
   "payContinue": "Continue",
   "@payContinue": {
     "description": "Button to continue to next step"
-  },
-  "recoverbullReenterRequired": "Reiniciar seu {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "receivePaymentNormally": "Receber pagamento normalmente",
   "@receivePaymentNormally": {
@@ -4550,10 +4365,6 @@
   "autoswapSave": "Salvar",
   "@autoswapSave": {
     "description": "Save button label"
-  },
-  "recoverbullVaultImportedSuccess": "Seu cofre foi importado com sucesso",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
   },
   "payOnChainFee": "Taxas On-Chain",
   "@payOnChainFee": {
@@ -4823,10 +4634,6 @@
   "@howToDecideBackupText2": {
     "description": "Second paragraph explaining encrypted vault benefits and risks"
   },
-  "recoverbullGoogleDriveErrorExportFailed": "Falhado para exportar o vault do Google Drive",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
-  },
   "payCompletedDescription": "Seu pagamento foi concluído e o destinatário recebeu os fundos.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
@@ -4858,10 +4665,6 @@
   "electrumRetryCountEmptyError": "Retry Count não pode estar vazio",
   "@electrumRetryCountEmptyError": {
     "description": "Validation error for empty Retry Count field"
-  },
-  "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
   },
   "passportStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "@passportStep14": {
@@ -5090,10 +4893,6 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "recoverbullSelectVaultProvider": "Selecione Provedor de Vault",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "Transação original",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -5121,10 +4920,6 @@
   "psbtFlowColdcardTitle": "Instruções do Coldcard Q",
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
-  },
-  "recoverbullErrorDecryptFailed": "Falhado para descriptografar o cofre",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "testBackupTitle": "Teste o backup da sua carteira",
   "@testBackupTitle": {
@@ -5214,10 +5009,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "recoverbullGoogleDriveDeleteVaultTitle": "Excluir Vault",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
-  },
   "keystoneStep9": "Clique nos botões para assinar a transação em seu Keystone.",
   "@keystoneStep9": {
     "description": "Keystone instruction for signing"
@@ -5249,10 +5040,6 @@
   "importQrDevicePassportStep10": "No aplicativo de carteira BULL, selecione \"Segwit (BIP84)\" como a opção de derivação",
   "@importQrDevicePassportStep10": {
     "description": "Passport instruction step 10"
-  },
-  "recoverbullErrorServiceUnavailable": "Serviço indisponível. Por favor, verifique a sua ligação.",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
   },
   "appStartupErrorMessageNoBackup": "Não podia inicializar. Excluir e reinstalar para corrigir. Se sua semente não for apoiada, você pode visualizá-la em Configurações->Bitcoin Settings->View Sementes após reinstalar.",
   "@appStartupErrorMessageNoBackup": {
@@ -5604,10 +5391,6 @@
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "recoverbullFetchingVaultKey": "Fetching Vault Chaveiro",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
   "psbtSignTransaction": "Transação de assinatura",
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
@@ -5645,10 +5428,6 @@
   "@bitboxActionImportWalletSuccess": {
     "description": "Success text for import wallet"
   },
-  "recoverbullPassword": "Senha",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
-  },
   "sendTransactionSignedLedger": "Transação assinada com sucesso com Ledger",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
@@ -5684,10 +5463,6 @@
   "jadeStep10": "Clique nos botões para assinar a transação no seu Jade.",
   "@jadeStep10": {
     "description": "Jade instruction for signing"
-  },
-  "recoverbullVaultSelected": "Vault selecionado",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "exchangeAuthLoginFailedOkButton": "ESTÁ BEM",
   "@exchangeAuthLoginFailedOkButton": {
@@ -5809,10 +5584,6 @@
   "transactionSwapInfoClaimableSwap": "A troca será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Retentar Swap Claim\".",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Falhado para excluir o vault do Google Drive",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "buyConfirmPurchase": "Confirme a compra",
   "@buyConfirmPurchase": {
@@ -5951,10 +5722,6 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "receiveAwaitingPayment": "À espera do pagamento...",
   "@receiveAwaitingPayment": {
     "description": "Status while waiting for payment"
@@ -6072,10 +5839,6 @@
   "transactionDetailLabelBitcoinTxId": "ID de transação de Bitcoin",
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
-  },
-  "recoverbullRecoveryContinueButton": "Continue",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
   },
   "backupWalletHowToDecideVaultCloudRecommendationText": "você quer se certificar de que você nunca perder o acesso ao seu arquivo de vault mesmo se você perder seus dispositivos.",
   "@backupWalletHowToDecideVaultCloudRecommendationText": {
@@ -6560,10 +6323,6 @@
   "@fundExchangeOnlineBillPaymentDescription": {
     "description": "Description of how online bill payment works and timeframe"
   },
-  "recoverbullErrorVaultNotSet": "Vault não está definido",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "cancel": "Cancelar",
   "@cancel": {
     "description": "Generic cancel button label"
@@ -6609,10 +6368,6 @@
   "@transactionOrderLabelOrderStatus": {
     "description": "Label for order status"
   },
-  "recoverbullTestBackupDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "payInvoiceCopied": "Fatura copiada para clipboard",
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
@@ -6629,10 +6384,6 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "recoverbullGoogleDriveDeleteButton": "Excluir",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
-  },
   "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
@@ -6648,10 +6399,6 @@
   "sendTitle": "Enviar",
   "@sendTitle": {
     "description": "Title for the send screen"
-  },
-  "recoverbullTorNotStarted": "Tor não é iniciado",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "settingsTermsOfServiceTitle": "Termos de Serviço",
   "@settingsTermsOfServiceTitle": {
@@ -6885,14 +6632,6 @@
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
   },
-  "recoverbullUnexpectedError": "Erro inesperado",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
-  "recoverbullSelectDecryptVault": "Descriptografar cofre",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "addressViewCopyAddress": "Endereço de cópia",
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
@@ -7074,10 +6813,6 @@
   "@payScanQRCode": {
     "description": "Button text to open QR code scanner for payment"
   },
-  "recoverbullPasswordMismatch": "As senhas não coincidem",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
-  },
   "receivePayjoinInProgress": "Payjoin em progresso",
   "@receivePayjoinInProgress": {
     "description": "Status message when a payjoin transaction is in progress"
@@ -7093,10 +6828,6 @@
   "swapInternalTransferTitle": "Transferência interna",
   "@swapInternalTransferTitle": {
     "description": "AppBar title on the amount entry page"
-  },
-  "recoverbullPIN": "PIN",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "sendScheduleFor": "Calendário para {date}",
   "@sendScheduleFor": {
@@ -7277,17 +7008,9 @@
       }
     }
   },
-  "recoverbullPasswordRequired": "A senha é necessária",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
-  },
   "sellSendPaymentSecureWallet": "Carteira Bitcoin segura",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
-  },
-  "recoverbullSelectBackupFileNotValidError": "O arquivo de backup do Recoverbull não é válido",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
   },
   "payNewRecipients": "Novos destinatários",
   "@payNewRecipients": {
@@ -7608,10 +7331,6 @@
   "@autoswapRecipientWalletInfo": {
     "description": "Info tooltip for recipient wallet field"
   },
-  "recoverbullRecoveryLoadingMessage": "Procurando equilíbrio e transações..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "bitboxScreenTroubleshootingStep3": "Reinicie seu dispositivo BitBox02 desconectando e reconectando-o.",
   "@bitboxScreenTroubleshootingStep3": {
     "description": "Troubleshooting step 3"
@@ -7635,10 +7354,6 @@
   "settingsThemeTitle": "Tema",
   "@settingsThemeTitle": {
     "description": "Title for the theme selection in app settings"
-  },
-  "recoverbullVaultKey": "Chave de fenda",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "electrumDelete": "Excluir",
   "@electrumDelete": {
@@ -7695,10 +7410,6 @@
   "ledgerImportTitle": "Carteira de LED de importação",
   "@ledgerImportTitle": {
     "description": "Title for importing a Ledger hardware wallet"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "Um erro ocorreu. Por favor, tente novamente.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "typeLabel": "Tipo: ",
   "@typeLabel": {
@@ -7918,10 +7629,6 @@
   "@urDecodingFailedMessage": {
     "description": "Error message when UR decoding fails"
   },
-  "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "transactionLabelLiquidTransactionId": "ID de transação líquida",
   "@transactionLabelLiquidTransactionId": {
     "description": "Label for Liquid network transaction ID"
@@ -8052,10 +7759,6 @@
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
   },
-  "recoverbullWaiting": "Esperando",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "fundExchangeOnlineBillPaymentTitle": "Pagamento de Bill Online",
   "@fundExchangeOnlineBillPaymentTitle": {
     "description": "Screen title for Online Bill Payment details"
@@ -8103,10 +7806,6 @@
   "coreWalletTransactionStatusConfirmed": "Confirmado",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
-  },
-  "recoverbullSelectGoogleDrive": "Google Drive",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
   },
   "fundExchangeJurisdictionMexico": "🇲🇽 México",
   "@fundExchangeJurisdictionMexico": {
@@ -8179,23 +7878,11 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "recoverbullVaultKeyInput": "Chave de fenda",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
-  },
   "fundExchangeRestrictedTitle": "Financiamento indisponível",
   "fundExchangeRestrictedMessage": "O financiamento não está disponível na sua conta. Entre em contato com o suporte para mais informações.",
   "fundExchangeWarningTitle": "Cuidado com os scammers",
   "@fundExchangeWarningTitle": {
     "description": "Title of the scammer warning screen"
-  },
-  "recoverbullGoogleDriveExportButton": "Exportação",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
-  "recoverbullGoogleDriveCancelButton": "Cancelar",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "ledgerProcessingVerify": "Mostrando endereço no Ledger...",
   "@ledgerProcessingVerify": {
@@ -8277,10 +7964,6 @@
   "importQrDevicePassportStep5": "Selecione a opção \"Sparrow\"",
   "@importQrDevicePassportStep5": {
     "description": "Passport instruction step 5"
-  },
-  "recoverbullErrorVaultCreatedKeyNotStored": "Falhado: arquivo Vault criado mas chave não armazenado no servidor",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
   },
   "coreScreensFeePriorityLabel": "Prioridade de Taxas",
   "@coreScreensFeePriorityLabel": {
@@ -8416,10 +8099,6 @@
   "exchangeAppSettingsEmailNotificationsDescription": "Receba notificações por e-mail para pedidos e atualizações de conta",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "Arquivo de backup faltando caminho de derivação.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "importQrDevicePassportStep3": "Selecione \"Conta de gerenciamento\"",
   "@importQrDevicePassportStep3": {
@@ -8568,10 +8247,6 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
-  "recoverbullSecureBackup": "Proteja seu backup",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "sellInProgress": "Vender em progresso...",
   "@sellInProgress": {
     "description": "Message for sell in progress"
@@ -8647,10 +8322,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "recoverbullRetry": "Repito",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "coreScreensConfirmTransfer": "Confirmar transferência",
   "@coreScreensConfirmTransfer": {
     "description": "Title for confirm transfer action"
@@ -8691,17 +8362,9 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "recoverbullErrorFetchKeyFailed": "Falhado para buscar a chave do cofre do servidor",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
-  },
   "transactionDetailLabelCompletedAt": "Completa em",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
-  },
-  "recoverbullTestSuccessDescription": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
   },
   "electrumLiquidSslInfo": "Nenhum protocolo deve ser especificado, SSL será usado automaticamente.",
   "@electrumLiquidSslInfo": {
@@ -8921,10 +8584,6 @@
   "@pinConfirmMismatchError": {
     "description": "Error message when confirmation PIN doesn't match original"
   },
-  "recoverbullGoogleDriveDeleteConfirmation": "Tem a certeza de que deseja apagar este backup do vault? Esta ação não pode ser desfeita.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
-  },
   "importQrDeviceJadeStep10": "É isso!",
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
@@ -8968,10 +8627,6 @@
   "sellAccountNumber": "Número de conta",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
-  },
-  "recoverbullRecoveryErrorWalletExists": "Esta carteira já existe.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
   },
   "passportStep7": "   - Tente mover seu dispositivo para trás um pouco",
   "@passportStep7": {
@@ -9022,10 +8677,6 @@
   "@ledgerErrorMissingPsbt": {
     "description": "Error message when PSBT parameter is missing for signing"
   },
-  "recoverbullGotIt": "Entendido",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
-  },
   "swapSubtractFeesLabel": "Subtrair taxas de montante",
   "@swapSubtractFeesLabel": {
     "description": "Label when receive exact amount toggle is off"
@@ -9046,10 +8697,6 @@
   "paySecurityQuestionHint": "Insira questão de segurança (10-40 caracteres)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
-  },
-  "recoverbullErrorRejected": "Rejeitado pelo servidor chave",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
   },
   "dcaUseDefaultLightningAddress": "Use o meu endereço de Lightning padrão.",
   "@dcaUseDefaultLightningAddress": {
@@ -9297,10 +8944,6 @@
   "@paySendAll": {
     "description": "Button to send entire wallet balance"
   },
-  "recoverbullSelectCustomLocation": "Localização personalizada",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
-  },
   "dcaWalletTypeLiquid": "Líquido (LBTC)",
   "@dcaWalletTypeLiquid": {
     "description": "Radio button option for Liquid wallet"
@@ -9438,10 +9081,6 @@
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "recoverbullTestRecovery": "Recuperação de Teste",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
-  },
   "paySecureBitcoinWallet": "Carteira Bitcoin segura",
   "@paySecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
@@ -9525,10 +9164,6 @@
   "autoswapMaxBalanceLabel": "Max equilíbrio de carteira instantânea",
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
-  },
-  "recoverbullRecoverBullServer": "Servidor de recuperação",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
   },
   "bitboxScreenAddressToVerify": "Endereço para verificar:",
   "@bitboxScreenAddressToVerify": {
@@ -9615,10 +9250,6 @@
   "@swapProgressRefunded": {
     "description": "Refunded transfer status"
   },
-  "recoverbullErrorSelectVault": "Falhado para selecionar o cofre",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
-  },
   "fundExchangeMethodEmailETransfer": "E-mail E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"
@@ -9655,10 +9286,6 @@
   "payExternalWallet": "Carteira externa",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "recoverbullSelectFetchDriveFilesError": "Falhado para buscar todos os backups de unidade",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "backupWalletVaultProviderCustomLocation": "Localização personalizada",
   "@backupWalletVaultProviderCustomLocation": {
@@ -9704,15 +9331,6 @@
   "sellRateExpired": "A taxa de câmbio expirou. Refrescando...",
   "@sellRateExpired": {
     "description": "Message when rate quote times out"
-  },
-  "recoverbullRecoveryTransactionsLabel": "Transações: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "rbfTitle": "Substituir por taxa",
   "@rbfTitle": {
@@ -10119,10 +9737,6 @@
   "@psbtImDone": {
     "description": "Button text to proceed after signing transaction on hardware device"
   },
-  "recoverbullFetchVaultKey": "Fetch Vault Chaveiro",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
-  },
   "sendSwapInProgressInvoice": "A troca está em andamento. A fatura será paga em alguns segundos.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
@@ -10322,10 +9936,6 @@
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
   },
-  "recoverbullSelectRecoverWallet": "Recuperar Carteira",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "backupSettingsEncryptedVault": "Vault criptografado",
   "@backupSettingsEncryptedVault": {
     "description": "Label for encrypted vault backup status row"
@@ -10357,10 +9967,6 @@
   "backupSettingsStartBackup": "Iniciar backup",
   "@backupSettingsStartBackup": {
     "description": "Button text to start new backup process"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "Falhado para selecionar o vault do Google Drive",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "torSettingsDescConnected": "Tor proxy está em execução e pronto",
   "@torSettingsDescConnected": {
@@ -10427,15 +10033,6 @@
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
   },
-  "recoverbullGoogleDriveErrorDisplay": "Erro: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "Servidor personalizado",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -10468,10 +10065,6 @@
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
   },
-  "recoverbullErrorConnectionFailed": "Falhado em se conectar ao servidor de chaves de destino. Por favor, tente novamente mais tarde!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
-  },
   "exchangeLandingFeature6": "Histórico de transações unificadas",
   "@exchangeLandingFeature6": {
     "description": "Sixth feature bullet point"
@@ -10503,15 +10096,6 @@
   "emptyMnemonicWordsError": "Digite todas as palavras de seu mnemônico",
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
-  },
-  "recoverbullEnterToDecrypt": "Digite seu {inputType} para descriptografar seu cofre.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "mempoolSettingsDescription": "Configurar servidores de mempool personalizados para diferentes redes. Cada rede pode usar seu próprio servidor para o explorador de blocos e estimativa de taxas.",
   "@mempoolSettingsDescription": {
@@ -10608,15 +10192,6 @@
   "transcribeLabel": "Transcrição",
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
-  },
-  "recoverbullEnterToTest": "Digite seu {inputType} para testar seu cofre.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "transactionNoteSaveButton": "Salvar",
   "@transactionNoteSaveButton": {
@@ -10757,15 +10332,6 @@
   "@importWatchOnlyXpub": {
     "description": "Label for xpub import method"
   },
-  "recoverbullEnterToView": "Digite seu {inputType} para ver sua chave do cofre.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "connectingToKeyServer": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
   "@connectingToKeyServer": {
     "description": "Message shown while connecting to key server via Tor"
@@ -10811,21 +10377,9 @@
       }
     }
   },
-  "recoverbullConnectingTor": "Conectando-se ao Key Server sobre Tor.\nIsto pode demorar até um minuto.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
-  "recoverbullEnterVaultKeyInstead": "Digite uma chave de cofre em vez",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
-  },
   "cancelButton": "Cancelar",
   "@cancelButton": {
     "description": "Button to cancel logout action"
-  },
-  "recoverbullConnecting": "Conexão",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
   },
   "transactionSwapProgressFundsClaimed": "Fundos\nCláusula",
   "@transactionSwapProgressFundsClaimed": {
@@ -10847,10 +10401,6 @@
   "@importColdcardInstructionsStep4": {
     "description": "ImportColdcardQ: Fourth instruction step"
   },
-  "recoverbullDecryptVault": "Descriptografar cofre",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
-  },
   "bip85Title": "BIP85 Entropias Deterministas",
   "@bip85Title": {
     "description": "AppBar title for BIP85 entropy derivation screen"
@@ -10871,15 +10421,6 @@
   "@importWatchOnlyLabel": {
     "description": "Label for wallet name/label input field"
   },
-  "recoverbullConfirmInput": "Confirme {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyZpub": "- sim",
   "@importWatchOnlyZpub": {
     "description": "Label for zpub import method"
@@ -10887,10 +10428,6 @@
   "exchangeLandingFeature5": "Chat com suporte ao cliente",
   "@exchangeLandingFeature5": {
     "description": "Fifth feature bullet point"
-  },
-  "recoverbullConnectionFailed": "A conexão falhou",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
   },
   "walletDetailsDeletingMessage": "Excluindo a carteira...",
   "@walletDetailsDeletingMessage": {
@@ -10903,10 +10440,6 @@
   "importColdcardInstructionsStep3": "Navegue para \"Advanced / ferramentas\"",
   "@importColdcardInstructionsStep3": {
     "description": "ImportColdcardQ: Third instruction step"
-  },
-  "recoverbullEncryptedVaultCreated": "Criptografado Vault criado!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
   },
   "bip85NextHex": "Próximo HEX",
   "@bip85NextHex": {
@@ -10936,10 +10469,6 @@
   "submitButton": "Submeter-me",
   "@submitButton": {
     "description": "Default button label to submit mnemonic"
-  },
-  "recoverbullContinue": "Continue",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
   },
   "importWatchOnlyTitle": "Importar apenas relógio",
   "@importWatchOnlyTitle": {
@@ -11056,10 +10585,6 @@
   "@importMnemonicTitle": {
     "description": "AppBar title for mnemonic import screen"
   },
-  "recoverbullCheckingConnection": "Verificando conexão para RecoverBull",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
-  },
   "exchangeLandingTitle": "BITCOIN",
   "@exchangeLandingTitle": {
     "description": "Main title on exchange landing screen"
@@ -11098,10 +10623,6 @@
   "@pickPasswordInsteadButton": {
     "description": "Button label to switch to password input"
   },
-  "recoverbullConfirm": "Confirmação",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
-  },
   "pickPinInsteadButton": "Escolha PIN em vez >>",
   "@pickPinInsteadButton": {
     "description": "Button label to switch to PIN input"
@@ -11110,22 +10631,9 @@
   "@defaultWalletsLabel": {
     "description": "Label for default wallets"
   },
-  "recoverbullConnected": "Conectado",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
-  },
   "recoverButton": "Recuperar",
   "@recoverButton": {
     "description": "Button label to recover wallet"
-  },
-  "recoverbullEnterInput": "Digite seu {inputType}",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "walletDetailsDescriptorLabel": "Descritores",
   "@walletDetailsDescriptorLabel": {
@@ -11206,10 +10714,6 @@
   "enterBackupKeyManuallyTitle": "Digite a tecla de backup manualmente",
   "@enterBackupKeyManuallyTitle": {
     "description": "Title for enter backup key manually screen"
-  },
-  "recoverbullCreatingVault": "Criando criptografia Vault",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
   },
   "importWatchOnlyCancel": "Cancelar",
   "@importWatchOnlyCancel": {
@@ -11606,22 +11110,6 @@
   "mempoolCustomServerNoSsl": "Sem SSL",
   "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
   "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
-  "recoverbullServerConfirmTitle": "Servidor de recuperação do cofre",
-  "recoverbullServerUsingDefault": "Usando o servidor padrão",
-  "recoverbullServerUsingCustom": "Usando um servidor personalizado",
-  "recoverbullServerUrlLabel": "URL do servidor:",
-  "recoverbullServerCustomWarning": "Você está usando um servidor Recoverbull personalizado. Certifique-se de confiar neste servidor.",
-  "recoverbullServerTorNotice": "Vamos nos conectar a este servidor através do Tor",
-  "recoverbullLearnMore": "Saiba mais sobre o Recoverbull",
-  "recoverbullSettingsTitle": "Configurações do Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL do servidor de chaves",
-  "recoverbullSettingsEdit": "Editar",
-  "recoverbullSettingsCancel": "Cancelar",
-  "recoverbullSettingsSave": "Salvar",
-  "recoverbullSettingsUrlRequired": "O URL é obrigatório",
-  "recoverbullSettingsUrlInvalid": "O URL não é válido",
-  "recoverbullSettingsUrlMustBeHttp": "O URL deve ser HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "O URL deve terminar em .onion",
   "onboardingAdvancedOptionsTitle": "Opções avançadas",
   "onboardingAdvancedOptionsDescription": "Configure as opções avançadas antes de criar ou recuperar sua carteira",
   "onboardingAdvancedOptionsCustomElectrum": "Servidor Electrum personalizado",
@@ -12119,7 +11607,6 @@
   "backupWarningBackupNow": "SIM",
   "backupWarningBackupLater": "NÃO, EU ENTENDO O RISCO",
   "transactionSwapOpenWithin24h": "Abra o aplicativo em até 24 horas para concluir o seu swap.",
-  "recoverbullSettingsUrlHint": "http://exemplo.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "bitboxErrorBluetoothPermissionDenied": "É necessária permissão de Bluetooth para conectar ao seu BitBox02 Nova.",
   "bitboxErrorBluetoothUnavailable": "O Bluetooth está indisponível. Ative o Bluetooth e tente novamente.",
@@ -12183,12 +11670,8 @@
   "torSettingsStatusCensored": "A conexão parece filtrada",
   "torSettingsDescCensored": "O Tor não conseguiu alcançar a rede. Isso costuma indicar que a conexão está sendo filtrada.",
   "torSettingsBootstrapProgress": "Conectando… {percent}%",
-  "recoverbullPhaseNetworkInfo": "Obtendo informações da rede",
-  "recoverbullLongestStep": "Esta é a etapa mais longa. Uma primeira inicialização pode levar mais de um minuto.",
   "recoverbullTorOffline": "Parece não haver conexão com a internet.",
   "recoverbullTorClockSkewed": "O relógio do dispositivo está errado, então o Tor não consegue verificar os certificados dos relays. Confira a data e a hora.",
-  "recoverbullTorCantStart": "O Tor não conseguiu conectar agora. Tente novamente.",
-  "recoverbullServerUnreachableTorOk": "O Tor está funcionando, mas o servidor de backup não respondeu. Logo após a primeira inicialização isso pode levar um momento.",
   "torSettingsEmbeddedTitle": "Tor integrado",
   "torSettingsEmbeddedDescription": "O Tor integrado é usado pelo RecoverBull e pelos servidores Bitcoin Electrum .onion. O restante do tráfego do app continua direto.",
   "torSettingsTransportMode": "Método de conexão",

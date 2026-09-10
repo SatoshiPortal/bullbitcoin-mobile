@@ -1,16 +1,20 @@
 import 'package:bb_mobile/main.dart';
 import 'package:bb_mobile/recoverbull_setup.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:get_it/get_it.dart';
 
 class _MockPayjoinLifecycle extends Mock implements PayjoinLifecycle {}
 
 class _MockRecoverBullMonitoring extends Mock
     implements RecoverBullAttemptMonitoringController {}
+
+class _MockWalletBloc extends Mock implements WalletBloc {}
 
 void main() {
   test('resumes Payjoin recovery when the app returns to the foreground', () {
@@ -40,5 +44,17 @@ void main() {
 
     resumePayjoinsOnAppResume(AppLifecycleState.resumed, lifecycle);
     verifyNever(monitoring.checkOnForeground);
+  });
+
+  test('refreshes the mounted wallet bloc once after recovery', () async {
+    final locator = GetIt.asNewInstance();
+    final walletBloc = _MockWalletBloc();
+    when(walletBloc.refresh).thenAnswer((_) async {});
+    locator.registerSingleton<WalletBloc>(walletBloc);
+
+    await recoverBullWalletUpdatedCallback(locator)();
+
+    verify(walletBloc.refresh).called(1);
+    await locator.reset();
   });
 }

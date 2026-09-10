@@ -1127,14 +1127,6 @@
   "exchangeDcaUnableToGetConfig": "Неможливо отримати конфігурацію DCA",
   "psbtFlowClickScan": "Натисніть сканування",
   "sellInstitutionNumber": "Кількість установ",
-  "recoverbullGoogleDriveErrorDisplay": "{error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "Статус на сервери",
   "fundExchangeMethodRegularSepa": "Звичайна СПА",
   "addressViewTransactions": "Твитнуть",
@@ -1174,7 +1166,6 @@
   "sellPaymentMethod": "Спосіб оплати",
   "importColdcardInstructionsStep2": "Вкажіть прохід, якщо це можливо",
   "satsSuffix": " атласне",
-  "recoverbullErrorPasswordNotSet": "Пароль не встановлюється",
   "systemLabelAutoSwap": "Автообмін",
   "payExpiresIn": "Закінчується {time}",
   "@payExpiresIn": {
@@ -1198,24 +1189,13 @@
   "exchangeCurrencyDropdownTitle": "Оберіть валюту",
   "importQrDeviceImporting": "Імпорт гаманця ...",
   "rbfFastest": "Швидке",
-  "recoverbullReenterConfirm": "Будь ласка, перейменуйте свій {inputType}, щоб підтвердити.",
-  "@recoverbullReenterConfirm": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "Скопіювати до буферу",
   "dcaLightningAddressInvalidError": "Будь ласка, введіть дійсну адресу Lightning",
   "ledgerButtonNeedHelp": "Потрібна допомога?",
   "hwKrux": "Кошик",
-  "recoverbullSelectVaultImportSuccess": "Ви успішно імпортували",
   "mempoolServerNotUsed": "Не використовується (активний сервер)",
-  "recoverbullSelectErrorPrefix": "Помилка:",
   "exchangeLandingRecommendedExchange": "Bitcoin у USD",
   "backupWalletHowToDecideVaultMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
-  "recoverbullGoBackEdit": "<< Повернутися і редагувати",
   "receiveConfirming": "Підтвердження... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
@@ -1238,14 +1218,6 @@
   "bitboxActionPairDeviceButton": "Старт Пірсінг",
   "importQrDeviceSpecterName": "Спектр",
   "broadcastSignedTxFee": "Плей",
-  "recoverbullRecoveryBalanceLabel": "Баланс: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "save": "Зберегти",
   "dcaWalletLiquidSubtitle": "Вимагає сумісний гаманець",
   "appUnlockButton": "Розблокувати",
@@ -1289,7 +1261,6 @@
     }
   },
   "autoswapMaxBalanceInfo": "Коли баланс гаманця перевищує подвійну цю суму, автотранспортер запускає зниження балансу на цей рівень",
-  "recoverbullTorNetwork": "Веб-сайт",
   "importColdcardInstructionsTitle": "Coldcard Q Інструкції",
   "sendVerifyOnDevice": "Перевірити на пристрої",
   "payRoutingFailed": "Маршрутизація",
@@ -1314,7 +1285,6 @@
   "broadcastSignedTxAmount": "Сума",
   "hwJade": "Блокстрім Jade",
   "keystoneStep14": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
-  "recoverbullErrorConnectionFailed": "Заборонено підключення до цільового сервера ключа. Будь ласка, спробуйте ще раз!",
   "testBackupDigitalCopy": "Цифрова копія",
   "paySearchPayments": "Пошук платежів.",
   "payPendingPayments": "Закінчення",
@@ -1367,12 +1337,10 @@
   "testBackupWarningMessage": "Без резервної копії ви в кінцевому підсумку втратите доступ до ваших грошей. Важливо зробити резервну копію.",
   "importWatchOnlyYpub": "й",
   "ledgerVerifyTitle": "Перевірити адресу на Ledger",
-  "recoverbullSwitchToPassword": "Підберіть пароль замість",
   "exchangeDcaNetworkBitcoin": "Bitcoin мережа",
   "autoswapWarningTitle": "Autoswap включений до наступних налаштувань:",
   "seedsignerStep1": "Увімкніть пристрій для насінництва",
   "backupWalletHowToDecideBackupLosePhysical": "Один з найбільш поширених способів втратити Біткойн, тому що вони втрачають фізичну резервну копію. Будь-ласка, що знаходить вашу фізичну резервну копію, зможе прийняти всі ваші біткойни. Якщо ви дуже впевнені, що ви можете приховати його добре і ніколи не втратите його, це хороший варіант.",
-  "recoverbullErrorMissingBytes": "Пропускання байтів від реагування тор. Ретри, але якщо питання зберігається, це відомий питання для деяких пристроїв з Tor.",
   "coreScreensReceiveNetworkFeeLabel": "Отримувати Мережі",
   "payEstimatedFee": "Орієнтовна Fee",
   "sendSendAmount": "Надіслати",
@@ -1380,7 +1348,6 @@
   "rbfCustomFee": "Спеціальний Fee",
   "importQrDeviceFingerprint": "Друк",
   "importWatchOnlyDescriptor": "Дескриптор",
-  "recoverbullFailed": "В'язниця",
   "ledgerProcessingSign": "Вивіска",
   "jadeStep6": "   - Збільшення яскравості екрану на вашому пристрої",
   "fundExchangeETransferLabelEmail": "Надіслати E-переказ на електронну пошту",
@@ -1484,17 +1451,8 @@
   "exchangeHomeWithdraw": "Зняття",
   "importMnemonicSegwit": "Сегвейт",
   "importQrDeviceJadeStep6": "Виберіть \"Експорт Xpub\" з меню гаманця",
-  "recoverbullEnterToDecrypt": "Будь ласка, введіть своє {inputType}, щоб розшифрувати вашу скриньку.",
-  "@recoverbullEnterToDecrypt": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "Передача",
   "testBackupSuccessTitle": "Випробувано успішно!",
-  "recoverbullSelectTakeYourTime": "Зробіть свій час",
   "coreScreensTotalFeesLabel": "Загальна вартість",
   "mempoolSettingsDescription": "Налаштування користувацького мемпул-сервера для різних мереж. Кожна мережа може використовувати власний сервер для блочного дослідника та оцінки комісій.",
   "exchangeHomeDeposit": "Депозити",
@@ -1522,7 +1480,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Заборонено фіксувати помилки з Google Диску",
   "systemLabelExchangeBuy": "Купити",
   "exchangeAmountInputValidationInsufficient": "Недостатній баланс",
   "psbtFlowReviewTransaction": "Після того, як угода імпортується в {device}, перевірте адресу призначення та суму.",
@@ -1558,7 +1515,6 @@
   "importWatchOnlyImport": "Імпорт",
   "backupWalletBackupButton": "Зареєструватися",
   "mempoolSettingsTitle": "Статус на сервери",
-  "recoverbullErrorVaultCreationFailed": "Створення Vault не вдалося, це може бути файл або ключ",
   "bitboxActionSignTransactionProcessing": "Вивіска",
   "sellWalletBalance": "Баланс: {amount}",
   "@sellWalletBalance": {
@@ -1568,7 +1524,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveNoBackupsFound": "Не знайдено резервних копій",
   "dcaConfirmPaymentMethod": "Спосіб оплати",
   "backupWalletErrorGoogleDriveConnection": "З'єднання з Google Диском",
   "payEnterInvoice": "Вхід",
@@ -1579,8 +1534,6 @@
   "sellAmount": "Сума на продаж",
   "ledgerErrorDeviceLocked": "Заблоковано пристрій Ledger. Будь ласка, розблокуйте пристрій і спробуйте знову.",
   "importQrDeviceSeedsignerStep5": "Виберіть \"Single Sig\", після чого виберіть бажаний тип скрипта (хозо Native Segwit, якщо невірно).",
-  "recoverbullRecoveryErrorWalletMismatch": "За замовчуванням гаманець вже існує. Ви можете мати один гаманець за замовчуванням.",
-  "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
   "importQrDevicePassportStep11": "Введіть мітку для вашого паспорта гаманця і натисніть \"Імпорт\"",
   "withdrawBelowMinAmountError": "Ви намагаєтеся виводити нижче мінімальної суми.",
   "swapYouPay": "Оплатити",
@@ -1610,7 +1563,6 @@
   },
   "sellOrderPlaced": "Продати замовлення успішно",
   "ledgerHelpStep4": "Переконайтеся, що ви встановили останню версію додатку Bitcoin від Ledger Live.",
-  "recoverbullPleaseWait": "Будь ласка, почекайте, коли ми встановлюємо безпечне підключення...",
   "broadcastSignedTxBroadcast": "Радіоканал",
   "lastKnownEncryptedVault": "Останній Знаний Зашифрований {date}",
   "@lastKnownEncryptedVault": {
@@ -1626,7 +1578,6 @@
   "torSettingsConnectionStatus": "Статус на сервери",
   "sendErrorInvalidAddressOrInvoice": "Плата за неоплату Bitcoin або Invoice",
   "sendErrorUnsupportedQrCodeFormat": "Непідтримуваний формат QR-коду",
-  "recoverbullRecoveryTitle": "Recoverbull відновлення",
   "broadcastSignedTxScanQR": "Сканування QR-коду з вашого апаратного гаманця",
   "ledgerSuccessSignDescription": "Ви успішно підписалися на Вашу операцію.",
   "exchangeSupportChatMessageRequired": "Необхідне повідомлення",
@@ -1667,7 +1618,6 @@
   "swapAvailableBalance": "Доступний баланс",
   "ledgerConnectingSubtext": "Створення безпечного підключення...",
   "electrumPrivacyNoticeCancel": "Зареєструватися",
-  "recoverbullVaultCreatedSuccess": "Vault створений успішно",
   "sellMaximumAmount": "Максимальна сума продажу: {amount}",
   "@sellMaximumAmount": {
     "placeholders": {
@@ -1703,35 +1653,17 @@
   "mempoolCustomServerDeleteMessage": "Ви впевнені, що ви хочете видалити цей користувальницький сервер? Сервер за замовчуванням буде використаний замість.",
   "coldcardStep6": "   - Збільшення яскравості екрану на вашому пристрої",
   "sellCashPickup": "Готівковий пікап",
-  "recoverbullRecoveryErrorKeyDerivationFailed": "Не вдалося відхилити локальну резервну копію ключа.",
   "swapValidationInsufficientBalance": "Недостатній баланс",
-  "recoverbullErrorRateLimited": "Тарифи обмежені. Будь ласка, спробуйте знову в {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyExtendedPublicKey": "Продовжити громадськість Головна",
   "autoswapAlwaysBlock": "Завжди блокувати високі Fees",
   "mempoolNetworkBitcoinMainnet": "Bitcoin у USD",
   "networkFeeLabel": "Партнерство",
-  "recoverbullMemorizeWarning": "Ви повинні запам'ятати цей {inputType} для відновлення доступу до вашого гаманця. Потрібно не менше 6 цифр. Якщо ви втратите це {inputType} ви не можете відновити резервну копію.",
-  "@recoverbullMemorizeWarning": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep15": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "fundExchangeETransferLabelSecretQuestion": "Таємне питання",
   "jadeStep15": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "payActualFee": "Актуальна Fee",
   "electrumValidateDomain": "Діє домен",
   "importQrDeviceJadeFirmwareWarning": "Переконайтеся, що ваш пристрій оновлено до останньої прошивки",
-  "recoverbullSelectFileNotSelectedError": "Файл не вибрано",
   "fundExchangeMethodSpeiTransferSubtitle": "Перерахування коштів за допомогою CLABE",
   "importQrDeviceJadeStep3": "Дотримуйтесь інструкцій пристрою, щоб розблокувати Jade",
   "sendSigningFailed": "Не вдалося",
@@ -1741,22 +1673,12 @@
   "swapValidationSelectFromWallet": "Будь ласка, виберіть гаманець для перенесення",
   "sendSwapInitiated": "Обмін ініціюється",
   "backupSettingsKeyWarningMessage": "Важливо, що ви не зберігаєте ключ резервного копіювання на одному місці, де ви зберігаєте файл резервного копіювання. Завжди зберігати їх на окремих пристроях або окремих хмарних провайдерах.",
-  "recoverbullEnterToTest": "Будь ласка, введіть своє {inputType}, щоб перевірити вашу скриньку.",
-  "@recoverbullEnterToTest": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeHelpBeneficiaryName": "Використовуйте нашу офіційну назву компанії. Не використовуйте \"Bull Bitcoin\".",
   "importQrDeviceSpecterStep10": "Введіть етикетку для свого гаманця Specter і натисніть Імпорт",
-  "recoverbullSelectVaultSelected": "Вибрані",
   "dcaWalletTypeBitcoin": "Біткін (BTC)",
   "payNoPayments": "Ніяких платежів",
   "exchangeDcaActivateTitle": "Активувати продаж",
   "payLightningInvoice": "Блискавка Invoice",
-  "recoverbullSelectEnterBackupKeyManually": "Введіть ключ Backup вручну >>",
   "payCoinjoinInProgress": "CoinJoin в прогрес ...",
   "testBackupAllWordsSelected": "Ви вибрали всі слова",
   "ledgerProcessingImportSubtext": "Налаштування вашого годинникового гаманця ...",
@@ -1769,7 +1691,6 @@
   "coreScreensAmountLabel": "Сума",
   "swapTransferRefundInProgressTitle": "Повернення коштів в Прогрес",
   "swapYouReceive": "Ви отримуєте",
-  "recoverbullSelectCustomLocationProvider": "Місцезнаходження",
   "electrumInvalidRetryError": "Інвалідна птиця Кількість: {value}",
   "@electrumInvalidRetryError": {
     "placeholders": {
@@ -1803,7 +1724,6 @@
     }
   },
   "kruxStep16": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
-  "recoverbullRecoveryErrorVaultCorrupted": "Вибраний файл резервного копіювання пошкоджений.",
   "buyVerifyIdentity": "Перевірити ідентичність",
   "exchangeDcaCancelDialogConfirmButton": "Так, деактивація",
   "electrumServerUrlHint": "{network} {environment} URL сервера",
@@ -1840,7 +1760,6 @@
   "ledgerVerifyAddressLabel": "Адреса для перевірки:",
   "backupSettingsTested": "Тестування",
   "jadeStep1": "Увійти на пристрій Jade",
-  "recoverbullSelectDriveBackups": "Приводні резервні копії",
   "exchangeAuthOk": "ЗАРЕЄСТРУВАТИСЯ",
   "testBackupErrorFailedToFetch": "Надіслане до резервного копіювання: {error}",
   "@testBackupErrorFailedToFetch": {
@@ -1856,8 +1775,6 @@
   "seedsignerInstructionsTitle": "SeedSigner Інструкції",
   "exchangeAmountInputValidationEmpty": "Введіть суму",
   "bitboxActionPairDeviceProcessingSubtext": "Будь ласка, перевірте код пари на пристрої BitBox ...",
-  "recoverbullKeyServer": "Статус на сервери ",
-  "recoverbullPasswordTooCommon": "Цей пароль занадто поширений. Будь ласка, оберіть інший",
   "fundExchangeLabelBeneficiaryAddress": "Адреса отримувача",
   "testBackupVerify": "Видання",
   "electrumAdvancedOptions": "Додаткові параметри",
@@ -1871,7 +1788,6 @@
   "importWatchOnlyFingerprint": "Друк",
   "withdrawAmountContinue": "Продовжити",
   "allSeedViewSecurityWarningMessage": "Відображення слів насіння є ризиком безпеки. Будь-який, хто бачить ваше слово насіння, може отримати доступ до ваших коштів. Переконайтеся, що ви перебуваєте в приватному місці і що ніхто не може бачити ваш екран.",
-  "recoverbullSeeMoreVaults": "Більше снів",
   "pinProtectionDescription": "Ваш PIN захищає доступ до вашого гаманця та налаштувань. Збережіть його незабутнім.",
   "kruxStep5": "Сканування QR-коду, показаного в булл-гаманці",
   "backupSettingsLabelsButton": "Етикетки",
@@ -1886,13 +1802,11 @@
   "fundExchangeLabelBankAddress": "Адреса банку",
   "exchangeDcaAddressLabelLiquid": "Контакти",
   "backupWalletGoogleDrivePrivacyMessage5": "bitcoin у USD.",
-  "recoverbullSelectQuickAndEasy": "Швидкий і простий",
   "backupWalletHowToDecideBackupPhysicalRecommendationText": "Ви впевнені, що ваші можливості оперативної безпеки приховати і зберегти ваші слова насіннєвих.",
   "sendErrorAmountAboveSwapLimits": "Сума вище лімітів закрутки",
   "backupWalletHowToDecideBackupEncryptedVault": "Зашифрована схованка запобігає вам з тих, хто шукає крадіжку вашої резервної копії. Ви також не зможете втратити резервну копію, оскільки вона буде зберігатися у хмарі. Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Існує невелика ймовірність, що веб-сервер, який зберігає ключ шифрування резервної копії. У цьому випадку безпека резервного копіювання у хмарному обліковому записі може бути на ризику.",
   "seedsignerStep11": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
   "fundExchangeBankTransferSubtitle": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації",
-  "recoverbullErrorInvalidVaultFile": "Недійсний файл схову.",
   "sellProcessingOrder": "Порядок обробки.",
   "sellUpdatingRate": "Оновлення курсу обміну...",
   "importQrDeviceKeystoneStep6": "На вашому мобільному натисніть \"відкрити камеру\"",
@@ -1903,7 +1817,6 @@
   "pinButtonContinue": "Продовжити",
   "importColdcardSuccess": "Гаманець холодної картки імпортований",
   "withdrawUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
-  "recoverbullTestCompletedTitle": "Випробувано успішно!",
   "exchangeDcaFrequencyDay": "день",
   "payBumpFee": "Бампер Фе",
   "bitboxActionImportWalletProcessingSubtext": "Налаштування вашого годинникового гаманця ...",
@@ -1926,7 +1839,6 @@
       }
     }
   },
-  "recoverbullSelectCustomLocationError": "Вимкнено вибрати файл з індивідуального розташування",
   "mempoolCustomServerDeleteTitle": "Видалити користувальницький сервер?",
   "confirmSendTitle": "Підтвердження",
   "buyKYCLevel1": "Рівень 1 - Базовий",
@@ -1946,7 +1858,6 @@
   "importQrDevicePassportStep2": "Введіть Ваш кошик",
   "buyExpressWithdrawalDesc": "Отримати Bitcoin миттєво після оплати",
   "importMnemonicImport": "Імпорт",
-  "recoverbullPasswordTooShort": "Пароль має бути принаймні 6 символів",
   "sendBuildFailed": "Не вдалося побудувати операцію",
   "paySwapFee": "Обмін Fee",
   "broadcastSignedTxTitle": "Трансмісія",
@@ -1966,7 +1877,6 @@
   "copyDialogButton": "Партнерство",
   "bitboxActionImportWalletProcessing": "Імпорт гаманця",
   "swapConfirmTransferTitle": "Підтвердження трансферу",
-  "recoverbullSwitchToPIN": "Підібрати PIN замість",
   "electrumServerOffline": "Оффлайн",
   "sendTransferFee": "Плата за трансфер",
   "testBackupPhysicalBackupDescription": "Написати 12 слів на аркуші паперу. Збережіть їх безпечно і переконайтеся, що не втратити їх.",
@@ -2042,7 +1952,6 @@
   "ledgerWalletTypeLabel": "Тип гаманця:",
   "bip85ExperimentalWarning": "Експериментальні\nРезервне копіювання стежок видалення вручну",
   "addressViewBalance": "Посилання",
-  "recoverbullSelectNoBackupsFound": "Не знайдено резервних копій",
   "importMnemonicNestedSegwit": "Нескінченний Segwit",
   "importQrDeviceSpecterStep9": "Сканування QR-коду, що відображається на вашому Specter",
   "importWatchOnlySelectDerivation": "Виберіть заборгованість",
@@ -2060,14 +1969,6 @@
   "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
   "mempoolNetworkLiquidMainnet": "Головна",
   "importColdcardButtonOpenCamera": "Відкрийте камеру",
-  "recoverbullReenterRequired": "Завантажити {inputType}",
-  "@recoverbullReenterRequired": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaFrequencyWeek": "тиждень",
   "keystoneStep6": "   - Перемістити червоному лазеру вгору і вниз по QR-коду",
   "fundExchangeLabelTransferCode": "Поштовий індекс (за умови оплати)",
@@ -2087,7 +1988,6 @@
   "payOnChainFee": "На-Чаїн Фе",
   "payUseCoinjoin": "Використовуйте CoinJoin",
   "autoswapWarningExplanation": "Коли ваш баланс перевищить максимальний баланс, буде ініційовано обмін. Цільовий баланс залишиться у вашому гаманці миттєвих платежів, а залишок буде обміняний у ваш безпечний гаманець Bitcoin.",
-  "recoverbullVaultRecoveryTitle": "Recoverbull відновлення",
   "passportStep14": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "sendSwapDetails": "Обмін подробиці",
   "psbtFlowSelectSeed": "Після того, як угода була імпортована в {device}, ви повинні вибрати насіння, яке ви хочете зареєструватися.",
@@ -2122,7 +2022,6 @@
   "swapExternalTransferLabel": "Зовнішня передача",
   "importQrDevicePassportStep4": "Виберіть \"Підключити гаманець\"",
   "payAddRecipient": "Додати одержувач",
-  "recoverbullVaultImportedSuccess": "Ви успішно імпортували",
   "confirmAccessPinTitle": "Підтвердження доступу {pinOrPassword}",
   "@confirmAccessPinTitle": {
     "placeholders": {
@@ -2142,14 +2041,6 @@
   "testBackupErrorUnexpectedSuccess": "Невибагливий успіх: резервне копіювання повинно відповідати існуючому гаманцю",
   "coreScreensReceiveAmountLabel": "Отримувати Amount",
   "systemLabelPayjoin": "Офіціант",
-  "recoverbullEnterToView": "Будь ласка, введіть {inputType}, щоб переглянути свій ключ за замовчуванням.",
-  "@recoverbullEnterToView": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "payReviewPayment": "Огляд платежів",
   "electrumBitcoinSslInfo": "Якщо не вказано протокол, ssl буде використовуватися за замовчуванням.",
   "buyKYCLevel3": "Рівень 3 - Повний",
@@ -2172,7 +2063,6 @@
   "mempoolSettingsDefaultServer": "Статус на сервери",
   "swapToLabel": "До",
   "sendSignatureReceived": "Отримали підпис",
-  "recoverbullGoogleDriveErrorExportFailed": "Заборонено експортувати сховище з Google Drive",
   "exchangeKycLevelLight": "Світло",
   "bip329LabelsExportSuccess": "Мітки успішно експортовано",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Найменший варіант, але можна зробити через онлайн-банкінг (3-4 робочих днів)",
@@ -2256,12 +2146,9 @@
   },
   "autoswapAlwaysBlockInfoEnabled": "При включенні автоперевезення з комісією над встановленим лімітом завжди буде заблоковано",
   "importMnemonicSelectScriptType": "Імпортний мнемічний",
-  "recoverbullConnectingTor": "Підключення до Key Server над Tor.\nЦе може прийняти до хвилини.",
-  "recoverbullEnterVaultKeyInstead": "Введіть ключ vault замість",
   "keystoneStep5": "   - Збільшення яскравості екрану на вашому пристрої",
   "importMnemonicEmpty": "Зручність",
   "electrumBitcoinServerInfo": "Адреса сервера в форматі: host:port (наприклад, приклад.com:50001)",
-  "recoverbullErrorServiceUnavailable": "Сервіс 0 Будь ласка, перевірте підключення.",
   "sendErrorInsufficientBalanceForSwap": "Чи не достатньо балансу для оплати за допомогою Рідини і не в межах обмежених обмежень для оплати через Біткойн.",
   "importQrDeviceKeystoneStep8": "У гаманці BULL виберіть бажаний тип деривації. Якщо ви не впевнені, виберіть \"Segwit (BIP84)\"",
   "buyStandardWithdrawalDesc": "Отримуйте Біткойн після сплати очистки (1-3 днів)",
@@ -2306,7 +2193,6 @@
   "exchangeSupportChatEmptyState": "Немає повідомлень. Почати розмову!",
   "electrumRetryCountEmptyError": "Рятівний граф не може бути порожнім",
   "ledgerErrorBitcoinAppNotOpen": "Будь ласка, відкрийте додаток Bitcoin на пристрої Ledger і спробуйте знову.",
-  "recoverbullConnecting": "Підключення",
   "swapExternalAddressHint": "Введіть адресу зовнішнього гаманця",
   "torSettingsDescConnecting": "Створення Тор підключення",
   "ledgerWalletTypeLegacyDescription": "P2PKH - Старший формат",
@@ -2337,7 +2223,6 @@
   "sendTypeSend": "Відправити",
   "payFeeBumpSuccessful": "Фей Бампер успішним",
   "importQrDeviceKruxStep1": "Увімкніть пристрій Krux",
-  "recoverbullSelectAppleIcloud": "Яблуко iCloud",
   "keystoneStep13": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "receiveGenerationFailed": "Вимкнено для створення {type}",
   "@receiveGenerationFailed": {
@@ -2358,17 +2243,14 @@
   "passportStep2": "Натисніть кнопку Вхід з QR-кодом",
   "withdrawOwnershipMyAccount": "Це мій обліковий запис",
   "payAddMemo": "Додати мемо (необов'язково)",
-  "recoverbullSelectVaultProvider": "Виберіть постачальник Vault",
   "replaceByFeeOriginalTransactionTitle": "Оригінальна угода",
   "testBackupPhysicalBackupTag": "Бездоганний (забрати час)",
-  "recoverbullErrorDecryptFailed": "Не вдалося розшифрувати запобіжник",
   "keystoneStep9": "Натисніть кнопку, щоб зареєструвати операцію на вашому пристрої.",
   "totalFeesLabel": "Загальна вартість",
   "importQrDevicePassportStep10": "У додатку BULL гаманця виберіть пункт \"Segwit (BIP84)\" як варіант виведення",
   "payHighPriority": "Висока якість",
   "sendFrozenCoin": "Заморожені",
   "importColdcardInstructionsStep4": "Перевірити, що ваша прошивка оновлена до версії 1.3.4Q",
-  "recoverbullDecryptVault": "Розшифрування за замовчуванням",
   "connectHardwareWalletJade": "Блокстрім Jade",
   "autoswapMaxFee": "Макс Трансфер Fee",
   "sellReviewOrder": "Огляд Sell Замовити",
@@ -2392,12 +2274,9 @@
   "importWalletJade": "Блокстрім Jade",
   "payInvalidInvoice": "Гарантований рахунок",
   "importQrDeviceButtonOpenCamera": "Відкрийте камеру",
-  "recoverbullFetchingVaultKey": "Fetching Вейф Головна",
   "dcaConfirmFrequency": "Кількість",
-  "recoverbullGoogleDriveDeleteVaultTitle": "Видалити Vault",
   "advancedOptionsTitle": "Додаткові параметри",
   "dcaConfirmOrderType": "Тип замовлення",
-  "recoverbullGoogleDriveErrorDeleteFailed": "Заборонено видалити сховище з Google Диску",
   "broadcastSignedTxTo": "До",
   "payPaymentDetails": "Деталі оплати",
   "bitboxActionVerifyAddressTitle": "Перевірити адресу на BitBox",
@@ -2412,7 +2291,6 @@
   },
   "bitboxActionImportWalletSuccess": "Гаманець Імпорт",
   "ledgerSignButton": "Зареєструватися",
-  "recoverbullPassword": "Логін",
   "fundExchangeMethodSinpeTransfer": "Трансфер SINPE",
   "importMnemonicHasBalance": "Має баланс",
   "dcaLightningAddressEmptyError": "Будь ласка, введіть адресу Lightning",
@@ -2459,14 +2337,6 @@
   "importQrDevicePassportName": "Паспорт Фундації",
   "fundExchangeMethodCanadaPostSubtitle": "Найкращі для тих, хто віддає перевагу оплаті",
   "importColdcardMultisigPrompt": "Для багатосигових гаманців сканування дескриптора гаманця QR коду",
-  "recoverbullConfirmInput": "Підтвердження {inputType}",
-  "@recoverbullConfirmInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowSignTransaction": "Реєстрація",
   "payAllPayments": "Всі платежі",
   "importWatchOnlyZpub": "зоп",
@@ -2495,7 +2365,6 @@
   "testBackupScreenshot": "Скріншоти",
   "dcaSuccessTitle": "Покупка є активним!",
   "receiveAwaitingPayment": "Відкликання платежу...",
-  "recoverbullGoogleDriveScreenTitle": "Google Диски",
   "receiveQRCode": "QR-код",
   "payDecodeFailed": "Заборонено декодувати рахунок",
   "rbfErrorFeeTooLow": "Ви повинні збільшити плату за принаймні 1 sat/vbyte порівняно з оригінальною угодою",
@@ -2507,7 +2376,6 @@
   "psbtFlowTransactionImported": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "testBackupGoogleDriveSignIn": "Ви повинні зареєструватися на Google Диску",
   "sendTransactionSignedLedger": "Заява, підписана успішно з Ledger",
-  "recoverbullRecoveryContinueButton": "Продовжити",
   "payTimeoutError": "Розстрочка платежу. Будь ласка, перевірте статус",
   "kruxStep4": "Натисніть завантаження з камери",
   "sellErrorRecalculateFees": "Плата за перерахунок: {error}",
@@ -2546,14 +2414,12 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "Підключення не вдалося",
   "sellCurrentRate": "Поточний курс",
   "payAmountTooLow": "Кількість нижче мінімальна",
   "bitboxScreenVerifyOnDevice": "Будь ласка, перевірте цю адресу на пристрої BitBox",
   "ledgerConnectTitle": "Підключення пристрою Ledger",
   "withdrawAmountTitle": "Зняття фіат",
   "coreScreensServerNetworkFeesLabel": "Статус на сервери",
-  "recoverbullVaultSelected": "Вибрані",
   "exchangeDcaFrequencyHour": "час",
   "payRBFDisabled": "RBF відключені",
   "exchangeAuthLoginFailedOkButton": "ЗАРЕЄСТРУВАТИСЯ",
@@ -2619,7 +2485,6 @@
   "allSeedViewDeleteWarningTitle": "УВАГА!",
   "backupSettingsBackupKey": "Зворотній зв'язок",
   "payInvoiceCopied": "Invoice copied до буфера",
-  "recoverbullEncryptedVaultCreated": "Зашифрований Vault створений!",
   "addressViewChangeAddressesComingSoon": "Змінити адреси, що надходяться",
   "psbtFlowScanQrShown": "Сканування QR-коду, показаного в булл-гаманці",
   "testBackupErrorInvalidFile": "Інвалідний вміст файлу",
@@ -2699,7 +2564,6 @@
   "payNetworkError": "Мережеві помилки. Будь ласка, спробуйте",
   "electrumUnknownError": "Помилки",
   "autoswapBaseBalanceInfoText": "==WEBLATE_PART==\nБаланс вашого гаманця миттєвих платежів повернеться до цього цільового балансу після автообміну.",
-  "recoverbullSelectDecryptVault": "Розшифрування за замовчуванням",
   "buyUpgradeKYC": "Оновлення KYC Рівень",
   "autoswapEnableToggleLabel": "Увімкнути автоматичне перенесення",
   "sendDustAmount": "Кріплення занадто малий (пило)",
@@ -2731,7 +2595,6 @@
   "submitButton": "Подати заявку",
   "bitboxScreenTryAgainButton": "Зареєструватися",
   "dcaConfirmTitle": "Підтвердження Купити",
-  "recoverbullPasswordMismatch": "Пароль не відповідає",
   "backupSettingsPhysicalBackup": "Фізичний фон",
   "importColdcardDescription": "Імпорт сканера гаманця QR-коду від вашого Coldcard Q",
   "backupSettingsSecurityWarning": "Попередження про безпеку",
@@ -2766,7 +2629,6 @@
     }
   },
   "backupWalletHowToDecide": "Як вирішити?",
-  "recoverbullTestBackupDescription": "Тепер перевірте вашу резервну копію, щоб переконатися, що все було зроблено належним чином.",
   "bitboxErrorOperationTimeout": "Час роботи. Будь ласка, спробуйте знову.",
   "mempoolCustomServerUrlEmpty": "Введіть URL-адресу сервера",
   "importQrDeviceKeystoneName": "Головна",
@@ -2774,7 +2636,6 @@
   "swapProgressPending": "Передача",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin адреса",
   "loadingBackupFile": "Завантаження файлів резервного копіювання ...",
-  "recoverbullContinue": "Продовжити",
   "receiveAddressCopied": "Адреса копіюється на буфер",
   "psbtFlowTurnOnDevice": "Увімкніть пристрій {device}",
   "@psbtFlowTurnOnDevice": {
@@ -2787,12 +2648,10 @@
   "backupSettingsKeyServer": "Статус на сервери ",
   "connectHardwareWalletColdcardQ": "Холодна картка Q",
   "seedsignerStep2": "Натисніть сканування",
-  "recoverbullErrorVaultNotSet": "Не встановлено",
   "dcaSetupContinue": "Продовжити",
   "electrumFormatError": "Використовуйте хост:порт формат (наприклад, приклад.com:50001)",
   "importWatchOnlyTitle": "Імпорт годинник",
   "cancel": "Зареєструватися",
-  "recoverbullTorNotStarted": "Не розпочато",
   "testBackupCreatedAt": "Створено:",
   "psbtFlowSignTransactionOnDevice": "Натисніть кнопку, щоб зареєструвати операцію {device}.",
   "@psbtFlowSignTransactionOnDevice": {
@@ -2816,7 +2675,6 @@
     }
   },
   "payLightningFee": "Освітлення Fee",
-  "recoverbullGoogleDriveDeleteButton": "Видалення",
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Купити",
   "testBackupLastBackupTest": "Останнє оновлення: {timestamp}",
   "@testBackupLastBackupTest": {
@@ -2860,7 +2718,6 @@
   "bitboxScreenTroubleshootingStep3": "Перезапустіть пристрій BitBox02, відключивши його.",
   "torSettingsProxyPort": "Тор Проксі Порт",
   "fundExchangeSpeiTransfer": "Трансфер SPEI",
-  "recoverbullUnexpectedError": "Несподівана помилка",
   "fundExchangeMethodSpeiTransfer": "Трансфер SPEI",
   "electrumAddServer": "Додати сервер",
   "addressViewCopyAddress": "Статус на сервери",
@@ -2875,15 +2732,12 @@
   "exchangeAmountInputValidationZero": "Кількість повинна бути більшою, ніж нуль",
   "importWatchOnlyRequired": "Потрібні",
   "payWalletNotSynced": "Гаманець не синхронізується. Будь ласка, почекайте",
-  "recoverbullRecoveryLoadingMessage": "Шукаємо баланс і операції..",
   "importMnemonicLegacy": "Спадщина",
-  "recoverbullVaultKey": "Vault ключ",
   "keystoneStep12": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на Keystone. Сканування.",
   "ledgerErrorRejectedByUser": "Переказ було відхилено користувачем на пристрої Ledger.",
   "payFeeRate": "Тарифи",
   "autoswapWarningDescription": "Автообмін запобігає випадковому збереженню занадто великої суми в гаманці миттєвих платежів, що не є безпечним для довготривалого зберігання.",
   "autoswapRecipientWalletPlaceholderRequired": "Виберіть гаманець Bitcoin *",
-  "recoverbullGoogleDriveErrorGeneric": "Помилки. Будь ласка, спробуйте знову.",
   "coreScreensConfirmSend": "Підтвердження",
   "passportStep10": "Після цього паспорт покаже вам власний QR-код.",
   "electrumStopGapEmptyError": "Стоп Gap не може бути порожнім",
@@ -2895,7 +2749,6 @@
   "seedsignerStep10": "Після того, як SeedSigner покаже вам власний QR-код.",
   "psbtInstructions": "Інструкції",
   "swapProgressCompletedMessage": "Ви чекали! Передавання завершено.",
-  "recoverbullPIN": "ПІН",
   "swapInternalTransferTitle": "Внутрішній переказ",
   "withdrawConfirmPayee": "Оплатити",
   "importQrDeviceJadeStep8": "Натисніть кнопку \"відкрита камера\"",
@@ -2914,11 +2767,9 @@
   "importQrDeviceSpecterStep11": "Комплектація",
   "mempoolSettingsUseForFeeEstimationDescription": "При включенні цей сервер буде використовуватися для оцінки комісій. Коли вимкнено, на сервері Биткойн буде використовуватися замість.",
   "seedsignerStep7": "   - Спробуйте перемістити пристрій назад трохи",
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull резервний файл не діє",
   "swapErrorInsufficientFunds": "Не вдалося побудувати операцію. Як правило, через недостатні кошти для покриття зборів і суми.",
   "dcaConfirmAmount": "Сума",
   "seedsignerStep8": "Після того, як угода була імпортована у вашому SeedSigner, ви повинні вибрати насіння, яке ви хочете зареєструватися.",
-  "recoverbullPasswordRequired": "Необхідний пароль",
   "importWatchOnlySigningDevice": "Пристрої реєстрації",
   "receiveInvoiceExpired": "Войце розширюється",
   "ledgerButtonManagePermissions": "Керування додатками",
@@ -2953,7 +2804,6 @@
   "sendSending": "Відправити",
   "withdrawConfirmAccount": "Облік",
   "sendErrorConfirmationFailed": "Підтвердження",
-  "recoverbullWaiting": "Чекати",
   "backupWalletVaultProviderGoogleDrive": "Українська",
   "bitboxCubitDeviceNotFound": "Не знайдено пристрій BitBox. Будь ласка, підключіть пристрій і спробуйте знову.",
   "buyStandardWithdrawal": "Стандартний знімок",
@@ -2986,13 +2836,11 @@
     }
   },
   "swapValidationEnterAmount": "Введіть суму",
-  "recoverbullErrorVaultCreatedKeyNotStored": "Переміщений файл Vault створений, але ключ не зберігається в сервері",
   "exchangeSupportChatWalletIssuesInfo": "Цей чат є тільки для обміну пов'язаними з питань, пов'язаних з фондуванням / купівлі / продажу / виведення / оплати.\nДля гаманця пов'язані питання, приєднатися до групи телеграм, натиснувши тут.",
   "exchangeLoginButton": "Увійти",
   "ledgerProcessingVerify": "Показати адресу на Ledger ...",
   "coreScreensFeePriorityLabel": "Пріоритетність",
   "coreScreensLogsTitle": "Логін",
-  "recoverbullVaultKeyInput": "Vault ключ",
   "testBackupErrorWalletMismatch": "Резервне копіювання не відповідає існуючому гаманцю",
   "bip329LabelsHeading": "BIP329 Етикетки Імпорт / Експорт",
   "jadeStep2": "Якщо у вас є одна (необов'язково)",
@@ -3052,7 +2900,6 @@
   "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
   "payPrivatePayment": "Приватний платіж",
   "autoswapDefaultWalletLabel": "Bitcoin гаманець",
-  "recoverbullTestSuccessDescription": "Ви можете відновити доступ до втраченого біткойн-гаманця",
   "exchangeAuthLoginFailedTitle": "Логін",
   "autoswapRecipientWallet": "Отримувач Bitcoin Wallet",
   "pickPasswordOrPinButton": "Виберіть {pinOrPassword} замість >>",
@@ -3100,7 +2947,6 @@
   "rbfOriginalTransaction": "Оригінальна угода",
   "bip329LabelsExportButton": "Експорт етикеток",
   "jadeStep4": "Сканування QR-коду, показаного в булл-гаманці",
-  "recoverbullRecoveryErrorWalletExists": "Цей гаманець вже існує.",
   "sendSelectCoins": "Виберіть монети",
   "fundExchangeLabelRoutingNumber": "Номер маршрутизації",
   "paySyncingWallet": "Syncing гаманець ...",
@@ -3110,7 +2956,6 @@
   "sellAccountNumber": "Номер рахунку",
   "backupWalletLastKnownEncryptedVault": "Останній Знаний Зашифрований За замовчуванням: ",
   "dcaSetupInsufficientBalanceMessage": "Ви не маєте достатнього балансу для створення цього замовлення.",
-  "recoverbullGotIt": "Про нас",
   "sellRateValidFor": "Тарифи на {seconds}",
   "@sellRateValidFor": {
     "placeholders": {
@@ -3150,7 +2995,6 @@
   "ledgerErrorNoConnection": "Немає підключень Ledger",
   "testBackupSuccessButton": "Про нас",
   "importWalletLedger": "Клей",
-  "recoverbullCheckingConnection": "Перевірка підключення до RecoverBull",
   "exchangeLandingTitle": "БУЛ БІТКОІН",
   "doneButton": "Сонце",
   "withdrawSuccessTitle": "Зняття ініціації",
@@ -3220,7 +3064,6 @@
     }
   },
   "sendViewDetails": "Переглянути подробиці",
-  "recoverbullErrorUnexpected": "Несподівана помилка, див. журнали",
   "sendSubmarineSwap": "Submarine Заміна",
   "allSeedViewSecurityWarningTitle": "Попередження про безпеку",
   "sendSwapFeeEstimate": "Орієнтовна плата за косу: {amount}",
@@ -3231,7 +3074,6 @@
       }
     }
   },
-  "recoverbullSelectFetchDriveFilesError": "Заборонено фіксувати всі резервні копії приводу",
   "sendBuildingTransaction": "Будівельна угода...",
   "electrumConfirm": "Підтвердження",
   "bitboxActionPairDeviceSuccessSubtext": "Пристрій BitBox тепер попарюється і готовий до використання.",
@@ -3242,7 +3084,6 @@
   "fundExchangeLabelBankName": "Назва банку",
   "backupWalletEncryptedVaultDescription": "Анонімне резервне копіювання з використанням сильного шифрування за допомогою хмари.",
   "sellRateExpired": "Курс обміну. Відновити ...",
-  "recoverbullConfirm": "Підтвердження",
   "dcaConfirmNetworkBitcoin": "Bitcoin у USD",
   "seedsignerStep14": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "importMnemonicTransactions": "{count} операції",
@@ -3265,14 +3106,6 @@
   "ledgerErrorMissingDerivationPath": "Потрібен шлях деривації",
   "ledgerErrorMissingScriptType": "Потрібен тип скрипту",
   "ledgerProcessingVerifySubtext": "Будь ласка, підтвердіть адресу на пристрої Ledger.",
-  "recoverbullRecoveryTransactionsLabel": "{count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "paySwapFailed": "Не вдалося",
   "autoswapMaxFeeLabel": "Макс Трансфер Fee",
   "importMnemonicBalance": "Баланс: {amount}",
@@ -3305,7 +3138,6 @@
   "testBackupGoogleDrivePrivacyPart5": "bitcoin у USD.",
   "bitboxActionSignTransactionSuccessSubtext": "Ви успішно підписалися на Вашу операцію.",
   "backupWalletInstructionLosePhone": "Якщо ви втратите або перейдете свій телефон, або якщо ви встановите додаток Bull Bitcoin, ваші біткоїни будуть втрачені назавжди.",
-  "recoverbullConnected": "Зв'язатися",
   "dcaConfirmLightningAddress": "Адреса блискавки",
   "backupWalletErrorGoogleDriveSave": "Не вдалося зберегти Google диск",
   "importQrDeviceKeystoneStep2": "Розблокуйте його, ввівши PIN-код",
@@ -3345,26 +3177,15 @@
   "pinButtonConfirm": "Підтвердження",
   "coldcardStep2": "Якщо у вас є одна (необов'язково)",
   "electrumInvalidNumberError": "Введіть дійсний номер",
-  "recoverbullSelectGoogleDrive": "Українська",
-  "recoverbullEnterInput": "{inputType}",
-  "@recoverbullEnterInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDevicePassportStep12": "Настроювання завершено.",
   "electrumRetryCount": "Птиця графа",
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Інструкції",
   "jadeStep12": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
   "importMnemonicImporting": "Імпорт.",
-  "recoverbullGoogleDriveExportButton": "Експорт",
   "bip329LabelsDescription": "Імпорт або експорт етикеток гаманця за допомогою стандартного формату BIP329.",
   "backupWalletHowToDecideBackupEncryptedRecommendationText": "Ви не впевнені, що вам потрібно більше часу, щоб дізнатися про методи резервної копії.",
   "backupWalletImportanceWarning": "Без резервної копії ви в кінцевому підсумку втратите доступ до ваших грошей. Важливо зробити резервну копію.",
   "autoswapMaxFeeInfoText": "Якщо сума переказу перевищує встановлений відсоток, автотранспорт буде заблоковано",
-  "recoverbullGoogleDriveCancelButton": "Зареєструватися",
   "backupWalletSuccessDescription": "Тепер перевірте вашу резервну копію, щоб переконатися, що все було зроблено належним чином.",
   "rbfBroadcast": "Радіоканал",
   "dcaConfirmFrequencyMonthly": "Місяць",
@@ -3390,7 +3211,6 @@
   "electrumSaveFailedError": "Не вдалося зберегти розширені параметри",
   "bitboxScreenWalletTypeLabel": "Тип гаманця:",
   "importQrDeviceKruxStep6": "Що це!",
-  "recoverbullRecoveryErrorMissingDerivationPath": "Файл резервного копіювання відсутній шлях видалення.",
   "mempoolCustomServerDelete": "Видалення",
   "optionalPassphraseHint": "Додатковий Пасфрас",
   "importColdcardImporting": "Імпортування холодної картки гаманець ...",
@@ -3446,7 +3266,6 @@
   "swapTotalFees": "Всього коштів ",
   "keystoneStep11": "Натисніть \"Я зробив\" в Гаманець Біткойн.",
   "scanningCompletedMessage": "Сканування завершено",
-  "recoverbullSecureBackup": "Забезпечити резервну копію",
   "buyUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
   "bitboxActionSignTransactionButton": "Зареєструватися",
   "sendEnterAbsoluteFee": "Введіть абсолютний внесок у сати",
@@ -3460,7 +3279,6 @@
       }
     }
   },
-  "recoverbullErrorFetchKeyFailed": "Вимкнено до ключа за замовчуванням від сервера",
   "sendSwapInProgressInvoice": "Ведуться ковпа. Оплатити рахунок за кілька секунд.",
   "electrumRetryCountNegativeError": "Рівний граф не може бути негативним",
   "importQrDeviceJadeStep4": "Виберіть \"Оптіони\" з основного меню",
@@ -3470,12 +3288,10 @@
   "fundExchangeMethodCrIbanCrcSubtitle": "Трансфер кошти в Коста-Рикан Колон (CRC)",
   "autoswapRecipientWalletLabel": "Отримувач Bitcoin Wallet",
   "coreScreensConfirmTransfer": "Підтвердження трансферу",
-  "recoverbullRetry": "Птиця",
   "receiveCopyInvoice": "Статус на сервери",
   "walletAutoTransferBlockedTitle": "Авто Трансфер блокується",
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Інструкції",
   "paySendMax": "Макс",
-  "recoverbullGoogleDriveDeleteConfirmation": "Ви впевнені, що ви хочете видалити цю резервну копію? Ця дія не може бути неоновою.",
   "googleDriveSignInMessage": "Ви повинні зареєструватися на Google Диску",
   "passportStep9": "Натисніть кнопку, щоб зареєструвати операцію на паспорті.",
   "electrumDeleteConfirmation": "Ви впевнені, що ви хочете видалити цей сервер?\n\n{serverUrl}",
@@ -3505,7 +3321,6 @@
   "hwKeystone": "Головна",
   "kruxStep12": "Після того, як Krux покаже вам власний QR-код.",
   "ledgerScanningTitle": "Сканування пристроїв",
-  "recoverbullFetchVaultKey": "Фетиш Vault Головна",
   "bitboxActionUnlockDeviceSuccessSubtext": "Ваш пристрій BitBox тепер розблокований і готовий до використання.",
   "payShareInvoice": "Надіслати запит",
   "bitboxScreenEnterPassword": "Введіть пароль",
@@ -3554,7 +3369,6 @@
   "withdrawConfirmBankAccount": "Банківський рахунок",
   "kruxStep1": "Вхід до пристрою Krux",
   "dcaUseDefaultLightningAddress": "Використовуйте свою адресу за замовчуванням.",
-  "recoverbullErrorRejected": "Відхилено Key Server",
   "sellEstimatedArrival": "Орієнтовне прибуття: {time}",
   "@sellEstimatedArrival": {
     "placeholders": {
@@ -3616,7 +3430,6 @@
   "importWatchOnlyErrorImportFailed": "Не вдалося імпортувати цей гаманець лише для перегляду. Будь ласка, перевірте дані та спробуйте ще раз.",
   "broadcastSignedTxErrorInvalidTransaction": "Це не схоже на дійсну підписану транзакцію. Переконайтеся, що ви вставили повний PSBT або транзакцію.",
   "broadcastSignedTxErrorInvalidPushTx": "Не вдалося зчитати транзакцію з цієї мітки. Будь ласка, спробуйте відсканувати ще раз.",
-  "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",
   "chooseVaultLocationTitle": "Виберіть місце розташування",
@@ -3633,7 +3446,6 @@
   "dcaWalletTypeLiquid": "Рідина (LBTC)",
   "fundExchangeLabelInstitutionNumber": "Номер установи",
   "swapAmountLabel": "Сума",
-  "recoverbullSelectCustomLocation": "Місцезнаходження",
   "sellConfirmOrder": "Підтвердити замовлення",
   "buyVerificationComplete": "Верифікація завершено",
   "replaceByFeeFeeRateDisplay": "{feeRate} sat/vbyte",
@@ -3660,11 +3472,9 @@
   "coldcardStep15": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "comingSoonDefaultMessage": "Ця функція доступна найближчим часом.",
   "ledgerErrorMissingAddress": "Адреса для перевірки",
-  "recoverbullCreatingVault": "Створення шифрування Виноград",
   "importWalletColdcardQ": "Холодна картка Q",
   "backupSettingsStartBackup": "Початок резервного копіювання",
   "sendReceiveAmount": "Отримувати Amount",
-  "recoverbullTestRecovery": "Відновлення даних",
   "sellNetAmount": "Чистий розмір",
   "willNot": "не буде ",
   "pinManageDescription": "Управління безпекою PIN",
@@ -3675,13 +3485,11 @@
   "ledgerButtonTryAgain": "Зареєструватися",
   "bitboxScreenNestedSegwitBip49Subtitle": "П2ВПХ-нестед-в-П2Ш",
   "autoswapMaxBalanceLabel": "Max Миттєвий баланс гаманця",
-  "recoverbullRecoverBullServer": "Статус на сервери",
   "exchangeDcaViewSettings": "Перегляд налаштувань",
   "payRetryPayment": "Плата за лікування",
   "exchangeSupportChatTitle": "Підтримка чату",
   "customLocationRecommendation": "Місцезнаходження: ",
   "fundExchangeMethodCrIbanUsd": "Коста-Рика IBAN (USD)",
-  "recoverbullErrorSelectVault": "Ввімкнено до вибору за замовчуванням",
   "paySwapCompleted": "Обмін завершено",
   "receiveDescription": "Опис (за бажанням)",
   "bitboxScreenVerifyAddress": "Адреса електронної пошти",
@@ -3700,7 +3508,6 @@
   "withdrawOrderAlreadyConfirmedError": "Цей порядок виведення вже було підтверджено.",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
   "walletAutoTransferBlockButton": "Блоки",
-  "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "ledgerSignTitle": "Реєстрація",
   "importWatchOnlyCancel": "Зареєструватися",
@@ -4320,22 +4127,6 @@
   "mempoolCustomServerNoSsl": "Без SSL",
   "autoswapTargetBalanceLabel": "Цільовий баланс миттєвого гаманця",
   "autoswapMaximumBalanceLabel": "Максимальний баланс миттєвого гаманця",
-  "recoverbullServerConfirmTitle": "Сервер відновлення сховища",
-  "recoverbullServerUsingDefault": "Використовується сервер за замовчуванням",
-  "recoverbullServerUsingCustom": "Використовується власний сервер",
-  "recoverbullServerUrlLabel": "URL сервера:",
-  "recoverbullServerCustomWarning": "Ви використовуєте власний сервер Recoverbull. Переконайтеся, що ви довіряєте цьому серверу.",
-  "recoverbullServerTorNotice": "Ми підключимося до цього сервера через Tor",
-  "recoverbullLearnMore": "Дізнатися більше про Recoverbull",
-  "recoverbullSettingsTitle": "Налаштування Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL сервера ключів",
-  "recoverbullSettingsEdit": "Редагувати",
-  "recoverbullSettingsCancel": "Скасувати",
-  "recoverbullSettingsSave": "Зберегти",
-  "recoverbullSettingsUrlRequired": "URL обовʼязковий",
-  "recoverbullSettingsUrlInvalid": "URL недійсний",
-  "recoverbullSettingsUrlMustBeHttp": "URL має бути HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "URL має закінчуватися на .onion",
   "onboardingAdvancedOptionsTitle": "Розширені параметри",
   "onboardingAdvancedOptionsDescription": "Налаштуйте розширені параметри перед створенням або відновленням гаманця",
   "onboardingAdvancedOptionsCustomElectrum": "Власний сервер Electrum",
@@ -4783,7 +4574,6 @@
   "viewerPaymentUriTab": "URI платежу",
   "transactionSwapOpenWithin24h": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "Транзакції з комісією менше 1 sat/vB можуть підтверджуватися довше і можуть не поширитися на всі вузли.",
   "sendBelowMinFeeRateError": "Комісія має становити щонайменше 0.1 sat/vB.",
@@ -4850,12 +4640,8 @@
   "torSettingsStatusCensored": "Схоже, з'єднання фільтрується",
   "torSettingsDescCensored": "Tor не зміг дістатися до мережі. Зазвичай це означає, що з'єднання фільтрують.",
   "torSettingsBootstrapProgress": "Підключення… {percent}%",
-  "recoverbullPhaseNetworkInfo": "Отримання відомостей про мережу",
-  "recoverbullLongestStep": "Це найдовший крок. Перший запуск може тривати понад хвилину.",
   "recoverbullTorOffline": "Схоже, інтернет-з'єднання відсутнє.",
   "recoverbullTorClockSkewed": "Годинник пристрою збився, тому Tor не може перевірити сертифікати вузлів. Перевірте дату й час.",
-  "recoverbullTorCantStart": "Наразі Tor не зміг підключитися. Спробуйте ще раз.",
-  "recoverbullServerUnreachableTorOk": "Tor працює, але сервер резервних копій не відповів. Одразу після першого запуску це може зайняти трохи часу.",
   "torSettingsEmbeddedTitle": "Вбудований Tor",
   "torSettingsEmbeddedDescription": "Вбудований Tor використовують RecoverBull і сервери Bitcoin Electrum з адресою .onion. Решта трафіку застосунку лишається прямою.",
   "torSettingsTransportMode": "Спосіб підключення",

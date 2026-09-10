@@ -255,10 +255,6 @@
   "@payPendingPayments": {
     "description": "Filter for pending payments"
   },
-  "recoverbullFailed": "Неуспешно",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
-  },
   "electrumCloseTooltip": "Затвори",
   "@electrumCloseTooltip": {
     "description": "Close button tooltip"
@@ -347,15 +343,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "recoverbullGoogleDriveErrorDisplay": "Грешка: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "Персонализиран сървър",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -419,10 +406,6 @@
   "satsSuffix": " сатове",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
-  },
-  "recoverbullErrorPasswordNotSet": "Паролата не е зададена",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "fundExchangeSinpeTitle": "SINPE превод",
   "@fundExchangeSinpeTitle": {
@@ -521,15 +504,6 @@
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
-  "recoverbullReenterConfirm": "Моля, въведете повторно вашия {inputType}, за да потвърдите.",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "Копирано в клипборда",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -550,25 +524,13 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "recoverbullSelectVaultImportSuccess": "Вашият сейф беше успешно импортиран",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
   "mempoolServerNotUsed": "Не се използва (активен е персонализираният сървър)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
-  "recoverbullSelectErrorPrefix": "Грешка:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
-  },
   "backupWalletHowToDecideVaultMoreInfo": "Посетете recoverbull.com за повече информация.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
-  },
-  "recoverbullGoBackEdit": "<< Върнете се назад и редактирайте",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "receiveConfirming": "Потвърждаване... ({count}/{required})",
   "@receiveConfirming": {
@@ -640,15 +602,6 @@
   "transactionDetailLabelSwapFees": "Такси за размяна",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
-  },
-  "recoverbullRecoveryBalanceLabel": "Баланс: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "buyFundYourAccount": "Заредете акаунта си",
   "@buyFundYourAccount": {
@@ -774,10 +727,6 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "recoverbullTorNetwork": "Tor мрежа",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "transactionDetailLabelTransferStatus": "Статус на прехвърлянето",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -858,10 +807,6 @@
   "exchangeStatisticsTitle": "Статистика",
   "@exchangeStatisticsTitle": {
     "description": "Title for the statistics screen"
-  },
-  "recoverbullErrorConnectionFailed": "Не успя да се свърже към целевия сървър за ключове. Моля, опитайте отново по-късно!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "Цифрово копие",
   "@testBackupDigitalCopy": {
@@ -1020,10 +965,6 @@
   "@importWatchOnlyYpub": {
     "description": "Label for ypub import method"
   },
-  "recoverbullSwitchToPassword": "Изберете парола вместо това",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "autoswapWarningTitle": "Автообменът е активиран с следните настройки:",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
@@ -1043,10 +984,6 @@
   "transactionSwapDescLnSendDefault": "Вашият обмен е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "recoverbullErrorMissingBytes": "Липсват байтове от отговора на Tor. Опитайте отново, но ако проблемът продължи, това е известен проблем за някои устройства с Tor.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "payEstimatedFee": "Очаквана такса",
   "@payEstimatedFee": {
@@ -1515,15 +1452,6 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "recoverbullEnterToDecrypt": "Моля, въведете вашето {inputType}, за да дешифрирате вашето хранилище.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "Прехвърляне",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
@@ -1531,10 +1459,6 @@
   "testBackupSuccessTitle": "Тестът завърши успешно!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "Вземете си нужното време",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "sendConfirmCustomFee": "Потвърди персонализирана такса",
   "@sendConfirmCustomFee": {
@@ -1647,10 +1571,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Неуспешно извличане на хранилища от Google Drive.",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "sendRecipientAddress": "Адрес на получателя",
   "@sendRecipientAddress": {
     "description": "Label for the recipient address field"
@@ -1749,10 +1669,6 @@
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
-  "recoverbullErrorVaultCreationFailed": "Създаването на сейфа се провали, може да е файлът или ключът",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "bitboxActionSignTransactionProcessing": "Подписване на транзакция",
   "@bitboxActionSignTransactionProcessing": {
     "description": "Processing text for sign transaction"
@@ -1765,10 +1681,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "Няма намерени резервни копия.",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
   },
   "sellSelectNetwork": "Изберете мрежа",
   "@sellSelectNetwork": {
@@ -1822,10 +1734,6 @@
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "Вече съществува друг портфейл по подразбиране. Можете да имате само един портфейл по подразбиране.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "Няма намерени получатели за плащане.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1833,10 +1741,6 @@
   "payNoInvoiceData": "Няма налични данни за фактура",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "recoverbullErrorInvalidCredentials": "Грешна парола за този архивен файл",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "paySinpeMonto": "Сума",
   "@paySinpeMonto": {
@@ -1910,10 +1814,6 @@
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
   },
-  "recoverbullPleaseWait": "Моля, изчакайте, докато установим сигурна връзка…",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "lastKnownEncryptedVault": "Последно известно шифрован сейф: {date}",
   "@lastKnownEncryptedVault": {
     "description": "Label showing last known encrypted vault date",
@@ -1948,10 +1848,6 @@
   "transactionLabelAmountReceived": "Получена сума",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault възстановяване",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "transactionStatusTransferInProgress": "Прехвърлянето е в процес",
   "@transactionStatusTransferInProgress": {
@@ -2119,10 +2015,6 @@
       }
     }
   },
-  "recoverbullVaultCreatedSuccess": "Хранилището е успешно създадено",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "Сума",
   "@payAmount": {
     "description": "Label for amount"
@@ -2257,10 +2149,6 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "Извличането на локалния ключ за резервно копие се провали.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "Недостатъчен баланс",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2268,15 +2156,6 @@
   "transactionLabelFromWallet": "От портфейла",
   "@transactionLabelFromWallet": {
     "description": "Label for source wallet"
-  },
-  "recoverbullErrorRateLimited": "Ограничена скорост. Моля, опитайте отново след {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
   },
   "importWatchOnlyExtendedPublicKey": "Разширен публичен ключ",
   "@importWatchOnlyExtendedPublicKey": {
@@ -2301,15 +2180,6 @@
   "networkFeeLabel": "Такса за мрежата",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
-  },
-  "recoverbullMemorizeWarning": "Трябва да запомните този {inputType}, за да възстановите достъпа до портфейла си. Той трябва да съдържа поне 6 цифри. Ако загубите този {inputType}, не можете да възстановите резервното копие.",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadDocumentsTitle": "Качване на документи",
   "@exchangeFileUploadDocumentsTitle": {
@@ -2342,10 +2212,6 @@
   "payActualFee": "Реална такса",
   "@payActualFee": {
     "description": "Label for actual fee paid after transaction"
-  },
-  "recoverbullSelectFileNotSelectedError": "Файлът не е избран",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "fundExchangeMethodSpeiTransferSubtitle": "Прехвърлете средства чрез вашата CLABE",
   "@fundExchangeMethodSpeiTransferSubtitle": {
@@ -2395,15 +2261,6 @@
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "recoverbullEnterToTest": "Моля, въведете вашето {inputType}, за да тествате вашето хранилище.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescription1": "Изпратете банков превод от вашата банкова сметка, използвайки посочените по-долу данни ",
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
@@ -2419,10 +2276,6 @@
   "sellOrderCompleted": "Поръчката е завършена!",
   "@sellOrderCompleted": {
     "description": "Success message for completed order"
-  },
-  "recoverbullSelectVaultSelected": "Избран сейф",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "dcaWalletTypeBitcoin": "Биткойн (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2455,10 +2308,6 @@
   "transactionOrderLabelPayoutAmount": "Сума за изплащане",
   "@transactionOrderLabelPayoutAmount": {
     "description": "Label for order payout amount"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "Въведете ключ за резервно копие ръчно >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exportingVaultButton": "Експортиране...",
   "@exportingVaultButton": {
@@ -2531,10 +2380,6 @@
   "swapYouReceive": "Вие получавате",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "recoverbullSelectCustomLocationProvider": "Персонализирано местоположение.",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "paySelectNetwork": "Изберете мрежа",
   "@paySelectNetwork": {
@@ -2615,10 +2460,6 @@
   "kruxStep16": "Сега е готово за излъчване! Веднага щом кликнете върху Излъчване, транзакцията ще бъде публикувана в мрежата на Bitcoin и средствата ще бъдат изпратени.",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "Избраният файл за резервно копие е повреден.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "buyVerifyIdentity": "Потвърдете самоличността",
   "@buyVerifyIdentity": {
@@ -2713,10 +2554,6 @@
   "@jadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "recoverbullSelectDriveBackups": "Резервни копия в Google Диск",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "settingsSecurityPinTitle": "PIN за сигурност",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
@@ -2749,14 +2586,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "Потвърдете кода за сдвояване на BitBox устройството...",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
-  },
-  "recoverbullKeyServer": "Сървър за ключове ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "Тази парола е твърде обичайна. Моля, изберете друга.",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "backupInstruction3": "Всеки, който има достъп до вашето резервно копие от 12 думи, може да открадне вашите биткойни. Скрийте го добре.",
   "@backupInstruction3": {
@@ -2854,10 +2683,6 @@
   "@walletNetworkBitcoinTestnet": {
     "description": "Network label for Bitcoin testnet"
   },
-  "recoverbullSeeMoreVaults": "Вижте още сейфове",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "sellPayFromWallet": "Плати от портфейла",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -2937,10 +2762,6 @@
   "settingsDevModeUnderstandButton": "Разбирам",
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
-  },
-  "recoverbullSelectQuickAndEasy": "Бързо и лесно",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
   },
   "exchangeFileUploadTitle": "Сигурно качване на файл",
   "@exchangeFileUploadTitle": {
@@ -3026,10 +2847,6 @@
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
   },
-  "recoverbullTestCompletedTitle": "Тестът завърши успешно!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
-  },
   "transactionFilterReceive": "Получаване",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
@@ -3086,10 +2903,6 @@
   "fundExchangeWarningConfirmation": "Потвърждавам, че не ме молят да купувам Bitcoin от друг човек.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "Неуспешно избиране на файл от персонализирано местоположение",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "Изтрий персонализирания сървър?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3198,10 +3011,6 @@
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
   },
-  "recoverbullPasswordTooShort": "Паролата трябва да съдържа поне 6 символа.",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
-  },
   "payNetwork": "Мрежа",
   "@payNetwork": {
     "description": "Label for network"
@@ -3298,10 +3107,6 @@
   "payTransitNumberHint": "Въведете транзитен номер",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "Изберете PIN вместо това",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "QR код",
   "@payQrCode": {
@@ -3517,10 +3322,6 @@
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"
   },
-  "recoverbullSelectNoBackupsFound": "Няма намерени резервни копия.",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "importMnemonicNestedSegwit": "Вложен SegWit",
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
@@ -3576,15 +3377,6 @@
   "automaticallyFetchKeyButton": "Автоматично изтегляне на ключ >>",
   "@automaticallyFetchKeyButton": {
     "description": "Button label to automatically fetch key"
-  },
-  "recoverbullReenterRequired": "Въведете отново вашия {inputType}.",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payFeePriority": "Приоритет на таксата",
   "@payFeePriority": {
@@ -3767,10 +3559,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "Вашият сейф беше успешно импортиран",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "Изключително важно е да не съхранявате резервния ключ на едно и също място, на което съхранявате резервния файл. Винаги ги съхранявайте на отделни устройства или на различни облачни доставчици.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -3826,15 +3614,6 @@
   "keyServerLabel": "Сървър за ключове ",
   "@keyServerLabel": {
     "description": "Label for key server status"
-  },
-  "recoverbullEnterToView": "Моля, въведете вашето {inputType}, за да видите ключа на вашето хранилище.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payReviewPayment": "Преглед на плащането",
   "@payReviewPayment": {
@@ -3939,10 +3718,6 @@
   "failedToDeriveBackupKey": "==WEBLATE_PART==\nНе успях да извлека резервния ключ.",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "Неуспешно експортиране на хранилище от Google Drive.",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "transactionLabelCreatedAt": "Създадено на",
   "@transactionLabelCreatedAt": {
@@ -4166,17 +3941,9 @@
   "@importMnemonicSelectScriptType": {
     "description": "AppBar title for script type selection"
   },
-  "recoverbullConnectingTor": "Свързване към сървъра за ключове през Tor. Това може да отнеме до минута.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
   "fundExchangeCanadaPostStep2": "2. Помолете касиера да сканира QR кода „Loadhub“",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "recoverbullEnterVaultKeyInstead": "Въведете ключ за хранилището вместо това",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
   },
   "exchangeAccountInfoEmailLabel": "Имейл",
   "@exchangeAccountInfoEmailLabel": {
@@ -4290,10 +4057,6 @@
   "@payCompletedDescription": {
     "description": "Description for payment completed"
   },
-  "recoverbullConnecting": "Свързване",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
-  },
   "retry": "Повтори",
   "@retry": {
     "description": "Generic retry button label"
@@ -4394,10 +4157,6 @@
   "@payFeeBumpSuccessful": {
     "description": "Success message after fee bump"
   },
-  "recoverbullSelectAppleIcloud": "iCloud на Apple",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "keystoneStep13": "Транзакцията ще бъде импортирана в портфейла Bull Bitcoin.",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -4472,10 +4231,6 @@
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
   },
-  "recoverbullSelectVaultProvider": "Изберете доставчик на Vault",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "Оригинална транзакция.",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -4487,10 +4242,6 @@
   "testBackupTitle": "Проверете резервното копие на портфейла си",
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
-  },
-  "recoverbullErrorDecryptFailed": "Не успях да дешифрирам сейфа",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "keystoneStep9": "Натиснете бутоните, за да подпишете транзакцията във вашия Keystone.",
   "@keystoneStep9": {
@@ -4537,10 +4288,6 @@
   "walletTypeWatchOnly": "Само за наблюдение",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "recoverbullDecryptVault": "Дешифрирайте сейфа",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "connectHardwareWalletJade": "Blockstream Jade",
   "@connectHardwareWalletJade": {
@@ -4610,14 +4357,6 @@
   "@receiveTotalFee": {
     "description": "Label for the total fee in a receive transaction"
   },
-  "recoverbullFetchingVaultKey": "Изтегляне на ключа за сейфа",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "Изтрий Vault",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
-  },
   "advancedOptionsTitle": "Разширени настройки",
   "@advancedOptionsTitle": {
     "description": "Bottom sheet header/title for advanced sending options"
@@ -4625,10 +4364,6 @@
   "payPriceWillRefreshIn": "Цената ще се обнови след ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Неуспешно изтриване на хранилище от Google Drive.",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "payPaymentDetails": "Детайли за плащането",
   "@payPaymentDetails": {
@@ -4658,10 +4393,6 @@
   "nextButton": "Напред",
   "@nextButton": {
     "description": "Button label to go to next step"
-  },
-  "recoverbullPassword": "Парола",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "fundExchangeMethodSinpeTransfer": "SINPE превод",
   "@fundExchangeMethodSinpeTransfer": {
@@ -4832,15 +4563,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "Потвърдете {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowSignTransaction": "Подпишете транзакцията",
   "@psbtFlowSignTransaction": {
     "description": "Title for psbt flow signing screen"
@@ -4934,10 +4656,6 @@
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "recoverbullGoogleDriveScreenTitle": "Сейфове в Google Диск",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "receiveQRCode": "QR код",
   "@receiveQRCode": {
     "description": "Section header for QR code display"
@@ -5003,10 +4721,6 @@
   "sendTransactionSignedLedger": "Транзакцията е успешно подписана с Ledger",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
-  },
-  "recoverbullRecoveryContinueButton": "Продължи",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
   },
   "payTimeoutError": "Изтече времето за плащане. Моля, проверете статуса.",
   "@payTimeoutError": {
@@ -5074,10 +4788,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "Свързването се провали",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
-  },
   "transactionDetailLabelPayinMethod": "Метод на плащане",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
@@ -5105,10 +4815,6 @@
   "sellCopBalance": "Баланс COP",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "Избран сейф",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "Такса за прехвърляне",
   "@receiveTransferFee": {
@@ -5327,10 +5033,6 @@
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "recoverbullEncryptedVaultCreated": "Криптираното хранилище е създадено!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
-  },
   "psbtFlowScanQrShown": "Сканирай QR кода, показан в портфейла Bull Bitcoin.",
   "@psbtFlowScanQrShown": {
     "description": "Instruction to scan QR code displayed in app"
@@ -5518,10 +5220,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "recoverbullSelectDecryptVault": "Дешифрирайте сейфа",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "buyUpgradeKYC": "Увеличете нивото на KYC",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
@@ -5594,10 +5292,6 @@
   "exchangeStatisticsNoData": "Няма налична статистика",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
-  },
-  "recoverbullPasswordMismatch": "Паролите не съвпадат",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
   },
   "fundExchangeCrIbanUsdTransferCodeWarning": "Трябва да добавите кода за прехвърляне като \"съобщение\" или \"причина\" или \"описание\" при извършване на плащането. Ако забравите да включите този код, плащането ви може да бъде отхвърлено.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
@@ -5690,10 +5384,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "Сега нека тестваме резервното копие, за да се уверим, че всичко е направено правилно.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "Направете депозит чрез SPEI трансфер (мгновен).",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -5730,10 +5420,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "recoverbullContinue": "Продължи",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
-  },
   "receiveAddressCopied": "Адресът е копиран в клипборда.",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -5767,10 +5453,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "recoverbullErrorVaultNotSet": "Сейфът не е зададен",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "transactionFeesDeductedFrom": "Тези такси ще бъдат удържани от изпратената сума.",
   "@transactionFeesDeductedFrom": {
     "description": "Fee deduction explanation for receiving swaps"
@@ -5782,10 +5464,6 @@
   "walletDetailsWalletFingerprintLabel": "Отпечатък на портфейла",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "recoverbullTorNotStarted": "Tor не е стартиран",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "transactionOrderLabelOrderStatus": "Статус на поръчката",
   "@transactionOrderLabelOrderStatus": {
@@ -5860,10 +5538,6 @@
   "payLabelOptional": "Етикет (по избор)",
   "@payLabelOptional": {
     "description": "Label for optional label field"
-  },
-  "recoverbullGoogleDriveDeleteButton": "Изтрий",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "fundExchangeMethodEmailETransferSubtitle": "Най-лесният и най-бърз метод (мгновено)",
   "@fundExchangeMethodEmailETransferSubtitle": {
@@ -6027,10 +5701,6 @@
   "@payBitcoinAmount": {
     "description": "Label for Bitcoin amount"
   },
-  "recoverbullUnexpectedError": "Неочаквана грешка",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "transactionFilterSell": "Продай",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
@@ -6115,10 +5785,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "Търся баланс и транзакции…",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "transactionSwapInfoChainDelay": "Трансфери по веригата може да отнемат известно време за завършване поради времето за потвърждение в блокчейна.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
@@ -6138,10 +5804,6 @@
   "sellTitle": "Продайте биткойн",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "Ключ за Vault",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "transactionListToday": "Днес",
   "@transactionListToday": {
@@ -6170,10 +5832,6 @@
   "autoswapRecipientWalletPlaceholderRequired": "Изберете Bitcoin портфейл *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "Възникна грешка. Моля, опитайте отново.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "sellUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
   "@sellUnauthenticatedError": {
@@ -6218,10 +5876,6 @@
   "sellCalculating": "Изчисляване...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
-  },
-  "recoverbullPIN": "ПИН",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "swapInternalTransferTitle": "Вътрешен превод.",
   "@swapInternalTransferTitle": {
@@ -6282,10 +5936,6 @@
   "@sendAmount": {
     "description": "Label for the transaction amount"
   },
-  "recoverbullSelectBackupFileNotValidError": "Резервното копие на Recoverbull не е валидно",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "Не може да се създаде транзакция. Вероятно поради недостатъчни средства за покриване на таксите и сумата",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -6293,10 +5943,6 @@
   "seedsignerStep8": "След като транзакцията бъде импортирана във вашия SeedSigner, трябва да изберете seed фразата, с която искате да подпишете.",
   "@seedsignerStep8": {
     "description": "SeedSigner instruction for seed selection"
-  },
-  "recoverbullPasswordRequired": "Паролата е задължителна",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
   },
   "receiveNoteLabel": "Бележка",
   "@receiveNoteLabel": {
@@ -6420,10 +6066,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "Изчакване",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "Непроверено",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -6512,14 +6154,6 @@
   "swapValidationEnterAmount": "Моля, въведете сума",
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
-  },
-  "recoverbullErrorVaultCreatedKeyNotStored": "Грешка: файлът на сейфа е създаден, но ключът не е съхранен в сървъра",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
-  },
-  "recoverbullVaultKeyInput": "Ключ за Vault",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "testBackupErrorWalletMismatch": "Резервното копие не съвпада със съществуващия портфейл.",
   "@testBackupErrorWalletMismatch": {
@@ -6680,10 +6314,6 @@
   "@payPrivatePayment": {
     "description": "Label for privacy-enhanced payment option"
   },
-  "recoverbullTestSuccessDescription": "Можете да възстановите достъп до изгубен биткойн портфейл",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
-  },
   "transactionDetailLabelOrderType": "Тип на поръчката",
   "@transactionDetailLabelOrderType": {
     "description": "Label for order type"
@@ -6838,10 +6468,6 @@
   "@jadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "recoverbullRecoveryErrorWalletExists": "Този портфейл вече съществува.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
-  },
   "payBillerNameValue": "Избрано име на издателя на фактурата",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -6885,10 +6511,6 @@
   "backupWalletLastKnownEncryptedVault": "Последният известен криптиран сейф: \n==WEBLATE_PART== ",
   "@backupWalletLastKnownEncryptedVault": {
     "description": "Label prefix for displaying timestamp of last encrypted vault backup"
-  },
-  "recoverbullGotIt": "Разбрах",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
   },
   "sendAdvancedOptions": "Разширени настройки",
   "@sendAdvancedOptions": {
@@ -6998,10 +6620,6 @@
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
-  },
-  "recoverbullCheckingConnection": "Проверка на връзката към RecoverBull",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "doneButton": "Готово",
   "@doneButton": {
@@ -7220,10 +6838,6 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "recoverbullErrorUnexpected": "Неочаквана грешка, вижте логовете",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "sendSubmarineSwap": "Подводна размяна",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
@@ -7256,10 +6870,6 @@
   "fundExchangeOnlineBillPaymentLabelBillerName": "Търсете това име в списъка на издателите на плащания за сметки във вашата банка",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
     "description": "Label for biller name in online bill payment"
-  },
-  "recoverbullSelectFetchDriveFilesError": "Не успях да заредя всички резервни копия от Google Диск",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "Ограничена верификация",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -7313,10 +6923,6 @@
   "payExternalWallet": "Външен портфейл",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "recoverbullConfirm": "Потвърди",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "fundExchangeInfoBankCountryUk": "Страната на банката ни е Обединеното кралство.",
   "@fundExchangeInfoBankCountryUk": {
@@ -7386,15 +6992,6 @@
   "transactionOrderLabelOriginCedula": "Произходна лична карта",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "recoverbullRecoveryTransactionsLabel": "Транзакции: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "buyViewDetails": "Виж подробности",
   "@buyViewDetails": {
@@ -7489,10 +7086,6 @@
   "backupWalletInstructionLosePhone": "Без резервно копие, ако изгубите или счупите телефона си, или ако деинсталирате приложението Bull Bitcoin, вашите биткойни ще бъдат загубени завинаги.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "recoverbullConnected": "Свързан",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
   },
   "coreSwapsLnReceiveCompleted": "Обмяната е завършена.",
   "@coreSwapsLnReceiveCompleted": {
@@ -7611,19 +7204,6 @@
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
   },
-  "recoverbullSelectGoogleDrive": "Google Диск",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "Въведете вашето {inputType}",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapInfoDismissButton": "Разбрах, повече няма да се показва.",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -7671,10 +7251,6 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "recoverbullGoogleDriveExportButton": "Експортиране",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "bip329LabelsDescription": "Импорт/Експорт на етикети BIP329",
   "@bip329LabelsDescription": {
     "description": "Description of BIP329 labels functionality"
@@ -7690,10 +7266,6 @@
   "autoswapMaxFeeInfoText": "Ако общата такса за прехвърляне надвишава зададения процент, автоматичното прехвърляне ще бъде блокирано",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "recoverbullGoogleDriveCancelButton": "Отказ",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "Сега нека тестваме резервното копие, за да се уверим, че всичко е направено правилно.",
   "@backupWalletSuccessDescription": {
@@ -7787,10 +7359,6 @@
   "bitboxScreenWalletTypeLabel": "Тип на портфейла:",
   "@bitboxScreenWalletTypeLabel": {
     "description": "Label for wallet type selector"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "Липсва деривационен път за резервното копие.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "Не сте удостоверени. Моля, влезте, за да продължите.",
   "@payUnauthenticatedError": {
@@ -7902,10 +7470,6 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "recoverbullSecureBackup": "Защитете вашето резервно копие",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "payDone": "Готово",
   "@payDone": {
     "description": "Button to close bottom sheet"
@@ -7946,10 +7510,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "Не успях да получа ключа за сейфа от сървъра",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "sendSwapInProgressInvoice": "Обменът е в ход. Инвойсът ще бъде платен след няколко секунди.",
   "@sendSwapInProgressInvoice": {
@@ -7999,10 +7559,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "recoverbullRetry": "Повтори",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "receiveCopyInvoice": "Копирайте фактурата",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -8014,10 +7570,6 @@
   "paySendMax": "Макс.",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "Сигурни ли сте, че искате да изтриете това резервно копие на Vault? Това действие не може да бъде отменено.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
   },
   "googleDriveSignInMessage": "Ще трябва да влезете в Google Drive",
   "@googleDriveSignInMessage": {
@@ -8087,10 +7639,6 @@
   "payInstitutionCode": "Код на институцията",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "recoverbullFetchVaultKey": "Изтеглете ключа за сейфа",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "bitboxActionUnlockDeviceSuccessSubtext": "Вашето BitBox устройство вече е отключено и готово за използване",
   "@bitboxActionUnlockDeviceSuccessSubtext": {
@@ -8413,10 +7961,6 @@
   "@walletDetailsNetworkLabel": {
     "description": "Label for the network field in wallet details"
   },
-  "recoverbullSelectRecoverWallet": "Възстанови портфейла.",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "receivePayjoinActivated": "Payjoin активиран",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -8465,10 +8009,6 @@
   "swapAmountLabel": "Сума",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
-  },
-  "recoverbullSelectCustomLocation": "Персонализирано местоположение",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
   },
   "sellConfirmOrder": "Потвърдете поръчката за продажба",
   "@sellConfirmOrder": {
@@ -8543,10 +8083,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "Създаване на криптирано хранилище",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -8558,10 +8094,6 @@
   "sendReceiveAmount": "Сума за получаване",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "recoverbullTestRecovery": "Тест за възстановяване",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
   },
   "sellNetAmount": "Нетна сума",
   "@sellNetAmount": {
@@ -8623,10 +8155,6 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "recoverbullRecoverBullServer": "RecoverBull сървър",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "satsBitcoinUnitSettingsLabel": "Показване на единицата в сатоши",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -8654,10 +8182,6 @@
   "fundExchangeMethodCrIbanUsd": "IBAN на Коста Рика (USD)",
   "@fundExchangeMethodCrIbanUsd": {
     "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "recoverbullErrorSelectVault": "Не успях да избера сейфа",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
   },
   "exchangeStatisticsTotalAmount": "Обща сума",
   "@exchangeStatisticsTotalAmount": {
@@ -8695,10 +8219,6 @@
   "payViewDetails": "Виж подробности",
   "@payViewDetails": {
     "description": "Button to view order details"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "Неуспешно избиране на хранилище от Google Drive.",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
@@ -9037,22 +8557,6 @@
   "mempoolCustomServerNoSsl": "Без SSL",
   "autoswapTargetBalanceLabel": "Целеви баланс на незабавния портфейл",
   "autoswapMaximumBalanceLabel": "Максимален баланс на незабавния портфейл",
-  "recoverbullServerConfirmTitle": "Сървър за възстановяване на трезора",
-  "recoverbullServerUsingDefault": "Използва се сървърът по подразбиране",
-  "recoverbullServerUsingCustom": "Използва се персонализиран сървър",
-  "recoverbullServerUrlLabel": "URL на сървъра:",
-  "recoverbullServerCustomWarning": "Използвате персонализиран сървър Recoverbull. Уверете се, че се доверявате на този сървър.",
-  "recoverbullServerTorNotice": "Ще се свържем с този сървър чрез Tor",
-  "recoverbullLearnMore": "Научете повече за Recoverbull",
-  "recoverbullSettingsTitle": "Настройки на Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL на сървъра за ключове",
-  "recoverbullSettingsEdit": "Редактирай",
-  "recoverbullSettingsCancel": "Отказ",
-  "recoverbullSettingsSave": "Запази",
-  "recoverbullSettingsUrlRequired": "URL е задължителен",
-  "recoverbullSettingsUrlInvalid": "URL не е валиден",
-  "recoverbullSettingsUrlMustBeHttp": "URL трябва да е HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "URL трябва да завършва на .onion",
   "onboardingAdvancedOptionsTitle": "Разширени опции",
   "onboardingAdvancedOptionsDescription": "Конфигурирайте разширените настройки преди да създадете или възстановите портфейла си",
   "onboardingAdvancedOptionsCustomElectrum": "Персонализиран сървър Electrum",
@@ -9422,7 +8926,6 @@
   "fundExchangeJurisdictionColombia": "🇨🇴 Колумбия",
   "customLocationTitle": "Персонализирано местоположение",
   "recoverWalletScreenTitle": "Възстанови портфейл",
-  "recoverbullVaultRecoveryTitle": "Възстановяване на Recoverbull трезор",
   "chooseAccessPinTitle": "Избери {pinOrPassword} за достъп",
   "memorizePasswordWarning": "Трябва да запомните тази {pinOrPassword}, за да възстановите достъпа до портфейла си. Трябва да бъде поне 6 цифри. Ако загубите тази {pinOrPassword}, не можете да възстановите резервното си копие.",
   "passwordTooCommonError": "Тази {pinOrPassword} е твърде често срещана. Моля, изберете различна.",
@@ -10070,9 +9573,6 @@
   "noteVisibleToSenderNotice": "Тази бележка ще бъде видима за получателя на вашия QR код или фактура.",
   "viewerAddressTab": "Адрес",
   "viewerPaymentUriTab": "URI за плащане",
-  "recoverbullErrorRejected": "Отхвърлено от ключовия сървър",
-  "recoverbullErrorServiceUnavailable": "Услугата не е достъпна. Моля, проверете връзката си.",
-  "recoverbullErrorInvalidVaultFile": "Невалиден файл на трезора.",
   "systemLabelSwaps": "Обмени",
   "systemLabelAutoSwap": "Автообмен",
   "systemLabelPayjoin": "Payjoin",
@@ -10099,7 +9599,6 @@
   "backupWarningBackupLater": "НЕ, РАЗБИРАМ РИСКА",
   "transactionSwapOpenWithin24h": "Отворете приложението в рамките на 24 часа, за да завършите обмена си.",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Възникна неочаквана грешка",
   "mempoolErrorUpdateSettingsFailed": "Неуспешно актуализиране на настройките: {error}",
@@ -10172,12 +9671,8 @@
   "torSettingsStatusCensored": "Връзката изглежда филтрирана",
   "torSettingsDescCensored": "Tor не успя да достигне мрежата. Това обикновено означава, че връзката се филтрира.",
   "torSettingsBootstrapProgress": "Свързване… {percent}%",
-  "recoverbullPhaseNetworkInfo": "Извличане на информация за мрежата",
-  "recoverbullLongestStep": "Това е най-дългата стъпка. Първото стартиране може да отнеме над минута.",
   "recoverbullTorOffline": "Изглежда няма интернет връзка.",
   "recoverbullTorClockSkewed": "Часовникът на устройството е неточен, затова Tor не може да провери сертификатите на препредавачите. Проверете датата и часа.",
-  "recoverbullTorCantStart": "В момента Tor не успя да се свърже. Опитайте отново.",
-  "recoverbullServerUnreachableTorOk": "Tor работи, но сървърът за резервни копия не отговори. Веднага след първо стартиране това може да отнеме момент.",
   "torSettingsEmbeddedTitle": "Вграден Tor",
   "torSettingsEmbeddedDescription": "Вграденият Tor се използва от RecoverBull и от сървърите Bitcoin Electrum с адрес .onion. Останалият трафик на приложението остава пряк.",
   "torSettingsTransportMode": "Начин на свързване",

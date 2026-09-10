@@ -128,15 +128,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "recoverbullGoogleDriveErrorDisplay": "ข้อผิดพลาด: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "เซิร์ฟเวอร์ที่กําหนดเอง",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -247,10 +238,6 @@
   "satsSuffix": " นอน",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
-  },
-  "recoverbullErrorPasswordNotSet": "รหัสผ่าน",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "sellSendPaymentExchangeRate": "อัตราแลกเปลี่ยน",
   "@sellSendPaymentExchangeRate": {
@@ -389,15 +376,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "recoverbullReenterConfirm": "กรุณาใส่ {inputType} ของคุณอีกครั้งเพื่อยืนยัน",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "ติดตามคลิปบอร์ด",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -422,17 +400,9 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "recoverbullSelectVaultImportSuccess": "การเปิดใช้งานของคุณประสบความสําเร็จ",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
   "mempoolServerNotUsed": "ไม่ใช้ (เซิร์ฟเวอร์ที่เหมาะสม)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
-  },
-  "recoverbullSelectErrorPrefix": "ข้อผิดพลาด:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
   },
   "exchangeLandingRecommendedExchange": "อัตราแลกเปลี่ยน Bitcoin",
   "@exchangeLandingRecommendedExchange": {
@@ -441,10 +411,6 @@
   "backupWalletHowToDecideVaultMoreInfo": "เยี่ยมชม กู้คืนข้อมูลเพิ่มเติม.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
-  },
-  "recoverbullGoBackEdit": "<<",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "receiveConfirming": "กำลังยืนยัน... ({count}/{required})",
   "@receiveConfirming": {
@@ -536,15 +502,6 @@
   "broadcastSignedTxFee": "ค่าธรรมเนียม",
   "@broadcastSignedTxFee": {
     "description": "Label for transaction fee"
-  },
-  "recoverbullRecoveryBalanceLabel": "สมดุล: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "buyFundYourAccount": "บัญชีบัญชีของคุณ",
   "@buyFundYourAccount": {
@@ -711,10 +668,6 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "recoverbullTorNetwork": "เครือข่าย",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "transactionDetailLabelTransferStatus": "การโอนเงิน",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -828,10 +781,6 @@
   "exchangeStatisticsTitle": "สถิติ",
   "@exchangeStatisticsTitle": {
     "description": "Title for the statistics screen"
-  },
-  "recoverbullErrorConnectionFailed": "เชื่อมต่อกับเซิร์ฟเวอร์ที่สําคัญ โปรดลองอีกครั้ง!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "สําเนาดิจิตอล",
   "@testBackupDigitalCopy": {
@@ -1060,10 +1009,6 @@
   "@ledgerVerifyTitle": {
     "description": "Title for verifying an address on Ledger device"
   },
-  "recoverbullSwitchToPassword": "เลือกรหัสผ่านแทน",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "exchangeDcaNetworkBitcoin": "เครือข่าย Bitcoin",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -1087,10 +1032,6 @@
   "transactionSwapDescLnSendDefault": "บันทึกของคุณอยู่ในความคืบหน้า กระบวนการนี้ใช้โดยอัตโนมัติและอาจใช้เวลา.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "recoverbullErrorMissingBytes": "วันหมดอายุจาก Tor ผู้สมัคร แต่หากมีปัญหาที่ได้รับการยอมรับว่าเป็นปัญหาบางอย่างสําหรับรถ.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "coreScreensReceiveNetworkFeeLabel": "รับค่าธรรมเนียมเครือข่าย",
   "@coreScreensReceiveNetworkFeeLabel": {
@@ -1139,10 +1080,6 @@
   "payPaymentInProgress": "การชําระเงินในความคืบหน้า!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "recoverbullFailed": "บ้าน",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "payOrderAlreadyConfirmed": "การสั่งซื้อนี้ได้รับการยืนยัน.",
   "@payOrderAlreadyConfirmed": {
@@ -1687,15 +1624,6 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "recoverbullEnterToDecrypt": "โปรดป้อน {inputType} ไปยัง deการเข้ารหัสของคุณ.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "การโอนเงิน",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
@@ -1703,10 +1631,6 @@
   "testBackupSuccessTitle": "ทดสอบเสร็จสมบูรณ์!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "ใช้เวลาของคุณ",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "sendConfirmCustomFee": "ยืนยันค่าธรรมเนียมที่กําหนดเอง",
   "@sendConfirmCustomFee": {
@@ -1839,10 +1763,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "มองหา PK จาก Google Drive",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "systemLabelExchangeBuy": "ซื้อ",
   "@systemLabelExchangeBuy": {
     "description": "System label for exchange buy transactions"
@@ -1966,10 +1886,6 @@
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
-  "recoverbullErrorVaultCreationFailed": "สร้างไฟล์ล้มเหลว, สามารถไฟล์หรือคีย์",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "sellSendPaymentFeePriority": "ค่าธรรมเนียม",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
@@ -1986,10 +1902,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "ไม่มีการสํารองข้อมูล",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
   },
   "sellSelectNetwork": "เลือกเครือข่าย",
   "@sellSelectNetwork": {
@@ -2071,10 +1983,6 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "กระเป๋าเริ่มต้นที่แตกต่างกันที่มีอยู่ คุณสามารถใช้กระเป๋าเงินเริ่มต้น.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "ไม่มีผู้รับรับชําระเงิน.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -2082,10 +1990,6 @@
   "payNoInvoiceData": "ไม่มีข้อมูล",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "recoverbullErrorInvalidCredentials": "รหัสผ่านสําหรับไฟล์นี้",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "paySinpeMonto": "จํานวน",
   "@paySinpeMonto": {
@@ -2211,10 +2115,6 @@
   "@ledgerHelpStep4": {
     "description": "Fourth troubleshooting step for Ledger connection issues"
   },
-  "recoverbullPleaseWait": "โปรดรอในขณะที่เราสร้างการเชื่อมต่อที่ปลอดภัย...",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "broadcastSignedTxBroadcast": "ออกอากาศ",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2257,10 +2157,6 @@
   "transactionLabelAmountReceived": "จํานวน",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
-  },
-  "recoverbullRecoveryTitle": "การกู้คืนข้อผิดพลาด",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "broadcastSignedTxScanQR": "สแกนรหัส QR จากฮาร์ดแวร์ของคุณ",
   "@broadcastSignedTxScanQR": {
@@ -2476,10 +2372,6 @@
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
-  "recoverbullVaultCreatedSuccess": "Vault ประสบความสําเร็จ",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "จํานวน",
   "@payAmount": {
     "description": "Label for amount"
@@ -2646,10 +2538,6 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "สํารองข้อมูลท้องถิ่น.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "สมดุล",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2657,15 +2545,6 @@
   "transactionLabelFromWallet": "จากกระเป๋าเงิน",
   "@transactionLabelFromWallet": {
     "description": "Label for source wallet"
-  },
-  "recoverbullErrorRateLimited": "ถูกจำกัดอัตราการใช้งาน กรุณาลองใหม่อีกครั้งใน {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
   },
   "importWatchOnlyExtendedPublicKey": "ขยายสาธารณะ คีย์",
   "@importWatchOnlyExtendedPublicKey": {
@@ -2694,15 +2573,6 @@
   "networkFeeLabel": "ค่าธรรมเนียมเครือข่าย",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
-  },
-  "recoverbullMemorizeWarning": "คุณต้องจำ {inputType} นี้ให้ได้เพื่อกู้คืนการเข้าถึงกระเป๋าสตางค์ของคุณ ต้องมีความยาวอย่างน้อย 6 หลัก หากคุณลืม {inputType} นี้ คุณจะไม่สามารถกู้คืนข้อมูลสำรองของคุณได้",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadDocumentsTitle": "อัพโหลดเอกสาร",
   "@exchangeFileUploadDocumentsTitle": {
@@ -2743,10 +2613,6 @@
   "importQrDeviceJadeFirmwareWarning": "ให้แน่ใจว่าอุปกรณ์ของคุณอัปเดตเฟิร์มแวร์ล่าสุด",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
-  },
-  "recoverbullSelectFileNotSelectedError": "ไฟล์ไม่เลือก",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "buyInputContinue": "อ่านต่อ",
   "@buyInputContinue": {
@@ -2808,15 +2674,6 @@
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "recoverbullEnterToTest": "โปรดป้อน {inputType} เพื่อทดสอบ vault.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescription1": "ส่งธนาคารจากบัญชีธนาคารของคุณโดยใช้รายละเอียดด้านล่าง ",
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
@@ -2840,10 +2697,6 @@
   "importQrDeviceSpecterStep10": "ใส่ฉลากสําหรับกระเป๋าสตางค์ของคุณและแตะนําเข้า",
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
-  },
-  "recoverbullSelectVaultSelected": "ค่าเริ่มต้น",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2880,10 +2733,6 @@
   "transactionOrderLabelPayoutAmount": "จํานวนเงิน",
   "@transactionOrderLabelPayoutAmount": {
     "description": "Label for order payout amount"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "ใส่การสํารองข้อมูลด้วยตนเอง >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exportingVaultButton": "ส่งออก ...",
   "@exportingVaultButton": {
@@ -2976,10 +2825,6 @@
   "swapYouReceive": "ท่าน",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "recoverbullSelectCustomLocationProvider": "สถานที่ที่กําหนดเอง",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "electrumInvalidRetryError": "เมนู จํานวนค่า: {value}",
   "@electrumInvalidRetryError": {
@@ -3118,10 +2963,6 @@
   "kruxStep16": "ตอนนี้พร้อมที่จะออกอากาศ! ทันทีที่คุณคลิกออกอากาศ, การทําธุรกรรมจะตีพิมพ์บนเครือข่าย Bitcoin และเงินจะส่ง.",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "ไฟล์ที่เลือกเป็นความเสียหาย.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "buyVerifyIdentity": "ระบุ",
   "@buyVerifyIdentity": {
@@ -3265,10 +3106,6 @@
   "@jadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "recoverbullSelectDriveBackups": "การสํารองข้อมูล",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "exchangeAuthOk": "ตกลง",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -3321,14 +3158,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "โปรดตรวจสอบรหัสราคาบนโทรศัพท์มือถือของคุณ ...",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
-  },
-  "recoverbullKeyServer": "เซิร์ฟเวอร์ ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "รหัสผ่านนี้เหมือนกัน เลือกรายการที่แตกต่างกัน",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "backupInstruction3": "วิธีใด ๆ กับการเข้าถึง 12 คําสํารองข้อมูลของคุณสามารถขโมย Bitcoin ของคุณ ซ่อน.",
   "@backupInstruction3": {
@@ -3450,10 +3279,6 @@
   "@walletNetworkBitcoinTestnet": {
     "description": "Network label for Bitcoin testnet"
   },
-  "recoverbullSeeMoreVaults": "ดูเพิ่มเติม",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "sellPayFromWallet": "ชําระเงินจากกระเป๋าเงิน",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -3554,10 +3379,6 @@
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
-  "recoverbullSelectQuickAndEasy": "ง่ายและรวดเร็ว",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
-  },
   "exchangeFileUploadTitle": "อัพโหลดไฟล์",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -3597,10 +3418,6 @@
   "fundExchangeBankTransferSubtitle": "ส่งธนาคารจากบัญชีธนาคารของคุณ",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
-  },
-  "recoverbullErrorInvalidVaultFile": "ไฟล์ที่ปิดการใช้งาน.",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
   },
   "sellProcessingOrder": "การประมวลผล.",
   "@sellProcessingOrder": {
@@ -3669,10 +3486,6 @@
   "sellBitcoinAmount": "จํานวน Bitcoin",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "recoverbullTestCompletedTitle": "ทดสอบเสร็จสมบูรณ์!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
   },
   "transactionFilterReceive": "ลงทะเบียน",
   "@transactionFilterReceive": {
@@ -3774,10 +3587,6 @@
   "fundExchangeWarningConfirmation": "ฉันยืนยันฉันไม่ได้ขอให้ซื้อ Bitcoin โดยคนอื่น.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "เลือกไฟล์จากรายการที่กําหนดเอง",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "ลบเซิร์ฟเวอร์ที่กําหนดเอง?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3906,10 +3715,6 @@
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
   },
-  "recoverbullPasswordTooShort": "รหัสผ่านจะต้องไม่เกิน 6 ตัวอักษร",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
-  },
   "payNetwork": "เครือข่ายเครือข่าย",
   "@payNetwork": {
     "description": "Label for network"
@@ -4030,10 +3835,6 @@
   "payTransitNumberHint": "ป้อนหมายเลข",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "เลือก PIN แทน",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "รหัส QR",
   "@payQrCode": {
@@ -4370,10 +4171,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "recoverbullSelectNoBackupsFound": "ไม่มีการสํารองข้อมูล",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "importMnemonicNestedSegwit": "พระราชวัง",
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
@@ -4462,15 +4259,6 @@
   "importColdcardButtonOpenCamera": "เปิดกล้อง",
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "recoverbullReenterRequired": "Re-enter your {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payFeePriority": "ค่าธรรมเนียม",
   "@payFeePriority": {
@@ -4564,10 +4352,6 @@
   "autoswapWarningExplanation": "เมื่อสมดุลของคุณเกินสมดุลสูงสุด, ยอดเงินจะถูกถูกถูกถูกถูกถูกถูกถูกบังคับ ยอดคงเหลือจะเก็บไว้ในกระเป๋าสตางค์ของคุณทันทีและจํานวนเงินที่เหลือจะสลับในเบราว์เซอร์ของคุณ.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "การกู้คืนข้อผิดพลาด",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "ตอนนี้พร้อมที่จะออกอากาศ! ทันทีที่คุณคลิกออกอากาศ, การทําธุรกรรมจะตีพิมพ์บนเครือข่าย Bitcoin และเงินจะส่ง.",
   "@passportStep14": {
@@ -4714,10 +4498,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "การเปิดใช้งานของคุณประสบความสําเร็จ",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "มันเป็นสิ่งสําคัญที่คุณไม่ได้บันทึกการสํารองข้อมูลคีย์เดียวกันที่ทุกที่ที่คุณบันทึกไฟล์ของคุณ เป็นเจ้าของอุปกรณ์แยกต่างหากหรือแยกคลาวด์.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -4803,15 +4583,6 @@
   "keyServerLabel": "เซิร์ฟเวอร์ ",
   "@keyServerLabel": {
     "description": "Label for key server status"
-  },
-  "recoverbullEnterToView": "โปรดป้อน {inputType} ไปยังมุมมองของคุณ.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payReviewPayment": "รีวิวการชําระเงิน",
   "@payReviewPayment": {
@@ -4948,10 +4719,6 @@
   "failedToDeriveBackupKey": "ขอสงวนสิทธิ์ในการสํารองข้อมูล",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "ค้นหาการส่งออกจาก Google Drive",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "exchangeKycLevelLight": "แสง",
   "@exchangeKycLevelLight": {
@@ -5247,17 +5014,9 @@
   "@sellSendPaymentCadBalance": {
     "description": "CAD balance payout method"
   },
-  "recoverbullConnectingTor": "เชื่อมต่อกับเซิร์ฟเวอร์\nคุณสามารถเพิ่มนาที.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
   "fundExchangeCanadaPostStep2": "2. 2. 2. ถามเงินสดกับการสแกน \"โหลด\"",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "recoverbullEnterVaultKeyInstead": "ใส่คีย์",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
   },
   "exchangeAccountInfoEmailLabel": "อีเมล",
   "@exchangeAccountInfoEmailLabel": {
@@ -5278,10 +5037,6 @@
   "electrumBitcoinServerInfo": "ใส่เซิร์ฟเวอร์ในรูปแบบ: โฮสต์: (เช่นเช่น.g.com: 50001)",
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
-  },
-  "recoverbullErrorServiceUnavailable": "บริการ โปรดตรวจสอบการเชื่อมต่อของคุณ.",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
   },
   "sendErrorInsufficientBalanceForSwap": "จํานวนเงินเพียงพอที่จะจ่ายสัญญาณนี้ผ่านของเหลวและไม่สามารถชําระเงินผ่านทาง Bitcoin.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5425,10 +5180,6 @@
   "payCompletedDescription": "การชําระเงินของคุณเสร็จสิ้นและผู้รับจะได้รับเงิน.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
-  },
-  "recoverbullConnecting": "การเชื่อมต่อการเชื่อมต่อ",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
   },
   "retry": "ปรึกษา",
   "@retry": {
@@ -5579,10 +5330,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "recoverbullSelectAppleIcloud": "แอปเปิ้ล iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "keystoneStep13": "การทําธุรกรรมจะถูกนําเข้าในกระเป๋าสตางค์ Bitcoin.",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -5689,10 +5436,6 @@
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
   },
-  "recoverbullSelectVaultProvider": "เลือกผู้ให้บริการ",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "ธุรกรรมทั่วไป",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -5708,10 +5451,6 @@
   "coreSwapsLnSendFailed": "ปฏิทิน.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "recoverbullErrorDecryptFailed": "การถอดรหัส",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "keystoneStep9": "คลิกที่ปุ่มไปยังการทําธุรกรรมในชิปของคุณ.",
   "@keystoneStep9": {
@@ -5762,10 +5501,6 @@
   "walletTypeWatchOnly": "ดูวิดีโอ",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "recoverbullDecryptVault": "ถอดรหัส",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "connectHardwareWalletJade": "บล็อก",
   "@connectHardwareWalletJade": {
@@ -5869,17 +5604,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "recoverbullFetchingVaultKey": "การตัด คีย์",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
   "dcaConfirmFrequency": "ความถี่",
   "@dcaConfirmFrequency": {
     "description": "Field label for frequency"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "ลบ Vault",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
   },
   "advancedOptionsTitle": "ตัวเลือกขั้นสูง",
   "@advancedOptionsTitle": {
@@ -5892,10 +5619,6 @@
   "payPriceWillRefreshIn": "ราคาจะผ่อนคลาย ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "เก็บลบจาก Google Drive",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "broadcastSignedTxTo": "ไปที่",
   "@broadcastSignedTxTo": {
@@ -5933,10 +5656,6 @@
   "ledgerSignButton": "เริ่มต้น",
   "@ledgerSignButton": {
     "description": "Button label to start signing transaction with Ledger"
-  },
-  "recoverbullPassword": "รหัสผ่าน",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "fundExchangeMethodSinpeTransfer": "SINPE โอน",
   "@fundExchangeMethodSinpeTransfer": {
@@ -6147,15 +5866,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "ยืนยัน {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "การสแกนของคุณประสบความสําเร็จ! เงินทุนควรอยู่ในกระเป๋าสตางค์ของคุณ.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
@@ -6286,10 +5996,6 @@
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "recoverbullGoogleDriveScreenTitle": "Google ไดรฟ์",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "receiveQRCode": "รหัส QR",
   "@receiveQRCode": {
     "description": "Section header for QR code display"
@@ -6367,10 +6073,6 @@
   "sendTransactionSignedLedger": "การทําธุรกรรมที่ประสบความสําเร็จกับ Ledger",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
-  },
-  "recoverbullRecoveryContinueButton": "อ่านต่อ",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
   },
   "payTimeoutError": "เวลาการชําระเงิน กรุณาตรวจสอบสถานะ",
   "@payTimeoutError": {
@@ -6480,10 +6182,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "การเชื่อมต่อล้มเหลว",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
-  },
   "transactionDetailLabelPayinMethod": "วิธีการชําระเงิน",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
@@ -6523,10 +6221,6 @@
   "sellCopBalance": "COP สมดุล",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "ค่าเริ่มต้น",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "ค่าธรรมเนียม",
   "@receiveTransferFee": {
@@ -6865,10 +6559,6 @@
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "recoverbullEncryptedVaultCreated": "การเข้ารหัส Vault!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
-  },
   "addressViewChangeAddressesComingSoon": "เปลี่ยนที่อยู่ทันที",
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
@@ -7128,10 +6818,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "recoverbullSelectDecryptVault": "ถอดรหัส",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "buyUpgradeKYC": "อัพเกรด ระดับระดับ",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
@@ -7235,10 +6921,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "recoverbullPasswordMismatch": "รหัสผ่านไม่ตรงกับรหัสผ่าน",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
-  },
   "fundExchangeCrIbanUsdTransferCodeWarning": "คุณต้องเพิ่มรหัสเป็น \"ข้อมูล\" หรือ \"ข้อความ\" หรือ \"ข้อความ\" เมื่อทําการชําระเงิน ถ้าคุณลืมรวมถึงรหัสนี้, การชําระเงินของคุณอาจปฏิเสธ.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
     "description": "Warning about including transfer code in payment for USD transfers"
@@ -7338,10 +7020,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "ตอนนี้ให้การทดสอบการสํารองข้อมูลของคุณเพื่อให้แน่ใจว่าทุกอย่างจะทําอย่างถูกต้อง.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "สร้างการฝากเงินโดยใช้ SPEI (instant).",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -7390,10 +7068,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "recoverbullContinue": "อ่านต่อ",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
-  },
   "receiveAddressCopied": "ที่อยู่ไปยังคลิปบอร์ด",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -7431,10 +7105,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "recoverbullErrorVaultNotSet": "Vault ไม่ได้ตั้งค่า",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "dcaSetupContinue": "อ่านต่อ",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
@@ -7462,10 +7132,6 @@
   "walletDetailsWalletFingerprintLabel": "ลายนิ้วมือ",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "recoverbullTorNotStarted": "Tor ไม่ได้เริ่มต้น",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "transactionOrderLabelOrderStatus": "ข้อมูล",
   "@transactionOrderLabelOrderStatus": {
@@ -7548,10 +7214,6 @@
   "payLabelOptional": "ฉลาก (อุปกรณ์เสริม)",
   "@payLabelOptional": {
     "description": "Label for optional label field"
-  },
-  "recoverbullGoogleDriveDeleteButton": "ลบ",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "exchangeDcaDeactivateTitle": "การลบซ้ําซื้อ",
   "@exchangeDcaDeactivateTitle": {
@@ -7743,10 +7405,6 @@
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
   },
-  "recoverbullUnexpectedError": "ความผิดพลาด",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "coreSwapsStatusFailed": "บ้าน",
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
@@ -7855,10 +7513,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "กําลังมองหายอดคงเหลือและการทําธุรกรรม ..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "transactionSwapInfoChainDelay": "การโอนเงินอาจใช้เวลาบางอย่างเนื่องจากการยืนยัน blockchain.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
@@ -7878,10 +7532,6 @@
   "sellTitle": "ขาย Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "วิดีโอ",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "transactionListToday": "วันนี้",
   "@transactionListToday": {
@@ -7923,10 +7573,6 @@
   "autoswapRecipientWalletPlaceholderRequired": "เลือกกระเป๋าสตางค์ Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "ข้อผิดพลาดเกิดขึ้น กรุณาลองอีกครั้ง.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "sellUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
   "@sellUnauthenticatedError": {
@@ -7995,10 +7641,6 @@
   "sellCalculating": "คํานวณ.",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
-  },
-  "recoverbullPIN": "รหัส PIN",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "swapInternalTransferTitle": "โอนภายใน",
   "@swapInternalTransferTitle": {
@@ -8083,10 +7725,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "กู้คืนไฟล์สแกน",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "ไม่สามารถสร้างการทําธุรกรรม เช่นเดียวกับค่าใช้จ่ายไม่เพียงพอต่อค่าธรรมเนียมและจํานวนเงิน.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -8102,10 +7740,6 @@
   "sellSendPaymentPriceRefresh": "ราคาจะผ่อนคลาย ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "recoverbullPasswordRequired": "รหัสผ่าน",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
   },
   "receiveNoteLabel": "หมายเหตุ",
   "@receiveNoteLabel": {
@@ -8269,10 +7903,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "รอ",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "ไม่ทดสอบ",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -8386,10 +8016,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "recoverbullErrorVaultCreatedKeyNotStored": "บ้าน: ไฟล์ Vault สร้างขึ้น แต่คีย์ไม่เก็บไว้ในเซิร์ฟเวอร์",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
-  },
   "exchangeSupportChatWalletIssuesInfo": "แชทนี้เป็นเพียงสําหรับรายงานที่เกี่ยวข้องกับเงินทุน / ซื้อ / ถอน / ถอนเงิน\nสําหรับข้อความที่เกี่ยวข้อง, เข้าร่วมกลุ่มโทรศัพท์โดยคลิกที่ที่นี่.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
@@ -8409,10 +8035,6 @@
   "coreScreensLogsTitle": "เข้าสู่ระบบ",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "recoverbullVaultKeyInput": "วิดีโอ",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "testBackupErrorWalletMismatch": "การสํารองข้อมูลไม่ได้ตรงกับกระเป๋าสตางค์ที่มีอยู่",
   "@testBackupErrorWalletMismatch": {
@@ -8640,10 +8262,6 @@
   "autoswapDefaultWalletLabel": "โทรศัพท์มือถือ",
   "@autoswapDefaultWalletLabel": {
     "description": "Default label for unnamed Bitcoin wallet"
-  },
-  "recoverbullTestSuccessDescription": "คุณสามารถกู้คืนการเข้าถึงกระเป๋าสตางค์ Bitcoin",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
   },
   "exchangeAuthLoginFailedTitle": "เข้าสู่ระบบ",
   "@exchangeAuthLoginFailedTitle": {
@@ -8874,10 +8492,6 @@
   "@jadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "recoverbullRecoveryErrorWalletExists": "กระเป๋านี้มีอยู่.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
-  },
   "payBillerNameValue": "ชื่อคูปอง",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -8933,10 +8547,6 @@
   "dcaSetupInsufficientBalanceMessage": "คุณไม่ได้มีความสมดุลเพียงพอเพื่อสร้างคําสั่งซื้อนี้.",
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
-  },
-  "recoverbullGotIt": "ดู",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
   },
   "sendAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@sendAdvancedOptions": {
@@ -9080,10 +8690,6 @@
   "importWalletLedger": "ไฟ LED",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
-  },
-  "recoverbullCheckingConnection": "ตรวจสอบการเชื่อมต่อสําหรับการกู้คืนBull",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "exchangeLandingTitle": "สหรัฐ",
   "@exchangeLandingTitle": {
@@ -9368,10 +8974,6 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "recoverbullErrorUnexpected": "ข้อผิดพลาดที่ผิดพลาด, ดูบันทึก",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "sendSubmarineSwap": "ทางด่วน",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
@@ -9408,10 +9010,6 @@
   "fundExchangeOnlineBillPaymentLabelBillerName": "ค้นหารายชื่อธนาคารของคุณ",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
     "description": "Label for biller name in online bill payment"
-  },
-  "recoverbullSelectFetchDriveFilesError": "ค้นหาการสํารองข้อมูลทั้งหมด",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "ตรวจสอบ",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -9473,10 +9071,6 @@
   "payExternalWallet": "กระเป๋าภายนอก",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "recoverbullConfirm": "ยืนยัน",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "fundExchangeInfoBankCountryUk": "ธนาคารของเราเป็นราชอาณาจักร.",
   "@fundExchangeInfoBankCountryUk": {
@@ -9562,15 +9156,6 @@
   "transactionOrderLabelOriginCedula": "สถานที่กําเนิด",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "recoverbullRecoveryTransactionsLabel": "การทําธุรกรรม: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "buyViewDetails": "ดูรายละเอียด",
   "@buyViewDetails": {
@@ -9689,10 +9274,6 @@
   "backupWalletInstructionLosePhone": "ไม่มีการสํารองข้อมูล, ถ้าคุณสูญเสียหรือทําลายโทรศัพท์ของคุณ, หรือถ้าคุณถอนการติดตั้ง App Bitcoin, Bitcoins, Bitcoin ของคุณจะหายไปตลอดไป.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "recoverbullConnected": "เชื่อมต่อ",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
   },
   "dcaConfirmLightningAddress": "ที่อยู่",
   "@dcaConfirmLightningAddress": {
@@ -9861,19 +9442,6 @@
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
   },
-  "recoverbullSelectGoogleDrive": "Google ไดรฟ์",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "Enter your {inputType}",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapInfoDismissButton": "มันไม่ได้แสดงอีกครั้ง",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -9929,10 +9497,6 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "recoverbullGoogleDriveExportButton": "ส่งออก",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "bip329LabelsDescription": "การนําเข้าหรือฉลากส่งออกโดยใช้รูปแบบ BIP329.",
   "@bip329LabelsDescription": {
     "description": "Description of BIP329 labels functionality"
@@ -9948,10 +9512,6 @@
   "autoswapMaxFeeInfoText": "หากโอนค่าธรรมเนียมรวมข้างต้นกําหนดอัตราอัตโนมัติจะถูกบล็อก",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "recoverbullGoogleDriveCancelButton": "ยกเลิก",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "ตอนนี้ให้การทดสอบการสํารองข้อมูลของคุณเพื่อให้แน่ใจว่าทุกอย่างจะทําอย่างถูกต้อง.",
   "@backupWalletSuccessDescription": {
@@ -10077,10 +9637,6 @@
   "importQrDeviceKruxStep6": "นั่นคือ!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "การสํารองข้อมูลไฟล์หายไป.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "คุณไม่ได้ กรุณาเข้าสู่ระบบ.",
   "@payUnauthenticatedError": {
@@ -10237,10 +9793,6 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "recoverbullSecureBackup": "สํารองข้อมูลของคุณ",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "payDone": "อย่าลืม",
   "@payDone": {
     "description": "Button to close bottom sheet"
@@ -10289,10 +9841,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "จัดเรียงคีย์คีย์จากเซิร์ฟเวอร์",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "sendSwapInProgressInvoice": "บันทึกในความคืบหน้า ใบแจ้งหนี้จะชําระเงินในไม่กี่วินาที.",
   "@sendSwapInProgressInvoice": {
@@ -10358,10 +9906,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "recoverbullRetry": "ปรึกษา",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "receiveCopyInvoice": "ใบแจ้งหนี้",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -10381,10 +9925,6 @@
   "paySendMax": "สูงสุด",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "คุณแน่ใจว่าคุณต้องลบรหัสนี้? การกระทํานี้ไม่สามารถได้.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
   },
   "googleDriveSignInMessage": "คุณจะต้องลงทะเบียนไปยัง Google Drive",
   "@googleDriveSignInMessage": {
@@ -10487,10 +10027,6 @@
   "payInstitutionCode": "รหัสสถาบัน",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "recoverbullFetchVaultKey": "ข้อควรระวัง คีย์",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "coreSwapsActionClaim": "การเรียกร้อง",
   "@coreSwapsActionClaim": {
@@ -10698,10 +10234,6 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "recoverbullErrorRejected": "เปลี่ยนเซิร์ฟเวอร์",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
-  },
   "sellEstimatedArrival": "ประมาณ: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -10897,10 +10429,6 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "recoverbullSelectRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "receivePayjoinActivated": "ชําระเงิน",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -10953,10 +10481,6 @@
   "swapAmountLabel": "จํานวน",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
-  },
-  "recoverbullSelectCustomLocation": "รายการที่กําหนดเอง",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
   },
   "sellConfirmOrder": "ยืนยันการสั่งซื้อ",
   "@sellConfirmOrder": {
@@ -11063,10 +10587,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "การสร้างการเข้ารหัส วิดีโอ",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "importWalletColdcardQ": "รถบัส",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -11078,10 +10598,6 @@
   "sendReceiveAmount": "จํานวนเงิน",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "recoverbullTestRecovery": "การทดสอบการกู้คืน",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
   },
   "sellNetAmount": "จํานวนเงิน",
   "@sellNetAmount": {
@@ -11151,10 +10667,6 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "recoverbullRecoverBullServer": "การกู้คืนเซิร์ฟเวอร์",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "satsBitcoinUnitSettingsLabel": "ชุดแสดงผลในเบาะ",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -11190,10 +10702,6 @@
   "fundExchangeMethodCrIbanUsd": "โซเชียลมีเดีย",
   "@fundExchangeMethodCrIbanUsd": {
     "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "recoverbullErrorSelectVault": "ค้นหาเลือก vault",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
   },
   "exchangeStatisticsTotalAmount": "จํานวนจํานวน",
   "@exchangeStatisticsTotalAmount": {
@@ -11251,10 +10759,6 @@
   "walletAutoTransferBlockButton": "บล็อก",
   "@walletAutoTransferBlockButton": {
     "description": "Button to block auto-transfer until next execution"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "ค้นหาเลือก vault จาก Google Drive",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
@@ -11482,22 +10986,6 @@
   "mempoolCustomServerNoSsl": "ไม่มี SSL",
   "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
   "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
-  "recoverbullServerConfirmTitle": "เซิร์ฟเวอร์กู้คืนวอลต์",
-  "recoverbullServerUsingDefault": "กำลังใช้เซิร์ฟเวอร์เริ่มต้น",
-  "recoverbullServerUsingCustom": "กำลังใช้เซิร์ฟเวอร์ที่กำหนดเอง",
-  "recoverbullServerUrlLabel": "URL เซิร์ฟเวอร์:",
-  "recoverbullServerCustomWarning": "คุณกำลังใช้เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง โปรดตรวจสอบให้แน่ใจว่าคุณเชื่อถือเซิร์ฟเวอร์นี้",
-  "recoverbullServerTorNotice": "เราจะเชื่อมต่อกับเซิร์ฟเวอร์นี้ผ่าน Tor",
-  "recoverbullLearnMore": "เรียนรู้เพิ่มเติมเกี่ยวกับ Recoverbull",
-  "recoverbullSettingsTitle": "การตั้งค่า Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL เซิร์ฟเวอร์คีย์",
-  "recoverbullSettingsEdit": "แก้ไข",
-  "recoverbullSettingsCancel": "ยกเลิก",
-  "recoverbullSettingsSave": "บันทึก",
-  "recoverbullSettingsUrlRequired": "ต้องระบุ URL",
-  "recoverbullSettingsUrlInvalid": "URL ไม่ถูกต้อง",
-  "recoverbullSettingsUrlMustBeHttp": "URL ต้องเป็น HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "URL ต้องลงท้ายด้วย .onion",
   "onboardingAdvancedOptionsTitle": "ตัวเลือกขั้นสูง",
   "onboardingAdvancedOptionsDescription": "กำหนดการตั้งค่าขั้นสูงก่อนสร้างหรือกู้คืนกระเป๋าเงินของคุณ",
   "onboardingAdvancedOptionsCustomElectrum": "เซิร์ฟเวอร์ Electrum ที่กำหนดเอง",
@@ -12106,7 +11594,6 @@
   "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
   "mempoolErrorUpdateSettingsFailed": "อัปเดตการตั้งค่าไม่สำเร็จ: {error}",
@@ -12175,12 +11662,8 @@
   "torSettingsStatusCensored": "การเชื่อมต่อดูเหมือนถูกกรอง",
   "torSettingsDescCensored": "Tor ไม่สามารถเข้าถึงเครือข่ายได้ ซึ่งมักหมายความว่าการเชื่อมต่อกำลังถูกกรอง",
   "torSettingsBootstrapProgress": "กำลังเชื่อมต่อ… {percent}%",
-  "recoverbullPhaseNetworkInfo": "กำลังดึงข้อมูลเครือข่าย",
-  "recoverbullLongestStep": "นี่เป็นขั้นตอนที่นานที่สุด การเริ่มครั้งแรกอาจใช้เวลามากกว่าหนึ่งนาที",
   "recoverbullTorOffline": "ดูเหมือนว่าไม่มีการเชื่อมต่ออินเทอร์เน็ต",
   "recoverbullTorClockSkewed": "นาฬิกาของอุปกรณ์ไม่ตรง Tor จึงไม่สามารถตรวจสอบใบรับรองของรีเลย์ได้ โปรดตรวจสอบการตั้งค่าวันที่และเวลา",
-  "recoverbullTorCantStart": "ขณะนี้ Tor เชื่อมต่อไม่สำเร็จ โปรดลองอีกครั้ง",
-  "recoverbullServerUnreachableTorOk": "Tor ทำงานอยู่ แต่เซิร์ฟเวอร์สำรองข้อมูลไม่ตอบสนอง หลังจากเริ่มครั้งแรกอาจใช้เวลาสักครู่",
   "torSettingsEmbeddedTitle": "Tor ในตัว",
   "torSettingsEmbeddedDescription": "Tor ในตัวใช้โดย RecoverBull และเซิร์ฟเวอร์ Bitcoin Electrum ที่เป็น .onion ส่วนการรับส่งข้อมูลอื่นของแอปยังคงเชื่อมต่อโดยตรง",
   "torSettingsTransportMode": "วิธีการเชื่อมต่อ",

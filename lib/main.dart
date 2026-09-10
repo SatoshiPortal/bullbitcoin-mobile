@@ -386,7 +386,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-        BlocProvider(create: (_) => locator<WalletBloc>()),
+        BlocProvider.value(value: locator<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
         // can use it to check if the user is authenticated
         BlocProvider(create: (_) => locator<ExchangeCubit>()),
