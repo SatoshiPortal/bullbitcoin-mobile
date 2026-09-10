@@ -635,7 +635,6 @@
   },
   "mempoolCustomServerUrl": "Server-URL",
   "buyUnexpectedError": "Ihre Order konnte derzeit nicht erstellt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
-  "buyOrderAlreadyConfirmedError": "Diese Kauforder wurde bereits bestätigt.",
   "fundExchangeArsBankTransferTitle": "Banküberweisung",
   "transactionLabelReceiveAmount": "Empfangsbetrag",
   "sendServerNetworkFees": "Server-Netzwerkgebühren",
@@ -717,7 +716,6 @@
     }
   },
   "sellOrderPlaced": "Verkaufsbestellung erfolgreich platziert",
-  "buyInsufficientFundsError": "Unzureichende Mittel auf Ihrem Bull Bitcoin-Konto, um diesen Kaufauftrag auszuführen.",
   "ledgerHelpStep4": "Stellen Sie sicher, dass Sie die neueste Version der Bitcoin-App von Ledger Live installiert haben.",
   "recoverbullPleaseWait": "Bitte warten Sie, während eine sichere Verbindung aufgebaut wird…",
   "broadcastSignedTxBroadcast": "Übertragen",
@@ -848,7 +846,6 @@
   "buyCompleteKyc": "KYC-Prüfung abschließen",
   "vaultSuccessfullyImported": "Ihr Tresor wurde erfolgreich importiert",
   "payAccountNumberHint": "Kontonummer eingeben",
-  "buyOrderNotFoundError": "Die Kauforder wurde nicht gefunden. Bitte versuchen Sie es erneut.",
   "backupWalletGoogleDrivePrivacyMessage2": "nicht ",
   "payAddressRequired": "Adresse erforderlich",
   "payTotalAmount": "Gesamtbetrag",
@@ -4899,5 +4896,8 @@
   "psbtFlowQrEncodingError": "Diese Transaktion konnte nicht in einen QR-Code umgewandelt werden.",
   "sendErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
   "sendErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-  "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut."
+  "sendErrorExchangeOrderMismatch": "Diese Zahlung stimmt nicht mehr mit der Order überein. Bitte starten Sie die Zahlung erneut.",
+  "sellUnexpectedError": "Ihre Verkaufsorder konnte derzeit nicht abgeschlossen werden. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.",
+  "sellErrorFeeBelowRelayFloor": "Netzwerkgebühr zu niedrig. Wählen Sie eine höhere Gebühr.",
+  "sellErrorFeesUnavailable": "Die Netzwerkgebühren konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
 }

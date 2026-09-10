@@ -3203,9 +3203,6 @@
   "navigationTabExchange": "Փոխանակում",
   "buyBelowMinAmountError": "Դուք փորձում եք գնել նվազագույն գումարից պակաս։",
   "buyAboveMaxAmountError": "Դուք փորձում եք գնել առավելագույն գումարից ավելի։",
-  "buyInsufficientFundsError": "Ձեր Bull Bitcoin հաշվում բավարար միջոցներ չկան այս գնման պատվերն ավարտելու համար։",
-  "buyOrderNotFoundError": "Գնման պատվերը չի գտնվել։ Խնդրում ենք կրկին փորձել։",
-  "buyOrderAlreadyConfirmedError": "Այս գնման պատվերն արդեն հաստատված է։",
   "withdrawBelowMinAmountError": "Դուք փորձում եք հանել նվազագույն գումարից պակաս։",
   "withdrawAboveMaxAmountError": "Դուք փորձում եք հանել առավելագույն գումարից ավելի։",
   "withdrawOrderNotFoundError": "Հանման պատվերը չի գտնվել։ Խնդրում ենք կրկին փորձել։",
@@ -3466,5 +3463,8 @@
   "psbtFlowQrEncodingError": "Այս գործարքը հնարավոր չեղավ վերածել QR կոդի։",
   "sendErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
   "sendErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
-  "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։"
+  "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
+  "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
+  "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
 }

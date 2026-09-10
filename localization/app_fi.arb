@@ -3414,10 +3414,7 @@
   "buyUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "buyBelowMinAmountError": "Yrität ostaa alle vähimmäismäärän.",
   "buyAboveMaxAmountError": "Yrität ostaa yli enimmäismäärän.",
-  "buyInsufficientFundsError": "Bull Bitcoin -tililläsi ei ole riittävästi varoja tämän oston suorittamiseen.",
-  "buyOrderNotFoundError": "Ostopyyntöä ei löytynyt. Yritä uudelleen.",
   "buyUnexpectedError": "Tilaustasi ei voitu luoda juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
-  "buyOrderAlreadyConfirmedError": "Tämä ostopyyntö on jo vahvistettu.",
   "withdrawUnauthenticatedError": "Et ole kirjautunut sisään. Kirjaudu jatkaaksesi.",
   "withdrawBelowMinAmountError": "Yrität nostaa alle vähimmäismäärän.",
   "withdrawAboveMaxAmountError": "Yrität nostaa yli enimmäismäärän.",
@@ -4688,5 +4685,8 @@
   "psbtFlowQrEncodingError": "Tätä tapahtumaa ei voitu muuntaa QR-koodiksi.",
   "sendErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
   "sendErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
-  "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen."
+  "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
+  "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
+  "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
 }

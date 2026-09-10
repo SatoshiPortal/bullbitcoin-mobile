@@ -3185,9 +3185,6 @@
   "buyUnauthenticatedError": "Hujathibitishwa. Tafadhali ingia ili kuendelea.",
   "buyBelowMinAmountError": "Unajaribu kununua chini ya kiwango cha chini.",
   "buyAboveMaxAmountError": "Unajaribu kununua zaidi ya kiwango cha juu.",
-  "buyInsufficientFundsError": "Fedha hazitoshi kwenye akaunti yako ya Bull Bitcoin kukamilisha agizo hili la ununuzi.",
-  "buyOrderNotFoundError": "Agizo la ununuzi halikupatikana. Tafadhali jaribu tena.",
-  "buyOrderAlreadyConfirmedError": "Agizo hili la ununuzi tayari limethibitishwa.",
   "withdrawUnauthenticatedError": "Hujathibitishwa. Tafadhali ingia ili kuendelea.",
   "withdrawBelowMinAmountError": "Unajaribu kuondoa chini ya kiwango cha chini.",
   "withdrawAboveMaxAmountError": "Unajaribu kuondoa zaidi ya kiwango cha juu.",
@@ -3478,5 +3475,8 @@
   "psbtFlowQrEncodingError": "Muamala huu haukuweza kubadilishwa kuwa msimbo wa QR.",
   "sendErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
   "sendErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
-  "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya."
+  "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
+  "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
+  "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
 }

@@ -9961,19 +9961,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "buyInsufficientFundsError": "Is buy order ko complete karne ke liye aapke Bull Bitcoin account mein insufficient funds hain.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
-  "buyOrderNotFoundError": "Buy order nahi mila. Kripya dobara try karo.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
   "buyUnexpectedError": "Aapka order abhi nahi banaya ja saka. Kripya dobara koshish karein ya support se sampark karein.",
-  "buyOrderAlreadyConfirmedError": "Ye buy order pehle se confirm ho chuka hai.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "withdrawUnauthenticatedError": "Aap authenticated nahi hain. Continue karne ke liye login karo.",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
@@ -12112,5 +12100,8 @@
   "psbtFlowQrEncodingError": "Is transaction ko QR code mein convert nahi kiya ja saka.",
   "sendErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sendErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
-  "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein."
+  "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
+  "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
+  "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
 }
