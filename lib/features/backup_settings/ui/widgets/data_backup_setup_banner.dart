@@ -12,11 +12,17 @@ import 'package:go_router/go_router.dart';
 /// a progress line while the server is asked and a backup is restored, a
 /// retry when the opt-in was refused. Hidden the rest of the time.
 class DataBackupSetupBanner extends StatelessWidget {
-  const DataBackupSetupBanner({super.key});
+  final Set<String> Function()? takeDefaultCreatedWalletIds;
+
+  const DataBackupSetupBanner({super.key, this.takeDefaultCreatedWalletIds});
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<DataBackupSetupBannerCubit>()..start(),
+    create: (_) => locator<DataBackupSetupBannerCubit>()
+      ..start(
+        defaultCreatedWalletIds:
+            takeDefaultCreatedWalletIds?.call() ?? const {},
+      ),
     child: const _DataBackupSetupBannerView(),
   );
 }

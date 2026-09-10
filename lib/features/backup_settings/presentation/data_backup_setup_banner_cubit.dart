@@ -35,17 +35,24 @@ final class DataBackupSetupFailed extends DataBackupSetupBannerState {
 /// so onboarding never waits for the server, and reports progress there.
 class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
   final Future<bool> Function() _hasPendingChoices;
-  final Future<Result<void, WizardFailure>> Function() _applyPendingChoices;
+  final Future<Result<void, WizardFailure>> Function({
+    Set<String> defaultCreatedWalletIds,
+  })
+  _applyPendingChoices;
   final Stream<Result<WalletBackupState, WalletBackupFailure>> Function()
   _watchState;
   StreamSubscription<Result<WalletBackupState, WalletBackupFailure>>?
   _subscription;
   bool _applyingChoices = false;
   bool _restoring = false;
+  bool _closing = false;
 
   DataBackupSetupBannerCubit({
     required Future<bool> Function() hasPendingChoices,
-    required Future<Result<void, WizardFailure>> Function() applyPendingChoices,
+    required Future<Result<void, WizardFailure>> Function({
+      Set<String> defaultCreatedWalletIds,
+    })
+    applyPendingChoices,
     required Stream<Result<WalletBackupState, WalletBackupFailure>> Function()
     watchState,
   }) : this._(hasPendingChoices, applyPendingChoices, watchState);
@@ -56,36 +63,48 @@ class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
     this._watchState,
   ) : super(const DataBackupSetupHidden());
 
-  Future<void> start() async {
+  Future<void> start({Set<String> defaultCreatedWalletIds = const {}}) async {
+    if (isClosed || _closing) return;
     _subscription ??= _watchState().listen((result) {
-      if (isClosed) return;
+      if (isClosed || _closing) return;
       if (result case Ok(:final value)) {
         _restoring = value.recoveryState == WalletBackupRecoveryState.applying;
         _render();
       }
     });
-    await applyPendingChoices();
+    await applyPendingChoices(defaultCreatedWalletIds: defaultCreatedWalletIds);
   }
 
   /// Runs the pending wizard choices, or retries them after a failure.
-  Future<void> applyPendingChoices() async {
-    if (_applyingChoices) return;
-    if (!await _hasPendingChoices()) {
-      if (!isClosed && state is DataBackupSetupFailed) {
-        emit(const DataBackupSetupHidden());
-      }
-      return;
-    }
+  Future<void> applyPendingChoices({
+    Set<String> defaultCreatedWalletIds = const {},
+  }) async {
+    if (_applyingChoices || isClosed || _closing) return;
     _applyingChoices = true;
-    if (!isClosed) _render();
-    final result = await _applyPendingChoices();
-    _applyingChoices = false;
-    if (isClosed) return;
-    switch (result) {
-      case Ok():
-        _render();
-      case Err():
-        emit(const DataBackupSetupFailed());
+    try {
+      final pending = await _hasPendingChoices();
+      if (isClosed || _closing) return;
+      if (!pending) {
+        emit(const DataBackupSetupHidden());
+        return;
+      }
+      _render();
+      final result = await _applyPendingChoices(
+        defaultCreatedWalletIds: defaultCreatedWalletIds,
+      );
+      _applyingChoices = false;
+      if (isClosed || _closing) return;
+      switch (result) {
+        case Ok():
+          emit(const DataBackupSetupHidden());
+          _render();
+        case Err():
+          emit(const DataBackupSetupFailed());
+      }
+    } on Exception {
+      if (!isClosed && !_closing) emit(const DataBackupSetupFailed());
+    } finally {
+      _applyingChoices = false;
     }
   }
 
@@ -98,6 +117,7 @@ class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
 
   @override
   Future<void> close() async {
+    _closing = true;
     await _subscription?.cancel();
     return super.close();
   }

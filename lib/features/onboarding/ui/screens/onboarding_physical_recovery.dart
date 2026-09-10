@@ -44,7 +44,10 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
           listener: (context, state) {
             if (state.step == OnboardingStep.recover &&
                 state.onboardingStepStatus == OnboardingStepStatus.success) {
-              context.goNamed(WalletRoute.walletHome.name);
+              context.goNamed(
+                WalletRoute.walletHome.name,
+                extra: WalletHomeRecoveryContext(state.defaultCreatedWalletIds),
+              );
             }
           },
           child: BlocBuilder<OnboardingBloc, OnboardingState>(

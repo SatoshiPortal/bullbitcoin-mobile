@@ -14,11 +14,11 @@ class CreateOnboardingWalletUsecase {
   Future<Result<List<Wallet>, OnboardingFailure>> execute() async {
     try {
       final wallets = await _createDefaultWalletsUsecase.execute();
-      return Ok(wallets);
+      return Ok(wallets.wallets);
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: default wallet creation failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(OnboardingWalletSetupFailure());

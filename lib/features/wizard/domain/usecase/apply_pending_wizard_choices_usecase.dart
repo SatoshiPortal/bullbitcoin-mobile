@@ -21,7 +21,9 @@ class ApplyPendingWizardChoicesUsecase {
   final SettingsRepository _settingsRepository;
   final WalletBackupFacade _walletBackup;
 
-  Future<Result<void, WizardFailure>> execute() async {
+  Future<Result<void, WizardFailure>> execute({
+    Set<String> defaultCreatedWalletIds = const {},
+  }) async {
     try {
       final choices = await _wizardRepository.readPending();
       if (choices == null) return const Ok(null);
@@ -42,7 +44,11 @@ class ApplyPendingWizardChoicesUsecase {
       final backupEnabled = choices.metadataBackupEnabled;
       if (choices.touched.contains(WizardField.metadataBackupEnabled) &&
           backupEnabled != null) {
-        if (await _walletBackup.setEnabled(backupEnabled) case Err()) {
+        if (await _walletBackup.setEnabled(
+              backupEnabled,
+              defaultCreatedWalletIds: defaultCreatedWalletIds,
+            )
+            case Err()) {
           return const Err(WizardApplyFailure());
         }
       }

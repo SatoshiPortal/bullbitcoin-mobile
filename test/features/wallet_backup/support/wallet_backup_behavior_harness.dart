@@ -61,6 +61,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_protocol.d
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_vaults_section.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
+import 'package:bb_mobile/features/wallet_backup/metadata/data/wallet_metadata_backup_section_provider.dart';
 import 'package:bb_mobile/features/wallet_backup/metadata/domain/wallet_metadata_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_job_runner.dart';
@@ -342,6 +343,7 @@ final class WalletBackupBehaviorHarness {
     SqliteDatabase? database,
     DateTime Function()? now,
     BullVaultBackupSection? vaultSection,
+    WalletMetadataBackupImpl? metadataSection,
     InspectVaultRecoveryPackage inspectVault = fakeVaultInspector,
     Stream<void> recordedChanges = const Stream.empty(),
   }) async {
@@ -407,7 +409,7 @@ final class WalletBackupBehaviorHarness {
       keychainManifest,
       definitions,
       backedUpVaults,
-      metadata.localSnapshot,
+      metadataSection?.localSnapshot ?? metadata.localSnapshot,
     );
     final registerRecoveryMaterial =
         RegisterWalletBackupRecoveryMaterialUsecase(
@@ -445,7 +447,10 @@ final class WalletBackupBehaviorHarness {
         keychainManifest.watchCommittedChanges(),
         recordedChanges,
       ]),
-      unrecordedChanges: _mergeChanges([definitions.changes, metadata.changes]),
+      unrecordedChanges: _mergeChanges([
+        definitions.changes,
+        metadataSection?.changes ?? metadata.changes,
+      ]),
       syncResults: const Stream.empty(),
       runner: runner,
       recordMutation: state.recordLocalMutation,
@@ -466,8 +471,8 @@ final class WalletBackupBehaviorHarness {
         }) async => true,
         keychainManifest,
       ),
-      validateMetadata: metadata.validate,
-      restoreMetadata: metadata.recover,
+      validateMetadata: metadataSection?.validate ?? metadata.validate,
+      restoreMetadata: metadataSection?.recover ?? metadata.recover,
     );
     final decodeFile = DecodeWalletBackupFileUsecase(
       resolveKey.execute,
@@ -488,7 +493,7 @@ final class WalletBackupBehaviorHarness {
         ).execute,
         () async => const <WalletDefinition>[],
         () async => const <String>{},
-        metadata.localSnapshot,
+        metadataSection?.localSnapshot ?? metadata.localSnapshot,
         vaults: backedUpVaults,
         inspectVault: inspectVault,
       ),

@@ -485,6 +485,12 @@ class WalletRepository
   Future<bool> containsWallet(String walletId) async =>
       await _walletMetadataDatasource.fetch(walletId) != null;
 
+  /// Stored identities, including wallets omitted from the visible wallet list.
+  Future<Set<String>> getStoredWalletIds() async => {
+    for (final metadata in await _walletMetadataDatasource.fetchAll())
+      metadata.id,
+  };
+
   @override
   Future<List<WalletDefinition>> getWalletDefinitions() async =>
       (await _walletMetadataDatasource.fetchAll())

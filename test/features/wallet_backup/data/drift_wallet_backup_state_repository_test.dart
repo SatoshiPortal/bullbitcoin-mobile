@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
@@ -22,6 +24,17 @@ void main() {
   });
 
   tearDown(() => database.close());
+
+  test('an idle backup state subscription can be cancelled', () async {
+    final first = Completer<void>();
+    final subscription = repository.watch().listen((state) {
+      expect(state, isA<Ok>());
+      if (!first.isCompleted) first.complete();
+    });
+    await first.future;
+    await pumpEventQueue();
+    await subscription.cancel().timeout(const Duration(seconds: 5));
+  });
 
   test(
     'changing server clears its checkpoint and marks backup dirty',

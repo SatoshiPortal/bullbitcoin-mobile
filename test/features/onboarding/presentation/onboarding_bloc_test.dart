@@ -4,6 +4,8 @@ import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 
 class _MockCreateOnboardingWalletUsecase extends Mock
     implements CreateOnboardingWalletUsecase {}
@@ -12,6 +14,39 @@ class _MockRecoverOnboardingWalletUsecase extends Mock
     implements RecoverOnboardingWalletUsecase {}
 
 void main() {
+  test(
+    'physical recovery forwards created IDs without awaiting a server',
+    () async {
+      final recover = _MockRecoverOnboardingWalletUsecase();
+      when(
+        () => recover.execute(mnemonicWords: any(named: 'mnemonicWords')),
+      ).thenAnswer((_) async => const Ok({'new-default'}));
+      final bloc = OnboardingBloc(
+        createOnboardingWalletUsecase: _MockCreateOnboardingWalletUsecase(),
+        recoverOnboardingWalletUsecase: recover,
+      );
+      addTearDown(bloc.close);
+      bloc.add(
+        OnboardingRecoverWalletClicked(
+          mnemonic: (
+            words:
+                'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+                    .split(' '),
+            language: bip39.Language.english,
+            label: '',
+            passphrase: '',
+          ),
+        ),
+      );
+      final state = await bloc.stream.firstWhere((state) => state.isSuccess);
+      expect(state.defaultCreatedWalletIds, {'new-default'});
+      expect(state.failure, isNull);
+      final context = WalletHomeRecoveryContext(state.defaultCreatedWalletIds);
+      expect(context.takeCreatedWalletIds(), {'new-default'});
+      expect(context.takeCreatedWalletIds(), isEmpty);
+    },
+  );
+
   test('reports success as soon as the default wallets exist', () async {
     final createWallets = _MockCreateOnboardingWalletUsecase();
     when(() => createWallets.execute()).thenAnswer((_) async => const Ok([]));

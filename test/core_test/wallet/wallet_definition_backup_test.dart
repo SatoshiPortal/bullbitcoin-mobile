@@ -534,6 +534,7 @@ void main() {
 
     expect(await wallets.getWallet(source.id), isNull);
     expect(await wallets.getWallets(), isEmpty);
+    expect(await wallets.getStoredWalletIds(), {source.id});
     await expectLater(
       wallets.getWalletBalances(walletId: source.id),
       throwsA(isA<PassphraseWalletLockedException>()),

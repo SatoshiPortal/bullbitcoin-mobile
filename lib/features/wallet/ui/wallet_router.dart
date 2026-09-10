@@ -33,6 +33,11 @@ class WalletRouter {
           },
           child: WalletHomeScreen(
             featureWarningsBuilder: featureWarningsBuilder,
+            takeDefaultCreatedWalletIds: switch (state.extra) {
+              final WalletHomeRecoveryContext recovery =>
+                recovery.takeCreatedWalletIds,
+              _ => null,
+            },
           ),
         ),
       );
@@ -52,4 +57,18 @@ class WalletRouter {
       );
     },
   );
+}
+
+/// One navigation's physical-seed recovery context; never persisted for retries.
+class WalletHomeRecoveryContext {
+  Set<String> _defaultCreatedWalletIds;
+
+  WalletHomeRecoveryContext(Set<String> walletIds)
+    : _defaultCreatedWalletIds = Set.unmodifiable(walletIds);
+
+  Set<String> takeCreatedWalletIds() {
+    final ids = _defaultCreatedWalletIds;
+    _defaultCreatedWalletIds = const {};
+    return ids;
+  }
 }

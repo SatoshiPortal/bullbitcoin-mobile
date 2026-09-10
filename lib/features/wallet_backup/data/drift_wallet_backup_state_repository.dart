@@ -41,9 +41,7 @@ final class DriftWalletBackupStateRepository
       final rows = (_database.select(
         _database.walletBackupStates,
       )..where((table) => table.id.equals(_id))).watchSingle();
-      await for (final row in rows) {
-        yield Ok(_map(row));
-      }
+      yield* rows.map((row) => Ok(_map(row)));
     } on Exception catch (error, trace) {
       _logStorageFailure('watch', error, trace);
       yield Err(_storageFailure('watch', error));

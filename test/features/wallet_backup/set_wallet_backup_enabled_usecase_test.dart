@@ -30,7 +30,7 @@ void main() {
     });
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      () async {
+      ({Set<String> defaultCreatedWalletIds = const {}}) async {
         calls.add('recover');
         return const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.noBackup,
@@ -53,7 +53,7 @@ void main() {
   test('does not enable or publish when recovery fails', () async {
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      () async {
+      ({Set<String> defaultCreatedWalletIds = const {}}) async {
         calls.add('recover');
         return const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.invalid,
@@ -86,9 +86,10 @@ void main() {
     ).thenAnswer((_) async => const Err(WalletBackupStorageFailure()));
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      () async => const WalletBackupRecoveryResult(
-        status: WalletBackupRecoveryStatus.restored,
-      ),
+      ({Set<String> defaultCreatedWalletIds = const {}}) async =>
+          const WalletBackupRecoveryResult(
+            status: WalletBackupRecoveryStatus.restored,
+          ),
       register,
       () async {
         calls.add('publish');
@@ -111,7 +112,7 @@ void main() {
     register = () async => const Err(WalletBackupWalletUnavailableFailure());
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      () async {
+      ({Set<String> defaultCreatedWalletIds = const {}}) async {
         calls.add('recover');
         return const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.noBackup,

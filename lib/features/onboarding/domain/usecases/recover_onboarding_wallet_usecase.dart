@@ -16,15 +16,18 @@ class RecoverOnboardingWalletUsecase {
   });
 
   @useResult
-  Future<Result<void, OnboardingFailure>> execute({
+  Future<Result<Set<String>, OnboardingFailure>> execute({
     required List<String> mnemonicWords,
   }) async {
+    final DefaultWalletsResult restored;
     try {
-      await _createDefaultWalletsUsecase.execute(mnemonicWords: mnemonicWords);
+      restored = await _createDefaultWalletsUsecase.execute(
+        mnemonicWords: mnemonicWords,
+      );
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: wallet recovery failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(OnboardingWalletSetupFailure());
@@ -35,12 +38,12 @@ class RecoverOnboardingWalletUsecase {
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: backup verification failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(OnboardingBackupVerificationFailure());
     }
 
-    return const Ok(null);
+    return Ok(restored.createdWalletIds);
   }
 }

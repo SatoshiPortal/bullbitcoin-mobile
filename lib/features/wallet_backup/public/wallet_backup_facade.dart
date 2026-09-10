@@ -93,8 +93,15 @@ class WalletBackupFacade {
   /// runner job: the recovery and the first publication must not be separated
   /// by anything else touching the server (spec 19.1).
   @useResult
-  Future<Result<void, WalletBackupFailure>> setEnabled(bool enabled) =>
-      _runner.run(() => _setEnabled.execute(enabled));
+  Future<Result<void, WalletBackupFailure>> setEnabled(
+    bool enabled, {
+    Set<String> defaultCreatedWalletIds = const {},
+  }) => _runner.run(
+    () => _setEnabled.execute(
+      enabled,
+      defaultCreatedWalletIds: defaultCreatedWalletIds,
+    ),
+  );
 
   @useResult
   Future<Result<void, WalletBackupFailure>> setServer(String value) =>

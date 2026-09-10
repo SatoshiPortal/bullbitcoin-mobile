@@ -8,7 +8,10 @@ import 'package:bull_logger/bull_logger.dart';
 
 final class SetWalletBackupEnabledUsecase {
   final WalletBackupStateRepository _repository;
-  final Future<WalletBackupRecoveryResult> Function() _recover;
+  final Future<WalletBackupRecoveryResult> Function({
+    Set<String> defaultCreatedWalletIds,
+  })
+  _recover;
   final Future<Result<void, WalletBackupFailure>> Function() _register;
   final Future<Result<void, WalletBackupFailure>> Function() _publish;
 
@@ -20,7 +23,10 @@ final class SetWalletBackupEnabledUsecase {
   );
 
   @useResult
-  Future<Result<void, WalletBackupFailure>> execute(bool enabled) async {
+  Future<Result<void, WalletBackupFailure>> execute(
+    bool enabled, {
+    Set<String> defaultCreatedWalletIds = const {},
+  }) async {
     if (!enabled) return _repository.setEnabled(false);
 
     // The recovery material has to be in the manifest before anything reads a
@@ -32,7 +38,9 @@ final class SetWalletBackupEnabledUsecase {
       return Err(failure);
     }
 
-    final recovery = await _recover();
+    final recovery = await _recover(
+      defaultCreatedWalletIds: defaultCreatedWalletIds,
+    );
     final recoveryFailure = _recoveryFailure(recovery.status);
     if (recoveryFailure != null) {
       log.warning(

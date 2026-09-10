@@ -42,7 +42,7 @@ void main() {
       final wallets = [_MockWallet()];
       when(
         () => createDefaultWalletsUsecase.execute(),
-      ).thenAnswer((_) async => wallets);
+      ).thenAnswer((_) async => (wallets: wallets, createdWalletIds: {'new'}));
 
       final result = await usecase.execute();
 

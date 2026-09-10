@@ -32,7 +32,7 @@ class RestoreVaultUsecase {
         mnemonicWords: mnemonic.words,
       );
 
-      for (final wallet in restoredWallets) {
+      for (final wallet in restoredWallets.wallets) {
         await _walletRepository.updateEncryptedBackupTime(
           time: DateTime.now(),
           walletId: wallet.id,
@@ -40,7 +40,7 @@ class RestoreVaultUsecase {
       }
 
       log.fine('Vault restored');
-      return Ok(List.unmodifiable(restoredWallets.map((wallet) => wallet.id)));
+      return Ok(List.unmodifiable(restoredWallets.createdWalletIds));
     } catch (e, st) {
       log.severe(
         message: 'restoreVault failed',

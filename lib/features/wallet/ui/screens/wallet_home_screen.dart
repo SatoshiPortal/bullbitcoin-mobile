@@ -19,8 +19,13 @@ typedef WalletHomeFeatureWarningsBuilder =
 
 class WalletHomeScreen extends StatefulWidget {
   final WalletHomeFeatureWarningsBuilder? featureWarningsBuilder;
+  final Set<String> Function()? takeDefaultCreatedWalletIds;
 
-  const WalletHomeScreen({super.key, this.featureWarningsBuilder});
+  const WalletHomeScreen({
+    super.key,
+    this.featureWarningsBuilder,
+    this.takeDefaultCreatedWalletIds,
+  });
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -138,7 +143,12 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const PinnedHeaderSliver(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
-                const SliverToBoxAdapter(child: DataBackupSetupBanner()),
+                SliverToBoxAdapter(
+                  child: DataBackupSetupBanner(
+                    takeDefaultCreatedWalletIds:
+                        widget.takeDefaultCreatedWalletIds,
+                  ),
+                ),
                 if (widget.featureWarningsBuilder case final builder?)
                   SliverToBoxAdapter(child: builder(context, wallets)),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),

@@ -78,11 +78,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     switch (await _recoverOnboardingWalletUsecase.execute(
       mnemonicWords: event.mnemonic.words,
     )) {
-      case Ok():
+      case Ok(:final value):
         // The wizard's Data Backup opt-in, with its server recovery, is
         // applied from the home page so the user never waits for it here.
         emit(
-          state.copyWith(onboardingStepStatus: OnboardingStepStatus.success),
+          state.copyWith(
+            onboardingStepStatus: OnboardingStepStatus.success,
+            defaultCreatedWalletIds: value,
+          ),
         );
       case Err(:final failure):
         emit(

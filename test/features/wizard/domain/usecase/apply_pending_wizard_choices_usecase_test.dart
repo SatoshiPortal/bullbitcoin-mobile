@@ -147,6 +147,28 @@ void main() {
   });
 
   test(
+    'passes physical recovery IDs into the enable-and-recover operation',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          metadataBackupEnabled: true,
+          touched: {WizardField.metadataBackupEnabled},
+        ),
+      );
+      when(
+        () => walletBackup.setEnabled(true, defaultCreatedWalletIds: {'new'}),
+      ).thenAnswer((_) async => const Ok(null));
+      final result = await usecase.execute(defaultCreatedWalletIds: {'new'});
+      expect(result, const Ok<void, WizardFailure>(null));
+      verifyInOrder([
+        () => walletBackup.setEnabled(true, defaultCreatedWalletIds: {'new'}),
+        wizard.clearPending,
+        wizard.markComplete,
+      ]);
+    },
+  );
+
+  test(
     'applies settings but keeps the choice pending until a wallet exists',
     () async {
       when(() => wizard.readPending()).thenAnswer(
