@@ -542,13 +542,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           emit(state.copyWith(decryptedVault: decryptedVault));
         case RecoverBullFlow.recoverVault:
           emit(state.copyWith(decryptedVault: decryptedVault));
-          final updated = await _updateLatestEncryptedVaultTestUsecase.execute(
-            decryptedVault: decryptedVault,
-          );
-          if (updated case Err()) {
-            emit(state.copyWith(failure: const VaultDecryptionFailure()));
-            return;
-          }
           await _restoreAndStart(decryptedVault, emit);
           return;
         case RecoverBullFlow.secureVault:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/vault_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
@@ -172,6 +173,125 @@ void main() {
 
     await bloc.close();
   });
+
+  for (final dataRecovered in [false, true]) {
+    test(
+      'fresh seed recovery completes with metadata recovered: $dataRecovered',
+      () async {
+        final vault = _MockEncryptedVault();
+        const decrypted = DecryptedVault();
+        when(
+          () => decrypt.execute(vault: vault, vaultKey: 'synthetic-key'),
+        ).thenReturn(const Ok(decrypted));
+        // There is no matching wallet on a fresh installation. This helper is
+        // for verifying an existing backup, not a prerequisite for restoration.
+        when(
+          () => updateLatest.execute(decryptedVault: decrypted),
+        ).thenAnswer((_) async => const Err(core.InvalidVaultFileFailure()));
+        when(
+          () => restore.execute(decryptedVault: decrypted),
+        ).thenAnswer((_) async => const Ok(['bitcoin', 'liquid']));
+        when(
+          () => remoteRecovery.execute(
+            defaultCreatedWalletIds: {'bitcoin', 'liquid'},
+          ),
+        ).thenAnswer((_) async => dataRecovered);
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.recoverVault,
+          preSelectedVault: vault,
+        );
+        addTearDown(bloc.close);
+
+        bloc.add(const OnVaultDecryption(vaultKey: 'synthetic-key'));
+        await pumpEventQueue();
+
+        expect(bloc.state.isFlowFinished, isTrue);
+        expect(bloc.state.dataBackupRecoveryIncomplete, !dataRecovered);
+        expect(bloc.state.failure, isNull);
+        verify(() => restore.execute(decryptedVault: decrypted)).called(1);
+        verify(
+          () => remoteRecovery.execute(
+            defaultCreatedWalletIds: {'bitcoin', 'liquid'},
+          ),
+        ).called(1);
+        verify(() => walletBloc.add(const WalletStarted())).called(1);
+        verifyNever(() => updateLatest.execute(decryptedVault: decrypted));
+      },
+    );
+  }
+
+  test(
+    'failed seed restoration does not start metadata recovery or the wallet',
+    () async {
+      final vault = _MockEncryptedVault();
+      const decrypted = DecryptedVault();
+      when(
+        () => decrypt.execute(vault: vault, vaultKey: 'synthetic-key'),
+      ).thenReturn(const Ok(decrypted));
+      when(() => restore.execute(decryptedVault: decrypted)).thenAnswer(
+        (_) async =>
+            const Err(core.RecoverBullUnexpectedCoreFailure('Restore failed')),
+      );
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.recoverVault,
+        preSelectedVault: vault,
+      );
+      addTearDown(bloc.close);
+
+      bloc.add(const OnVaultDecryption(vaultKey: 'synthetic-key'));
+      await pumpEventQueue();
+
+      expect(bloc.state.failure, isA<VaultRecoveryFailure>());
+      expect(bloc.state.isFlowFinished, isFalse);
+      expect(bloc.state.isLoading, isFalse);
+      verifyZeroInteractions(remoteRecovery);
+      verifyNever(() => walletBloc.add(const WalletStarted()));
+    },
+  );
+
+  for (final flow in [
+    RecoverBullFlow.testVault,
+    RecoverBullFlow.viewVaultKey,
+  ]) {
+    for (final matches in [false, true]) {
+      test(
+        '$flow still verifies an existing wallet (matches: $matches)',
+        () async {
+          final vault = _MockEncryptedVault();
+          const decrypted = DecryptedVault();
+          when(
+            () => decrypt.execute(vault: vault, vaultKey: 'synthetic-key'),
+          ).thenReturn(const Ok(decrypted));
+          when(
+            () => updateLatest.execute(decryptedVault: decrypted),
+          ).thenAnswer(
+            (_) async => matches
+                ? const Ok(null)
+                : const Err(core.InvalidVaultFileFailure()),
+          );
+          final bloc = buildBloc(flow: flow, preSelectedVault: vault);
+          addTearDown(bloc.close);
+          bloc.add(const OnVaultDecryption(vaultKey: 'synthetic-key'));
+          await pumpEventQueue();
+
+          verify(
+            () => updateLatest.execute(decryptedVault: decrypted),
+          ).called(1);
+          expect(bloc.state.isFlowFinished, isFalse);
+          if (matches) {
+            expect(bloc.state.failure, isNull);
+            expect(bloc.state.vaultKey, 'synthetic-key');
+          } else {
+            expect(bloc.state.failure, isA<VaultDecryptionFailure>());
+            expect(bloc.state.vaultKey, isNull);
+          }
+          verifyZeroInteractions(restore);
+          verifyZeroInteractions(remoteRecovery);
+          verifyNever(() => walletBloc.add(const WalletStarted()));
+        },
+      );
+    }
+  }
 
   test('backs up the BullVault seed selected by fingerprint', () async {
     when(() => createVault.execute(fingerprint: 'deadbeef')).thenAnswer(
