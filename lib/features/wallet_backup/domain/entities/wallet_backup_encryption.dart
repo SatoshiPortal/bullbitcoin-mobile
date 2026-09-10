@@ -5,11 +5,7 @@ final class WalletBackupEncryptionKey {
 
   WalletBackupEncryptionKey(String value) : hex = value.trim().toLowerCase() {
     if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(hex)) {
-      throw ArgumentError.value(
-        value,
-        'value',
-        'Invalid backup encryption key',
-      );
+      throw ArgumentError('Invalid backup encryption key');
     }
   }
 }
@@ -25,8 +21,7 @@ final class WalletBackupCiphertext {
   WalletBackupCiphertext(String value)
     : value = value,
       byteLength =
-          _measure(value) ??
-          (throw ArgumentError.value(value, 'value', 'Invalid ciphertext'));
+          _measure(value) ?? (throw ArgumentError('Invalid ciphertext'));
 
   WalletBackupCiphertext._(this.value, this.byteLength);
 

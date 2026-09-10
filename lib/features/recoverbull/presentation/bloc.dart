@@ -282,10 +282,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
     } catch (e) {
       if (isClosed || _closingBloc) return;
-      log.severe(error: e, trace: StackTrace.current);
+      log.severe(error: e.runtimeType, trace: StackTrace.current);
       emit(
         state.copyWith(
-          failure: RecoverBullUnexpectedFailure(e.toString()),
+          failure: const RecoverBullUnexpectedFailure(),
           keyServerStatus: KeyServerStatus.offline,
         ),
       );
@@ -349,8 +349,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      emit(state.copyWith(failure: RecoverBullUnexpectedFailure(e.toString())));
+      log.severe(error: e.runtimeType, trace: StackTrace.current);
+      emit(state.copyWith(failure: const RecoverBullUnexpectedFailure()));
     } finally {
       emit(state.copyWith(isLoading: false));
     }
@@ -553,7 +553,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault decrypted');
     } catch (e) {
       if (isClosed || _closingBloc) return;
-      log.severe(error: e, trace: StackTrace.current);
+      log.severe(error: e.runtimeType, trace: StackTrace.current);
       emit(state.copyWith(failure: const VaultDecryptionFailure()));
     } finally {
       if (!isClosed && !_closingBloc) emit(state.copyWith(isLoading: false));

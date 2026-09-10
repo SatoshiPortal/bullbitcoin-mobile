@@ -10,7 +10,7 @@ enum RecoverBullFlow {
 
 enum KeyServerStatus { unknown, connecting, online, offline }
 
-@freezed
+@Freezed(toStringOverride: false, equal: false)
 sealed class RecoverBullState with _$RecoverBullState {
   const factory RecoverBullState({
     required RecoverBullFlow flow,
@@ -45,4 +45,9 @@ sealed class RecoverBullState with _$RecoverBullState {
   }) = _RecoverBullState;
 
   const RecoverBullState._();
+
+  @override
+  String toString() =>
+      'RecoverBullState(flow: ${flow.name}, isLoading: $isLoading, '
+      'isFlowFinished: $isFlowFinished, privateMaterial: <redacted>)';
 }

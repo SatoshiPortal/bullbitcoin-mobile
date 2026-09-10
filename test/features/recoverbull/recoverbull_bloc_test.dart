@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
@@ -28,6 +29,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 class _MockPickVault extends Mock implements PickVaultUsecase {}
 
@@ -162,6 +164,48 @@ void main() {
     fetchLatestGoogleDriveVaultUsecase: fetchLatestDrive,
     updateLatestEncryptedVaultTestUsecase: updateLatest,
     watchTorConnectionUsecase: watchTor,
+  );
+
+  test(
+    'a foreign creation error cannot expose private material in failure or logs',
+    () async {
+      const secret = 'synthetic-private-provider-error';
+      final originalDirectory = log.dir;
+      final directory = Directory.systemTemp.createTempSync(
+        'bbm_recovery_error_log_',
+      );
+      final logger = Logger.replace(directory: directory);
+      log = logger;
+      addTearDown(() async {
+        await logger.flush();
+        log = Logger.replace(directory: originalDirectory);
+        await directory.delete(recursive: true);
+      });
+      await logger.ensureLogsExist();
+      when(
+        () => createVault.execute(),
+      ).thenThrow(const FormatException(secret));
+      final bloc = buildBloc(flow: RecoverBullFlow.secureVault);
+      addTearDown(bloc.close);
+      bloc.add(const OnVaultPasswordSet(password: '123456'));
+      await bloc.stream.firstWhere((state) => state.vaultPassword != null);
+      bloc.add(
+        const OnVaultProviderSelection(provider: VaultProvider.customLocation),
+      );
+      final state = await bloc.stream.firstWhere(
+        (state) => state.failure != null,
+      );
+      expect(state.failure, isA<RecoverBullUnexpectedFailure>());
+      expect(state.failure!.logMessage, isNull);
+      await logger.flush();
+      final recorded = await logger.logsFile.readAsString();
+      expect(
+        recorded,
+        contains('FormatException'),
+        reason: 'The real failure must reach this capture',
+      );
+      expect(recorded, isNot(contains(secret)));
+    },
   );
 
   test('retains the caller-return mode through the recovery flow', () async {
