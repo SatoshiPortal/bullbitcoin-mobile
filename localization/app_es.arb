@@ -3480,10 +3480,7 @@
   "buyUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "buyBelowMinAmountError": "Está intentando comprar por debajo del monto mínimo.",
   "buyAboveMaxAmountError": "Está intentando comprar por encima del monto máximo.",
-  "buyInsufficientFundsError": "Fondos insuficientes en su cuenta Bull Bitcoin para completar esta compra.",
-  "buyOrderNotFoundError": "No se encontró la orden de compra. Por favor, inténtelo de nuevo.",
   "buyUnexpectedError": "No se ha podido crear su orden en este momento. Vuelva a intentarlo o contacte con el soporte.",
-  "buyOrderAlreadyConfirmedError": "Esta orden de compra ya ha sido confirmada.",
   "withdrawUnauthenticatedError": "No está autenticado. Por favor, inicie sesión para continuar.",
   "withdrawBelowMinAmountError": "Está intentando retirar por debajo del monto mínimo.",
   "withdrawAboveMaxAmountError": "Está intentando retirar por encima del monto máximo.",
@@ -4697,5 +4694,8 @@
   "psbtFlowQrEncodingError": "No se pudo convertir esta transacción en un código QR.",
   "sendErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
   "sendErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
-  "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago."
+  "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
+  "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
+  "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
 }
