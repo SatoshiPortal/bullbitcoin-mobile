@@ -119,6 +119,41 @@ void main() {
     expect(recoverBullDefaultServerUrl, contains('.onion'));
   });
 
+  test('composition imports a legacy custom server URL', () async {
+    final directory = await Directory.systemTemp.createTemp('recoverbull-url-');
+    final core = RecoverBullCore(
+      config: RecoverBullConfig(
+        databasePath: p.join(directory.path, 'state.sqlite'),
+        initialServerUrlOverride: Uri.parse('http://custom-server.onion'),
+        initialPermissionGranted: true,
+      ),
+      dependencies: const RecoverBullDependencies(),
+    );
+
+    try {
+      final settings = await core.serverSettings();
+
+      expect(settings.server, Uri.parse('http://custom-server.onion'));
+      expect(settings.permissionGranted, isTrue);
+    } finally {
+      await core.lifecycle.dispose();
+      await directory.delete(recursive: true);
+    }
+  });
+
+  test('composition does not replace an existing server override', () async {
+    final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    await database.ensureState(
+      initialServerUrlOverride: 'http://existing.onion',
+    );
+    await database.ensureState(initialServerUrlOverride: 'http://legacy.onion');
+
+    final state = await database.select(database.recoverbullState).getSingle();
+
+    expect(state.serverUrlOverride, 'http://existing.onion');
+    await database.close();
+  });
+
   test(
     'fresh settings fetch uses the configured effective default server',
     () async {

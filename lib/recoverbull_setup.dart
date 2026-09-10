@@ -23,14 +23,15 @@ final class RecoverBullSetup {
     required bool startAttemptMonitoring,
   }) async {
     final documents = await getApplicationDocumentsDirectory();
-    final initialPermissionGranted = await _readLegacyPermission(database);
+    final legacySettings = await _readLegacySettings(database);
     final settingsRepository = locator<SettingsRepository>();
     final walletRepository = locator<WalletRepository>();
     final recoverBullLog = log.scoped('recoverbull');
     final composed = await RecoverBullFeature.create(
       config: RecoverBullConfig(
         databasePath: '${documents.path}/recoverbull.sqlite',
-        initialPermissionGranted: initialPermissionGranted,
+        initialPermissionGranted: legacySettings.permissionGranted,
+        initialServerUrlOverride: legacySettings.serverUrl,
       ),
       wallets: _WalletAdapter(walletRepository),
       seeds: _SeedAdapter(locator<SeedRepository>()),
@@ -49,6 +50,10 @@ final class RecoverBullSetup {
     locator.registerSingleton<RecoverBullLifecycle>(composed.lifecycle);
     locator.registerSingleton<RecoverBullLifecyclePort>(composed.lifecycle);
 
+    if (legacySettings.wasImported) {
+      recoverBullLog.fine('recoverbull.migration.legacy_settings_imported');
+    }
+
     // Advisory only: an attempt monitoring outage must never delay app startup. The
     // background composition passes false and therefore does not open this DB.
     if (startAttemptMonitoring) {
@@ -61,14 +66,40 @@ final class RecoverBullSetup {
   }
 }
 
-Future<bool> _readLegacyPermission(SqliteDatabase database) async {
+final class _LegacyRecoverBullSettings {
+  final Uri? serverUrl;
+  final bool permissionGranted;
+
+  const _LegacyRecoverBullSettings({
+    required this.serverUrl,
+    required this.permissionGranted,
+  });
+
+  bool get wasImported => serverUrl != null || permissionGranted;
+}
+
+Future<_LegacyRecoverBullSettings> _readLegacySettings(
+  SqliteDatabase database,
+) async {
   try {
     final row = await (database.select(
       database.recoverbull,
     )..where((table) => table.id.equals(1))).getSingleOrNull();
-    return row?.isPermissionGranted ?? false;
+    Uri? serverUrl;
+    if (row?.url case final rawUrl?) {
+      try {
+        serverUrl = validateRecoverBullServerUrl(Uri.parse(rawUrl));
+      } catch (_) {}
+    }
+    return _LegacyRecoverBullSettings(
+      serverUrl: serverUrl,
+      permissionGranted: row?.isPermissionGranted ?? false,
+    );
   } catch (_) {
-    return false;
+    return const _LegacyRecoverBullSettings(
+      serverUrl: null,
+      permissionGranted: false,
+    );
   }
 }
 

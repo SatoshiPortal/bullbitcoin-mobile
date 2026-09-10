@@ -13,6 +13,9 @@ import '../domain/recoverbull_attempt_alert_port.dart';
 import '../domain/recoverbull_lifecycle_port.dart';
 import '../domain/recoverbull_server_url.dart';
 
+export '../domain/recoverbull_server_url.dart'
+    show validateRecoverBullServerUrl;
+
 /// The production key server. Kept in the package so shell configuration is
 /// not able to accidentally drift from the protocol default.
 const recoverBullDefaultServerUrl =
@@ -25,11 +28,13 @@ typedef RecoverBullTiming =
 final class RecoverBullConfig {
   final String databasePath;
   final Uri? defaultServer;
+  final Uri? initialServerUrlOverride;
   final bool initialPermissionGranted;
 
   const RecoverBullConfig({
     required this.databasePath,
     this.defaultServer,
+    this.initialServerUrlOverride,
     this.initialPermissionGranted = false,
   });
 
@@ -396,21 +401,29 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
   Future<void> open(
     String path, {
     bool initialPermissionGranted = false,
+    Uri? initialServerUrlOverride,
   }) async {
     await _openDatabase(
       path,
       initialPermissionGranted: initialPermissionGranted,
+      initialServerUrlOverride: initialServerUrlOverride?.toString(),
     );
   }
 
   Future<RecoverBullDatabase> openDatabase(
     String path, {
     bool initialPermissionGranted = false,
-  }) => _openDatabase(path, initialPermissionGranted: initialPermissionGranted);
+    Uri? initialServerUrlOverride,
+  }) => _openDatabase(
+    path,
+    initialPermissionGranted: initialPermissionGranted,
+    initialServerUrlOverride: initialServerUrlOverride?.toString(),
+  );
 
   Future<RecoverBullDatabase> _openDatabase(
     String path, {
     bool initialPermissionGranted = false,
+    String? initialServerUrlOverride,
   }) async {
     if (_disposed) throw StateError('RecoverBull lifecycle is disposed');
     if (_database != null && _path == path) return _database!;
@@ -423,6 +436,7 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       final database = RecoverBullDatabase.open(
         path,
         initialPermissionGranted: initialPermissionGranted,
+        initialServerUrlOverride: initialServerUrlOverride,
       );
       await database.forceOpen();
       _database = database;
@@ -436,6 +450,7 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       final database = RecoverBullDatabase.open(
         path,
         initialPermissionGranted: initialPermissionGranted,
+        initialServerUrlOverride: initialServerUrlOverride,
       );
       await database.forceOpen();
       _database = database;
@@ -513,6 +528,7 @@ final class RecoverBullCore {
       final db = await lifecycle._openDatabase(
         config.databasePath,
         initialPermissionGranted: config.initialPermissionGranted,
+        initialServerUrlOverride: config.initialServerUrlOverride?.toString(),
       );
       final row = await db.select(db.recoverbullState).getSingle();
       return RecoverBullStatus(
@@ -528,6 +544,7 @@ final class RecoverBullCore {
     final db = await lifecycle._openDatabase(
       config.databasePath,
       initialPermissionGranted: config.initialPermissionGranted,
+      initialServerUrlOverride: config.initialServerUrlOverride?.toString(),
     );
     final row = await db.select(db.recoverbullState).getSingle();
     return RecoverBullServerSettings(

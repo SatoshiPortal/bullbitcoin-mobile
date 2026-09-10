@@ -3,6 +3,7 @@ library;
 export 'src/public/recoverbull.dart'
     show
         RecoverBullConfig,
+        validateRecoverBullServerUrl,
         RecoverBullTiming,
         RecoverBullStatus,
         RecoverBullLifecycle,

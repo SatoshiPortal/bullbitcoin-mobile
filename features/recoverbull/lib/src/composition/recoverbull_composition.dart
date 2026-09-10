@@ -113,6 +113,7 @@ final class RecoverBullFeature {
     final database = await core.lifecycle.openDatabase(
       config.databasePath,
       initialPermissionGranted: config.initialPermissionGranted,
+      initialServerUrlOverride: config.initialServerUrlOverride,
     );
     final attemptMonitoringStore = RecoverBullAttemptMonitoringStore(database);
     final settingsDatasource = RecoverbullSettingsDatasource(
