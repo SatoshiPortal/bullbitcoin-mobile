@@ -109,6 +109,7 @@ final class RecoverBullFeature {
     final core = RecoverBullCore(
       config: config,
       dependencies: RecoverBullDependencies(timing: timing),
+      log: log,
     );
     final database = await core.lifecycle.openDatabase(
       config.databasePath,

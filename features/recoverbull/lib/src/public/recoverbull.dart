@@ -405,9 +405,12 @@ final class _CallbackAttemptMonitoringRemote
 }
 
 final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
+  final LogSink? _log;
   RecoverBullDatabase? _database;
   String? _path;
   bool _disposed = false;
+
+  RecoverBullLifecycle({this._log});
 
   Future<void> open(
     String path, {
@@ -457,7 +460,8 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       if (!_isCorruption(error)) rethrow;
       await _database?.close();
       _database = null;
-      await _deleteFiles(path);
+      await _archiveCorruptFiles(path);
+      _log?.warning('recoverbull.database.corrupt_archived');
       final database = RecoverBullDatabase.open(
         path,
         initialPermissionGranted: initialPermissionGranted,
@@ -521,6 +525,24 @@ final class RecoverBullLifecycle implements RecoverBullLifecyclePort {
       } catch (_) {}
     }
   }
+
+  static Future<void> _archiveCorruptFiles(String path) async {
+    final timestamp = DateTime.now().toUtc().millisecondsSinceEpoch;
+    final archivePath = '$path.corrupt-$timestamp';
+    final directory = Directory(File(path).parent.path);
+    final prefix = '${File(path).uri.pathSegments.last}.corrupt-';
+    if (await directory.exists()) {
+      await for (final entity in directory.list()) {
+        if (entity is File && entity.uri.pathSegments.last.startsWith(prefix)) {
+          await entity.delete();
+        }
+      }
+    }
+    for (final suffix in ['', '-wal', '-shm', '-journal', '.sqlite-journal']) {
+      final file = File('$path$suffix');
+      if (await file.exists()) await file.rename('$archivePath$suffix');
+    }
+  }
 }
 
 final class RecoverBullCore {
@@ -532,7 +554,8 @@ final class RecoverBullCore {
     required this.config,
     required this.dependencies,
     RecoverBullLifecycle? lifecycle,
-  }) : lifecycle = lifecycle ?? RecoverBullLifecycle();
+    LogSink? log,
+  }) : lifecycle = lifecycle ?? RecoverBullLifecycle(log: log);
 
   Future<RecoverBullStatus> status() async {
     try {
