@@ -297,7 +297,18 @@ final class RecoverBullAttemptMonitoring
         'recoverbull.attempts.monitoring.failed '
         'error_type=${error.runtimeType}',
       );
-      return const [];
+      final unavailable = _publicAlert(
+        const domain_alert.AttemptMonitoringUnavailableAlert(since: null),
+      );
+      if (!_visibleAlerts.any(
+        (alert) => alert.identity == unavailable.identity,
+      )) {
+        _visibleAlerts.add(unavailable);
+        if (!_alertUpdates.isClosed) {
+          _alertUpdates.add(List.unmodifiable(_visibleAlerts));
+        }
+      }
+      return [unavailable];
     }
   }
 

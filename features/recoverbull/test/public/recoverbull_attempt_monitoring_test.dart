@@ -48,6 +48,10 @@ void main() {
       contains('recoverbull.attempts.monitoring.failed error_type='),
     );
     expect(harness.log.entries.single.message, isNot(contains('sentinel')));
+    expect(
+      (await harness.monitoring.check()).single.kind,
+      RecoverBullAttemptAlertKind.unavailable,
+    );
   });
 
   test(
