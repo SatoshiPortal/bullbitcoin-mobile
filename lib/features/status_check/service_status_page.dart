@@ -125,28 +125,43 @@ class _ServiceStatusItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: .stretch,
       children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            shape: .circle,
-            color: _getStatusColor(context),
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: .circle,
+                color: _getStatusColor(context),
+              ),
+            ),
+            const SizedBox(width: 12),
+            BBText(
+              service.name,
+              style: context.font.bodyMedium,
+              color: context.appColors.onSurface,
+            ),
+            const Spacer(),
+            BBText(
+              _getStatusText(context),
+              style: context.font.bodySmall,
+              color: context.appColors.onSurfaceVariant,
+            ),
+          ],
+        ),
+        if (service.isDegraded &&
+            service.reason == ServiceStatusReason.temporarilyUnavailable)
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 4),
+            child: BBText(
+              context.loc.statusCheckTemporarilyUnavailableExplanation,
+              style: context.font.bodySmall,
+              color: context.appColors.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        BBText(
-          service.name,
-          style: context.font.bodyMedium,
-          color: context.appColors.onSurface,
-        ),
-        const Spacer(),
-        BBText(
-          _getStatusText(context),
-          style: context.font.bodySmall,
-          color: context.appColors.onSurfaceVariant,
-        ),
       ],
     );
   }
@@ -157,6 +172,8 @@ class _ServiceStatusItem extends StatelessWidget {
         return context.appColors.success;
       case ServiceStatus.offline:
         return context.appColors.error;
+      case ServiceStatus.degraded:
+        return context.appColors.warning;
       case ServiceStatus.unknown:
       case ServiceStatus.disabled:
         return context.appColors.textMuted;
@@ -169,6 +186,8 @@ class _ServiceStatusItem extends StatelessWidget {
         return context.loc.statusCheckOnline;
       case ServiceStatus.offline:
         return context.loc.statusCheckOffline;
+      case ServiceStatus.degraded:
+        return context.loc.statusCheckDegraded;
       case ServiceStatus.unknown:
         return context.loc.statusCheckUnknown;
       case ServiceStatus.disabled:

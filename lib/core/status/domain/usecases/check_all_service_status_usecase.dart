@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 
 class CheckAllServiceStatusUsecase {
@@ -25,11 +24,13 @@ class CheckAllServiceStatusUsecase {
   final PayjoinPolicyAccess _payjoinPolicy;
   final PayjoinDiagnostics _payjoinDiagnostics;
   final FeesRepository _feesRepository;
-  final WalletRepository _walletRepository;
   final EnsureTorReadyUsecase _ensureTorReadyUsecase;
-  final CheckServerConnectionUsecase _checkServerConnectionUsecase;
+  final RecoverBullFeature? _recoverBull;
   final SettingsRepository _settingsRepository;
   final Tor _tor;
+  final TorRoutePool? routePool;
+  final Future<RecoverBullHealth> Function()? recoverBullHealthProbe;
+  final Future<RecoverBullStatus> Function()? recoverBullStatusProbe;
 
   CheckAllServiceStatusUsecase({
     required this._electrumConnectivityPort,
@@ -37,11 +38,13 @@ class CheckAllServiceStatusUsecase {
     required this._payjoinPolicy,
     required this._payjoinDiagnostics,
     required this._feesRepository,
-    required this._walletRepository,
     required this._ensureTorReadyUsecase,
-    required this._checkServerConnectionUsecase,
+    this._recoverBull,
     required this._settingsRepository,
     required this._tor,
+    this.routePool,
+    this.recoverBullHealthProbe,
+    this.recoverBullStatusProbe,
   });
 
   Future<AllServicesStatus> execute({
@@ -124,6 +127,17 @@ class CheckAllServiceStatusUsecase {
           serviceName: 'Recoverbull',
         ),
       ]);
+
+      // A successful key-server probe is stronger evidence than a concurrent
+      // Tor probe that lost a race while the shared route was being acquired.
+      // Therefore a verdict follows the strongest proof: RecoverBull online
+      // makes Tor available, while any RecoverBull failure leaves Tor unchanged.
+      if (current.recoverbull.status == ServiceStatus.online &&
+          current.tor.status != ServiceStatus.online) {
+        current = current.copyWith(
+          tor: current.tor.copyWith(status: ServiceStatus.online),
+        );
+      }
 
       final completed = current.copyWith(lastChecked: now);
       onUpdate?.call(completed);
@@ -269,23 +283,49 @@ class CheckAllServiceStatusUsecase {
       } on ArgumentError {
         return status.copyWith(status: ServiceStatus.offline);
       }
-      final external = await _tor.external.verify(endpoint);
-      return status.copyWith(
-        status: external is TorReady
-            ? ServiceStatus.online
-            : ServiceStatus.offline,
-      );
+      try {
+        final lease =
+            await (routePool?.acquire(
+                  key: 'external:${endpoint.host}:${endpoint.port}',
+                  open: () async {
+                    final result = await _tor.external.verify(endpoint);
+                    if (result case TorReady(:final route)) return route;
+                    throw StateError('External Tor unavailable');
+                  },
+                  close: () async {},
+                ) ??
+                Future<TorRouteLease>.error(StateError('No route pool')));
+        await lease.release();
+        return status.copyWith(status: ServiceStatus.online);
+      } catch (_) {
+        if (routePool == null) {
+          final external = await _tor.external.verify(endpoint);
+          return status.copyWith(
+            status: external is TorReady
+                ? ServiceStatus.online
+                : ServiceStatus.offline,
+          );
+        }
+        return status.copyWith(status: ServiceStatus.offline);
+      }
     }
     return status.copyWith(status: await _checkEmbeddedTorIfRequired());
   }
 
   Future<ServiceStatus> _checkEmbeddedTorIfRequired() async {
-    if (!await _walletRepository.isTorRequired()) return ServiceStatus.unknown;
+    final recoverBullStatus =
+        await (recoverBullStatusProbe?.call() ??
+            _recoverBull?.status() ??
+            Future.value(const RecoverBullStatus.unavailable()));
+    if (!recoverBullStatus.isKnown || !recoverBullStatus.hasEncryptedBackup) {
+      return ServiceStatus.unknown;
+    }
     return _checkEmbeddedTorConnection();
   }
 
-  Future<ServiceStatus> _checkEmbeddedTorConnection() async =>
-      switch (await _ensureTorReadyUsecase.execute().timeout(
+  Future<ServiceStatus> _checkEmbeddedTorConnection() async {
+    if (routePool == null) {
+      return switch (await _ensureTorReadyUsecase.execute().timeout(
         _torStatusTimeout,
         onTimeout: () => const TorUninitialized(),
       )) {
@@ -293,6 +333,39 @@ class CheckAllServiceStatusUsecase {
           ServiceStatus.online,
         _ => ServiceStatus.offline,
       };
+    }
+    try {
+      TorSession? session;
+      final lease = await routePool!.acquire(
+        key: 'embedded',
+        open: () async {
+          final state = await _ensureTorReadyUsecase.execute().timeout(
+            _torStatusTimeout,
+            onTimeout: () => const TorUninitialized(),
+          );
+          if (state case TorReady(
+            :final route,
+          ) when route.source == TorSource.embedded) {
+            session = await _tor.embedded.sessions.open();
+            return TorRoute(
+              source: route.source,
+              endpoint: session!.endpoint,
+              evidence: route.evidence,
+              transport: session!.transport,
+            );
+          }
+          throw StateError('Embedded Tor unavailable');
+        },
+        close: () async {
+          await session?.close();
+        },
+      );
+      await lease.release();
+      return ServiceStatus.online;
+    } catch (_) {
+      return ServiceStatus.offline;
+    }
+  }
 
   Future<ServiceStatusInfo> _checkRecoverbullConnection() async {
     final status = ServiceStatusInfo(
@@ -301,20 +374,23 @@ class CheckAllServiceStatusUsecase {
       lastChecked: DateTime.now(),
     );
 
-    if (!await _walletRepository.isTorRequired()) return status;
-
-    // Delegated rather than reimplemented: this is the same "can we reach the
-    // key server over Tor" question the RecoverBull flow asks, and one answer
-    // for both keeps the screen and the flow from disagreeing.
-    final result = await _checkServerConnectionUsecase.execute().timeout(
-      _torStatusTimeout,
-      onTimeout: () => const Ok(false),
-    );
+    final health =
+        await (recoverBullHealthProbe?.call() ??
+                _recoverBull?.checkService() ??
+                Future.value(RecoverBullHealth.timeout))
+            .timeout(
+              _torStatusTimeout,
+              onTimeout: () => RecoverBullHealth.timeout,
+            );
     return status.copyWith(
-      status: switch (result) {
-        Ok(value: true) => ServiceStatus.online,
+      status: switch (health) {
+        RecoverBullHealth.online => ServiceStatus.online,
+        RecoverBullHealth.temporarilyUnavailable => ServiceStatus.degraded,
         _ => ServiceStatus.offline,
       },
+      reason: health == RecoverBullHealth.temporarilyUnavailable
+          ? ServiceStatusReason.temporarilyUnavailable
+          : null,
     );
   }
 

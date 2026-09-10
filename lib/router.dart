@@ -27,8 +27,7 @@ import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/recoverbull/router.dart';
-import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -187,8 +186,7 @@ class AppRouter {
       ElectrumSettingsRouter.route,
       MempoolSettingsRoute.route,
       ...ImportQrDeviceRouter.routes,
-      RecoverBullRouter.route,
-      RecoverBullGoogleDriveRouter.route,
+      ...locator<RecoverBullFeature>().routes,
       LabelsRouter.route,
       StatusCheckRouter.route,
     ],

@@ -8,10 +8,9 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_navigation.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAssets, Gap;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -65,7 +64,7 @@ class PaymentReceivedPage extends StatelessWidget {
         children: [
           const Spacer(),
           Gif(
-            image: AssetImage(Assets.animations.successTick.path),
+            image: BullAssets.animations.successTick,
             autostart: Autostart.once,
             height: 100,
             width: 100,

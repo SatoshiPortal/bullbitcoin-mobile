@@ -525,15 +525,9 @@ class WalletRepository {
   }
 
   Future<bool> isTorRequired() async {
-    final defaultWallets = await getWallets(
-      onlyDefaults: true,
-      onlyBitcoin: true,
-      environment: Environment.mainnet,
-    );
-
-    if (defaultWallets.isEmpty) return false;
-
-    return defaultWallets.first.latestEncryptedBackup != null;
+    // RecoverBull status is package-owned. Callers that need this policy use
+    // RecoverBull.status() rather than reading wallet metadata.
+    return false;
   }
 
   Future<int> getAmountSentToAddress({

@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullAssets, Gap;
 import 'package:gif/gif.dart';
 
 String formatSinpePhoneNumber(String? phoneNumber, String fallback) {
@@ -55,7 +54,7 @@ class SinpeReceiptCard extends StatelessWidget {
           children: [
             if (showSuccessAnimation) ...[
               Gif(
-                image: AssetImage(Assets.animations.successTick.path),
+                image: BullAssets.animations.successTick,
                 autostart: Autostart.once,
                 width: 150,
                 height: 150,

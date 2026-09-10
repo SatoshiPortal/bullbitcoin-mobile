@@ -11,6 +11,7 @@ import 'domain/ports/external_tor_port.dart';
 import 'domain/ports/socket_port.dart';
 import 'domain/entities/tor_transport.dart';
 import 'domain/tor_repository.dart';
+import 'domain/tor_route_pool.dart';
 import 'domain/usecases/close_tor_usecase.dart';
 import 'domain/usecases/ensure_tor_ready_usecase.dart';
 import 'domain/usecases/get_tor_connection_usecase.dart';
@@ -47,6 +48,7 @@ final class TorLocator {
     locator.registerLazySingleton<TorHttpClientFactory>(
       TorHttpClientFactory.new,
     );
+    locator.registerLazySingleton<TorRoutePool>(TorRoutePool.new);
   }
 
   static void registerRepositories(

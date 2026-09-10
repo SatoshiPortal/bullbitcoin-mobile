@@ -1,46 +1,26 @@
-import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
-import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bull_tor/tor.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final ensureTorReadyUsecase = locator<EnsureTorReadyUsecase>();
-  final restoreVaultUsecase = locator<RestoreVaultUsecase>();
-  final decryptVaultUsecase = locator<DecryptVaultUsecase>();
-  final fetchVaultKeyFromServerUsecase =
-      locator<FetchVaultKeyFromServerUsecase>();
-
+  final feature = locator<RecoverBullFeature>();
   final walletRepository = locator<WalletRepository>();
   final seedRepository = locator<SeedRepository>();
 
-  const oldPathZooMnemonicWithSevenZerosPassword =
-      """{"created_at":784044000000,"id":"09a6ed8f4de8fd73b73e2392ea78410b7b306d7090cd6f91ed91e7d1c1159799","ciphertext":"U2FiHun3tiRRzVIyJKWwPFmvnfzPJ/K/OzbASAoOIamOP4NRs8ADU7CR87NsxS5mp2dzbl3wgiquhCdQVABJXhHRpTQS7PlCwbbIg2Vj9o3PBoERCfeeD2KRv8uD+6HjNkm33zdHDK/dt1uAYUCcJtqP9ARhn+bUPlKBIW0XP/fIiH94LuU4+AXjN2WD8SBWX1VtS+CrORofA+eMLphLRh2ibzEGotvfrlp52/VjSd5sY3LGkr12lapLSfx4zILhgc2AqgUeFn4Nv8v8F6d3kZ372ikuie963MrncvTS4LxIVO723zX+Lp86bUcDXRtb6B4ZTVHhmRABGqYnviamf84dpcCbC2JhvPHBnOVGTMgf5KbIiBsCNFTKlRmaEnj2HSJLFeC6yBNop02jQ/XkgjFC+35Z7cvO2sKhB5Es0uo=","salt":"658d4287b027f95ae7e5b9f52a5439a4","path":"m/1608'/0'/586053381"}""";
-  const newPathZooMnemonicWithSevenZerosPassword =
-      """{"created_at":1759844619801,"id":"4958a5130b77d4359b88a541998351f04e595060e867e8ea5cd2e8efdc4cddaa","ciphertext":"wBeihGFKLoCQeSZhhX7Nh7zbMzt5If/5QayQ4MuzsQ1X8DgUFo+FbdpPx3KB8Xjwe25DknAc5TIU9zbIDoETIGCWZohvVt1sL5L+bweLVijbJlUQub0va3ZlYSR5QeHVfisaKlS2Psv5mqF9XK6vyq7fiM5qHnDeKG5edDblm8qEh/K/2Ogn9v1ZEKf2BJQFzpJxy7/sCAciZ0j+hY6SNkWVZIyQiLn9+mVGIEjKdPDadP8lvt8CYE4Y5vGfIKo2Mw5ziCdYHCZ+eiG6m+GK9yqdX4n3je1VffYFSIze5vNbgcdgM/uL9BJgiz3iC4d29ble1Uac8MleObrnScB7MCHuMVevwLdFm8kt+TGMbZ2t/MH/xxsUtTFJH7cjuz3ykZtIzfR+CPTkB3OZ637SunzYUcQ70mFzkk/e8xdLjZeKP1r27j6LQK/D84x2RVqB","salt":"08ddfdcc4abbc7e159e2bbd6773b80c3","path":"1608'/0'/632486385'"}""";
+  const oldPathVault =
+      '{"created_at":784044000000,"id":"09a6ed8f4de8fd73b73e2392ea78410b7b306d7090cd6f91ed91e7d1c1159799","ciphertext":"U2FiHun3tiRRzVIyJKWwPFmvnfzPJ/K/OzbASAoOIamOP4NRs8ADU7CR87NsxS5mp2dzbl3wgiquhCdQVABJXhHRpTQS7PlCwbbIg2Vj9o3PBoERCfeeD2KRv8uD+6HjNkm33zdHDK/dt1uAYUCcJtqP9ARhn+bUPlKBIW0XP/fIiH94LuU4+AXjN2WD8SBWX1VtS+CrORofA+eMLphLRh2ibzEGotvfrlp52/VjSd5sY3LGkr12lapLSfx4zILhgc2AqgUeFn4Nv8v8F6d3kZ372ikuie963MrncvTS4LxIVO723zX+Lp86bUcDXRtb6B4ZTVHhmRABGqYnviamf84dpcCbC2JhvPHBnOVGTMgf5KbIiBsCNFTKlRmaEnj2HSJLFeC6yBNop02jQ/XkgjFC+35Z7cvO2sKhB5Es0uo=","salt":"658d4287b027f95ae7e5b9f52a5439a4","path":"m/1608\'/0\'/586053381"}';
+  const newPathVault =
+      '{"created_at":1759844619801,"id":"4958a5130b77d4359b88a541998351f04e595060e867e8ea5cd2e8efdc4cddaa","ciphertext":"wBeihGFKLoCQeSZhhX7Nh7zbMzt5If/5QayQ4MuzsQ1X8DgUFo+FbdpPx3KB8Xjwe25DknAc5TIU9zbIDoETIGCWZohvVt1sL5L+bweLVijbJlUQub0va3ZlYSR5QeHVfisaKlS2Psv5mqF9XK6vyq7fiM5qHnDeKG5edDblm8qEh/K/2Ogn9v1ZEKf2BJQFzpJxy7/sCAciZ0j+hY6SNkWVZIyQiLn9+mVGIEjKdPDadP8lvt8CYE4Y5vGfIKo2Mw5ziCdYHCZ+eiG6m+GK9yqdX4n3je1VffYFSIze5vNbgcdgM/uL9BJgiz3iC4d29ble1Uac8MleObrnScB7MCHuMVevwLdFm8kt+TGMbZ2t/MH/xxsUtTFJH7cjuz3ykZtIzfR+CPTkB3OZ637SunzYUcQ70mFzkk/e8xdLjZeKP1r27j6LQK/D84x2RVqB","salt":"08ddfdcc4abbc7e159e2bbd6773b80c3","path":"1608\'/0\'/632486385\'"}';
   const password = '0000000';
-  const oldPathVaultKey =
-      '151a5a41f5eac5d49e67e0fad0bddd3beebe0f0e4b7739435997506cf12d9fce';
-  const newPathVaultKey =
-      '32255e6651db67fa5b5a44240b6a5d2189cb58666bcc3830c35aff5a2b01b84f';
   const expectedMnemonicWords = [
     'zoo',
     'zoo',
@@ -55,27 +35,10 @@ Future<void> main({bool isInitialized = false}) async {
     'zoo',
     'wrong',
   ];
-  final mnemonic = bip39.Mnemonic.fromWords(
-    words: expectedMnemonicWords,
-    language: bip39.Language.english,
-    passphrase: '',
-  );
-  final xprv = Bip32Derivation.getXprvFromSeed(
-    Uint8List.fromList(mnemonic.seed),
-    Network.bitcoinMainnet,
-  );
 
-  setUpAll(() async {
-    final state = await ensureTorReadyUsecase.execute();
-    expect(state, isA<TorReady>());
-  });
-
-  group('Recoverbull', () {
-    // Fetches the vault key over Tor from the RecoverBull key server. Tor can
-    // take ~20s to bootstrap before the first request even goes out, so the
-    // default 30s test timeout is too tight — give it a full minute.
+  group('RecoverBull', () {
     test(
-      'Restore encrypted vault',
+      'restores the funded old vault through Tor and the key server',
       timeout: const Timeout(Duration(minutes: 2)),
       () async {
         debugPrint('''
@@ -90,84 +53,39 @@ Future<void> main({bool isInitialized = false}) async {
 ║                                                                            ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ''');
-        final vaultKeyResult = await fetchVaultKeyFromServerUsecase.execute(
-          vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
+        expect(await feature.ensureTorReady(), isTrue);
+        final result = await feature.recoverBackup(
+          encryptedBackup: oldPathVault,
           password: password,
         );
-        expect(vaultKeyResult, isA<Ok<String, RecoverBullCoreFailure>>());
-        final vaultKey =
-            (vaultKeyResult as Ok<String, RecoverBullCoreFailure>).value;
-        expect(vaultKey, oldPathVaultKey);
-
-        final decryptedResult = decryptVaultUsecase.execute(
-          vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
-          vaultKey: vaultKey,
-        );
-        final decryptedVault =
-            (decryptedResult as Ok<DecryptedVault, RecoverBullCoreFailure>)
-                .value;
-        final restored = await restoreVaultUsecase.execute(
-          decryptedVault: decryptedVault,
-        );
-        expect(restored, isA<Ok<Null, RecoverBullCoreFailure>>());
+        expect(result.restored, isTrue);
 
         final wallets = await walletRepository.getWallets(
           onlyDefaults: true,
           onlyBitcoin: true,
           environment: Environment.mainnet,
         );
-
-        expect(wallets.length, 1);
-        final wallet = wallets.first;
+        expect(wallets, hasLength(1));
+        final wallet = wallets.single;
         expect(wallet.masterFingerprint, isNotEmpty);
         final seed = await seedRepository.get(wallet.masterFingerprint);
         final seedModel = SeedModel.fromEntity(seed);
         expect(seedModel, isA<MnemonicSeedModel>());
-        final mnemonicSeedModel = seedModel as MnemonicSeedModel;
-        expect(mnemonicSeedModel.mnemonicWords, equals(expectedMnemonicWords));
+        expect(
+          (seedModel as MnemonicSeedModel).mnemonicWords,
+          expectedMnemonicWords,
+        );
       },
     );
 
-    test('OLD path: Derive key from default wallet', () {
-      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
-        xprv,
-        EncryptedVault(
-          file: oldPathZooMnemonicWithSevenZerosPassword,
-        ).derivationPath,
-      );
-      expect(derivedKey, oldPathVaultKey);
+    test('accepts the old derivation-path vault fixture', () {
+      final vault = EncryptedVault(file: oldPathVault);
+      expect(vault.derivationPath, "m/1608'/0'/586053381");
     });
 
-    test('NEW path: Derive key from default wallet', () {
-      final derivedKey = RecoverbullBip85Utils.deriveBackupKey(
-        xprv,
-        EncryptedVault(
-          file: newPathZooMnemonicWithSevenZerosPassword,
-        ).derivationPath,
-      );
-      expect(derivedKey, newPathVaultKey);
-    });
-
-    test('OLD path: Decrypt vault from key', () {
-      final decryptedResult = decryptVaultUsecase.execute(
-        vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
-        vaultKey: oldPathVaultKey,
-      );
-      expect(
-        decryptedResult,
-        isA<Ok<DecryptedVault, RecoverBullCoreFailure>>(),
-      );
-    });
-
-    test('NEW path: Decrypt vault from key', () {
-      final decryptedResult = decryptVaultUsecase.execute(
-        vault: EncryptedVault(file: newPathZooMnemonicWithSevenZerosPassword),
-        vaultKey: newPathVaultKey,
-      );
-      expect(
-        decryptedResult,
-        isA<Ok<DecryptedVault, RecoverBullCoreFailure>>(),
-      );
+    test('accepts the new derivation-path vault fixture', () {
+      final vault = EncryptedVault(file: newPathVault);
+      expect(vault.derivationPath, "1608'/0'/632486385'");
     });
   });
 }

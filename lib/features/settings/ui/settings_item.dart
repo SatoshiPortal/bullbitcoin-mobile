@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
-import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
@@ -223,7 +223,10 @@ List<SettingsItem> buildSettingsItems({
         localization.backupSettingsRecoverBullSettings,
       ),
       icon: Icons.cloud_circle,
-      open: (context) => const RecoverBullFacade().openSettings(context),
+      open: (context) => context.pushNamed(
+        RecoverBullRoute.recoverbullFlows.name,
+        extra: const RecoverBullFlowsExtra(flow: RecoverBullFlow.settings),
+      ),
       keywords: _keywords(
         localization.settingsSearchRecoverbullKeywords,
         english.settingsSearchRecoverbullKeywords,

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 part 'backup_settings_cubit.freezed.dart';
 part 'backup_settings_state.dart';
@@ -13,10 +14,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   BackupSettingsCubit({
     required this._getWalletsUsecase,
     required this._settingsRepository,
+    required this._recoverBullStatus,
   }) : super(BackupSettingsState());
 
   final GetWalletsUsecase _getWalletsUsecase;
   final SettingsRepository _settingsRepository;
+  final Future<RecoverBullStatus> Function() _recoverBullStatus;
 
   Future<void> checkBackupStatus() async {
     try {
@@ -32,9 +35,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final isDefaultPhysicalBackupTested = defaultWallets.every(
         (e) => e.isPhysicalBackupTested,
       );
-      final isDefaultEncryptedBackupTested = defaultWallets.every(
-        (e) => e.isEncryptedVaultTested,
-      );
+      final recoverBullStatus = await _recoverBullStatus();
 
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
@@ -42,19 +43,25 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         isTestnet: environment.isTestnet,
         isLiquid: false,
       );
+      final currentNetworkWallets = defaultWallets
+          .where((wallet) => wallet.network == network)
+          .toList(growable: false);
+      final hasEncryptedBackup = recoverBullStatus.isKnown
+          ? recoverBullStatus.hasEncryptedBackup
+          : false;
+      final isDefaultEncryptedBackupTested = recoverBullStatus.isKnown
+          ? recoverBullStatus.hasVerifiedEncryptedBackup
+          : false;
 
-      final lastPhysicalBackup = defaultWallets
-          .firstWhere((e) => e.network == network)
-          .latestPhysicalBackup;
-      final lastEncryptedBackup = defaultWallets
-          .firstWhere((e) => e.network == network)
-          .latestEncryptedBackup;
+      final lastPhysicalBackup = currentNetworkWallets.isEmpty
+          ? null
+          : currentNetworkWallets.first.latestPhysicalBackup;
       emit(
         state.copyWith(
           isDefaultPhysicalBackupTested: isDefaultPhysicalBackupTested,
+          hasEncryptedBackup: hasEncryptedBackup,
           isDefaultEncryptedBackupTested: isDefaultEncryptedBackupTested,
           lastPhysicalBackup: lastPhysicalBackup,
-          lastEncryptedBackup: lastEncryptedBackup,
           status: BackupSettingsStatus.success,
           failure: null,
         ),

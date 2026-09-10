@@ -2,15 +2,14 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -27,11 +26,6 @@ class _MockPayjoinPolicyAccess extends Mock implements PayjoinPolicyAccess {}
 class _MockPayjoinDiagnostics extends Mock implements PayjoinDiagnostics {}
 
 class _MockFeesRepository extends Mock implements FeesRepository {}
-
-class _MockCheckServerConnectionUsecase extends Mock
-    implements CheckServerConnectionUsecase {}
-
-class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockEnsureTorReadyUsecase extends Mock
     implements EnsureTorReadyUsecase {}
@@ -50,6 +44,14 @@ SettingsEntity _settings({required bool useTorProxy, int port = 9050}) =>
       useTorProxy: useTorProxy,
       torProxyPort: port,
     );
+
+TorRoute _route(TorSource source) => TorRoute(
+  source: source,
+  endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9050),
+  evidence: source == TorSource.embedded
+      ? TorReadinessEvidence.embeddedBootstrap
+      : TorReadinessEvidence.externalSocksHandshake,
+);
 
 void main() {
   setUpAll(() {
@@ -75,10 +77,8 @@ void main() {
     ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final payjoinDiagnostics = _MockPayjoinDiagnostics();
-    final walletRepository = _MockWalletRepository();
     // Tor is not required for this wallet, so neither the Tor nor the
     // RecoverBull probe is reached — the point of the test is Payjoin.
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     when(
       payjoinPolicy.load,
     ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
@@ -95,9 +95,7 @@ void main() {
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: payjoinDiagnostics,
       feesRepository: feesRepository,
-      walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
       settingsRepository: settingsRepository,
       tor: tor,
     );
@@ -112,8 +110,6 @@ void main() {
   test(
     'reports configured external Tor ready without a backup wallet',
     () async {
-      final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final electrum = _MockElectrumConnectivityPort();
       when(
         () => electrum.checkServersInUseAreOnlineForNetwork(any()),
@@ -155,9 +151,7 @@ void main() {
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
-        walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
         settingsRepository: settingsRepository,
         tor: tor,
       );
@@ -165,15 +159,12 @@ void main() {
       final status = await usecase.execute(network: Network.bitcoinMainnet);
 
       expect(status.tor.status, ServiceStatus.online);
-      verify(walletRepository.isTorRequired).called(1);
     },
   );
 
   test(
     'reports configured external Tor unavailable without a backup wallet',
     () async {
-      final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final electrum = _MockElectrumConnectivityPort();
       when(
         () => electrum.checkServersInUseAreOnlineForNetwork(any()),
@@ -212,9 +203,7 @@ void main() {
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
-        walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
         settingsRepository: settingsRepository,
         tor: tor,
       );
@@ -222,7 +211,6 @@ void main() {
       final status = await usecase.execute(network: Network.bitcoinMainnet);
 
       expect(status.tor.status, ServiceStatus.offline);
-      verify(walletRepository.isTorRequired).called(1);
     },
   );
 
@@ -253,8 +241,6 @@ void main() {
         () => feesRepository.getNetworkFees(network: any(named: 'network')),
       ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
 
-      final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final settingsRepository = _MockSettingsRepository();
       when(
         () => settingsRepository.fetch(),
@@ -270,9 +256,7 @@ void main() {
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
-        walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
         settingsRepository: settingsRepository,
         tor: _MockTor(),
       );
@@ -323,8 +307,6 @@ void main() {
       () => feesRepository.getNetworkFees(network: any(named: 'network')),
     ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
 
-    final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     final settingsRepository = _MockSettingsRepository();
     when(settingsRepository.fetch).thenThrow(Exception('Tor probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
@@ -339,9 +321,7 @@ void main() {
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
       feesRepository: feesRepository,
-      walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
       settingsRepository: settingsRepository,
       tor: _MockTor(),
     );
@@ -385,8 +365,6 @@ void main() {
       when(
         payjoinPolicy.load,
       ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
-      final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final settingsRepository = _MockSettingsRepository();
       when(
         () => settingsRepository.fetch(),
@@ -398,9 +376,7 @@ void main() {
         payjoinPolicy: payjoinPolicy,
         payjoinDiagnostics: _MockPayjoinDiagnostics(),
         feesRepository: feesRepository,
-        walletRepository: walletRepository,
         ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
         settingsRepository: settingsRepository,
         tor: _MockTor(),
       );
@@ -433,8 +409,6 @@ void main() {
     when(
       payjoinPolicy.load,
     ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
-    final walletRepository = _MockWalletRepository();
-    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     final settingsRepository = _MockSettingsRepository();
     when(
       () => settingsRepository.fetch(),
@@ -446,9 +420,7 @@ void main() {
       payjoinPolicy: payjoinPolicy,
       payjoinDiagnostics: _MockPayjoinDiagnostics(),
       feesRepository: feesRepository,
-      walletRepository: walletRepository,
       ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-      checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
       settingsRepository: settingsRepository,
       tor: _MockTor(),
     );
@@ -458,4 +430,171 @@ void main() {
       throwsA(isA<StateError>()),
     );
   });
+
+  test(
+    'opens one route during a complete check with both probes active',
+    () async {
+      final pool = TorRoutePool();
+      final events = <TorRoutePoolEvent>[];
+      final callsStarted = Completer<void>();
+      final leasesAcquired = Completer<void>();
+      final routeOpen = Completer<TorRoute>();
+      var probeCalls = 0;
+      var leaseCount = 0;
+      var closes = 0;
+      Future<TorRouteLease> acquireProbe() async {
+        probeCalls++;
+        if (probeCalls == 2) callsStarted.complete();
+        final lease = await pool.acquire(
+          key: 'embedded',
+          open: () async {
+            await callsStarted.future;
+            return routeOpen.future;
+          },
+          close: () async => closes++,
+          onEvent: events.add,
+        );
+        leaseCount++;
+        if (leaseCount == 2) leasesAcquired.complete();
+        return lease;
+      }
+
+      final usecase = _usecase(
+        settings: _settings(useTorProxy: false),
+        routePool: pool,
+        recoverBullHealthProbe: () async {
+          final lease = await acquireProbe();
+          await leasesAcquired.future;
+          await lease.release();
+          return RecoverBullHealth.online;
+        },
+        recoverBullStatusProbe: () async {
+          final lease = await acquireProbe();
+          await leasesAcquired.future;
+          await lease.release();
+          return const RecoverBullStatus.unavailable();
+        },
+      );
+
+      final resultFuture = usecase.execute(network: Network.bitcoinMainnet);
+      await callsStarted.future;
+      routeOpen.complete(_route(TorSource.embedded));
+      await resultFuture;
+
+      expect(
+        events.where((event) => event.type == TorRoutePoolEventType.opened),
+        hasLength(1),
+      );
+      expect(
+        events.where((event) => event.type == TorRoutePoolEventType.attached),
+        hasLength(1),
+      );
+      expect(events.map((event) => event.holders), containsAll([1, 2]));
+      expect(closes, 1);
+    },
+  );
+
+  test('promotes Tor to available when RecoverBull is online', () async {
+    final usecase = _usecase(
+      settings: _settings(useTorProxy: false),
+      recoverBullHealthProbe: () async => RecoverBullHealth.online,
+      recoverBullStatusProbe: () async => const RecoverBullStatus.unavailable(),
+    );
+
+    final result = await usecase.execute(network: Network.bitcoinMainnet);
+
+    expect(result.tor.status, ServiceStatus.online);
+    expect(result.tor.status, isNot(ServiceStatus.unknown));
+  });
+
+  test('does not promote Tor when RecoverBull fails or times out', () async {
+    for (final health in [
+      RecoverBullHealth.offline,
+      RecoverBullHealth.timeout,
+    ]) {
+      final usecase = _usecase(
+        settings: _settings(useTorProxy: false),
+        recoverBullHealthProbe: () async => health,
+        recoverBullStatusProbe: () async =>
+            const RecoverBullStatus.unavailable(),
+      );
+
+      final result = await usecase.execute(network: Network.bitcoinMainnet);
+
+      expect(result.tor.status, ServiceStatus.unknown);
+      expect(result.recoverbull.status, ServiceStatus.offline);
+    }
+  });
+
+  test('keeps the successful verdict over a concurrent failure', () async {
+    final torFailure = Completer<TorConnectionState>();
+    final recoverBullHealth = Completer<RecoverBullHealth>();
+    final ensureTor = _MockEnsureTorReadyUsecase();
+    when(() => ensureTor.execute()).thenAnswer((_) => torFailure.future);
+    final usecase = _usecase(
+      settings: _settings(useTorProxy: false),
+      ensureTor: ensureTor,
+      routePool: TorRoutePool(),
+      recoverBullHealthProbe: () => recoverBullHealth.future,
+      recoverBullStatusProbe: () async => const RecoverBullStatus.initial(),
+    );
+
+    final resultFuture = usecase.execute(network: Network.bitcoinMainnet);
+    torFailure.complete(
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorUnexpectedFailure('concurrent failure'),
+      ),
+    );
+    recoverBullHealth.complete(RecoverBullHealth.online);
+    final result = await resultFuture;
+
+    expect(result.recoverbull.status, ServiceStatus.online);
+    expect(result.tor.status, ServiceStatus.online);
+  });
+}
+
+CheckAllServiceStatusUsecase _usecase({
+  required SettingsEntity settings,
+  _MockTor? tor,
+  _MockEnsureTorReadyUsecase? ensureTor,
+  TorRoutePool? routePool,
+  Future<RecoverBullHealth> Function()? recoverBullHealthProbe,
+  Future<RecoverBullStatus> Function()? recoverBullStatusProbe,
+}) {
+  final electrum = _MockElectrumConnectivityPort();
+  when(
+    () => electrum.checkServersInUseAreOnlineForNetwork(any()),
+  ).thenAnswer((_) async => true);
+  final exchangeRate = _MockExchangeRateRepository();
+  when(
+    () => exchangeRate.getCurrencyValue(
+      amountSat: any(named: 'amountSat'),
+      currency: any(named: 'currency'),
+    ),
+  ).thenAnswer((_) async => 1);
+  final fees = _MockFeesRepository();
+  when(
+    () => fees.getNetworkFees(network: any(named: 'network')),
+  ).thenAnswer((_) async => throw Exception('Mempool probe disabled'));
+  final payjoinPolicy = _MockPayjoinPolicyAccess();
+  when(
+    payjoinPolicy.load,
+  ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+  final settingsRepository = _MockSettingsRepository();
+  when(settingsRepository.fetch).thenAnswer((_) async => settings);
+
+  return CheckAllServiceStatusUsecase(
+    electrumConnectivityPort: electrum,
+    exchangeRateRepository: exchangeRate,
+    payjoinPolicy: payjoinPolicy,
+    payjoinDiagnostics: _MockPayjoinDiagnostics(),
+    feesRepository: fees,
+    ensureTorReadyUsecase: ensureTor ?? _MockEnsureTorReadyUsecase(),
+    settingsRepository: settingsRepository,
+    tor: tor ?? _MockTor(),
+    routePool: routePool,
+    recoverBullHealthProbe: recoverBullHealthProbe,
+    recoverBullStatusProbe: recoverBullStatusProbe,
+  );
 }

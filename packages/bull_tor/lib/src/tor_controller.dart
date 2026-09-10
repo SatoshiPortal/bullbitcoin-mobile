@@ -49,6 +49,8 @@ class EmbeddedTor {
 
   Stream<TorConnectionState> get states => _watch.execute();
 
+  WatchTorConnectionUsecase get watcher => _watch;
+
   Future<TorConnectionState> ensureReady() => _ensureReady.execute();
 
   Future<TorConnectionState> retry() => _retry.execute();

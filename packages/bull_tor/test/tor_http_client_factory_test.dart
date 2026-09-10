@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bull_tor/tor.dart';
+import 'package:socks5_proxy/enums.dart';
+import 'package:socks5_proxy/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -97,4 +99,129 @@ void main() {
       expect(targetConnected.isCompleted, isFalse);
     },
   );
+
+  test('closes the proxy socket when HTTPS negotiation fails', () async {
+    final proxy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final closed = Completer<void>();
+    proxy.listen((socket) {
+      var greeted = false;
+      var connected = false;
+      final bytes = <int>[];
+      socket.listen(
+        (chunk) {
+          bytes.addAll(chunk);
+          if (!greeted && bytes.length >= 3) {
+            greeted = true;
+            bytes.clear();
+            socket.add([0x05, 0x00]);
+          } else if (greeted && !connected && bytes.length >= 7) {
+            connected = true;
+            socket.add([0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0, 443]);
+            socket.add([0x15, 0x03, 0x03, 0x00, 0x02, 0x02, 0x28]);
+            bytes.clear();
+          }
+        },
+        onDone: () {
+          if (!closed.isCompleted) closed.complete();
+        },
+      );
+    });
+    addTearDown(proxy.close);
+    final client = const TorHttpClientFactory().create(
+      TorProxyEndpoint(host: '127.0.0.1', port: proxy.port),
+    );
+    addTearDown(() => client.close(force: true));
+
+    await expectLater(
+      client
+          .getUrl(Uri.parse('https://destination.invalid/'))
+          .timeout(const Duration(seconds: 1)),
+      throwsA(anything),
+    );
+    await closed.future.timeout(const Duration(seconds: 2));
+  });
+
+  test('records and rethrows a connection-factory failure', () async {
+    final recorder = TorConnectionFailureRecorder();
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.hostUnreachable,
+    );
+    final attempt = recorder.begin();
+
+    await expectLater(
+      attempt.run(() async {
+        recorder.record(error);
+        throw error;
+      }),
+      throwsA(same(error)),
+    );
+    expect(attempt.take(), SocksConnectionFailureCause.onionServiceUnreachable);
+  });
+
+  test('records a failure while awaiting the connection task socket', () async {
+    final recorder = TorConnectionFailureRecorder();
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.connectionRefused,
+    );
+    final socketFailure = Completer<Socket>();
+    final attempt = recorder.begin();
+    final socket = expectLater(
+      attempt.run(() async {
+        recorder.record(error);
+        await socketFailure.future;
+      }),
+      throwsA(same(error)),
+    );
+    socketFailure.completeError(error);
+    await socket;
+    expect(attempt.take(), SocksConnectionFailureCause.serviceRefused);
+  });
+
+  test('does not attribute a late failure to a concurrent operation', () async {
+    final recorder = TorConnectionFailureRecorder();
+    final first = recorder.begin();
+    final second = recorder.begin();
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.connectionRefused,
+    );
+    await expectLater(
+      first.run(() async {
+        recorder.record(error);
+        throw error;
+      }),
+      throwsA(same(error)),
+    );
+    expect(second.take(), isNull);
+  });
+
+  test('does not attribute a cause observed outside any attempt', () {
+    final recorder = TorConnectionFailureRecorder();
+
+    recorder.recordCause(SocksConnectionFailureCause.serviceRefused);
+
+    final attempt = recorder.begin();
+    expect(attempt.take(), isNull);
+  });
+
+  test('does not consume a late failure through a reused connection', () async {
+    final recorder = TorConnectionFailureRecorder();
+    final first = recorder.begin();
+    final second = recorder.begin();
+    final error = const SocksClientConnectionCommandFailedException(
+      CommandReplyCode.connectionRefused,
+    );
+
+    final lateFailureObserved = Completer<void>();
+    await first.run(() async {
+      Timer.run(() {
+        recorder.record(error);
+        lateFailureObserved.complete();
+      });
+    });
+    expect(first.take(), isNull);
+
+    await second.run(() => lateFailureObserved.future);
+    expect(first.take(), SocksConnectionFailureCause.serviceRefused);
+    expect(second.take(), isNull);
+  });
 }

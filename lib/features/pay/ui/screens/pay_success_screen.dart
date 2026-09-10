@@ -5,9 +5,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +26,7 @@ class PaySuccessScreen extends StatelessWidget {
       headline: context.loc.payCompleted,
       onClose: () => context.goNamed(ExchangeRoute.exchangeHome.name),
       icon: Gif(
-        image: AssetImage(Assets.animations.successTick.path),
+        image: BullAssets.animations.successTick,
         autostart: Autostart.once,
         height: 100,
         width: 100,
