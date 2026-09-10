@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
@@ -20,6 +21,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -291,6 +293,95 @@ void main() {
     expect(facts.single.derivationPath, "m/84'/0'/0'");
     expect(facts.single.seedPassphraseUsed, isTrue);
   });
+
+  for (final isDefault in [false, true]) {
+    for (final passphraseUsed in [false, true]) {
+      test(
+        'descriptor upgrade retains recovery identity (default: $isDefault, passphrase: $passphraseUsed)',
+        () async {
+          final seed = SeedModel.mnemonic(
+            mnemonicWords: [...List.filled(11, 'abandon'), 'about'],
+            passphrase: passphraseUsed ? 'synthetic-upgrade-passphrase' : null,
+          ).toEntity();
+          final provenance = isDefault
+              ? WalletProvenance.defaultSeed
+              : WalletProvenance.importedMnemonic;
+          final derived = await WalletMetadataService.deriveFromSeed(
+            seed: seed,
+            network: Network.bitcoinMainnet,
+            scriptType: ScriptType.bip84,
+            isDefault: isDefault,
+            provenance: provenance,
+          );
+          final imported = await wallets.importDescriptor(
+            descriptor: derived.publicDescriptor,
+            network: derived.network,
+            label: 'Saved wallet label',
+          );
+          final birthday = DateTime.utc(2020, 1, 1);
+          await metadata.store(
+            (await metadata.fetch(imported.id))!.copyWith(birthday: birthday),
+          );
+
+          final upgraded = await wallets.createWallet(
+            seed: seed,
+            network: derived.network,
+            scriptType: ScriptType.bip84,
+            isDefault: isDefault,
+            provenance: provenance,
+            birthday: DateTime.utc(2026, 1, 1),
+          );
+
+          final stored = (await metadata.fetch(imported.id))!;
+          expect(upgraded.id, imported.id);
+          expect(upgraded.id, isNot(derived.id));
+          expect(stored.provenance, provenance);
+          expect(stored.seedPassphraseUsed, passphraseUsed);
+          expect(stored.birthday, birthday);
+          expect(
+            stored.label,
+            isDefault ? 'Secure Bitcoin' : 'Saved wallet label',
+          );
+          expect(stored.signers.single.signer, Signer.local);
+          expect(await metadata.fetchAll(), hasLength(1));
+          expect(await wallets.getWalletDefinitions(), isEmpty);
+          expect(await wallets.getLocallyKeyedWalletIds(), {imported.id});
+          final fact =
+              (await wallets.getSeedDerivedWalletRecoveryFacts()).single;
+          expect(fact.walletId, imported.id);
+          expect(fact.derivationPath, "m/84'/0'/0'");
+          expect(fact.scriptType, ScriptType.bip84);
+          expect(fact.seedPassphraseUsed, passphraseUsed);
+          expect(
+            await wallets.matchesSeedDerivedRecoveryIdentity(
+              walletId: fact.walletId,
+              seedFingerprint: seed.masterFingerprint,
+              network: fact.network,
+              scriptType: fact.scriptType,
+              provenance: provenance,
+              derivationPath: fact.derivationPath,
+              seedPassphraseUsed: passphraseUsed,
+            ),
+            isTrue,
+          );
+        },
+      );
+    }
+  }
+
+  test(
+    'recovery facts use signer paths, not a descriptor-origin wallet ID',
+    () async {
+      final source = await importSource(
+        provenance: WalletProvenance.importedMnemonic,
+        seedPassphraseUsed: false,
+      );
+      final facts = await wallets.getSeedDerivedWalletRecoveryFacts();
+      expect(facts.single.walletId, source.id);
+      expect(facts.single.scriptType, ScriptType.bip84);
+      expect(facts.single.derivationPath, "m/84'/0'/0'");
+    },
+  );
 
   test('emits only backed-up catalogue changes', () async {
     final source = await importSource();

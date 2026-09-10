@@ -196,6 +196,8 @@ class WalletRepository
           isDefault: existing.isDefault || isDefault,
           label: isDefault ? metadata.label : existing.label,
           birthday: existing.birthday ?? metadata.birthday,
+          provenance: metadata.provenance,
+          seedPassphraseUsed: metadata.seedPassphraseUsed,
         );
       }
     }
@@ -506,7 +508,11 @@ class WalletRepository
               walletId: metadata.id,
               seedFingerprint: Fingerprint(metadata.masterFingerprint),
               network: metadata.network,
-              scriptType: metadata.scriptType,
+              scriptType:
+                  metadata.inferredScriptType ??
+                  (throw const FormatException(
+                    'Unsupported seed wallet script',
+                  )),
               provenance: metadata.provenance,
               derivationPath: _recoveryPath(metadata),
               seedPassphraseUsed: metadata.seedPassphraseUsed,
@@ -659,7 +665,7 @@ class WalletRepository
     return metadata.masterFingerprint.toLowerCase() ==
             seedFingerprint.toLowerCase() &&
         metadata.network == network &&
-        metadata.scriptType == scriptType &&
+        metadata.inferredScriptType == scriptType &&
         metadata.provenance == provenance &&
         metadata.seedPassphraseUsed == seedPassphraseUsed &&
         metadata.isDefault == (provenance == WalletProvenance.defaultSeed) &&
@@ -1163,9 +1169,9 @@ WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
     );
 
 String _recoveryPath(WalletMetadataModel metadata) {
-  final origin = metadata.decodeOrigin;
-  final account = origin.account.endsWith('h')
-      ? "${origin.account.substring(0, origin.account.length - 1)}'"
-      : origin.account;
-  return "m/${origin.script.purpose}'/${origin.network.coinType}'/$account";
+  // A descriptor wallet keeps its hashed ID when upgraded with a seed.
+  // Its verified signer row, not that ID, owns the account derivation path.
+  final path = metadata.signers.single.descriptorKeys.single.derivationPath;
+  if (path == null) throw const FormatException('Missing seed wallet origin');
+  return path.replaceAll('h', "'").replaceAll('H', "'");
 }
