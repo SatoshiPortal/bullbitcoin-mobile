@@ -8346,19 +8346,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "buyInsufficientFundsError": "এই ক্ৰয় অৰ্ডাৰ সম্পন্ন কৰিবলৈ আপোনাৰ Bull Bitcoin account-ত পৰ্যাপ্ত পুঁজি নাই।",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
-  "buyOrderNotFoundError": "ক্ৰয় অৰ্ডাৰ পোৱা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
   "buyUnexpectedError": "আপোনাৰ অৰ্ডাৰ এই মুহূৰ্তত সৃষ্টি কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সমৰ্থনৰ সৈতে যোগাযোগ কৰক।",
-  "buyOrderAlreadyConfirmedError": "এই ক্ৰয় অৰ্ডাৰ ইতিমধ্যে নিশ্চিত হৈছে।",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "withdrawUnauthenticatedError": "আপুনি প্ৰমাণীকৃত নহয়। অব্যাহত ৰাখিবলৈ অনুগ্ৰহ কৰি লগইন কৰক।",
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"

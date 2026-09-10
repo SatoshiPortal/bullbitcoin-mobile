@@ -1942,10 +1942,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "ไม่สามารถสร้างคำสั่งซื้อของคุณได้ในขณะนี้ กรุณาลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
-  "buyOrderAlreadyConfirmedError": "ซื้อการสั่งซื้อนี้ได้รับการยืนยัน.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "โอนธนาคาร",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -2210,10 +2206,6 @@
   "sellOrderPlaced": "ขายคําสั่งซื้อที่ประสบความสําเร็จ",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "จํานวนเงินไม่เพียงพอในบัญชี Bitcoin ของคุณเพื่อเสร็จสมบูรณ์.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "ตรวจสอบให้แน่ใจว่าคุณติดตั้งเวอร์ชันล่าสุดของแอป Bitcoin จาก Ledger Live.",
   "@ledgerHelpStep4": {
@@ -2601,10 +2593,6 @@
   "payAccountNumberHint": "ใส่บัญชี",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "ซื้อการสั่งซื้อ กรุณาลองอีกครั้ง.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "อย่าไม่ได้ ",
   "@backupWalletGoogleDrivePrivacyMessage2": {

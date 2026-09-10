@@ -1911,10 +1911,6 @@
     "description": "Label for custom mempool server URL input field"
   },
   "buyUnexpectedError": "আপনার অর্ডার এই মুহূর্তে তৈরি করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
-  "buyOrderAlreadyConfirmedError": "এই ক্রয় অর্ডারটি ইতিমধ্যেই নিশ্চিত করা হয়েছে।",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
   "fundExchangeArsBankTransferTitle": "ব্যাংক স্থানান্তর",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -2167,10 +2163,6 @@
   "sellOrderPlaced": "বিক্রয় আদেশ সফলভাবে স্থাপন হয়েছে",
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
-  },
-  "buyInsufficientFundsError": "এই ক্রয় অর্ডারটি সম্পূর্ণ করতে Bull Bitcoin অ্যাকাউন্টে পর্যাপ্ত তহবিল নেই",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
   },
   "ledgerHelpStep4": "লেজার লাইভ থেকে বিটকয়েন অ্যাপটির সর্বশেষ সংস্করণটি ইনস্টল করা হয়েছে কিনা নিশ্চিত করুন।",
   "@ledgerHelpStep4": {
@@ -2545,10 +2537,6 @@
   "payAccountNumberHint": "অ্যাকাউন্ট নম্বর লিখুন",
   "@payAccountNumberHint": {
     "description": "Hint for account number input"
-  },
-  "buyOrderNotFoundError": "ক্রয় অর্ডারটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে পুনরায় চেষ্টা করুন।",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
   },
   "backupWalletGoogleDrivePrivacyMessage2": "ছাড়বে না ",
   "@backupWalletGoogleDrivePrivacyMessage2": {

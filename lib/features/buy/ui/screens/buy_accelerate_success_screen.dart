@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,12 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buyOrder = context.select((BuyBloc bloc) => bloc.state.buyOrder);
+    // This route builds its own bloc and refreshes the order on entry, so a
+    // failed refresh is the reason "View details" is missing — say so instead
+    // of leaving an empty slot.
+    final BuyFailure? accelerateFailure = context.select(
+      (BuyBloc bloc) => bloc.state.accelerateFailure,
+    );
 
     return PopScope(
       canPop: false,
@@ -66,6 +74,16 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: .min,
               children: [
+                if (accelerateFailure != null) ...[
+                  Text(
+                    accelerateFailure.toTranslated(context),
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 if (buyOrder != null)
                   BBButton.big(
                     label: context.loc.buyViewDetails,

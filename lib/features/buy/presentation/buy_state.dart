@@ -5,7 +5,6 @@ sealed class BuyState with _$BuyState {
   const factory BuyState({
     @Default(false) bool isStarted,
     UserSummary? userSummary,
-    GetExchangeUserSummaryException? getUserSummaryException,
     @Default({}) Map<String, double> balances,
     @Default('') String amountInput,
     @Default(true) bool isFiatCurrencyInput,
@@ -13,24 +12,17 @@ sealed class BuyState with _$BuyState {
     @Default('') String currencyInput,
     @Default(0.0) double exchangeRate,
     @Default([]) List<Wallet> wallets,
-    GetWalletsException? getWalletsException,
     Wallet? selectedWallet,
     @Default('') String bitcoinAddressInput,
-    GetReceiveAddressException? getNewReceiveAddressException,
     @Default(false) bool isCreatingOrder,
-    BuyError? createOrderBuyError,
     @Default(false) bool isRefreshingOrder,
-    RefreshBuyOrderException? refreshBuyOrderException,
     @Default(false) bool isConfirmingOrder,
-    ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
     @Default(false) bool payjoinGloballyEnabled,
     @Default(true) bool isPayjoinEnabled,
     FeeOptions? accelerationNetworkFees,
-    GetNetworkFeesException? getNetworkFeesException,
-    ConvertSatsToCurrencyAmountException? convertSatsToCurrencyAmountException,
     @Default(false) bool isAcceleratingOrder,
-    AccelerateBuyOrderException? accelerateBuyOrderException,
+    BuyFailure? failure,
   }) = _BuyState;
   const BuyState._();
 
@@ -105,6 +97,25 @@ sealed class BuyState with _$BuyState {
   bool get hasDestination {
     return selectedWallet != null || bitcoinAddressInput.isNotEmpty;
   }
+
+  /// One slot per screen that renders a failure.
+  ///
+  /// The input, confirm and success screens share a single bloc, so within
+  /// that shell [buyOrder] is what tells them apart: nothing reaches the
+  /// confirm screen before an order exists, and the input screen is gone once
+  /// one does.
+  BuyFailure? get inputFailure => buyOrder == null ? failure : null;
+
+  /// The success screen shares this slot but deliberately renders nothing: its
+  /// only failure source is the 5s background payjoin poll, which the next tick
+  /// clears, and an error under a completed order would alarm for nothing.
+  BuyFailure? get confirmFailure => buyOrder == null ? null : failure;
+
+  /// The accelerate routes each build their own bloc, so [buyOrder] says
+  /// nothing about who a failure belongs to — it is still null while the entry
+  /// refresh, the fee read and the rate read can each fail. Every failure that
+  /// reaches an accelerate bloc belongs to the screen showing it.
+  BuyFailure? get accelerateFailure => failure;
 
   bool get canOfferPayjoin =>
       payjoinGloballyEnabled &&

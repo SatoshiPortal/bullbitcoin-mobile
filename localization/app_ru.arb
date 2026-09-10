@@ -646,7 +646,6 @@
   },
   "mempoolCustomServerUrl": "Адрес сервера",
   "buyUnexpectedError": "Не удалось создать ваш заказ. Попробуйте снова или обратитесь в поддержку.",
-  "buyOrderAlreadyConfirmedError": "Этот заказ уже подтвержден.",
   "fundExchangeArsBankTransferTitle": "Банковский перевод",
   "transactionLabelReceiveAmount": "Получить сумму",
   "sendServerNetworkFees": "Фейсы сети сервера",
@@ -732,7 +731,6 @@
     }
   },
   "sellOrderPlaced": "Заказ выполнен успешно",
-  "buyInsufficientFundsError": "Недостаточные средства на вашем счете Bull Bitcoin для завершения этого заказа покупки.",
   "ledgerHelpStep4": "Убедитесь, что вы установили последнюю версию приложения Bitcoin от Ledger Live.",
   "recoverbullPleaseWait": "Подождите, пока мы установим безопасное соединение...",
   "broadcastSignedTxBroadcast": "Broadcast",
@@ -868,7 +866,6 @@
   "buyCompleteKyc": "Полный KYC",
   "vaultSuccessfullyImported": "Ваше хранилище было успешно импортировано",
   "payAccountNumberHint": "Номер счета",
-  "buyOrderNotFoundError": "Заказ на покупку не был найден. Попробуй еще раз.",
   "backupWalletGoogleDrivePrivacyMessage2": "не будет ",
   "payAddressRequired": "Требуется адрес",
   "payTotalAmount": "Общая сумма",

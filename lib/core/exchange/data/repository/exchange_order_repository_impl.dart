@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -185,8 +184,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const BuyError.unauthenticated();
+      if (apiKeyModel == null) {
+        throw ApiKeyNotFoundException();
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyInactiveException();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createBuyOrder(
@@ -202,16 +205,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
 
       return order;
-    } on BullBitcoinApiMinAmountException catch (e) {
-      throw BuyError.belowMinAmount(
-        minAmount: e.minAmount,
-        currency: e.currency,
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      throw BuyError.aboveMaxAmount(
-        maxAmount: e.maxAmount,
-        currency: e.currency,
-      );
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to place buy order: $e');
     }
@@ -330,12 +329,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! BuyOrder) {
-        throw Exception(
-          'Expected BuyOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('BuyOrder');
       }
 
       return order;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to confirm buy order: $e');
     }
@@ -407,12 +406,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! BuyOrder) {
-        throw const BuyError.unexpected(
-          message: 'Expected BuyOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('BuyOrder');
       }
 
       return order;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to refresh order: $e');
     }
@@ -524,6 +523,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet) as BuyOrder;
 
       return order;
+    } on ApiKeyException {
+      rethrow;
     } catch (e) {
       throw Exception('Failed to dequeue and pay order: $e');
     }

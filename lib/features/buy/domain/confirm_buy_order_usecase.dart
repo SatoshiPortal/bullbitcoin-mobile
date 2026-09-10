@@ -1,8 +1,11 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class ConfirmBuyOrderUsecase {
@@ -18,7 +21,10 @@ class ConfirmBuyOrderUsecase {
     required this._labelsFacade,
   });
 
-  Future<BuyOrder> execute({required String orderId}) async {
+  @useResult
+  Future<Result<BuyOrder, BuyFailure>> execute({
+    required String orderId,
+  }) async {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
@@ -36,14 +42,21 @@ class ConfirmBuyOrderUsecase {
         );
       }
 
-      return order;
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      throw ConfirmBuyOrderException('$e');
+      return Ok(order);
+    } on ApiKeyException catch (e, st) {
+      log.severe(
+        message: 'Cannot confirm the buy order: not authenticated',
+        error: e,
+        trace: st,
+      );
+      return Err(BuyUnauthenticatedFailure(e.message));
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to confirm the buy order',
+        error: e,
+        trace: st,
+      );
+      return Err(BuyUnexpectedFailure('$e'));
     }
   }
-}
-
-class ConfirmBuyOrderException extends BullException {
-  ConfirmBuyOrderException(super.message);
 }

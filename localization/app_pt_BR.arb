@@ -11251,10 +11251,6 @@
   "@withdrawOwnershipQuestion": {
     "description": "Question asking about account ownership"
   },
-  "buyOrderNotFoundError": "A ordem de compra não foi encontrada. Por favor, tente novamente.",
-  "@buyOrderNotFoundError": {
-    "description": "Error message for order not found during buy"
-  },
   "navigationTabExchange": "Troca",
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
@@ -11291,14 +11287,6 @@
     "description": "Error message for amount above maximum during buy"
   },
   "buyUnexpectedError": "Não foi possível criar seu pedido neste momento. Tente novamente ou entre em contato com o suporte.",
-  "buyOrderAlreadyConfirmedError": "Esta ordem de compra já foi confirmada.",
-  "@buyOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed buy order"
-  },
-  "buyInsufficientFundsError": "Fundos insuficientes em sua conta Bull Bitcoin para completar esta ordem de compra.",
-  "@buyInsufficientFundsError": {
-    "description": "Error message for insufficient funds during buy"
-  },
   "appInitErrorTitle": "Falha ao iniciar o aplicativo",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
