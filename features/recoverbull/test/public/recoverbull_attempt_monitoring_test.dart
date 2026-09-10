@@ -7,9 +7,23 @@ import 'package:bull_recoverbull/src/attempt_monitoring/recoverbull_attempt_moni
 import 'package:bull_recoverbull/src/database/recoverbull_database.dart';
 import 'package:bull_recoverbull/src/domain/entities/attempt_alert.dart';
 import 'package:bull_recoverbull/src/public/recoverbull.dart';
+import 'package:recoverbull/recoverbull.dart';
 import '../support/log_sink.dart';
 
 void main() {
+  test('stores the client contract digest over raw identifier bytes', () async {
+    final database = RecoverBullDatabase.forTesting(NativeDatabase.memory());
+    addTearDown(database.close);
+    await database.ensureState();
+    final store = RecoverBullAttemptMonitoringStore(database);
+    const identifier = [0, 1, 2, 3];
+
+    expect(
+      store.digestFor(identifier),
+      _bytesFromHex(attemptsIdHash(identifier)),
+    );
+  });
+
   test('logs a safe monitoring success', () async {
     final harness = await _Harness.create();
     addTearDown(harness.close);

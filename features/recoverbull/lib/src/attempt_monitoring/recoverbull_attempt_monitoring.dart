@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:crypto/crypto.dart';
+import 'package:convert/convert.dart' as convert;
 import 'package:drift/drift.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 import '../database/recoverbull_database.dart';
 import '../domain/entities/key_server_attempts.dart';
@@ -670,7 +671,7 @@ final class RecoverBullAttemptMonitoringStore {
   }
 
   static Uint8List _digest(List<int> value) =>
-      Uint8List.fromList(sha256.convert(value).bytes);
+      Uint8List.fromList(convert.hex.decode(attemptsIdHash(value)));
   static List<int> _decodeHash(String value) => Uint8List.fromList(
     List<int>.generate(
       value.length ~/ 2,
