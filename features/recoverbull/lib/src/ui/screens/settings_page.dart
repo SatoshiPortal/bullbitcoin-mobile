@@ -69,6 +69,30 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _cancelEdit() => setState(() => _isEditing = false);
 
+  Future<void> _setMonitoringEnabled(bool enabled) async {
+    if (!enabled) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(context.loc.recoverbullMonitoringDisableTitle),
+          content: Text(context.loc.recoverbullMonitoringDisableWarning),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(context.loc.recoverbullMonitoringDisableCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(context.loc.recoverbullMonitoringDisableConfirm),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+    }
+    await widget.cubit.setMonitoringEnabled(enabled);
+  }
+
   Future<void> _openRecoverBullWebsite() async {
     final uri = Uri.parse('https://recoverbull.com/');
     if (await canLaunchUrl(uri)) {
@@ -188,7 +212,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             BullSwitch(
                               value: monitoring.enabled,
-                              onChanged: widget.cubit.setMonitoringEnabled,
+                              onChanged: _setMonitoringEnabled,
                             ),
                           ],
                         ),
