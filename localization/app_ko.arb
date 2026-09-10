@@ -128,15 +128,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "recoverbullGoogleDriveErrorDisplay": "오류: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "주문 서버",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -247,10 +238,6 @@
   "satsSuffix": " 뚱 베어",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
-  },
-  "recoverbullErrorPasswordNotSet": "비밀번호 설정",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "sellSendPaymentExchangeRate": "환율",
   "@sellSendPaymentExchangeRate": {
@@ -389,15 +376,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "recoverbullReenterConfirm": "확인하려면 {inputType}를 다시 입력하십시오.",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "클립보드에 복사",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -422,17 +400,9 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "recoverbullSelectVaultImportSuccess": "당신의 vault는 성공적으로 수입되었습니다",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
   "mempoolServerNotUsed": "사용되지 않음 (custom server active)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
-  },
-  "recoverbullSelectErrorPrefix": "오류:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
   },
   "exchangeLandingRecommendedExchange": "Bitcoin 교환",
   "@exchangeLandingRecommendedExchange": {
@@ -441,10 +411,6 @@
   "backupWalletHowToDecideVaultMoreInfo": "자세한 내용은 recoverbull.com 방문.",
   "@backupWalletHowToDecideVaultMoreInfo": {
     "description": "Link text to external resource about vault locations"
-  },
-  "recoverbullGoBackEdit": "<< 돌아가고 편집",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "receiveConfirming": "확인... ({count}/{required})",
   "@receiveConfirming": {
@@ -536,15 +502,6 @@
   "broadcastSignedTxFee": "요금안내",
   "@broadcastSignedTxFee": {
     "description": "Label for transaction fee"
-  },
-  "recoverbullRecoveryBalanceLabel": "밸런스: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "buyFundYourAccount": "계정 생성",
   "@buyFundYourAccount": {
@@ -711,10 +668,6 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "recoverbullTorNetwork": "Tor 네트워크",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "transactionDetailLabelTransferStatus": "전송 상태",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -828,10 +781,6 @@
   "exchangeStatisticsTitle": "관련 기사",
   "@exchangeStatisticsTitle": {
     "description": "Title for the statistics screen"
-  },
-  "recoverbullErrorConnectionFailed": "대상 키 서버에 연결 실패. 나중에 다시 시도하십시오!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "디지털 복사",
   "@testBackupDigitalCopy": {
@@ -1060,10 +1009,6 @@
   "@ledgerVerifyTitle": {
     "description": "Title for verifying an address on Ledger device"
   },
-  "recoverbullSwitchToPassword": "비밀번호로",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "exchangeDcaNetworkBitcoin": "Bitcoin 네트워크",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -1087,10 +1032,6 @@
   "transactionSwapDescLnSendDefault": "교환은 진행 중입니다. 이 프로세스는 자동화되어 완료할 수 있습니다.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
-  },
-  "recoverbullErrorMissingBytes": "Tor 응답에서 바이트를 밀어. Retry 하지만 문제가 발생하면 Tor와 일부 장치에 대한 알려진 문제입니다.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "coreScreensReceiveNetworkFeeLabel": "네트워크 수수료",
   "@coreScreensReceiveNetworkFeeLabel": {
@@ -1139,10 +1080,6 @@
   "payPaymentInProgress": "결제 진행 중!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "recoverbullFailed": "뚱 베어",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "payOrderAlreadyConfirmed": "이 지불 순서는 이미 확인되었습니다.",
   "@payOrderAlreadyConfirmed": {
@@ -1687,15 +1624,6 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "recoverbullEnterToDecrypt": "당신의 볼트를 해독하기 위해 {inputType}를 입력하십시오.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "지원하다",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
@@ -1703,10 +1631,6 @@
   "testBackupSuccessTitle": "성공적으로 완료된 테스트!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "자주 묻는 질문",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "sendConfirmCustomFee": "자주 묻는 질문",
   "@sendConfirmCustomFee": {
@@ -1839,10 +1763,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "Google 드라이브에서 vault를 태워",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "systemLabelExchangeBuy": "구매하기",
   "@systemLabelExchangeBuy": {
     "description": "System label for exchange buy transactions"
@@ -1966,10 +1886,6 @@
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
-  "recoverbullErrorVaultCreationFailed": "Vault 생성 실패, 그것은 파일 또는 열쇠일 수 있습니다",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "sellSendPaymentFeePriority": "요금 우선",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
@@ -1986,10 +1902,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "백업 없음",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
   },
   "sellSelectNetwork": "네트워크",
   "@sellSelectNetwork": {
@@ -2071,10 +1983,6 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "다른 기본 지갑은 이미 존재합니다. 하나의 기본 지갑만 가질 수 있습니다.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "지불 할 수 있습니다.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -2082,10 +1990,6 @@
   "payNoInvoiceData": "사용 가능한 청구서",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "recoverbullErrorInvalidCredentials": "이 백업 파일에 대한 잘못된 암호",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "paySinpeMonto": "계정 정보",
   "@paySinpeMonto": {
@@ -2211,10 +2115,6 @@
   "@ledgerHelpStep4": {
     "description": "Fourth troubleshooting step for Ledger connection issues"
   },
-  "recoverbullPleaseWait": "보안 연결을 설정하는 동안 기다리십시오 ...",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "broadcastSignedTxBroadcast": "- 연혁",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2257,10 +2157,6 @@
   "transactionLabelAmountReceived": "지불 방법",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
-  },
-  "recoverbullRecoveryTitle": "Recoverbull vault 복구",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "broadcastSignedTxScanQR": "하드웨어 지갑에서 QR 코드를 스캔",
   "@broadcastSignedTxScanQR": {
@@ -2476,10 +2372,6 @@
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
-  "recoverbullVaultCreatedSuccess": "Vault는 성공적으로 만들었습니다",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "계정 정보",
   "@payAmount": {
     "description": "Label for amount"
@@ -2646,10 +2538,6 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "로컬 백업 키 derivation 실패.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "충분한 균형",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2657,15 +2545,6 @@
   "transactionLabelFromWallet": "지갑에서",
   "@transactionLabelFromWallet": {
     "description": "Label for source wallet"
-  },
-  "recoverbullErrorRateLimited": "가격 제한. 다시 시도 {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
   },
   "importWatchOnlyExtendedPublicKey": "회사 소개 이름 *",
   "@importWatchOnlyExtendedPublicKey": {
@@ -2694,15 +2573,6 @@
   "networkFeeLabel": "네트워크 요금",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
-  },
-  "recoverbullMemorizeWarning": "지갑에 액세스할 수 있도록 {inputType}를 기억해야합니다. 적어도 6개의 손가락이어야 합니다. 이 {inputType}를 잃으면 백업을 복구 할 수 없습니다.",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadDocumentsTitle": "문서 업로드",
   "@exchangeFileUploadDocumentsTitle": {
@@ -2743,10 +2613,6 @@
   "importQrDeviceJadeFirmwareWarning": "최신 펌웨어 업데이트 확인",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
-  },
-  "recoverbullSelectFileNotSelectedError": "선택되지 않음",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "buyInputContinue": "계속하기",
   "@buyInputContinue": {
@@ -2808,15 +2674,6 @@
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "recoverbullEnterToTest": "Vault를 테스트하려면 {inputType}를 입력하십시오.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescription1": "아래 세부 사항을 사용하여 은행 계좌에서 은행 송금을 보내십시오 ",
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
@@ -2840,10 +2697,6 @@
   "importQrDeviceSpecterStep10": "Specter 지갑에 대한 라벨을 입력하고 가져 오기",
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
-  },
-  "recoverbullSelectVaultSelected": "Vault 선택",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "dcaWalletTypeBitcoin": "비트 코인 (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -2880,10 +2733,6 @@
   "transactionOrderLabelPayoutAmount": "결제 금액",
   "@transactionOrderLabelPayoutAmount": {
     "description": "Label for order payout amount"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "백업 키를 수동으로 입력 >>",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exportingVaultButton": "수출 ...",
   "@exportingVaultButton": {
@@ -2976,10 +2825,6 @@
   "swapYouReceive": "견적 요청",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "recoverbullSelectCustomLocationProvider": "주문 위치",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "electrumInvalidRetryError": "잘못된 Retry 카운트 값: {value}",
   "@electrumInvalidRetryError": {
@@ -3118,10 +2963,6 @@
   "kruxStep16": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "선택한 백업 파일은 손상됩니다.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "buyVerifyIdentity": "ID 찾기",
   "@buyVerifyIdentity": {
@@ -3265,10 +3106,6 @@
   "@jadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "recoverbullSelectDriveBackups": "드라이브 백업",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "exchangeAuthOk": "이름 *",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -3321,14 +3158,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "BitBox 장치에서 페어링 코드를 확인하십시오 ...",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
-  },
-  "recoverbullKeyServer": "키 서버 ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "이 암호는 너무 일반적입니다. 다른 것을 선택하십시오",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "backupInstruction3": "당신의 12 단어 백업에 액세스 할 수있는 사람은 Bitcoins을 훔칠 수 있습니다. 그것을 잘 숨깁니다.",
   "@backupInstruction3": {
@@ -3450,10 +3279,6 @@
   "@walletNetworkBitcoinTestnet": {
     "description": "Network label for Bitcoin testnet"
   },
-  "recoverbullSeeMoreVaults": "더 보기 vaults",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "sellPayFromWallet": "지갑에서 지불",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -3554,10 +3379,6 @@
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
-  "recoverbullSelectQuickAndEasy": "빠르고 & 쉬운",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
-  },
   "exchangeFileUploadTitle": "보안 파일 업로드",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -3597,10 +3418,6 @@
   "fundExchangeBankTransferSubtitle": "은행 계좌에서 은행 송금",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
-  },
-  "recoverbullErrorInvalidVaultFile": "잘못된 vault 파일.",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
   },
   "sellProcessingOrder": "주문 처리 ...",
   "@sellProcessingOrder": {
@@ -3669,10 +3486,6 @@
   "sellBitcoinAmount": "비트 코인 금액",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "recoverbullTestCompletedTitle": "성공적으로 완료된 테스트!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
   },
   "transactionFilterReceive": "이름 *",
   "@transactionFilterReceive": {
@@ -3774,10 +3587,6 @@
   "fundExchangeWarningConfirmation": "나는 내가 다른 사람에 의해 Bitcoin을 구입하는 것을 요청하지 않다는 것을 확인합니다.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "사용자 정의 위치에서 파일을 선택 해제",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "사용자 정의 서버 삭제?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3906,10 +3715,6 @@
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
   },
-  "recoverbullPasswordTooShort": "비밀번호는 최소 6자 이상이어야 합니다",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
-  },
   "payNetwork": "회사연혁",
   "@payNetwork": {
     "description": "Label for network"
@@ -4030,10 +3835,6 @@
   "payTransitNumberHint": "전송 번호",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "대신 PIN을 선택하십시오",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "QR 코드",
   "@payQrCode": {
@@ -4370,10 +4171,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "recoverbullSelectNoBackupsFound": "백업 없음",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "importMnemonicNestedSegwit": "연락처",
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
@@ -4462,15 +4259,6 @@
   "importColdcardButtonOpenCamera": "카메라 열기",
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "recoverbullReenterRequired": "재입력 {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payFeePriority": "요금 우선",
   "@payFeePriority": {
@@ -4564,10 +4352,6 @@
   "autoswapWarningExplanation": "잔액이 최대 잔액을 초과하면 스왑이 트리거됩니다. 대상 잔액은 즉시 결제 지갑에 보관되며 나머지 금액은 Secure Bitcoin Wallet으로 교환됩니다.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "Recoverbull vault 복구",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "passportStep14": "지금 방송 할 준비가되었습니다! 방송을 클릭하면 거래가 Bitcoin 네트워크에 게시되고 자금이 전송됩니다.",
   "@passportStep14": {
@@ -4714,10 +4498,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "당신의 vault는 성공적으로 수입되었습니다",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "백업 파일을 저장하는 동시에 백업 키를 저장하지 않는 것이 중요합니다. 항상 별도의 장치 또는 별도의 클라우드 공급자에 저장합니다.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -4803,15 +4583,6 @@
   "keyServerLabel": "키 서버 ",
   "@keyServerLabel": {
     "description": "Label for key server status"
-  },
-  "recoverbullEnterToView": "{inputType}를 입력하여 볼트 키를 볼 수 있습니다.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payReviewPayment": "회사 소개",
   "@payReviewPayment": {
@@ -4948,10 +4719,6 @@
   "failedToDeriveBackupKey": "백업 키에 실패",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "Google Drive에서 vault 내보내기",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "exchangeKycLevelLight": "제품 정보",
   "@exchangeKycLevelLight": {
@@ -5247,17 +5014,9 @@
   "@sellSendPaymentCadBalance": {
     "description": "CAD balance payout method"
   },
-  "recoverbullConnectingTor": "Tor에 키 서버 연결.\n1 분까지 걸릴 수 있습니다.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
   "fundExchangeCanadaPostStep2": "2. 명세 \"Loadhub\" QR 코드를 스캔하는 캐비티를 요청하십시오",
   "@fundExchangeCanadaPostStep2": {
     "description": "Step 2 for Canada Post payment process"
-  },
-  "recoverbullEnterVaultKeyInstead": "Vault 키를 대신 입력",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
   },
   "exchangeAccountInfoEmailLabel": "이름 *",
   "@exchangeAccountInfoEmailLabel": {
@@ -5278,10 +5037,6 @@
   "electrumBitcoinServerInfo": "형식의 서버 주소를 입력하십시오 : 호스트 : 포트 (예 : example.com : 50001)",
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
-  },
-  "recoverbullErrorServiceUnavailable": "서비스 제공 자주 묻는 질문.",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
   },
   "sendErrorInsufficientBalanceForSwap": "Liquid를 통해 이 스왑을 지불하고 Bitcoin을 통해 지불 할 수 없습니다.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5425,10 +5180,6 @@
   "payCompletedDescription": "결제가 완료되고 수령자는 자금을 받았습니다.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
-  },
-  "recoverbullConnecting": "연결하기",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
   },
   "retry": "이름 *",
   "@retry": {
@@ -5579,10 +5330,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "recoverbullSelectAppleIcloud": "애플 iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "keystoneStep13": "거래는 Bull Bitcoin 지갑에서 수입됩니다.",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -5689,10 +5436,6 @@
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
   },
-  "recoverbullSelectVaultProvider": "Vault 공급자 선택",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "Original 거래",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -5708,10 +5451,6 @@
   "coreSwapsLnSendFailed": "스왑 실패.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "recoverbullErrorDecryptFailed": "Vault를 해독하는 실패",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "keystoneStep9": "Keystone에서 거래에 서명하는 버튼을 클릭합니다.",
   "@keystoneStep9": {
@@ -5762,10 +5501,6 @@
   "walletTypeWatchOnly": "계정 정보",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "recoverbullDecryptVault": "암호 해독",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "connectHardwareWalletJade": "블록스트림 옥",
   "@connectHardwareWalletJade": {
@@ -5869,17 +5604,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "recoverbullFetchingVaultKey": "Fetching 볼트 이름 *",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
   "dcaConfirmFrequency": "주파수 영역",
   "@dcaConfirmFrequency": {
     "description": "Field label for frequency"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "Vault 삭제",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
   },
   "advancedOptionsTitle": "고급 옵션",
   "@advancedOptionsTitle": {
@@ -5892,10 +5619,6 @@
   "payPriceWillRefreshIn": "가격은 상쾌합니다 ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "Google Drive에서 vault 삭제",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "broadcastSignedTxTo": "으로",
   "@broadcastSignedTxTo": {
@@ -5933,10 +5656,6 @@
   "ledgerSignButton": "로그인",
   "@ledgerSignButton": {
     "description": "Button label to start signing transaction with Ledger"
-  },
-  "recoverbullPassword": "비밀번호",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "fundExchangeMethodSinpeTransfer": "SINPE 전송",
   "@fundExchangeMethodSinpeTransfer": {
@@ -6147,15 +5866,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "{inputType} 확인",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "스왑이 성공적으로 완료되었습니다! 자금은 이제 지갑에서 사용할 수 있어야 합니다.",
   "@transactionSwapDescLnReceiveCompleted": {
     "description": "Description for completed Lightning receive swap"
@@ -6286,10 +5996,6 @@
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "recoverbullGoogleDriveScreenTitle": "Google 드라이브 볼트",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "receiveQRCode": "QR 코드",
   "@receiveQRCode": {
     "description": "Section header for QR code display"
@@ -6367,10 +6073,6 @@
   "sendTransactionSignedLedger": "Transaction은 Ledger와 성공적으로 서명했습니다",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
-  },
-  "recoverbullRecoveryContinueButton": "계속하기",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
   },
   "payTimeoutError": "지불 timeout. 자주 묻는 질문",
   "@payTimeoutError": {
@@ -6476,10 +6178,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "연결 실패",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
-  },
   "transactionDetailLabelPayinMethod": "Payin 방법",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
@@ -6519,10 +6217,6 @@
   "sellCopBalance": "제품정보 (주)",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "Vault 선택",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "송금 수수료",
   "@receiveTransferFee": {
@@ -6861,10 +6555,6 @@
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "recoverbullEncryptedVaultCreated": "암호화된 Vault 생성!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
-  },
   "addressViewChangeAddressesComingSoon": "곧 업데이트",
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
@@ -7124,10 +6814,6 @@
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "recoverbullSelectDecryptVault": "암호 해독",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "buyUpgradeKYC": "업그레이드 KYC 1 단계",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
@@ -7231,10 +6917,6 @@
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
   },
-  "recoverbullPasswordMismatch": "비밀번호는 일치하지 않습니다",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
-  },
   "fundExchangeCrIbanUsdTransferCodeWarning": "지불을 할 때 \"message\"또는 \"reason\"또는 \"description\"으로 전송 코드를 추가해야합니다. 이 코드를 포함 하는 것을 잊지 면, 당신의 지불 거부 될 수 있습니다.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
     "description": "Warning about including transfer code in payment for USD transfers"
@@ -7334,10 +7016,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "이제 백업을 테스트하여 모든 것이 제대로 수행되었습니다.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "SPEI 송금 (instant)을 사용하여 입금하십시오.",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -7386,10 +7064,6 @@
   "@loadingBackupFile": {
     "description": "Message shown while loading backup file"
   },
-  "recoverbullContinue": "계속하기",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
-  },
   "receiveAddressCopied": "클립보드에 복사된 주소",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -7427,10 +7101,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "recoverbullErrorVaultNotSet": "Vault는 설정되지 않습니다",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "dcaSetupContinue": "계속하기",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
@@ -7458,10 +7128,6 @@
   "walletDetailsWalletFingerprintLabel": "지갑 지문",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "recoverbullTorNotStarted": "시작되지 않음",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "transactionOrderLabelOrderStatus": "주문 상태",
   "@transactionOrderLabelOrderStatus": {
@@ -7544,10 +7210,6 @@
   "payLabelOptional": "(선택) 상표",
   "@payLabelOptional": {
     "description": "Label for optional label field"
-  },
-  "recoverbullGoogleDriveDeleteButton": "기타 제품",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "exchangeDcaDeactivateTitle": "Recurring 구매",
   "@exchangeDcaDeactivateTitle": {
@@ -7743,10 +7405,6 @@
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
   },
-  "recoverbullUnexpectedError": "오류 없음",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "coreSwapsStatusFailed": "뚱 베어",
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
@@ -7855,10 +7513,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "균형과 거래를 찾고..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "transactionSwapInfoChainDelay": "On-chain 전송은 블록체인 확인 시대로 인해 완료 될 수 있습니다.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
@@ -7878,10 +7532,6 @@
   "sellTitle": "비트코인",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "Vault 키",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "transactionListToday": "으로",
   "@transactionListToday": {
@@ -7923,10 +7573,6 @@
   "autoswapRecipientWalletPlaceholderRequired": "Bitcoin 지갑 선택 *",
   "@autoswapRecipientWalletPlaceholderRequired": {
     "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "오류가 발생했습니다. 다시 시도하십시오.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "sellUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
   "@sellUnauthenticatedError": {
@@ -7995,10 +7641,6 @@
   "sellCalculating": "교육 ...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
-  },
-  "recoverbullPIN": "핀",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "swapInternalTransferTitle": "내부 전송",
   "@swapInternalTransferTitle": {
@@ -8083,10 +7725,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "Recoverbull 백업 파일은 유효하지 않습니다",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "거래를 만들 수 없습니다. 수수료 및 금액에 대한 충분한 자금 때문에.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -8102,10 +7740,6 @@
   "sellSendPaymentPriceRefresh": "가격은 상쾌합니다 ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "recoverbullPasswordRequired": "비밀번호필수",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
   },
   "receiveNoteLabel": "* 이름",
   "@receiveNoteLabel": {
@@ -8269,10 +7903,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "더 보기",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "시험되지 않음",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -8386,10 +8016,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "recoverbullErrorVaultCreatedKeyNotStored": "실패: 생성된 Vault 파일 그러나 서버에서 저장하지 않는 열쇠",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
-  },
   "exchangeSupportChatWalletIssuesInfo": "이 채팅은 Funding/Buy/Sell/Withdraw/Pay의 교환 관련 문제에만 사용됩니다.\n지갑 관련 문제의 경우, 여기를 클릭하여 telegram 그룹에 가입하십시오.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
@@ -8409,10 +8035,6 @@
   "coreScreensLogsTitle": "제품정보",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "recoverbullVaultKeyInput": "Vault 키",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "testBackupErrorWalletMismatch": "백업은 기존 지갑과 일치하지 않습니다",
   "@testBackupErrorWalletMismatch": {
@@ -8640,10 +8262,6 @@
   "autoswapDefaultWalletLabel": "Bitcoin 지갑",
   "@autoswapDefaultWalletLabel": {
     "description": "Default label for unnamed Bitcoin wallet"
-  },
-  "recoverbullTestSuccessDescription": "Bitcoin 지갑에 액세스 할 수 있습니다",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
   },
   "exchangeAuthLoginFailedTitle": "로그인 실패",
   "@exchangeAuthLoginFailedTitle": {
@@ -8874,10 +8492,6 @@
   "@jadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "recoverbullRecoveryErrorWalletExists": "이 지갑은 이미 존재합니다.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
-  },
   "payBillerNameValue": "선정된 빌러 이름",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -8933,10 +8547,6 @@
   "dcaSetupInsufficientBalanceMessage": "이 주문을 만들 수있는 충분한 균형이 없습니다.",
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
-  },
-  "recoverbullGotIt": "뚱 베어",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
   },
   "sendAdvancedOptions": "고급 옵션",
   "@sendAdvancedOptions": {
@@ -9080,10 +8690,6 @@
   "importWalletLedger": "연락처",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
-  },
-  "recoverbullCheckingConnection": "RecoverBull에 대한 연결 확인",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "exchangeLandingTitle": "비트 코인",
   "@exchangeLandingTitle": {
@@ -9368,10 +8974,6 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "recoverbullErrorUnexpected": "오류가 없습니다. 로그",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "sendSubmarineSwap": "Submarine 교환",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
@@ -9408,10 +9010,6 @@
   "fundExchangeOnlineBillPaymentLabelBillerName": "이 이름의 은행 목록 검색",
   "@fundExchangeOnlineBillPaymentLabelBillerName": {
     "description": "Label for biller name in online bill payment"
-  },
-  "recoverbullSelectFetchDriveFilesError": "모든 드라이브 백업을 fetch로 실패",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "제한 검증",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -9473,10 +9071,6 @@
   "payExternalWallet": "외부 지갑",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "recoverbullConfirm": "제품정보",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "fundExchangeInfoBankCountryUk": "우리의 은행 국가는 영국입니다.",
   "@fundExchangeInfoBankCountryUk": {
@@ -9562,15 +9156,6 @@
   "transactionOrderLabelOriginCedula": "근원 Cedula",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "recoverbullRecoveryTransactionsLabel": "거래 : {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "buyViewDetails": "더 보기",
   "@buyViewDetails": {
@@ -9689,10 +9274,6 @@
   "backupWalletInstructionLosePhone": "백업하지 않고 휴대 전화를 잃거나 깰 경우, 또는 Bull Bitcoin 앱을 제거하면 Bitcoins가 영원히 잃을 것입니다.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "recoverbullConnected": "연결하기",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
   },
   "dcaConfirmLightningAddress": "연락처",
   "@dcaConfirmLightningAddress": {
@@ -9861,19 +9442,6 @@
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
   },
-  "recoverbullSelectGoogleDrive": "Google 드라이브",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "{inputType}를 입력하세요",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapInfoDismissButton": "그것을, 다시 표시하지 마십시오",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
@@ -9929,10 +9497,6 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "recoverbullGoogleDriveExportButton": "수출입",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "bip329LabelsDescription": "BIP329 표준 형식을 사용하여 수입 또는 수출 지갑 라벨.",
   "@bip329LabelsDescription": {
     "description": "Description of BIP329 labels functionality"
@@ -9948,10 +9512,6 @@
   "autoswapMaxFeeInfoText": "총 송금 수수료가 설정 비율 이상이라면 자동 송금이 차단됩니다",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
-  },
-  "recoverbullGoogleDriveCancelButton": "이름 *",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "이제 백업을 테스트하여 모든 것이 제대로 수행되었습니다.",
   "@backupWalletSuccessDescription": {
@@ -10077,10 +9637,6 @@
   "importQrDeviceKruxStep6": "그것은!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "백업 파일 누락된 derivation 경로.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "인증되지 않습니다. 자주 묻는 질문.",
   "@payUnauthenticatedError": {
@@ -10237,10 +9793,6 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "recoverbullSecureBackup": "백업 보안",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "payDone": "한국어",
   "@payDone": {
     "description": "Button to close bottom sheet"
@@ -10289,10 +9841,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "서버에서 vault 키를 fetch로 실패",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "sendSwapInProgressInvoice": "스왑은 진행 중입니다. 송장은 몇 초 안에 지급됩니다.",
   "@sendSwapInProgressInvoice": {
@@ -10358,10 +9906,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "recoverbullRetry": "이름 *",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "receiveCopyInvoice": "복사 송장",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -10381,10 +9925,6 @@
   "paySendMax": "최대",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "이 vault 백업을 삭제하시겠습니까? 이 동작은 undone일 수 없습니다.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
   },
   "googleDriveSignInMessage": "Google Drive에 로그인해야 합니다",
   "@googleDriveSignInMessage": {
@@ -10487,10 +10027,6 @@
   "payInstitutionCode": "기관 코드",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "recoverbullFetchVaultKey": "Fetch 볼트 이름 *",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "coreSwapsActionClaim": "계정 만들기",
   "@coreSwapsActionClaim": {
@@ -10698,10 +10234,6 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "recoverbullErrorRejected": "Key Server에 의해 거부",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
-  },
   "sellEstimatedArrival": "예상 도착: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -10897,10 +10429,6 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "recoverbullSelectRecoverWallet": "지갑 복구",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "receivePayjoinActivated": "Payjoin 활성화",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -10953,10 +10481,6 @@
   "swapAmountLabel": "계정 정보",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
-  },
-  "recoverbullSelectCustomLocation": "주문 위치",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
   },
   "sellConfirmOrder": "주문 확인",
   "@sellConfirmOrder": {
@@ -11063,10 +10587,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "암호화 만들기 볼트",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "importWalletColdcardQ": "콜드 카드 Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -11078,10 +10598,6 @@
   "sendReceiveAmount": "결제하기",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "recoverbullTestRecovery": "시험 회복",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
   },
   "sellNetAmount": "순 금액",
   "@sellNetAmount": {
@@ -11151,10 +10667,6 @@
   "@autoswapMaxBalanceLabel": {
     "description": "Label for amount threshold input field"
   },
-  "recoverbullRecoverBullServer": "RecoverBull 서버",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "satsBitcoinUnitSettingsLabel": "Sats에 있는 표시 단위",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -11190,10 +10702,6 @@
   "fundExchangeMethodCrIbanUsd": "코스타리카 IBAN (USD)",
   "@fundExchangeMethodCrIbanUsd": {
     "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "recoverbullErrorSelectVault": "Vault를 선택하는 실패",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
   },
   "exchangeStatisticsTotalAmount": "총 금액",
   "@exchangeStatisticsTotalAmount": {
@@ -11251,10 +10759,6 @@
   "walletAutoTransferBlockButton": "제품정보",
   "@walletAutoTransferBlockButton": {
     "description": "Button to block auto-transfer until next execution"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "Google Drive에서 vault를 선택 해제",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "autoswapRecipientWalletRequired": "* 이름",
   "@autoswapRecipientWalletRequired": {
@@ -11478,22 +10982,6 @@
   "mempoolCustomServerNoSsl": "SSL 없음",
   "autoswapTargetBalanceLabel": "목표 즉시 지갑 잔액",
   "autoswapMaximumBalanceLabel": "최대 즉시 지갑 잔액",
-  "recoverbullServerConfirmTitle": "볼트 복구 서버",
-  "recoverbullServerUsingDefault": "기본 서버 사용 중",
-  "recoverbullServerUsingCustom": "사용자 지정 서버 사용 중",
-  "recoverbullServerUrlLabel": "서버 URL:",
-  "recoverbullServerCustomWarning": "사용자 지정 Recoverbull 서버를 사용하고 있습니다. 이 서버를 신뢰할 수 있는지 확인하세요.",
-  "recoverbullServerTorNotice": "Tor를 통해 이 서버에 연결합니다",
-  "recoverbullLearnMore": "Recoverbull에 대해 자세히 알아보기",
-  "recoverbullSettingsTitle": "Recoverbull 설정",
-  "recoverbullSettingsKeyServerUrl": "키 서버 URL",
-  "recoverbullSettingsEdit": "편집",
-  "recoverbullSettingsCancel": "취소",
-  "recoverbullSettingsSave": "저장",
-  "recoverbullSettingsUrlRequired": "URL이 필요합니다",
-  "recoverbullSettingsUrlInvalid": "URL이 유효하지 않습니다",
-  "recoverbullSettingsUrlMustBeHttp": "URL은 HTTP여야 합니다",
-  "recoverbullSettingsUrlMustBeOnion": "URL은 .onion으로 끝나야 합니다",
   "onboardingAdvancedOptionsTitle": "고급 옵션",
   "onboardingAdvancedOptionsDescription": "지갑을 생성하거나 복구하기 전에 고급 설정을 구성하세요",
   "onboardingAdvancedOptionsCustomElectrum": "사용자 지정 Electrum 서버",
@@ -12107,7 +11595,6 @@
   "exchangeSupportChatPickFilesFailed": "파일을 선택하지 못했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatAttachLogsFailed": "로그 첨부에 실패했습니다. 다시 시도해 주세요.",
   "exchangeSupportChatFetchFileDataFailed": "파일 데이터를 가져오지 못했습니다",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "bitboxErrorBluetoothPermissionDenied": "BitBox02 Nova에 연결하려면 블루투스 권한이 필요합니다.",
   "bitboxErrorBluetoothUnavailable": "블루투스를 사용할 수 없습니다. 블루투스를 켜고 다시 시도해 주세요.",
@@ -12171,12 +11658,8 @@
   "torSettingsStatusCensored": "연결이 차단된 것으로 보입니다",
   "torSettingsDescCensored": "Tor가 네트워크에 연결하지 못했습니다. 보통 연결이 차단되고 있다는 뜻입니다.",
   "torSettingsBootstrapProgress": "연결 중… {percent}%",
-  "recoverbullPhaseNetworkInfo": "네트워크 정보를 가져오는 중",
-  "recoverbullLongestStep": "가장 오래 걸리는 단계입니다. 첫 실행은 1분 이상 걸릴 수 있습니다.",
   "recoverbullTorOffline": "인터넷 연결이 없는 것 같습니다.",
   "recoverbullTorClockSkewed": "기기 시계가 맞지 않아 Tor가 중계 서버 인증서를 확인할 수 없습니다. 날짜와 시간 설정을 확인하세요.",
-  "recoverbullTorCantStart": "지금은 Tor가 연결하지 못했습니다. 다시 시도해 주세요.",
-  "recoverbullServerUnreachableTorOk": "Tor는 작동하지만 백업 서버가 응답하지 않았습니다. 첫 실행 직후에는 시간이 걸릴 수 있습니다.",
   "torSettingsEmbeddedTitle": "내장 Tor",
   "torSettingsEmbeddedDescription": "내장 Tor는 RecoverBull과 Bitcoin Electrum .onion 서버에서 사용됩니다. 앱의 다른 트래픽은 그대로 직접 연결됩니다.",
   "torSettingsTransportMode": "연결 방식",

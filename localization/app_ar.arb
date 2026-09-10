@@ -124,15 +124,6 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "recoverbullGoogleDriveErrorDisplay": "الخطأ: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "description": "Error message display format",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "خادم الجمارك",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
@@ -243,10 +234,6 @@
   "satsSuffix": " الجلسات",
   "@satsSuffix": {
     "description": "Unit suffix for satoshi amounts"
-  },
-  "recoverbullErrorPasswordNotSet": "كلمة السر ليست جاهزة",
-  "@recoverbullErrorPasswordNotSet": {
-    "description": "Error when attempting operation without setting password"
   },
   "sellSendPaymentExchangeRate": "سعر الصرف",
   "@sellSendPaymentExchangeRate": {
@@ -369,15 +356,6 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "recoverbullReenterConfirm": "يرجى العودة إلى {inputType} تأكيد.",
-  "@recoverbullReenterConfirm": {
-    "description": "Instruction to re-enter PIN or password for confirmation",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "مركب على لوح مشبك",
   "@importWatchOnlyCopiedToClipboard": {
     "description": "Snackbar message shown when QR code content is copied"
@@ -402,21 +380,9 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "recoverbullSelectVaultImportSuccess": "تم استيراد قبوك بنجاح",
-  "@recoverbullSelectVaultImportSuccess": {
-    "description": "Success message shown on vault selected page"
-  },
   "mempoolServerNotUsed": "غير مستخدمة (الخدمة الجمركية العاملة)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
-  },
-  "recoverbullSelectErrorPrefix": "Error:",
-  "@recoverbullSelectErrorPrefix": {
-    "description": "Prefix text shown before error messages"
-  },
-  "recoverbullGoBackEdit": "■ العودة والتحرير",
-  "@recoverbullGoBackEdit": {
-    "description": "Button text to return to previous screen for editing"
   },
   "receiveConfirming": "Confirming... ({count}/{required})",
   "@receiveConfirming": {
@@ -508,15 +474,6 @@
   "broadcastSignedTxFee": "Fee",
   "@broadcastSignedTxFee": {
     "description": "Label for transaction fee"
-  },
-  "recoverbullRecoveryBalanceLabel": "الرصيد: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "description": "Label showing total wallet balance found",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
   },
   "buyFundYourAccount": "صندوق حسابك",
   "@buyFundYourAccount": {
@@ -679,10 +636,6 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "recoverbullTorNetwork": "Tor Network",
-  "@recoverbullTorNetwork": {
-    "description": "Label for Tor network connection status"
-  },
   "transactionDetailLabelTransferStatus": "حالة النقل",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
@@ -796,10 +749,6 @@
   "exchangeStatisticsTitle": "الإحصاءات",
   "@exchangeStatisticsTitle": {
     "description": "Title for the statistics screen"
-  },
-  "recoverbullErrorConnectionFailed": "فشل في التواصل مع الخادم الرئيسي المستهدف أرجوك حاول مرة أخرى!",
-  "@recoverbullErrorConnectionFailed": {
-    "description": "Error message when server connection fails"
   },
   "testBackupDigitalCopy": "نسخة رقمية",
   "@testBackupDigitalCopy": {
@@ -1006,10 +955,6 @@
   "@ledgerVerifyTitle": {
     "description": "Title for verifying an address on Ledger device"
   },
-  "recoverbullSwitchToPassword": "اختر كلمة السر بدلاً من ذلك",
-  "@recoverbullSwitchToPassword": {
-    "description": "Button text to switch from PIN to password input"
-  },
   "exchangeDcaNetworkBitcoin": "شبكة بيتكوين",
   "@exchangeDcaNetworkBitcoin": {
     "description": "DCA network option: Bitcoin"
@@ -1025,10 +970,6 @@
   "transactionLabelStatus": "الحالة",
   "@transactionLabelStatus": {
     "description": "Label for transaction status"
-  },
-  "recoverbullErrorMissingBytes": "مفقودة من رد فعل تور Retry but if the issue persists, it is a known issue for some devices with Tor.",
-  "@recoverbullErrorMissingBytes": {
-    "description": "Error message when Tor response is incomplete"
   },
   "coreScreensReceiveNetworkFeeLabel": "شبكة الاستقبال",
   "@coreScreensReceiveNetworkFeeLabel": {
@@ -1073,10 +1014,6 @@
   "payPaymentInProgress": "الدفع في التقدم!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
-  },
-  "recoverbullFailed": "فشل",
-  "@recoverbullFailed": {
-    "description": "Status label indicating operation failure"
   },
   "payOrderAlreadyConfirmed": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
   "@payOrderAlreadyConfirmed": {
@@ -1569,15 +1506,6 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "recoverbullEnterToDecrypt": "الرجاء الدخول إلى {inputType} لفك شفرة السرداب الخاص بك.",
-  "@recoverbullEnterToDecrypt": {
-    "description": "Instruction to enter PIN or password for vault decryption",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "التحويل",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
@@ -1585,10 +1513,6 @@
   "testBackupSuccessTitle": "اكتمل الاختبار بنجاح!",
   "@testBackupSuccessTitle": {
     "description": "Success screen title after completing backup verification"
-  },
-  "recoverbullSelectTakeYourTime": "خذ وقتك",
-  "@recoverbullSelectTakeYourTime": {
-    "description": "Description tag for custom location provider option"
   },
   "sendConfirmCustomFee": "الرسوم الجمركية",
   "@sendConfirmCustomFee": {
@@ -1721,10 +1645,6 @@
       }
     }
   },
-  "recoverbullGoogleDriveErrorFetchFailed": "فشل في جلب الخزائن من محرك غوغل",
-  "@recoverbullGoogleDriveErrorFetchFailed": {
-    "description": "Error message when fetching drive backups fails"
-  },
   "systemLabelExchangeBuy": "اشتري",
   "@systemLabelExchangeBuy": {
     "description": "System label for exchange buy transactions"
@@ -1840,10 +1760,6 @@
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
-  "recoverbullErrorVaultCreationFailed": "اختراق الخزنة قد يكون الملف أو المفتاح",
-  "@recoverbullErrorVaultCreationFailed": {
-    "description": "Error message when overall vault creation fails"
-  },
   "sellSendPaymentFeePriority": "الأولوية",
   "@sellSendPaymentFeePriority": {
     "description": "Field label for fee priority"
@@ -1860,10 +1776,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullGoogleDriveNoBackupsFound": "لم يتم العثور على أي دعم",
-  "@recoverbullGoogleDriveNoBackupsFound": {
-    "description": "Message displayed when no backups are found in Google Drive"
   },
   "sellSelectNetwork": "شبكة مختارة",
   "@sellSelectNetwork": {
@@ -1941,10 +1853,6 @@
   "@importQrDeviceSeedsignerStep5": {
     "description": "SeedSigner instruction step 5"
   },
-  "recoverbullRecoveryErrorWalletMismatch": "محفظة مختلفة موجودة بالفعل يمكنك الحصول على محفظة واحدة فقط.",
-  "@recoverbullRecoveryErrorWalletMismatch": {
-    "description": "Error when different default wallet already exists"
-  },
   "payNoRecipientsFound": "لم يعثر على متلقين يدفعون لهم.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
@@ -1952,10 +1860,6 @@
   "payNoInvoiceData": "لا توجد بيانات فواتير متاحة",
   "@payNoInvoiceData": {
     "description": "Message when no invoice data available"
-  },
-  "recoverbullErrorInvalidCredentials": "كلمة سر خاطئة لهذا الملف الاحتياطي",
-  "@recoverbullErrorInvalidCredentials": {
-    "description": "Error message when wrong password is entered for vault"
   },
   "paySinpeMonto": "المبلغ",
   "@paySinpeMonto": {
@@ -2063,10 +1967,6 @@
   "@sellOrderPlaced": {
     "description": "Success message after order submission"
   },
-  "recoverbullPleaseWait": "من فضلك انتظر بينما نقيم علاقة آمنة.",
-  "@recoverbullPleaseWait": {
-    "description": "Message shown during connection establishment"
-  },
   "broadcastSignedTxBroadcast": "بث",
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
@@ -2099,10 +1999,6 @@
   "transactionLabelAmountReceived": "المبلغ المستلم",
   "@transactionLabelAmountReceived": {
     "description": "Label for received amount"
-  },
-  "recoverbullRecoveryTitle": "استرداد الخزنة",
-  "@recoverbullRecoveryTitle": {
-    "description": "AppBar title for vault recovery screen"
   },
   "broadcastSignedTxScanQR": "امسح شفرة (كيو آر) من محفظة معداتك",
   "@broadcastSignedTxScanQR": {
@@ -2310,10 +2206,6 @@
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
-  "recoverbullVaultCreatedSuccess": "الخزنة المُنشأة بنجاح",
-  "@recoverbullVaultCreatedSuccess": {
-    "description": "Success message after vault creation"
-  },
   "payAmount": "المبلغ",
   "@payAmount": {
     "description": "Label for amount"
@@ -2476,10 +2368,6 @@
   "@payInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "recoverbullRecoveryErrorKeyDerivationFailed": "المساندة المحلية فشلت.",
-  "@recoverbullRecoveryErrorKeyDerivationFailed": {
-    "description": "Error when app fails to derive backup encryption key"
-  },
   "swapValidationInsufficientBalance": "الرصيد غير الكافي",
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
@@ -2487,15 +2375,6 @@
   "transactionLabelFromWallet": "من المحفظة",
   "@transactionLabelFromWallet": {
     "description": "Label for source wallet"
-  },
-  "recoverbullErrorRateLimited": "معدل محدود حاول مرة أخرى في {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "description": "Error message when rate limited by the server",
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
   },
   "importWatchOnlyExtendedPublicKey": "الجمهور الموسع المفتاح",
   "@importWatchOnlyExtendedPublicKey": {
@@ -2524,15 +2403,6 @@
   "networkFeeLabel": "Network Fee",
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
-  },
-  "recoverbullMemorizeWarning": "يجب أن تتذكّر هذا {inputType} لاسترداد الدخول إلى محفظتك. يجب أن يكون على الأقل 6 أرقام إذا فقدت هذا {inputType} لا يمكنك استعادة دعمك.",
-  "@recoverbullMemorizeWarning": {
-    "description": "Warning message about memorizing PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "exchangeFileUploadDocumentsTitle": "أعلى الوثائق",
   "@exchangeFileUploadDocumentsTitle": {
@@ -2569,10 +2439,6 @@
   "importQrDeviceJadeFirmwareWarning": "تأكد من تحديث جهازك إلى آخر شركة",
   "@importQrDeviceJadeFirmwareWarning": {
     "description": "Warning message to update Jade firmware"
-  },
-  "recoverbullSelectFileNotSelectedError": "File not selected",
-  "@recoverbullSelectFileNotSelectedError": {
-    "description": "Error when user cancels file selection"
   },
   "buyInputContinue": "استمر",
   "@buyInputContinue": {
@@ -2634,15 +2500,6 @@
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "recoverbullEnterToTest": "الرجاء الدخول إلى {inputType} لاختبار خزانتك.",
-  "@recoverbullEnterToTest": {
-    "description": "Instruction to enter PIN or password to test vault recovery",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescription1": "أرسل تحويل مصرفي من حسابك المصرفي باستخدام التفاصيل أدناه ",
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
@@ -2666,10 +2523,6 @@
   "importQrDeviceSpecterStep10": "أدخل بطاقة لمحفظة سبيكتر و إستيراد",
   "@importQrDeviceSpecterStep10": {
     "description": "Specter instruction step 10"
-  },
-  "recoverbullSelectVaultSelected": "Vault Selected",
-  "@recoverbullSelectVaultSelected": {
-    "description": "AppBar title shown after vault has been selected"
   },
   "dcaWalletTypeBitcoin": "بيتكوين",
   "@dcaWalletTypeBitcoin": {
@@ -2702,10 +2555,6 @@
   "transactionOrderLabelPayoutAmount": "المبلغ المدفوع",
   "@transactionOrderLabelPayoutAmount": {
     "description": "Label for order payout amount"
-  },
-  "recoverbullSelectEnterBackupKeyManually": "أدخل مفتاح الدعم يدوياً",
-  "@recoverbullSelectEnterBackupKeyManually": {
-    "description": "Button text to manually enter backup key"
   },
   "exportingVaultButton": "التصدير...",
   "@exportingVaultButton": {
@@ -2794,10 +2643,6 @@
   "swapYouReceive": "تستلم",
   "@swapYouReceive": {
     "description": "Label in swap card for receiving amount"
-  },
-  "recoverbullSelectCustomLocationProvider": "الموقع العرفي",
-  "@recoverbullSelectCustomLocationProvider": {
-    "description": "Name label for custom location backup provider option"
   },
   "electrumInvalidRetryError": "Invalid Retry القيمة الكونية: {value}",
   "@electrumInvalidRetryError": {
@@ -2920,10 +2765,6 @@
   "kruxStep16": "الآن جاهز للبث! بمجرد أن تبث، ستنشر الصفقة على شبكة بيتكوين وسترسل الأموال.",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
-  },
-  "recoverbullRecoveryErrorVaultCorrupted": "ملف إحتياطي مُنتَقِب فاسد.",
-  "@recoverbullRecoveryErrorVaultCorrupted": {
-    "description": "Error when vault backup file cannot be decrypted or is invalid"
   },
   "buyVerifyIdentity": "التحقق من الهوية",
   "@buyVerifyIdentity": {
@@ -3055,10 +2896,6 @@
   "@jadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "recoverbullSelectDriveBackups": "الدعم في مجال المركبات",
-  "@recoverbullSelectDriveBackups": {
-    "description": "AppBar title for screen showing list of Google Drive backups"
-  },
   "exchangeAuthOk": "حسنا",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
@@ -3107,14 +2944,6 @@
   "bitboxActionPairDeviceProcessingSubtext": "من فضلك تحقق من شفرة الأزواج على جهازك البثوري.",
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
-  },
-  "recoverbullKeyServer": "موظف رئيسي ",
-  "@recoverbullKeyServer": {
-    "description": "Label for key server connection status"
-  },
-  "recoverbullPasswordTooCommon": "كلمة السر هذه شائعة جداً الرجاء اختيار واحد مختلف",
-  "@recoverbullPasswordTooCommon": {
-    "description": "Validation error for commonly used passwords"
   },
   "backupInstruction3": "أي شخص لديه القدرة على الوصول إلى الـ 12 كلمة احتياطية يمكن أن يسرق كعكاتك اخفيه جيداً.",
   "@backupInstruction3": {
@@ -3232,10 +3061,6 @@
   "@walletNetworkBitcoinTestnet": {
     "description": "Network label for Bitcoin testnet"
   },
-  "recoverbullSeeMoreVaults": "See more vaults",
-  "@recoverbullSeeMoreVaults": {
-    "description": "Button text to view additional vault options"
-  },
   "sellPayFromWallet": "الدفع من المحفظة",
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
@@ -3328,10 +3153,6 @@
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
-  "recoverbullSelectQuickAndEasy": "بسرعة",
-  "@recoverbullSelectQuickAndEasy": {
-    "description": "Description tag for Google Drive and iCloud provider options"
-  },
   "exchangeFileUploadTitle": "الشحن الآمن",
   "@exchangeFileUploadTitle": {
     "description": "Title for the secure file upload section in exchange"
@@ -3367,10 +3188,6 @@
   "fundExchangeBankTransferSubtitle": "أرسل تحويل مصرفي من حسابك المصرفي",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
-  },
-  "recoverbullErrorInvalidVaultFile": "ملف الخزنة الغير مؤمن.",
-  "@recoverbullErrorInvalidVaultFile": {
-    "description": "Error message when vault file format is invalid"
   },
   "sellProcessingOrder": "أمر تجهيز...",
   "@sellProcessingOrder": {
@@ -3435,10 +3252,6 @@
   "sellBitcoinAmount": "مبلغ البتروين",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
-  },
-  "recoverbullTestCompletedTitle": "اكتمل الاختبار بنجاح!",
-  "@recoverbullTestCompletedTitle": {
-    "description": "Success title after completing backup test"
   },
   "transactionFilterReceive": "الاستلام",
   "@transactionFilterReceive": {
@@ -3536,10 +3349,6 @@
   "fundExchangeWarningConfirmation": "أُؤكّدُ بأنّني لَنْ يُطلبَ مِنْ أَنْ أَشتري بيتكوين مِن قِبل شخص آخر.",
   "@fundExchangeWarningConfirmation": {
     "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
-  },
-  "recoverbullSelectCustomLocationError": "فشل في اختيار ملف من موقع العرف",
-  "@recoverbullSelectCustomLocationError": {
-    "description": "Error when file selection from custom location fails"
   },
   "mempoolCustomServerDeleteTitle": "تُحذفُ خادمَ العهود؟?",
   "@mempoolCustomServerDeleteTitle": {
@@ -3655,10 +3464,6 @@
   "importMnemonicImport": "الواردات",
   "@importMnemonicImport": {
     "description": "Button to import selected wallet type"
-  },
-  "recoverbullPasswordTooShort": "كلمة السر يجب أن تكون على الأقل 6 شخصيات طويلة",
-  "@recoverbullPasswordTooShort": {
-    "description": "Validation error for passwords under minimum length"
   },
   "payNetwork": "الشبكة",
   "@payNetwork": {
@@ -3776,10 +3581,6 @@
   "payTransitNumberHint": "رقم المرور العابر",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
-  },
-  "recoverbullSwitchToPIN": "إختر بن بدلاً من ذلك",
-  "@recoverbullSwitchToPIN": {
-    "description": "Button text to switch from password to PIN input"
   },
   "payQrCode": "QR Code",
   "@payQrCode": {
@@ -4103,10 +3904,6 @@
   "@addressViewBalance": {
     "description": "Label for address balance"
   },
-  "recoverbullSelectNoBackupsFound": "لم يتم العثور على أي دعم",
-  "@recoverbullSelectNoBackupsFound": {
-    "description": "Empty state message when no backup files found in Google Drive"
-  },
   "importMnemonicNestedSegwit": "Nested Segwit",
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
@@ -4195,15 +3992,6 @@
   "importColdcardButtonOpenCamera": "افتح الكاميرا",
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
-  },
-  "recoverbullReenterRequired": "أعيدي إدخال {inputType}",
-  "@recoverbullReenterRequired": {
-    "description": "Label for confirmation input field",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payFeePriority": "الأولوية",
   "@payFeePriority": {
@@ -4419,10 +4207,6 @@
   "@payAddRecipient": {
     "description": "Button to add another payment recipient"
   },
-  "recoverbullVaultImportedSuccess": "تم استيراد قبوك بنجاح",
-  "@recoverbullVaultImportedSuccess": {
-    "description": "Success message after vault import"
-  },
   "backupKeySeparationWarning": "من المهم جداً أن لا تنقذ المفتاح الإحتياطي في نفس المكان حيث تنقذ ملفك الإحتياطي دائماً يخزنها على أجهزة منفصلة أو على متعهدين سحاب منفصلين.",
   "@backupKeySeparationWarning": {
     "description": "Warning about storing backup key and file separately"
@@ -4498,15 +4282,6 @@
   "keyServerLabel": "موظف رئيسي ",
   "@keyServerLabel": {
     "description": "Label for key server status"
-  },
-  "recoverbullEnterToView": "من فضلك أدخل {inputType} لعرض مفتاح الخزنة الخاص بك.",
-  "@recoverbullEnterToView": {
-    "description": "Instruction to enter PIN or password to view vault key",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
   },
   "payReviewPayment": "إعادة الدفع",
   "@payReviewPayment": {
@@ -4635,10 +4410,6 @@
   "failedToDeriveBackupKey": "فشل في الحصول على مفتاح الدعم",
   "@failedToDeriveBackupKey": {
     "description": "Error message when backup key derivation fails"
-  },
-  "recoverbullGoogleDriveErrorExportFailed": "Failed to export vault from Google Drive",
-  "@recoverbullGoogleDriveErrorExportFailed": {
-    "description": "Error message when exporting a drive backup fails"
   },
   "exchangeKycLevelLight": "الضوء",
   "@exchangeKycLevelLight": {
@@ -4914,14 +4685,6 @@
   "@sellSendPaymentCadBalance": {
     "description": "CAD balance payout method"
   },
-  "recoverbullConnectingTor": "(تواصل مع (كي سيرفر على (تور\nهذا يمكن أن يستغرق حتى دقيقة.",
-  "@recoverbullConnectingTor": {
-    "description": "Message shown while establishing Tor connection"
-  },
-  "recoverbullEnterVaultKeyInstead": "أدخل مفتاح القبو بدلاً من ذلك",
-  "@recoverbullEnterVaultKeyInstead": {
-    "description": "Button text to switch to manual vault key entry"
-  },
   "exchangeAccountInfoEmailLabel": "Email",
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
@@ -4941,10 +4704,6 @@
   "electrumBitcoinServerInfo": "عنوان حاسوب خدمة الدخول في الشكل: الجهة المضيفة (مثلاً:com:50001)",
   "@electrumBitcoinServerInfo": {
     "description": "Info text for Bitcoin server URL format"
-  },
-  "recoverbullErrorServiceUnavailable": "خدمة غير متاحة من فضلك تحقق من اتصالك.",
-  "@recoverbullErrorServiceUnavailable": {
-    "description": "Error message when key server service is unavailable"
   },
   "sendErrorInsufficientBalanceForSwap": "ليس هناك رصيد كافي لدفع هذا التبديل عن طريق السائل وليس ضمن حدود التبديل للدفع عبر بيتكوين.",
   "@sendErrorInsufficientBalanceForSwap": {
@@ -5072,10 +4831,6 @@
   "payCompletedDescription": "لقد اكتملت مستحقتك وحصل على الأموال.",
   "@payCompletedDescription": {
     "description": "Description for payment completed"
-  },
-  "recoverbullConnecting": "الاتصال",
-  "@recoverbullConnecting": {
-    "description": "Status label indicating connection in progress"
   },
   "retry": "Retry",
   "@retry": {
@@ -5206,10 +4961,6 @@
   "@transactionSwapProgressFundsClaimed": {
     "description": "Swap progress step: funds claimed"
   },
-  "recoverbullSelectAppleIcloud": "Apple iCloud",
-  "@recoverbullSelectAppleIcloud": {
-    "description": "Name label for Apple iCloud backup provider option"
-  },
   "keystoneStep13": "سيتم استيراد الصفقة في محفظة (بول بيتكوين).",
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
@@ -5312,10 +5063,6 @@
   "@transactionNetworkBitcoin": {
     "description": "Label for Bitcoin network transactions"
   },
-  "recoverbullSelectVaultProvider": "مُدَوِّر قبو مختار",
-  "@recoverbullSelectVaultProvider": {
-    "description": "Screen title for vault provider selection"
-  },
   "replaceByFeeOriginalTransactionTitle": "المعاملة الأصلية",
   "@replaceByFeeOriginalTransactionTitle": {
     "description": "Title for original transaction section"
@@ -5331,10 +5078,6 @@
   "coreSwapsLnSendFailed": "تفرقوا.",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
-  },
-  "recoverbullErrorDecryptFailed": "فشل في فك شفرة السرداب",
-  "@recoverbullErrorDecryptFailed": {
-    "description": "Error message when vault decryption fails"
   },
   "keystoneStep9": "اضغط على الأزرار لتوقيع الصفقة على حجرك.",
   "@keystoneStep9": {
@@ -5385,10 +5128,6 @@
   "walletTypeWatchOnly": "شاهد فقط",
   "@walletTypeWatchOnly": {
     "description": "Wallet type label for watch-only wallets"
-  },
-  "recoverbullDecryptVault": "الخزنة المشفرة",
-  "@recoverbullDecryptVault": {
-    "description": "Button text to decrypt the selected vault"
   },
   "connectHardwareWalletJade": "Blockstream Jade",
   "@connectHardwareWalletJade": {
@@ -5474,17 +5213,9 @@
   "@importQrDeviceButtonOpenCamera": {
     "description": "ImportQrDevice: Button to open camera for QR scanning"
   },
-  "recoverbullFetchingVaultKey": "خزينة الصيد المفتاح",
-  "@recoverbullFetchingVaultKey": {
-    "description": "Screen title while fetching vault key from server"
-  },
   "dcaConfirmFrequency": "التردد",
   "@dcaConfirmFrequency": {
     "description": "Field label for frequency"
-  },
-  "recoverbullGoogleDriveDeleteVaultTitle": "الخزنة",
-  "@recoverbullGoogleDriveDeleteVaultTitle": {
-    "description": "Title for delete vault confirmation dialog"
   },
   "advancedOptionsTitle": "الخيارات المتقدمة",
   "@advancedOptionsTitle": {
@@ -5497,10 +5228,6 @@
   "payPriceWillRefreshIn": "ستنعش الأسعار ",
   "@payPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
-  },
-  "recoverbullGoogleDriveErrorDeleteFailed": "فشل في حذف الخزنة من محرك غوغل",
-  "@recoverbullGoogleDriveErrorDeleteFailed": {
-    "description": "Error message when deleting a drive backup fails"
   },
   "broadcastSignedTxTo": "إلى",
   "@broadcastSignedTxTo": {
@@ -5538,10 +5265,6 @@
   "ledgerSignButton": "بدء التوقيع",
   "@ledgerSignButton": {
     "description": "Button label to start signing transaction with Ledger"
-  },
-  "recoverbullPassword": "كلمة السر",
-  "@recoverbullPassword": {
-    "description": "Label for password input type"
   },
   "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
   "@fundExchangeMethodSinpeTransfer": {
@@ -5732,15 +5455,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "تأكيد {inputType}",
-  "@recoverbullConfirmInput": {
-    "description": "Label to confirm input (PIN or password)",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowSignTransaction": "معاملات التوقيع",
   "@psbtFlowSignTransaction": {
     "description": "Title for psbt flow signing screen"
@@ -5859,10 +5573,6 @@
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
-  "recoverbullGoogleDriveScreenTitle": "Google Drive Vaults",
-  "@recoverbullGoogleDriveScreenTitle": {
-    "description": "Screen title for Google Drive vaults management"
-  },
   "receiveQRCode": "QR Code",
   "@receiveQRCode": {
     "description": "Section header for QR code display"
@@ -5940,10 +5650,6 @@
   "sendTransactionSignedLedger": "المعاملات الموقعة بنجاح مع ليدجر",
   "@sendTransactionSignedLedger": {
     "description": "Success message after Ledger signing"
-  },
-  "recoverbullRecoveryContinueButton": "استمر",
-  "@recoverbullRecoveryContinueButton": {
-    "description": "Button text to proceed with importing the wallet"
   },
   "payTimeoutError": "وقت الدفع يرجى التحقق من الحالة",
   "@payTimeoutError": {
@@ -6045,10 +5751,6 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "فشل",
-  "@recoverbullConnectionFailed": {
-    "description": "Status label indicating connection failure"
-  },
   "transactionDetailLabelPayinMethod": "طريقة الدفع",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
@@ -6088,10 +5790,6 @@
   "sellCopBalance": "مؤتمر الأطراف الرصيد",
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
-  },
-  "recoverbullVaultSelected": "Vault Selected",
-  "@recoverbullVaultSelected": {
-    "description": "Screen title after vault has been selected"
   },
   "receiveTransferFee": "Transfer Fee",
   "@receiveTransferFee": {
@@ -6384,10 +6082,6 @@
   "@payInvoiceCopied": {
     "description": "Toast message after copying invoice"
   },
-  "recoverbullEncryptedVaultCreated": "الخزنة المشفرة خلقت!",
-  "@recoverbullEncryptedVaultCreated": {
-    "description": "Success message title after vault creation"
-  },
   "addressViewChangeAddressesComingSoon": "عنوان التغيير قادم قريبا",
   "@addressViewChangeAddressesComingSoon": {
     "description": "Empty state message for change addresses feature that is coming soon"
@@ -6635,10 +6329,6 @@
   "@payWhichWallet": {
     "description": "Question prompt for wallet selection"
   },
-  "recoverbullSelectDecryptVault": "الخزنة المشفرة",
-  "@recoverbullSelectDecryptVault": {
-    "description": "Primary button text to proceed with vault decryption"
-  },
   "buyUpgradeKYC": "أعلى مستوى KYC الرتبة",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
@@ -6729,10 +6419,6 @@
   "dcaConfirmTitle": "إعادة تأكيد اشتري",
   "@dcaConfirmTitle": {
     "description": "AppBar title for DCA confirmation screen"
-  },
-  "recoverbullPasswordMismatch": "كلمات السر لا تتطابق",
-  "@recoverbullPasswordMismatch": {
-    "description": "Validation error when passwords don't match"
   },
   "fundExchangeCrIbanUsdTransferCodeWarning": "يجب أن تضيف رمز التحويل كـ\"ممارسة\" أو \"سبب\" أو \"الوصف\" عند الدفع إذا نسيت أن تُضمّن هذا الرمز، قد يُرفض دفعك.",
   "@fundExchangeCrIbanUsdTransferCodeWarning": {
@@ -6833,10 +6519,6 @@
   "@backupWalletHowToDecide": {
     "description": "Link text to open modal explaining how to choose backup method"
   },
-  "recoverbullTestBackupDescription": "الآن دعونا نختبر دعمك للتأكد من أن كل شيء قد تم بشكل صحيح.",
-  "@recoverbullTestBackupDescription": {
-    "description": "Description message before testing backup"
-  },
   "fundExchangeSpeiInfo": "(أ) أن يقدم إيداعاً باستخدام تحويلات شركة SPEI (الضريبة).",
   "@fundExchangeSpeiInfo": {
     "description": "Info message about SPEI transfer being instant"
@@ -6881,10 +6563,6 @@
   "@exchangeDcaAddressLabelBitcoin": {
     "description": "Label for Bitcoin address in DCA settings"
   },
-  "recoverbullContinue": "استمر",
-  "@recoverbullContinue": {
-    "description": "Button text to proceed to next step"
-  },
   "receiveAddressCopied": "العنوان المنسخ من لوح مشبك",
   "@receiveAddressCopied": {
     "description": "Toast message after copying address"
@@ -6922,10 +6600,6 @@
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
-  "recoverbullErrorVaultNotSet": "الخزنة ليست جاهزة",
-  "@recoverbullErrorVaultNotSet": {
-    "description": "Error when attempting operation without selected vault"
-  },
   "dcaSetupContinue": "استمر",
   "@dcaSetupContinue": {
     "description": "Continue button on DCA setup"
@@ -6953,10 +6627,6 @@
   "walletDetailsWalletFingerprintLabel": "بصمت",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
-  },
-  "recoverbullTorNotStarted": "(تور) لم يبدأ",
-  "@recoverbullTorNotStarted": {
-    "description": "Error message when Tor is not started"
   },
   "transactionOrderLabelOrderStatus": "النظام",
   "@transactionOrderLabelOrderStatus": {
@@ -7039,10 +6709,6 @@
   "payLabelOptional": "Label (optional)",
   "@payLabelOptional": {
     "description": "Label for optional label field"
-  },
-  "recoverbullGoogleDriveDeleteButton": "تحذف",
-  "@recoverbullGoogleDriveDeleteButton": {
-    "description": "Delete button text for vault backup"
   },
   "exchangeDcaDeactivateTitle": "Deactivate Recurring Buy",
   "@exchangeDcaDeactivateTitle": {
@@ -7230,10 +6896,6 @@
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
   },
-  "recoverbullUnexpectedError": "خطأ غير متوقع",
-  "@recoverbullUnexpectedError": {
-    "description": "Short unexpected error message"
-  },
   "coreSwapsStatusFailed": "فشل",
   "@coreSwapsStatusFailed": {
     "description": "Display name for failed swap status"
@@ -7338,10 +7000,6 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "recoverbullRecoveryLoadingMessage": "أبحث عن التوازن والمعاملات..",
-  "@recoverbullRecoveryLoadingMessage": {
-    "description": "Loading message while checking wallet balance and transactions"
-  },
   "transactionSwapInfoChainDelay": "وقد تستغرق عمليات النقل في سلسلة بعض الوقت لإكمالها نظراً لعرقلة أوقات التثبيت.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
@@ -7361,10 +7019,6 @@
   "sellTitle": "Sell Bitcoin",
   "@sellTitle": {
     "description": "AppBar title for sell screen"
-  },
-  "recoverbullVaultKey": "مفتاح القبو",
-  "@recoverbullVaultKey": {
-    "description": "Screen title and label for vault key"
   },
   "transactionListToday": "اليوم",
   "@transactionListToday": {
@@ -7398,10 +7052,6 @@
   "pinCodeMismatchError": "PINS لا تطابق",
   "@pinCodeMismatchError": {
     "description": "Error message when PIN confirmation doesn't match"
-  },
-  "recoverbullGoogleDriveErrorGeneric": "حدث خطأ أرجوك حاول مرة أخرى.",
-  "@recoverbullGoogleDriveErrorGeneric": {
-    "description": "Generic error message for unknown errors"
   },
   "sellUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
   "@sellUnauthenticatedError": {
@@ -7470,10 +7120,6 @@
   "sellCalculating": "حساب...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
-  },
-  "recoverbullPIN": "PIN",
-  "@recoverbullPIN": {
-    "description": "Label for PIN input type"
   },
   "swapInternalTransferTitle": "النقل الداخلي",
   "@swapInternalTransferTitle": {
@@ -7554,10 +7200,6 @@
   "@buyInputInsufficientBalanceMessage": {
     "description": "Insufficient balance message"
   },
-  "recoverbullSelectBackupFileNotValidError": "ملف الاسترداد الاحتياطي غير صحيح",
-  "@recoverbullSelectBackupFileNotValidError": {
-    "description": "Error when selected file is not a valid RecoverBull backup format"
-  },
   "swapErrorInsufficientFunds": "لم أستطع بناء صفقة ويعزى ذلك على الأرجح إلى عدم كفاية الأموال لتغطية الرسوم والمبالغ.",
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
@@ -7573,10 +7215,6 @@
   "sellSendPaymentPriceRefresh": "ستنعش الأسعار ",
   "@sellSendPaymentPriceRefresh": {
     "description": "Price refresh countdown prefix"
-  },
-  "recoverbullPasswordRequired": "كلمة السر مطلوبة",
-  "@recoverbullPasswordRequired": {
-    "description": "Validation error when password field is empty"
   },
   "receiveNoteLabel": "ملاحظة",
   "@receiveNoteLabel": {
@@ -7723,10 +7361,6 @@
   "@sendErrorConfirmationFailed": {
     "description": "Error title when transaction confirmation fails"
   },
-  "recoverbullWaiting": "الانتظار",
-  "@recoverbullWaiting": {
-    "description": "Status label indicating waiting state"
-  },
   "notTestedStatus": "لم يختبر",
   "@notTestedStatus": {
     "description": "Status text indicating backup has not been tested"
@@ -7823,10 +7457,6 @@
   "@swapValidationEnterAmount": {
     "description": "Validation error when amount is empty"
   },
-  "recoverbullErrorVaultCreatedKeyNotStored": "المختفي: تم إنشاء ملف قبو لكنه لم يخزن في الخادم",
-  "@recoverbullErrorVaultCreatedKeyNotStored": {
-    "description": "Error when vault file created but server key storage failed"
-  },
   "exchangeSupportChatWalletIssuesInfo": "هذه الدردشة هي فقط من أجل تبادل القضايا ذات الصلة في التمويل/البوي/البيع/السحب/اليوم.\nبالنسبة للمسائل المتصلة بالمحفظة، انضم إلى مجموعة البرقية بالنقر هنا.",
   "@exchangeSupportChatWalletIssuesInfo": {
     "description": "Info message about wallet issues and telegram group link"
@@ -7846,10 +7476,6 @@
   "coreScreensLogsTitle": "اللوز",
   "@coreScreensLogsTitle": {
     "description": "AppBar title for logs viewer screen"
-  },
-  "recoverbullVaultKeyInput": "مفتاح القبو",
-  "@recoverbullVaultKeyInput": {
-    "description": "Input field label for vault key entry"
   },
   "testBackupErrorWalletMismatch": "الدعم لا يطابق المحفظة الموجودة",
   "@testBackupErrorWalletMismatch": {
@@ -8066,10 +7692,6 @@
   "@autoswapDefaultWalletLabel": {
     "description": "Default label for unnamed Bitcoin wallet"
   },
-  "recoverbullTestSuccessDescription": "أنت قادر على استعادة الدخول إلى محفظة بيتكوين المفقودة",
-  "@recoverbullTestSuccessDescription": {
-    "description": "Description shown after successful recovery test"
-  },
   "exchangeAuthLoginFailedTitle": "Login Failed",
   "@exchangeAuthLoginFailedTitle": {
     "description": "Title of the dialog shown when exchange login fails"
@@ -8261,10 +7883,6 @@
   "@jadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "recoverbullRecoveryErrorWalletExists": "هذه المحفظة موجودة بالفعل.",
-  "@recoverbullRecoveryErrorWalletExists": {
-    "description": "Error when attempting to restore vault that already exists"
-  },
   "payBillerNameValue": "Selected Biller Name",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
@@ -8320,10 +7938,6 @@
   "dcaSetupInsufficientBalanceMessage": "ليس لديك توازن كافي لخلق هذا النظام.",
   "@dcaSetupInsufficientBalanceMessage": {
     "description": "Insufficient balance error message"
-  },
-  "recoverbullGotIt": "حصلت عليه",
-  "@recoverbullGotIt": {
-    "description": "Button text to acknowledge and dismiss message"
   },
   "sendAdvancedOptions": "الخيارات المتقدمة",
   "@sendAdvancedOptions": {
@@ -8459,10 +8073,6 @@
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
-  },
-  "recoverbullCheckingConnection": "وصلة التحقق لـ (ريفري بول)",
-  "@recoverbullCheckingConnection": {
-    "description": "Screen title while checking connection status"
   },
   "exchangeLandingTitle": "BUL BITCOIN",
   "@exchangeLandingTitle": {
@@ -8721,10 +8331,6 @@
   "@sendViewDetails": {
     "description": "Button to view transaction details"
   },
-  "recoverbullErrorUnexpected": "خطأ غير متوقع، انظر السجلات",
-  "@recoverbullErrorUnexpected": {
-    "description": "Error message for unexpected errors"
-  },
   "sendSubmarineSwap": "غواصة سواب",
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
@@ -8757,10 +8363,6 @@
   "coreSwapsLnReceiveExpired": "لقد انتهى.",
   "@coreSwapsLnReceiveExpired": {
     "description": "Status message for expired Lightning receive swap"
-  },
-  "recoverbullSelectFetchDriveFilesError": "فشل في جلب كل الدعم",
-  "@recoverbullSelectFetchDriveFilesError": {
-    "description": "Error when unable to retrieve backup list from Google Drive"
   },
   "exchangeAccountInfoVerificationLimitedVerification": "التحقق المحدود",
   "@exchangeAccountInfoVerificationLimitedVerification": {
@@ -8822,10 +8424,6 @@
   "payExternalWallet": "المحفظة الخارجية",
   "@payExternalWallet": {
     "description": "Option for external wallet"
-  },
-  "recoverbullConfirm": "Confirm",
-  "@recoverbullConfirm": {
-    "description": "Button text to confirm an action"
   },
   "fundExchangeInfoBankCountryUk": "بلدنا المصرفي هو المملكة المتحدة.",
   "@fundExchangeInfoBankCountryUk": {
@@ -8907,15 +8505,6 @@
   "transactionOrderLabelOriginCedula": "Origin Cedula",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
-  },
-  "recoverbullRecoveryTransactionsLabel": "المعاملات: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "description": "Label showing total number of transactions found",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "buyViewDetails": "تفاصيل الرؤية",
   "@buyViewDetails": {
@@ -9026,10 +8615,6 @@
   "backupWalletInstructionLosePhone": "بدون دعم، إذا فقدت أو كسرت هاتفك، أو إذا كنت غير تركيب تطبيق بول بيتكوين،.",
   "@backupWalletInstructionLosePhone": {
     "description": "Warning instruction about consequences without backup"
-  },
-  "recoverbullConnected": "Connected",
-  "@recoverbullConnected": {
-    "description": "Status label indicating successful connection"
   },
   "dcaConfirmLightningAddress": "عنوان البرق",
   "@dcaConfirmLightningAddress": {
@@ -9190,19 +8775,6 @@
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
   },
-  "recoverbullSelectGoogleDrive": "Google Drive",
-  "@recoverbullSelectGoogleDrive": {
-    "description": "Name label for Google Drive backup provider option"
-  },
-  "recoverbullEnterInput": "أدخلي {inputType}",
-  "@recoverbullEnterInput": {
-    "description": "Input field label prompting for PIN or password",
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelIbanUsdOnly": "IBAN account number (for US dollars only)",
   "@fundExchangeLabelIbanUsdOnly": {
     "description": "Label for IBAN field - US Dollars only"
@@ -9254,10 +8826,6 @@
   "@importMnemonicImporting": {
     "description": "Loading message while importing wallet"
   },
-  "recoverbullGoogleDriveExportButton": "الصادرات",
-  "@recoverbullGoogleDriveExportButton": {
-    "description": "Export button text for vault backup"
-  },
   "bip329LabelsDescription": "(ب) بطاقات محفظة الاستيراد أو التصدير باستخدام النموذج المعياري BIP329.",
   "@bip329LabelsDescription": {
     "description": "Description of BIP329 labels functionality"
@@ -9265,10 +8833,6 @@
   "backupWalletImportanceWarning": "بدون دعم، ستخسر في النهاية الوصول إلى مالك من المهم للغاية أن نقدم الدعم.",
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
-  },
-  "recoverbullGoogleDriveCancelButton": "إلغاء",
-  "@recoverbullGoogleDriveCancelButton": {
-    "description": "Cancel button text for delete confirmation dialog"
   },
   "backupWalletSuccessDescription": "الآن دعونا نختبر دعمك للتأكد من أن كل شيء قد تم بشكل صحيح.",
   "@backupWalletSuccessDescription": {
@@ -9390,10 +8954,6 @@
   "importQrDeviceKruxStep6": "هذا هو!",
   "@importQrDeviceKruxStep6": {
     "description": "Krux instruction step 6"
-  },
-  "recoverbullRecoveryErrorMissingDerivationPath": "ملف المساندة يفوت مسار التعقيم.",
-  "@recoverbullRecoveryErrorMissingDerivationPath": {
-    "description": "Error when vault backup file is missing required derivation path"
   },
   "payUnauthenticatedError": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
   "@payUnauthenticatedError": {
@@ -9542,10 +9102,6 @@
   "@scanningCompletedMessage": {
     "description": "Success message when UR scanning completes"
   },
-  "recoverbullSecureBackup": "أمن دعمك",
-  "@recoverbullSecureBackup": {
-    "description": "Screen title for backup security setup"
-  },
   "payDone": "تم",
   "@payDone": {
     "description": "Button to close bottom sheet"
@@ -9594,10 +9150,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorFetchKeyFailed": "فشل في جلب مفتاح الخزنة من الخادم",
-  "@recoverbullErrorFetchKeyFailed": {
-    "description": "Error message when server key fetch fails"
   },
   "sendSwapInProgressInvoice": "المبادلة جارية الفاتورة ستدفع خلال ثواني.",
   "@sendSwapInProgressInvoice": {
@@ -9655,10 +9207,6 @@
   "@transactionLabelTotalTransferFees": {
     "description": "Label for total transfer fees"
   },
-  "recoverbullRetry": "Retry",
-  "@recoverbullRetry": {
-    "description": "Button text to retry failed operation"
-  },
   "receiveCopyInvoice": "فاتورة النسخ",
   "@receiveCopyInvoice": {
     "description": "Button to copy invoice to clipboard"
@@ -9678,10 +9226,6 @@
   "paySendMax": "ماكس",
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
-  },
-  "recoverbullGoogleDriveDeleteConfirmation": "هل أنت متأكد من أنك تريد حذف هذه الخزنة الاحتياطية؟ هذا العمل لا يمكن أن يزول.",
-  "@recoverbullGoogleDriveDeleteConfirmation": {
-    "description": "Confirmation message for deleting a vault backup"
   },
   "transactionNoteEditTitle": "مذكرة إديت",
   "@transactionNoteEditTitle": {
@@ -9780,10 +9324,6 @@
   "payInstitutionCode": "قانون المؤسسات",
   "@payInstitutionCode": {
     "description": "Label for institution code field"
-  },
-  "recoverbullFetchVaultKey": "خزائن المفتاح",
-  "@recoverbullFetchVaultKey": {
-    "description": "Screen title for vault key fetch screen"
   },
   "coreSwapsActionClaim": "المطالبة",
   "@coreSwapsActionClaim": {
@@ -9982,10 +9522,6 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "recoverbullErrorRejected": "تم رفضه من قبل خادم المفتاح",
-  "@recoverbullErrorRejected": {
-    "description": "Error message when request is rejected by the key server"
-  },
   "sellEstimatedArrival": "الوصول التقديري: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
@@ -10173,10 +9709,6 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
-  "recoverbullSelectRecoverWallet": "Recover Wallet",
-  "@recoverbullSelectRecoverWallet": {
-    "description": "AppBar title for initial provider selection screen"
-  },
   "receivePayjoinActivated": "تم تنشيط بيجوين",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -10225,10 +9757,6 @@
   "swapAmountLabel": "المبلغ",
   "@swapAmountLabel": {
     "description": "Label for amount input section"
-  },
-  "recoverbullSelectCustomLocation": "الموقع العرفي",
-  "@recoverbullSelectCustomLocation": {
-    "description": "AppBar title for custom location file picker screen"
   },
   "sellConfirmOrder": "أمر الترخيص",
   "@sellConfirmOrder": {
@@ -10331,10 +9859,6 @@
   "@transactionDetailLabelRecipientAddress": {
     "description": "Label for recipient address"
   },
-  "recoverbullCreatingVault": "الإبداع المشفرة القبو",
-  "@recoverbullCreatingVault": {
-    "description": "Screen title while vault is being created"
-  },
   "importWalletColdcardQ": "Coldcard Q",
   "@importWalletColdcardQ": {
     "description": "Button label for Coldcard Q hardware wallet"
@@ -10346,10 +9870,6 @@
   "sendReceiveAmount": "المبلغ المستلم",
   "@sendReceiveAmount": {
     "description": "Label for amount being received in swap"
-  },
-  "recoverbullTestRecovery": "استعادة الاختبار",
-  "@recoverbullTestRecovery": {
-    "description": "Button text to initiate recovery test"
   },
   "sellNetAmount": "المبلغ الصافي",
   "@sellNetAmount": {
@@ -10411,10 +9931,6 @@
   "@buyInstantPaymentWallet": {
     "description": "Label for instant payment (Liquid) wallet"
   },
-  "recoverbullRecoverBullServer": "RecoverBull Server",
-  "@recoverbullRecoverBullServer": {
-    "description": "Label for RecoverBull server connection status"
-  },
   "satsBitcoinUnitSettingsLabel": "وحدة التلاعب بالجلسات",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
@@ -10446,10 +9962,6 @@
   "fundExchangeMethodCrIbanUsd": "كوستاريكا",
   "@fundExchangeMethodCrIbanUsd": {
     "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "recoverbullErrorSelectVault": "فشل في اختيار الخزنة",
-  "@recoverbullErrorSelectVault": {
-    "description": "Error message when vault selection fails"
   },
   "exchangeStatisticsTotalAmount": "المجموع",
   "@exchangeStatisticsTotalAmount": {
@@ -10503,10 +10015,6 @@
   "walletAutoTransferBlockButton": "Block",
   "@walletAutoTransferBlockButton": {
     "description": "Button to block auto-transfer until next execution"
-  },
-  "recoverbullGoogleDriveErrorSelectFailed": "Failed to select vault from Google Drive",
-  "@recoverbullGoogleDriveErrorSelectFailed": {
-    "description": "Error message when selecting/loading a drive backup fails"
   },
   "pinCodeLoading": "Loading",
   "@pinCodeLoading": {
@@ -10801,10 +10309,6 @@
   "autoswapWarningExplanation": "عندما يتجاوز رصيدك الحد الأقصى للتوازن، سيتم التبديل. الميزان المستهدف سيُحتفظ به في محفظة الدفع الضئيلة الخاصة بك والمبلغ المتبقي سيُعاد توزيعه في وولك الآمن.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
-  },
-  "recoverbullVaultRecoveryTitle": "استرداد الخزنة",
-  "@recoverbullVaultRecoveryTitle": {
-    "description": "Title for recoverbull vault recovery screen"
   },
   "transactionSwapDescChainClaimable": "تم تأكيد صفقة القفل أنت الآن تَدْعي الأموالَ لإكمال نقلِكَ.",
   "@transactionSwapDescChainClaimable": {
@@ -11482,22 +10986,6 @@
   "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
   "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
-  "recoverbullServerConfirmTitle": "خادم استرداد الخزنة",
-  "recoverbullServerUsingDefault": "استخدام الخادم الافتراضي",
-  "recoverbullServerUsingCustom": "استخدام خادم مخصص",
-  "recoverbullServerUrlLabel": "رابط الخادم:",
-  "recoverbullServerCustomWarning": "أنت تستخدم خادم Recoverbull مخصصًا. تأكد من أنك تثق بهذا الخادم.",
-  "recoverbullServerTorNotice": "سنتصل بهذا الخادم عبر Tor",
-  "recoverbullLearnMore": "اعرف المزيد عن Recoverbull",
-  "recoverbullSettingsTitle": "إعدادات Recoverbull",
-  "recoverbullSettingsKeyServerUrl": "URL خادم المفاتيح",
-  "recoverbullSettingsEdit": "تعديل",
-  "recoverbullSettingsCancel": "إلغاء",
-  "recoverbullSettingsSave": "حفظ",
-  "recoverbullSettingsUrlRequired": "الرابط مطلوب",
-  "recoverbullSettingsUrlInvalid": "الرابط غير صالح",
-  "recoverbullSettingsUrlMustBeHttp": "يجب أن يكون الرابط من نوع HTTP",
-  "recoverbullSettingsUrlMustBeOnion": "يجب أن ينتهي الرابط بـ .onion",
   "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
   "onboardingAdvancedOptionsDescription": "اضبط الإعدادات المتقدمة قبل إنشاء محفظتك أو استردادها",
   "onboardingAdvancedOptionsCustomElectrum": "خادم Electrum مخصص",
@@ -12105,7 +11593,6 @@
   "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
   "mempoolCustomServerSsl": "SSL",
-  "recoverbullSettingsUrlHint": "http://example.onion",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
@@ -12174,12 +11661,8 @@
   "torSettingsStatusCensored": "يبدو أن الاتصال مُرشَّح",
   "torSettingsDescCensored": "تعذّر على Tor الوصول إلى الشبكة. غالبًا ما يعني هذا أن الاتصال يخضع للترشيح.",
   "torSettingsBootstrapProgress": "جارٍ الاتصال… {percent}%",
-  "recoverbullPhaseNetworkInfo": "جارٍ جلب معلومات الشبكة",
-  "recoverbullLongestStep": "هذه أطول خطوة. قد يستغرق التشغيل الأول أكثر من دقيقة.",
   "recoverbullTorOffline": "يبدو أنه لا يوجد اتصال بالإنترنت.",
   "recoverbullTorClockSkewed": "ساعة جهازك غير مضبوطة، لذا لا يستطيع Tor التحقق من شهادات المُرحِّلات. تحقق من إعدادات التاريخ والوقت.",
-  "recoverbullTorCantStart": "تعذّر على Tor الاتصال الآن. أعد المحاولة.",
-  "recoverbullServerUnreachableTorOk": "يعمل Tor، لكن خادم النسخ الاحتياطي لم يستجب. قد يستغرق ذلك لحظة بعد التشغيل الأول مباشرة.",
   "torSettingsEmbeddedTitle": "Tor المدمج",
   "torSettingsEmbeddedDescription": "يُستخدم Tor المدمج من قِبل RecoverBull وخوادم Bitcoin Electrum التي تنتهي بـ .onion. تبقى بقية حركة التطبيق مباشرة.",
   "torSettingsTransportMode": "طريقة الاتصال",
