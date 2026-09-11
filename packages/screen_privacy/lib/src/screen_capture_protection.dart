@@ -60,7 +60,7 @@ class ScreenCaptureProtection {
       } else {
         return await _noScreenshot.screenshotOn();
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       // Callers fire-and-forget this, so a platform-channel failure would
       // otherwise vanish as an unhandled async error. On a secret screen a
       // silent failure means we may be showing the mnemonic without
