@@ -182,8 +182,6 @@ final class _WalletBackupGraph {
       readPortableSettings: portableSettings.read,
       restorePortableSettings: portableSettings.restore,
       changeStreams: [
-        labels.changes,
-        locator<WatchWalletUtxoFreezeChangesUsecase>().execute(),
         database.select(database.settings).watch().skip(1).map((_) {}),
         database.select(database.autoSwap).watch().skip(1).map((_) {}),
         database.select(database.electrumServers).watch().skip(1).map((_) {}),
@@ -295,6 +293,8 @@ final class _WalletBackupGraph {
       // These owners commit the backup revision with their data. Their events
       // only wake publication; recording them again would double-count writes.
       recordedChanges: _mergeChanges([
+        labels.changes,
+        locator<WatchWalletUtxoFreezeChangesUsecase>().execute(),
         vaultChanges(),
         keychainManifest.watchCommittedChanges(),
         definitions.changes,

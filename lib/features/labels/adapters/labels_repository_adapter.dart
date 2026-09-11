@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/storage.dart';
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
@@ -7,8 +8,11 @@ import 'package:bb_mobile/features/labels/domain/new_label.dart';
 
 class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   final SqliteDatabase _database;
+  final BackupRevisionRecorder _revisions;
 
-  DriftLabelsRepositoryAdapter({required this._database});
+  DriftLabelsRepositoryAdapter({required SqliteDatabase database})
+    : _database = database,
+      _revisions = DriftBackupRevisionRecorder(database);
 
   @override
   Future<LabelEntity> store(NewLabel newLabel) async {
@@ -35,23 +39,32 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
       origin: newLabel.origin,
     );
     final companion = LabelMapper.newLabelEntityToCompanion(normalized);
-    final id = await _database
-        .into(_database.labels)
-        .insert(
-          companion,
-          onConflict: DoUpdate(
-            (old) => companion,
-            target: [_database.labels.label, _database.labels.reference],
-          ),
-        );
-
-    return LabelEntity(
-      id: id,
-      type: normalized.type,
-      label: normalized.label,
-      reference: normalized.reference,
-      origin: normalized.origin,
-    );
+    return _database.transaction(() async {
+      final previous =
+          await (_database.select(_database.labels)..where(
+                (row) =>
+                    row.label.equals(normalized.label) &
+                    row.reference.equals(normalized.reference),
+              ))
+              .getSingleOrNull();
+      final row = await _database
+          .into(_database.labels)
+          .insertReturning(
+            companion,
+            onConflict: DoUpdate(
+              (old) => companion,
+              target: [_database.labels.label, _database.labels.reference],
+            ),
+          );
+      // Label/reference identify the upsert target. Type and origin are the
+      // remaining backed-up fields; the local row ID is not part of a backup.
+      if (previous == null ||
+          previous.type != row.type ||
+          previous.origin != row.origin) {
+        await _revisions.recordCommittedMutation();
+      }
+      return LabelMapper.toLabelEntity(row);
+    });
   }
 
   @override
@@ -89,7 +102,12 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
 
   @override
   Future<void> trash(int id) async {
-    await _database.managers.labels.filter((l) => l.id(id)).delete();
+    await _database.transaction(() async {
+      final deleted = await _database.managers.labels
+          .filter((l) => l.id(id))
+          .delete();
+      if (deleted > 0) await _revisions.recordCommittedMutation();
+    });
   }
 
   @override

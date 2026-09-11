@@ -21,7 +21,89 @@ void main() {
 
   tearDown(() async => db.close());
 
+  Future<int> revision() async =>
+      (await db.select(db.walletBackupStates).getSingleOrNull())
+          ?.localRevision ??
+      0;
+
   group('FrozenWalletUtxoDatasource', () {
+    test(
+      'freeze and unfreeze record durable changes, but no-ops do not',
+      () async {
+        await datasource.freezeOutpoints(
+          walletId: walletId,
+          outpoints: const [a, b],
+        );
+        expect(await revision(), 1);
+        await datasource.freezeOutpoints(
+          walletId: walletId,
+          outpoints: const [a],
+        );
+        expect(await revision(), 1);
+        await datasource.unfreezeOutpoints(
+          walletId: walletId,
+          outpoints: const [a],
+        );
+        expect(await revision(), 2);
+        await datasource.unfreezeOutpoints(
+          walletId: walletId,
+          outpoints: const [a],
+        );
+        expect(await revision(), 2);
+      },
+    );
+
+    test('restored freezes record changes only once', () async {
+      const outpoints = [(walletId: walletId, txId: 'aaaa', vout: 0)];
+      await datasource.restoreFrozenWalletOutpoints(outpoints);
+      expect(await revision(), 1);
+      await datasource.restoreFrozenWalletOutpoints(outpoints);
+      expect(await revision(), 1);
+    });
+
+    for (final operation in ['freeze', 'restore', 'unfreeze']) {
+      test(
+        '$operation rolls back if its backup revision cannot commit',
+        () async {
+          if (operation == 'unfreeze') {
+            await datasource.freezeOutpoints(
+              walletId: walletId,
+              outpoints: const [a],
+            );
+          }
+          final before = await datasource.getAllFrozen();
+          final previousRevision = await revision();
+          var notifications = 0;
+          final subscription = datasource.changes.listen(
+            (_) => notifications++,
+          );
+          addTearDown(subscription.cancel);
+          await db.customStatement('''
+          CREATE TRIGGER reject_freeze_backup_revision
+          BEFORE UPDATE OF local_revision ON wallet_backup_states
+          BEGIN SELECT RAISE(ABORT, 'injected revision failure'); END
+        ''');
+          final write = switch (operation) {
+            'freeze' => datasource.freezeOutpoints(
+              walletId: walletId,
+              outpoints: const [a],
+            ),
+            'restore' => datasource.restoreFrozenWalletOutpoints(const [
+              (walletId: walletId, txId: 'aaaa', vout: 0),
+            ]),
+            _ => datasource.unfreezeOutpoints(
+              walletId: walletId,
+              outpoints: const [a],
+            ),
+          };
+          await expectLater(write, throwsA(isA<Exception>()));
+          expect(await datasource.getAllFrozen(), before);
+          expect(await revision(), previousRevision);
+          expect(notifications, 0);
+        },
+      );
+    }
+
     test('freeze → read → unfreeze round trip', () async {
       await datasource.freezeOutpoints(
         walletId: walletId,
