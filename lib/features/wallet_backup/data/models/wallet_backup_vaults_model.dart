@@ -3,11 +3,6 @@ import 'dart:convert';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 
-/// Reads the facts a recovery package states about itself, or null when the
-/// package is not one the vault feature recognises.
-typedef InspectVaultRecoveryPackage =
-    WalletBackupVaultPackageFacts? Function(String recoveryPackage);
-
 /// The vaults section: BullVault recovery packages, verbatim.
 ///
 /// The package bytes are the vault feature's own codec output; this codec only

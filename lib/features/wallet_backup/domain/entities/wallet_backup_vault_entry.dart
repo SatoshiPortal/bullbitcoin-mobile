@@ -62,6 +62,11 @@ final class WalletBackupVaultEntry {
   }
 }
 
+/// Reads the facts a recovery package states about itself, or null when the
+/// package is not one the vault feature recognises.
+typedef InspectVaultRecoveryPackage =
+    WalletBackupVaultPackageFacts? Function(String recoveryPackage);
+
 /// What a recovery package says about itself, read by the vault feature's own
 /// codec so the backup never re-implements the package format.
 final class WalletBackupVaultPackageFacts {

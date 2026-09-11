@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
@@ -16,7 +16,7 @@ typedef FetchWalletBackupImport =
 
 /// Reads what the server holds for this seed without applying any of it.
 ///
-/// This is the "phone is gone, cold key in hand" path: fetch, decrypt, show.
+/// Uses this app's backup identity to fetch, decrypt and show the inventory.
 /// Nothing is written, the recovery fence is untouched, and a null result
 /// means the server has no backup for this seed.
 final class GetRemoteWalletBackupContentsUsecase {
