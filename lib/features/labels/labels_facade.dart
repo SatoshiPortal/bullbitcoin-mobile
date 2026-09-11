@@ -82,7 +82,7 @@ class LabelsFacade {
 
   @useResult
   Future<Result<List<Label>, LabelFailure>> fetchAllStrict() async {
-    final result = await _fetchAllLabelsUsecase.execute();
+    final result = await _fetchAllLabelsUsecase.execute(strict: true);
     return result.map(
       (labels) => labels
           .map(LabelMapper.applicationLabelToLabel)

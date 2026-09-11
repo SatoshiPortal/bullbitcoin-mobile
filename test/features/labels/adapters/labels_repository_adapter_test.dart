@@ -1,9 +1,16 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/new_label.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/label_change_notifier.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart' as public;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -58,6 +65,59 @@ void main() {
   });
 
   group('fetchAll / fetchByReference tolerate a corrupt row', () {
+    test(
+      'backup reads reject corruption without changing ordinary reads',
+      () async {
+        final facade = public.LabelsFacade(
+          fetchLabelByReferenceUsecase: FetchLabelByReferenceUsecase(
+            labelRepository: adapter,
+          ),
+          fetchAllLabelsUsecase: FetchAllLabelsUsecase(
+            labelRepository: adapter,
+          ),
+          storeLabelsUsecase: StoreLabelUsecase(labelRepository: adapter),
+          trashLabelUsecase: TrashLabelUsecase(labelRepository: adapter),
+          changeNotifier: LabelChangeNotifier(),
+        );
+        final empty = await facade.fetchAllStrict();
+        expect(
+          (empty as Ok<List<public.Label>, public.LabelFailure>).value,
+          isEmpty,
+        );
+        await adapter.store(
+          NewLabel(
+            type: LabelType.transaction,
+            label: 'retained label',
+            reference: 'a' * 64,
+          ),
+        );
+        final valid = await facade.fetchAllStrict();
+        expect(
+          (valid as Ok<List<public.Label>, public.LabelFailure>)
+              .value
+              .single
+              .label,
+          'retained label',
+        );
+        await db
+            .into(db.labels)
+            .insert(
+              LabelsCompanion.insert(
+                label: 'corrupt',
+                reference: 'invalid txid',
+                type: LabelTypeColumn.tx,
+              ),
+            );
+
+        expect((await facade.fetchAll()).single.label, 'retained label');
+        expect(
+          await facade.fetchAllStrict(),
+          isA<Err<List<public.Label>, public.LabelFailure>>(),
+        );
+        expect(await db.select(db.labels).get(), hasLength(2));
+      },
+    );
+
     test('a single corrupt row is skipped and logged, not letting it discard '
         'every valid label in the same query', () async {
       // Insert one valid row through the adapter (validated).

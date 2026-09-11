@@ -93,8 +93,9 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   }
 
   @override
-  Future<List<LabelEntity>> fetchAll() async {
+  Future<List<LabelEntity>> fetchAll({bool strict = false}) async {
     final rows = await _database.managers.labels.get();
+    if (strict) return rows.map(LabelMapper.toLabelEntity).toList();
     return _mapRowsTolerantly(rows);
   }
 

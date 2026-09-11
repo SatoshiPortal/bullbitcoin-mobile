@@ -31,6 +31,7 @@ void main() {
         (result as Err<List<ApplicationLabel>, LabelFailure>).failure,
         isA<LabelUnexpectedFailure>(),
       );
+      expect(result.failure.logMessage, 'Failed to fetch all labels');
     });
 
     test('returns Ok with the mapped labels on success', () async {
