@@ -23,11 +23,12 @@ class ImportLabelsUsecase {
     try {
       final decoded = _labelConverter.convertFrom(labels);
       await _labelRepository.storeAll(decoded.labels);
+      // Labels are committed even if the subsequent freeze operation fails.
+      if (decoded.labels.isNotEmpty) _changeNotifier.notify();
       // Freeze state imported as a separate channel (never a label row). An
       // `spendable: false` adopted here becomes a durable freeze the user owns;
       // matched by outpoint, so it applies to whichever wallet holds the coin.
       if (importFreezes) await _freezeOwnedOnly(decoded.frozen);
-      if (decoded.labels.isNotEmpty) _changeNotifier.notify();
       return decoded.labels.length;
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
