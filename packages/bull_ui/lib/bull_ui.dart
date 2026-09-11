@@ -34,6 +34,7 @@ export 'package:flutter/widgets.dart'
         Curves,
         EdgeInsets,
         EdgeInsetsGeometry,
+        ExcludeSemantics,
         Expanded,
         Flexible,
         FontFeature,

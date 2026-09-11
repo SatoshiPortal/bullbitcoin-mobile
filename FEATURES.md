@@ -28,6 +28,7 @@ graph TB
     NETWORK[Network]
     BIP85[BIP85]
     NOSTR_IDENTITY[Nostr Identity]
+    PORTABLE_BACKUP[Portable Backup Prototype<br/>---<br/>Two RecoverBull files, password-derived<br/>Nostr identity; standalone harness]
     WALLET_BACKUP[Wallet Backup<br/>---<br/>Typed backup snapshot & codec,<br/>remote protocol, durable state,<br/>serialized job runner]
     KEYCHAIN_MANIFEST[Keychain Manifest<br/>---<br/>Wallet inventory, Nostr keys,<br/>passphrase wallet records]
     PASSPHRASE_WALLETS[Passphrase Wallets<br/>---<br/>Passphrase entry, derivation,<br/>scan port; keeps no secret at rest]
@@ -300,3 +301,5 @@ To verify no cyclic dependencies exist, you can:
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
+
+The `portable_backup` prototype is a leaf feature composed only by `tools/portable_backup_prototype_app.dart`. It uses the existing RecoverBull encryptor and shared Nostr infrastructure, has no cross-feature imports, and is not registered in the production router or locator. Existing BullVault Nostr backups reuse the generic relay/event transport without changing their wire profile.
