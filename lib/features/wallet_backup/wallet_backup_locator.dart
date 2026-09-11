@@ -275,7 +275,7 @@ final class _WalletBackupGraph {
       definitions,
       vaults,
       restoreManifest: RestoreWalletBackupManifestUsecase(
-        wallets.matchesSeedDerivedRecoveryIdentity,
+        wallets.resolveSeedDerivedRecoveryWalletId,
         keychainManifest,
       ),
       validateMetadata: metadata.validate,

@@ -244,6 +244,21 @@ final class KeychainManifestWallet extends KeychainManifestMaterialization {
 
   @override
   String get identity => 'wallet:$walletId';
+
+  KeychainManifestWallet withWalletId(String walletId) =>
+      KeychainManifestWallet(
+        walletId: walletId,
+        entryId: entryId,
+        childSeedFingerprint: childSeedFingerprint,
+        network: network,
+        scriptType: scriptType,
+        provenance: provenance,
+        seedPassphraseUsed: seedPassphraseUsed,
+        descriptor: descriptor,
+        label: label,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
 }
 
 final class KeychainManifestNostrKey extends KeychainManifestMaterialization {

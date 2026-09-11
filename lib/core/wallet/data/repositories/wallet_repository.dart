@@ -292,11 +292,7 @@ class WalletRepository
     );
     final parsedKeys = _descriptorKeys(parsed.keys);
     final metadata = WalletMetadataModel(
-      id:
-          walletId ??
-          sha256
-              .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
-              .toString(),
+      id: walletId ?? _descriptorWalletId(network, parsed.scriptIdentity),
       network: network,
       signers: _applySignerAnnotations(
         parsedKeys,
@@ -656,7 +652,7 @@ class WalletRepository
         provenance: definition.provenance,
       );
 
-  Future<bool> matchesSeedDerivedRecoveryIdentity({
+  Future<String?> resolveSeedDerivedRecoveryWalletId({
     required String walletId,
     required String seedFingerprint,
     required Network network,
@@ -665,17 +661,48 @@ class WalletRepository
     required String derivationPath,
     required bool? seedPassphraseUsed,
   }) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) return false;
-    final actualPath = _recoveryPath(metadata);
-    return metadata.masterFingerprint.toLowerCase() ==
+    bool matches(WalletMetadataModel metadata) =>
+        metadata.signers.length == 1 &&
+        metadata.signers.single.descriptorKeys.length == 1 &&
+        metadata.masterFingerprint.toLowerCase() ==
             seedFingerprint.toLowerCase() &&
         metadata.network == network &&
         metadata.inferredScriptType == scriptType &&
         metadata.provenance == provenance &&
         metadata.seedPassphraseUsed == seedPassphraseUsed &&
         metadata.isDefault == (provenance == WalletProvenance.defaultSeed) &&
-        actualPath == derivationPath;
+        _recoveryPath(metadata) == derivationPath;
+
+    final exact = await _walletMetadataDatasource.fetch(walletId);
+    if (exact != null) return matches(exact) ? exact.id : null;
+    if (!network.isBitcoin || provenance != WalletProvenance.defaultSeed) {
+      return null;
+    }
+
+    // Importing a descriptor before its seed keeps the descriptor-derived ID.
+    // A fresh seed restore uses an origin ID instead. Reconcile these two
+    // known identities, not arbitrary wallets sharing a 32-bit fingerprint.
+    String? resolved;
+    for (final candidate in await _walletMetadataDatasource.fetchAll()) {
+      if (!matches(candidate)) continue;
+      final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
+        descriptor: candidate.publicDescriptor,
+        isTestnet: network.isTestnet,
+      );
+      final descriptorId = _descriptorWalletId(network, parsed.scriptIdentity);
+      final originId = WalletMetadataService.encodeOrigin(
+        fingerprint: seedFingerprint,
+        network: network,
+        scriptType: scriptType,
+      );
+      if (walletId != descriptorId &&
+          !(walletId == originId && candidate.id == descriptorId)) {
+        continue;
+      }
+      if (resolved != null) return null;
+      resolved = candidate.id;
+    }
+    return resolved;
   }
 
   Future<void> updateEncryptedBackupTime({
@@ -1163,6 +1190,9 @@ class WalletRepository
     ];
   }
 }
+
+String _descriptorWalletId(Network network, String scriptIdentity) =>
+    sha256.convert(utf8.encode('${network.name}:$scriptIdentity')).toString();
 
 WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
     WalletDefinition(

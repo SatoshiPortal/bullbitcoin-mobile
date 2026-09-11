@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/frozen_wallet_outpoint.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
@@ -212,6 +213,119 @@ void main() {
     expect(calls, ['outcome']);
     verifyNever(() => restore.execute(any(), deadline: any(named: 'deadline')));
   });
+
+  for (final collision in ['none', 'preferences', 'frozen coins']) {
+    test(
+      'reconciles all metadata references (collision: $collision)',
+      () async {
+        final txid = List.filled(64, 'a').join();
+        final initial = WalletPreferences(
+          walletRef: 'local-id',
+          label: 'Fresh',
+        );
+        final source = WalletMetadataSnapshot(
+          labels: metadataSnapshot.labels,
+          frozenOutpoints: [
+            FrozenWalletOutpoint(walletId: 'recorded-id', txId: txid, vout: 1),
+            if (collision == 'frozen coins')
+              FrozenWalletOutpoint(walletId: 'local-id', txId: txid, vout: 1),
+          ],
+          walletPreferences: [
+            WalletPreferences(
+              walletRef: 'recorded-id',
+              label: 'Recovered',
+              hideOnHome: true,
+              autoSweepEnabled: false,
+            ),
+            if (collision == 'preferences')
+              WalletPreferences(walletRef: 'local-id', label: 'Another record'),
+          ],
+          settings: portableSettingsFixture(recipientWalletRef: 'recorded-id'),
+        );
+        when(
+          () => restore.execute(any(), deadline: any(named: 'deadline')),
+        ).thenAnswer(
+          (_) async => const WalletBackupManifestRestoreResult(
+            restoredCount: 1,
+            failedCount: 0,
+            walletReferences: {'recorded-id': 'local-id'},
+          ),
+        );
+        final result = await usecase.execute(
+          snapshot: Ok(
+            WalletBackupSnapshot(
+              parentFingerprint: manifest.parentFingerprint,
+              createdAt: 1,
+              recoveryManifest: manifest,
+              metadata: source,
+            ),
+          ),
+          defaultCreatedWalletPreferences: [initial],
+        );
+        if (collision != 'none') {
+          expect(result.status, WalletBackupRecoveryStatus.conflict);
+          expect(fence, WalletBackupRecoveryState.needsAttention);
+          verifyNever(
+            () => metadata.recover(
+              snapshot: any(named: 'snapshot'),
+              createdWalletPreferences: any(named: 'createdWalletPreferences'),
+              deadline: any(named: 'deadline'),
+            ),
+          );
+          return;
+        }
+        expect(result.status, WalletBackupRecoveryStatus.restored);
+        final captured =
+            verify(
+                  () => metadata.recover(
+                    snapshot: captureAny(named: 'snapshot'),
+                    createdWalletPreferences: [initial],
+                    deadline: any(named: 'deadline'),
+                  ),
+                ).captured.single
+                as WalletMetadataSnapshot;
+        final preference = captured.walletPreferences.single;
+        expect(preference.walletRef, 'local-id');
+        expect(preference.label, 'Recovered');
+        expect(preference.hideOnHome, true);
+        expect(preference.autoSweepEnabled, false);
+        expect(captured.frozenOutpoints.single.walletId, 'local-id');
+        expect(captured.frozenOutpoints.single.txId, txid);
+        expect(captured.frozenOutpoints.single.vout, 1);
+        expect(captured.settings.autoswap.recipientWalletRef, 'local-id');
+        expect(
+          captured.settings.autoswap.enabled,
+          source.settings.autoswap.enabled,
+        );
+        expect(
+          captured.settings.autoswap.balanceThresholdSats,
+          source.settings.autoswap.balanceThresholdSats,
+        );
+        expect(
+          captured.settings.autoswap.triggerBalanceSats,
+          source.settings.autoswap.triggerBalanceSats,
+        );
+        expect(
+          captured.settings.autoswap.feeThresholdPercent,
+          source.settings.autoswap.feeThresholdPercent,
+        );
+        expect(
+          captured.settings.autoswap.alwaysBlock,
+          source.settings.autoswap.alwaysBlock,
+        );
+        expect(captured.settings.bitcoinUnit, source.settings.bitcoinUnit);
+        expect(captured.settings.fiatCurrency, source.settings.fiatCurrency);
+        expect(captured.settings.language, source.settings.language);
+        expect(captured.settings.themeMode, source.settings.themeMode);
+        expect(captured.settings.hideAmounts, source.settings.hideAmounts);
+        expect(captured.settings.electrum, source.settings.electrum);
+        expect(captured.settings.mempool, source.settings.mempool);
+        expect(captured.settings.payjoin, source.settings.payjoin);
+        expect(source.walletPreferences.single.walletRef, 'recorded-id');
+        expect(source.settings.autoswap.recipientWalletRef, 'recorded-id');
+      },
+    );
+  }
 
   test('a partial restore ends at needs-attention', () async {
     when(

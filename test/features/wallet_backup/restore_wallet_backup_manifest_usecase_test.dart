@@ -58,7 +58,7 @@ void main() {
       RemovePassphraseWalletUsecase(repository),
     );
     usecase = RestoreWalletBackupManifestUsecase(
-      wallets.matchesSeedDerivedRecoveryIdentity,
+      wallets.resolveSeedDerivedRecoveryWalletId,
       manifest,
     );
     registerFallbackValue(_manifest(const []));
@@ -91,7 +91,7 @@ void main() {
     for (final entry in [bitcoin, liquid]) {
       final wallet = entry.materializations.single as KeychainManifestWallet;
       when(
-        () => wallets.matchesSeedDerivedRecoveryIdentity(
+        () => wallets.resolveSeedDerivedRecoveryWalletId(
           walletId: wallet.walletId,
           seedFingerprint: root.hex,
           network: wallet.network,
@@ -100,7 +100,7 @@ void main() {
           derivationPath: entry.derivationPath,
           seedPassphraseUsed: false,
         ),
-      ).thenAnswer((_) async => true);
+      ).thenAnswer((_) async => wallet.walletId);
     }
 
     final result = await usecase.execute(_manifest([bitcoin, liquid]));
@@ -131,6 +131,51 @@ void main() {
     verifyZeroInteractions(wallets);
   });
 
+  for (final conflict in [false, true]) {
+    test(
+      'rebinds only admitted default identities (conflict: $conflict)',
+      () async {
+        final entry = _walletEntry(
+          walletId: 'recorded-id',
+          network: Network.bitcoinMainnet,
+          path: "m/84'/0'/0'",
+          seedFingerprint: root,
+          provenance: WalletProvenance.defaultSeed,
+        );
+        when(
+          () => wallets.resolveSeedDerivedRecoveryWalletId(
+            walletId: 'recorded-id',
+            seedFingerprint: root.hex,
+            network: Network.bitcoinMainnet,
+            scriptType: ScriptType.bip84,
+            provenance: WalletProvenance.defaultSeed,
+            derivationPath: entry.derivationPath,
+            seedPassphraseUsed: false,
+          ),
+        ).thenAnswer((_) async => 'local-id');
+        if (conflict) {
+          when(() => repository.restoreSnapshot(any())).thenAnswer(
+            (_) async =>
+                Ok(KeychainManifestRestoreReport(conflicts: [entry.entryId])),
+          );
+        }
+        final result = await usecase.execute(_manifest([entry]));
+        final restored =
+            verify(
+                  () => repository.restoreSnapshot(captureAny()),
+                ).captured.single
+                as KeychainManifest;
+        expect(restored.wallets.single.walletId, 'local-id');
+        expect(restored.entries.single.entryId, entry.entryId);
+        expect(
+          result.walletReferences,
+          conflict ? isEmpty : {'recorded-id': 'local-id'},
+        );
+        expect(result.failedCount, conflict ? 1 : 0);
+      },
+    );
+  }
+
   test('keeps recovery fenced for contradictory default metadata', () async {
     final entry = _walletEntry(
       walletId: 'secure-bitcoin',
@@ -140,7 +185,7 @@ void main() {
       provenance: WalletProvenance.defaultSeed,
     );
     when(
-      () => wallets.matchesSeedDerivedRecoveryIdentity(
+      () => wallets.resolveSeedDerivedRecoveryWalletId(
         walletId: 'secure-bitcoin',
         seedFingerprint: root.hex,
         network: Network.bitcoinMainnet,
@@ -149,7 +194,7 @@ void main() {
         derivationPath: "m/84'/0'/0'",
         seedPassphraseUsed: false,
       ),
-    ).thenAnswer((_) async => false);
+    ).thenAnswer((_) async => null);
 
     final result = await usecase.execute(_manifest([entry]));
 

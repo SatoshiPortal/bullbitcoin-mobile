@@ -378,6 +378,111 @@ void main() {
     expect(facts.single.seedPassphraseUsed, isTrue);
   });
 
+  test(
+    'recovers a descriptor-adopted default after a fresh seed restore',
+    () async {
+      final seed = SeedModel.mnemonic(
+        mnemonicWords: [...List.filled(11, 'abandon'), 'about'],
+      ).toEntity();
+      final derived = await WalletMetadataService.deriveFromSeed(
+        seed: seed,
+        network: Network.bitcoinMainnet,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        provenance: WalletProvenance.defaultSeed,
+      );
+      final imported = await wallets.importDescriptor(
+        descriptor: derived.publicDescriptor,
+        network: derived.network,
+        label: 'Imported before seed recovery',
+      );
+      await wallets.createWallet(
+        seed: seed,
+        network: derived.network,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        provenance: WalletProvenance.defaultSeed,
+        birthday: null,
+      );
+      final recorded =
+          (await wallets.getSeedDerivedWalletRecoveryFacts()).single;
+      expect(recorded.walletId, imported.id);
+      expect(recorded.walletId, isNot(derived.id));
+      expect(
+        await wallets.resolveSeedDerivedRecoveryWalletId(
+          walletId: derived.id,
+          seedFingerprint: seed.masterFingerprint,
+          network: recorded.network,
+          scriptType: recorded.scriptType,
+          provenance: recorded.provenance,
+          derivationPath: recorded.derivationPath,
+          seedPassphraseUsed: recorded.seedPassphraseUsed,
+        ),
+        imported.id,
+        reason:
+            'Origin-ID backups also recover onto a descriptor-adopted default',
+      );
+
+      // A fresh installation derives the same wallet, but not its adopted ID.
+      await metadata.delete(imported.id);
+      final recovered = await wallets.createWallet(
+        seed: seed,
+        network: derived.network,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        provenance: WalletProvenance.defaultSeed,
+        birthday: null,
+      );
+      expect(recovered.id, derived.id);
+      expect(
+        await wallets.resolveSeedDerivedRecoveryWalletId(
+          walletId: recorded.walletId,
+          seedFingerprint: seed.masterFingerprint,
+          network: recorded.network,
+          scriptType: recorded.scriptType,
+          provenance: recorded.provenance,
+          derivationPath: recorded.derivationPath,
+          seedPassphraseUsed: recorded.seedPassphraseUsed,
+        ),
+        recovered.id,
+      );
+      expect(await metadata.fetch(recorded.walletId), isNull);
+      expect((await metadata.fetchAll()).single.id, recovered.id);
+      expect(
+        await wallets.resolveSeedDerivedRecoveryWalletId(
+          walletId: 'unrelated-recorded-id',
+          seedFingerprint: seed.masterFingerprint,
+          network: recorded.network,
+          scriptType: recorded.scriptType,
+          provenance: recorded.provenance,
+          derivationPath: recorded.derivationPath,
+          seedPassphraseUsed: recorded.seedPassphraseUsed,
+        ),
+        isNull,
+        reason: 'Matching fingerprint and path cannot alias arbitrary IDs',
+      );
+
+      // Keep the same fingerprint/path in the signer facts, but change the
+      // descriptor's full key. A fingerprint-only fallback would accept this.
+      final local = (await metadata.fetch(recovered.id))!;
+      await metadata.store(local.copyWith(publicDescriptor: descriptor));
+      expect(
+        await wallets.resolveSeedDerivedRecoveryWalletId(
+          walletId: recorded.walletId,
+          seedFingerprint: seed.masterFingerprint,
+          network: recorded.network,
+          scriptType: recorded.scriptType,
+          provenance: recorded.provenance,
+          derivationPath: recorded.derivationPath,
+          seedPassphraseUsed: recorded.seedPassphraseUsed,
+        ),
+        isNull,
+        reason:
+            'Descriptor identity must prove the complete key, not its fingerprint',
+      );
+    },
+  );
+
   for (final isDefault in [false, true]) {
     for (final passphraseUsed in [false, true]) {
       test(
@@ -437,7 +542,7 @@ void main() {
           expect(fact.scriptType, ScriptType.bip84);
           expect(fact.seedPassphraseUsed, passphraseUsed);
           expect(
-            await wallets.matchesSeedDerivedRecoveryIdentity(
+            await wallets.resolveSeedDerivedRecoveryWalletId(
               walletId: fact.walletId,
               seedFingerprint: seed.masterFingerprint,
               network: fact.network,
@@ -446,7 +551,7 @@ void main() {
               derivationPath: fact.derivationPath,
               seedPassphraseUsed: passphraseUsed,
             ),
-            isTrue,
+            imported.id,
           );
         },
       );

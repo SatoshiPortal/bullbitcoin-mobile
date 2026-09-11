@@ -223,6 +223,67 @@ final class WalletMetadataSnapshot {
     required this.walletPreferences,
     required this.settings,
   });
+
+  /// Rebinds verified wallet identities without merging conflicting records.
+  WalletMetadataSnapshot? withWalletReferences(Map<String, String> references) {
+    if (references.isEmpty) return this;
+    String resolve(String id) => references[id] ?? id;
+    final preferences = [
+      for (final value in walletPreferences)
+        WalletPreferences(
+          walletRef: resolve(value.walletRef),
+          label: value.label,
+          hideOnHome: value.hideOnHome,
+          autoSweepEnabled: value.autoSweepEnabled,
+        ),
+    ];
+    final freezes = [
+      for (final value in frozenOutpoints)
+        FrozenWalletOutpoint(
+          walletId: resolve(value.walletId),
+          txId: value.txId,
+          vout: value.vout,
+        ),
+    ];
+    if (preferences.map((value) => value.walletRef).toSet().length !=
+            preferences.length ||
+        freezes
+                .map(
+                  (value) =>
+                      '${value.walletId}\u0000${value.txId}:${value.vout}',
+                )
+                .toSet()
+                .length !=
+            freezes.length) {
+      return null;
+    }
+    final autoswap = settings.autoswap;
+    return WalletMetadataSnapshot(
+      labels: labels,
+      frozenOutpoints: freezes,
+      walletPreferences: preferences,
+      settings: WalletPortableSettings(
+        bitcoinUnit: settings.bitcoinUnit,
+        fiatCurrency: settings.fiatCurrency,
+        language: settings.language,
+        themeMode: settings.themeMode,
+        hideAmounts: settings.hideAmounts,
+        autoswap: WalletAutoswapSettings(
+          enabled: autoswap.enabled,
+          balanceThresholdSats: autoswap.balanceThresholdSats,
+          triggerBalanceSats: autoswap.triggerBalanceSats,
+          feeThresholdPercent: autoswap.feeThresholdPercent,
+          alwaysBlock: autoswap.alwaysBlock,
+          recipientWalletRef: autoswap.recipientWalletRef == null
+              ? null
+              : resolve(autoswap.recipientWalletRef!),
+        ),
+        electrum: settings.electrum,
+        mempool: settings.mempool,
+        payjoin: settings.payjoin,
+      ),
+    );
+  }
 }
 
 void _requireUnique(Iterable<String> values, String description) {

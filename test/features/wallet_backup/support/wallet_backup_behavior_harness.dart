@@ -472,7 +472,7 @@ final class WalletBackupBehaviorHarness {
           required provenance,
           required derivationPath,
           required seedPassphraseUsed,
-        }) async => true,
+        }) async => walletId,
         keychainManifest,
       ),
       validateMetadata: metadataSection?.validate ?? metadata.validate,

@@ -199,8 +199,17 @@ final class ApplyBackupSnapshotUsecase {
 
     var metadataComplete = true;
     if (snapshot.metadata case final metadata?) {
+      final rebound = metadata.withWalletReferences(restored.walletReferences);
+      if (rebound == null) {
+        return _result(
+          WalletBackupRecoveryStatus.conflict,
+          restored: restored,
+          definitions: definitionsRestored,
+          vaults: vaultsRestored,
+        );
+      }
       final metadataResult = await _restoreMetadata(
-        snapshot: metadata,
+        snapshot: rebound,
         createdWalletPreferences: [
           ...defaultCreatedWalletPreferences,
           ...?definitionsRestored?.createdWalletPreferences,

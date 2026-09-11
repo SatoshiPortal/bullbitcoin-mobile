@@ -50,9 +50,11 @@ final class WalletBackupRecoveryResult {
 final class WalletBackupManifestRestoreResult {
   final int restoredCount;
   final int failedCount;
+  final Map<String, String> walletReferences;
 
   const WalletBackupManifestRestoreResult({
     required this.restoredCount,
     required this.failedCount,
+    this.walletReferences = const {},
   });
 }

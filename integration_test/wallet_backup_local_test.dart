@@ -4,10 +4,14 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_descriptor_service.dart';
@@ -18,7 +22,7 @@ import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
 
 import '../test/features/bullvault/bullvault_test_fixture.dart';
 
@@ -28,6 +32,9 @@ import '../test/features/bullvault/bullvault_test_fixture.dart';
 Future<void> main({bool isInitialized = false}) async {
   const phase = String.fromEnvironment('BULL_LOCAL_METADATA_PHASE');
   const enabled = phase == 'publish' || phase == 'recover';
+  const adoptDescriptor = bool.fromEnvironment(
+    'BULL_LOCAL_METADATA_ADOPT_DESCRIPTOR',
+  );
   const localOrigin = 'http://127.0.0.1:8235';
   TestWidgetsFlutterBinding.ensureInitialized();
   if (enabled) {
@@ -57,10 +64,27 @@ Future<void> main({bool isInitialized = false}) async {
       expect((await labels.fetchAllStrict() as Ok).value, isEmpty);
       expect((await vaults.listRecords() as Ok).value, isEmpty);
 
+      final words = [...List.filled(11, 'abandon'), 'about'];
+      final derived = await WalletMetadataService.deriveFromSeed(
+        seed: SeedModel.mnemonic(mnemonicWords: words).toEntity(),
+        network: Network.bitcoinMainnet,
+        scriptType: ScriptType.bip84,
+        isDefault: true,
+        provenance: WalletProvenance.defaultSeed,
+      );
+      String? adoptedId;
+      if (phase == 'publish' && adoptDescriptor) {
+        final imported = await wallets.importDescriptor(
+          descriptor: derived.publicDescriptor,
+          network: derived.network,
+          label: 'Imported before its seed',
+        );
+        adoptedId = imported.id;
+        expect(adoptedId, isNot(derived.id));
+      }
+
       final restored = await locator<RestoreVaultUsecase>().execute(
-        decryptedVault: DecryptedVault(
-          mnemonic: [...List.filled(11, 'abandon'), 'about'],
-        ),
+        decryptedVault: DecryptedVault(mnemonic: words),
       );
       expect(
         restored,
@@ -69,10 +93,11 @@ Future<void> main({bool isInitialized = false}) async {
       final created =
           (restored as Ok<List<WalletPreferences>, RecoverBullCoreFailure>)
               .value;
-      expect(created, hasLength(2));
+      expect(created, hasLength(adoptedId == null ? 2 : 1));
       final bitcoin = (await wallets.getWallets(
         onlyDefaults: true,
       )).singleWhere((wallet) => wallet.isBitcoin);
+      expect(bitcoin.id, adoptedId ?? derived.id);
       const walletLabel = 'Recovered local mobile wallet';
       const vaultLabel = 'Local inheritance vault';
       const transactionLabel = 'Synthetic recovery label';

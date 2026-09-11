@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 
-typedef MatchesSeedDerivedRecoveryIdentity =
-    Future<bool> Function({
+typedef ResolveSeedDerivedRecoveryWalletId =
+    Future<String?> Function({
       required String walletId,
       required String seedFingerprint,
       required Network network,
@@ -17,12 +17,12 @@ typedef MatchesSeedDerivedRecoveryIdentity =
     });
 
 class RestoreWalletBackupManifestUsecase {
-  final MatchesSeedDerivedRecoveryIdentity _matchesWallet;
+  final ResolveSeedDerivedRecoveryWalletId _resolveWallet;
   final KeychainManifestFacade _manifest;
   final DateTime Function() _nowUtc;
 
   const RestoreWalletBackupManifestUsecase(
-    this._matchesWallet,
+    this._resolveWallet,
     this._manifest, {
     this._nowUtc = _systemNowUtc,
   });
@@ -36,6 +36,10 @@ class RestoreWalletBackupManifestUsecase {
     // Wallet records are applied in one pass so the conflict policy sees the
     // whole snapshot, and so a half-applied inventory cannot be committed.
     final admitted = <KeychainManifestEntry>[];
+    final walletReferences = <String, String>{};
+    final recordedIds = manifest.wallets
+        .map((wallet) => wallet.walletId)
+        .toSet();
 
     for (final entry in manifest.entries) {
       if (_expired(deadline)) {
@@ -47,19 +51,29 @@ class RestoreWalletBackupManifestUsecase {
         if (wallet.provenance == WalletProvenance.defaultSeed) {
           final matchesRoot =
               wallet.childSeedFingerprint == manifest.parentFingerprint;
-          final matchesWallet =
-              matchesRoot &&
-              await _matchesWallet(
-                walletId: wallet.walletId,
-                seedFingerprint: wallet.childSeedFingerprint.hex,
-                network: wallet.network,
-                scriptType: wallet.scriptType,
-                provenance: wallet.provenance,
-                derivationPath: entry.derivationPath,
-                seedPassphraseUsed: wallet.seedPassphraseUsed,
-              );
-          if (!matchesWallet) {
+          final localId = !matchesRoot
+              ? null
+              : await _resolveWallet(
+                  walletId: wallet.walletId,
+                  seedFingerprint: wallet.childSeedFingerprint.hex,
+                  network: wallet.network,
+                  scriptType: wallet.scriptType,
+                  provenance: wallet.provenance,
+                  derivationPath: entry.derivationPath,
+                  seedPassphraseUsed: wallet.seedPassphraseUsed,
+                );
+          if (localId == null ||
+              (localId != wallet.walletId &&
+                  (recordedIds.contains(localId) ||
+                      walletReferences.containsValue(localId)))) {
             failed++;
+            continue;
+          }
+          if (localId != wallet.walletId) {
+            walletReferences[wallet.walletId] = localId;
+            admitted.add(
+              entry.withMaterializations([wallet.withWalletId(localId)]),
+            );
             continue;
           }
         } else if (wallet.provenance != WalletProvenance.importedMnemonic &&
@@ -125,15 +139,26 @@ class RestoreWalletBackupManifestUsecase {
       switch (applied) {
         case Err():
           failed += admitted.length;
+          walletReferences.clear();
         case Ok(:final value):
           restored += value.restored;
           failed += value.conflicts.length;
+          for (final entry in admitted.where(
+            (entry) => value.conflicts.contains(entry.entryId),
+          )) {
+            final wallet =
+                entry.materializations.single as KeychainManifestWallet;
+            walletReferences.removeWhere(
+              (_, localId) => localId == wallet.walletId,
+            );
+          }
       }
     }
 
     return WalletBackupManifestRestoreResult(
       restoredCount: restored,
       failedCount: failed,
+      walletReferences: Map.unmodifiable(walletReferences),
     );
   }
 
