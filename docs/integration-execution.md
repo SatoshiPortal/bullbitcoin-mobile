@@ -2,7 +2,7 @@
 
 Started 2026-09-09. This is an execution log, not a release-readiness claim.
 
-Latest verified code checkpoint: `39370cd5fa03f72e9581f4b1ec1da5acf5a5c750`. Whole-workspace `make checks` passed 3,573 tests; current-source Android publication and fresh-install recovery against the retained local server both passed. The normal app APK was rebuilt and installed on the isolated emulator. See the final checkpoint below for exact evidence and limits. Distributed backup implementation and final integration/release approval are not complete.
+Latest consolidated code checkpoint: `2eaef4cc236fdce75abe7845a39896f2ab8844f7`. All applicable distributed donor work is on this integration branch; the separate-child proposal is superseded by the user's one-branch requirement. Normal commit hooks, targeted suites and full-workspace `make checks` passed: 3,484 root tests plus 180 package tests, 3,664 total, zero failures and three deliberate live/export skips. A normal production-flavor Android x64 debug APK also built successfully; no new-source emulator recovery run is claimed. The earlier 3,573-test/local-server Android results below belong to source `39370cd5f`. Production distributed-backup wiring and final integration/release approval remain incomplete.
 
 ## Inputs and preservation
 
@@ -771,3 +771,39 @@ Rebuilt the normal `lib/main.dart` production-flavor x64 debug APK in 32.9 secon
 Tapped Next and visually confirmed navigation to the Data Backup consent screen (`/home/francis/bbm-i8-durable-current-normal-next.png`); the refreshed process log still contains none of the failure markers above. Left the app on that screen without selecting consent or creating a wallet. This is a working normal-app navigation check, not a complete UI-flow audit.
 
 All three fixes are local commits on `integration/bullvault-metadata-deterministic-keys-v2`; donor worktrees retain their original state, including the distributed donor's three untracked planning documents. Backend source is unchanged. The current-source checks do not prove production RecoverBull availability, hardware signing, iOS privacy, funded renewal or the future Nostr/Bitcoin/backup-password recovery flows. Remaining core-review packaging, published-schema consolidation and distributed roadmap work are still outstanding; this checkpoint is not a merge or release approval.
+
+## Single-branch consolidation — 2026-09-11
+
+The user clarified that the original 11 slices were largely complete before BullVault adaptation and that the desired deliverable is one working branch on top of Ben, not a separate core and distributed delivery branch. A short-lived, uncommitted transplant was undone when the user asked for references only; the subsequent instruction explicitly resumed consolidation. No donor history was rewritten and no temporary transplant became a commit in that paused attempt.
+
+The completed replay is based on pre-consolidation integration `06c46a7da53c329a1a7c1899b0de443ce309180a`, itself based on Ben `309819e31ca49c73ab48701c8c3b274e3375d10f`. The final distributed source is `7cf8694e6c5622c31fd2a779d36b247a910ba2d6`; its unique range follows `80cf9ac6d`. Grouped patch replay preserves a linear integration history without merging the donor's older upstream ancestry. All three new code commits used the normal repository hooks.
+
+| Donor commit | Integrated commit | Disposition |
+| --- | --- | --- |
+| `bda56ac83` | `cd350ba78` | BIP138 codec, descriptor/Nostr recovery, scoped identities, fixtures and development entry point retained. |
+| `8232640f0` | `cd350ba78` | OP_RETURN/Electrum recovery and isolated watch-only prototype storage retained. |
+| `2d6ea7664` | `cd350ba78` | Testnet4 tools and historical evidence retained unchanged. |
+| `406e3019e` | `cd350ba78` | Full-descriptor, single-transaction/five-output prototype and tests retained. |
+| `aa5a80b6b` | `cd350ba78` | Final shared verified Nostr event/relay/session implementation retained. |
+| `1ec76af73` | `9ffb26f0b` | Combined with its replacement below; the intermediate custom cipher was not introduced as a committed milestone. |
+| `7cf8694e6` | `9ffb26f0b` | Final RecoverBull-backed portable files, backup words, password-only Nostr flow, protected UI, tools and tests retained. |
+| `309e0569f` | `2eaef4cc2` | Exception-only catch retained; positive native responses and stronger false/null failed-mount balancing tests already existed and were preserved instead of duplicated. |
+
+The earlier donor permission-gate and passphrase-settings fixes (`bc58e0b69`, `80cf9ac6d`) were already represented by core replay `d044a50a6` and `6de8250c8`. The source inventory found all 108 donor-added files present with contents identical to the final donor. Stable patch-ID comparison also matched all ten remaining shared source/localization/dependency deltas against the donor; privacy and the graph were inspected separately. No Dart feature implementation or expected test value needed adaptation to Ben in this replay. The only graph reconciliation removed a duplicate unlabelled WalletBackup → BullVault edge while preserving the existing labelled edge. Existing core recovery/signing changes, Ben's lifecycle/policy code, published schema files and production router/locator were not replaced.
+
+The complete existing implementation is now reviewable on this branch, including code that remains a development harness. BIP138 public Nostr/Bitcoin writers are still absent from production routes; they were not promoted into the later approved password-encrypted public profile. The dedicated prototype wallet store remains separate from real app recovery. Existing production metadata credential/encryption/authentication is unchanged. The old experimental cipher is absent from the final tree.
+
+Verification on the consolidated source:
+
+- First replay group: whole-project analysis reported no issues. `test/features/bullvault`, `test/features/nostr_identity` and `test/core_test/nostr` passed 288 tests with three live/export cases skipped; no expectation changes (`/home/francis/bbm-unified-descriptor-tests-20260911.log`).
+- Independent existing Python fixture verifier decrypted the retained BIP138 fixture for all three public cosigners. This was a local fixture check, not a new public relay/chain fetch.
+- Portable suites and shared cipher adapter: 37 tests passed, including independent credential/author and Python ciphertext vectors, protected input, cancellation and separate-artifact behavior (`/home/francis/bbm-unified-portable-tests-20260911.log`).
+- Hooks passed for each of the three code commits; logs are `/home/francis/bbm-unified-{descriptor,portable,privacy}-commit-20260911.log`.
+- Full-workspace `make checks` completed with exit 0 at `2eaef4cc2`: 3,484 root tests plus package counts 7/78/27/40/1/17/10, 3,664 total, zero failures and three deliberate live/export skips. Whole-project fatal analysis, the UI import check, Dart fix dry-run and source formatting also passed (`/home/francis/bbm-unified-checks-20260911.log`). This is 91 additional passing tests over the pre-consolidation core checkpoint; no expectations were weakened to obtain that result.
+- After host tests finished, `fvm flutter build apk --debug --flavor production --target-platform android-x64` completed with exit 0, with a 224.1-second Gradle step (`/home/francis/bbm-unified-normal-build-20260911.log`). The normal `lib/main.dart` APK is `build/app/outputs/flutter-apk/app-production-debug.apk`, SHA-256 `35dcefb6ef6de431a9f0238f6b12102f3fa94a995a3b73eb2d0d35893c1d8642`. The build reports existing Gradle/Kotlin deprecation warnings; no Android configuration was changed. This APK was not installed or used for a new emulator recovery test in this consolidation.
+
+No public backup was published, no network fee was spent, no backend source was changed and no branch was pushed. The donor worktrees and original untracked planning files remain preserved. The remaining work is production wiring, the later recovery/setup UI and credential/Bitcoin-profile changes, final schema/release decisions and independent review—not retrieving missing existing implementations from another delivery branch.
+
+### Upstream delivery arrangement
+
+Continue review, polish and the remaining approved feature work on `integration/bullvault-metadata-deterministic-keys-v2`. Its pinned Ben ancestor is `309819e31`; this operation did not refresh or silently change that upstream pin. The old core and distributed branches remain archives only. Ben's PR can be reviewed alongside ours, with Ben landing first. After upstream lands Ben, replay our commits onto the actual upstream merge result so our eventual PR contains only our delta, accounting for whether Ben was merged with preserved history or squashed. Do not merge the obsolete donor histories or create another distributed delivery branch. Pushing, opening/retargeting PRs and release approval are separate actions and were not performed here.

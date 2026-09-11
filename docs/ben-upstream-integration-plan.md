@@ -1,6 +1,8 @@
 # Ben upstream integration and backup-stack consolidation
 
-Status: implementation proposal, grounded on 2026-09-09. Planning only: no application/backend changes, rebase, branch creation, publication or deployment has been performed. This plan precedes production work in [distributed-backups-roadmap.md](distributed-backups-roadmap.md); it does not replace that roadmap or resolve its open product decisions.
+Update 2026-09-11: the user requires ONE working branch containing the core integration and the applicable distributed donor work. The older distributed-child branch proposal below is superseded. Existing donor work has now been replayed onto `integration/bullvault-metadata-deterministic-keys-v2`; see [integration-execution.md](integration-execution.md) for source-commit mapping, current verification and remaining production work. Original donor histories/worktrees are preserved, not separate delivery targets. This consolidation does not enable prototype writers in production or implement the remaining product-flow roadmap.
+
+Historical status when written on 2026-09-09: implementation proposal only; no application/backend changes, rebase, branch creation, publication or deployment had been performed for this plan at that point. Execution has since progressed as recorded above and in the execution log. This plan precedes production work in [distributed-backups-roadmap.md](distributed-backups-roadmap.md); it does not replace that roadmap or resolve its open product decisions.
 
 UI addendum: [bullvault-backup-recovery-ui-plan.md](bullvault-backup-recovery-ui-plan.md) specifies the subsequently requested mandatory descriptor action, Additional backup protection screen and three recovery entry points. Those are deliberate product changes in their own chunks, not silent rebase resolutions. In particular, the new manual gate supersedes preservation of the old share-sheet-plus-checkbox completion behavior.
 
@@ -136,7 +138,7 @@ Execution order: I0 → I1 → I2–I5 → **I8 core gate** → I6 → **I8 cons
 
 **Exit:** compiling integration, targeted suites green; every donor commit mapped; no undocumented lost behavior. Full two-way fidelity review is repeated in I8.
 
-The mechanical starting point, to execute only during implementation after I0 verifies unused names and unchanged source refs, is:
+Historical mechanical starting point from the original proposal, retained for provenance only: do not rerun these commands on the already-created integration worktree. Actual pins and replay decisions are recorded in the execution log.
 
 ```sh
 git -C /home/francis/bbm-bullvault-rebase worktree add -b integration/bullvault-metadata-deterministic-keys-v2 /home/francis/bbm-bullvault-integration-v2 eaa5696f0a2533b6dd1474cd275e72dc484a6f46
@@ -214,7 +216,7 @@ Split the following into separate coherent fixes, not one catch-all cleanup comm
 
 **Scope:** branch consolidation and preservation of development assets, not production implementation of the distributed roadmap.
 
-Create the proposed distributed-v2 child only after the core integration gate passes. Use the manifest below, validating final file behavior rather than relying on patch IDs alone:
+Replay the unique work onto the same integration branch after the core gate; do not create a distributed-v2 child. This carry-over is now committed at `cd350ba78`, `9ffb26f0b` and `2eaef4cc2`, with the exact donor mapping and current verification in the execution log. The original manifest below remains the fidelity checklist; validate final behavior rather than relying on patch IDs alone.
 
 | Source commit | Planned disposition |
 | --- | --- |
@@ -339,19 +341,19 @@ Adversarial simplification checks:
 - Can we delete the old path now that Ben has a transactional implementation? Delete it instead of retaining two selectable engines.
 - Is a test proving the public behavior, or only matching the mocks we just changed? Keep the public-behavior proof.
 - Does moving a folder or renaming a class help the integration? If not, defer it.
-- Is this really restack work, or production distributed-backup work? Keep the latter in its separate branch/roadmap.
+- Is this really restack work, or production distributed-backup work? Keep the latter in separately scoped roadmap chunks on the same working branch; do not present source consolidation as completion of those flows.
 
 No blanket size target or arbitrary class-count target: a small failure-injection test or transaction boundary is justified by a concrete loss scenario, not by aesthetic abstraction.
 
 ## 8. PR and integration procedure
 
 1. Keep Ben's full branch as the parent. Do not merge the alternate beta PR as an additional feature stack.
-2. Prepare a draft core child PR from the new core integration branch against Ben's feature branch, only when authorized to push/open it. It contains our stack plus clearly identified integration fixes; no distributed prototypes.
+2. Use `integration/bullvault-metadata-deterministic-keys-v2` as the single working branch for our complete stack, integration fixes and consolidated distributed work. Prepare its PR only when authorized to push/open it. While Ben is pending, his feature branch is the comparison base for reviewing our delta; clearly label prototype-only code and unfinished production gates.
 3. Preserve the original 11-slice archive and publish an old-to-new mapping in review documentation. Do not rewrite historical archive PRs merely to make the new integration look cleaner. Group dependent commits for review by storage/manifest, protocol/engine, recovery/settings, and private signing; do not create new PRs for every helper.
-4. Keep the distributed-v2 branch as a separate draft child against the core integration. Its unique prototype diff must not delay review of the core stack or be represented as production-ready publication.
+4. Keep old core/distributed branches as archives, not separate delivery targets. Review the consolidated prototype commits as their own source ranges within the single branch; production enablement still requires its own correctness/security and UX evidence.
 5. Offer narrowly upstream-relevant fixes, such as schema consolidation or secret-screen gating, to Ben as separate diffs when coordination is authorized. Do not silently edit or force-push his branch. If he adopts a fix, remove only the now-equivalent child patch after checking behavior.
 6. After Ben merges, inspect the actual merged tree. If he was squash-merged, do not replay his entire rewritten history; transplant only our child commits onto the actual merged base and repeat range-diff and impacted tests. If upstream changes materially, refresh the integration evidence.
-7. Retarget/rebuild the distributed child after the core parent moves. Preserve our audit-fix checklist as a contract, not a list of hashes expected to remain identical forever.
+7. Continue the remaining approved production work and polish on that same branch. Preserve the audit-fix checklist as a behavior contract, not a list of hashes expected to remain identical forever.
 8. No force-push or PR retarget operation is pre-authorized by this plan. Prepare the local candidate and report the exact proposed external action when needed.
 
 ### If integration or testing fails
