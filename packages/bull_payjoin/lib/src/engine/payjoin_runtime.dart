@@ -440,9 +440,10 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   @override
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watchPolicy() async* {
     try {
-      await for (final value in _policy.watch()) {
-        yield Ok(value);
-      }
+      // Forward cancellation even while the policy stream is idle.
+      yield* _policy.watch().map<Result<PayjoinPolicy, PayjoinFailure>>(
+        (value) => Ok(value),
+      );
     } catch (_) {
       yield const Err(PayjoinStorageFailure('Policy watch failed'));
     }
