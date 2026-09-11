@@ -2455,6 +2455,7 @@
   "fundExchangeErrorTitleOrdKyc400": "Requisiti KYC mancanti",
   "fundExchangeErrorOrdKyc400": "Non hai i requisiti KYC per questa azione",
   "fundExchangeErrorOrdCsrcp400": "Si prega di attivare l'opzione di pagamento virtuale per questo destinatario SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Non è stato possibile aprire il link di pagamento. Si prega di riprovare.",
   "fundExchangeErrorTitleOrdCop400": "Dati di finanziamento COP non validi",
   "fundExchangeErrorOrdCop400": "Dati di richiesta non validi per il finanziamento COP",
   "fundExchangeErrorTitleOrdCsrcp400": "Pagamento virtuale non attivato",

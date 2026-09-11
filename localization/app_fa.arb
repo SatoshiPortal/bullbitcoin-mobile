@@ -7291,6 +7291,7 @@
   "fundExchangeErrorTitleOrdKyc400": "الزامات KYC ناقص است",
   "fundExchangeErrorOrdKyc400": "شما الزامات KYC لازم برای این عمل را ندارید",
   "fundExchangeErrorOrdCsrcp400": "لطفاً گزینه پرداخت مجازی را برای این گیرنده SEPA فعال کنید",
+  "fundExchangeErrorOpeningPaymentLink": "لینک پرداخت باز نشد. لطفاً دوباره تلاش کنید.",
   "fundExchangeErrorTitleOrdCop400": "داده‌های تأمین مالی COP نامعتبر است",
   "fundExchangeErrorOrdCop400": "داده‌های درخواست برای تأمین مالی COP نامعتبر است",
   "fundExchangeErrorTitleOrdCsrcp400": "پرداخت مجازی فعال نشده است",

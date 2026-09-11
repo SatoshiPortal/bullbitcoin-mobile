@@ -2456,6 +2456,7 @@
   "fundExchangeErrorTitleOrdKyc400": "缺少 KYC 要求",
   "fundExchangeErrorOrdKyc400": "您不满足执行此操作所需的 KYC 要求",
   "fundExchangeErrorOrdCsrcp400": "请为此 SEPA 收款人激活虚拟付款选项。",
+  "fundExchangeErrorOpeningPaymentLink": "无法打开付款链接。请重试。",
   "fundExchangeErrorTitleOrdCop400": "无效的 COP 充值数据",
   "fundExchangeErrorOrdCop400": "COP 充值的请求数据无效",
   "fundExchangeErrorTitleOrdCsrcp400": "虚拟付款未激活",

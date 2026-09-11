@@ -905,6 +905,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE non disponible",
   "fundExchangeErrorTitleOrdKyc400": "Exigences KYC manquantes",
   "fundExchangeErrorOrdKyc400": "Vous ne remplissez pas les exigences KYC pour cette action",
+  "fundExchangeErrorOpeningPaymentLink": "Le lien de paiement n'a pas pu être ouvert. Veuillez réessayer.",
   "fundExchangeErrorTitleOrdCop400": "Données de financement COP invalides",
   "fundExchangeErrorOrdCop400": "Données de demande invalides pour le financement COP",
   "fundExchangeErrorTitleOrdCsrcp400": "Paiement virtuel non activé",

@@ -7060,6 +7060,7 @@
   "fundExchangeErrorTitleOrdKyc400": "متطلبات KYC مفقودة",
   "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء",
   "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA هذا",
+  "fundExchangeErrorOpeningPaymentLink": "تعذر فتح رابط الدفع. يرجى المحاولة مرة أخرى.",
   "fundExchangeErrorTitleOrdCop400": "بيانات تمويل COP غير صالحة",
   "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP",
   "fundExchangeErrorTitleOrdCsrcp400": "الدفع الافتراضي غير مُفعّل",

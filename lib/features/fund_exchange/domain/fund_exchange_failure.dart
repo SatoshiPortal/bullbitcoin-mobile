@@ -64,6 +64,13 @@ final class FundExchangeConsentRegistrationFailure extends FundExchangeFailure {
   const FundExchangeConsentRegistrationFailure([super.logMessage]);
 }
 
+/// The COP payment link could not be handed to a browser, so the user cannot
+/// reach the payment page from here.
+final class FundExchangePaymentLinkUnavailableFailure
+    extends FundExchangeFailure {
+  const FundExchangePaymentLinkUnavailableFailure([super.logMessage]);
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI —
 /// the presentation extension returns the shared generic string.
 final class FundExchangeUnexpectedFailure extends FundExchangeFailure {

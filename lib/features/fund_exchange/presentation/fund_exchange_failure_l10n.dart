@@ -32,6 +32,8 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
     // correctly wherever it is rendered — not just in that sheet.
     FundExchangeConsentRegistrationFailure() =>
       context.loc.fundExchangeScamConsentError,
+    FundExchangePaymentLinkUnavailableFailure() =>
+      context.loc.fundExchangeErrorOpeningPaymentLink,
     // Never `logMessage`. That arm used to carry the API's `apiError.en`
     // string — and, for COP and SEPA, its `messageData` payload — straight to
     // the funding screens.
@@ -58,6 +60,7 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
       context.loc.fundExchangeErrorTitleRcp400,
     FundExchangeNoInstitutionsFailure() ||
     FundExchangeConsentRegistrationFailure() ||
+    FundExchangePaymentLinkUnavailableFailure() ||
     FundExchangeUnexpectedFailure() => null,
   };
 }

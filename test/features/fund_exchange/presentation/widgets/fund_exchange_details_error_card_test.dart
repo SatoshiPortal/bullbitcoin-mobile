@@ -1,9 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
@@ -59,7 +61,20 @@ FundExchangeBloc _blocFor(FundExchangeFailure failure) {
     registerResponsibilityConsentUsecase: RegisterResponsibilityConsentUsecase(
       fundingGateway: gateway,
     ),
+    openFundingPaymentLinkUsecase: const OpenFundingPaymentLinkUsecase(
+      externalLink: _UnusedExternalLink(),
+    ),
   );
+}
+
+/// The card under test never opens a link; this satisfies the bloc's
+/// dependency without pulling in a platform channel.
+class _UnusedExternalLink implements ExternalLinkPort {
+  const _UnusedExternalLink();
+
+  @override
+  Future<Result<void, FundExchangeFailure>> open(Uri url) async =>
+      throw UnimplementedError();
 }
 
 Future<InfoCard> _pumpCard(
