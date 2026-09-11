@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
@@ -5,6 +7,7 @@ import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -205,6 +208,7 @@ void main() {
       usecase = FetchAllBip85DerivationsWithEntropyUsecase(
         bip85Repository: bip85Repository,
         getDefaultSeedUsecase: getDefaultSeedUsecase,
+        settingsRepository: settingsRepository,
       );
     });
 
@@ -212,7 +216,7 @@ void main() {
       'returns Bip85UnexpectedFailure when default seed lookup throws',
       () async {
         when(
-          () => getDefaultSeedUsecase.execute(),
+          () => getDefaultSeedUsecase.execute(environment: Environment.mainnet),
         ).thenThrow(Exception('internal db error with secret path /data/user'));
 
         final result = await usecase.execute();
@@ -224,5 +228,50 @@ void main() {
         expect(failure.logMessage, isNotNull);
       },
     );
+
+    test('uses the active environment for the default seed lookup', () async {
+      final usecase = FetchAllBip85DerivationsWithEntropyUsecase(
+        bip85Repository: bip85Repository,
+        getDefaultSeedUsecase: GetDefaultSeedUsecase(
+          walletRepository: walletRepository,
+          seedRepository: seedRepository,
+        ),
+        settingsRepository: settingsRepository,
+      );
+      when(() => settingsRepository.fetch()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.testnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      when(
+        () => walletRepository.getWallets(
+          onlyDefaults: true,
+          onlyBitcoin: true,
+          environment: Environment.testnet,
+        ),
+      ).thenAnswer((_) async => [_fakeWallet]);
+      when(() => seedRepository.get(_fakeWallet.masterFingerprint)).thenAnswer(
+        (_) async => Seed.bytes(
+          bytes: Uint8List(64),
+          masterFingerprint: _fakeWallet.masterFingerprint,
+        ),
+      );
+      when(
+        () => bip85Repository.fetchAll(),
+      ).thenAnswer((_) async => const Ok([]));
+
+      final result = await usecase.execute();
+
+      expect(result, isA<Ok>());
+      verify(
+        () => walletRepository.getWallets(
+          onlyDefaults: true,
+          onlyBitcoin: true,
+          environment: Environment.testnet,
+        ),
+      ).called(1);
+    });
   });
 }
