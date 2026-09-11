@@ -170,11 +170,33 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     required Map<String, dynamic> params,
     bool requireResult = true,
   }) async {
-    final response = await _authenticatedApiClient.post(
-      path,
-      data: {'jsonrpc': '2.0', 'id': '0', 'method': method, 'params': params},
-    );
+    final Response<dynamic> response;
+    try {
+      response = await _authenticatedApiClient.post(
+        path,
+        data: {'jsonrpc': '2.0', 'id': '0', 'method': method, 'params': params},
+      );
+    } on DioException catch (e) {
+      // Dio's default `validateStatus` throws on any non-2xx, so a bad status
+      // surfaces here rather than at the check below. Either way this is an
+      // ordinary transport condition — an offline device, a 5xx — not a bug,
+      // so it becomes a datasource exception and is logged at warning level
+      // instead of raising a severe Sentry event.
+      final status = e.response?.statusCode;
+      if (status != null) {
+        throw FundingNetworkException('HTTP $status');
+      }
+      // Dio wraps anything the adapter throws — including genuine programmer
+      // bugs — as `unknown`. Those must keep reaching the severe path, so only
+      // the real transport types are downgraded.
+      if (e.type == DioExceptionType.unknown) {
+        rethrow;
+      }
+      throw FundingNetworkException('Transport failure: ${e.type.name}');
+    }
 
+    // Reachable only if a caller widens `validateStatus`; kept so a non-200
+    // can never be parsed as a successful body.
     if (response.statusCode != 200) {
       throw FundingNetworkException('HTTP ${response.statusCode}');
     }
