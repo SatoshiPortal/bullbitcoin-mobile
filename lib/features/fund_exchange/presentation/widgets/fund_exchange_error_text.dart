@@ -1,23 +1,23 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 
 class FundExchangeErrorText extends StatelessWidget {
   const FundExchangeErrorText({
     super.key,
-    required this.error,
+    required this.failure,
     this.textAlign = TextAlign.center,
   });
 
-  final FundExchangePresentationError error;
+  final FundExchangeFailure failure;
   final TextAlign textAlign;
 
   @override
   Widget build(BuildContext context) {
-    final title = error.displayTitle(context.loc);
-    final message = error.displayMessage(context.loc);
+    final title = failure.toTranslatedTitle(context);
+    final message = failure.toTranslated(context);
 
     if (title == null) {
       return BBText(

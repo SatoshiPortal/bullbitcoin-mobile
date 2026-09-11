@@ -2991,42 +2991,6 @@
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
   },
-  "fundExchangeCrBankTransferDescription1": "Neeche di gayi jaankari se apne bank account se bank transfer bhejo ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
-  },
-  "fundExchangeCrBankTransferDescriptionExactly": "bilkul sahi",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
-  "fundExchangeCrBankTransferDescription2": ". Paise aapke account balance mein jud jayenge.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
-  "fundExchangeLabelIbanCrcOnly": "IBAN account number (sirf Colones ke liye)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
-  "fundExchangeLabelIbanUsdOnly": "IBAN account number (sirf US dollars ke liye)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
-  "fundExchangeLabelPaymentDescription": "Payment ka vivaran",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
-  "fundExchangeHelpPaymentDescription": "Aapka transfer code.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
-  },
-  "fundExchangeInfoTransferCodeRequired": "Payment karte waqt transfer code ko \"message\" ya \"reason\" ya \"description\" mein zaroor daalo. Agar yeh code bhool gaye toh payment reject ho sakti hai.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
-  },
   "fundExchangeArsBankTransferTitle": "Bank Transfer",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -3048,11 +3012,8 @@
   "fundExchangeErrorTitleRcpPo404": "Payment Option Uplabdh Nahin Hai",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Uplabdh Nahin",
   "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing Hain",
-  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Galat COP Funding Data",
-  "fundExchangeErrorOrdCop400": "COP funding ke liye invalid request data: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Activate Nahin Hai",
-  "fundExchangeErrorOrdCsrcp400": "Kripya IBAN: {iban} wale SEPA recipient ke liye virtual payment option activate karein",
   "fundExchangeErrorTitleRcp400": "Galat Request",
   "fundExchangeErrorRcp400": "Galat request",
   "fundExchangeErrorOrdPo404": "Koi payment option uplabdh nahin hai",
@@ -8883,14 +8844,6 @@
       }
     }
   },
-  "fundExchangeFundAccount": "Apna account fund karo",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "fundExchangeSelectCountry": "Apna desh aur payment method select karo",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeSpeiTransfer": "SPEI transfer",
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
@@ -11268,46 +11221,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
-  },
-  "fundExchangeMethodSpeiTransferSubtitle": "Apne CLABE ka use karke funds transfer karein",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE ka use karke Colones transfer karein",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Costa Rican Colón (CRC) mein funds transfer karein",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "US Dollars (USD) mein funds transfer karein",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
-  },
-  "fundExchangeMethodArsBankTransfer": "Bank Transfer",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
-  },
-  "fundExchangeMethodArsBankTransferSubtitle": "Apne bank account se ek bank transfer bhejein",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
@@ -11606,10 +11519,6 @@
   "fundExchangeCopOpenPaymentLink": "Payment Link Kholein",
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
-  },
-  "fundExchangeCopFailedToOpenLink": "Payment link nahi khul saka. Kripya phir se try karein ya support se contact karein.",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
   },
   "electrumStopGapHighWarning": "High stop gap values sync time ko kaafi badha deti hain. Sync poora hone tak app ko foreground mein khula rakhein — app ko background mein daalne se yeh ruk sakta hai.",
   "@electrumStopGapHighWarning": {
@@ -12620,5 +12529,7 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "fundExchangeErrorOrdCop400": "COP funding ke liye invalid request data",
+  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain"
 }

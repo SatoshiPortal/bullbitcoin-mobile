@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +25,7 @@ class _FundExchangeWarningBottomSheetState
   bool _hasConfirmedNoCoercion = false;
   late StreamSubscription<FundExchangeState> _blocSubscription;
   bool _isLoading = false;
-  FundExchangePresentationError? _submitConsentError;
+  FundExchangeFailure? _submitConsentFailure;
 
   @override
   void initState() {
@@ -39,9 +39,9 @@ class _FundExchangeWarningBottomSheetState
       if (isLoading != _isLoading) {
         setState(() => _isLoading = isLoading);
       }
-      if (state.submitScamWarningConsentException != _submitConsentError) {
+      if (state.submitScamWarningConsentFailure != _submitConsentFailure) {
         setState(
-          () => _submitConsentError = state.submitScamWarningConsentException,
+          () => _submitConsentFailure = state.submitScamWarningConsentFailure,
         );
       }
       // Close the bottom sheet once the API call triggered after consent
@@ -50,8 +50,8 @@ class _FundExchangeWarningBottomSheetState
       final dataReady =
           state.fundingDetails != null || state.fundingInstitutions != null;
       final dataError =
-          state.getExchangeFundingDetailsException != null ||
-          state.listFundingInstitutionsException != null;
+          state.getFundingDetailsFailure != null ||
+          state.listFundingInstitutionsFailure != null;
       if (dataReady || dataError) {
         Navigator.of(context).pop();
       }
@@ -132,7 +132,7 @@ class _FundExchangeWarningBottomSheetState
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const Gap(16.0),
-              if (_submitConsentError != null) ...[
+              if (_submitConsentFailure != null) ...[
                 BBText(
                   context.loc.fundExchangeScamConsentError,
                   style: theme.textTheme.bodyMedium,

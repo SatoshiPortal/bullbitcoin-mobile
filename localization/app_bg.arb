@@ -1250,10 +1250,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "IBAN на Коста Рика (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "Изтриването не успя",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -1806,10 +1802,6 @@
   "@payFeeBreakdown": {
     "description": "Section header for detailed fee information"
   },
-  "fundExchangeCrBankTransferDescription2": ". Средствата ще бъдат добавени към баланса ви.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
   "sellAmount": "Сума за продажба",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
@@ -2347,10 +2339,6 @@
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "Прехвърлете средства чрез вашата CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "paySecurityQuestionLengthError": "Трябва да е между 10 и 40 знака",
   "@paySecurityQuestionLengthError": {
     "description": "Error for invalid security question length"
@@ -2403,10 +2391,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "Изпратете банков превод от вашата банкова сметка, използвайки посочените по-долу данни ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "fundExchangeHelpBeneficiaryName": "Използвайте нашето официално корпоративно име. Не използвайте \"Bull Bitcoin\".",
   "@fundExchangeHelpBeneficiaryName": {
@@ -3050,10 +3034,6 @@
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
   },
-  "fundExchangeMethodSinpeTransferSubtitle": "Прехвърляне на колони чрез SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
   "sendEstimatedDelivery": "Очаквано време за потвърждение ~ ",
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
@@ -3327,10 +3307,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN номер на сметка (само за колони)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "Запишете 12 думи на лист хартия. Дръжте ги на сигурно място и се уверете, че няма да ги изгубите.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -3500,10 +3476,6 @@
   "sellBitcoinOnChain": "Биткойн в блокчейна",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Юридически идентификационен номер",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "Получатели - Очаква се скоро",
   "@exchangeRecipientsComingSoon": {
@@ -4354,10 +4326,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "fundExchangeLabelPaymentDescription": "Описание на плащането",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "Сумата надвишава максималната стойност",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -4566,10 +4534,6 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "Изпратете банков превод от вашата банкова сметка",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "Курс на обмен",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -4662,10 +4626,6 @@
   "recoverbullPassword": "Парола",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE превод",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "Платете от друг биткойн портфейл",
   "@payFromAnotherWallet": {
@@ -5114,10 +5074,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "Трябва да добавите кода за превод като „съобщение“ или „основание“ или „описание“ при извършване на плащането. Ако забравите да въведете този код, вашето плащане може да бъде отказано.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "transactionLabelPayjoinCreationTime": "Време на създаване на Payjoin",
   "@transactionLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation timestamp"
@@ -5472,10 +5428,6 @@
   "pinStatusProcessing": "Обработка",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "Вашият код за превод.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "transactionHistoryTitle": "История на транзакциите",
   "transactionHistoryHeading": "История на транзакциите",
@@ -6005,11 +5957,8 @@
   "fundExchangeErrorTitleRcpPo404": "Опцията за плащане не е налична",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE не е наличен",
   "fundExchangeErrorTitleOrdKyc400": "Липсващи изисквания за KYC",
-  "fundExchangeErrorOrdKyc400": "Нямате необходимите изисквания за KYC за това действие: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Невалидни данни за финансиране в COP",
-  "fundExchangeErrorOrdCop400": "Невалидни данни за заявка за финансиране в COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Виртуалното плащане не е активирано",
-  "fundExchangeErrorOrdCsrcp400": "Моля, активирайте опцията за виртуално плащане за получателя по SEPA с IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Невалидна заявка",
   "fundExchangeErrorRcp400": "Невалидна заявка",
   "fundExchangeErrorOrdPo404": "Няма налична опция за плащане",
@@ -6034,10 +5983,6 @@
   "transactionFilterSell": "Продай",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI превод",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " думата \"Bitcoin\" или \"Crypto\" в описанието на плащането. Това ще блокира вашето плащане.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -7628,10 +7573,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN номер на сметка (само за щатски долари)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "Детайли за получателя",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -7979,10 +7920,6 @@
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Прехвърлете средства в костарикански колони (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "Детайли на транзакцията",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -8038,10 +7975,6 @@
   "importMnemonicSelectType": "Изберете тип портфейл за импортиране",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "Банков превод",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Детерминирани ентропии",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -8442,10 +8375,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "точно",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "Шифиран сейф",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -8494,10 +8423,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Прехвърлете средства в щатски долари (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "exchangeAccountInfoVerificationIdentityVerified": "Идентичността е потвърдена",
   "@exchangeAccountInfoVerificationIdentityVerified": {
@@ -8650,10 +8575,6 @@
   "customLocationRecommendation": "Персонализирано местоположение: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "IBAN на Коста Рика (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "Не успях да избера сейфа",
   "@recoverbullErrorSelectVault": {
@@ -9673,8 +9594,6 @@
   "withdrawConfirmCard": "Карта",
   "withdrawConfirmButton": "Потвърди тегленето",
   "withdrawConfirmError": "Грешка: {error}",
-  "fundExchangeFundAccount": "Захранете сметката си",
-  "fundExchangeSelectCountry": "Изберете вашата държава и метод на плащане",
   "fundExchangeSpeiTransfer": "SPEI превод",
   "fundExchangeSpeiSubtitle": "Прехвърляйте средства чрез вашия CLABE",
   "fundExchangeBankTransfer": "Банков превод",
@@ -9689,7 +9608,6 @@
   "fundExchangeCopGeneratePaymentLink": "Генерирай линк за плащане",
   "fundExchangeCopRedirectMessage": "Ще бъдете пренасочени към външна страница, за да извършите плащането.",
   "fundExchangeCopOpenPaymentLink": "Отвори линка за плащане",
-  "fundExchangeCopFailedToOpenLink": "Линкът за плащане не можа да бъде отворен. Моля, опитайте отново или се свържете с поддръжката.",
   "dcaSetupTitle": "Настрой периодична покупка",
   "dcaSetupInsufficientBalance": "Недостатъчен баланс",
   "dcaSetupInsufficientBalanceMessage": "Нямате достатъчен баланс, за да създадете тази поръчка.",
@@ -10233,5 +10151,7 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "fundExchangeErrorOrdCop400": "Невалидни данни за заявка за финансиране в COP",
+  "fundExchangeErrorOrdKyc400": "Нямате необходимите изисквания за KYC за това действие"
 }

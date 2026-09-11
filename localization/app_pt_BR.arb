@@ -1130,10 +1130,6 @@
   "@pinCodeCreateButton": {
     "description": "Button label to create a new PIN"
   },
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "backupWalletSuccessTitle": "Backup concluído!",
   "@backupWalletSuccessTitle": {
     "description": "Success screen title after backup is completed"
@@ -2038,10 +2034,6 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "fundExchangeCrBankTransferDescription2": ". Os fundos serão adicionados ao saldo da sua conta.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
   "hwChooseDevice": "Escolha a carteira de hardware que você gostaria de conectar",
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
@@ -2451,10 +2443,6 @@
   "@exchangeSettingsTransactionsTitle": {
     "description": "Title for the transactions button in exchange settings"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "Transferir fundos usando seu CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "logoutConfirmationTitle": "Confirme o logotipo",
   "@logoutConfirmationTitle": {
     "description": "Title for logout confirmation bottom sheet"
@@ -2691,10 +2679,6 @@
   "payRecipientType": "Tipo de destinatário",
   "@payRecipientType": {
     "description": "Label for recipient type"
-  },
-  "fundExchangeCrBankTransferDescription1": "Envie uma transferência bancária da sua conta bancária usando os detalhes abaixo ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "dcaWalletTypeBitcoin": "Bitcoin (BTC)",
   "@dcaWalletTypeBitcoin": {
@@ -3067,10 +3051,6 @@
   "exchangeAuthOk": "ESTÁ BEM",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
-  },
-  "fundExchangeSelectCountry": "Selecione seu país e método de pagamento",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
   },
   "recoverbullSelectQuickAndEasy": "Rápido e fácil",
   "@recoverbullSelectQuickAndEasy": {
@@ -3594,10 +3574,6 @@
   "@sellIBAN": {
     "description": "Label for International Bank Account Number"
   },
-  "fundExchangeMethodSinpeTransferSubtitle": "Transferir Colones usando SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
   "pinCodeCreateDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
   "@pinCodeCreateDescription": {
     "description": "Description explaining the purpose of the PIN code"
@@ -3688,10 +3664,6 @@
   "@sendEstimatedDelivery": {
     "description": "Label prefix for estimated delivery time"
   },
-  "fundExchangeLabelIbanCrcOnly": "Número da conta IBAN (apenas para Colones)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "priceChartFetchingHistory": "Fetching Price History...",
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
@@ -3719,10 +3691,6 @@
   "sendInitiatingSwap": "Iniciando troca...",
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "payPayeeAccountNumber": "Número de Conta de Pagamento",
   "@payPayeeAccountNumber": {
@@ -4436,10 +4404,6 @@
   "@bitboxErrorHandshakeFailed": {
     "description": "Error when handshake with BitBox device fails"
   },
-  "fundExchangeFundAccount": "Fina sua conta",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "statusCheckOnline": "Online",
   "@statusCheckOnline": {
     "description": "Status text when a service is online"
@@ -5142,10 +5106,6 @@
   "@bitboxActionVerifyAddressTitle": {
     "description": "Title for verify address action"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "Enviar uma transferência bancária da sua conta bancária",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "payDebitCardNumber": "Número de cartão de débito",
   "@payDebitCardNumber": {
     "description": "Label for debit card number field"
@@ -5305,10 +5265,6 @@
   "sellBankTransfer": "Transferência bancária",
   "@sellBankTransfer": {
     "description": "Option for bank deposit"
-  },
-  "fundExchangeLabelPaymentDescription": "Descrição do pagamento",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
   },
   "electrumDeleteFailedError": "Falhado para excluir servidor personalizado",
   "@electrumDeleteFailedError": {
@@ -5756,10 +5712,6 @@
   "electrumMainnet": "Principal",
   "@electrumMainnet": {
     "description": "Mainnet environment label"
-  },
-  "fundExchangeMethodSinpeTransfer": "Transferência de SINPE",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
   "@sendEstimatedDelivery10to30Minutes": {
@@ -6275,10 +6227,6 @@
   "bitboxActionVerifyAddressProcessingSubtext": "Por favor, confirme o endereço do seu dispositivo BitBox.",
   "@bitboxActionVerifyAddressProcessingSubtext": {
     "description": "Processing subtext for verify address"
-  },
-  "fundExchangeHelpPaymentDescription": "O teu código de transferência.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "buyVerificationFailed": "Verificação falhada: {reason}",
   "@buyVerificationFailed": {
@@ -6797,10 +6745,6 @@
       }
     }
   },
-  "fundExchangeInfoTransferCodeRequired": "Você deve adicionar o código de transferência como a \"mensagem\" ou \"razão\" ou \"descrição\" ao fazer o pagamento. Se você esquecer de colocar este código o seu pagamento pode ser rejeitado.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeSettingsLogOutTitle": "Log out",
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
@@ -6896,10 +6840,6 @@
   "addressViewCopyAddress": "Endereço de cópia",
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
-  },
-  "fundExchangeMethodSpeiTransfer": "Transferência SPEI",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "importQrDeviceJadeStep1": "Ligue o dispositivo Jade",
   "@importQrDeviceJadeStep1": {
@@ -7238,11 +7178,8 @@
   "fundExchangeErrorTitleRcpPo404": "Opção de Pagamento Não Disponível",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Não Disponível",
   "fundExchangeErrorTitleOrdKyc400": "Requisitos de KYC Ausentes",
-  "fundExchangeErrorOrdKyc400": "Você não atende aos requisitos de KYC para esta ação: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Dados de Financiamento COP Inválidos",
-  "fundExchangeErrorOrdCop400": "Dados de solicitação inválidos para o financiamento COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Pagamento Virtual Não Ativado",
-  "fundExchangeErrorOrdCsrcp400": "Por favor, ative a opção de pagamento virtual para o destinatário SEPA com o IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Solicitação Inválida",
   "fundExchangeErrorRcp400": "Solicitação inválida",
   "fundExchangeErrorOrdPo404": "Nenhuma opção de pagamento disponível",
@@ -8377,10 +8314,6 @@
   "@withdrawRecipientsPrompt": {
     "description": "Instructions on recipients screen"
   },
-  "fundExchangeLabelIbanUsdOnly": "Número da conta IBAN (apenas para dólares americanos)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "addressLabel": "Endereço: ",
   "@addressLabel": {
     "description": "Label for UTXO address in coin selection tile"
@@ -8671,10 +8604,6 @@
   "@exchangeAccountComingSoon": {
     "description": "Message indicating that a feature is coming soon"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Transferir fundos em Costa Rican Colón (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "autoswapWarningSettingsLink": "Leve-me para configurações de auto-despertar",
   "@autoswapWarningSettingsLink": {
     "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
@@ -8726,10 +8655,6 @@
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
   "@coldcardStep10": {
     "description": "Coldcard instruction for signing"
-  },
-  "fundExchangeMethodArsBankTransfer": "Transferência bancária",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 Entropias Deterministas",
   "@bitcoinSettingsBip85EntropiesTitle": {
@@ -9362,10 +9287,6 @@
   "@electrumTimeoutEmptyError": {
     "description": "Validation error for empty Timeout field"
   },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Transferir fundos em dólares americanos (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
-  },
   "dcaSetupTitle": "Definir Recorrer Comprar",
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"
@@ -9553,10 +9474,6 @@
   "exchangeStatisticsTotalAmount": "Montante total",
   "@exchangeStatisticsTotalAmount": {
     "description": "Label for total amount statistic"
-  },
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "torSettingsEnableProxy": "Ativar Proxy Tor",
   "@torSettingsEnableProxy": {
@@ -10158,10 +10075,6 @@
   "autoswapRecipientWalletDefaultLabel": "Carteira Bitcoin",
   "@autoswapRecipientWalletDefaultLabel": {
     "description": "Default label shown for wallets without a custom label in the dropdown"
-  },
-  "fundExchangeCrBankTransferDescriptionExactly": "exactamente",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
   },
   "payPhoneNumber": "Número de telefone",
   "@payPhoneNumber": {
@@ -12097,7 +12010,6 @@
   "fundExchangeCopGeneratePaymentLink": "Gerar link de pagamento",
   "fundExchangeCopRedirectMessage": "Você será redirecionado para uma página externa para realizar o pagamento.",
   "fundExchangeCopOpenPaymentLink": "Abrir link de pagamento",
-  "fundExchangeCopFailedToOpenLink": "Não foi possível abrir o link de pagamento. Tente novamente ou entre em contato com o suporte.",
   "priceChartFailedToLoad": "Falha ao carregar o histórico de preços",
   "priceFailedToLoad": "Falha ao carregar o preço",
   "statusScreenTryAgain": "Tente novamente",
@@ -12244,5 +12156,7 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "fundExchangeErrorOrdCop400": "Dados de solicitação inválidos para o financiamento COP",
+  "fundExchangeErrorOrdKyc400": "Você não atende aos requisitos de KYC para esta ação"
 }

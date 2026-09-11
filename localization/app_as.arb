@@ -1156,16 +1156,6 @@
   "fundExchangeMethodInstantSepaSubtitle": "দ্ৰুততম - কেৱল €30,000-ৰ তলৰ লেনদেনৰ বাবে",
   "fundExchangeMethodRegularSepa": "Regular SEPA",
   "fundExchangeMethodRegularSepaSubtitle": "কেৱল €30,000-ৰ ওপৰৰ বৃহত্তৰ লেনদেনৰ বাবে ব্যৱহাৰ কৰক",
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "fundExchangeMethodSpeiTransferSubtitle": "আপোনাৰ CLABE ব্যৱহাৰ কৰি ধন transfer কৰক",
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE ব্যৱহাৰ কৰি Colones transfer কৰক",
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "fundExchangeMethodCrIbanCrcSubtitle": "Costa Rican Colón (CRC)-ত ধন transfer কৰক",
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "fundExchangeMethodCrIbanUsdSubtitle": "US Dollars (USD)-ত ধন transfer কৰক",
-  "fundExchangeMethodArsBankTransfer": "ব্যাংক Transfer",
-  "fundExchangeMethodArsBankTransferSubtitle": "আপোনাৰ ব্যাংক একাউন্টৰ পৰা ব্যাংক transfer পঠিয়াওক",
   "fundExchangeBankTransferWireTitle": "ব্যাংক transfer (wire)",
   "fundExchangeBankTransferWireDescription": "তলৰ Bull Bitcoin-ৰ ব্যাংকৰ বিৱৰণ ব্যৱহাৰ কৰি আপোনাৰ ব্যাংক একাউন্টৰ পৰা wire transfer পঠিয়াওক। আপোনাৰ ব্যাংকৰ বাবে হয়তো এই বিৱৰণৰ কিছু অংশহে প্ৰয়োজন হ'ব।",
   "fundExchangeBankTransferWireTimeframe": "আপুনি পঠিওৱা যিকোনো ধন 1-2 ব্যৱসায়িক দিনৰ ভিতৰত আপোনাৰ Bull Bitcoin-ত যোগ কৰা হ'ব।",
@@ -1227,15 +1217,6 @@
   "fundExchangeSinpeDescription": "SINPE ব্যৱহাৰ কৰি Colones transfer কৰক",
   "fundExchangeCrIbanCrcTitle": "ব্যাংক Transfer (CRC)",
   "fundExchangeCrIbanUsdTitle": "ব্যাংক Transfer (USD)",
-  "fundExchangeCrBankTransferDescription1": "তলৰ বিৱৰণ ব্যৱহাৰ কৰি আপোনাৰ ব্যাংক একাউন্টৰ পৰা ব্যাংক transfer পঠিয়াওক ",
-  "fundExchangeCrBankTransferDescriptionExactly": "ঠিক তেনেকৈয়ে",
-  "fundExchangeCrBankTransferDescription2": "। ধন আপোনাৰ একাউন্ট ব্যালেন্সত যোগ কৰা হ'ব।",
-  "fundExchangeLabelIbanCrcOnly": "IBAN একাউন্ট নম্বৰ (কেৱল Colones-ৰ বাবে)",
-  "fundExchangeLabelIbanUsdOnly": "IBAN একাউন্ট নম্বৰ (কেৱল US Dollars-ৰ বাবে)",
-  "fundExchangeLabelPaymentDescription": "পৰিশোধৰ বিৱৰণ",
-  "fundExchangeHelpPaymentDescription": "আপোনাৰ transfer কোড।",
-  "fundExchangeInfoTransferCodeRequired": "পৰিশোধ কৰোঁতে আপুনি transfer কোড \"বাৰ্তা\" বা \"কাৰণ\" বা \"বিৱৰণ\" হিচাপে যোগ কৰিব লাগিব। যদি আপুনি এই কোড দিয়াটো পাহৰে, আপোনাৰ পৰিশোধ প্ৰত্যাখ্যান হ'ব পাৰে।",
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
   "fundExchangeArsBankTransferTitle": "ব্যাংক Transfer",
   "fundExchangeArsBankTransferDescription": "তলৰ Argentina ব্যাংকৰ সঠিক বিৱৰণ ব্যৱহাৰ কৰি আপোনাৰ ব্যাংক একাউন্টৰ পৰা ব্যাংক transfer পঠিয়াওক।",
   "fundExchangeLabelRecipientNameArs": "প্ৰাপকৰ নাম",
@@ -1245,11 +1226,8 @@
   "fundExchangeErrorTitleRcpPo404": "পৰিশোধ বিকল্প উপলব্ধ নাই",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE উপলব্ধ নাই",
   "fundExchangeErrorTitleOrdKyc400": "KYC প্ৰয়োজনীয়তা অনুপস্থিত",
-  "fundExchangeErrorOrdKyc400": "এই কাৰ্যৰ বাবে আপোনাৰ প্ৰয়োজনীয় KYC প্ৰয়োজনীয়তা নাই: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "অবৈধ COP ফান্ডিং ডেটা",
-  "fundExchangeErrorOrdCop400": "COP ফান্ডিংৰ বাবে অবৈধ অনুৰোধ ডেটা: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "ভাৰ্চুৱেল পৰিশোধ সক্ৰিয় নহয়",
-  "fundExchangeErrorOrdCsrcp400": "অনুগ্ৰহ কৰি IBAN: {iban} থকা SEPA গ্ৰাহকৰ বাবে ভাৰ্চুৱেল পৰিশোধ বিকল্প সক্ৰিয় কৰক",
   "fundExchangeErrorTitleRcp400": "অবৈধ অনুৰোধ",
   "fundExchangeErrorRcp400": "অবৈধ অনুৰোধ",
   "fundExchangeErrorOrdPo404": "কোনো পৰিশোধ বিকল্প উপলব্ধ নাই",
@@ -6785,14 +6763,6 @@
       }
     }
   },
-  "fundExchangeFundAccount": "আপোনাৰ একাউণ্টত পুঁজি যোগ কৰক",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "fundExchangeSelectCountry": "আপোনাৰ দেশ আৰু পৰিশোধ পদ্ধতি বাছনি কৰক",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeSpeiTransfer": "SPEI transfer",
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
@@ -8620,10 +8590,6 @@
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
   },
-  "fundExchangeCopFailedToOpenLink": "পৰিশোধ লিংক খুলিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায়ৰ বাবে যোগাযোগ কৰক।",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
-  },
   "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হৈছে",
   "@transactionStatusPayjoinCompleted": {
     "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
@@ -9344,5 +9310,7 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "fundExchangeErrorOrdCop400": "COP ফান্ডিংৰ বাবে অবৈধ অনুৰোধ ডেটা",
+  "fundExchangeErrorOrdKyc400": "এই কাৰ্যৰ বাবে আপোনাৰ প্ৰয়োজনীয় KYC প্ৰয়োজনীয়তা নাই"
 }

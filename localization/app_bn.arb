@@ -1332,10 +1332,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "কোস্টা রিকা IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "মোছা ব্যর্থ হয়েছে",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -2011,10 +2007,6 @@
   "coreSwapsLnSendPaid": "আপনার পেমেন্ট নিশ্চিত হওয়ার পরে ইনভয়েস পরিশোধ হবে।",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": "এই তহবিলগুলো আপনার অ্যাকাউন্টের ব্যালান্সে যোগ হবে।",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "বিক্রি করার পরিমাণ",
   "@sellAmount": {
@@ -2692,10 +2684,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "আপনার CLABE ব্যবহার করে তহবিল স্থানান্তর",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "Jade আনলক করতে ডিভাইস নির্দেশনা অনুসরণ করুন",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2756,10 +2744,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "নীচে দেওয়া বিবরণ ব্যবহার করে আপনার ব্যাংক অ্যাকাউন্ট থেকে একটি ব্যাংক ট্রান্সফার পাঠান ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "fundExchangeHelpBeneficiaryName": "আমাদের অফিসিয়াল কর্পোরেট নাম ব্যবহার করুন। \"Bull Bitcoin\" ব্যবহার করবেন না।",
   "@fundExchangeHelpBeneficiaryName": {
@@ -3332,10 +3316,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "আপনার দেশ এবং পেমেন্ট পদ্ধতি নির্বাচন করুন",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE ব্যবহার করে কলোনেস স্থানান্তর",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3615,10 +3595,6 @@
   "testBackupRecoverWallet": "ওয়ালেট পুনরুদ্ধার করুন",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE ব্যবহার করে কলোনেস স্থানান্তর",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "আনুমানিক ডেলিভারি ~ ",
   "@sendEstimatedDelivery": {
@@ -3968,10 +3944,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN অ্যাকাউন্ট নম্বর (কলোনসের জন্য কেবল)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "১২টি শব্দ একটি কাগজে লিখে রাখুন। সেগুলো নিরাপদে রাখুন এবং ভুলে যাওয়ার চেষ্টা করবেন না।",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4233,10 +4205,6 @@
   "sellBitcoinOnChain": "Bitcoin অন-চেইন",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "আইনি সনদ নম্বর",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "প্রাপকসমূহ - শীঘ্রই আসছে",
   "@exchangeRecipientsComingSoon": {
@@ -5003,10 +4971,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "আপনার অ্যাকাউন্টে তহবিল যোগ করুন",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "Electrum সার্ভার (Bitcoin নোড)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5348,10 +5312,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "পেমেন্ট বিবরণ",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "পরিমাণ সর্বোচ্চ সীমা ছাড়িয়ে গেছে",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5640,10 +5600,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "আপনার ব্যাংক অ্যাকাউন্ট থেকে একটি ব্যাংক স্থানান্তর পাঠান",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "বিনিময় হার",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5770,10 +5726,6 @@
   "recoverbullPassword": "পাসওয়ার্ড",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE ট্রান্সফার",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "অন্য একটি বিটকয়েন ওয়ালেট থেকে পেমেন্ট করুন",
   "@payFromAnotherWallet": {
@@ -6349,10 +6301,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "পেমেন্ট করার সময় ট্রান্সফার কোডটি 'message' বা 'reason' বা 'description' হিসেবে যোগ করতে হবে। আপনি যদি এই কোডটি যোগ করতে ভুল করেন, তবে আপনার পেমেন্ট প্রত্যাখ্যাত হতে পারে।",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "ঘণ্টা",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -6866,10 +6814,6 @@
   "pinStatusProcessing": "প্রক্রিয়াকরণ চলছে",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "আপনার ট্রান্সফার কোড।",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "সবচেয়ে দ্রুত",
   "@sellSendPaymentFastest": {
@@ -7496,11 +7440,8 @@
   "fundExchangeErrorTitleRcpPo404": "পেমেন্ট অপশন উপলব্ধ নেই",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE উপলব্ধ নেই",
   "fundExchangeErrorTitleOrdKyc400": "KYC প্রয়োজনীয়তা অনুপস্থিত",
-  "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "অবৈধ COP ফান্ডিং ডেটা",
-  "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "ভার্চুয়াল পেমেন্ট সক্রিয় নয়",
-  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে IBAN: {iban} সহ SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন",
   "fundExchangeErrorTitleRcp400": "অবৈধ অনুরোধ",
   "fundExchangeErrorRcp400": "অবৈধ অনুরোধ",
   "fundExchangeErrorOrdPo404": "কোনো পেমেন্ট অপশন উপলব্ধ নেই",
@@ -7533,10 +7474,6 @@
   "transactionFilterSell": "বিক্রি",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI ট্রান্সফার",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " পেমেন্ট বিবরণে \"Bitcoin\" বা \"Crypto\" শব্দটি রাখবেন না। এতে আপনার পেমেন্ট ব্লক হতে পারে।",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9623,10 +9560,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN অ্যাকাউন্ট নম্বর (শুধু US ডলার জন্য)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "প্রাপকের বিবরণ",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -10055,10 +9988,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "CRC-এ কোস্টা রিকার কলোনে তহবিল স্থানান্তর\n==WEBLATE_PART==",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "লেনদেনের বিবরণ",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10130,10 +10059,6 @@
   "importMnemonicSelectType": "ইমপোর্ট করার জন্য একটি ওয়ালেট টাইপ নির্বাচন করুন",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "ব্যাংক স্থানান্তর",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "Keystone ডিভাইস চালু করুন",
   "@importQrDeviceKeystoneStep1": {
@@ -10626,10 +10551,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "ঠিক",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "এনক্রিপ্টেড ভল্ট",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10682,10 +10603,6 @@
   "torSettingsPortValidationRange": "পোর্ট নম্বর 1 থেকে 65535 এর মধ্যে হতে হবে",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "US ডলার (USD) এ অর্থ স্থানান্তর করুন",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "টাইমআউট খালি হতে পারে না",
   "@electrumTimeoutEmptyError": {
@@ -10882,10 +10799,6 @@
   "customLocationRecommendation": "কাস্টম লোকেশন: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "কোস্টা রিকা IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "ভল্ট নির্বাচন করতে ব্যর্থ হয়েছে",
   "@recoverbullErrorSelectVault": {
@@ -11716,10 +11629,6 @@
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
   },
-  "fundExchangeCopFailedToOpenLink": "পেমেন্ট লিঙ্ক খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন অথবা সহায়তার সাথে যোগাযোগ করুন।",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
-  },
   "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হয়েছে",
   "@transactionStatusPayjoinCompleted": {
     "description": "যখন একটি Payjoin লেনদেন সফলভাবে সম্পন্ন হয় তখন এটি দেখানো হয়।"
@@ -12442,5 +12351,7 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা",
+  "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই"
 }

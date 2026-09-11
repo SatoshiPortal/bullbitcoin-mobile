@@ -3650,46 +3650,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
-  },
-  "fundExchangeMethodSpeiTransferSubtitle": "Transfer funds using your CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "Transfer Colones using SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Transfer funds in Costa Rican Colón (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Transfer funds in US Dollars (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
-  },
-  "fundExchangeMethodArsBankTransfer": "Bank Transfer",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
-  },
-  "fundExchangeMethodArsBankTransferSubtitle": "Send a bank transfer from your bank account",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
@@ -3934,42 +3894,6 @@
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
   },
-  "fundExchangeCrBankTransferDescription1": "Send a bank transfer from your bank account using the details below ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
-  },
-  "fundExchangeCrBankTransferDescriptionExactly": "exactly",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
-  "fundExchangeCrBankTransferDescription2": ". The funds will be added to your account balance.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
-  "fundExchangeLabelIbanCrcOnly": "IBAN account number (for Colones only)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
-  "fundExchangeLabelIbanUsdOnly": "IBAN account number (for US dollars only)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
-  "fundExchangeLabelPaymentDescription": "Payment description",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
-  "fundExchangeHelpPaymentDescription": "Your transfer code.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
-  },
-  "fundExchangeInfoTransferCodeRequired": "You must add the transfer code as the \"message\" or \"reason\" or \"description\" when making the payment. If you forget to put this code your payment may be rejected.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
-  },
   "fundExchangeArsBankTransferTitle": "Bank Transfer",
   "@fundExchangeArsBankTransferTitle": {
     "description": "Screen title for Argentina bank transfer"
@@ -4018,40 +3942,13 @@
   "@fundExchangeErrorTitleOrdKyc400": {
     "description": "bb-exchange errorTitleOrdKyc400"
   },
-  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action: {missingFields}",
-  "@fundExchangeErrorOrdKyc400": {
-    "description": "bb-exchange errorMsgOrdKyc400",
-    "placeholders": {
-      "missingFields": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
   "@fundExchangeErrorTitleOrdCop400": {
     "description": "bb-exchange errorTitleOrdCop400"
   },
-  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding: {error}",
-  "@fundExchangeErrorOrdCop400": {
-    "description": "bb-exchange errorMsgOrdCop400",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
   "@fundExchangeErrorTitleOrdCsrcp400": {
     "description": "bb-exchange errorTitleOrdCsrcp400"
-  },
-  "fundExchangeErrorOrdCsrcp400": "Please activate virtual payment option for the SEPA recipient with IBAN: {iban}",
-  "@fundExchangeErrorOrdCsrcp400": {
-    "description": "bb-exchange errorMsgOrdCsrcp400",
-    "placeholders": {
-      "iban": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeErrorTitleRcp400": "Invalid Request",
   "@fundExchangeErrorTitleRcp400": {
@@ -10386,14 +10283,6 @@
       }
     }
   },
-  "fundExchangeFundAccount": "Fund your account",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "fundExchangeSelectCountry": "Select your country and payment method",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeSpeiTransfer": "SPEI transfer",
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
@@ -10449,10 +10338,6 @@
   "fundExchangeCopOpenPaymentLink": "Open Payment Link",
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
-  },
-  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
   },
   "dcaSetupTitle": "Set Recurring Buy",
   "@dcaSetupTitle": {
@@ -14693,5 +14578,17 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "fundExchangeErrorOrdCsrcp400": "Please activate the virtual payment option for this SEPA recipient",
+  "@fundExchangeErrorOrdCsrcp400": {
+    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Retranslation needed: the previous copy named the IBAN."
+  },
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action",
+  "@fundExchangeErrorOrdKyc400": {
+    "description": "bb-exchange errorMsgOrdKyc400. The API names the missing fields in messageData.missingFields; that is backend-controlled text, kept to logs only (#1895)."
+  },
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding",
+  "@fundExchangeErrorOrdCop400": {
+    "description": "bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895)."
   }
 }
