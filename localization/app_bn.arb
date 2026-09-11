@@ -521,10 +521,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "লেবেল",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "জোড়া শুরু করুন",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11791,37 +11787,6 @@
   "pinCodeNotSetError": "No PIN code has been set.",
   "bitcoinPriceExchangeRateUnavailable": "বিনিময় হার অনুপলব্ধ। পরে আবার চেষ্টা করুন।",
   "priceChartLoadFailed": "মূল্য চার্ট ডেটা লোড করা যায়নি। আবার চেষ্টা করুন।",
-  "labelErrorUnexpected": "অপ্রত্যাশিত ত্রুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "সিস্টেম লেবেলগুলি মুছে ফেলা যাবে না।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "এই ধরনের {type} সমর্থিত নয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "লেবেল \"{label}\" খুঁজে পাওয়া যায়নি।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "ঘণ্টা",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
@@ -12442,5 +12407,14 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "labelsErrorNoteTooLong": "নোট {max} অক্ষরের বেশি হতে পারবে না",
+  "labelsErrorNoteForbiddenCharacter": "নোটে {character} অক্ষরটি থাকতে পারবে না",
+  "labelsErrorFileTooLarge": "এই ফাইলটি খুব বড়। লেবেল ফাইল {max} এর কম হতে হবে।",
+  "labelsErrorFileUnreadable": "এটি BIP-329 লেবেল ফাইল বলে মনে হচ্ছে না। আপনি সঠিক ফাইল বেছেছেন কিনা দেখুন।",
+  "labelsErrorFileEmpty": "এই ফাইলে আমদানি করার মতো কোনো লেবেল নেই।",
+  "labelsErrorExportFailed": "আপনার লেবেল সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
+  "labelsErrorFileReservedName": "এই ফাইলটি অ্যাপের সংরক্ষিত লেবেল নাম ব্যবহার করে। ফাইলে নাম পরিবর্তন করে আবার চেষ্টা করুন।",
+  "labelsErrorNoteForbiddenWhitespace": "নোটে লাইন ব্রেক বা ট্যাব থাকতে পারবে না",
+  "labelsErrorFileInvalidEntry": "সেই ফাইলের কিছু এন্ট্রি পড়া যায়নি। ফাইলটি পরীক্ষা করে আবার চেষ্টা করুন।"
 }

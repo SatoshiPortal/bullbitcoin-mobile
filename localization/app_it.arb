@@ -191,7 +191,6 @@
   "swapReceiveExactAmountLabel": "Ricevi la quantità esatta",
   "swapInsufficientFunds": "Fondi insufficienti",
   "ledgerImportButton": "Inizio Importazione",
-  "labelInputLabel": "Etichetta",
   "bitboxActionPairDeviceButton": "Iniziare a coppie",
   "importQrDeviceSpecterName": "Spettacolo",
   "transactionDetailLabelSwapFees": "Tasse di cambio",
@@ -4365,31 +4364,6 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "labelErrorUnexpected": "Errore inaspettato: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Le etichette di sistema non possono essere eliminate.",
-  "labelErrorUnsupportedType": "Questo tipo {type} non è supportato",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Etichetta \"{label}\" non trovata.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "ore",
   "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
   "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
@@ -4914,5 +4888,14 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "labelsErrorNoteTooLong": "La nota non può superare {max} caratteri",
+  "labelsErrorNoteForbiddenCharacter": "La nota non può contenere il carattere {character}",
+  "labelsErrorFileTooLarge": "Questo file è troppo grande. I file di etichette devono essere inferiori a {max}.",
+  "labelsErrorFileUnreadable": "Questo non sembra un file di etichette BIP-329. Verifica di aver scelto il file giusto.",
+  "labelsErrorFileEmpty": "Questo file non contiene etichette da importare.",
+  "labelsErrorExportFailed": "Non è stato possibile salvare le tue etichette. Riprova.",
+  "labelsErrorFileReservedName": "Questo file usa un nome di etichetta riservato dall'app. Rinominalo nel file e riprova.",
+  "labelsErrorNoteForbiddenWhitespace": "La nota non può contenere interruzioni di riga o tabulazioni",
+  "labelsErrorFileInvalidEntry": "Alcune voci di questo file non sono state lette. Controlla il file e riprova."
 }

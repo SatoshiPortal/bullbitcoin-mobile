@@ -192,7 +192,6 @@
   "swapReceiveExactAmountLabel": "收到确切数额",
   "swapInsufficientFunds": "资金不足",
   "ledgerImportButton": "开始导入",
-  "labelInputLabel": "Label",
   "bitboxActionPairDeviceButton": "启动",
   "importQrDeviceSpecterName": "专栏",
   "transactionDetailLabelSwapFees": "学费",
@@ -4249,31 +4248,6 @@
   "@allSeedViewErrorDelete": {
     "description": "Error shown when seed deletion fails"
   },
-  "labelErrorUnexpected": "意外错误:{message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "系统标签不能删除.",
-  "labelErrorUnsupportedType": "这种{type}不支持",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Label “{label}”没有发现.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "sendEstimatedDeliveryHours": "小时",
   "mempoolErrorUnexpected": "发生了意外错误",
   "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
@@ -4914,5 +4888,14 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "labelsErrorNoteTooLong": "备注不能超过 {max} 个字符",
+  "labelsErrorNoteForbiddenCharacter": "备注不能包含字符 {character}",
+  "labelsErrorFileTooLarge": "该文件太大。标签文件必须小于 {max}。",
+  "labelsErrorFileUnreadable": "这看起来不是 BIP-329 标签文件。请确认您选择了正确的文件。",
+  "labelsErrorFileEmpty": "该文件不包含可导入的标签。",
+  "labelsErrorExportFailed": "无法保存您的标签。请重试。",
+  "labelsErrorFileReservedName": "该文件使用了应用保留的标签名称。请在文件中重命名后重试。",
+  "labelsErrorNoteForbiddenWhitespace": "备注不能包含换行符或制表符",
+  "labelsErrorFileInvalidEntry": "该文件中的某些条目无法读取。请检查文件后重试。"
 }

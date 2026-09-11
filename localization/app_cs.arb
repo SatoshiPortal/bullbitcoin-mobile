@@ -788,10 +788,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "Čeština",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "Start Párování",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11625,40 +11621,9 @@
   "bitcoinPriceExchangeRateUnavailable": "Směnný kurz není dostupný. Zkuste to prosím později.",
   "priceChartLoadFailed": "Data grafu ceny nelze načíst. Zkuste to prosím znovu.",
   "mempoolErrorInvalidUrl": "Neplatná adresa serveru. Zadejte platnou doménu nebo IP adresu.",
-  "labelErrorUnexpected": "Chybná chyba: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "Pro import mnemoniky je nutný štítek",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "Systémové štítky nelze odstranit.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "Tento typ {type} není podporován",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Štítky \"{label}\" nebyl nalezen.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "hodiny",
   "@sendEstimatedDeliveryHours": {
@@ -12232,5 +12197,14 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "labelsErrorNoteTooLong": "Poznámka nesmí být delší než {max} znaků",
+  "labelsErrorNoteForbiddenCharacter": "Poznámka nesmí obsahovat znak {character}",
+  "labelsErrorFileTooLarge": "Tento soubor je příliš velký. Soubory se štítky musí být menší než {max}.",
+  "labelsErrorFileUnreadable": "Nevypadá to jako soubor se štítky BIP-329. Zkontrolujte, zda jste vybrali správný soubor.",
+  "labelsErrorFileEmpty": "Tento soubor neobsahuje žádné štítky k importu.",
+  "labelsErrorExportFailed": "Vaše štítky se nepodařilo uložit. Zkuste to prosím znovu.",
+  "labelsErrorFileReservedName": "Tento soubor používá název štítku vyhrazený aplikací. Přejmenujte jej v souboru a zkuste to znovu.",
+  "labelsErrorNoteForbiddenWhitespace": "Poznámka nesmí obsahovat konce řádků ani tabulátory",
+  "labelsErrorFileInvalidEntry": "Některé položky v tomto souboru se nepodařilo přečíst. Zkontrolujte soubor a zkuste to znovu."
 }

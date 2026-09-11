@@ -1234,7 +1234,6 @@
   "swapReceiveExactAmountLabel": "Отримати точний розмір",
   "swapInsufficientFunds": "Недостатньо коштів",
   "ledgerImportButton": "Імпорт",
-  "labelInputLabel": "Етикетка",
   "bitboxActionPairDeviceButton": "Старт Пірсінг",
   "importQrDeviceSpecterName": "Спектр",
   "broadcastSignedTxFee": "Плей",
@@ -4363,31 +4362,6 @@
     "description": "Error shown when seed deletion fails"
   },
   "sendEstimatedDeliveryHours": "години",
-  "labelErrorUnexpected": "Несподівана помилка: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Система не може бути видалена.",
-  "labelErrorUnsupportedType": "Цей тип {type} не підтримується",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Етикетку \"{label}\" не знайдено.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolErrorUnexpected": "Сталася неочікувана помилка",
   "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
   "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
@@ -4911,5 +4885,14 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "labelsErrorNoteTooLong": "Примітка має містити не більше {max} символів",
+  "labelsErrorNoteForbiddenCharacter": "Примітка не може містити символ {character}",
+  "labelsErrorFileTooLarge": "Цей файл завеликий. Файли міток мають бути менші за {max}.",
+  "labelsErrorFileUnreadable": "Це не схоже на файл міток BIP-329. Перевірте, чи обрали ви потрібний файл.",
+  "labelsErrorFileEmpty": "У цьому файлі немає міток для імпорту.",
+  "labelsErrorExportFailed": "Не вдалося зберегти ваші мітки. Спробуйте ще раз.",
+  "labelsErrorFileReservedName": "У цьому файлі використано назву мітки, зарезервовану застосунком. Перейменуйте її у файлі та спробуйте ще раз.",
+  "labelsErrorNoteForbiddenWhitespace": "Примітка не може містити розриви рядків або табуляції",
+  "labelsErrorFileInvalidEntry": "Деякі записи в цьому файлі не вдалося прочитати. Перевірте файл і спробуйте ще раз."
 }

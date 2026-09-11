@@ -517,10 +517,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "Label",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "Başlangıç",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11509,40 +11505,9 @@
   "bitcoinPriceExchangeRateUnavailable": "Döviz kuru mevcut değil. Lütfen daha sonra tekrar deneyin.",
   "priceChartLoadFailed": "Fiyat grafiği verileri yüklenemedi. Lütfen tekrar deneyin.",
   "mempoolErrorInvalidUrl": "Geçersiz sunucu URL'si. Geçerli bir alan adı veya IP adresi girin.",
-  "labelErrorUnexpected": "Beklenmeyen hata: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "Bir anımsatıcı içe aktarmak için etiket gereklidir",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "Sistem etiketleri silinemez.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "Bu tip {type} desteklenmez",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Etiket \"{label} bulunamadı.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "saatler",
   "@sendEstimatedDeliveryHours": {
@@ -12232,5 +12197,14 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "labelsErrorNoteTooLong": "Not en fazla {max} karakter olmalıdır",
+  "labelsErrorNoteForbiddenCharacter": "Not {character} karakterini içeremez",
+  "labelsErrorFileTooLarge": "Bu dosya çok büyük. Etiket dosyaları {max} boyutundan küçük olmalıdır.",
+  "labelsErrorFileUnreadable": "Bu bir BIP-329 etiket dosyasına benzemiyor. Doğru dosyayı seçtiğinizden emin olun.",
+  "labelsErrorFileEmpty": "Bu dosyada içe aktarılacak etiket yok.",
+  "labelsErrorExportFailed": "Etiketleriniz kaydedilemedi. Lütfen tekrar deneyin.",
+  "labelsErrorFileReservedName": "Bu dosya uygulamanın ayırdığı bir etiket adını kullanıyor. Dosyada adını değiştirip tekrar deneyin.",
+  "labelsErrorNoteForbiddenWhitespace": "Not satır sonu veya sekme içeremez",
+  "labelsErrorFileInvalidEntry": "Bu dosyadaki bazı girdiler okunamadı. Dosyayı kontrol edip tekrar deneyin."
 }

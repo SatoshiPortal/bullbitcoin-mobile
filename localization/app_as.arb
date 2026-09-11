@@ -2657,10 +2657,6 @@
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
   },
-  "labelInputLabel": "লেবেল",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "requiredHint": "প্ৰয়োজনীয়",
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
@@ -8705,37 +8701,6 @@
     }
   },
   "sendEstimatedDeliveryHours": "ঘণ্টা",
-  "labelErrorNotFound": "লেবেল \"{label}\" পোৱা নগ'ল।",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "এই ধৰণ {type} সমৰ্থিত নহয়",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "অপ্ৰত্যাশিত ত্ৰুটি: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "চিস্টেম লেবেলসমূহ মচিব নোৱাৰি।",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "coreScreensUnexpectedError": "অপ্ৰত্যাশিত ত্ৰুটি: {message}।",
   "walletButtonCoins": "কইন পৰিচালনা কৰক",
   "@walletButtonCoins": {
@@ -9344,5 +9309,14 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorNoteTooLong": "টোকা {max} আখৰতকৈ বেছি হ'ব নোৱাৰে",
+  "labelsErrorNoteForbiddenCharacter": "টোকাত {character} আখৰটো থাকিব নোৱাৰে",
+  "labelsErrorFileTooLarge": "এই ফাইলটো অতি ডাঙৰ। লেবেল ফাইল {max} তকৈ সৰু হ'ব লাগিব।",
+  "labelsErrorFileUnreadable": "এইটো BIP-329 লেবেল ফাইল যেন নালাগে। আপুনি শুদ্ধ ফাইল বাছিছে নে চাওক।",
+  "labelsErrorFileEmpty": "এই ফাইলত আমদানি কৰিবলৈ কোনো লেবেল নাই।",
+  "labelsErrorExportFailed": "আপোনাৰ লেবেলবোৰ সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorFileReservedName": "এই ফাইলে এপ্পে সংৰক্ষিত কৰা লেবেল নাম ব্যৱহাৰ কৰে। ফাইলত নাম সলনি কৰি পুনৰ চেষ্টা কৰক।",
+  "labelsErrorNoteForbiddenWhitespace": "টোকাত লাইন ব্ৰেক বা টেব থাকিব নোৱাৰে",
+  "labelsErrorFileInvalidEntry": "সেই ফাইলৰ কিছুমান প্ৰবিষ্টি পঢ়িব পৰা নগ'ল। ফাইলটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
 }

@@ -10460,10 +10460,6 @@
   "@importWatchOnlyImportButton": {
     "description": "Button to confirm watch-only import"
   },
-  "labelInputLabel": "Etiqueta",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "exchangeLandingFeature2": "DCA, Limite de ordens e Auto-compra",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -11637,40 +11633,9 @@
   "bitcoinPriceExchangeRateUnavailable": "Taxa de câmbio indisponível. Por favor, tente novamente mais tarde.",
   "priceChartLoadFailed": "Os dados do gráfico de preços não puderam ser carregados. Por favor, tente novamente.",
   "mempoolErrorInvalidUrl": "URL do servidor inválido. Insira um domínio ou endereço IP válido.",
-  "labelErrorUnexpected": "Erro inesperado: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "É necessário um rótulo para importar um mnemônico",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "Os rótulos do sistema não podem ser excluídos.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "Este tipo {type} não é suportado",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Label \"{label}\" não encontrado.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "horas",
   "@sendEstimatedDeliveryHours": {
@@ -12244,5 +12209,14 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "labelsErrorNoteTooLong": "A nota não pode ter mais de {max} caracteres",
+  "labelsErrorNoteForbiddenCharacter": "A nota não pode conter o caractere {character}",
+  "labelsErrorFileTooLarge": "Esse arquivo é muito grande. Arquivos de etiquetas devem ter menos de {max}.",
+  "labelsErrorFileUnreadable": "Isto não parece ser um arquivo de etiquetas BIP-329. Verifique se escolheu o arquivo certo.",
+  "labelsErrorFileEmpty": "Esse arquivo não contém etiquetas para importar.",
+  "labelsErrorExportFailed": "Não foi possível salvar suas etiquetas. Tente novamente.",
+  "labelsErrorFileReservedName": "Esse arquivo usa um nome de etiqueta reservado pelo aplicativo. Renomeie-o no arquivo e tente novamente.",
+  "labelsErrorNoteForbiddenWhitespace": "A nota não pode conter quebras de linha nem tabulações",
+  "labelsErrorFileInvalidEntry": "Não foi possível ler algumas entradas desse arquivo. Verifique o arquivo e tente novamente."
 }

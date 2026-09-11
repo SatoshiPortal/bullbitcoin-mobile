@@ -434,10 +434,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "Label",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "Ξεκινήστε Paiing",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11625,40 +11621,9 @@
   "bitcoinPriceExchangeRateUnavailable": "Η συναλλαγματική ισοτιμία δεν είναι διαθέσιμη. Παρακαλώ δοκιμάστε ξανά αργότερα.",
   "priceChartLoadFailed": "Τα δεδομένα του γραφήματος τιμών δεν ήταν δυνατό να φορτωθούν. Παρακαλώ δοκιμάστε ξανά.",
   "mempoolErrorInvalidUrl": "Μη έγκυρη διεύθυνση URL διακομιστή. Εισαγάγετε έγκυρο domain ή διεύθυνση IP.",
-  "labelErrorUnexpected": "Ανεπιθύμητο λάθος: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "Απαιτείται ετικέτα για την εισαγωγή μνημονικού",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "Οι ετικέτες συστήματος δεν μπορούν να διαγραφούν.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "Αυτός ο τύπος {type} δεν υποστηρίζεται",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "Το Label \"{label}\" δεν βρέθηκε.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "ώρες",
   "@sendEstimatedDeliveryHours": {
@@ -12232,5 +12197,14 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "labelsErrorNoteTooLong": "Η σημείωση δεν πρέπει να υπερβαίνει τους {max} χαρακτήρες",
+  "labelsErrorNoteForbiddenCharacter": "Η σημείωση δεν μπορεί να περιέχει τον χαρακτήρα {character}",
+  "labelsErrorFileTooLarge": "Αυτό το αρχείο είναι πολύ μεγάλο. Τα αρχεία ετικετών πρέπει να είναι μικρότερα από {max}.",
+  "labelsErrorFileUnreadable": "Αυτό δεν μοιάζει με αρχείο ετικετών BIP-329. Ελέγξτε ότι επιλέξατε το σωστό αρχείο.",
+  "labelsErrorFileEmpty": "Αυτό το αρχείο δεν περιέχει ετικέτες για εισαγωγή.",
+  "labelsErrorExportFailed": "Δεν ήταν δυνατή η αποθήκευση των ετικετών σας. Δοκιμάστε ξανά.",
+  "labelsErrorFileReservedName": "Αυτό το αρχείο χρησιμοποιεί όνομα ετικέτας που δεσμεύει η εφαρμογή. Μετονομάστε το στο αρχείο και δοκιμάστε ξανά.",
+  "labelsErrorNoteForbiddenWhitespace": "Η σημείωση δεν μπορεί να περιέχει αλλαγές γραμμής ή στηλοθέτες",
+  "labelsErrorFileInvalidEntry": "Ορισμένες καταχωρίσεις αυτού του αρχείου δεν μπόρεσαν να διαβαστούν. Ελέγξτε το αρχείο και δοκιμάστε ξανά."
 }

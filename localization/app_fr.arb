@@ -1618,7 +1618,6 @@
   },
   "submitButton": "Soumettre",
   "optionalPassphraseHint": "Phrase secrète facultative",
-  "labelInputLabel": "Étiquette",
   "requiredHint": "Obligatoire",
   "wordsDropdownSuffix": " mots",
   "emptyMnemonicWordsError": "Entrez tous les mots de votre mnémonique",
@@ -4351,31 +4350,6 @@
     "description": "Error shown when seed deletion fails"
   },
   "sendEstimatedDeliveryHours": "heures",
-  "labelErrorNotFound": "Label \"{label}\" introuvable.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Erreur inattendue : {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
   "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
   "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
   "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
@@ -4960,5 +4934,14 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "labelsErrorNoteTooLong": "La note ne doit pas dépasser {max} caractères",
+  "labelsErrorNoteForbiddenCharacter": "La note ne peut pas contenir le caractère {character}",
+  "labelsErrorFileTooLarge": "Ce fichier est trop volumineux. Les fichiers d’étiquettes doivent faire moins de {max}.",
+  "labelsErrorFileUnreadable": "Ce fichier ne semble pas être un fichier d’étiquettes BIP-329. Vérifiez que vous avez choisi le bon fichier.",
+  "labelsErrorFileEmpty": "Ce fichier ne contient aucune étiquette à importer.",
+  "labelsErrorExportFailed": "Vos étiquettes n’ont pas pu être enregistrées. Veuillez réessayer.",
+  "labelsErrorFileReservedName": "Ce fichier utilise un nom d’étiquette réservé par l’application. Renommez-le dans le fichier et réessayez.",
+  "labelsErrorNoteForbiddenWhitespace": "La note ne peut pas contenir de sauts de ligne ni de tabulations",
+  "labelsErrorFileInvalidEntry": "Certaines entrées de ce fichier n’ont pas pu être lues. Vérifiez le fichier et réessayez."
 }

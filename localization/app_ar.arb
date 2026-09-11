@@ -489,10 +489,6 @@
   "@ledgerImportButton": {
     "description": "Button label to start importing Ledger wallet"
   },
-  "labelInputLabel": "Label",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "bitboxActionPairDeviceButton": "ابدأ بالطير",
   "@bitboxActionPairDeviceButton": {
     "description": "Button text for pair device"
@@ -11513,40 +11509,9 @@
   "bitcoinPriceExchangeRateUnavailable": "سعر الصرف غير متاح. يرجى المحاولة مرة أخرى لاحقاً.",
   "priceChartLoadFailed": "تعذر تحميل بيانات مخطط السعر. يرجى المحاولة مرة أخرى.",
   "mempoolErrorInvalidUrl": "عنوان URL للخادم غير صالح. أدخل نطاقًا أو عنوان IP صالحًا.",
-  "labelErrorUnexpected": "خطأ غير متوقع: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicEmptyLabelError": "يجب توفير تسمية لاستيراد عبارة التذكر",
   "@importMnemonicEmptyLabelError": {
     "description": "Error message when user tries to import a mnemonic without a label"
-  },
-  "labelErrorSystemCannotDelete": "ولا يمكن حذف علامات النظام.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
-  "labelErrorUnsupportedType": "هذا النوع {type} غير مدعم",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorNotFound": "لابل «{label}» لم يعثر عليه.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
   },
   "sendEstimatedDeliveryHours": "ساعات",
   "@sendEstimatedDeliveryHours": {
@@ -12235,5 +12200,14 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "labelsErrorNoteTooLong": "يجب ألا تزيد الملاحظة عن {max} حرفًا",
+  "labelsErrorNoteForbiddenCharacter": "لا يمكن أن تحتوي الملاحظة على الحرف {character}",
+  "labelsErrorFileTooLarge": "هذا الملف كبير جدًا. يجب أن تكون ملفات التسميات أصغر من {max}.",
+  "labelsErrorFileUnreadable": "لا يبدو أن هذا ملف تسميات BIP-329. تأكد من اختيارك الملف الصحيح.",
+  "labelsErrorFileEmpty": "لا يحتوي هذا الملف على تسميات لاستيرادها.",
+  "labelsErrorExportFailed": "تعذّر حفظ تسمياتك. حاول مرة أخرى.",
+  "labelsErrorFileReservedName": "يستخدم هذا الملف اسم تسمية محجوزًا للتطبيق. غيّر الاسم في الملف وحاول مرة أخرى.",
+  "labelsErrorNoteForbiddenWhitespace": "لا يمكن أن تحتوي الملاحظة على أسطر جديدة أو علامات جدولة",
+  "labelsErrorFileInvalidEntry": "تعذّرت قراءة بعض الإدخالات في هذا الملف. تحقق من الملف وحاول مرة أخرى."
 }

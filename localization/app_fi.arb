@@ -1570,7 +1570,6 @@
   },
   "submitButton": "Lähetä",
   "optionalPassphraseHint": "Valinnainen salafraasi",
-  "labelInputLabel": "Tunniste",
   "requiredHint": "Pakollinen",
   "wordsDropdownSuffix": " sanaa",
   "emptyMnemonicWordsError": "Syötä kaikki siemenlauseen sanat",
@@ -4354,31 +4353,6 @@
     "description": "Error shown when seed deletion fails"
   },
   "sendEstimatedDeliveryHours": "tuntia",
-  "labelErrorNotFound": "Tunnistetta \"{label}\" ei löytynyt.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Odottamaton virhe: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "Järjestelmätunnisteita ei voi poistaa.",
   "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
   "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
   "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
@@ -4902,5 +4876,14 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "labelsErrorNoteTooLong": "Muistiinpano voi olla enintään {max} merkkiä",
+  "labelsErrorNoteForbiddenCharacter": "Muistiinpano ei voi sisältää merkkiä {character}",
+  "labelsErrorFileTooLarge": "Tiedosto on liian suuri. Tunnistetiedostojen on oltava alle {max}.",
+  "labelsErrorFileUnreadable": "Tämä ei näytä BIP-329-tunnistetiedostolta. Tarkista, että valitsit oikean tiedoston.",
+  "labelsErrorFileEmpty": "Tiedostossa ei ole tuotavia tunnisteita.",
+  "labelsErrorExportFailed": "Tunnisteitasi ei voitu tallentaa. Yritä uudelleen.",
+  "labelsErrorFileReservedName": "Tiedosto käyttää sovelluksen varaamaa tunnisteen nimeä. Nimeä se uudelleen tiedostossa ja yritä uudelleen.",
+  "labelsErrorNoteForbiddenWhitespace": "Muistiinpano ei voi sisältää rivinvaihtoja tai sarkaimia",
+  "labelsErrorFileInvalidEntry": "Joitakin tiedoston merkintöjä ei voitu lukea. Tarkista tiedosto ja yritä uudelleen."
 }

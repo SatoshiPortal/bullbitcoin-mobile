@@ -4743,10 +4743,6 @@
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
   },
-  "labelInputLabel": "Label",
-  "@labelInputLabel": {
-    "description": "Label for wallet label input field"
-  },
   "requiredHint": "Zaroori",
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
@@ -11965,37 +11961,6 @@
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
-  "labelErrorNotFound": "Label \"{label}\" nahi mila.",
-  "@labelErrorNotFound": {
-    "description": "Error message when a label is not found",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnsupportedType": "Ye type {type} supported nahi hai",
-  "@labelErrorUnsupportedType": {
-    "description": "Error message when label type is not supported",
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorUnexpected": "Anayaas error: {message}",
-  "@labelErrorUnexpected": {
-    "description": "Error message for unexpected label errors",
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "labelErrorSystemCannotDelete": "System labels delete nahi kiye ja sakte.",
-  "@labelErrorSystemCannotDelete": {
-    "description": "Error message when trying to delete a system label"
-  },
   "walletButtonCoins": "Coins manage karein",
   "@walletButtonCoins": {
     "description": "Wallet-detail entry button/tile label opening the Coins (UTXO) view"
@@ -12620,5 +12585,14 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "labelsErrorNoteTooLong": "Note {max} aksharon se adhik nahin hona chahiye",
+  "labelsErrorNoteForbiddenCharacter": "Note mein {character} varn nahin ho sakta",
+  "labelsErrorFileTooLarge": "Yah file bahut badi hai. Label files {max} se chhoti honi chahiye.",
+  "labelsErrorFileUnreadable": "Yah BIP-329 label file nahin lagti. Janchein ki aapne sahi file chuni hai.",
+  "labelsErrorFileEmpty": "Is file mein import karne ke liye koi label nahin hai.",
+  "labelsErrorExportFailed": "Aapke label save nahin ho sake. Kripya phir se prayas karein.",
+  "labelsErrorFileReservedName": "Yah file app dwara aarakshit label naam ka upyog karti hai. File mein iska naam badlein aur phir se prayas karein.",
+  "labelsErrorNoteForbiddenWhitespace": "Note mein line break ya tab nahin ho sakte",
+  "labelsErrorFileInvalidEntry": "Us file ki kuch entries padhi nahin ja sakin. File janchein aur phir se prayas karein."
 }
