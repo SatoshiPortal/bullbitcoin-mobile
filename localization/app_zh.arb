@@ -4891,5 +4891,6 @@
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
   "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
   "fundExchangeErrorOrdCop400": "COP 充值的请求数据无效",
-  "fundExchangeErrorOrdKyc400": "您不满足执行此操作所需的 KYC 要求"
+  "fundExchangeErrorOrdKyc400": "您不满足执行此操作所需的 KYC 要求",
+  "fundExchangeErrorOrdCsrcp400": "请为此 SEPA 收款人激活虚拟付款选项。"
 }

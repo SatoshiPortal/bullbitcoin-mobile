@@ -12149,5 +12149,6 @@
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
   "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
   "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP",
-  "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء"
+  "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء",
+  "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA هذا"
 }

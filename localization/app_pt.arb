@@ -4937,5 +4937,6 @@
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
   "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
   "fundExchangeErrorOrdCop400": "Dados de pedido inválidos para o financiamento COP",
-  "fundExchangeErrorOrdKyc400": "Não cumpre os requisitos de KYC para esta ação"
+  "fundExchangeErrorOrdKyc400": "Não cumpre os requisitos de KYC para esta ação",
+  "fundExchangeErrorOrdCsrcp400": "Por favor, ative a opção de pagamento virtual para este destinatário SEPA"
 }

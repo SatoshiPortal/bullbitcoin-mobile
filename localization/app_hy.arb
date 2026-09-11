@@ -3573,5 +3573,6 @@
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
   "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
   "fundExchangeErrorOrdCop400": "Անվավեր հարցման տվյալներ COP ֆինանսավորման համար",
-  "fundExchangeErrorOrdKyc400": "Դուք չունեք այս գործողության համար անհրաժեշտ KYC-ի պահանջները"
+  "fundExchangeErrorOrdKyc400": "Դուք չունեք այս գործողության համար անհրաժեշտ KYC-ի պահանջները",
+  "fundExchangeErrorOrdCsrcp400": "Խնդրում ենք ակտիվացնել վիրտուալ վճարման տարբերակը այս SEPA ստացողի համար"
 }

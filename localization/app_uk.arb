@@ -4888,5 +4888,6 @@
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
   "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
   "fundExchangeErrorOrdCop400": "Невірні дані запиту для поповнення в COP",
-  "fundExchangeErrorOrdKyc400": "У вас немає вимог KYC для цієї дії"
+  "fundExchangeErrorOrdKyc400": "У вас немає вимог KYC для цієї дії",
+  "fundExchangeErrorOrdCsrcp400": "Будь ласка, активуйте опцію віртуального платежу для цього отримувача SEPA"
 }

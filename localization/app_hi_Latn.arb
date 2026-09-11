@@ -12531,5 +12531,6 @@
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
   "fundExchangeErrorOrdCop400": "COP funding ke liye invalid request data",
-  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain"
+  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain",
+  "fundExchangeErrorOrdCsrcp400": "Kripya is SEPA recipient ke liye virtual payment option activate karein"
 }

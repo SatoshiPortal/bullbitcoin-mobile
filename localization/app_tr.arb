@@ -12146,5 +12146,6 @@
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
   "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
   "fundExchangeErrorOrdCop400": "COP fonlaması için geçersiz istek verisi",
-  "fundExchangeErrorOrdKyc400": "Bu işlem için gerekli KYC gereksinimlerine sahip değilsiniz"
+  "fundExchangeErrorOrdKyc400": "Bu işlem için gerekli KYC gereksinimlerine sahip değilsiniz",
+  "fundExchangeErrorOrdCsrcp400": "Lütfen bu SEPA alıcısı için sanal ödeme seçeneğini etkinleştirin"
 }

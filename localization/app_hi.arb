@@ -12333,5 +12333,6 @@
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
   "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
   "fundExchangeErrorOrdCop400": "COP फंडिंग के लिए अमान्य अनुरोध डेटा",
-  "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं"
+  "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं",
+  "fundExchangeErrorOrdCsrcp400": "कृपया इस SEPA प्राप्तकर्ता के लिए वर्चुअल भुगतान विकल्प सक्रिय करें"
 }

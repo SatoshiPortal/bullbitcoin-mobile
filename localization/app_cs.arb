@@ -12146,5 +12146,6 @@
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
   "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
   "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP",
-  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci"
+  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci",
+  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro tohoto příjemce SEPA"
 }

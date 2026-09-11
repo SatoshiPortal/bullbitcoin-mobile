@@ -12146,5 +12146,6 @@
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
   "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
   "fundExchangeErrorOrdCop400": "Μη έγκυρα δεδομένα αιτήματος για χρηματοδότηση COP",
-  "fundExchangeErrorOrdKyc400": "Δεν έχετε τις απαιτήσεις KYC για αυτή την ενέργεια"
+  "fundExchangeErrorOrdKyc400": "Δεν έχετε τις απαιτήσεις KYC για αυτή την ενέργεια",
+  "fundExchangeErrorOrdCsrcp400": "Ενεργοποιήστε την επιλογή εικονικής πληρωμής για αυτόν τον παραλήπτη SEPA"
 }

@@ -4897,5 +4897,6 @@
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
   "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
   "fundExchangeErrorOrdCop400": "Неверные данные запроса для пополнения в COP",
-  "fundExchangeErrorOrdKyc400": "У вас нет требований KYC для этого действия"
+  "fundExchangeErrorOrdKyc400": "У вас нет требований KYC для этого действия",
+  "fundExchangeErrorOrdCsrcp400": "Пожалуйста, активируйте опцию виртуального платежа для этого получателя SEPA"
 }
