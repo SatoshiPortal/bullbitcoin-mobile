@@ -36,48 +36,51 @@ final class TorRoutePool {
     required Future<void> Function() close,
     void Function(TorRoutePoolEvent event)? onEvent,
   }) async {
-    final existing = _entries[key];
-    if (existing != null) {
-      existing.references++;
+    while (true) {
+      final existing = _entries[key];
+      if (existing != null && !existing.isClosing) {
+        existing.references++;
+        _emit(
+          onEvent,
+          TorRoutePoolEvent(
+            TorRoutePoolEventType.attached,
+            existing.route.source,
+            existing.references,
+          ),
+        );
+        return TorRouteLease(
+          existing.route,
+          () => _release(key, existing, onEvent),
+        );
+      }
+      final acquisition = _acquisitions[key];
+      final previousClose = _closures[key];
+      if (previousClose != null) {
+        await previousClose;
+        continue;
+      }
+      late final Future<_Entry> pending;
+      if (acquisition == null) {
+        pending = _openAndStore(key, open, close);
+        _acquisitions[key] = pending;
+      } else {
+        pending = acquisition;
+      }
+      final entry = await pending;
+      if (!identical(_entries[key], entry) || entry.isClosing) continue;
+      entry.references++;
       _emit(
         onEvent,
         TorRoutePoolEvent(
-          TorRoutePoolEventType.attached,
-          existing.route.source,
-          existing.references,
+          acquisition == null
+              ? TorRoutePoolEventType.opened
+              : TorRoutePoolEventType.attached,
+          entry.route.source,
+          entry.references,
         ),
       );
-      return TorRouteLease(
-        existing.route,
-        () => _release(key, existing, onEvent),
-      );
+      return TorRouteLease(entry.route, () => _release(key, entry, onEvent));
     }
-    final acquisition = _acquisitions[key];
-    final previousClose = _closures[key];
-    if (previousClose != null) {
-      await previousClose;
-      return acquire(key: key, open: open, close: close, onEvent: onEvent);
-    }
-    late final Future<_Entry> pending;
-    if (acquisition == null) {
-      pending = _openAndStore(key, open, close);
-      _acquisitions[key] = pending;
-    } else {
-      pending = acquisition;
-    }
-    final entry = await pending;
-    entry.references++;
-    _emit(
-      onEvent,
-      TorRoutePoolEvent(
-        acquisition == null
-            ? TorRoutePoolEventType.opened
-            : TorRoutePoolEventType.attached,
-        entry.route.source,
-        entry.references,
-      ),
-    );
-    return TorRouteLease(entry.route, () => _release(key, entry, onEvent));
   }
 
   Future<_Entry> _openAndStore(
@@ -135,6 +138,8 @@ final class _Entry {
   Future<void>? _closing;
 
   _Entry(this.route, this._onClose);
+
+  bool get isClosing => _closing != null;
 
   Future<void> close() => _closing ??= _onClose();
 }

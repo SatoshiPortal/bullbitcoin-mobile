@@ -65,6 +65,101 @@ void main() {
     },
   );
 
+  test(
+    'reacquires when the first lease is released before a pending consumer resumes',
+    () async {
+      final pool = TorRoutePool();
+      final events = <TorRoutePoolEvent>[];
+      final routeOpen = Completer<TorRoute>();
+      var opens = 0;
+      var closes = 0;
+
+      Future<TorRoute> open() async {
+        opens++;
+        if (opens == 1) return routeOpen.future;
+        return _route(TorSource.embedded);
+      }
+
+      final firstFuture = pool.acquire(
+        key: 'embedded',
+        open: open,
+        close: () async => closes++,
+        onEvent: events.add,
+      );
+      final secondFuture = pool.acquire(
+        key: 'embedded',
+        open: open,
+        close: () async => closes++,
+        onEvent: events.add,
+      );
+      routeOpen.complete(_route(TorSource.embedded));
+
+      final first = await firstFuture;
+      await first.release();
+      final second = await secondFuture;
+
+      expect(opens, 2);
+      expect(second.route.endpoint.port, 9050);
+      expect(second.route, isNot(same(first.route)));
+      expect(
+        events
+            .where((event) => event.type == TorRoutePoolEventType.attached)
+            .every((event) => event.holders >= 2),
+        isTrue,
+      );
+      expect(
+        events.where((event) => event.type == TorRoutePoolEventType.attached),
+        isEmpty,
+      );
+      expect(
+        events.where((event) => event.type == TorRoutePoolEventType.closed),
+        hasLength(1),
+      );
+      expect(closes, 1);
+      await second.release();
+    },
+  );
+
+  test('does not distribute an entry once its close has started', () async {
+    final pool = TorRoutePool();
+    final closeStarted = Completer<void>();
+    final allowClose = Completer<void>();
+    var opens = 0;
+    var closes = 0;
+    final first = await pool.acquire(
+      key: 'embedded',
+      open: () async {
+        opens++;
+        return _route(TorSource.embedded);
+      },
+      close: () async {
+        closes++;
+        closeStarted.complete();
+        await allowClose.future;
+      },
+    );
+
+    final firstClose = first.release();
+    await closeStarted.future;
+    final next = pool.acquire(
+      key: 'embedded',
+      open: () async {
+        opens++;
+        return _route(TorSource.embedded);
+      },
+      close: () async => closes++,
+    );
+
+    expect(opens, 1);
+    allowClose.complete();
+    final nextLease = await next;
+    await firstClose;
+    expect(opens, 2);
+    expect(closes, 1);
+    expect(nextLease.route, isNot(same(first.route)));
+    await nextLease.release();
+  });
+
   test('external and embedded sources never share a route', () async {
     final pool = TorRoutePool();
     final events = <TorRoutePoolEvent>[];
