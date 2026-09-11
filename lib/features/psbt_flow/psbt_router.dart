@@ -14,11 +14,14 @@ class PsbtRouterConfig {
     name: PsbtFlowRoutes.show.name,
     path: PsbtFlowRoutes.show.path,
     builder: (context, state) {
-      final extra =
-          state.extra! as ({String? psbt, SignerDeviceEntity? signerDevice});
+      final extra = state.extra;
+      final parameters =
+          extra is ({String? psbt, SignerDeviceEntity? signerDevice})
+          ? extra
+          : null;
       return ShowPsbtScreen(
-        psbt: extra.psbt ?? '',
-        signerDevice: extra.signerDevice,
+        psbt: parameters?.psbt ?? '',
+        signerDevice: parameters?.signerDevice,
       );
     },
   );

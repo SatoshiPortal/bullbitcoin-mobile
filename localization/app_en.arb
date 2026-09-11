@@ -14219,7 +14219,7 @@
   "@torSettingsEmbeddedTitle": {
     "description": "Heading for embedded Tor settings"
   },
-  "torSettingsEmbeddedDescription": "Bull’s built-in Tor routing protects RecoverBull and Bitcoin Electrum .onion servers. Other app traffic is not routed through Tor.",
+  "torSettingsEmbeddedDescription": "Bull’s built-in Tor routing is used for RecoverBull and Bitcoin Electrum .onion servers. Fee requests also retry through Tor when direct access is unavailable.",
   "@torSettingsEmbeddedDescription": {
     "description": "Explains which traffic uses embedded Tor"
   },
@@ -14264,7 +14264,7 @@
   "@torSettingsExternalProxyTitle": {
     "description": "Heading for the optional Orbot override"
   },
-  "torSettingsExternalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "torSettingsExternalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below routes RecoverBull, Bitcoin Electrum .onion traffic, and Bitcoin fee requests through Tor.",
   "@torSettingsExternalProxyDescription": {
     "description": "Explains the scope of the external Tor proxy override: Bitcoin Electrum (onion and clearnet) plus the RecoverBull key server, never Liquid"
   },
@@ -14541,7 +14541,7 @@
   "@torSettingsLocalProxyTitle": {
     "description": "Heading for the optional user-managed local SOCKS5 proxy."
   },
-  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring Orbot’s SOCKS port below only routes RecoverBull and Bitcoin Electrum .onion traffic through Tor.",
+  "torSettingsLocalProxyDescription": "You can use Orbot in VPN mode to route Bull’s network traffic through Tor. Configuring the SOCKS port below routes RecoverBull, Bitcoin Electrum .onion traffic, and Bitcoin fee requests through Tor.",
   "@torSettingsLocalProxyDescription": {
     "description": "Explains how Orbot VPN mode and the configured SOCKS port route traffic through Tor."
   },
@@ -14693,5 +14693,17 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "psbtFlowMissingPsbt": "No transaction to display. Please go back and try again.",
+  "@psbtFlowMissingPsbt": {
+    "description": "Shown on the PSBT display screen when it was opened without a built transaction (e.g. the build failed), instead of rendering a meaningless QR code."
+  },
+  "sendFeesFallbackWarning": "Couldn't fetch current fee rates. Values shown are fallback minimums — verify or set a custom fee.",
+  "@sendFeesFallbackWarning": {
+    "description": "Warning shown on the send confirm screen when the fee API was unreachable and the displayed fee rates are stale or relay-floor fallback values instead of live market rates."
+  },
+  "sendFeesFallbackWarningTitle": "Fee rates unavailable",
+  "@sendFeesFallbackWarningTitle": {
+    "description": "Title of the warning card shown on the send confirm screen when live fee rates could not be fetched and fallback values are displayed."
   }
 }

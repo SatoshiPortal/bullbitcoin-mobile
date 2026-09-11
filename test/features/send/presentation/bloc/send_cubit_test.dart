@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -31,6 +30,7 @@ import 'package:bb_mobile/features/send/domain/usecases/create_send_cross_chain_
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_cross_chain_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -69,8 +69,7 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockConvertSatsToCurrencyAmountUsecase extends Mock
     implements ConvertSatsToCurrencyAmountUsecase {}
 
-class _MockGetNetworkFeesUsecase extends Mock
-    implements GetNetworkFeesUsecase {}
+class _MockLoadSendFeesUsecase extends Mock implements LoadSendFeesUsecase {}
 
 class _MockGetWalletUtxosUsecase extends Mock
     implements GetWalletUtxosUsecase {}
@@ -180,7 +179,7 @@ class _TestableSendCubit extends SendCubit {
     required super.detectBitcoinStringUsecase,
     required super.getSettingsUsecase,
     required super.convertSatsToCurrencyAmountUsecase,
-    required super.getNetworkFeesUsecase,
+    required super.loadSendFeesUsecase,
     required super.getWalletUtxosUsecase,
     required super.getAvailableCurrenciesUsecase,
     required super.prepareBitcoinSendUsecase,
@@ -312,7 +311,7 @@ void main() {
   late _MockDetectBitcoinStringUsecase detectBitcoinStringUsecase;
   late _MockGetSettingsUsecase getSettingsUsecase;
   late _MockConvertSatsToCurrencyAmountUsecase convertSatsUsecase;
-  late _MockGetNetworkFeesUsecase getNetworkFeesUsecase;
+  late _MockLoadSendFeesUsecase loadSendFeesUsecase;
   late _MockGetWalletUtxosUsecase getWalletUtxosUsecase;
   late _MockGetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
   late _MockPrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
@@ -359,7 +358,7 @@ void main() {
     detectBitcoinStringUsecase: detectBitcoinStringUsecase,
     getSettingsUsecase: getSettingsUsecase,
     convertSatsToCurrencyAmountUsecase: convertSatsUsecase,
-    getNetworkFeesUsecase: getNetworkFeesUsecase,
+    loadSendFeesUsecase: loadSendFeesUsecase,
     getWalletUtxosUsecase: getWalletUtxosUsecase,
     getAvailableCurrenciesUsecase: getAvailableCurrenciesUsecase,
     prepareBitcoinSendUsecase: prepareBitcoinSendUsecase,
@@ -432,7 +431,7 @@ void main() {
     detectBitcoinStringUsecase = _MockDetectBitcoinStringUsecase();
     getSettingsUsecase = _MockGetSettingsUsecase();
     convertSatsUsecase = _MockConvertSatsToCurrencyAmountUsecase();
-    getNetworkFeesUsecase = _MockGetNetworkFeesUsecase();
+    loadSendFeesUsecase = _MockLoadSendFeesUsecase();
     getWalletUtxosUsecase = _MockGetWalletUtxosUsecase();
     getAvailableCurrenciesUsecase = _MockGetAvailableCurrenciesUsecase();
     prepareBitcoinSendUsecase = _MockPrepareBitcoinSendUsecase();
@@ -1247,8 +1246,17 @@ void main() {
           () => checkLiquidConsolidationUsecase.execute(walletId: wallet.id),
         ).thenAnswer((_) async => false);
         when(
-          () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
-        ).thenAnswer((_) async => _feeOptions());
+          () => loadSendFeesUsecase.execute(
+            previousBitcoinFees: any(named: 'previousBitcoinFees'),
+            previousLiquidFees: any(named: 'previousLiquidFees'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok<SendFeeRates, SendFailure>((
+            bitcoin: _feeOptions(),
+            liquid: _feeOptions(),
+            usingFallbackBitcoinFees: false,
+          )),
+        );
         when(
           () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
         ).thenAnswer((_) => const Stream<Wallet>.empty());
@@ -1281,8 +1289,11 @@ void main() {
               'an obsolete continuation must not overwrite the current send type',
         );
         verify(
-          () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
-        ).called(2);
+          () => loadSendFeesUsecase.execute(
+            previousBitcoinFees: any(named: 'previousBitcoinFees'),
+            previousLiquidFees: any(named: 'previousLiquidFees'),
+          ),
+        ).called(1);
       },
     );
 
@@ -1290,7 +1301,7 @@ void main() {
       final cubit = buildCubit();
       addTearDown(cubit.close);
       final wallet = _bitcoinWallet(balanceSat: 100000);
-      final oldBitcoinFeesLoaded = Completer<FeeOptions>();
+      final oldFeesLoaded = Completer<Result<SendFeeRates, SendFailure>>();
       const oldRequest = PaymentRequest.bitcoin(
         address: 'old-address',
         isTestnet: false,
@@ -1311,11 +1322,11 @@ void main() {
         () => checkLiquidConsolidationUsecase.execute(walletId: wallet.id),
       ).thenAnswer((_) async => false);
       when(
-        () => getNetworkFeesUsecase.execute(isLiquid: false),
-      ).thenAnswer((_) => oldBitcoinFeesLoaded.future);
-      when(
-        () => getNetworkFeesUsecase.execute(isLiquid: true),
-      ).thenAnswer((_) async => _feeOptions());
+        () => loadSendFeesUsecase.execute(
+          previousBitcoinFees: any(named: 'previousBitcoinFees'),
+          previousLiquidFees: any(named: 'previousLiquidFees'),
+        ),
+      ).thenAnswer((_) => oldFeesLoaded.future);
       when(
         () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
       ).thenAnswer((_) => const Stream<Wallet>.empty());
@@ -1327,12 +1338,23 @@ void main() {
         'old-address',
         oldRequest,
       );
-      await untilCalled(() => getNetworkFeesUsecase.execute(isLiquid: false));
+      await untilCalled(
+        () => loadSendFeesUsecase.execute(
+          previousBitcoinFees: any(named: 'previousBitcoinFees'),
+          previousLiquidFees: any(named: 'previousLiquidFees'),
+        ),
+      );
 
       await cubit.onChangedText('new@example.com');
       expect(cubit.state.step, SendStep.address);
 
-      oldBitcoinFeesLoaded.complete(_feeOptions());
+      oldFeesLoaded.complete(
+        Ok<SendFeeRates, SendFailure>((
+          bitcoin: _feeOptions(),
+          liquid: _feeOptions(),
+          usingFallbackBitcoinFees: false,
+        )),
+      );
       await oldContinuation;
 
       expect(cubit.state.paymentRequest, newRequest);
@@ -1616,5 +1638,213 @@ void main() {
         isNot(isA<SendInsufficientFundsForFeesFailure>()),
       );
     });
+  });
+
+  group('SendCubit.createTransaction failure invalidation', () {
+    final feeOptions = FeeOptions(
+      fastest: NetworkFee.relativeFromSatPerVbyte(10),
+      economic: NetworkFee.relativeFromSatPerVbyte(5),
+      slow: NetworkFee.relativeFromSatPerVbyte(1),
+      minRelay: NetworkFee.relativeFromSatPerVbyte(0.1),
+    );
+
+    SendState confirmStateWithStaleTransaction() => SendState(
+      step: SendStep.confirm,
+      sendType: SendType.bitcoin,
+      selectedWallet: _bitcoinLocalWallet(),
+      copiedRawPaymentRequest: 'bc1qaddr',
+      confirmedAmountSat: 50000,
+      unsignedPsbt: 'c3RhbGUtcHNidA==',
+      signedBitcoinPsbt: 'c2lnbmVkLXN0YWxlLXBzYnQ=',
+      signedBitcoinTx: 'signed-stale-tx',
+      signedLiquidTx: 'signed-stale-pset',
+      bitcoinFeesList: feeOptions,
+      liquidFeesList: feeOptions,
+    );
+
+    setUp(() {
+      when(
+        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+      ).thenAnswer((_) async => []);
+    });
+
+    test('clears stale transaction payloads when the build throws', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          networkFee: any(named: 'networkFee'),
+          amountSat: any(named: 'amountSat'),
+          replaceByFee: any(named: 'replaceByFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          drain: any(named: 'drain'),
+        ),
+      ).thenThrow(PrepareBitcoinSendException('electrum unreachable'));
+
+      cubit.setStateForTest(confirmStateWithStaleTransaction());
+      await cubit.createTransaction();
+
+      expect(cubit.state.unsignedPsbt, isNull);
+      expect(cubit.state.signedBitcoinPsbt, isNull);
+      expect(cubit.state.signedBitcoinTx, isNull);
+      expect(cubit.state.signedLiquidTx, isNull);
+      expect(cubit.state.failure, isA<SendTransactionBuildFailure>());
+      expect(cubit.state.buildingTransaction, isFalse);
+    });
+
+    test(
+      'clears stale transaction payloads when the fee is below relay',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            networkFee: any(named: 'networkFee'),
+            amountSat: any(named: 'amountSat'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenAnswer(
+          (_) async =>
+              (unsignedPsbt: 'cHNidP8=', txSize: 1000, isToSelf: false),
+        );
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async => 1);
+
+        cubit.setStateForTest(confirmStateWithStaleTransaction());
+        await cubit.createTransaction();
+
+        expect(cubit.state.unsignedPsbt, isNull);
+        expect(cubit.state.signedBitcoinPsbt, isNull);
+        expect(cubit.state.signedBitcoinTx, isNull);
+        expect(cubit.state.signedLiquidTx, isNull);
+        expect(cubit.state.failure, isA<SendFeeBelowRelayFloorFailure>());
+        expect(cubit.state.buildingTransaction, isFalse);
+      },
+    );
+  });
+
+  group('SendCubit fee fallback', () {
+    test(
+      'stops transaction construction on an unrecoverable fee failure',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        const failure = SendUnexpectedFailure('settings unavailable');
+        when(
+          () => loadSendFeesUsecase.execute(
+            previousBitcoinFees: any(named: 'previousBitcoinFees'),
+            previousLiquidFees: any(named: 'previousLiquidFees'),
+          ),
+        ).thenAnswer((_) async => const Err(failure));
+
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.confirm,
+            sendType: SendType.bitcoin,
+            selectedWallet: _bitcoinLocalWallet(),
+            copiedRawPaymentRequest: 'bc1qaddr',
+            confirmedAmountSat: 50000,
+          ),
+        );
+        await cubit.createTransaction();
+
+        expect(cubit.state.failure, same(failure));
+        expect(cubit.state.unsignedPsbt, isNull);
+        verifyNever(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            networkFee: any(named: 'networkFee'),
+            amountSat: any(named: 'amountSat'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            drain: any(named: 'drain'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'builds the transaction with fallback rates when the fee API is down',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => loadSendFeesUsecase.execute(
+            previousBitcoinFees: any(named: 'previousBitcoinFees'),
+            previousLiquidFees: any(named: 'previousLiquidFees'),
+          ),
+        ).thenAnswer(
+          (_) async => Ok<SendFeeRates, SendFailure>((
+            bitcoin: const FeeOptions(
+              fastest: RelativeFee(250),
+              economic: RelativeFee(250),
+              slow: RelativeFee(250),
+              minRelay: RelativeFee(25),
+            ),
+            liquid: const FeeOptions(
+              fastest: RelativeFee(25),
+              economic: RelativeFee(25),
+              slow: RelativeFee(25),
+              minRelay: RelativeFee(25),
+            ),
+            usingFallbackBitcoinFees: true,
+          )),
+        );
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer((_) async => []);
+        when(
+          () => prepareBitcoinSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            networkFee: any(named: 'networkFee'),
+            amountSat: any(named: 'amountSat'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenAnswer(
+          (_) async => (unsignedPsbt: 'cHNidP8=', txSize: 200, isToSelf: false),
+        );
+        when(
+          () => calculateBitcoinAbsoluteFeesUsecase.execute(
+            psbt: any(named: 'psbt'),
+          ),
+        ).thenAnswer((_) async => 1000);
+        when(
+          () => signBitcoinTxUsecase.execute(
+            psbt: any(named: 'psbt'),
+            walletId: any(named: 'walletId'),
+          ),
+        ).thenAnswer((_) async => (signedPsbt: 'c2lnbmVk', txSize: 200));
+
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.confirm,
+            sendType: SendType.bitcoin,
+            selectedWallet: _bitcoinLocalWallet(),
+            copiedRawPaymentRequest: 'bc1qaddr',
+            confirmedAmountSat: 50000,
+          ),
+        );
+        await cubit.createTransaction();
+
+        expect(cubit.state.unsignedPsbt, 'cHNidP8=');
+        expect(cubit.state.usingFallbackFees, isTrue);
+        expect(cubit.state.bitcoinFeesList!.fastest, const RelativeFee(250));
+        expect(cubit.state.liquidFeesList!.fastest, const RelativeFee(25));
+        expect(cubit.state.failure, isNull);
+      },
+    );
   });
 }
