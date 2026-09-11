@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
@@ -17,9 +19,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final VerifyBroadcastSignedTxUsecase _verifySignedTxUsecase;
 
   BroadcastSignedTxCubit({
     required this._broadcastBitcoinTransactionUsecase,
+    required this._verifySignedTxUsecase,
     String? unsignedPsbt,
   }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
@@ -49,6 +53,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           tx.finalize();
           finalTx = hex.encode(tx.extractTx().serialize());
         }
+        if (!await _verifyAgainstOriginal(finalTx)) return;
 
         emit(
           state.copyWith(
@@ -62,9 +67,17 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       } else {
         final (tx, bbqr) = await state.bbqr.scanTransaction(payload);
         emit(state.copyWith(bbqr: bbqr));
-        if (tx != null) emit(state.copyWith(transaction: tx));
+        if (tx != null) {
+          if (!await _verifyAgainstOriginal(
+            tx.data,
+            isPsbt: tx.format == TxFormat.psbt,
+          )) {
+            return;
+          }
+          emit(state.copyWith(transaction: tx));
+        }
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.warning('Failed to scan QR transaction', error: e, trace: st);
       emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
@@ -122,7 +135,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       await tryParseTransaction(txBytesHex);
 
       emit(state.copyWith(pushTxUri: pushTx));
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       log.warning('Failed to scan NFC PushTx tag', error: e, trace: st);
       emit(state.copyWith(failure: BroadcastUnexpectedFailure(e.toString())));
     }
@@ -147,29 +160,57 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
   Future<void> tryParseTransaction(String input) async {
     emit(state.copyWith(failure: null));
+    late final BitcoinTx tx;
+    late final TxFormat format;
     try {
-      final tx = await BitcoinTx.fromPsbt(input);
-      emit(
-        state.copyWith(
-          transaction: ParsedTx(format: TxFormat.psbt, data: input, tx: tx),
-        ),
-      );
-    } catch (e) {
+      tx = await BitcoinTx.fromPsbt(input);
+      format = TxFormat.psbt;
+    } on Exception {
       try {
-        final tx = await BitcoinTx.fromBytes(hex.decode(input));
-        emit(
-          state.copyWith(
-            transaction: ParsedTx(format: TxFormat.hex, data: input, tx: tx),
-          ),
-        );
-      } catch (e, st) {
+        tx = await BitcoinTx.fromBytes(hex.decode(input));
+        format = TxFormat.hex;
+      } on Exception catch (e, st) {
         log.warning(
           'Pasted input is not a valid PSBT or tx',
           error: e,
           trace: st,
         );
         emit(state.copyWith(failure: const InvalidTransactionFailure()));
+        return;
       }
+    }
+
+    if (!await _verifyAgainstOriginal(input, isPsbt: format == TxFormat.psbt)) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        transaction: ParsedTx(format: format, data: input, tx: tx),
+      ),
+    );
+  }
+
+  Future<bool> _verifyAgainstOriginal(
+    String signedTransaction, {
+    bool isPsbt = false,
+  }) async {
+    final unsignedPsbt = state.unsignedPsbt;
+    if (unsignedPsbt == null) return true;
+    final result = await _verifySignedTxUsecase.execute(
+      unsignedPsbt: unsignedPsbt,
+      signedTransaction: signedTransaction,
+      isPsbt: isPsbt,
+    );
+    switch (result) {
+      case Ok():
+        return true;
+      case Err(:final failure):
+        log.warning(
+          'Signed transaction does not match the exported PSBT',
+          error: failure.logMessage,
+        );
+        emit(state.copyWith(failure: failure));
+        return false;
     }
   }
 

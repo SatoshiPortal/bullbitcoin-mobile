@@ -14693,5 +14693,13 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "coinsSweep": "Sweep",
+  "@coinsSweep": {
+    "description": "Action label for spending every satoshi from the selected coins to one recipient."
+  },
+  "coinsSweepTitle": "Sweep coins",
+  "@coinsSweepTitle": {
+    "description": "Title shown throughout the selected-coins sweep flow."
   }
 }

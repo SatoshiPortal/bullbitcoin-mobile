@@ -7,3 +7,7 @@ sealed class WalletFailure extends Failure {
 final class WalletTransactionLookupFailure extends WalletFailure {
   const WalletTransactionLookupFailure([super.logMessage]);
 }
+
+final class SignedTransactionVerificationFailure extends WalletFailure {
+  const SignedTransactionVerificationFailure([super.logMessage]);
+}

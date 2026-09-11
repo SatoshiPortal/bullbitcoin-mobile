@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 
 /// The curated icon set `bull_ui` exposes. Feature code references these
 /// instead of Material `Icons` directly, e.g. `BullIcon(BullIcons.acUnit)`.
-///
-/// Mirrors the Material icon names used in the design (§5.2). `call_merge`
-/// (sweep-only) is deliberately omitted — there is no Sweep in scope.
 abstract final class BullIcons {
   static const IconData tune = Icons.tune;
   static const IconData acUnit = Icons.ac_unit;
@@ -24,6 +21,7 @@ abstract final class BullIcons {
   static const IconData accountTree = Icons.account_tree;
   static const IconData deleteOutline = Icons.delete_outline;
   static const IconData errorOutline = Icons.error_outline;
+  static const IconData callMerge = Icons.call_merge;
 }
 
 /// A thin wrapper over the Flutter [Icon] so feature code never touches

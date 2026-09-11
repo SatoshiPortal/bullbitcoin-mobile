@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -116,6 +117,7 @@ abstract class SendState with _$SendState {
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
+    @Default({}) Set<Outpoint> sweepOutpoints,
     @Default(true) bool replaceByFee,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
@@ -189,6 +191,10 @@ abstract class SendState with _$SendState {
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
 
+  bool get isSweep => sweepOutpoints.isNotEmpty;
+
+  bool get sweepDestinationBlocked => isSweep && selectedUtxos.isEmpty;
+
   /// Whether a payjoin is structurally possible for this send: the setting
   /// is on, the wallet signs locally, and the recipient's BIP21 advertises a
   /// pj= endpoint. Drives whether the confirm screen offers the payjoin
@@ -200,6 +206,7 @@ abstract class SendState with _$SendState {
   /// wallets instead), so without this check the toggle could promise a
   /// payjoin that structurally can never happen for that wallet class.
   bool get isPayjoinAvailable =>
+      !isSweep &&
       payjoinGloballyEnabled &&
       (selectedWallet?.signsLocally ?? false) &&
       isToSelf != true &&
@@ -416,6 +423,10 @@ abstract class SendState with _$SendState {
       .where((u) => u.isFrozen)
       .fold(0, (sum, u) => sum + u.amountSat.toInt());
 
+  int get selectedSpendableBalanceSat => selectedUtxos
+      .where((utxo) => !utxo.isFrozen)
+      .fold(0, (sum, utxo) => sum + utxo.amountSat.toInt());
+
   /// Frozen balance ([frozenBalanceSat]) formatted in the active [bitcoinUnit],
   /// for the "you have frozen coins" hint shown when a payment can't be covered
   /// by the spendable balance alone (#2337).
@@ -427,8 +438,9 @@ abstract class SendState with _$SendState {
   /// frozen coins (D7). Frozen coins are never spendable, so the amount screen
   /// must validate against this, not the raw wallet balance. Falls back to the
   /// full balance before [utxos] have loaded so it never under-reports.
-  int get spendableBalanceSat =>
-      (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
+  int get spendableBalanceSat => isSweep
+      ? selectedSpendableBalanceSat
+      : (selectedWallet?.balanceSat.toInt() ?? 0) - frozenBalanceSat;
 
   int get maxAvailableBalanceSat {
     final selectedBalance = selectedUtxos.fold(

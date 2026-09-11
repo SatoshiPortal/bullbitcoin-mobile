@@ -27,6 +27,7 @@ class PreviewBitcoinFeePresetsUsecase {
     required bool replaceByFee,
     required List<WalletUtxo> selectedInputs,
     required bool drain,
+    bool selectedOnly = false,
   }) async {
     String rateKey(NetworkFee fee) => switch (fee) {
       AbsoluteFee(:final sats) => 'abs:$sats',
@@ -43,6 +44,7 @@ class PreviewBitcoinFeePresetsUsecase {
         replaceByFee: replaceByFee,
         selectedInputs: selectedInputs,
         drain: drain,
+        selectedOnly: selectedOnly,
       ),
     );
     final results = await Future.wait([
