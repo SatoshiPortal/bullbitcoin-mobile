@@ -42,8 +42,13 @@ final class FundingRpcException extends FundingDatasourceException {
         ? Map<String, dynamic>.from(apiErrorValue)
         : const <String, dynamic>{};
 
+    // Read the code tolerantly: a hard `as String?` would throw a TypeError on
+    // a numeric code, escape the boundary and demote an otherwise mappable
+    // error to the generic catch-all.
+    final code = apiError['code'];
+
     return FundingRpcException(
-      apiCode: apiError['code'] as String?,
+      apiCode: code?.toString(),
       logMessage: apiError['en']?.toString() ?? json['message']?.toString(),
     );
   }
