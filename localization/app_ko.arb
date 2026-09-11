@@ -1346,10 +1346,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "코스타리카 IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "실패 삭제",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -2046,10 +2042,6 @@
   "coreSwapsLnSendPaid": "청구서는 결제 후 지불됩니다.",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": "· 자금은 계정 잔액에 추가됩니다.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "판매 수수료",
   "@sellAmount": {
@@ -2752,10 +2744,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "CLABE를 사용하여 자금을 전송",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "장치 지침을 따르십시오. Jade",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2816,10 +2804,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "아래 세부 사항을 사용하여 은행 계좌에서 은행 송금을 보내십시오 ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "제품 정보",
   "@transactionNoteSaveButton": {
@@ -3414,10 +3398,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "국가 및 결제 방법 선택",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE를 사용하여 Colones 전송",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3701,10 +3681,6 @@
   "testBackupRecoverWallet": "지갑 복구",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE를 사용하여 Colones 전송",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "예상 배송 ~ ",
   "@sendEstimatedDelivery": {
@@ -4063,10 +4039,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN 계정 번호 (콜론 전용)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "종이 조각에 12 단어를 쓰기. 그들을 안전하게 유지하고 그들을 잃지 않도록하십시오.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4345,10 +4317,6 @@
   "sellBitcoinOnChain": "비트코인",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "콜롬비아",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "Recipients - 곧 출시",
   "@exchangeRecipientsComingSoon": {
@@ -5153,10 +5121,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "계정 생성",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "Electrum 서버 (Bitcoin 노드)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5506,10 +5470,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "지불 묘사",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "금액은 최대를 초과",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5807,10 +5767,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "은행 계좌에서 은행 송금",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "환율",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5937,10 +5893,6 @@
   "recoverbullPassword": "비밀번호",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE 전송",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "다른 Bitcoin 지갑에서 지불",
   "@payFromAnotherWallet": {
@@ -6528,10 +6480,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "지불을 할 때 \"message\"또는 \"reason\"또는 \"description\"으로 전송 코드를 추가해야합니다. 이 코드를 잊을 때 지불을 거부 할 수 있습니다.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "1시간",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7050,10 +6998,6 @@
   "pinStatusProcessing": "제품정보",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "전송 코드.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "빠른 속도",
   "@sellSendPaymentFastest": {
@@ -7754,10 +7698,6 @@
   "transactionFilterSell": "구매하기",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI 전송",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " 지불 설명에서 \"Bitcoin\"또는 \"Crypto\"라는 단어. 결제를 차단합니다.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9878,10 +9818,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN 계정 번호 (미국 달러 전용)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "자주 묻는 질문",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -10334,10 +10270,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Costa Rican Colón (CRC)의 송금 자금",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "거래내역",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10418,10 +10350,6 @@
   "importMnemonicSelectType": "지갑 유형 선택하기",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "은행 송금",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "당신의 Keystone에 힘",
   "@importQrDeviceKeystoneStep1": {
@@ -10930,10 +10858,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "견적 요청",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "암호화된 vault",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10986,10 +10910,6 @@
   "torSettingsPortValidationRange": "항구는 1과 65535 사이에서 있어야 합니다",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "미국 달러로 송금 (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "타임아웃은 비어있을 수 없습니다",
   "@electrumTimeoutEmptyError": {
@@ -11186,10 +11106,6 @@
   "customLocationRecommendation": "공급 능력: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "코스타리카 IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "Vault를 선택하는 실패",
   "@recoverbullErrorSelectVault": {
@@ -11889,7 +11805,6 @@
   "fundExchangeCopGeneratePaymentLink": "결제 링크 생성",
   "fundExchangeCopRedirectMessage": "결제를 진행하기 위해 외부 페이지로 이동합니다.",
   "fundExchangeCopOpenPaymentLink": "결제 링크 열기",
-  "fundExchangeCopFailedToOpenLink": "결제 링크를 열 수 없습니다. 다시 시도하거나 고객 지원팀에 문의해 주세요.",
   "autoswapActiveCardTitle": "Autoswap 활성화됨",
   "autoswapWarningExplanationBold": "자동으로",
   "autoswapInfoConsentMessage": "Autoswap이 현재 활성화되어 있지만 동의하기 전까지는 실행되지 않습니다. 계속 켜두시겠습니까?",

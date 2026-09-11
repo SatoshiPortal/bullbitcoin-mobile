@@ -1346,10 +1346,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "कोस्टा रिका IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "हटाना विफल",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -2046,10 +2042,6 @@
   "coreSwapsLnSendPaid": "आपके भुगतान की पुष्टि प्राप्त होने के बाद invoice का भुगतान किया जाएगा।",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": "। धन आपके खाते में शेष राशि में जोड़ा जाएगा।।",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "बेचना",
   "@sellAmount": {
@@ -2752,10 +2744,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "अपने CLABE का उपयोग करके फंड ट्रांसफर करें",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "जेड को अनलॉक करने के लिए डिवाइस निर्देश का पालन करें",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2816,10 +2804,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "नीचे दिए गए विवरण का उपयोग करके अपने बैंक खाते से बैंक ट्रांसफर करें ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "सहेजें",
   "@transactionNoteSaveButton": {
@@ -3414,10 +3398,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "अपने देश और भुगतान विधि का चयन करें",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE का उपयोग कर Colones स्थानांतरण",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3701,10 +3681,6 @@
   "testBackupRecoverWallet": "वॉलेट को पुनर्प्राप्त करें",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE का उपयोग कर Colones स्थानांतरण",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "अनुमानित डिलीवरी ~ ",
   "@sendEstimatedDelivery": {
@@ -4063,10 +4039,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN खाता संख्या (केवल Colones के लिए)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "12 शब्दों को कागज के एक टुकड़े पर लिखें। उन्हें सुरक्षित रखें और उन्हें खोने के लिए सुनिश्चित करें।।",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4345,10 +4317,6 @@
   "sellBitcoinOnChain": "Bitcoin ऑन-चेन",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "प्राप्तकर्ता - जल्द आ रहा है",
   "@exchangeRecipientsComingSoon": {
@@ -5153,10 +5121,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "अपने खाते को फंड करें",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "Electrum सर्वर (Bitcoin नोड)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5506,10 +5470,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "भुगतान विवरण",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "अधिकतम राशि",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5807,10 +5767,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "अपने बैंक खाते से एक बैंक ट्रांसफर भेजें",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "विनिमय दर",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5937,10 +5893,6 @@
   "recoverbullPassword": "पासवर्ड",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE स्थानांतरण",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "किसी अन्य Bitcoin वॉलेट से भुगतान करें",
   "@payFromAnotherWallet": {
@@ -6528,10 +6480,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "भुगतान करते समय आपको ट्रांसफर कोड को \"मेसेज\" या \"रेसन\" या \"डिस्क्रिप्शन\" के रूप में जोड़ना होगा। यदि आप इस कोड को देना चाहते हैं तो आपका भुगतान अस्वीकार कर दिया जा सकता है।।",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "घंटे",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7050,10 +6998,6 @@
   "pinStatusProcessing": "प्रसंस्करण",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "आपका स्थानांतरण कोड।।",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "सबसे तेज़",
   "@sellSendPaymentFastest": {
@@ -7754,10 +7698,6 @@
   "transactionFilterSell": "बेचें",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI स्थानांतरण",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " भुगतान विवरण में \"बिटकॉइन\" या \"क्रिप्टो\" शब्द। यह आपके भुगतान को अवरुद्ध करेगा।।",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9878,10 +9818,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN खाता संख्या (केवल US डॉलर के लिए)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "प्राप्तकर्ता का विवरण",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -10334,10 +10270,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "कोस्टा रिकन कोलोन (CRC) में फंड ट्रांसफर करें",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "लेनदेन विवरण",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10418,10 +10350,6 @@
   "importMnemonicSelectType": "आयात करने के लिए एक वॉलेट प्रकार का चयन करें",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "बैंक ट्रान्सफर",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "अपने कीस्टोन पर पावर",
   "@importQrDeviceKeystoneStep1": {
@@ -10930,10 +10858,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "बिल्कुल",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "एन्क्रिप्टेड वॉल्ट",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10986,10 +10910,6 @@
   "torSettingsPortValidationRange": "पोर्ट 1 और 65535 के बीच होना चाहिए",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "अमेरिकी डॉलर (USD) में फंड ट्रांसफर करें",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "टाइमआउट खाली नहीं हो सकता",
   "@electrumTimeoutEmptyError": {
@@ -11186,10 +11106,6 @@
   "customLocationRecommendation": "कस्टम स्थान: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "कोस्टा रिका IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "वॉल्ट चुनने में विफल",
   "@recoverbullErrorSelectVault": {
@@ -11693,10 +11609,6 @@
   "fundExchangeCopEnterAmountError": "Please enter an amount",
   "@fundExchangeCopEnterAmountError": {
     "description": "Validation error when amount is empty"
-  },
-  "fundExchangeCopFailedToOpenLink": "भुगतान लिंक नहीं खोला जा सका। कृपया पुनः प्रयास करें या सहायता से संपर्क करें।",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
   },
   "transactionStatusPayjoinCompleted": "Payjoin पूरा हुआ",
   "@transactionStatusPayjoinCompleted": {

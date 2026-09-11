@@ -1168,10 +1168,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "Κόστα Ρίκα IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "Διαγράψτε",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -1736,10 +1732,6 @@
   "coreSwapsLnSendPaid": "Το Invoice θα πληρωθεί μετά την επιβεβαίωση της πληρωμής σας.",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": ". Τα κεφάλαια θα προστεθούν στην ισορροπία λογαριασμού σας.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "Ποσό προς πώληση",
   "@sellAmount": {
@@ -2330,10 +2322,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "Μεταφορά κεφαλαίων χρησιμοποιώντας το CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "Ακολουθήστε τις οδηγίες της συσκευής για να ξεκλειδώσετε το Jade",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2385,10 +2373,6 @@
   "backupSettingsKeyWarningMessage": "Είναι εξαιρετικά σημαντικό να μην αποθηκεύσετε το κλειδί ασφαλείας στο ίδιο μέρος όπου εξοικονομείτε το αρχείο αντιγράφων ασφαλείας σας. Πάντα να τα αποθηκεύει σε ξεχωριστές συσκευές ή ξεχωριστά παρόχους cloud.",
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
-  },
-  "fundExchangeCrBankTransferDescription1": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας χρησιμοποιώντας τις παρακάτω λεπτομέρειες ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "Εξοικονομήστε",
   "@transactionNoteSaveButton": {
@@ -2898,10 +2882,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "Επιλέξτε τη χώρα και τη μέθοδο πληρωμής",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3145,10 +3125,6 @@
   "psbtFlowDone": "Έχω κάνει",
   "@psbtFlowDone": {
     "description": "Button to complete psbt flow signing process"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "Εκτιμώμενη παράδοση - ",
   "@sendEstimatedDelivery": {
@@ -3453,10 +3429,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "Αριθμός λογαριασμού IBAN (μόνο για τις Αποικίες)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "sendInitiatingSwap": "Initiating swap...",
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
@@ -3699,10 +3671,6 @@
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "Μαθητές - Έρχεται σύντομα",
   "@exchangeRecipientsComingSoon": {
@@ -4372,10 +4340,6 @@
   "@fundExchangeCrIbanUsdPaymentDescriptionHelp": {
     "description": "Help text explaining payment description is the transfer code"
   },
-  "fundExchangeFundAccount": "Χρηματοδότηση του λογαριασμού σας",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "Διακομιστής Electrum (κόμβος Bitcoin)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -4665,10 +4629,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "Περιγραφή πληρωμής",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "Ποσό υπερβαίνει το μέγιστο",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -4934,10 +4894,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "Στείλτε μια τραπεζική μεταφορά από τον τραπεζικό λογαριασμό σας",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "Συναλλαγματική ισοτιμία",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5034,10 +4990,6 @@
   "ledgerSignButton": "Ξεκινήστε εγγραφή",
   "@ledgerSignButton": {
     "description": "Button label to start signing transaction with Ledger"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "Πληρώστε από ένα άλλο πορτοφόλι Bitcoin",
   "@payFromAnotherWallet": {
@@ -5531,10 +5483,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "Πρέπει να προσθέσετε τον κωδικό μεταφοράς ως \"message\" ή \"reason\" ή \"αναγραφή\" όταν κάνετε την πληρωμή. Εάν ξεχάσετε να βάλετε αυτόν τον κώδικα η πληρωμή σας μπορεί να απορριφθεί.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "ώρα",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -5975,10 +5923,6 @@
   "pinStatusProcessing": "Επεξεργασία επεξεργασίας",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "Ο κωδικός μεταφοράς σας.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "Πιο γρήγορα",
   "@sellSendPaymentFastest": {
@@ -6543,10 +6487,6 @@
   "transactionFilterSell": "Πώληση",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "Μεταφορά SPEI",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " τη λέξη \"Bitcoin\" ή \"Crypto\" στην περιγραφή πληρωμής. Αυτό θα εμποδίσει την πληρωμή σας.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -8260,10 +8200,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "Αριθμός λογαριασμού IBAN (μόνο για δολάρια ΗΠΑ)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "Μαθητές λεπτομέρειες",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -8655,10 +8591,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Μεταφορά κεφαλαίων στην Costa Rican Colón (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "Στοιχεία συναλλαγής",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -8723,10 +8655,6 @@
   "importMnemonicSelectType": "Επιλέξτε έναν τύπο πορτοφολιού για εισαγωγή",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "Τράπεζα Μεταφοράς",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "Power on your Keystone",
   "@importQrDeviceKeystoneStep1": {
@@ -9182,10 +9110,6 @@
   "@dcaConfirmOrderTypeValue": {
     "description": "Order type value"
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "ακριβώς",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "dcaWalletTypeLiquid": "Liquid (LBTC)",
   "@dcaWalletTypeLiquid": {
     "description": "Radio button option for Liquid wallet"
@@ -9230,10 +9154,6 @@
   "torSettingsPortValidationRange": "Το λιμάνι πρέπει να είναι μεταξύ 1 και 65535",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Μεταφορά κεφαλαίων σε δολάρια ΗΠΑ (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "Το Timeout δεν μπορεί να είναι άδειο",
   "@electrumTimeoutEmptyError": {
@@ -9390,10 +9310,6 @@
   "exchangeSettingsLogInTitle": "Συνδεθείτε στο Log In",
   "@exchangeSettingsLogInTitle": {
     "description": "Title for the log in option in exchange settings"
-  },
-  "fundExchangeMethodCrIbanUsd": "Κόστα Ρίκα IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "exchangeStatisticsTotalAmount": "Συνολικό ποσό",
   "@exchangeStatisticsTotalAmount": {
@@ -12079,7 +11995,6 @@
   "fundExchangeCopGeneratePaymentLink": "Δημιουργία συνδέσμου πληρωμής",
   "fundExchangeCopRedirectMessage": "Θα ανακατευθυνθείτε σε μια εξωτερική σελίδα για να πραγματοποιήσετε την πληρωμή.",
   "fundExchangeCopOpenPaymentLink": "Άνοιγμα συνδέσμου πληρωμής",
-  "fundExchangeCopFailedToOpenLink": "Δεν ήταν δυνατό το άνοιγμα του συνδέσμου πληρωμής. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "priceChartFailedToLoad": "Αποτυχία φόρτωσης ιστορικού τιμών",
   "priceFailedToLoad": "Αποτυχία φόρτωσης τιμής",
   "statusScreenTryAgain": "Δοκιμάστε ξανά",

@@ -1260,10 +1260,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "كوستاريكا",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "يُحذف الفشل",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -1916,10 +1912,6 @@
   "coreSwapsLnSendPaid": "ستدفع الفاتورة بعد حصولك على تأكيد.",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": ". ستضاف الأموال إلى رصيد حسابك.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "Amount to Sell",
   "@sellAmount": {
@@ -2578,10 +2570,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "تحويل الأموال باستخدام الـ \" سي بي \"",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "اتبع تعليمات الجهاز لفتح الجادى",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2642,10 +2630,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "أرسل تحويل مصرفي من حسابك المصرفي باستخدام التفاصيل أدناه ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "أنقذ",
   "@transactionNoteSaveButton": {
@@ -3196,10 +3180,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "اختيار بلدكم وطريقة الدفع",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Colones using SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3467,10 +3447,6 @@
   "testBackupRecoverWallet": "Recover Wallet",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "Colones using SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "تقديرات الإنجاز ",
   "@sendEstimatedDelivery": {
@@ -3809,10 +3785,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN account number (for Colones only)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "أكتب 12 كلمة على قطعة من الورق أبقيهم بأمان وتأكدي من عدم فقدانهم.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4078,10 +4050,6 @@
   "sellBitcoinOnChain": "بيتكوين على شاين",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "المستفيدون - قادمون قريبا",
   "@exchangeRecipientsComingSoon": {
@@ -4824,10 +4792,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "صندوق حسابك",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "خادم الإلكرام (عميد بيتكوين)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5137,10 +5101,6 @@
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "fundExchangeLabelPaymentDescription": "وصف المدفوعات",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "المبلغ يتجاوز الحد الأقصى",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5426,10 +5386,6 @@
   "@sendEnterRelativeFee": {
     "description": "Placeholder for relative fee rate input field"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "أرسل تحويل مصرفي من حسابك المصرفي",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "سعر الصرف",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5542,10 +5498,6 @@
   "recoverbullPassword": "كلمة السر",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "دفع محفظة بيتكوين أخرى",
   "@payFromAnotherWallet": {
@@ -6097,10 +6049,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "يجب أن تضيف رمز التحويل كـ\"العرض\" أو \"السبب\" أو \"الوصف\" عند الدفع إذا نسيت أن تضع هذا الرمز قد يتم رفض دفعك.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "ساعة",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -6569,10 +6517,6 @@
   "pinStatusProcessing": "المعالجة",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "رمز نقلك.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "أسرع",
   "@sellSendPaymentFastest": {
@@ -7241,10 +7185,6 @@
   "transactionFilterSell": "Sell",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " كلمة \"بيتكوين\" أو \"كريبتو\" في وصف الدفع هذا سيمنع دفعك.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9203,10 +9143,6 @@
       }
     }
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN account number (for US dollars only)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "تفاصيل المستقبل",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -9635,10 +9571,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "صناديق التحويل في كولون كوستاريكا",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "تفاصيل المعاملات",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -9711,10 +9643,6 @@
   "importMnemonicSelectType": "اختيار نوع المحفظة للاستيراد",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "التحويل المصرفي",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "القوة على حجرك",
   "@importQrDeviceKeystoneStep1": {
@@ -10202,10 +10130,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "بالضبط",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "الخزنة المشفرة",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10258,10 +10182,6 @@
   "torSettingsPortValidationRange": "يجب أن يكون الميناء بين 1 و 65535",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "صناديق التحويل في دولار الولايات المتحدة",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "الوقت لا يمكن أن يكون فارغا",
   "@electrumTimeoutEmptyError": {
@@ -10442,10 +10362,6 @@
   "exchangeSettingsLogInTitle": "Log In",
   "@exchangeSettingsLogInTitle": {
     "description": "Title for the log in option in exchange settings"
-  },
-  "fundExchangeMethodCrIbanUsd": "كوستاريكا",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "فشل في اختيار الخزنة",
   "@recoverbullErrorSelectVault": {
@@ -11975,7 +11891,6 @@
   "fundExchangeCopGeneratePaymentLink": "إنشاء رابط الدفع",
   "fundExchangeCopRedirectMessage": "سيتم تحويلك إلى صفحة خارجية لإجراء الدفع.",
   "fundExchangeCopOpenPaymentLink": "فتح رابط الدفع",
-  "fundExchangeCopFailedToOpenLink": "تعذّر فتح رابط الدفع. يرجى المحاولة مرة أخرى أو التواصل مع الدعم.",
   "priceChartFailedToLoad": "فشل تحميل سجل الأسعار",
   "priceFailedToLoad": "فشل تحميل السعر",
   "statusScreenTryAgain": "حاول مرة أخرى",

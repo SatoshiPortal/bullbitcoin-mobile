@@ -3650,46 +3650,6 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
-  },
-  "fundExchangeMethodSpeiTransferSubtitle": "Transfer funds using your CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "Transfer Colones using SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
-  },
-  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Transfer funds in Costa Rican Colón (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
-  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Transfer funds in US Dollars (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
-  },
-  "fundExchangeMethodArsBankTransfer": "Bank Transfer",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
-  },
-  "fundExchangeMethodArsBankTransferSubtitle": "Send a bank transfer from your bank account",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
   "@fundExchangeBankTransferWireTitle": {
     "description": "Screen title for bank transfer wire payment details"
@@ -3933,42 +3893,6 @@
   "fundExchangeCrIbanUsdTitle": "Bank Transfer (USD)",
   "@fundExchangeCrIbanUsdTitle": {
     "description": "Screen title for Costa Rica bank transfer in US Dollars"
-  },
-  "fundExchangeCrBankTransferDescription1": "Send a bank transfer from your bank account using the details below ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
-  },
-  "fundExchangeCrBankTransferDescriptionExactly": "exactly",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
-  "fundExchangeCrBankTransferDescription2": ". The funds will be added to your account balance.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
-  "fundExchangeLabelIbanCrcOnly": "IBAN account number (for Colones only)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
-  "fundExchangeLabelIbanUsdOnly": "IBAN account number (for US dollars only)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
-  "fundExchangeLabelPaymentDescription": "Payment description",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
-  "fundExchangeHelpPaymentDescription": "Your transfer code.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
-  },
-  "fundExchangeInfoTransferCodeRequired": "You must add the transfer code as the \"message\" or \"reason\" or \"description\" when making the payment. If you forget to put this code your payment may be rejected.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "fundExchangeArsBankTransferTitle": "Bank Transfer",
   "@fundExchangeArsBankTransferTitle": {
@@ -10386,14 +10310,6 @@
       }
     }
   },
-  "fundExchangeFundAccount": "Fund your account",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
-  "fundExchangeSelectCountry": "Select your country and payment method",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeSpeiTransfer": "SPEI transfer",
   "@fundExchangeSpeiTransfer": {
     "description": "SPEI transfer method title (Mexico)"
@@ -10449,10 +10365,6 @@
   "fundExchangeCopOpenPaymentLink": "Open Payment Link",
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
-  },
-  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
-  "@fundExchangeCopFailedToOpenLink": {
-    "description": "Error shown when the COP payment link fails to open"
   },
   "dcaSetupTitle": "Set Recurring Buy",
   "@dcaSetupTitle": {

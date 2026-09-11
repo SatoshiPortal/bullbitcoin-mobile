@@ -1342,10 +1342,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "Kosta Rika IBAN (CRC)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "Delete Failed",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -2038,10 +2034,6 @@
   "coreSwapsLnSendPaid": "Fatura, ödeme onay aldıktan sonra ödenecektir.",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": ". Fonlar hesap bakiyenize eklenecektir.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "Satmak için",
   "@sellAmount": {
@@ -2744,10 +2736,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "CLABE kullanarak transfer fonları",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "Jade'nin kilidini açmak için cihazı talimatları izleyin",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2808,10 +2796,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "Banka hesabınızdan aşağıdaki ayrıntıları kullanarak bir banka transfer gönderin ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "Kaydet",
   "@transactionNoteSaveButton": {
@@ -3402,10 +3386,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "Ülkenizi ve ödeme yöntemini seçin",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "SINPE kullanarak Transfer Kolonleri",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3689,10 +3669,6 @@
   "testBackupRecoverWallet": "Recover Cüzdan",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "SINPE kullanarak Transfer Kolonleri",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "Tahmin edilen teslimat - ",
   "@sendEstimatedDelivery": {
@@ -4043,10 +4019,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "IBAN hesabı numarası (yalnızca Kolonlar için)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "Kağıt parçası üzerine 12 kelime yazın. Onları güvende tut ve onları kaybetmemek için emin olun.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4325,10 +4297,6 @@
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "Recipients - Yakında Geliyor",
   "@exchangeRecipientsComingSoon": {
@@ -5129,10 +5097,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "Hesabınızı finanse edin",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "Electrum sunucusu (Bitcoin node)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5478,10 +5442,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "Ödeme Açıklama",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "Para maksimumları aşıyor",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5779,10 +5739,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "Banka hesabınızdan bir banka transfer gönderin",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "Değişim oranı",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5909,10 +5865,6 @@
   "recoverbullPassword": "Şifre",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE Transfer Transfer",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "Başka bir Bitcoin cüzdanından ödeme",
   "@payFromAnotherWallet": {
@@ -6491,10 +6443,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "Ödeme yaparken transfer kodunu \"message\" veya \"reason\" veya \"description\" olarak eklemeniz gerekir. Bu kodu koymayı unutursanız ödemeniz reddedilebilir.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "saat",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7000,10 +6948,6 @@
   "pinStatusProcessing": "İşleme",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "Transfer kodunuz.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "En hızlı",
   "@sellSendPaymentFastest": {
@@ -7687,10 +7631,6 @@
   "transactionFilterSell": "Sat Satış Sat",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " ödeme açıklamasında \"Bitcoin\" veya \"Crypto\" kelimesi. Bu, ödemenizi engelleyecektir.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9799,10 +9739,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "IBAN hesabı numarası (yalnızca ABD doları için)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "Güvenilir ayrıntılar",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -10246,10 +10182,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Kosta Rikan Colón'daki transfer fonları (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "İşlem detayları",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10330,10 +10262,6 @@
   "importMnemonicSelectType": "Import etmek için bir cüzdan türü seçin",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "Banka Transfer",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "Keystone üzerinde güç",
   "@importQrDeviceKeystoneStep1": {
@@ -10825,10 +10753,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "tam",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "Encrypted to",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10877,10 +10801,6 @@
   "torSettingsPortValidationRange": "Port 1 ile 65535 arasında olmalıdır",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "ABD Doları transfer fonları (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "Zamanout boş olamaz",
   "@electrumTimeoutEmptyError": {
@@ -11077,10 +10997,6 @@
   "customLocationRecommendation": "Özel yer: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "Kosta Rika IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "Kaçını seçmek için başarısız oldu",
   "@recoverbullErrorSelectVault": {
@@ -11971,7 +11887,6 @@
   "fundExchangeCopGeneratePaymentLink": "Ödeme Bağlantısı Oluştur",
   "fundExchangeCopRedirectMessage": "Ödemeyi yapmak için harici bir sayfaya yönlendirileceksiniz.",
   "fundExchangeCopOpenPaymentLink": "Ödeme Bağlantısını Aç",
-  "fundExchangeCopFailedToOpenLink": "Ödeme bağlantısı açılamadı. Lütfen tekrar deneyin veya destek ile iletişime geçin.",
   "priceChartFailedToLoad": "Fiyat geçmişi yüklenemedi",
   "priceFailedToLoad": "Fiyat yüklenemedi",
   "statusScreenTryAgain": "Tekrar Dene",

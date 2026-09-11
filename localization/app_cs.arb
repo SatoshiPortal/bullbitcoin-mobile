@@ -1572,10 +1572,6 @@
   "@payMemo": {
     "description": "Label for optional payment note"
   },
-  "fundExchangeMethodCrIbanCrc": "Kostarika IBAN (ČR)",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "Smazat",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -2253,10 +2249,6 @@
   "@payFeeBreakdown": {
     "description": "Section header for detailed fee information"
   },
-  "fundExchangeCrBankTransferDescription2": "Čeština Finanční prostředky budou přidány do zůstatku na účtu.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
-  },
   "sellAmount": "Částka k prodeji",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
@@ -2925,10 +2917,6 @@
   "@recoverbullSelectFileNotSelectedError": {
     "description": "Error when user cancels file selection"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "Převod prostředků pomocí CLABE",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "Postupujte podle pokynů zařízení k odemknutí Jade",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2985,10 +2973,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "Odeslání bankovního převodu z vašeho bankovního účtu pomocí níže uvedených informací ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "Čeština",
   "@transactionNoteSaveButton": {
@@ -3554,10 +3538,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "Vyberte zemi a způsob platby",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "Přeneste kolo pomocí SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3817,10 +3797,6 @@
   "testBackupRecoverWallet": "Obnovit peněženku",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "Přeneste kolo pomocí SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "Odhadovaná dodávka ~ ",
   "@sendEstimatedDelivery": {
@@ -4163,10 +4139,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "Číslo účtu IBAN (pouze kolo)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "Sepsat 12 slov na kus papíru. Udržujte je bezpečné a ujistěte se, že je neztrácejí.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4429,10 +4401,6 @@
   "sellBitcoinOnChain": "Bitcoin on-chain",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "Příjemci - Brzy Brzy",
   "@exchangeRecipientsComingSoon": {
@@ -5185,10 +5153,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "Fond vašeho účtu",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "Electrum server (Bitcoin uzel)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5530,10 +5494,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "Popis platby",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "Množství přesahuje maximální",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5819,10 +5779,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "Odeslání bankovního převodu z vašeho bankovního účtu",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "Směnný kurz",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5945,10 +5901,6 @@
   "recoverbullPassword": "Heslo",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE přenos",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "Platit z jiné Bitcoin peněženky",
   "@payFromAnotherWallet": {
@@ -6503,10 +6455,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "Při platbě je nutné přidat kód převodu jako \"oddělávací\" nebo \"rozpis\" nebo \"description\". Pokud zapomenete dát tento kód, může být vaše platba odmítnuta.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "hodina",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7005,10 +6953,6 @@
   "ledgerSuccessImportDescription": "Vaše peněženka Ledger úspěšně doveze.",
   "@ledgerSuccessImportDescription": {
     "description": "Success message description after importing Ledger wallet"
-  },
-  "fundExchangeHelpPaymentDescription": "Váš převodový kód.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "Čeština",
   "@sellSendPaymentFastest": {
@@ -7681,10 +7625,6 @@
   "transactionFilterSell": "Prodej",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "SPEI přenos",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " slovo \"Bitcoin\" nebo \"Crypto\" v popisu platby. Vaše platba zablokuje.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9680,10 +9620,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "Číslo účtu IBAN (pouze USA dolarů)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "Podrobnosti o pomoc",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -10128,10 +10064,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "Převod prostředků v Kostarické Colón (CRC)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "Detaily transakce",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10212,10 +10144,6 @@
   "importMnemonicSelectType": "Vyberte typ peněženky pro import",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "Bankovní převod",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "Moc na klíče",
   "@importQrDeviceKeystoneStep1": {
@@ -10708,10 +10636,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "přesně",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "Šifrovaná klenba",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10764,10 +10688,6 @@
   "torSettingsPortValidationRange": "Port musí být mezi 1 a 65535",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "Převod prostředků na americký dolar (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "Časout nelze vyprázdnit",
   "@electrumTimeoutEmptyError": {
@@ -10960,10 +10880,6 @@
   "customLocationRecommendation": "Vlastní umístění: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "Kostarika IBAN (USD)",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "Vypnuto vybrat klenbu",
   "@recoverbullErrorSelectVault": {
@@ -12079,7 +11995,6 @@
   "fundExchangeCopGeneratePaymentLink": "Vygenerovat platební odkaz",
   "fundExchangeCopRedirectMessage": "Budete přesměrováni na externí stránku, kde provedete platbu.",
   "fundExchangeCopOpenPaymentLink": "Otevřít platební odkaz",
-  "fundExchangeCopFailedToOpenLink": "Nepodařilo se otevřít platební odkaz. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "priceChartFailedToLoad": "Nepodařilo se načíst historii cen",
   "priceFailedToLoad": "Nepodařilo se načíst cenu",
   "statusScreenTryAgain": "Zkusit znovu",

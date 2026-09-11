@@ -1346,10 +1346,6 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fundExchangeMethodCrIbanCrc": "โซเชียลมีเดีย",
-  "@fundExchangeMethodCrIbanCrc": {
-    "description": "Payment method: Costa Rica IBAN in Colones"
-  },
   "walletDeletionFailedTitle": "ลบ",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
@@ -2046,10 +2042,6 @@
   "coreSwapsLnSendPaid": "ใบแจ้งหนี้จะชําระเงินหลังจากชําระเงิน.",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
-  },
-  "fundExchangeCrBankTransferDescription2": ". เงินทุนจะเพิ่มยอดเงินในบัญชีของคุณ.",
-  "@fundExchangeCrBankTransferDescription2": {
-    "description": "Second part of Costa Rica bank transfer description"
   },
   "sellAmount": "จํานวนขาย",
   "@sellAmount": {
@@ -2752,10 +2744,6 @@
   "@buyInputContinue": {
     "description": "Continue button on buy input"
   },
-  "fundExchangeMethodSpeiTransferSubtitle": "การโอนเงินโดยใช้เคาน์เตอร์ของคุณ",
-  "@fundExchangeMethodSpeiTransferSubtitle": {
-    "description": "Subtitle for SPEI transfer payment method"
-  },
   "importQrDeviceJadeStep3": "ติดตามอุปกรณ์เพื่อปลดล็อค ปักกิ่ง",
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
@@ -2816,10 +2804,6 @@
         "type": "String"
       }
     }
-  },
-  "fundExchangeCrBankTransferDescription1": "ส่งธนาคารจากบัญชีธนาคารของคุณโดยใช้รายละเอียดด้านล่าง ",
-  "@fundExchangeCrBankTransferDescription1": {
-    "description": "First part of Costa Rica bank transfer description"
   },
   "transactionNoteSaveButton": "บันทึก",
   "@transactionNoteSaveButton": {
@@ -3414,10 +3398,6 @@
   "@fundExchangeCrIbanUsdDescriptionBold": {
     "description": "Bold emphasis word for CR IBAN USD transfer instructions"
   },
-  "fundExchangeSelectCountry": "เลือกประเทศและการชําระเงิน",
-  "@fundExchangeSelectCountry": {
-    "description": "Instruction text"
-  },
   "fundExchangeCostaRicaMethodSinpeSubtitle": "การโอนเงินโดยใช้ SINPE",
   "@fundExchangeCostaRicaMethodSinpeSubtitle": {
     "description": "Subtitle description for SINPE Móvil payment method"
@@ -3701,10 +3681,6 @@
   "testBackupRecoverWallet": "การกู้คืนกระเป๋าสตางค์",
   "@testBackupRecoverWallet": {
     "description": "AppBar title for fetched backup info screen"
-  },
-  "fundExchangeMethodSinpeTransferSubtitle": "การโอนเงินโดยใช้ SINPE",
-  "@fundExchangeMethodSinpeTransferSubtitle": {
-    "description": "Subtitle for SINPE Transfer payment method"
   },
   "sendEstimatedDelivery": "ราคาโดยประมาณ ~ ",
   "@sendEstimatedDelivery": {
@@ -4063,10 +4039,6 @@
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
-  "fundExchangeLabelIbanCrcOnly": "จํานวนบัญชี (สําหรับประชากร)",
-  "@fundExchangeLabelIbanCrcOnly": {
-    "description": "Label for IBAN field - Colones only"
-  },
   "testBackupPhysicalBackupDescription": "เขียน 12 คําบนกระดาษ เพื่อให้ปลอดภัยและให้แน่ใจว่าไม่สูญเสียพวกเขา.",
   "@testBackupPhysicalBackupDescription": {
     "description": "Description for physical backup option"
@@ -4345,10 +4317,6 @@
   "sellBitcoinOnChain": "Bitcoin บนโซ่",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
-  },
-  "fundExchangeLabelCedulaJuridica": "Cédula Jurdica",
-  "@fundExchangeLabelCedulaJuridica": {
-    "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
   "exchangeRecipientsComingSoon": "ตารางเวลา - มาถึงเร็ว",
   "@exchangeRecipientsComingSoon": {
@@ -5153,10 +5121,6 @@
   "@recoverVia12WordsDescription": {
     "description": "Description for recovering via 12 words"
   },
-  "fundExchangeFundAccount": "บัญชีบัญชีของคุณ",
-  "@fundExchangeFundAccount": {
-    "description": "Main heading on funding screen"
-  },
   "electrumServerSettingsLabel": "เซิร์ฟเวอร์ไฟฟ้า (Bitcoin ไม่)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
@@ -5506,10 +5470,6 @@
   "@exchangeFeatureSelfCustody": {
     "description": "Feature bullet point describing self-custody Bitcoin purchases"
   },
-  "fundExchangeLabelPaymentDescription": "รายละเอียดการชําระเงิน",
-  "@fundExchangeLabelPaymentDescription": {
-    "description": "Label for payment description field"
-  },
   "payAmountTooHigh": "จํานวนจํานวนสูงสุด",
   "@payAmountTooHigh": {
     "description": "Error when payment amount exceeds maximum allowed"
@@ -5807,10 +5767,6 @@
   "@importQrDevicePassportStep1": {
     "description": "Passport instruction step 1"
   },
-  "fundExchangeMethodArsBankTransferSubtitle": "ส่งธนาคารจากบัญชีธนาคารของคุณ",
-  "@fundExchangeMethodArsBankTransferSubtitle": {
-    "description": "Subtitle for Argentina bank transfer payment method"
-  },
   "transactionOrderLabelExchangeRate": "อัตราแลกเปลี่ยน",
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
@@ -5937,10 +5893,6 @@
   "recoverbullPassword": "รหัสผ่าน",
   "@recoverbullPassword": {
     "description": "Label for password input type"
-  },
-  "fundExchangeMethodSinpeTransfer": "SINPE โอน",
-  "@fundExchangeMethodSinpeTransfer": {
-    "description": "Payment method: SINPE Transfer (Costa Rica)"
   },
   "payFromAnotherWallet": "ชําระเงินจากกระเป๋าสตางค์ Bitcoin",
   "@payFromAnotherWallet": {
@@ -6532,10 +6484,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "fundExchangeInfoTransferCodeRequired": "คุณต้องเพิ่มรหัสเป็น \"ข้อมูล\" หรือ \"ข้อความ\" หรือ \"ข้อความ\" เมื่อทําการชําระเงิน หากคุณลืมรหัสการชําระเงินของคุณอาจปฏิเสธ.",
-  "@fundExchangeInfoTransferCodeRequired": {
-    "description": "Important info about transfer code requirement for Costa Rica transfers"
-  },
   "exchangeDcaFrequencyHour": "ชั่วโมง",
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
@@ -7054,10 +7002,6 @@
   "pinStatusProcessing": "การประมวลผลการประมวลผล",
   "@pinStatusProcessing": {
     "description": "Status screen title during PIN save/delete operations"
-  },
-  "fundExchangeHelpPaymentDescription": "รหัสของคุณ.",
-  "@fundExchangeHelpPaymentDescription": {
-    "description": "Help text for payment description field"
   },
   "sellSendPaymentFastest": "รวดเร็ว",
   "@sellSendPaymentFastest": {
@@ -7754,10 +7698,6 @@
   "transactionFilterSell": "ขาย",
   "@transactionFilterSell": {
     "description": "Filter option to show only sell orders"
-  },
-  "fundExchangeMethodSpeiTransfer": "การโอนเงิน",
-  "@fundExchangeMethodSpeiTransfer": {
-    "description": "Payment method: SPEI transfer (Mexico)"
   },
   "fundExchangeSinpeWarningNoBitcoinDescription": " คําว่า \"Bitcoin\" หรือ \"Crypto\" ในคําอธิบายการชําระเงิน นี่คือบล็อกการชําระเงินของคุณ.",
   "@fundExchangeSinpeWarningNoBitcoinDescription": {
@@ -9878,10 +9818,6 @@
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "fundExchangeLabelIbanUsdOnly": "จํานวนบัญชี (สําหรับสหรัฐเท่านั้น)",
-  "@fundExchangeLabelIbanUsdOnly": {
-    "description": "Label for IBAN field - US Dollars only"
-  },
   "payRecipientDetails": "รายละเอียดรายละเอียด",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
@@ -10334,10 +10270,6 @@
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
-  "fundExchangeMethodCrIbanCrcSubtitle": "การโอนเงินในคอสตาตาซา (HM)",
-  "@fundExchangeMethodCrIbanCrcSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN CRC payment method"
-  },
   "transactionDetailTitle": "รายละเอียด",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -10418,10 +10350,6 @@
   "importMnemonicSelectType": "เลือกกระเป๋าสําหรับนําเข้า",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
-  },
-  "fundExchangeMethodArsBankTransfer": "โอนธนาคาร",
-  "@fundExchangeMethodArsBankTransfer": {
-    "description": "Payment method: Bank Transfer (Argentina)"
   },
   "importQrDeviceKeystoneStep1": "พลังงานบนแม่เหล็กของคุณ",
   "@importQrDeviceKeystoneStep1": {
@@ -10930,10 +10858,6 @@
       }
     }
   },
-  "fundExchangeCrBankTransferDescriptionExactly": "ทั้งหมด",
-  "@fundExchangeCrBankTransferDescriptionExactly": {
-    "description": "Emphasized word 'exactly' in Costa Rica description"
-  },
   "testBackupEncryptedVaultTitle": "การเข้ารหัส",
   "@testBackupEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option card"
@@ -10986,10 +10910,6 @@
   "torSettingsPortValidationRange": "พอร์ตจะต้องอยู่ระหว่าง 1 และ 65",
   "@torSettingsPortValidationRange": {
     "description": "Validation error when port is out of valid range"
-  },
-  "fundExchangeMethodCrIbanUsdSubtitle": "การโอนเงินใน ดอลลาร์สหรัฐอเมริกา (USD)",
-  "@fundExchangeMethodCrIbanUsdSubtitle": {
-    "description": "Subtitle for Costa Rica IBAN USD payment method"
   },
   "electrumTimeoutEmptyError": "เวลาในการว่าง",
   "@electrumTimeoutEmptyError": {
@@ -11186,10 +11106,6 @@
   "customLocationRecommendation": "สถานที่ที่กําหนดเอง: ",
   "@customLocationRecommendation": {
     "description": "Bold label for custom location recommendation"
-  },
-  "fundExchangeMethodCrIbanUsd": "โซเชียลมีเดีย",
-  "@fundExchangeMethodCrIbanUsd": {
-    "description": "Payment method: Costa Rica IBAN in US Dollars"
   },
   "recoverbullErrorSelectVault": "ค้นหาเลือก vault",
   "@recoverbullErrorSelectVault": {
@@ -11975,7 +11891,6 @@
   "fundExchangeCopGeneratePaymentLink": "สร้างลิงก์ชำระเงิน",
   "fundExchangeCopRedirectMessage": "คุณจะถูกนำไปยังหน้าเว็บภายนอกเพื่อทำการชำระเงิน",
   "fundExchangeCopOpenPaymentLink": "เปิดลิงก์ชำระเงิน",
-  "fundExchangeCopFailedToOpenLink": "ไม่สามารถเปิดลิงก์ชำระเงินได้ กรุณาลองใหม่อีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "priceChartFailedToLoad": "โหลดประวัติราคาไม่สำเร็จ",
   "priceFailedToLoad": "โหลดราคาไม่สำเร็จ",
   "statusScreenTryAgain": "ลองใหม่อีกครั้ง",
