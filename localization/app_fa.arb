@@ -12147,5 +12147,6 @@
   "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
   "fundExchangeErrorOrdCop400": "داده‌های درخواست برای تأمین مالی COP نامعتبر است",
   "fundExchangeErrorOrdKyc400": "شما الزامات KYC لازم برای این عمل را ندارید",
-  "fundExchangeErrorOrdCsrcp400": "لطفاً گزینه پرداخت مجازی را برای این گیرنده SEPA فعال کنید"
+  "fundExchangeErrorOrdCsrcp400": "لطفاً گزینه پرداخت مجازی را برای این گیرنده SEPA فعال کنید",
+  "fundExchangeErrorOpeningPaymentLink": "لینک پرداخت باز نشد. لطفاً دوباره تلاش کنید."
 }

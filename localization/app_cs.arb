@@ -12147,5 +12147,6 @@
   "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
   "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP",
   "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci",
-  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro tohoto příjemce SEPA"
+  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro tohoto příjemce SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Platební odkaz se nepodařilo otevřít. Zkuste to prosím znovu."
 }

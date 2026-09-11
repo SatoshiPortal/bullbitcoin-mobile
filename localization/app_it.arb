@@ -4892,5 +4892,6 @@
   "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
   "fundExchangeErrorOrdCop400": "Dati di richiesta non validi per il finanziamento COP",
   "fundExchangeErrorOrdKyc400": "Non hai i requisiti KYC per questa azione",
-  "fundExchangeErrorOrdCsrcp400": "Si prega di attivare l'opzione di pagamento virtuale per questo destinatario SEPA"
+  "fundExchangeErrorOrdCsrcp400": "Si prega di attivare l'opzione di pagamento virtuale per questo destinatario SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Non è stato possibile aprire il link di pagamento. Si prega di riprovare."
 }

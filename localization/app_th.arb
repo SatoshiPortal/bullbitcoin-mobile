@@ -12151,5 +12151,6 @@
   "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
   "fundExchangeErrorOrdCop400": "ข้อมูลคำขอไม่ถูกต้องสำหรับการเติมเงิน COP",
   "fundExchangeErrorOrdKyc400": "คุณไม่มีข้อกำหนด KYC ที่จำเป็นสำหรับการดำเนินการนี้",
-  "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA รายนี้"
+  "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA รายนี้",
+  "fundExchangeErrorOpeningPaymentLink": "ไม่สามารถเปิดลิงก์ชำระเงินได้ โปรดลองอีกครั้ง"
 }

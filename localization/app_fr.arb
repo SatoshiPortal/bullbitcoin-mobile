@@ -4938,5 +4938,6 @@
   "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "fundExchangeErrorOrdCsrcp400": "Veuillez activer l'option de paiement virtuel pour ce destinataire SEPA",
   "fundExchangeErrorOrdCop400": "Données de demande invalides pour le financement COP",
-  "fundExchangeErrorOrdKyc400": "Vous ne remplissez pas les exigences KYC pour cette action"
+  "fundExchangeErrorOrdKyc400": "Vous ne remplissez pas les exigences KYC pour cette action",
+  "fundExchangeErrorOpeningPaymentLink": "Le lien de paiement n'a pas pu être ouvert. Veuillez réessayer."
 }

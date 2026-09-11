@@ -4892,5 +4892,6 @@
   "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
   "fundExchangeErrorOrdCop400": "COP 充值的请求数据无效",
   "fundExchangeErrorOrdKyc400": "您不满足执行此操作所需的 KYC 要求",
-  "fundExchangeErrorOrdCsrcp400": "请为此 SEPA 收款人激活虚拟付款选项。"
+  "fundExchangeErrorOrdCsrcp400": "请为此 SEPA 收款人激活虚拟付款选项。",
+  "fundExchangeErrorOpeningPaymentLink": "无法打开付款链接。请重试。"
 }

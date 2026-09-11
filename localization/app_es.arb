@@ -4889,5 +4889,6 @@
   "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
   "fundExchangeErrorOrdCop400": "Datos de solicitud inválidos para fondeo COP",
   "fundExchangeErrorOrdKyc400": "No cumples con los requisitos KYC para esta acción",
-  "fundExchangeErrorOrdCsrcp400": "Por favor active la opción de pago virtual para este destinatario SEPA"
+  "fundExchangeErrorOrdCsrcp400": "Por favor active la opción de pago virtual para este destinatario SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "No se pudo abrir el enlace de pago. Por favor, inténtelo de nuevo."
 }

@@ -12150,5 +12150,6 @@
   "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
   "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP",
   "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء",
-  "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA هذا"
+  "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA هذا",
+  "fundExchangeErrorOpeningPaymentLink": "تعذر فتح رابط الدفع. يرجى المحاولة مرة أخرى."
 }

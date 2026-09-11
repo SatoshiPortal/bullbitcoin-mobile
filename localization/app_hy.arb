@@ -3574,5 +3574,6 @@
   "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
   "fundExchangeErrorOrdCop400": "Անվավեր հարցման տվյալներ COP ֆինանսավորման համար",
   "fundExchangeErrorOrdKyc400": "Դուք չունեք այս գործողության համար անհրաժեշտ KYC-ի պահանջները",
-  "fundExchangeErrorOrdCsrcp400": "Խնդրում ենք ակտիվացնել վիրտուալ վճարման տարբերակը այս SEPA ստացողի համար"
+  "fundExchangeErrorOrdCsrcp400": "Խնդրում ենք ակտիվացնել վիրտուալ վճարման տարբերակը այս SEPA ստացողի համար",
+  "fundExchangeErrorOpeningPaymentLink": "Չհաջողվեց բացել վճարման հղումը։ Խնդրում ենք փորձել կրկին։"
 }

@@ -14,6 +14,8 @@ sealed class FundExchangeState with _$FundExchangeState {
     @Default(false) bool isSubmittingScamWarningConsent,
     FundExchangeFailure? submitScamWarningConsentFailure,
     PendingConsentAction? pendingConsentAction,
+    @Default(false) bool isOpeningPaymentLink,
+    FundExchangeFailure? openPaymentLinkFailure,
   }) = _FundExchangeState;
   const FundExchangeState._();
 

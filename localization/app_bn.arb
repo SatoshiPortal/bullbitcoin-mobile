@@ -12354,5 +12354,6 @@
   "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
   "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা",
   "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই",
-  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে এই SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন"
+  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে এই SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন",
+  "fundExchangeErrorOpeningPaymentLink": "পেমেন্ট লিঙ্কটি খোলা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }

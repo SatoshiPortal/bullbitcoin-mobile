@@ -3586,5 +3586,6 @@
   "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
   "fundExchangeErrorOrdCop400": "Data ya ombi si sahihi kwa ufadhili wa COP",
   "fundExchangeErrorOrdKyc400": "Huna mahitaji ya KYC kwa ajili ya kitendo hiki",
-  "fundExchangeErrorOrdCsrcp400": "Tafadhali washa chaguo la malipo ya mtandaoni kwa mpokeaji huyu wa SEPA"
+  "fundExchangeErrorOrdCsrcp400": "Tafadhali washa chaguo la malipo ya mtandaoni kwa mpokeaji huyu wa SEPA",
+  "fundExchangeErrorOpeningPaymentLink": "Kiungo cha malipo hakikuweza kufunguliwa. Tafadhali jaribu tena."
 }

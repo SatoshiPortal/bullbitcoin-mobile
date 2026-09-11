@@ -14590,5 +14590,9 @@
   "fundExchangeErrorOrdCop400": "Invalid request data for COP funding",
   "@fundExchangeErrorOrdCop400": {
     "description": "bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895)."
+  },
+  "fundExchangeErrorOpeningPaymentLink": "The payment link could not be opened. Please try again.",
+  "@fundExchangeErrorOpeningPaymentLink": {
+    "description": "bb-exchange: shown when the COP payment link cannot be handed to a browser (#1895)."
   }
 }

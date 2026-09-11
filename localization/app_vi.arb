@@ -3574,5 +3574,6 @@
   "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
   "fundExchangeErrorOrdCop400": "Dữ liệu yêu cầu không hợp lệ để nạp tiền COP",
   "fundExchangeErrorOrdKyc400": "Bạn không có các yêu cầu KYC cần thiết cho hành động này",
-  "fundExchangeErrorOrdCsrcp400": "Vui lòng kích hoạt tùy chọn thanh toán ảo cho người nhận SEPA này"
+  "fundExchangeErrorOrdCsrcp400": "Vui lòng kích hoạt tùy chọn thanh toán ảo cho người nhận SEPA này",
+  "fundExchangeErrorOpeningPaymentLink": "Không thể mở liên kết thanh toán. Vui lòng thử lại."
 }

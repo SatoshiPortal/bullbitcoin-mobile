@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
@@ -25,12 +26,14 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   final ListFundingInstitutionsUsecase _listFundingInstitutionsUsecase;
   final RegisterResponsibilityConsentUsecase
   _registerResponsibilityConsentUsecase;
+  final OpenFundingPaymentLinkUsecase _openFundingPaymentLinkUsecase;
 
   FundExchangeBloc({
     required this._getFundExchangeUserSummaryUsecase,
     required this._getFundingDetailsUsecase,
     required this._listFundingInstitutionsUsecase,
     required this._registerResponsibilityConsentUsecase,
+    required this._openFundingPaymentLinkUsecase,
   }) : super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeFundingInstitutionsRequested>(
@@ -39,6 +42,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     on<FundExchangeFundingDetailsRequested>(_onFundingDetailsRequested);
     on<FundExchangeScamWarningConsentSubmitted>(_onScamWarningConsentSubmitted);
     on<FundExchangeScamWarningDismissed>(_onScamWarningDismissed);
+    on<FundExchangePaymentLinkOpenRequested>(_onPaymentLinkOpenRequested);
     on<FundExchangeFundingDetailsErrorCleared>(_onFundingDetailsErrorCleared);
   }
 
@@ -218,6 +222,27 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     Emitter<FundExchangeState> emit,
   ) async {
     emit(state.copyWith(pendingConsentAction: null));
+  }
+
+  Future<void> _onPaymentLinkOpenRequested(
+    FundExchangePaymentLinkOpenRequested event,
+    Emitter<FundExchangeState> emit,
+  ) async {
+    emit(
+      state.copyWith(openPaymentLinkFailure: null, isOpeningPaymentLink: true),
+    );
+
+    final result = await _openFundingPaymentLinkUsecase.execute(
+      OpenFundingPaymentLinkCommand(paymentLink: event.paymentLink),
+    );
+
+    emit(switch (result) {
+      Ok() => state.copyWith(isOpeningPaymentLink: false),
+      Err(:final failure) => state.copyWith(
+        openPaymentLinkFailure: failure,
+        isOpeningPaymentLink: false,
+      ),
+    });
   }
 
   Future<void> _onFundingDetailsErrorCleared(

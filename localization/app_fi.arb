@@ -4880,5 +4880,6 @@
   "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
   "fundExchangeErrorOrdCop400": "Virheelliset pyyntötiedot COP-rahoitukselle",
   "fundExchangeErrorOrdKyc400": "Sinulla ei ole KYC-vaatimuksia tätä toimintoa varten",
-  "fundExchangeErrorOrdCsrcp400": "Aktivoi virtuaalinen maksuvaihtoehto tälle SEPA-vastaanottajalle"
+  "fundExchangeErrorOrdCsrcp400": "Aktivoi virtuaalinen maksuvaihtoehto tälle SEPA-vastaanottajalle",
+  "fundExchangeErrorOpeningPaymentLink": "Maksulinkkiä ei voitu avata. Yritä uudelleen."
 }
