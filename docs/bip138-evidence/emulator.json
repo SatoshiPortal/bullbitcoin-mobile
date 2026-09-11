@@ -1,0 +1,14 @@
+{
+  "device": "emulator-5582",
+  "avd": "bip138_prototype",
+  "android": "14",
+  "relay": "wss://nos.lol",
+  "recoveryOnly": true,
+  "validRuns": 2,
+  "postReviewRepeat": true,
+  "records": [
+    "BIP138_NOSTR_EMULATOR_PASS role=everyday event=a0ef41af11b0f63cf183a6651641aaa580f61b9e33cceacd1a8300dcb4d182b9 receive/change=0,7,111",
+    "BIP138_NOSTR_EMULATOR_PASS role=cold event=01c69fc0b7dbb47d971d864459707d18c96969de58f5846ea30064b27185b7e3 receive/change=0,7,111",
+    "BIP138_NOSTR_EMULATOR_PASS role=inheritance event=945305740e0e8512fe0b9d22b5b8ab348ad257a33107ca13da21240c46f34ae2 receive/change=0,7,111"
+  ]
+}

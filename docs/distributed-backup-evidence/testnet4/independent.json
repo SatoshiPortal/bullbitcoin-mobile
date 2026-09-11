@@ -1,0 +1,14 @@
+[
+  {
+    "generation": 0,
+    "txid": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901",
+    "payloadSha256": "9b6d81d75c2d2200056818b18f2503e559544a633280117fad0c8b48a35cf364",
+    "recipientsVerified": 3
+  },
+  {
+    "generation": 1,
+    "txid": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660",
+    "payloadSha256": "938f85ef615862e69932e251727ed130e29e860053c07872d6311e4e84cce277",
+    "recipientsVerified": 3
+  }
+]

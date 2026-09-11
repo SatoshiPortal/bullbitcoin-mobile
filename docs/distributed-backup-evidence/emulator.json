@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-09-07T20:38:52.058717+00:00",
+  "device": "emulator-5582",
+  "avd": "bip138_prototype",
+  "chain": "regtest",
+  "electrum": "tcp://127.0.0.1:51401",
+  "relay": "wss://nos.lol",
+  "runs": [
+    {
+      "logSha256": "c70d080079a2ad7ef7a93b5d3522b5afb5c8e2db9b240bf0ba8b79f6f823cb6d",
+      "bitcoin": [
+        {
+          "role": "everyday",
+          "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+          "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "everyday",
+          "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+          "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "cold",
+          "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+          "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "cold",
+          "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+          "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "inheritance",
+          "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+          "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "inheritance",
+          "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+          "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        }
+      ]
+    },
+    {
+      "logSha256": "3dd31d47556fda14051dc91ec0339a6b4e6efdd7540d166a38680898e4fda5c1",
+      "bitcoin": [
+        {
+          "role": "everyday",
+          "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+          "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "everyday",
+          "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+          "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "cold",
+          "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+          "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "cold",
+          "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+          "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "inheritance",
+          "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+          "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        },
+        {
+          "role": "inheritance",
+          "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+          "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+          "balanceSats": 300000,
+          "persistedReopened": true
+        }
+      ],
+      "nostr": [
+        {
+          "role": "everyday",
+          "eventId": "265da6b814611e8445237e9ad8741acf2a201998246f92dbf0699fd88515faf4"
+        },
+        {
+          "role": "cold",
+          "eventId": "cf45c8188ba0d680c1f5b43b2ccbb00ab085c606d93efc2f51bcdd55f8b50ae5"
+        },
+        {
+          "role": "inheritance",
+          "eventId": "ddf2bcabca3f1154bde4ff3346db0f655b20b5c07784d86d34c3ee21fe6c0689"
+        }
+      ]
+    }
+  ]
+}

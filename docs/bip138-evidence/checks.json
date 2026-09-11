@@ -1,0 +1,50 @@
+{
+  "command": "make checks",
+  "exitCode": 0,
+  "recordedAt": "2026-09-06T14:56:07.106383+00:00",
+  "analyze": "passed, whole project with fatal warnings/infos",
+  "dartFix": "Nothing to fix!",
+  "format": "passed",
+  "results": [
+    {
+      "package": "app",
+      "passed": 3130,
+      "skipped": 1
+    },
+    {
+      "package": "packages/bull_logger",
+      "passed": 7,
+      "skipped": 0
+    },
+    {
+      "package": "packages/bull_payjoin",
+      "passed": 77,
+      "skipped": 0
+    },
+    {
+      "package": "packages/bull_tor",
+      "passed": 27,
+      "skipped": 0
+    },
+    {
+      "package": "packages/bull_ui",
+      "passed": 39,
+      "skipped": 0
+    },
+    {
+      "package": "packages/bull_ui_catalogue",
+      "passed": 1,
+      "skipped": 0
+    },
+    {
+      "package": "packages/primitives",
+      "passed": 17,
+      "skipped": 0
+    },
+    {
+      "package": "packages/screen_privacy",
+      "passed": 8,
+      "skipped": 0
+    }
+  ]
+}

@@ -75,6 +75,7 @@ dependencies:
   convert: ^3.1.2
   bech32: ^0.2.2
   crypto: ^3.0.7
+  pointycastle: 3.9.1
   synchronized: ^3.4.0
   json_annotation: ^4.9.0
   flutter_localizations:

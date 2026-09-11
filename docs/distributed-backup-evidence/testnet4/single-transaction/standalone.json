@@ -1,0 +1,9 @@
+{
+  "sha256": "09ea0059a3318ba2dd68c893181cb8217ec27cae7df1441c263246dc49f0e344",
+  "target": "tools/distributed_backups_prototype_app.dart",
+  "flavor": "beta",
+  "mode": "debug",
+  "platform": "android-x64",
+  "network": "testnet4",
+  "electrum": "ssl://blackie.c3-soft.com:57010"
+}

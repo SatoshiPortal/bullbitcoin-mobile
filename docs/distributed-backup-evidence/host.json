@@ -1,0 +1,62 @@
+[
+  {
+    "role": "everyday",
+    "generation": 0,
+    "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+    "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+    "balanceSats": 300000,
+    "persistedReopened": true,
+    "receive": "bcrt1pxcq60msjde8u4plupulwj9pqnz5g7a0ltrvls83cgled8f09pvlqmkhesn",
+    "change": "bcrt1phr72whkw8hzt3kw37eey7fnq89zv7q90am38ze0xh7fwlq7akkrqaj3d98"
+  },
+  {
+    "role": "everyday",
+    "generation": 1,
+    "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+    "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+    "balanceSats": 300000,
+    "persistedReopened": true,
+    "receive": "bcrt1p0fkntkq86tzcrms6yw02p4qmgptrn60ecu8cf69mkv04zuw9wavqmns7zu",
+    "change": "bcrt1pd0fwk29ald4ehdm60yzn5tjvfsf4vy3vs3h9400mmlvxjpxj0slqghutse"
+  },
+  {
+    "role": "cold",
+    "generation": 0,
+    "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+    "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+    "balanceSats": 300000,
+    "persistedReopened": true,
+    "receive": "bcrt1pxcq60msjde8u4plupulwj9pqnz5g7a0ltrvls83cgled8f09pvlqmkhesn",
+    "change": "bcrt1phr72whkw8hzt3kw37eey7fnq89zv7q90am38ze0xh7fwlq7akkrqaj3d98"
+  },
+  {
+    "role": "cold",
+    "generation": 1,
+    "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+    "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+    "balanceSats": 300000,
+    "persistedReopened": true,
+    "receive": "bcrt1p0fkntkq86tzcrms6yw02p4qmgptrn60ecu8cf69mkv04zuw9wavqmns7zu",
+    "change": "bcrt1pd0fwk29ald4ehdm60yzn5tjvfsf4vy3vs3h9400mmlvxjpxj0slqghutse"
+  },
+  {
+    "role": "inheritance",
+    "generation": 0,
+    "txid": "45d89c26cae44a477c69aad55585b75eee530aa2e174488748ccebd147ab033f",
+    "walletId": "8331193e50087d8017d8a7f3777b3b8f476d92c98f837653862681738735a072",
+    "balanceSats": 300000,
+    "persistedReopened": true,
+    "receive": "bcrt1pxcq60msjde8u4plupulwj9pqnz5g7a0ltrvls83cgled8f09pvlqmkhesn",
+    "change": "bcrt1phr72whkw8hzt3kw37eey7fnq89zv7q90am38ze0xh7fwlq7akkrqaj3d98"
+  },
+  {
+    "role": "inheritance",
+    "generation": 1,
+    "txid": "a5837c1a67dca3164c1e21e6db7688286715e2adf6fbcea9b5135e1380f2554e",
+    "walletId": "2f4dff73172324189615a02973cdbede5707bba152bc3be1a6069544d4381769",
+    "balanceSats": 300000,
+    "persistedReopened": true,
+    "receive": "bcrt1p0fkntkq86tzcrms6yw02p4qmgptrn60ecu8cf69mkv04zuw9wavqmns7zu",
+    "change": "bcrt1pd0fwk29ald4ehdm60yzn5tjvfsf4vy3vs3h9400mmlvxjpxj0slqghutse"
+  }
+]

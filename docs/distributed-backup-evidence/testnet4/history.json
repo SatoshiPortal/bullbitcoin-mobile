@@ -1,0 +1,51 @@
+{
+  "at": "2026-09-07T21:01:40.357776+00:00",
+  "electrum": "ssl://blackie.c3-soft.com:57010",
+  "records": [
+    {
+      "address": "tb1qc3zh58dr75p3f8d6tvh9ml2e45xhrmw7lxhhfz",
+      "history": [
+        {
+          "fee": 3544,
+          "height": -1,
+          "tx_hash": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901"
+        },
+        {
+          "fee": 3548,
+          "height": -1,
+          "tx_hash": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660"
+        }
+      ]
+    },
+    {
+      "address": "tb1qtxe637xs0plw0q5dyxzsyr0c9dn8xyg6q08fuv",
+      "history": [
+        {
+          "fee": 3544,
+          "height": -1,
+          "tx_hash": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901"
+        },
+        {
+          "fee": 3548,
+          "height": -1,
+          "tx_hash": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660"
+        }
+      ]
+    },
+    {
+      "address": "tb1qyqvygdd58dhyhwqhve63gef8t7kjms59cm82h8",
+      "history": [
+        {
+          "fee": 3544,
+          "height": -1,
+          "tx_hash": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901"
+        },
+        {
+          "fee": 3548,
+          "height": -1,
+          "tx_hash": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660"
+        }
+      ]
+    }
+  ]
+}

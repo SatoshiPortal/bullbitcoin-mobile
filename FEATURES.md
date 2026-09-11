@@ -96,6 +96,7 @@ graph TB
     %% Wallet Backup is the only feature that reads the keychain manifest for a
     %% backup; Backup Settings goes through its facade rather than around it.
     WALLET_BACKUP --> NOSTR_IDENTITY
+    BULLVAULT --> NOSTR_IDENTITY
     WALLET_BACKUP --> KEYCHAIN_MANIFEST
     WALLET_BACKUP --> LABELS
     WALLET_BACKUP -->|Recovery packages and committed backup changes| BULLVAULT

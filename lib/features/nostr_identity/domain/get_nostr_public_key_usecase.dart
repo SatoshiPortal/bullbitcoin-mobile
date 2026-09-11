@@ -9,6 +9,19 @@ class GetNostrPublicKeyUsecase {
   const GetNostrPublicKeyUsecase(this._resolver);
 
   @useResult
-  Future<Result<String, NostrIdentityFailure>> execute() async =>
-      (await _resolver.resolve()).map((key) => key.publicKeyHex);
+  Future<Result<String, NostrIdentityFailure>> execute({
+    String? descriptorLookup,
+  }) async {
+    if (descriptorLookup != null &&
+        !RegExp(r'^[0-9a-f]{64}$').hasMatch(descriptorLookup)) {
+      return const Err(NostrIdentityInvalidHashFailure());
+    }
+    return (await _resolver.resolve()).map(
+      (key) =>
+          (descriptorLookup == null
+                  ? key
+                  : key.descriptorBackupScope(descriptorLookup))
+              .publicKeyHex,
+    );
+  }
 }

@@ -1,0 +1,70 @@
+{
+  "recordedAt": "2026-09-07T21:11:33.922015+00:00",
+  "device": "emulator-5582",
+  "electrum": "ssl://blackie.c3-soft.com:57010",
+  "logSha256": "7a32446416cdf0b040de1a23fc5606791e37f2459f649f13e45d5278d3fa5312",
+  "bitcoin": [
+    {
+      "role": "everyday",
+      "txid": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901",
+      "walletId": "b0e06d554c002d00b3a9fb6bdc9c42cf5583ce94593e2b437ba5d424e9081422",
+      "balanceSats": 3000,
+      "persistedReopened": true,
+      "network": "testnet4"
+    },
+    {
+      "role": "everyday",
+      "txid": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660",
+      "walletId": "55452b99abd22bff2619e4c48197b5a4c41ab0c8125a5998bd9cb87ad76d2b3d",
+      "balanceSats": 3000,
+      "persistedReopened": true,
+      "network": "testnet4"
+    },
+    {
+      "role": "cold",
+      "txid": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901",
+      "walletId": "b0e06d554c002d00b3a9fb6bdc9c42cf5583ce94593e2b437ba5d424e9081422",
+      "balanceSats": 3000,
+      "persistedReopened": true,
+      "network": "testnet4"
+    },
+    {
+      "role": "cold",
+      "txid": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660",
+      "walletId": "55452b99abd22bff2619e4c48197b5a4c41ab0c8125a5998bd9cb87ad76d2b3d",
+      "balanceSats": 3000,
+      "persistedReopened": true,
+      "network": "testnet4"
+    },
+    {
+      "role": "inheritance",
+      "txid": "7f0bf8e3c6428b0fb82fea33b3d67399b6308fe30d921d1de18b42831aecc901",
+      "walletId": "b0e06d554c002d00b3a9fb6bdc9c42cf5583ce94593e2b437ba5d424e9081422",
+      "balanceSats": 3000,
+      "persistedReopened": true,
+      "network": "testnet4"
+    },
+    {
+      "role": "inheritance",
+      "txid": "d8ea3b6dd6498e1cd10866697a2b7334cf07b9ea61a6079ac88d5ca94f75b660",
+      "walletId": "55452b99abd22bff2619e4c48197b5a4c41ab0c8125a5998bd9cb87ad76d2b3d",
+      "balanceSats": 3000,
+      "persistedReopened": true,
+      "network": "testnet4"
+    }
+  ],
+  "nostr": [
+    {
+      "role": "everyday",
+      "eventId": "265da6b814611e8445237e9ad8741acf2a201998246f92dbf0699fd88515faf4"
+    },
+    {
+      "role": "cold",
+      "eventId": "cf45c8188ba0d680c1f5b43b2ccbb00ab085c606d93efc2f51bcdd55f8b50ae5"
+    },
+    {
+      "role": "inheritance",
+      "eventId": "ddf2bcabca3f1154bde4ff3346db0f655b20b5c07784d86d34c3ee21fe6c0689"
+    }
+  ]
+}

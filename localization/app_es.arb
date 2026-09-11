@@ -4900,5 +4900,19 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "distributedBackupTitle": "Prototipo de respaldo distribuido",
+  "distributedBackupNotice": "Recupere con el xpub de cuenta de cualquier cofirmante mediante su primera dirección SegWit. Reutilizar direcciones vincula públicamente los respaldos. La restauración es de solo lectura y se guarda aparte de sus carteras BULL.",
+  "distributedBackupNostr": "Recuperar desde Nostr",
+  "distributedBackupNetwork": "Red Bitcoin",
+  "distributedBackupElectrum": "Servidor Electrum (ssl://host:puerto)",
+  "distributedBackupWorking": "En curso… Cancelar oculta el resultado; una sincronización activa puede terminar de guardar localmente.",
+  "distributedBackupIncomplete": "Búsqueda incompleta. No se pudo comprobar parte del historial o los respaldos. Reintente o use otro servidor Electrum.",
+  "distributedBackupRestore": "Restaurar cartera de solo lectura",
+  "distributedBackupRestored": "Cartera de solo lectura guardada y reabierta. El escaneo cubre las primeras 200 direcciones de recepción y 200 de cambio; el saldo puede excluir direcciones posteriores.",
+  "distributedBackupBalance": "Saldo: {sats} sats · Transacciones: {count}",
+  "distributedBackupAddresses": "Recepción: {receive}\nCambio: {change}",
+  "distributedBackupEmpty": "No se encontraron respaldos de descriptor descifrables en este historial.",
+  "distributedBackupUnverified": "Verifique esta política de forma independiente antes de recibir fondos. Cualquiera con el xpub de un cofirmante puede publicar otro respaldo. La restauración no recupera claves privadas.",
+  "distributedBackupHeight": "Altura de bloque indicada por el servidor: {height} (0 o -1 significa sin confirmar)"
 }

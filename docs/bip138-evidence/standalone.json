@@ -1,0 +1,11 @@
+{
+  "device": "emulator-5582",
+  "package": "com.bullbitcoin.mobile.beta.debug",
+  "entrypoint": "tools/bip138_prototype_app.dart",
+  "relay": "wss://nos.lol",
+  "inputRole": "inheritance",
+  "inputXpub": "tpubDEUX3NbynJLM8Vta1jFDCieG35dErszSu9NvWJqVzMQXo3fT6SePgFKWneiZF6Ju5Dy99E9Yu2hLftMXrUWEU583j5xhdvFwsJ6iWhqHHt3",
+  "renderedDescriptorSha256": "680d2f277117777c8e5018bff56f25d9569561af7c06ddf67a9f8fce7df81e4d",
+  "apkSha256": "3b745f2a6c090ece922ffafdb7474909ec3ea7f26abc1ca0967c517db9929053",
+  "copyFeedbackObserved": true
+}

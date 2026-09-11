@@ -4949,5 +4949,19 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "distributedBackupTitle": "Prototype de sauvegarde distribuée",
+  "distributedBackupNotice": "Récupérez avec le xpub de compte de tout cosignataire via sa première adresse SegWit. Les adresses réutilisées relient publiquement les sauvegardes. Les portefeuilles restaurés sont en lecture seule et séparés de vos portefeuilles BULL.",
+  "distributedBackupNostr": "Récupérer depuis Nostr",
+  "distributedBackupNetwork": "Réseau Bitcoin",
+  "distributedBackupElectrum": "Serveur Electrum (ssl://hôte:port)",
+  "distributedBackupWorking": "En cours… Annuler masque le résultat ; une synchronisation active peut terminer son enregistrement local.",
+  "distributedBackupIncomplete": "Recherche incomplète. Une partie de l’historique ou des sauvegardes n’a pas pu être vérifiée. Réessayez ou utilisez un autre serveur Electrum.",
+  "distributedBackupRestore": "Restaurer en lecture seule",
+  "distributedBackupRestored": "Portefeuille en lecture seule enregistré et rouvert. Le scan couvre les 200 premières adresses de réception et de change ; le solde peut exclure les adresses suivantes.",
+  "distributedBackupBalance": "Solde : {sats} sats · Transactions : {count}",
+  "distributedBackupAddresses": "Réception : {receive}\nChange : {change}",
+  "distributedBackupEmpty": "Aucune sauvegarde de descripteur déchiffrable trouvée dans cet historique.",
+  "distributedBackupUnverified": "Vérifiez cette politique indépendamment avant de recevoir des fonds. Toute personne possédant le xpub d’un cosignataire peut publier une autre sauvegarde. La restauration ne récupère pas les clés privées.",
+  "distributedBackupHeight": "Hauteur de bloc indiquée par le serveur : {height} (0 ou -1 signifie non confirmée)"
 }

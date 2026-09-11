@@ -17235,5 +17235,113 @@
   "homeDataBackupRetry": "Retry",
   "@homeDataBackupRetry": {
     "description": "Button on the home banner to retry enabling Data Backup after it was refused."
+  },
+  "bip138PrototypeTitle": "BullVault descriptor backup prototype",
+  "@bip138PrototypeTitle": {},
+  "bip138PrototypeNotice": "Test data only. Publishes a synthetic BullVault to a public Nostr relay over a direct connection. Never fund these keys.",
+  "@bip138PrototypeNotice": {},
+  "bip138PrototypePublish": "Publish test descriptor",
+  "@bip138PrototypePublish": {},
+  "bip138PrototypeFetch": "Fetch descriptor from xpub",
+  "@bip138PrototypeFetch": {},
+  "bip138PrototypeRelay": "Nostr relay (wss://)",
+  "@bip138PrototypeRelay": {},
+  "bip138PrototypeInput": "Cosigner account xpub or single-key descriptor",
+  "@bip138PrototypeInput": {},
+  "bip138PrototypeAccepted": "Relay accepted the test publications. Fetch separately to check recovery.",
+  "@bip138PrototypeAccepted": {},
+  "bip138PrototypeEmpty": "No matching backup returned by this relay.",
+  "@bip138PrototypeEmpty": {},
+  "bip138PrototypeIncomplete": "This search was incomplete. Other backups may exist.",
+  "@bip138PrototypeIncomplete": {},
+  "bip138PrototypeUnverified": "Descriptor recovered and decrypted locally. Original policy ownership is unverified. This prototype does not import a spending or receiving wallet.",
+  "@bip138PrototypeUnverified": {},
+  "bip138PrototypeMobile": "Use test mobile xpub",
+  "@bip138PrototypeMobile": {},
+  "bip138PrototypeCold": "Use test cold xpub",
+  "@bip138PrototypeCold": {},
+  "bip138PrototypeInheritance": "Use test inheritance xpub",
+  "@bip138PrototypeInheritance": {},
+  "bip138PrototypeWorking": "Contacting Nostr…",
+  "@bip138PrototypeWorking": {},
+  "bip138PrototypeRejected": "Some returned events were invalid or unsupported.",
+  "@bip138PrototypeRejected": {},
+  "bip138PrototypeCopy": "Copy recovered descriptor",
+  "@bip138PrototypeCopy": {},
+  "bip138PrototypePublicationNotice": "Publication may be partial: accepted copies remain public even if a later upload fails or you cancel. Fetch each test key separately to check.",
+  "@bip138PrototypePublicationNotice": {},
+  "bip138PrototypeCopied": "Descriptor copied",
+  "@bip138PrototypeCopied": {},
+  "distributedBackupTitle": "Distributed backup prototype",
+  "@distributedBackupTitle": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupNotice": "Recover from any cosigner account xpub using its first SegWit address. Reused addresses publicly link backup transactions. Restores are watch-only and stored separately from your BULL wallets.",
+  "@distributedBackupNotice": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupNostr": "Fetch from Nostr",
+  "@distributedBackupNostr": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupNetwork": "Bitcoin network",
+  "@distributedBackupNetwork": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupElectrum": "Electrum server (ssl://host:port)",
+  "@distributedBackupElectrum": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupWorking": "Working… Cancelling hides the result; an active wallet sync may finish saving locally.",
+  "@distributedBackupWorking": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupIncomplete": "Search incomplete. Some history or backups could not be checked. Retry or use another Electrum server.",
+  "@distributedBackupIncomplete": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupRestore": "Restore watch-only wallet",
+  "@distributedBackupRestore": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupRestored": "Watch-only wallet saved and reopened. Scan covers the first 200 receive and 200 change addresses; balance may exclude later addresses.",
+  "@distributedBackupRestored": {
+    "description": "Isolated distributed backup prototype"
+  },
+  "distributedBackupBalance": "Balance: {sats} sats · Transactions: {count}",
+  "@distributedBackupBalance": {
+    "description": "Isolated distributed backup prototype",
+    "placeholders": {
+      "sats": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "distributedBackupAddresses": "Receive: {receive}\nChange: {change}",
+  "@distributedBackupAddresses": {
+    "description": "Isolated distributed backup prototype",
+    "placeholders": {
+      "receive": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "distributedBackupEmpty": "No decryptable descriptor backups found in this address history.",
+  "@distributedBackupEmpty": {},
+  "distributedBackupUnverified": "Check this policy independently before receiving funds. Anyone holding a cosigner xpub can publish a replacement backup. Restoration does not recover private keys.",
+  "@distributedBackupUnverified": {},
+  "distributedBackupHeight": "Server-reported block height: {height} (0 or -1 means unconfirmed)",
+  "@distributedBackupHeight": {
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
   }
 }

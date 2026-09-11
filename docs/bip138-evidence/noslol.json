@@ -1,0 +1,35 @@
+{
+  "relay": "wss://nos.lol",
+  "at": "2026-09-06T14:30:14.050596Z",
+  "descriptor": "tr([00000000]tpubD6NzVbkrYhZ4WLd82sJzTQAcHXancR9nXqyNo8pXVNNEQ7qTDXiwX6dSW97sUvxdVBV2tAgod7gfG8dhJsVqDspXrsaLSifGx8suAPrpyUn/<0;1>/*,{multi_a(2,[ab1a7e75/48'/1'/0'/2']tpubDEna6R5KwkworJMS4q9ttdzWnoH3Fjb55JHAMwCemQL1LJNDoXd4i2FwFFMDSbni6cWr3VhZxhQmen5KB3oTMBGfSSMPUrsi7v2qMkS1RLW/<0;1>/*,[c15e7c0b/48'/1'/0'/2']tpubDDxj9L5WRBsGuihUrPe7aq5NQDobAw6LiappjKWXbqcjbwmw6H9P4fWygigtYbq4VrufkQtmjm7gBFZCWYaFJt8iyWwUA3hhht8cdg4U8Xg/<0;1>/*),{and_v(v:after(1861920000),multi_a(2,[ab1a7e75/48'/1'/0'/2']tpubDEna6R5KwkworJMS4q9ttdzWnoH3Fjb55JHAMwCemQL1LJNDoXd4i2FwFFMDSbni6cWr3VhZxhQmen5KB3oTMBGfSSMPUrsi7v2qMkS1RLW/<2;3>/*,[c15e7c0b/48'/1'/0'/2']tpubDDxj9L5WRBsGuihUrPe7aq5NQDobAw6LiappjKWXbqcjbwmw6H9P4fWygigtYbq4VrufkQtmjm7gBFZCWYaFJt8iyWwUA3hhht8cdg4U8Xg/<2;3>/*,[dba830f8/48'/1'/0'/2']tpubDEUX3NbynJLM8Vta1jFDCieG35dErszSu9NvWJqVzMQXo3fT6SePgFKWneiZF6Ju5Dy99E9Yu2hLftMXrUWEU583j5xhdvFwsJ6iWhqHHt3/<0;1>/*)),{and_v(v:after(1893456000),pk([c15e7c0b/48'/1'/0'/2']tpubDDxj9L5WRBsGuihUrPe7aq5NQDobAw6LiappjKWXbqcjbwmw6H9P4fWygigtYbq4VrufkQtmjm7gBFZCWYaFJt8iyWwUA3hhht8cdg4U8Xg/<4;5>/*)),and_v(v:after(1956528000),pk([dba830f8/48'/1'/0'/2']tpubDEUX3NbynJLM8Vta1jFDCieG35dErszSu9NvWJqVzMQXo3fT6SePgFKWneiZF6Ju5Dy99E9Yu2hLftMXrUWEU583j5xhdvFwsJ6iWhqHHt3/<2;3>/*))}}})#r4a0k0p2",
+  "xpubs": [
+    "tpubDEna6R5KwkworJMS4q9ttdzWnoH3Fjb55JHAMwCemQL1LJNDoXd4i2FwFFMDSbni6cWr3VhZxhQmen5KB3oTMBGfSSMPUrsi7v2qMkS1RLW",
+    "tpubDDxj9L5WRBsGuihUrPe7aq5NQDobAw6LiappjKWXbqcjbwmw6H9P4fWygigtYbq4VrufkQtmjm7gBFZCWYaFJt8iyWwUA3hhht8cdg4U8Xg",
+    "tpubDEUX3NbynJLM8Vta1jFDCieG35dErszSu9NvWJqVzMQXo3fT6SePgFKWneiZF6Ju5Dy99E9Yu2hLftMXrUWEU583j5xhdvFwsJ6iWhqHHt3"
+  ],
+  "publishedEventIds": [
+    "a0ef41af11b0f63cf183a6651641aaa580f61b9e33cceacd1a8300dcb4d182b9",
+    "01c69fc0b7dbb47d971d864459707d18c96969de58f5846ea30064b27185b7e3",
+    "945305740e0e8512fe0b9d22b5b8ab348ad257a33107ca13da21240c46f34ae2"
+  ],
+  "recovered": [
+    {
+      "role": "everyday",
+      "eventId": "a0ef41af11b0f63cf183a6651641aaa580f61b9e33cceacd1a8300dcb4d182b9",
+      "newlyPublishedEventId": "a0ef41af11b0f63cf183a6651641aaa580f61b9e33cceacd1a8300dcb4d182b9",
+      "incomplete": false
+    },
+    {
+      "role": "cold",
+      "eventId": "01c69fc0b7dbb47d971d864459707d18c96969de58f5846ea30064b27185b7e3",
+      "newlyPublishedEventId": "01c69fc0b7dbb47d971d864459707d18c96969de58f5846ea30064b27185b7e3",
+      "incomplete": false
+    },
+    {
+      "role": "inheritance",
+      "eventId": "945305740e0e8512fe0b9d22b5b8ab348ad257a33107ca13da21240c46f34ae2",
+      "newlyPublishedEventId": "945305740e0e8512fe0b9d22b5b8ab348ad257a33107ca13da21240c46f34ae2",
+      "incomplete": false
+    }
+  ]
+}

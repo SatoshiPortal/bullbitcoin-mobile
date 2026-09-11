@@ -20,4 +20,20 @@ class NostrIdentityFacade {
   Future<Result<String, NostrIdentityFailure>> signWalletBackupHash(
     String hashHex,
   ) => _signHash.execute(hashHex);
+
+  @useResult
+  Future<Result<String, NostrIdentityFailure>> descriptorBackupPublicKey(
+    String lookup,
+  ) => _getPublicKey.execute(descriptorLookup: lookup);
+
+  @useResult
+  Future<Result<String, NostrIdentityFailure>> signDescriptorBackupHash({
+    required String lookup,
+    required String hashHex,
+    required String expectedPublicKey,
+  }) => _signHash.execute(
+    hashHex,
+    descriptorLookup: lookup,
+    expectedPublicKey: expectedPublicKey,
+  );
 }

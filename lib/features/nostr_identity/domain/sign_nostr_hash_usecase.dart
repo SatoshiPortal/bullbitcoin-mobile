@@ -11,10 +11,30 @@ class SignNostrHashUsecase {
   const SignNostrHashUsecase(this._resolver);
 
   @useResult
-  Future<Result<String, NostrIdentityFailure>> execute(String hashHex) async {
-    if (!_hashPattern.hasMatch(hashHex)) {
+  Future<Result<String, NostrIdentityFailure>> execute(
+    String hashHex, {
+    String? descriptorLookup,
+    String? expectedPublicKey,
+  }) async {
+    if (!_hashPattern.hasMatch(hashHex) ||
+        (descriptorLookup != null &&
+            (!RegExp(r'^[0-9a-f]{64}$').hasMatch(descriptorLookup) ||
+                expectedPublicKey == null))) {
       return const Err(NostrIdentityInvalidHashFailure());
     }
-    return (await _resolver.resolve()).map((key) => key.signHash(hashHex));
+    final result = await _resolver.resolve();
+    switch (result) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final key = descriptorLookup == null
+            ? value
+            : value.descriptorBackupScope(descriptorLookup);
+        if (expectedPublicKey != null &&
+            key.publicKeyHex != expectedPublicKey) {
+          return const Err(NostrIdentityUnavailableFailure());
+        }
+        return Ok(key.signHash(hashHex));
+    }
   }
 }
