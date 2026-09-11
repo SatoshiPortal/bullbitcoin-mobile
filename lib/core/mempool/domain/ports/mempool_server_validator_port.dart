@@ -11,5 +11,6 @@ abstract class MempoolServerValidatorPort {
     required String url,
     required MempoolServerNetwork network,
     bool enableSsl = true,
+    bool validateDomain = true,
   });
 }

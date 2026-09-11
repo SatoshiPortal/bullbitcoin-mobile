@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../utils/self_signed_certificate_fixture.dart';
 
 class _MockDio extends Mock implements Dio {}
 
@@ -34,10 +39,17 @@ DioException _dioError(String path, {int? statusCode}) => DioException(
 void main() {
   late _MockDio dio;
   late FeesDatasource datasource;
+  late SelfSignedCertificateFixture certificateFixture;
+
+  setUpAll(() async {
+    certificateFixture = await SelfSignedCertificateFixture.create();
+  });
+
+  tearDownAll(() => certificateFixture.dispose());
 
   setUp(() {
     dio = _MockDio();
-    datasource = FeesDatasource(dioBuilder: (_) => dio);
+    datasource = FeesDatasource(dioBuilder: (_, _) => dio);
   });
 
   group('FeesDatasource.fetchBitcoinNetworkFees', () {
@@ -196,5 +208,45 @@ void main() {
         throwsA(isA<MempoolFeesException>()),
       );
     });
+
+    test(
+      'accepts a self-signed custom server only when validation is disabled',
+      () async {
+        final server = await HttpServer.bindSecure(
+          InternetAddress.loopbackIPv4,
+          0,
+          certificateFixture.securityContext,
+        );
+        addTearDown(() => server.close(force: true));
+        server.listen((request) async {
+          request.response
+            ..statusCode = HttpStatus.ok
+            ..headers.contentType = ContentType.json
+            ..write(
+              jsonEncode({
+                'fastestFee': 4,
+                'halfHourFee': 3,
+                'hourFee': 2,
+                'economyFee': 1,
+                'minimumFee': 1,
+              }),
+            );
+          await request.response.close();
+        });
+        final liveDatasource = FeesDatasource();
+        final baseUrl = 'https://${server.address.address}:${server.port}';
+
+        await expectLater(
+          liveDatasource.fetchBitcoinNetworkFees(baseUrl: baseUrl),
+          throwsA(isA<MempoolFeesException>()),
+        );
+        final fees = await liveDatasource.fetchBitcoinNetworkFees(
+          baseUrl: baseUrl,
+          validateDomain: false,
+        );
+
+        expect(fees.fastestFee, 4);
+      },
+    );
   });
 }
