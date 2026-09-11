@@ -1,27 +1,49 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
+import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_usage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:crypto/crypto.dart';
 
-class WalletRepository {
+class WalletRepository
+    implements
+        BitcoinDescriptorPort,
+        WalletBackupMetadataPort,
+        WalletVisibilityPort,
+        WalletSignerDevicePort,
+        WalletSignerOwnershipPort,
+        Bip48AccountUsagePort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
@@ -59,6 +81,30 @@ class WalletRepository {
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
       _lwkWallet.isWalletSyncing(walletId: walletId);
 
+  @override
+  Future<List<Bip48AccountUsage>> getBip48AccountUsages() async {
+    final wallets = await _walletMetadataDatasource.fetchAll();
+    return [
+      for (final wallet in wallets)
+        if (wallet.network.isBitcoin)
+          for (final signer in wallet.signers)
+            for (final key in signer.descriptorKeys)
+              if (Bip48Derivation.account(
+                    key.derivationPath,
+                    coinType: wallet.network.coinType,
+                  )
+                  case final account?)
+                Bip48AccountUsage(
+                  seedFingerprint: key.masterFingerprint.toLowerCase(),
+                  localSeedFingerprint: signer.localSeedFingerprint,
+                  coinType: wallet.network.coinType,
+                  account: account,
+                  derivationPath: key.derivationPath!,
+                  xpub: key.xpub,
+                ),
+    ];
+  }
+
   Future<Wallet> createWallet({
     required Seed seed,
     required Network network,
@@ -80,7 +126,7 @@ class WalletRepository {
         ? 'Instant Payments'
         : label;
 
-    final metadata = await WalletMetadataService.deriveFromSeed(
+    var metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
@@ -98,115 +144,171 @@ class WalletRepository {
       }
     }
 
-    final balance = await _getBalance(metadata, sync: sync);
-    await _walletMetadataDatasource.store(metadata);
-
-    return Wallet(
-      origin: metadata.id,
-      label: metadata.label,
-      network: network,
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: metadata.scriptType,
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer.toEntity(),
-      signerDevice: metadata.signerDevice?.toEntity(),
-      balanceSat: balance.totalSat,
-      confirmedBalanceSat: balance.confirmedSat,
-    );
-  }
-
-  Future<Wallet> importDescriptor({
-    required WatchOnlyDescriptorEntity watchOnlyDescriptor,
-    bool sync = false,
-  }) async {
-    final metadata = await WalletMetadataService.fromDescriptor(
-      watchOnlyDescriptor,
-    );
-
-    // Fetch the balance (in the future maybe other details of the wallet too)
-    final balance = await _getBalance(metadata, sync: sync);
-
-    final allWallets = await getWallets();
-    for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) {
-        throw WalletAlreadyExistsException(metadata.id);
+    if (network.isBitcoin) {
+      final descriptor = _bdkWallet.parsePublicTwoPathDescriptor(
+        descriptor: metadata.publicDescriptor,
+        isTestnet: network.isTestnet,
+      );
+      try {
+        await _ensureUniqueBitcoinDescriptor(
+          metadata: metadata,
+          scriptIdentity: descriptor.scriptIdentity,
+        );
+      } on WalletAlreadyExistsException catch (error) {
+        final existing = await _walletMetadataDatasource.fetch(error.walletId);
+        if (existing == null || existing.network != metadata.network) {
+          rethrow;
+        }
+        final canReplaceSigners = existing.signers.every(
+          (signer) =>
+              signer.signer.toEntity() == SignerEntity.none ||
+              (signer.signer.toEntity() == SignerEntity.remote &&
+                  signer.signerDevice == null),
+        );
+        if ((!isDefault && !canReplaceSigners) ||
+            (isDefault && existing.isDefault)) {
+          rethrow;
+        }
+        metadata = existing.copyWith(
+          signers: metadata.signers,
+          publicDescriptor: metadata.publicDescriptor,
+          isDefault: existing.isDefault || isDefault,
+          label: isDefault ? metadata.label : existing.label,
+          birthday: existing.birthday ?? metadata.birthday,
+        );
       }
     }
 
+    final balance = await _getBalance(metadata, sync: sync);
     await _walletMetadataDatasource.store(metadata);
 
-    // Return the created wallet entity
-    return Wallet(
-      origin: metadata.id,
-      label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: metadata.scriptType,
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer.toEntity(),
-      signerDevice: metadata.signerDevice?.toEntity(),
-      balanceSat: balance.totalSat,
-      confirmedBalanceSat: balance.confirmedSat,
+    return _toWallet(metadata, balance);
+  }
+
+  @override
+  ({
+    String descriptor,
+    ScriptType? scriptType,
+    List<WalletDescriptorKey> descriptorKeys,
+    bool inferredChangePath,
+  })
+  parseBitcoinDescriptor({
+    required String descriptor,
+    required Network network,
+  }) {
+    _requireBitcoinNetwork(network);
+    final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      isTestnet: network.isTestnet,
+    );
+    return (
+      descriptor: parsed.descriptor,
+      scriptType: parsed.scriptType,
+      descriptorKeys: _descriptorKeys(parsed.keys),
+      inferredChangePath: parsed.inferredChangePath,
     );
   }
 
-  Future<Wallet> importWatchOnlyXpub({
-    required String xpub,
+  @override
+  ({List<WalletDescriptorKey> policyKeys, bool hasUnspendablePolicyKey})
+  analyzeBitcoinPolicyDescriptor({
+    required String descriptor,
     required Network network,
-    required ScriptType scriptType,
+  }) {
+    _requireBitcoinNetwork(network);
+    final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      isTestnet: network.isTestnet,
+    );
+    return (
+      policyKeys: _descriptorKeys(parsed.policyKeys),
+      hasUnspendablePolicyKey:
+          parsed.unspendablePolicyKeyIdentifiers.isNotEmpty,
+    );
+  }
+
+  @override
+  Future<Wallet> importDescriptor({
+    required String descriptor,
+    required Network network,
     required String label,
+    List<WalletSigner> signers = const [],
+    bool isHidden = false,
     bool sync = false,
   }) async {
-    final metadata = await WalletMetadataService.deriveFromXpub(
-      xpub: xpub,
+    _requireBitcoinNetwork(network);
+    final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      isTestnet: network.isTestnet,
+    );
+    final parsedKeys = _descriptorKeys(parsed.keys);
+    final metadata = WalletMetadataModel(
+      id: sha256
+          .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
+          .toString(),
       network: network,
-      scriptType: scriptType,
+      signers: _applySignerAnnotations(
+        parsedKeys,
+        annotations: signers,
+      ).map((signer) => signer.toModel()).toList(),
+      publicDescriptor: parsed.descriptor,
+      isDefault: false,
+      isHidden: isHidden,
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
       label: label,
     );
 
-    // Fetch the balance (in the future maybe other details of the wallet too)
+    await _ensureUniqueBitcoinDescriptor(
+      metadata: metadata,
+      scriptIdentity: parsed.scriptIdentity,
+    );
+
     final balance = await _getBalance(metadata, sync: sync);
-
-    final allWallets = await getWallets();
-    for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) {
-        throw WalletAlreadyExistsException(metadata.id);
-      }
-    }
-
     await _walletMetadataDatasource.store(metadata);
 
-    // Return the created wallet entity
-    return Wallet(
-      origin: metadata.id,
-      label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: metadata.scriptType,
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer.toEntity(),
-      signerDevice: metadata.signerDevice?.toEntity(),
-      balanceSat: balance.totalSat,
-      confirmedBalanceSat: balance.confirmedSat,
-    );
+    return _toWallet(metadata, balance);
+  }
+
+  Future<void> _ensureUniqueBitcoinDescriptor({
+    required WalletMetadataModel metadata,
+    required String scriptIdentity,
+  }) async {
+    final existingWallets = await _walletMetadataDatasource.fetchAll();
+    for (final existing in existingWallets) {
+      if (existing.id == metadata.id ||
+          existing.publicDescriptor == metadata.publicDescriptor) {
+        throw WalletAlreadyExistsException(existing.id);
+      }
+      if (existing.network != metadata.network || !existing.network.isBitcoin) {
+        continue;
+      }
+
+      try {
+        final existingDescriptor = _bdkWallet.parsePublicTwoPathDescriptor(
+          descriptor: existing.publicDescriptor,
+          isTestnet: metadata.network.isTestnet,
+        );
+        if (existingDescriptor.scriptIdentity == scriptIdentity) {
+          throw WalletAlreadyExistsException(existing.id);
+        }
+      } on WalletAlreadyExistsException {
+        rethrow;
+      } on Exception {
+        // Exact descriptor and ID checks above still protect stored wallet
+        // forms that are not supported by the Bitcoin descriptor parser.
+      }
+    }
+  }
+
+  void _requireBitcoinNetwork(Network network) {
+    if (!network.isBitcoin) {
+      throw ArgumentError.value(
+        network,
+        'network',
+        'must be a Bitcoin network',
+      );
+    }
   }
 
   Future<Wallet?> getWallet(String walletId, {bool sync = false}) async {
@@ -218,34 +320,7 @@ class WalletRepository {
     // Get the balance
     final balance = await _getBalance(metadata, sync: sync);
 
-    // Return the wallet entity
-    return Wallet(
-      origin: metadata.id,
-      label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: metadata.scriptType,
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      signer: metadata.signer.toEntity(),
-      signerDevice: metadata.signerDevice?.toEntity(),
-      balanceSat: balance.totalSat,
-      confirmedBalanceSat: balance.confirmedSat,
-      isEncryptedVaultTested: metadata.isEncryptedVaultTested,
-      isPhysicalBackupTested: metadata.isPhysicalBackupTested,
-      latestEncryptedBackup: metadata.latestEncryptedBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
-          : null,
-      latestPhysicalBackup: metadata.latestPhysicalBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
-          : null,
-    );
+    return _toWallet(metadata, balance);
   }
 
   Future<List<Wallet>> getWallets({
@@ -277,43 +352,10 @@ class WalletRepository {
       filteredWallets.map((wallet) => _getBalance(wallet, sync: sync)),
     );
 
-    return filteredWallets
-        .asMap()
-        .entries
-        .map(
-          (entry) => Wallet(
-            origin: entry.value.id,
-            label: entry.value.label,
-            network: Network.fromEnvironment(
-              isTestnet: entry.value.isTestnet,
-              isLiquid: entry.value.isLiquid,
-            ),
-            isDefault: entry.value.isDefault,
-            masterFingerprint: entry.value.masterFingerprint,
-            xpubFingerprint: entry.value.xpubFingerprint,
-            scriptType: entry.value.scriptType,
-            xpub: entry.value.xpub,
-            externalPublicDescriptor: entry.value.externalPublicDescriptor,
-            internalPublicDescriptor: entry.value.internalPublicDescriptor,
-            signer: entry.value.signer.toEntity(),
-            signerDevice: entry.value.signerDevice?.toEntity(),
-            balanceSat: balances[entry.key].totalSat,
-            confirmedBalanceSat: balances[entry.key].confirmedSat,
-            isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
-            isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
-            latestEncryptedBackup: entry.value.latestEncryptedBackup != null
-                ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestEncryptedBackup!,
-                  )
-                : null,
-            latestPhysicalBackup: entry.value.latestPhysicalBackup != null
-                ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestPhysicalBackup!,
-                  )
-                : null,
-          ),
-        )
-        .toList();
+    return [
+      for (final (index, metadata) in filteredWallets.indexed)
+        _toWallet(metadata, balances[index]),
+    ];
   }
 
   Future<void> updateEncryptedBackupTime({
@@ -331,6 +373,22 @@ class WalletRepository {
         latestEncryptedBackup: time?.millisecondsSinceEpoch,
         isEncryptedVaultTested: time != null,
       ),
+    );
+  }
+
+  @override
+  Future<void> recordEncryptedBackupCreated({
+    required DateTime time,
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw WalletError.notFound(walletId);
+    }
+
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(latestEncryptedBackup: time.millisecondsSinceEpoch),
     );
   }
 
@@ -355,6 +413,139 @@ class WalletRepository {
         latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
       ),
     );
+  }
+
+  @override
+  Future<void> setHidden({
+    required String walletId,
+    required bool isHidden,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw WalletError.notFound(walletId);
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(isHidden: isHidden),
+    );
+  }
+
+  @override
+  Future<Wallet> updateSignerDevice({
+    required String walletId,
+    required String signerId,
+    required SignerDeviceEntity? signerDevice,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw const WalletSignerDeviceUpdateException();
+
+    final signerIndex = metadata.signers.indexWhere(
+      (signer) => signer.id == signerId,
+    );
+    if (signerIndex == -1) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+
+    final signer = metadata.signers[signerIndex].toEntity();
+    if (signer.signer == SignerEntity.local) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+
+    final updatedSigner = signer
+        .copyWith(
+          signer: SignerEntity.remote,
+          signerDevice: signerDevice,
+          clearSignerDevice: signerDevice == null,
+        )
+        .toModel();
+    final updatedSigners = [...metadata.signers];
+    updatedSigners[signerIndex] = updatedSigner;
+    final updatedMetadata = metadata.copyWith(signers: updatedSigners);
+    final balance = await _getBalance(updatedMetadata);
+    final didUpdate = await _walletMetadataDatasource.updateSignerDevice(
+      walletId: walletId,
+      signerId: signerId,
+      signer: updatedSigner.signer,
+      signerDevice: updatedSigner.signerDevice,
+    );
+    if (!didUpdate) throw const WalletSignerDeviceUpdateException();
+    return _toWallet(updatedMetadata, balance);
+  }
+
+  @override
+  Future<Wallet> updateSignerRegistrationName({
+    required String walletId,
+    required String signerId,
+    required String registrationName,
+  }) async {
+    final normalizedName = registrationName.trim();
+    if (normalizedName.isEmpty) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw const WalletSignerDeviceUpdateException();
+    final signerIndex = metadata.signers.indexWhere(
+      (signer) => signer.id == signerId,
+    );
+    if (signerIndex == -1) {
+      throw const WalletSignerDeviceUpdateException();
+    }
+    final updatedSigner = metadata.signers[signerIndex]
+        .toEntity()
+        .copyWith(registrationName: normalizedName)
+        .toModel();
+    final updatedSigners = [...metadata.signers];
+    updatedSigners[signerIndex] = updatedSigner;
+    final updatedMetadata = metadata.copyWith(signers: updatedSigners);
+    final didUpdate = await _walletMetadataDatasource
+        .updateSignerRegistrationName(
+          walletId: walletId,
+          signerId: signerId,
+          registrationName: normalizedName,
+        );
+    if (!didUpdate) throw const WalletSignerDeviceUpdateException();
+    return _toWallet(updatedMetadata, await _getBalance(updatedMetadata));
+  }
+
+  @override
+  Future<Wallet> markSignerLocal({
+    required String walletId,
+    required String signerId,
+    required String seedFingerprint,
+    required Set<String> passphraseProtectedKeyIds,
+  }) async {
+    if (seedFingerprint.trim().isEmpty) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final signerIndex = metadata.signers.indexWhere(
+      (signer) => signer.id == signerId,
+    );
+    if (signerIndex == -1) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final existing = metadata.signers[signerIndex].toEntity();
+    final keyIds = existing.descriptorKeys.map((key) => key.id).toSet();
+    if (!keyIds.containsAll(passphraseProtectedKeyIds)) {
+      throw const WalletSignerOwnershipUpdateException();
+    }
+    final updatedSigner = WalletSigner(
+      id: existing.id,
+      signer: SignerEntity.local,
+      signerDevice: null,
+      localSeedFingerprint: seedFingerprint.toLowerCase(),
+      descriptorKeys: [
+        for (final key in existing.descriptorKeys)
+          key.copyWith(
+            requiresPassphrase: passphraseProtectedKeyIds.contains(key.id),
+          ),
+      ],
+    ).toModel();
+    final updatedSigners = [...metadata.signers];
+    updatedSigners[signerIndex] = updatedSigner;
+    final updatedMetadata = metadata.copyWith(signers: updatedSigners);
+    await _walletMetadataDatasource.store(updatedMetadata);
+    return _toWallet(updatedMetadata, await _getBalance(updatedMetadata));
   }
 
   Future<WalletBalances> getWalletBalances({required String walletId}) async {
@@ -424,15 +615,10 @@ class WalletRepository {
   ]);
 
   Future<void> _updateWalletSyncTime(String walletId) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      return;
-    }
-
-    final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
-
-    await _walletMetadataDatasource.store(updatedWalletMetadata);
+    await _walletMetadataDatasource.updateSyncedAt(
+      walletId: walletId,
+      syncedAt: DateTime.now(),
+    );
   }
 
   Future<BalanceModel> _getBalance(
@@ -442,7 +628,7 @@ class WalletRepository {
     BalanceModel balance;
     if (metadata.isLiquid) {
       final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        combinedCtDescriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
@@ -454,8 +640,7 @@ class WalletRepository {
       balance = await _lwkWallet.getBalance(wallet: wallet);
     } else {
       final wallet = WalletModel.publicBdk(
-        externalDescriptor: metadata.externalPublicDescriptor,
-        internalDescriptor: metadata.internalPublicDescriptor,
+        descriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
@@ -474,20 +659,41 @@ class WalletRepository {
     final walletModel = WalletModel.fromMetadata(
       WalletMetadataModel(
         id: wallet.id,
-        masterFingerprint: wallet.masterFingerprint,
-        xpubFingerprint: wallet.xpubFingerprint,
+        network: wallet.network,
+        signers: wallet.signers.map((signer) => signer.toModel()).toList(),
         isEncryptedVaultTested: wallet.isEncryptedVaultTested,
         isPhysicalBackupTested: wallet.isPhysicalBackupTested,
-        externalPublicDescriptor: wallet.externalPublicDescriptor,
-        internalPublicDescriptor: wallet.internalPublicDescriptor,
-        xpub: wallet.xpub,
+        publicDescriptor: wallet.publicDescriptor,
         isDefault: wallet.isDefault,
         label: wallet.label,
-        signer: Signer.fromEntity(wallet.signer),
       ),
     );
     await _syncWallet(walletModel);
   }
+
+  Wallet _toWallet(
+    WalletMetadataModel metadata,
+    BalanceModel balance,
+  ) => Wallet(
+    origin: metadata.id,
+    label: metadata.label,
+    network: metadata.network,
+    isDefault: metadata.isDefault,
+    isHidden: metadata.isHidden,
+    signers: metadata.signers.map((signer) => signer.toEntity()).toList(),
+    scriptType: metadata.inferredScriptType,
+    publicDescriptor: metadata.publicDescriptor,
+    balanceSat: balance.totalSat,
+    confirmedBalanceSat: balance.confirmedSat,
+    isEncryptedVaultTested: metadata.isEncryptedVaultTested,
+    isPhysicalBackupTested: metadata.isPhysicalBackupTested,
+    latestEncryptedBackup: metadata.latestEncryptedBackup != null
+        ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
+        : null,
+    latestPhysicalBackup: metadata.latestPhysicalBackup != null
+        ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
+        : null,
+  );
 
   Future<void> _syncWallet(WalletModel wallet) async {
     final isLiquid = wallet is PublicLwkWalletModel;
@@ -548,7 +754,7 @@ class WalletRepository {
 
     if (metadata.isLiquid) {
       final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
+        combinedCtDescriptor: metadata.publicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
@@ -564,5 +770,64 @@ class WalletRepository {
         isTestnet: metadata.isTestnet,
       );
     }
+  }
+
+  static List<WalletDescriptorKey> _descriptorKeys(
+    List<BdkDescriptorKey> keys,
+  ) => [
+    for (final (index, key) in keys.indexed)
+      WalletDescriptorKey(
+        id: 'key-$index',
+        signerId: 'signer-$index',
+        masterFingerprint: key.masterFingerprint,
+        xpubFingerprint: key.xpubFingerprint,
+        xpub: key.xpub,
+        derivationPath: key.derivationPath,
+        descriptorPath: key.descriptorPath,
+      ),
+  ];
+
+  static List<WalletSigner> _applySignerAnnotations(
+    List<WalletDescriptorKey> keys, {
+    required List<WalletSigner> annotations,
+  }) {
+    final annotationsByKey = {
+      for (final signer in annotations)
+        for (final key in signer.descriptorKeys)
+          key.id: (signer: signer, key: key),
+    };
+    final annotationsById = {
+      for (final signer in annotations) signer.id: signer,
+    };
+    final grouped = <String, List<WalletDescriptorKey>>{};
+    for (final key in keys) {
+      final annotation = annotationsByKey[key.id];
+      final signerId = annotation?.signer.id ?? key.signerId;
+      grouped
+          .putIfAbsent(signerId, () => [])
+          .add(
+            key.copyWith(
+              signerId: signerId,
+              requiresPassphrase: annotation?.key.requiresPassphrase,
+              derivationPath:
+                  key.derivationPath ?? annotation?.key.derivationPath,
+              masterFingerprint: key.masterFingerprint.isEmpty
+                  ? annotation?.key.masterFingerprint
+                  : key.masterFingerprint,
+            ),
+          );
+    }
+    return [
+      for (final entry in grouped.entries)
+        WalletSigner(
+          id: entry.key,
+          signer: annotationsById[entry.key]?.signer ?? SignerEntity.none,
+          signerDevice: annotationsById[entry.key]?.signerDevice,
+          registrationName: annotationsById[entry.key]?.registrationName,
+          localSeedFingerprint:
+              annotationsById[entry.key]?.localSeedFingerprint,
+          descriptorKeys: entry.value,
+        ),
+    ];
   }
 }

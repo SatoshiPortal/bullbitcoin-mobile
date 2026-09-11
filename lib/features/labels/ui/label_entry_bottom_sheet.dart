@@ -9,7 +9,8 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
+import 'package:bb_mobile/features/labels/ui/labels_widget.dart' show LabelChip;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -26,7 +27,7 @@ import 'package:go_router/go_router.dart';
 ///
 /// Both factories return the trimmed string when the user saves, or `null`
 /// on dismiss/cancel. Caller is responsible for persisting the result
-/// (typically via a bloc/cubit that calls `LabelsFacade.store`).
+/// (typically via a bloc/cubit that calls the labels facade).
 class LabelEntryBottomSheet extends StatefulWidget {
   const LabelEntryBottomSheet._({
     required this.title,
@@ -74,6 +75,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
     String? initialValue,
     Future<Set<String>>? suggestionsFuture,
     String? hint,
+    bool allowEmpty = false,
   }) {
     return _show(
       context,
@@ -82,7 +84,7 @@ class LabelEntryBottomSheet extends StatefulWidget {
       suggestionsFuture: suggestionsFuture,
       hint: hint,
       disclosure: null,
-      allowEmpty: false,
+      allowEmpty: allowEmpty,
     );
   }
 

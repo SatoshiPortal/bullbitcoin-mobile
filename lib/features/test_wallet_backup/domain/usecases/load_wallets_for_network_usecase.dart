@@ -20,7 +20,9 @@ class LoadWalletsForNetworkUsecase {
         onlyBitcoin: true,
         environment: settings.environment,
       );
-      return wallets;
+      return wallets
+          .where((wallet) => wallet.singleLocalSeedFingerprint != null)
+          .toList();
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       rethrow;

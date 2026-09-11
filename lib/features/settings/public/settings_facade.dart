@@ -2,21 +2,31 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
+import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
 export 'payjoin_disclaimer_dialog.dart';
+export 'settings_entry_registry.dart'
+    show SettingsEntryContribution, SettingsEntrySection;
+export 'wallet_registration_request.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
+  final SettingsEntryRegistry _entryRegistry;
 
   SettingsFacade({
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
-  });
+    required SettingsEntryRegistry entryRegistry,
+  }) : _entryRegistry = entryRegistry; // ignore: prefer_initializing_formals
+
+  void registerEntry(SettingsEntryContribution contribution) {
+    _entryRegistry.register(contribution);
+  }
 
   Future<Result<bool, SettingsFailure>> setPayjoinEnabled(
     bool enabled, {

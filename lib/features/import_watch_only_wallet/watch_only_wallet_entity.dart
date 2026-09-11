@@ -1,101 +1,69 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 part 'watch_only_wallet_entity.freezed.dart';
 
 @freezed
-abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
+sealed class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
   const factory WatchOnlyWalletEntity.descriptor({
-    required satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-    @Default(SignerEntity.remote) SignerEntity signer,
+    required String descriptor,
+    required Network network,
+    required ScriptType? scriptType,
+    required List<WalletSigner> signers,
+    @Default(false) bool inferredChangePath,
     @Default('') String label,
-    @Default(null) SignerDeviceEntity? signerDevice,
   }) = WatchOnlyDescriptorEntity;
 
   const factory WatchOnlyWalletEntity.xpub({
-    required satoshifier.WatchOnlyXpub watchOnlyXpub,
+    required String extendedPublicKey,
+    required String canonicalXpub,
+    required Network network,
+    required ScriptType scriptType,
+    String? masterFingerprint,
+    String? derivationPath,
     @Default(SignerEntity.none) SignerEntity signer,
+    SignerDeviceEntity? signerDevice,
     @Default('') String label,
   }) = WatchOnlyXpubEntity;
 
   const WatchOnlyWalletEntity._();
-
-  T when<T>({
-    required T Function(
-      satoshifier.WatchOnlyDescriptor watchOnlyDescriptor,
-      SignerEntity signer,
-      String label,
-    )
-    descriptor,
-    required T Function(
-      satoshifier.WatchOnlyXpub watchOnlyXpub,
-      SignerEntity signer,
-      String label,
-    )
-    xpub,
-  }) {
-    if (this is WatchOnlyDescriptorEntity) {
-      final entity = this as WatchOnlyDescriptorEntity;
-      return descriptor(
-        entity.watchOnlyDescriptor,
-        entity.signer,
-        entity.label,
-      );
-    } else if (this is WatchOnlyXpubEntity) {
-      final entity = this as WatchOnlyXpubEntity;
-      return xpub(entity.watchOnlyXpub, entity.signer, entity.label);
-    }
-    throw UnimplementedError();
-  }
-
-  static Future<WatchOnlyWalletEntity> parse(
-    String value, {
-    SignerDeviceEntity? signerDevice,
-  }) async {
-    final privateVersion = RegExp(
-      r'(?<![A-Za-z0-9])(xprv|yprv|zprv|tprv|uprv|vprv)[1-9A-HJ-NP-Za-km-z]+',
-    );
-    if (privateVersion.hasMatch(value)) {
-      throw FormatException('Watch-only imports require public extended keys');
-    }
-    final normalized = value.trim().replaceFirst(RegExp(r'^\[[^\]]+\]'), '');
-    final satoshified = await satoshifier.Satoshifier.parse(normalized);
-    if (satoshified is satoshifier.WatchOnlyDescriptor) {
-      return WatchOnlyWalletEntity.descriptor(
-        watchOnlyDescriptor: satoshified,
-        signerDevice: signerDevice,
-      );
-    } else if (satoshified is satoshifier.WatchOnlyXpub) {
-      return WatchOnlyWalletEntity.xpub(watchOnlyXpub: satoshified);
-    }
-    throw Exception('Unsupported watch only format');
-  }
-
-  String get pubkey => when(
-    descriptor: (x, _, _) => x.descriptor.pubkey,
-    xpub: (x, _, _) => x.extendedPubkey.pubBase58,
-  );
-
-  Network get network => when(
-    descriptor: (x, _, _) => Network.fromName(x.descriptor.network.name),
-    xpub: (x, _, _) => Network.fromName(x.extendedPubkey.network.name),
-  );
-
-  ScriptType get scriptType => when(
-    descriptor: (x, _, _) => ScriptType.fromName(x.descriptor.derivation.name),
-    xpub: (x, _, _) => ScriptType.fromName(x.extendedPubkey.derivation.name),
-  );
 }
 
 extension WatchOnlyXpubEntityExtension on WatchOnlyXpubEntity {
-  satoshifier.ExtendedPubkey get extendedPubkey => watchOnlyXpub.extendedPubkey;
+  WatchOnlyWalletEntity withScriptType(ScriptType value) {
+    final accountKey = Bip32Derivation.getBip32Xpub(canonicalXpub);
+    return copyWith(
+      extendedPublicKey: accountKey.convert(value.getXpubType(network)),
+      scriptType: value,
+    );
+  }
 }
 
 extension WatchOnlyDescriptorEntityExtension on WatchOnlyDescriptorEntity {
-  satoshifier.Descriptor get descriptor => watchOnlyDescriptor.descriptor;
-  String get masterFingerprint => watchOnlyDescriptor.masterFingerprint;
-  String get pubkeyFingerprint => watchOnlyDescriptor.pubkeyFingerprint;
+  WatchOnlyDescriptorEntity withSignerDevice({
+    required String signerId,
+    required SignerDeviceEntity? signerDevice,
+  }) {
+    final matching = signers.where((signer) => signer.id == signerId);
+    if (matching.any((signer) => signer.signer == SignerEntity.local)) {
+      return this;
+    }
+
+    return copyWith(
+      signers: [
+        for (final signer in signers)
+          if (signer.id == signerId)
+            signer.copyWith(
+              signerDevice: signerDevice,
+              clearSignerDevice: signerDevice == null,
+            )
+          else
+            signer,
+      ],
+    );
+  }
 }

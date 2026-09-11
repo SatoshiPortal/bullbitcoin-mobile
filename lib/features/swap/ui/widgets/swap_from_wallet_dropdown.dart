@@ -27,7 +27,7 @@ class SwapFromWalletDropdown extends StatelessWidget {
         else
           BBDropdown<Wallet>(
             items: wallets
-                .where((wallet) => wallet.signsLocally)
+                .where((wallet) => wallet.isStandardLocalSingleSignatureWallet)
                 .map(
                   (wallet) => DropdownMenuItem(
                     value: wallet,

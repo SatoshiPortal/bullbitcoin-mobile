@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
@@ -17,19 +18,35 @@ import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final bool collectSignerResult;
+  final bool allowSignerResultNfc;
+  final bool allowBbqrSignerResult;
 
   BroadcastSignedTxCubit({
     required this._broadcastBitcoinTransactionUsecase,
-    String? unsignedPsbt,
-  }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+    BroadcastSignedTxRequest request = const BroadcastSignedTxRequest(),
+  }) : collectSignerResult = request.collectSignerResult,
+       allowSignerResultNfc = request.allowSignerResultNfc,
+       allowBbqrSignerResult = request.allowBbqrSignerResult,
+       super(
+         BroadcastSignedTxState(
+           bbqr: Bbqr(),
+           unsignedPsbt: request.unsignedPsbt,
+         ),
+       );
 
   Future<void> onQrScanned(String payload) async {
     try {
       emit(state.copyWith(failure: null));
       if (payload.startsWith('cHN')) {
+        if (collectSignerResult) {
+          _collectSignerResult(payload);
+          return;
+        }
+        final normalizedPayload = normalizeBitcoinPsbt(payload);
         // Jade returns a non-finalized PSBT, but BDK doesn't finalize transactions it did not sign itself
         // So here we have to finalize the PSBT with bitcoin_base before we broadcast it
-        final psbt = Psbt.fromBase64(payload);
+        final psbt = Psbt.fromBase64(normalizedPayload);
         final builder = PsbtBuilder.fromPsbt(psbt);
         String finalTx;
         try {
@@ -41,8 +58,10 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
           // Seedsigner doesn't return the original input data, so here we try to add inputs data from the unsigned tx
 
-          final psbt = bdk.Psbt(psbtBase64: state.unsignedPsbt!);
-          final signedPsbt = bdk.Psbt(psbtBase64: payload);
+          final psbt = bdk.Psbt(
+            psbtBase64: normalizeBitcoinPsbt(state.unsignedPsbt!),
+          );
+          final signedPsbt = bdk.Psbt(psbtBase64: normalizedPayload);
 
           final tx = psbt.combine(other: signedPsbt);
 
@@ -60,9 +79,19 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           ),
         );
       } else {
+        if (collectSignerResult && !allowBbqrSignerResult) {
+          _collectSignerResult(payload);
+          return;
+        }
         final (tx, bbqr) = await state.bbqr.scanTransaction(payload);
         emit(state.copyWith(bbqr: bbqr));
-        if (tx != null) emit(state.copyWith(transaction: tx));
+        if (tx != null) {
+          if (collectSignerResult) {
+            _collectSignerResult(tx.data);
+          } else {
+            emit(state.copyWith(transaction: tx));
+          }
+        }
       }
     } catch (e, st) {
       log.warning('Failed to scan QR transaction', error: e, trace: st);
@@ -147,6 +176,10 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
   Future<void> tryParseTransaction(String input) async {
     emit(state.copyWith(failure: null));
+    if (collectSignerResult) {
+      _collectSignerResult(input);
+      return;
+    }
     try {
       final tx = await BitcoinTx.fromPsbt(input);
       emit(
@@ -173,14 +206,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     }
   }
 
+  void _collectSignerResult(String input) {
+    emit(state.copyWith(collectedSignerResult: input));
+  }
+
   Future<void> broadcastTransaction() async {
     if (state.isBroadcasting ||
         state.isBroadcasted ||
         state.transaction == null) {
       return;
     }
-    // Clear any error from a previous failed attempt so the stale message
-    // doesn't linger under the spinner while the retry is in flight.
     emit(state.copyWith(isBroadcasting: true, failure: null));
     try {
       await _broadcastBitcoinTransactionUsecase.execute(

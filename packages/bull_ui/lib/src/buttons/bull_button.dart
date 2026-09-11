@@ -29,6 +29,7 @@ class BullButton extends StatelessWidget {
     this.outlined = false,
     this.borderColor,
     this.disabled = false,
+    this.loading = false,
     this.height,
     this.width,
     this.textStyle,
@@ -45,6 +46,7 @@ class BullButton extends StatelessWidget {
     this.outlined = false,
     this.borderColor,
     this.disabled = false,
+    this.loading = false,
     this.height,
     this.width,
     this.textStyle,
@@ -80,6 +82,9 @@ class BullButton extends StatelessWidget {
   /// When true, dims the button and ignores taps.
   final bool disabled;
 
+  /// Shows progress and ignores taps without changing the button's size.
+  final bool loading;
+
   /// Overrides the default height.
   final double? height;
 
@@ -109,11 +114,11 @@ class BullButton extends StatelessWidget {
 
     final button = AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
-      opacity: disabled ? 0.5 : 1,
+      opacity: disabled && !loading ? 0.5 : 1,
       child: IgnorePointer(
-        ignoring: disabled,
+        ignoring: disabled || loading,
         child: InkWell(
-          onTap: disabled ? null : onPressed,
+          onTap: disabled || loading ? null : onPressed,
           borderRadius: radius,
           child: Container(
             height: height ?? 52,
@@ -131,7 +136,17 @@ class BullButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (iconData == null) ...[
+                if (loading) ...[
+                  SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: textColor,
+                    ),
+                  ),
+                  const Gap(10),
+                  labelText,
+                ] else if (iconData == null) ...[
                   labelText,
                 ] else if (label.isEmpty) ...[
                   image,

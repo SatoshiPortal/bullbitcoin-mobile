@@ -9,8 +9,8 @@ void main() {
   test('sends destination hostnames to SOCKS5 as domain names', () async {
     final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     final requestSeen = Completer<List<int>>();
-    var greeted = false;
     server.listen((socket) {
+      var greeted = false;
       final bytes = <int>[];
       socket.listen((chunk) {
         bytes.addAll(chunk);
@@ -18,10 +18,18 @@ void main() {
           greeted = true;
           socket.add([0x05, 0x00]);
           bytes.clear();
+          return;
         }
-        if (greeted && bytes.length >= 7 && !requestSeen.isCompleted) {
+        if (!requestSeen.isCompleted &&
+            bytes.length >= 5 &&
+            bytes.length >= 7 + bytes[4]) {
           requestSeen.complete(List<int>.from(bytes));
+          bytes.clear();
           socket.add([0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0, 80]);
+          return;
+        }
+        if (requestSeen.isCompleted &&
+            utf8.decode(bytes).contains('\r\n\r\n')) {
           socket.add(
             utf8.encode('HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n'),
           );
@@ -38,7 +46,8 @@ void main() {
     final request = await proxiedClient
         .getUrl(Uri.parse('http://destination.invalid/'))
         .timeout(const Duration(seconds: 5));
-    await request.close();
+    final response = await request.close().timeout(const Duration(seconds: 5));
+    expect(response.statusCode, HttpStatus.ok);
     final socksRequest = await requestSeen.future.timeout(
       const Duration(seconds: 5),
     );

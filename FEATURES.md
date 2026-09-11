@@ -54,6 +54,11 @@ graph TB
     ALL_SEED_VIEW[All Seed View]
     APP_UNLOCK[App Unlock]
     AUTOSWAP[Autoswap]
+    PSBT_SIGNING[PSBT Signing]
+    PSBT_FLOW[PSBT Flow]
+    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
+    IMPORT_WALLET[Import Wallet]
+    BULLVAULT[BullVault]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -101,7 +106,14 @@ graph TB
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
     PIN_CODE --> CORE
+    PSBT_FLOW --> BROADCAST_SIGNED_TX
+    PSBT_SIGNING --> PSBT_FLOW
+    SEND --> PSBT_FLOW
+    SETTINGS --> PSBT_SIGNING
+    SETTINGS --> HW_WALLETS
+    RECEIVE --> HW_WALLETS
     RECEIVE --> BULL_PAYJOIN
+    RECEIVE --> BULLVAULT
     RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
@@ -112,15 +124,21 @@ graph TB
     SELL --> TX_HISTORY
     SEND --> CONSOLIDATION
     SEND --> FEES
+    SEND --> LABELS
+    SEND --> HW_WALLETS
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
     SEND --> SWAPS
     SEND --> TX_HISTORY
     SEND --> UTXO_MGMT
-    SEND --> WALLETS
     SETTINGS --> CORE
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
+    BULLVAULT -->|Mnemonic display, verification and backup status| BACKUPS
+    BULLVAULT --> RECOVERBULL
+    BULLVAULT --> SEND
+    BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
+    BULLVAULT --> SETTINGS
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
@@ -146,6 +164,7 @@ graph TB
     WALLETS --> NETWORK
     WALLETS --> SECRETS
     WALLETS --> SETTINGS
+    WALLETS -->|Navigation| SEND
     WALLETS --> SWAPS
     WITHDRAWAL --> RECIPIENTS
 
@@ -156,7 +175,7 @@ graph TB
 
     class CORE coreStyle
     class PRIMITIVES,BULL_PAYJOIN,TOR packageStyle
-    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK featureStyle
+    class SETTINGS,PIN_CODE,LABELS,SECRETS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,BG_TASKS,AUTOSWAP,DCA,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,PSBT_SIGNING,PSBT_FLOW,BROADCAST_SIGNED_TX,IMPORT_WALLET,BULLVAULT featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -178,6 +197,10 @@ graph TB
    - Dependency cardinality (required vs optional)
 
 ## Dependency Rules
+
+The app shell composes Send's pending-transaction contribution into wallet details
+through Wallet's generic sliver builder. Send owns its pending-transaction state
+and actions; Wallet retains navigation to Send.
 
 1. **No Cyclic Dependencies**: Features must not create circular dependency chains
 2. **Core Independence**: Core must not depend on any feature
@@ -216,7 +239,7 @@ graph TB
 
 - **Core**: Foundation for all features
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
-- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
+- **Wallets**: Used by UTXO Management, Transaction History, Backups, App Startup
 - **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
@@ -224,7 +247,7 @@ graph TB
 
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
-- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
+- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management
 - **Receive**: Depends on Payjoin, Swaps
 - **Backups**: Depends on BIP85, Tor, Wallets
 

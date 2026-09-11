@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -150,26 +151,40 @@ void main() {
     verifyNever(() => getWallet.execute(any()));
   });
 
-  test('rejects a Bitcoin hardware wallet before deriving fallback', () async {
-    when(
-      () => getWallet.execute('wallet-1'),
-    ).thenAnswer((_) async => _wallet(Network.bitcoinTestnet, remote: true));
+  for (final remote in [true, false]) {
+    test(
+      'rejects unsupported Bitcoin signing before deriving fallback (remote: $remote)',
+      () async {
+        when(() => getWallet.execute('wallet-1')).thenAnswer(
+          (_) async => remote
+              ? _wallet(Network.bitcoinTestnet, remote: true)
+              : _wallet(Network.bitcoinTestnet).copyWith(
+                  scriptType: null,
+                  publicDescriptor: 'tr(...)',
+                  signers: [
+                    ..._wallet(Network.bitcoinTestnet).signers,
+                    ..._wallet(Network.bitcoinTestnet, remote: true).signers,
+                  ],
+                ),
+        );
 
-    final result = await usecase.execute(
-      walletId: 'wallet-1',
-      invoice: _invoice(amountSat: 1000),
-      amountSat: 1000,
-    );
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          invoice: _invoice(amountSat: 1000),
+          amountSat: 1000,
+        );
 
-    expect(
-      (result as Err<OrderSwapRecord, SendFailure>).failure,
-      isA<SendHardwareWalletFailure>(),
+        expect(
+          (result as Err<OrderSwapRecord, SendFailure>).failure,
+          isA<SendSwapWalletFailure>(),
+        );
+        verifyNever(
+          () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
+        );
+        verifyZeroInteractions(swapFacade);
+      },
     );
-    verifyNever(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-    );
-    verifyZeroInteractions(swapFacade);
-  });
+  }
 }
 
 Bolt11PaymentRequest _invoice({required int amountSat, int? expiresAt}) =>
@@ -185,13 +200,19 @@ Bolt11PaymentRequest _invoice({required int amountSat, int? expiresAt}) =>
 Wallet _wallet(Network network, {bool remote = false}) => Wallet(
   origin: 'wallet-1',
   network: network,
-  xpubFingerprint: '00000000',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: '00000000',
+      xpubFingerprint: '00000000',
+      xpub: '',
+      derivationPath: "m/84'/${network.coinType}'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: remote ? SignerEntity.remote : SignerEntity.local,
+      signerDevice: remote ? SignerDeviceEntity.jade : null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: remote ? SignerEntity.remote : SignerEntity.local,
-  signerDevice: remote ? SignerDeviceEntity.jade : null,
+  publicDescriptor: '',
   balanceSat: BigInt.from(100000),
 );
 

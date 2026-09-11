@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_account_key_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -59,6 +60,28 @@ void main() {
 
       expect((result as Err).failure, isA<LedgerRejectedByUserFailure>());
     });
+  });
+
+  test('reads the requested account key with its verified origin', () async {
+    const path = "m/48'/1'/0'/2'";
+    const xpub =
+        'tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ';
+    final usecase = GetLedgerAccountKeyUsecase(repository);
+    when(
+      () => repository.getMasterFingerprint(device),
+    ).thenAnswer((_) async => const Ok('AABBCCDD'));
+    when(
+      () => repository.getXpub(
+        device,
+        derivationPath: path,
+        scriptType: ScriptType.bip44,
+      ),
+    ).thenAnswer((_) async => const Ok(xpub));
+
+    final result = await usecase.execute(device: device, derivationPath: path);
+
+    expect(result, isA<Ok>());
+    expect((result as Ok).value, '[aabbccdd/48\'/1\'/0\'/2\']$xpub');
   });
 
   group('GetLedgerWatchOnlyWalletUsecase', () {

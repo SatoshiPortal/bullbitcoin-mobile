@@ -28,6 +28,12 @@ sealed class PayError with _$PayError {
   /// operation, so the refreshed order is refused rather than paid.
   const factory PayError.depositAddressChanged() =
       DepositAddressChangedPayError;
+  const factory PayError.transactionSigningFailed() =
+      TransactionSigningFailedPayError;
+  const factory PayError.selectedCoinsUnavailable() =
+      SelectedCoinsUnavailablePayError;
+  const factory PayError.selectedCoinsInsufficient() =
+      SelectedCoinsInsufficientPayError;
   const factory PayError.unexpected({required String message}) =
       UnexpectedPayError;
 
@@ -42,6 +48,11 @@ sealed class PayError with _$PayError {
     orderNotFound: () => context.loc.payOrderNotFound,
     orderAlreadyConfirmed: () => context.loc.payOrderAlreadyConfirmed,
     depositAddressChanged: () => context.loc.payDepositAddressChangedError,
+    transactionSigningFailed: () => context.loc.oopsSomethingWentWrong,
+    selectedCoinsUnavailable: () =>
+        context.loc.sendErrorSelectedCoinsUnavailable,
+    selectedCoinsInsufficient: () =>
+        context.loc.sendErrorSelectedCoinsInsufficient,
     unexpected: (message) => message,
   );
 }
