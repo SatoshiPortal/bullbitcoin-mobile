@@ -16,21 +16,6 @@ class DescriptorDerivation {
     );
   }
 
-  static String combinePublicBitcoinDescriptors({
-    required String externalDescriptor,
-    required String internalDescriptor,
-    required Network network,
-  }) {
-    final parsed = _parseDescriptor(externalDescriptor);
-    if (_canonicalPublicBitcoinDescriptor(parsed.external, network) !=
-            _canonicalPublicBitcoinDescriptor(externalDescriptor, network) ||
-        _canonicalPublicBitcoinDescriptor(parsed.internal, network) !=
-            _canonicalPublicBitcoinDescriptor(internalDescriptor, network)) {
-      throw const FormatException('Descriptor branches do not match');
-    }
-    return canonicalCombinedPublicBitcoinDescriptor(parsed.combined, network);
-  }
-
   static String canonicalCombinedPublicBitcoinDescriptor(
     String value,
     Network network,
