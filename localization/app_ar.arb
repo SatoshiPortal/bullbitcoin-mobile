@@ -1078,10 +1078,6 @@
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
   },
-  "payOrderAlreadyConfirmed": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "التوقيع على المعاملات",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1279,10 +1275,6 @@
   "buyYouPay": "تدفع",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "وقد تم بالفعل تأكيد أمر الدفع هذا.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "محفظة (بول بيتكين) ستطلب منك أن تفحص رمز (كيو آر) على جواز السفر افحصه.",
   "@passportStep12": {
@@ -1773,10 +1765,6 @@
   "receivePaymentReceived": "تم استلام الدفع!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },
-  "payOrderNotFound": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "محفظة (بول بيتكين) ستطلب منك أن تفحص شفرة (كيو آر) على البطاقة افحصه.",
   "@coldcardStep13": {
@@ -8412,10 +8400,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "أنت غير موثق. يرجى تسجيل في لمواصلة.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "رقم المرجع",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -8896,10 +8880,6 @@
   "ledgerErrorInvalidPsbt": "تم اكتشاف تنسيق PSBT غير صالح.",
   "ledgerErrorMissingDerivationPath": "مسار الاشتقاق مطلوب",
   "ledgerErrorMissingScriptType": "نوع البرنامج النصي مطلوب",
-  "payBelowMinAmount": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "يرجى تأكيد العنوان على جهاز ليدجر الخاص بك.",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -9237,10 +9217,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "تعليمات البذور",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "ولم يعثر على أمر الدفع. أرجوك حاول مرة أخرى.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "قم بلعق \"أنا انتهيت\" في محفظة \"بول بيتكين\".",
   "@jadeStep12": {
@@ -9744,10 +9720,6 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "payInsufficientBalance": "عدم كفاية الرصيد في المحفظة المختارة لإكمال هذا الترتيب.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "سجلات المراقبة",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10031,10 +10003,6 @@
   "transactionNoteUpdateButton": "آخر",
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
-  },
-  "payAboveMaxAmount": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
   },
   "receiveNetworkUnavailable": "{network} غير متاح حالياً",
   "@receiveNetworkUnavailable": {

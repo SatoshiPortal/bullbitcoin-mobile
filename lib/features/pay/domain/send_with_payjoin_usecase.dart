@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 class SendWithPayjoinUsecase {
@@ -7,7 +9,8 @@ class SendWithPayjoinUsecase {
 
   const SendWithPayjoinUsecase(this._sender);
 
-  Future<PayjoinSenderSession> execute({
+  @useResult
+  Future<Result<PayjoinSenderSession, PayFailure>> execute({
     required String walletId,
     required bool isTestnet,
     required String bip21,
@@ -29,13 +32,16 @@ class SendWithPayjoinUsecase {
             : DateTime.now().add(Duration(seconds: expireAfterSec)),
       ),
     );
-    return switch (result) {
-      Ok(:final value) => value,
-      Err() => throw SendPayjoinException('Failed to start Payjoin payment'),
-    };
-  }
-}
 
-class SendPayjoinException extends BullException {
-  SendPayjoinException(super.message);
+    switch (result) {
+      case Ok(:final value):
+        return Ok(value);
+      case Err(:final failure):
+        // Not necessarily a failed payment: the engine persists the session,
+        // signed original included, before posting to the directory. The caller
+        // checks for that row before treating this as a dead end.
+        log.warning('Failed to start the Pay Payjoin session', error: failure);
+        return Err(PayUnexpectedFailure('$failure'));
+    }
+  }
 }

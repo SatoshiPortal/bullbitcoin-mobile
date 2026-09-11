@@ -1140,10 +1140,6 @@
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
   },
-  "payOrderAlreadyConfirmed": "Bu ödeme emri zaten doğrulandı.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "Kayıt İşlemleri",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1361,10 +1357,6 @@
   "buyYouPay": "Ödersiniz",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Bu ödeme emri zaten doğrulandı.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "Bull Bitcoin cüzdanı, Pasaportdaki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@passportStep12": {
@@ -1891,10 +1883,6 @@
   "howToDecideBackupText1": "İnsanların Bitcoin’i kaybetmesinin en yaygın yollarından biri, fiziksel yedeklemeyi kaybederler. Fiziksel yedeklemenizi bulan herhangi biri tüm Bitcoin'inizi alabilir. Onu iyi saklayabileceğinize ve asla kaybetmeme çok eminseniz, iyi bir seçenek.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "Ödeme emri bulunamadı. Lütfen tekrar deneyin.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "Bull Bitcoin cüzdanı, soğuk kartta QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@coldcardStep13": {
@@ -8958,10 +8946,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "Gerçekleştirilmezsiniz. Lütfen devam etmek için oturum açın.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "Referans numarası",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -9476,10 +9460,6 @@
   "ledgerErrorInvalidPsbt": "Geçersiz PSBT formatı tespit edildi.",
   "ledgerErrorMissingDerivationPath": "Türetme yolu gereklidir",
   "ledgerErrorMissingScriptType": "Betik türü gereklidir",
-  "payBelowMinAmount": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "Lütfen Adresinizi Ledger cihazınızda onaylayın.",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -9833,10 +9813,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner Talimatlar",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "Ödeme emri bulunamadı. Lütfen tekrar deneyin.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "Bull Bitcoin cüzdanında \"Yapacağım\" tıklayın.",
   "@jadeStep12": {
@@ -10363,10 +10339,6 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "payInsufficientBalance": "Seçilen cüzdanda bu ödeme siparişini tamamlamak için yeterli bir denge.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "View logs",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10642,10 +10614,6 @@
   "transactionNoteUpdateButton": "Update",
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
-  },
-  "payAboveMaxAmount": "Bu cüzdanla ödenebilecek maksimum miktarın üzerinde ödemeye çalışıyorsunuz.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
   },
   "receiveNetworkUnavailable": "{network} şu anda mevcut değildir",
   "@receiveNetworkUnavailable": {

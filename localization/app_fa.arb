@@ -1968,10 +1968,6 @@
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
   },
-  "payOrderAlreadyConfirmed": "این سفارش پرداخت در حال حاضر تایید شده است.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "jadeStep6": "   افزایش روشنایی صفحه بر روی دستگاه شما",
   "@jadeStep6": {
     "description": "Jade troubleshooting tip 1"
@@ -2157,10 +2153,6 @@
   "buyYouPay": "پرداخت می کنید",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "این سفارش پرداخت در حال حاضر تایید شده است.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "کیف پول Bitcoin بول از شما می خواهد کد QR را در پاسپورت اسکن کنید. آن را اسکن کنید.",
   "@passportStep12": {
@@ -2589,10 +2581,6 @@
   "backupWalletHowToDecideVaultCloudSecurity": "ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. آنها فقط می توانند به Bitcoin شما در رویداد غیر محتمل که آنها با سرور کلیدی (خدمات آنلاین که رمز رمزگذاری شما را ذخیره می کند) دسترسی پیدا کنند. اگر سرور کلیدی هک شود، Bitcoin شما می تواند در معرض خطر با Google یا Apple Cloud باشد.",
   "@backupWalletHowToDecideVaultCloudSecurity": {
     "description": "Explanation of cloud storage security in vault location decision help modal"
-  },
-  "payOrderNotFound": "سفارش پرداخت پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "کیف پول Bitcoin بول از شما می خواهد کد QR را در کارت سرد اسکن کنید. آن را اسکن کنید.",
   "@coldcardStep13": {
@@ -8527,10 +8515,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "شما معتبر نیستید. لطفا برای ادامه وارد شوید.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "شماره مرجع",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -8967,10 +8951,6 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "payBelowMinAmount": "شما در حال تلاش برای پرداخت کمتر از حداقل مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "transactionOrderLabelOriginCedula": "منشأ Cedula",
   "@transactionOrderLabelOriginCedula": {
     "description": "Label for origin cedula in fiat payment order"
@@ -9266,10 +9246,6 @@
   "walletDetailsDescriptorLabel": "Descriptor",
   "@walletDetailsDescriptorLabel": {
     "description": "Label for the wallet descriptor field in wallet details"
-  },
-  "payOrderNotFoundError": "سفارش پرداخت پیدا نشد. لطفا دوباره امتحان کنید.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "روی گزینه “I’m Done” در کیف پول Bitcoin بول کلیک کنید.",
   "@jadeStep12": {
@@ -9753,10 +9729,6 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "payInsufficientBalance": "تعادل ناکافی در کیف پول انتخاب شده برای تکمیل این سفارش پرداخت.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "View logs",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10024,10 +9996,6 @@
   "transactionNoteUpdateButton": "Update",
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
-  },
-  "payAboveMaxAmount": "شما در تلاش برای پرداخت بالاتر از حداکثر مبلغی هستید که می توانید با این کیف پول پرداخت کنید.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
   },
   "receiveNetworkUnavailable": "{network} در حال حاضر در دسترس نیست",
   "@receiveNetworkUnavailable": {

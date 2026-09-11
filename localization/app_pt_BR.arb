@@ -1142,10 +1142,6 @@
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
   },
-  "payOrderAlreadyConfirmedError": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "fundExchangeWarningTactic5": "Eles pedem para enviar Bitcoin em outra plataforma",
   "@fundExchangeWarningTactic5": {
     "description": "Fifth scammer tactic warning"
@@ -1165,10 +1161,6 @@
   "hwConnectTitle": "Conecte a carteira de hardware",
   "@hwConnectTitle": {
     "description": "AppBar title for hardware wallet selection screen"
-  },
-  "payOrderAlreadyConfirmed": "Esta ordem de pagamento já foi confirmada.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
   },
   "recipientsSearchHint": "Pesquisar destinatários por nome ou rótulo",
   "@recipientsSearchHint": {
@@ -1781,10 +1773,6 @@
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Costa Rica",
   "@fundExchangeJurisdictionCostaRica": {
     "description": "Dropdown option for Costa Rica jurisdiction"
-  },
-  "payOrderNotFound": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "bitboxActionSignTransactionProcessing": "Transação de Assinatura",
   "@bitboxActionSignTransactionProcessing": {
@@ -8961,10 +8949,6 @@
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
   },
-  "payInsufficientBalance": "Balança insuficiente na carteira selecionada para completar esta ordem de pagamento.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "sellAccountNumber": "Número de conta",
   "@sellAccountNumber": {
     "description": "Label for bank account number"
@@ -9149,17 +9133,9 @@
   "@importWalletLedger": {
     "description": "Button label for Ledger hardware wallet"
   },
-  "payAboveMaxAmount": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
-  },
   "doneButton": "Feito",
   "@doneButton": {
     "description": "Button to close advanced options bottom sheet"
-  },
-  "payNotAuthenticated": "Não és autenticado. Faça login para continuar.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
   },
   "exchangeFeatureBankTransfers": "• Enviar transferências bancárias e pagar contas",
   "@exchangeFeatureBankTransfers": {
@@ -9855,10 +9831,6 @@
   "@mempoolCustomServerEdit": {
     "description": "Button text to edit custom mempool server"
   },
-  "payBelowMinAmount": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
@@ -10022,10 +9994,6 @@
   "bitboxActionSignTransactionButton": "Começar a assinar",
   "@bitboxActionSignTransactionButton": {
     "description": "Button text for sign transaction"
-  },
-  "payOrderNotFoundError": "A ordem de pagamento não foi encontrada. Por favor, tente novamente.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "coreScreensToLabel": "Para",
   "@coreScreensToLabel": {
