@@ -112,12 +112,35 @@ void main() {
       );
     });
 
-    test('a non-200 status never leaks the body', () async {
-      final gateway = BullBitcoinApiFundingGateway(
-        authenticatedApiClient: _dioReturning({
-          'oops': _backendSentence,
-        }, statusCode: 503),
-      );
+    // Dio's default `validateStatus` throws on non-2xx, so this exercises the
+    // DioException arm of `_rpc`, not the `statusCode != 200` check.
+    test(
+      'a non-200 status is a network condition, and never leaks the body',
+      () async {
+        final gateway = BullBitcoinApiFundingGateway(
+          authenticatedApiClient: _dioReturning({
+            'oops': _backendSentence,
+          }, statusCode: 503),
+        );
+
+        final result = await gateway.getFundingDetails(
+          fundingMethod: RegularSepa(),
+        );
+        final failure = (result as Err).failure as FundExchangeFailure;
+
+        expect(failure, isA<FundExchangeUnexpectedFailure>());
+        expect(failure.logMessage, 'HTTP 503');
+        expect(failure.logMessage, isNot(contains(_backendSentence)));
+      },
+    );
+
+    // A plain offline device: no response at all. This must stay a warning-level
+    // transport condition rather than a severe Sentry event, which is what the
+    // FundingNetworkException classification buys.
+    test('a connection error is classified as transport, not a bug', () async {
+      final dio = Dio();
+      dio.httpClientAdapter = _ConnectionErrorAdapter();
+      final gateway = BullBitcoinApiFundingGateway(authenticatedApiClient: dio);
 
       final result = await gateway.getFundingDetails(
         fundingMethod: RegularSepa(),
@@ -125,6 +148,7 @@ void main() {
       final failure = (result as Err).failure as FundExchangeFailure;
 
       expect(failure, isA<FundExchangeUnexpectedFailure>());
+      expect(failure.logMessage, 'Transport failure: connectionError');
       expect(failure.logMessage, isNot(contains(_backendSentence)));
     });
 
@@ -352,6 +376,22 @@ class _StubAdapter implements HttpClientAdapter {
     headers: {
       Headers.contentTypeHeader: [Headers.jsonContentType],
     },
+  );
+}
+
+/// Fails the way an offline device does: a [DioException] with no response.
+class _ConnectionErrorAdapter implements HttpClientAdapter {
+  @override
+  void close({bool force = false}) {}
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => throw DioException.connectionError(
+    requestOptions: options,
+    reason: _backendSentence,
   );
 }
 
