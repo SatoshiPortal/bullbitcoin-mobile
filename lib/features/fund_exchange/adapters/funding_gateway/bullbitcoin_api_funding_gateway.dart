@@ -185,9 +185,16 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     }
 
     final json = Map<String, dynamic>.from(body);
+    // Any non-null `error` is fatal, whatever its shape. Only recognising the
+    // Map envelope would let `{"error": "refused"}` through as a success —
+    // fatal for `requireResult: false` calls, which have no result to check.
     final error = json['error'];
-    if (error is Map) {
-      throw FundingRpcException.fromJson(Map<String, dynamic>.from(error));
+    if (error != null) {
+      throw error is Map
+          ? FundingRpcException.fromJson(Map<String, dynamic>.from(error))
+          : FundingResponseException(
+              'Non-object RPC error: ${error.runtimeType}',
+            );
     }
 
     final result = json['result'];

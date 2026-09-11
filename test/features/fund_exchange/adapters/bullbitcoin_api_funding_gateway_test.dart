@@ -228,6 +228,107 @@ void main() {
         isA<Ok<void, FundExchangeFailure>>(),
       );
     });
+
+    // Regression: this call passes `requireResult: false`, so it has no result
+    // to fall back on. If `_rpc` only recognised the Map error envelope, a
+    // scalar error would return Ok and the scam-warning flow would record a
+    // consent the backend refused.
+    test('a non-object error value is still a failure', () async {
+      for (final error in <dynamic>[
+        'refused',
+        42,
+        true,
+        <dynamic>['refused'],
+      ]) {
+        final gateway = BullBitcoinApiFundingGateway(
+          authenticatedApiClient: _dioReturning({
+            'jsonrpc': '2.0',
+            'id': 1,
+            'error': error,
+          }),
+        );
+
+        final result = await gateway.registerResponsibilityConsent();
+
+        expect(
+          result,
+          isA<Err<void, FundExchangeFailure>>(),
+          reason: 'error: $error (${error.runtimeType}) was treated as success',
+        );
+      }
+    });
+  });
+
+  group('JSON-RPC error envelope parsing', () {
+    // Regression: a hard `as String?` on the code threw a TypeError, which
+    // escaped to the generic catch and cost the user the specific message.
+    test('a non-string API code still selects its variant', () async {
+      final gateway = BullBitcoinApiFundingGateway(
+        authenticatedApiClient: _dioReturning({
+          'jsonrpc': '2.0',
+          'id': '0',
+          'error': {
+            'code': -32000,
+            'data': {
+              'apiError': {'code': 400, 'en': _backendSentence},
+            },
+          },
+        }),
+      );
+
+      final result = await gateway.getFundingDetails(
+        fundingMethod: RegularSepa(),
+      );
+      final failure = (result as Err).failure as FundExchangeFailure;
+
+      // 400 is not a code we map, so the catch-all is correct here — what
+      // matters is that parsing did not blow up on the way.
+      expect(failure, isA<FundExchangeUnexpectedFailure>());
+      expect(failure.logMessage, contains(_backendSentence));
+    });
+
+    test('a numeric code that matches a known string maps normally', () async {
+      final gateway = BullBitcoinApiFundingGateway(
+        authenticatedApiClient: _dioReturning({
+          'jsonrpc': '2.0',
+          'id': '0',
+          'error': {
+            'code': -32000,
+            'data': {
+              'apiError': {'code': 'ERR_ORD_KYC400', 'en': _backendSentence},
+            },
+          },
+        }),
+      );
+
+      final result = await gateway.getFundingDetails(
+        fundingMethod: RegularSepa(),
+      );
+
+      expect((result as Err).failure, isA<FundExchangeKycIncompleteFailure>());
+    });
+
+    test('a non-object error keeps the raw value out of logMessage', () async {
+      final gateway = BullBitcoinApiFundingGateway(
+        authenticatedApiClient: _dioReturning({
+          'jsonrpc': '2.0',
+          'id': '0',
+          'error': _backendSentence,
+        }),
+      );
+
+      final result = await gateway.getFundingDetails(
+        fundingMethod: RegularSepa(),
+      );
+      final failure = (result as Err).failure as FundExchangeFailure;
+
+      expect(failure, isA<FundExchangeUnexpectedFailure>());
+      expect(
+        failure.logMessage,
+        isNot(contains(_iban)),
+        reason: 'only the runtime type should be recorded, not the payload',
+      );
+    });
   });
 }
 
