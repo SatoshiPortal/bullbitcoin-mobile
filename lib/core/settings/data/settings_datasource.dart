@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:drift/drift.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -9,9 +10,9 @@ class SettingsDatasource {
 
   SettingsDatasource({required this._sqlite});
 
-  Future<void> store(SettingsModel model) async {
+  Future<void> store(SettingsModel model) => _writeBackedUpSettings(() async {
     await _sqlite.into(_sqlite.settings).insert(model.toSqlite());
-  }
+  });
 
   Future<SettingsModel> fetch() async {
     final row = await _sqlite.managers.settings
@@ -20,35 +21,39 @@ class SettingsDatasource {
     return SettingsModel.fromSqlite(row);
   }
 
-  Future<void> setEnvironment(Environment env) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), environment: Value(env.name)),
-    );
-  }
+  Future<void> setEnvironment(Environment env) =>
+      _writeBackedUpSettings(() async {
+        await _sqlite.managers.settings.update(
+          (f) => f(id: const Value(1), environment: Value(env.name)),
+        );
+      });
 
-  Future<void> setBitcoinUnit(BitcoinUnit bitcoinUnit) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), bitcoinUnit: Value(bitcoinUnit.name)),
-    );
-  }
+  Future<void> setBitcoinUnit(BitcoinUnit bitcoinUnit) =>
+      _writeBackedUpSettings(() async {
+        await _sqlite.managers.settings.update(
+          (f) => f(id: const Value(1), bitcoinUnit: Value(bitcoinUnit.name)),
+        );
+      });
 
-  Future<void> setLanguage(Language language) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), language: Value(language.name)),
-    );
-  }
+  Future<void> setLanguage(Language language) =>
+      _writeBackedUpSettings(() async {
+        await _sqlite.managers.settings.update(
+          (f) => f(id: const Value(1), language: Value(language.name)),
+        );
+      });
 
-  Future<void> setCurrency(String currencyCode) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), currency: Value(currencyCode)),
-    );
-  }
+  Future<void> setCurrency(String currencyCode) =>
+      _writeBackedUpSettings(() async {
+        await _sqlite.managers.settings.update(
+          (f) => f(id: const Value(1), currency: Value(currencyCode)),
+        );
+      });
 
-  Future<void> setHideAmounts(bool hide) async {
+  Future<void> setHideAmounts(bool hide) => _writeBackedUpSettings(() async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), hideAmounts: Value(hide)),
     );
-  }
+  });
 
   Future<void> setIsSuperuser(bool isSuperuser) async {
     await _sqlite.managers.settings.update(
@@ -87,11 +92,12 @@ class SettingsDatasource {
     );
   }
 
-  Future<void> setThemeMode(AppThemeMode themeMode) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
-    );
-  }
+  Future<void> setThemeMode(AppThemeMode themeMode) =>
+      _writeBackedUpSettings(() async {
+        await _sqlite.managers.settings.update(
+          (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
+        );
+      });
 
   Future<void> setErrorReportingEnabled(bool enabled) async {
     await _sqlite.managers.settings.update(
@@ -118,4 +124,27 @@ class SettingsDatasource {
       ),
     );
   }
+
+  Future<void> _writeBackedUpSettings(Future<void> Function() write) =>
+      _sqlite.transaction(() async {
+        final query = _sqlite.select(_sqlite.settings)
+          ..where((row) => row.id.equals(1));
+        final previous = _backupValues(await query.getSingleOrNull());
+        await write();
+        if (previous != _backupValues(await query.getSingleOrNull())) {
+          await DriftBackupRevisionRecorder(_sqlite).recordCommittedMutation();
+        }
+      });
+
+  // Environment selects the autoswap settings represented in the snapshot.
+  Object? _backupValues(SettingsRow? row) => row == null
+      ? null
+      : (
+          row.environment,
+          row.bitcoinUnit,
+          row.language,
+          row.currency,
+          row.hideAmounts,
+          row.themeMode,
+        );
 }

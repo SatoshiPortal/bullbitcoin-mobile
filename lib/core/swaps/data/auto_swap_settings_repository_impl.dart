@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
@@ -30,21 +31,45 @@ class AutoSwapSettingsRepositoryImpl implements AutoSwapSettingsRepository {
   Future<void> updateAutoSwapParams(AutoSwap params) async {
     final id = await _environmentRowId();
     final model = AutoSwapModel.fromEntity(params);
-    await _database
-        .into(_database.autoSwap)
-        .insertOnConflictUpdate(
-          AutoSwapCompanion.insert(
-            id: Value(id),
-            enabled: Value(model.enabled),
-            balanceThresholdSats: model.balanceThresholdSats,
-            triggerBalanceSats: model.triggerBalanceSats,
-            feeThresholdPercent: model.feeThresholdPercent,
-            blockTillNextExecution: Value(model.blockTillNextExecution),
-            alwaysBlock: Value(model.alwaysBlock),
-            recipientWalletId: Value(model.recipientWalletId),
-            showWarning: Value(model.showWarning),
-          ),
-        );
+    await _database.transaction(() async {
+      final previous = await (_database.select(
+        _database.autoSwap,
+      )..where((row) => row.id.equals(id))).getSingleOrNull();
+      await _database
+          .into(_database.autoSwap)
+          .insertOnConflictUpdate(
+            AutoSwapCompanion.insert(
+              id: Value(id),
+              enabled: Value(model.enabled),
+              balanceThresholdSats: model.balanceThresholdSats,
+              triggerBalanceSats: model.triggerBalanceSats,
+              feeThresholdPercent: model.feeThresholdPercent,
+              blockTillNextExecution: Value(model.blockTillNextExecution),
+              alwaysBlock: Value(model.alwaysBlock),
+              recipientWalletId: Value(model.recipientWalletId),
+              showWarning: Value(model.showWarning),
+            ),
+          );
+      if (previous == null ||
+          (
+                previous.enabled,
+                previous.balanceThresholdSats,
+                previous.triggerBalanceSats,
+                previous.feeThresholdPercent,
+                previous.alwaysBlock,
+                previous.recipientWalletId,
+              ) !=
+              (
+                model.enabled,
+                model.balanceThresholdSats,
+                model.triggerBalanceSats,
+                model.feeThresholdPercent,
+                model.alwaysBlock,
+                model.recipientWalletId,
+              )) {
+        await DriftBackupRevisionRecorder(_database).recordCommittedMutation();
+      }
+    });
     _controller.add(params);
   }
 

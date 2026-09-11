@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_settings_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 class MempoolSettingsStorageDatasource {
@@ -11,7 +12,15 @@ class MempoolSettingsStorageDatasource {
   Future<void> store(MempoolSettingsModel settings) async {
     try {
       final row = settings.toSqlite();
-      await _sqlite.into(_sqlite.mempoolSettings).insertOnConflictUpdate(row);
+      await _sqlite.transaction(() async {
+        final previous = await _sqlite.managers.mempoolSettings
+            .filter((table) => table.network(settings.network))
+            .getSingleOrNull();
+        await _sqlite.into(_sqlite.mempoolSettings).insertOnConflictUpdate(row);
+        if (previous != row) {
+          await DriftBackupRevisionRecorder(_sqlite).recordCommittedMutation();
+        }
+      });
 
       log.fine(
         'Successfully stored/updated mempool settings: ${settings.network}',

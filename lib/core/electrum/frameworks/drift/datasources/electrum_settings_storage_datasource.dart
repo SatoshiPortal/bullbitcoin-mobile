@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environmen
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 
@@ -13,7 +14,21 @@ class ElectrumSettingsStorageDatasource {
   Future<void> store(ElectrumSettingsModel settings) async {
     try {
       final row = settings.toSqlite();
-      await _sqlite.into(_sqlite.electrumSettings).insertOnConflictUpdate(row);
+      await _sqlite.transaction(() async {
+        final previous = await _sqlite.managers.electrumSettings
+            .filter((row) => row.network(settings.network))
+            .getSingleOrNull();
+        await _sqlite
+            .into(_sqlite.electrumSettings)
+            .insertOnConflictUpdate(row);
+        if (previous == null ||
+            previous.validateDomain != settings.validateDomain ||
+            previous.stopGap != settings.stopGap ||
+            previous.timeout != settings.timeout ||
+            previous.retry != settings.retry) {
+          await DriftBackupRevisionRecorder(_sqlite).recordCommittedMutation();
+        }
+      });
 
       log.fine(
         'Successfully stored/updated electrum settings: ${settings.network}',

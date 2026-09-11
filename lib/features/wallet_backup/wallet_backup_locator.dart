@@ -181,15 +181,7 @@ final class _WalletBackupGraph {
           locator<ApplyRecoveredWalletPreferencesUsecase>().execute,
       readPortableSettings: portableSettings.read,
       restorePortableSettings: portableSettings.restore,
-      changeStreams: [
-        database.select(database.settings).watch().skip(1).map((_) {}),
-        database.select(database.autoSwap).watch().skip(1).map((_) {}),
-        database.select(database.electrumServers).watch().skip(1).map((_) {}),
-        database.select(database.electrumSettings).watch().skip(1).map((_) {}),
-        database.select(database.mempoolServers).watch().skip(1).map((_) {}),
-        database.select(database.mempoolSettings).watch().skip(1).map((_) {}),
-        payjoin.watch().skip(1).map((_) {}),
-      ],
+      changeStreams: [payjoin.watch().skip(1).map((_) {})],
     );
     final keychainManifest = locator<KeychainManifestFacade>();
     final codec = WalletBackupSnapshotCodec(
@@ -295,6 +287,12 @@ final class _WalletBackupGraph {
       recordedChanges: _mergeChanges([
         labels.changes,
         locator<WatchWalletUtxoFreezeChangesUsecase>().execute(),
+        database.select(database.settings).watch().skip(1).map((_) {}),
+        database.select(database.autoSwap).watch().skip(1).map((_) {}),
+        database.select(database.electrumServers).watch().skip(1).map((_) {}),
+        database.select(database.electrumSettings).watch().skip(1).map((_) {}),
+        database.select(database.mempoolServers).watch().skip(1).map((_) {}),
+        database.select(database.mempoolSettings).watch().skip(1).map((_) {}),
         vaultChanges(),
         keychainManifest.watchCommittedChanges(),
         definitions.changes,

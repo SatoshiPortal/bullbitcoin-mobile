@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 
@@ -12,7 +13,15 @@ class ElectrumServerStorageDatasource {
   Future<void> store(ElectrumServerModel server) async {
     try {
       final row = server.toSqlite();
-      await _sqlite.into(_sqlite.electrumServers).insertOnConflictUpdate(row);
+      await _sqlite.transaction(() async {
+        final previous = await fetchByUrl(server.url);
+        await _sqlite.into(_sqlite.electrumServers).insertOnConflictUpdate(row);
+        final before = previous?.isCustom == true ? previous!.toSqlite() : null;
+        final after = server.isCustom ? row : null;
+        if (before != after) {
+          await DriftBackupRevisionRecorder(_sqlite).recordCommittedMutation();
+        }
+      });
 
       log.fine('Successfully stored/updated server: ${server.url}');
     } catch (e) {
@@ -27,14 +36,9 @@ class ElectrumServerStorageDatasource {
 
   Future<void> storeBatch(List<ElectrumServerModel> servers) async {
     try {
-      await _sqlite.batch((batch) {
+      await _sqlite.transaction(() async {
         for (final server in servers) {
-          final row = server.toSqlite();
-          batch.insert(
-            _sqlite.electrumServers,
-            row,
-            mode: InsertMode.insertOrReplace,
-          );
+          await store(server);
         }
       });
 
@@ -129,9 +133,16 @@ class ElectrumServerStorageDatasource {
   /// Delete a specific server by URL
   Future<bool> deleteServer(String url) async {
     try {
-      final deleted = await _sqlite.managers.electrumServers
-          .filter((f) => f.url.equals(url))
-          .delete();
+      final deleted = await _sqlite.transaction(() async {
+        final previous = await fetchByUrl(url);
+        final count = await _sqlite.managers.electrumServers
+            .filter((f) => f.url.equals(url))
+            .delete();
+        if (count > 0 && previous?.isCustom == true) {
+          await DriftBackupRevisionRecorder(_sqlite).recordCommittedMutation();
+        }
+        return count;
+      });
 
       log.fine('Deleted $deleted server(s) with URL: $url');
       return deleted > 0;
