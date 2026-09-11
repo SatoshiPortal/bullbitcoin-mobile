@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
@@ -81,6 +82,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [existing]);
       when(() => newlyCreated.id).thenReturn('new');
+      when(() => newlyCreated.label).thenReturn('Initial wallet label');
       when(
         () => create.execute(mnemonicWords: any(named: 'mnemonicWords')),
       ).thenAnswer(
@@ -107,11 +109,21 @@ void main() {
                       .split(' '),
             ),
           );
-      expect(result, isA<Ok<List<String>, RecoverBullCoreFailure>>());
       expect(
-        (result as Ok<List<String>, RecoverBullCoreFailure>).value.toSet(),
+        result,
+        isA<Ok<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+      );
+      expect(
+        (result as Ok<List<WalletPreferences>, RecoverBullCoreFailure>).value
+            .map((item) => item.walletRef)
+            .toSet(),
         createdIds,
       );
+      for (final initial in result.value) {
+        expect(initial.label, 'Initial wallet label');
+        expect(initial.hideOnHome, isNull);
+        expect(initial.autoSweepEnabled, isNull);
+      }
       verify(
         () => wallets.updateEncryptedBackupTime(
           time: any(named: 'time'),
@@ -196,7 +208,10 @@ void main() {
           ).execute(decryptedVault: DecryptedVault(mnemonic: _words));
 
           if (scenario == 'fresh' || scenario == 'matching') {
-            expect(result, isA<Ok<List<String>, RecoverBullCoreFailure>>());
+            expect(
+              result,
+              isA<Ok<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+            );
             verify(() => create.execute(mnemonicWords: _words)).called(1);
             verify(
               () => wallets.updateEncryptedBackupTime(
@@ -205,9 +220,13 @@ void main() {
               ),
             ).called(1);
           } else {
-            expect(result, isA<Err<List<String>, RecoverBullCoreFailure>>());
             expect(
-              (result as Err<List<String>, RecoverBullCoreFailure>).failure,
+              result,
+              isA<Err<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+            );
+            expect(
+              (result as Err<List<WalletPreferences>, RecoverBullCoreFailure>)
+                  .failure,
               isA<InvalidVaultFileFailure>(),
             );
             verifyNever(

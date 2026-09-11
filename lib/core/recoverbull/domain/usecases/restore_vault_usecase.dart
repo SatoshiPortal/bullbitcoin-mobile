@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
@@ -24,7 +25,7 @@ class RestoreVaultUsecase {
 
   // Orchestrates the still-throwing wallet core repo; the local try/catch is
   // the boundary, mapping any failure to a sanitized core failure.
-  Future<Result<List<String>, RecoverBullCoreFailure>> execute({
+  Future<Result<List<WalletPreferences>, RecoverBullCoreFailure>> execute({
     required DecryptedVault decryptedVault,
   }) async {
     try {
@@ -71,7 +72,7 @@ class RestoreVaultUsecase {
       }
 
       log.fine('Vault restored');
-      return Ok(List.unmodifiable(restoredWallets.createdWalletIds));
+      return Ok(restoredWallets.createdWalletPreferences);
     } catch (e, st) {
       log.severe(
         message: 'restoreVault failed',

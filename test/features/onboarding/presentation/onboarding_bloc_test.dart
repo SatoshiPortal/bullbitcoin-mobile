@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,12 +16,15 @@ class _MockRecoverOnboardingWalletUsecase extends Mock
 
 void main() {
   test(
-    'physical recovery forwards created IDs without awaiting a server',
+    'physical recovery forwards initial preferences without awaiting a server',
     () async {
       final recover = _MockRecoverOnboardingWalletUsecase();
+      final initial = [
+        WalletPreferences(walletRef: 'new-default', label: 'Initial'),
+      ];
       when(
         () => recover.execute(mnemonicWords: any(named: 'mnemonicWords')),
-      ).thenAnswer((_) async => const Ok({'new-default'}));
+      ).thenAnswer((_) async => Ok(initial));
       final bloc = OnboardingBloc(
         createOnboardingWalletUsecase: _MockCreateOnboardingWalletUsecase(),
         recoverOnboardingWalletUsecase: recover,
@@ -39,11 +43,13 @@ void main() {
         ),
       );
       final state = await bloc.stream.firstWhere((state) => state.isSuccess);
-      expect(state.defaultCreatedWalletIds, {'new-default'});
+      expect(state.defaultCreatedWalletPreferences, initial);
       expect(state.failure, isNull);
-      final context = WalletHomeRecoveryContext(state.defaultCreatedWalletIds);
-      expect(context.takeCreatedWalletIds(), {'new-default'});
-      expect(context.takeCreatedWalletIds(), isEmpty);
+      final context = WalletHomeRecoveryContext(
+        state.defaultCreatedWalletPreferences,
+      );
+      expect(context.takeCreatedWalletPreferences(), initial);
+      expect(context.takeCreatedWalletPreferences(), isEmpty);
     },
   );
 

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -6,13 +7,13 @@ import 'package:meta/meta.dart';
 final class WalletDefinitionsRecoveryResult {
   final int restoredCount;
   final int failedCount;
-  final List<String> createdWalletRefs;
+  final List<WalletPreferences> createdWalletPreferences;
 
   WalletDefinitionsRecoveryResult({
     required this.restoredCount,
     required this.failedCount,
-    required List<String> createdWalletRefs,
-  }) : createdWalletRefs = List.unmodifiable(createdWalletRefs);
+    required List<WalletPreferences> createdWalletPreferences,
+  }) : createdWalletPreferences = List.unmodifiable(createdWalletPreferences);
 }
 
 abstract interface class WalletDefinitionsBackup {

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart'
+    show WalletPreferencesRecoveryApplyResult;
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -25,6 +26,8 @@ import '../wallet_backup/support/wallet_backup_behavior_harness.dart';
 
 class _CreateDefaults extends Mock implements CreateDefaultWalletsUsecase {}
 
+class _Wallet extends Mock implements Wallet {}
+
 class _VerifyPhysical extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
 
@@ -39,9 +42,14 @@ class _Settings extends Mock implements SettingsRepository {}
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  for (final conflict in [false, true]) {
+  for (final (conflict, editDuringFetch, editBeforeFetch) in [
+    (false, false, false),
+    (true, false, false),
+    (false, true, false),
+    (false, false, true),
+  ]) {
     test(
-      'physical recovery restores new defaults and preserves existing preferences (conflict: $conflict)',
+      'physical recovery preserves preferences (conflict: $conflict, in-flight edit: $editDuringFetch, earlier edit: $editBeforeFetch)',
       () async {
         final remote = FakeWalletBackupRemote();
         final source = await WalletBackupBehaviorHarness.create(remote: remote);
@@ -85,8 +93,10 @@ void main() {
           applyPreferences: (updates) async {
             for (final update in updates) {
               expect(
-                preferences[update.expected.walletRef],
-                same(update.expected),
+                preferences[update.expected.walletRef]!.hasSameValues(
+                  update.expected,
+                ),
+                isTrue,
               );
               preferences[update.recovered.walletRef] = update.recovered;
             }
@@ -113,10 +123,14 @@ void main() {
         // Seed creation is a controlled boundary here; core tests separately
         // verify that pre-existing/adopted wallet IDs are excluded from this result.
         final defaults = _CreateDefaults();
+        final freshWallet = _Wallet();
+        when(() => freshWallet.id).thenReturn('fresh');
+        when(() => freshWallet.label).thenReturn('Secure Bitcoin');
         when(
           () => defaults.execute(mnemonicWords: any(named: 'mnemonicWords')),
         ).thenAnswer(
-          (_) async => (wallets: <Wallet>[], createdWalletIds: {'fresh'}),
+          (_) async =>
+              (wallets: <Wallet>[freshWallet], createdWalletIds: {'fresh'}),
         );
         final verification = _VerifyPhysical();
         when(() => verification.execute()).thenAnswer((_) async {});
@@ -148,7 +162,7 @@ void main() {
           reason: 'Home navigation must not wait for remote recovery',
         );
         final navigation = WalletHomeRecoveryContext(
-          completed.defaultCreatedWalletIds,
+          completed.defaultCreatedWalletPreferences,
         );
 
         var pending = true;
@@ -176,17 +190,47 @@ void main() {
           watchState: target.facade.watchState,
         );
         addTearDown(() => banner.close().timeout(const Duration(seconds: 5)));
+        void editPreferences() {
+          preferences['fresh'] = WalletPreferences(
+            walletRef: 'fresh',
+            label: 'Edited while recovering',
+            hideOnHome: false,
+            autoSweepEnabled: true,
+          );
+        }
+
+        if (editBeforeFetch) editPreferences();
+        if (editDuringFetch) {
+          remote.beforeFetch = () async {
+            remote.beforeFetch = null;
+            editPreferences();
+          };
+        }
         await banner.start(
-          defaultCreatedWalletIds: navigation.takeCreatedWalletIds(),
+          defaultCreatedWalletPreferences: navigation
+              .takeCreatedWalletPreferences(),
         );
 
-        expect(preferences['fresh']!.label, 'Recovered savings');
-        expect(preferences['fresh']!.hideOnHome, isTrue);
+        expect(
+          preferences['fresh']!.label,
+          editDuringFetch || editBeforeFetch
+              ? 'Edited while recovering'
+              : 'Recovered savings',
+        );
+        expect(
+          preferences['fresh']!.hideOnHome,
+          !(editDuringFetch || editBeforeFetch),
+        );
+        expect(
+          preferences['fresh']!.autoSweepEnabled,
+          editDuringFetch || editBeforeFetch ? isTrue : isNull,
+        );
         expect(preferences['existing']!.label, 'Keep local label');
-        expect((await target.readState()).enabled, !conflict);
-        expect(pending, conflict);
-        expect(navigation.takeCreatedWalletIds(), isEmpty);
-        if (conflict) {
+        final hasConflict = conflict || editDuringFetch || editBeforeFetch;
+        expect((await target.readState()).enabled, !hasConflict);
+        expect(pending, hasConflict);
+        expect(navigation.takeCreatedWalletPreferences(), isEmpty);
+        if (hasConflict) {
           expect(banner.state, isA<DataBackupSetupFailed>());
           expect(
             remote.storedCiphertext,

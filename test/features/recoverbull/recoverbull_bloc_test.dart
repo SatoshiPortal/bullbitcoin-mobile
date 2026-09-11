@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -72,11 +73,15 @@ class _MockWatchTorConnection extends Mock
 class _MockEncryptedVault extends Mock implements EncryptedVault {}
 
 void main() {
+  final initialPreferences = [
+    WalletPreferences(walletRef: 'bitcoin', label: 'Initial Bitcoin'),
+    WalletPreferences(walletRef: 'liquid', label: 'Initial Liquid'),
+  ];
   late _MockPickVault pickVault;
   late _MockSaveFile saveFile;
   late _MockCreateVault createVault;
-  late Future<bool> Function(Set<String>) onSeedRecovered;
-  final completionCalls = <Set<String>>[];
+  late Future<bool> Function(List<WalletPreferences>) onSeedRecovered;
+  final completionCalls = <List<WalletPreferences>>[];
   late _MockStoreKey storeKey;
   late _MockRecordBackupCreated recordBackupCreated;
   late _MockCheckConnection checkConnection;
@@ -235,7 +240,7 @@ void main() {
         ).thenAnswer((_) async => const Err(core.InvalidVaultFileFailure()));
         when(
           () => restore.execute(decryptedVault: decrypted),
-        ).thenAnswer((_) async => const Ok(['bitcoin', 'liquid']));
+        ).thenAnswer((_) async => Ok(initialPreferences));
         onSeedRecovered = (_) async => dataRecovered;
         final bloc = buildBloc(
           flow: RecoverBullFlow.recoverVault,
@@ -250,9 +255,7 @@ void main() {
         expect(bloc.state.dataBackupRecoveryIncomplete, !dataRecovered);
         expect(bloc.state.failure, isNull);
         verify(() => restore.execute(decryptedVault: decrypted)).called(1);
-        expect(completionCalls, [
-          {'bitcoin', 'liquid'},
-        ]);
+        expect(completionCalls, [initialPreferences]);
         verify(() => walletBloc.add(const WalletStarted())).called(1);
         verifyNever(() => updateLatest.execute(decryptedVault: decrypted));
       },
@@ -339,14 +342,16 @@ void main() {
         final vault = _MockEncryptedVault();
         const decrypted = DecryptedVault();
         final pendingRestore =
-            Completer<Result<List<String>, core.RecoverBullCoreFailure>>();
+            Completer<
+              Result<List<WalletPreferences>, core.RecoverBullCoreFailure>
+            >();
         final pendingFollowUp = Completer<bool>();
         when(
           () => decrypt.execute(vault: vault, vaultKey: 'synthetic-key'),
         ).thenReturn(const Ok(decrypted));
         when(() => restore.execute(decryptedVault: decrypted)).thenAnswer(
           (_) => duringFollowUp
-              ? Future.value(const Ok(['bitcoin', 'liquid']))
+              ? Future.value(Ok(initialPreferences))
               : pendingRestore.future,
         );
         onSeedRecovered = (_) => pendingFollowUp.future;
@@ -359,17 +364,13 @@ void main() {
         await pumpEventQueue();
         final closing = bloc.close();
         await pumpEventQueue();
-        pendingRestore.complete(const Ok(['bitcoin', 'liquid']));
+        pendingRestore.complete(Ok(initialPreferences));
         pendingFollowUp.complete(true);
         await closing;
 
         expect(
           completionCalls,
-          duringFollowUp
-              ? [
-                  {'bitcoin', 'liquid'},
-                ]
-              : isEmpty,
+          duringFollowUp ? [initialPreferences] : isEmpty,
         );
         verifyNever(() => walletBloc.add(const WalletStarted()));
         expect(bloc.state.isFlowFinished, isFalse);

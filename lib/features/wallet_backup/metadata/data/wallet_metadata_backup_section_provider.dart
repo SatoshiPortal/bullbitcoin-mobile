@@ -123,7 +123,7 @@ final class WalletMetadataBackupImpl {
 
   Future<Result<bool, WalletMetadataBackupFailure>> recover({
     required WalletMetadataSnapshot snapshot,
-    required Set<String> createdWalletRefs,
+    required List<WalletPreferences> createdWalletPreferences,
     DateTime? deadline,
   }) async {
     _suppressChanges = true;
@@ -145,7 +145,7 @@ final class WalletMetadataBackupImpl {
       _checkDeadline(deadline);
       final preferencesResult = await _restorePreferences(
         snapshot.walletPreferences,
-        createdWalletRefs,
+        createdWalletPreferences,
       );
       final bool preferencesComplete;
       switch (preferencesResult) {
@@ -214,7 +214,7 @@ final class WalletMetadataBackupImpl {
 
   Future<Result<bool, WalletMetadataBackupFailure>> _restorePreferences(
     List<WalletPreferences> desired,
-    Set<String> createdWalletRefs,
+    List<WalletPreferences> createdWalletPreferences,
   ) async {
     final currentResult = await _getPreferences();
     final List<WalletPreferences> current;
@@ -225,11 +225,14 @@ final class WalletMetadataBackupImpl {
         return const Err(WalletMetadataBackupReadFailure());
     }
     final currentByWallet = {for (final item in current) item.walletRef: item};
+    final createdByWallet = {
+      for (final item in createdWalletPreferences) item.walletRef: item,
+    };
     final updates = <WalletPreferencesRecoveryUpdate>[];
     var complete = true;
     for (final recovered in desired) {
       final existing = currentByWallet[recovered.walletRef];
-      if (existing != null && _samePreferences(existing, recovered)) {
+      if (existing != null && existing.hasSameValues(recovered)) {
         updates.add(
           WalletPreferencesRecoveryUpdate(
             expected: existing,
@@ -238,10 +241,13 @@ final class WalletMetadataBackupImpl {
         );
         continue;
       }
-      if (existing != null && createdWalletRefs.contains(recovered.walletRef)) {
+      final initial = createdByWallet[recovered.walletRef];
+      if (existing != null &&
+          initial != null &&
+          existing.hasSameValues(initial)) {
         updates.add(
           WalletPreferencesRecoveryUpdate(
-            expected: existing,
+            expected: initial,
             recovered: recovered,
           ),
         );
@@ -292,12 +298,6 @@ final class WalletMetadataBackupImpl {
 
 String _labelIdentity(String label, String reference) =>
     '$label\u0000$reference';
-
-bool _samePreferences(WalletPreferences left, WalletPreferences right) =>
-    left.walletRef == right.walletRef &&
-    left.label == right.label &&
-    left.hideOnHome == right.hideOnHome &&
-    left.autoSweepEnabled == right.autoSweepEnabled;
 
 void _logFailure(String operation, StackTrace trace) {
   log.severe(

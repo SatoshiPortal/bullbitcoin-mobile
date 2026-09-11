@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
@@ -172,7 +173,9 @@ void main() {
       expect(result.skippedCount, 1);
       expect(result.failedCount, 1);
       expect(
-        result.createdWalletRefs,
+        (result.createdWalletPreferences as List<WalletPreferences>).map(
+          (item) => item.walletRef,
+        ),
         ['gen-0', 'gen-1'],
         reason: 'a wallet that already existed is not reported as created',
       );

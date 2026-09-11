@@ -36,7 +36,7 @@ final class DataBackupSetupFailed extends DataBackupSetupBannerState {
 class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
   final Future<bool> Function() _hasPendingChoices;
   final Future<Result<void, WizardFailure>> Function({
-    Set<String> defaultCreatedWalletIds,
+    List<WalletPreferences> defaultCreatedWalletPreferences,
   })
   _applyPendingChoices;
   final Stream<Result<WalletBackupState, WalletBackupFailure>> Function()
@@ -50,7 +50,7 @@ class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
   DataBackupSetupBannerCubit({
     required Future<bool> Function() hasPendingChoices,
     required Future<Result<void, WizardFailure>> Function({
-      Set<String> defaultCreatedWalletIds,
+      List<WalletPreferences> defaultCreatedWalletPreferences,
     })
     applyPendingChoices,
     required Stream<Result<WalletBackupState, WalletBackupFailure>> Function()
@@ -63,7 +63,9 @@ class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
     this._watchState,
   ) : super(const DataBackupSetupHidden());
 
-  Future<void> start({Set<String> defaultCreatedWalletIds = const {}}) async {
+  Future<void> start({
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+  }) async {
     if (isClosed || _closing) return;
     _subscription ??= _watchState().listen((result) {
       if (isClosed || _closing) return;
@@ -72,12 +74,14 @@ class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
         _render();
       }
     });
-    await applyPendingChoices(defaultCreatedWalletIds: defaultCreatedWalletIds);
+    await applyPendingChoices(
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
+    );
   }
 
   /// Runs the pending wizard choices, or retries them after a failure.
   Future<void> applyPendingChoices({
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
   }) async {
     if (_applyingChoices || isClosed || _closing) return;
     _applyingChoices = true;
@@ -90,7 +94,7 @@ class DataBackupSetupBannerCubit extends Cubit<DataBackupSetupBannerState> {
       }
       _render();
       final result = await _applyPendingChoices(
-        defaultCreatedWalletIds: defaultCreatedWalletIds,
+        defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
       );
       _applyingChoices = false;
       if (isClosed || _closing) return;

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -7,14 +8,14 @@ final class WalletVaultsRecoveryResult {
   final int restoredCount;
   final int skippedCount;
   final int failedCount;
-  final List<String> createdWalletRefs;
+  final List<WalletPreferences> createdWalletPreferences;
 
   WalletVaultsRecoveryResult({
     required this.restoredCount,
     required this.skippedCount,
     required this.failedCount,
-    required List<String> createdWalletRefs,
-  }) : createdWalletRefs = List.unmodifiable(createdWalletRefs);
+    required List<WalletPreferences> createdWalletPreferences,
+  }) : createdWalletPreferences = List.unmodifiable(createdWalletPreferences);
 }
 
 /// The vaults section's owner-facing contract, mirroring the definitions one.

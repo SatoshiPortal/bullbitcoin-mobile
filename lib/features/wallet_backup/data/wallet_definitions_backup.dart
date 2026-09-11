@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';
 
@@ -40,7 +41,7 @@ final class WalletDefinitionsBackupImpl implements WalletDefinitionsBackup {
   }) async {
     var restored = 0;
     var failed = 0;
-    final created = <String>[];
+    final created = <WalletPreferences>[];
     for (var index = 0; index < definitions.length; index++) {
       if (deadline != null && !_nowUtc().isBefore(deadline)) {
         failed += definitions.length - index;
@@ -51,7 +52,8 @@ final class WalletDefinitionsBackupImpl implements WalletDefinitionsBackup {
         switch (result.status) {
           case WalletDefinitionRestoreStatus.created:
             restored++;
-            created.add(result.walletRef);
+            // Definition import leaves all preferences unset for metadata.
+            created.add(WalletPreferences(walletRef: result.walletRef));
           case WalletDefinitionRestoreStatus.alreadyPresent:
             restored++;
           case WalletDefinitionRestoreStatus.conflict:
@@ -65,7 +67,7 @@ final class WalletDefinitionsBackupImpl implements WalletDefinitionsBackup {
       WalletDefinitionsRecoveryResult(
         restoredCount: restored,
         failedCount: failed,
-        createdWalletRefs: created,
+        createdWalletPreferences: created,
       ),
     );
   }

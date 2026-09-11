@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
@@ -9,7 +10,7 @@ import 'package:bull_logger/bull_logger.dart';
 final class SetWalletBackupEnabledUsecase {
   final WalletBackupStateRepository _repository;
   final Future<WalletBackupRecoveryResult> Function({
-    Set<String> defaultCreatedWalletIds,
+    List<WalletPreferences> defaultCreatedWalletPreferences,
   })
   _recover;
   final Future<Result<void, WalletBackupFailure>> Function() _register;
@@ -25,7 +26,7 @@ final class SetWalletBackupEnabledUsecase {
   @useResult
   Future<Result<void, WalletBackupFailure>> execute(
     bool enabled, {
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
   }) async {
     if (!enabled) return _repository.setEnabled(false);
 
@@ -39,7 +40,7 @@ final class SetWalletBackupEnabledUsecase {
     }
 
     final recovery = await _recover(
-      defaultCreatedWalletIds: defaultCreatedWalletIds,
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
     );
     final recoveryFailure = _recoveryFailure(recovery.status);
     if (recoveryFailure != null) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -39,7 +40,7 @@ final class FakeBullVaultBackupSection implements BullVaultBackupSection {
     var restoredCount = 0;
     var skipped = 0;
     var failed = 0;
-    final created = <String>[];
+    final created = <WalletPreferences>[];
     for (final entry in [...entries]..sort(WalletBackupVaultEntry.compare)) {
       if (entry.network != network) {
         skipped++;
@@ -51,14 +52,21 @@ final class FakeBullVaultBackupSection implements BullVaultBackupSection {
         continue;
       }
       restoredCount++;
-      if (!existing.contains(entry.walletRef)) created.add(entry.walletRef);
+      if (!existing.contains(entry.walletRef)) {
+        created.add(
+          WalletPreferences(
+            walletRef: entry.walletRef,
+            label: entry.label ?? 'BullVault',
+          ),
+        );
+      }
     }
     return Ok(
       WalletVaultsRecoveryResult(
         restoredCount: restoredCount,
         skippedCount: skipped,
         failedCount: failed,
-        createdWalletRefs: created,
+        createdWalletPreferences: created,
       ),
     );
   }

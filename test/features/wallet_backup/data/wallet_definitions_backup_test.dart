@@ -110,7 +110,10 @@ void main() {
     expect(restoreCalls, hasLength(3));
     expect(value.restoredCount, 2);
     expect(value.failedCount, 1);
-    expect(value.createdWalletRefs, ['wallet-a']);
+    expect(value.createdWalletPreferences.map((item) => item.walletRef), [
+      'wallet-a',
+    ]);
+    expect(value.createdWalletPreferences.single.hasRepresentedValue, isFalse);
   });
 }
 

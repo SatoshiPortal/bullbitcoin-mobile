@@ -1,4 +1,8 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'dart:typed_data';
+
+export 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart'
+    show WalletPreferences;
 
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart'
     show
@@ -95,11 +99,11 @@ class WalletBackupFacade {
   @useResult
   Future<Result<void, WalletBackupFailure>> setEnabled(
     bool enabled, {
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
   }) => _runner.run(
     () => _setEnabled.execute(
       enabled,
-      defaultCreatedWalletIds: defaultCreatedWalletIds,
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
     ),
   );
 
@@ -130,9 +134,11 @@ class WalletBackupFacade {
   }
 
   Future<WalletBackupRecoveryResult> recover({
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
   }) => _runRecovery(
-    () => _recover.execute(defaultCreatedWalletIds: defaultCreatedWalletIds),
+    () => _recover.execute(
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
+    ),
   );
 
   @useResult

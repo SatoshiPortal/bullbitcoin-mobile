@@ -256,7 +256,7 @@ class AppRouter {
       RecoverBullRouter.route(
         onSeedRecovered: (walletIds) => recoverWalletDataAfterSeedRestore(
           locator<WalletBackupFacade>(),
-          defaultCreatedWalletIds: walletIds,
+          defaultCreatedWalletPreferences: walletIds,
         ),
       ),
       RecoverBullGoogleDriveRouter.route,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
@@ -110,7 +111,10 @@ Future<void> main({bool isInitialized = false}) async {
         final restored = await restoreVaultUsecase.execute(
           decryptedVault: decryptedVault,
         );
-        expect(restored, isA<Ok<List<String>, RecoverBullCoreFailure>>());
+        expect(
+          restored,
+          isA<Ok<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+        );
 
         final wallets = await walletRepository.getWallets(
           onlyDefaults: true,
@@ -118,7 +122,9 @@ Future<void> main({bool isInitialized = false}) async {
         );
 
         expect(
-          (restored as Ok<List<String>, RecoverBullCoreFailure>).value,
+          (restored as Ok<List<WalletPreferences>, RecoverBullCoreFailure>)
+              .value
+              .map((item) => item.walletRef),
           unorderedEquals(
             wallets
                 .map((wallet) => wallet.id)

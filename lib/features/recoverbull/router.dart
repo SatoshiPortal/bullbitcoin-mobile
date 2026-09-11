@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
@@ -55,7 +56,8 @@ void openRecoverBullFlow(
 
 class RecoverBullRouter {
   static GoRoute route({
-    required Future<bool> Function(Set<String> walletIds) onSeedRecovered,
+    required Future<bool> Function(List<WalletPreferences> preferences)
+    onSeedRecovered,
   }) => GoRoute(
     name: RecoverBullRoute.recoverbullFlows.name,
     path: RecoverBullRoute.recoverbullFlows.path,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
@@ -21,7 +22,7 @@ typedef ValidateWalletMetadataSnapshot =
 typedef RestoreWalletMetadataSnapshot =
     Future<Result<bool, WalletMetadataBackupFailure>> Function({
       required WalletMetadataSnapshot snapshot,
-      required Set<String> createdWalletRefs,
+      required List<WalletPreferences> createdWalletPreferences,
       DateTime? deadline,
     });
 
@@ -68,7 +69,7 @@ final class ApplyBackupSnapshotUsecase {
   Future<WalletBackupRecoveryResult> execute({
     required Result<WalletBackupSnapshot?, WalletBackupFailure> snapshot,
     ValidateWalletBackupRecovery? revalidate,
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
     bool callerSettlesFence = false,
     DateTime? deadline,
   }) async {
@@ -80,7 +81,7 @@ final class ApplyBackupSnapshotUsecase {
         Ok(:final value) => await _apply(
           snapshot: value,
           revalidate: revalidate,
-          defaultCreatedWalletIds: defaultCreatedWalletIds,
+          defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
           deadline: budget,
           settleFence: !callerSettlesFence,
         ),
@@ -112,7 +113,7 @@ final class ApplyBackupSnapshotUsecase {
   Future<WalletBackupRecoveryResult> _apply({
     required WalletBackupSnapshot? snapshot,
     required ValidateWalletBackupRecovery? revalidate,
-    required Set<String> defaultCreatedWalletIds,
+    required List<WalletPreferences> defaultCreatedWalletPreferences,
     required DateTime deadline,
     required bool settleFence,
   }) async {
@@ -200,11 +201,11 @@ final class ApplyBackupSnapshotUsecase {
     if (snapshot.metadata case final metadata?) {
       final metadataResult = await _restoreMetadata(
         snapshot: metadata,
-        createdWalletRefs: {
-          ...defaultCreatedWalletIds,
-          ...?definitionsRestored?.createdWalletRefs,
-          ...?vaultsRestored?.createdWalletRefs,
-        },
+        createdWalletPreferences: [
+          ...defaultCreatedWalletPreferences,
+          ...?definitionsRestored?.createdWalletPreferences,
+          ...?vaultsRestored?.createdWalletPreferences,
+        ],
         deadline: deadline,
       );
       metadataComplete = switch (metadataResult) {

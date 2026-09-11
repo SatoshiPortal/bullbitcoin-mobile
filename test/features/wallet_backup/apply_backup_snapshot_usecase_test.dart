@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
@@ -39,7 +40,7 @@ abstract interface class _MetadataSection {
 
   Future<Result<bool, WalletMetadataBackupFailure>> recover({
     required WalletMetadataSnapshot snapshot,
-    required Set<String> createdWalletRefs,
+    required List<WalletPreferences> createdWalletPreferences,
     DateTime? deadline,
   });
 }
@@ -47,6 +48,11 @@ abstract interface class _MetadataSection {
 class _Metadata extends Mock implements _MetadataSection {}
 
 void main() {
+  final externalPreferences = WalletPreferences(walletRef: 'external');
+  final vaultPreferences = WalletPreferences(
+    walletRef: 'vault-wallet',
+    label: 'Vault',
+  );
   final manifest = KeychainManifest(
     parentFingerprint: Fingerprint('73c5da0a'),
     generatedAt: 1,
@@ -77,6 +83,7 @@ void main() {
     registerFallbackValue(manifest);
     registerFallbackValue(metadataSnapshot);
     registerFallbackValue(const <WalletDefinition>[]);
+    registerFallbackValue(const <WalletPreferences>[]);
     registerFallbackValue(const <WalletBackupVaultEntry>[]);
     registerFallbackValue(WalletBackupRecoveryStatus.noBackup);
     registerFallbackValue(WalletBackupRecoveryState.idle);
@@ -120,14 +127,14 @@ void main() {
         WalletDefinitionsRecoveryResult(
           restoredCount: 1,
           failedCount: 0,
-          createdWalletRefs: ['external'],
+          createdWalletPreferences: [externalPreferences],
         ),
       );
     });
     when(
       () => metadata.recover(
         snapshot: any(named: 'snapshot'),
-        createdWalletRefs: any(named: 'createdWalletRefs'),
+        createdWalletPreferences: any(named: 'createdWalletPreferences'),
         deadline: any(named: 'deadline'),
       ),
     ).thenAnswer((_) async {
@@ -188,7 +195,7 @@ void main() {
     verify(
       () => metadata.recover(
         snapshot: metadataSnapshot,
-        createdWalletRefs: {'external'},
+        createdWalletPreferences: [externalPreferences],
         deadline: any(named: 'deadline'),
       ),
     ).called(1);
@@ -210,7 +217,7 @@ void main() {
     when(
       () => metadata.recover(
         snapshot: any(named: 'snapshot'),
-        createdWalletRefs: any(named: 'createdWalletRefs'),
+        createdWalletPreferences: any(named: 'createdWalletPreferences'),
         deadline: any(named: 'deadline'),
       ),
     ).thenAnswer((_) async {
@@ -268,7 +275,7 @@ void main() {
     verifyNever(
       () => metadata.recover(
         snapshot: any(named: 'snapshot'),
-        createdWalletRefs: any(named: 'createdWalletRefs'),
+        createdWalletPreferences: any(named: 'createdWalletPreferences'),
         deadline: any(named: 'deadline'),
       ),
     );
@@ -313,7 +320,7 @@ void main() {
             restoredCount: 1,
             skippedCount: 0,
             failedCount: 0,
-            createdWalletRefs: ['vault-wallet'],
+            createdWalletPreferences: [vaultPreferences],
           ),
         );
       });
@@ -341,12 +348,14 @@ void main() {
           verify(
                 () => metadata.recover(
                   snapshot: any(named: 'snapshot'),
-                  createdWalletRefs: captureAny(named: 'createdWalletRefs'),
+                  createdWalletPreferences: captureAny(
+                    named: 'createdWalletPreferences',
+                  ),
                   deadline: any(named: 'deadline'),
                 ),
               ).captured.single
-              as Set<String>;
-      expect(created, containsAll(['external', 'vault-wallet']));
+              as List<WalletPreferences>;
+      expect(created, [externalPreferences, vaultPreferences]);
     });
 
     test('are not touched when the document has none', () async {
@@ -368,7 +377,7 @@ void main() {
               restoredCount: 0,
               skippedCount: 0,
               failedCount: 1,
-              createdWalletRefs: const [],
+              createdWalletPreferences: const [],
             ),
           ),
         );

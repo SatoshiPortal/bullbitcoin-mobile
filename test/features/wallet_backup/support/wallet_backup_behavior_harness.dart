@@ -139,6 +139,9 @@ final class FakeWalletBackupRemote implements WalletBackupRemoteRepository {
   /// while a publication is in flight.
   Future<void> Function()? beforeStore;
 
+  /// Runs while recovery is fetching its remote snapshot.
+  Future<void> Function()? beforeFetch;
+
   String? get storedCiphertext => _ciphertext?.value;
 
   bool get isEmpty => _ciphertext == null;
@@ -176,6 +179,7 @@ final class FakeWalletBackupRemote implements WalletBackupRemoteRepository {
     required WalletBackupAuthentication authentication,
   }) async {
     fetchCount += 1;
+    await beforeFetch?.call();
     final failure = fetchFailure;
     return failure == null ? Ok(head()) : Err(failure);
   }
@@ -248,7 +252,7 @@ final class FakeWalletDefinitionsSection implements WalletDefinitionsBackup {
     WalletDefinitionsRecoveryResult(
       restoredCount: 0,
       failedCount: 0,
-      createdWalletRefs: const [],
+      createdWalletPreferences: const [],
     ),
   );
 
@@ -284,7 +288,7 @@ final class FakeWalletMetadataSection {
 
   Future<Result<bool, WalletMetadataBackupFailure>> recover({
     required WalletMetadataSnapshot snapshot,
-    required Set<String> createdWalletRefs,
+    required List<WalletPreferences> createdWalletPreferences,
     DateTime? deadline,
   }) async {
     if (recoverError case final error?) throw error;

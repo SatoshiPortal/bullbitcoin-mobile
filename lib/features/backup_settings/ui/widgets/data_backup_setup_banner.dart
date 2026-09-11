@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
@@ -12,16 +13,19 @@ import 'package:go_router/go_router.dart';
 /// a progress line while the server is asked and a backup is restored, a
 /// retry when the opt-in was refused. Hidden the rest of the time.
 class DataBackupSetupBanner extends StatelessWidget {
-  final Set<String> Function()? takeDefaultCreatedWalletIds;
+  final List<WalletPreferences> Function()? takeDefaultCreatedWalletPreferences;
 
-  const DataBackupSetupBanner({super.key, this.takeDefaultCreatedWalletIds});
+  const DataBackupSetupBanner({
+    super.key,
+    this.takeDefaultCreatedWalletPreferences,
+  });
 
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (_) => locator<DataBackupSetupBannerCubit>()
       ..start(
-        defaultCreatedWalletIds:
-            takeDefaultCreatedWalletIds?.call() ?? const {},
+        defaultCreatedWalletPreferences:
+            takeDefaultCreatedWalletPreferences?.call() ?? const [],
       ),
     child: const _DataBackupSetupBannerView(),
   );

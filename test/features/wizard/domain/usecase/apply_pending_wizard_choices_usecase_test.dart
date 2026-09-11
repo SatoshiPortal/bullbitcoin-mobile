@@ -147,8 +147,9 @@ void main() {
   });
 
   test(
-    'passes physical recovery IDs into the enable-and-recover operation',
+    'passes initial preferences into the enable-and-recover operation',
     () async {
+      final initial = [WalletPreferences(walletRef: 'new', label: 'Initial')];
       when(() => wizard.readPending()).thenAnswer(
         (_) async => const WizardChoices(
           metadataBackupEnabled: true,
@@ -156,12 +157,20 @@ void main() {
         ),
       );
       when(
-        () => walletBackup.setEnabled(true, defaultCreatedWalletIds: {'new'}),
+        () => walletBackup.setEnabled(
+          true,
+          defaultCreatedWalletPreferences: initial,
+        ),
       ).thenAnswer((_) async => const Ok(null));
-      final result = await usecase.execute(defaultCreatedWalletIds: {'new'});
+      final result = await usecase.execute(
+        defaultCreatedWalletPreferences: initial,
+      );
       expect(result, const Ok<void, WizardFailure>(null));
       verifyInOrder([
-        () => walletBackup.setEnabled(true, defaultCreatedWalletIds: {'new'}),
+        () => walletBackup.setEnabled(
+          true,
+          defaultCreatedWalletPreferences: initial,
+        ),
         wizard.clearPending,
         wizard.markComplete,
       ]);

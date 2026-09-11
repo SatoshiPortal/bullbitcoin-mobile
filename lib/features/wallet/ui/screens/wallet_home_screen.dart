@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
@@ -19,12 +20,12 @@ typedef WalletHomeFeatureWarningsBuilder =
 
 class WalletHomeScreen extends StatefulWidget {
   final WalletHomeFeatureWarningsBuilder? featureWarningsBuilder;
-  final Set<String> Function()? takeDefaultCreatedWalletIds;
+  final List<WalletPreferences> Function()? takeDefaultCreatedWalletPreferences;
 
   const WalletHomeScreen({
     super.key,
     this.featureWarningsBuilder,
-    this.takeDefaultCreatedWalletIds,
+    this.takeDefaultCreatedWalletPreferences,
   });
 
   @override
@@ -145,8 +146,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const SliverToBoxAdapter(child: HomeWarnings()),
                 SliverToBoxAdapter(
                   child: DataBackupSetupBanner(
-                    takeDefaultCreatedWalletIds:
-                        widget.takeDefaultCreatedWalletIds,
+                    takeDefaultCreatedWalletPreferences:
+                        widget.takeDefaultCreatedWalletPreferences,
                   ),
                 ),
                 if (widget.featureWarningsBuilder case final builder?)

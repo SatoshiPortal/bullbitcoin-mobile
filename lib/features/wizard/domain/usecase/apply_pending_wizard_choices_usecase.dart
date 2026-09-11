@@ -22,7 +22,7 @@ class ApplyPendingWizardChoicesUsecase {
   final WalletBackupFacade _walletBackup;
 
   Future<Result<void, WizardFailure>> execute({
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
   }) async {
     try {
       final choices = await _wizardRepository.readPending();
@@ -46,7 +46,7 @@ class ApplyPendingWizardChoicesUsecase {
           backupEnabled != null) {
         if (await _walletBackup.setEnabled(
               backupEnabled,
-              defaultCreatedWalletIds: defaultCreatedWalletIds,
+              defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
             )
             case Err()) {
           return const Err(WizardApplyFailure());

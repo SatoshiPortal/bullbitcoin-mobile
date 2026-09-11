@@ -17,19 +17,21 @@ WalletBackupState _state(WalletBackupRecoveryState recovery) =>
     );
 
 void main() {
+  final fresh = WalletPreferences(walletRef: 'fresh-wallet', label: 'Initial');
   late StreamController<Result<WalletBackupState, WalletBackupFailure>> states;
   late bool pending;
   late Completer<Result<void, WizardFailure>> apply;
   late int applyCalls;
-  late List<Set<String>> recoveryContexts;
+  late List<List<WalletPreferences>> recoveryContexts;
 
   DataBackupSetupBannerCubit cubit() => DataBackupSetupBannerCubit(
     hasPendingChoices: () async => pending,
-    applyPendingChoices: ({Set<String> defaultCreatedWalletIds = const {}}) {
-      applyCalls++;
-      recoveryContexts.add(defaultCreatedWalletIds);
-      return apply.future;
-    },
+    applyPendingChoices:
+        ({List<WalletPreferences> defaultCreatedWalletPreferences = const []}) {
+          applyCalls++;
+          recoveryContexts.add(defaultCreatedWalletPreferences);
+          return apply.future;
+        },
     watchState: () => states.stream,
   );
 
@@ -107,12 +109,12 @@ void main() {
     final c = cubit();
     addTearDown(c.close);
     apply.complete(const Err(WizardApplyFailure()));
-    await c.start(defaultCreatedWalletIds: {'fresh-wallet'});
+    await c.start(defaultCreatedWalletPreferences: [fresh]);
     apply = Completer()..complete(const Ok(null));
     await c.applyPendingChoices();
     expect(recoveryContexts, [
-      {'fresh-wallet'},
-      <String>{},
+      [fresh],
+      <WalletPreferences>[],
     ]);
     expect(c.state, isA<DataBackupSetupHidden>());
   });
@@ -130,13 +132,16 @@ void main() {
       final c = DataBackupSetupBannerCubit(
         hasPendingChoices: () => pendingCheck.future,
         applyPendingChoices:
-            ({Set<String> defaultCreatedWalletIds = const {}}) async {
+            ({
+              List<WalletPreferences> defaultCreatedWalletPreferences =
+                  const [],
+            }) async {
               calls++;
               return const Ok(null);
             },
         watchState: () => watched.stream,
       );
-      final started = c.start(defaultCreatedWalletIds: {'fresh'});
+      final started = c.start(defaultCreatedWalletPreferences: [fresh]);
       final closing = c.close();
       pendingCheck.complete(true);
       await pumpEventQueue();
@@ -151,14 +156,14 @@ void main() {
   test('concurrent starts do not duplicate setup', () async {
     final c = cubit();
     addTearDown(c.close);
-    final first = c.start(defaultCreatedWalletIds: {'fresh-wallet'});
+    final first = c.start(defaultCreatedWalletPreferences: [fresh]);
     final second = c.start();
     await pumpEventQueue();
     expect(applyCalls, 1);
     apply.complete(const Ok(null));
     await Future.wait([first, second]);
     expect(recoveryContexts, [
-      {'fresh-wallet'},
+      [fresh],
     ]);
   });
 }

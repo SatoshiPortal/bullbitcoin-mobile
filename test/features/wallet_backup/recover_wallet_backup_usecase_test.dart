@@ -20,7 +20,7 @@ void main() {
           ({
             required snapshot,
             revalidate,
-            defaultCreatedWalletIds = const {},
+            defaultCreatedWalletPreferences = const [],
             callerSettlesFence = false,
             deadline,
           }) async {
@@ -51,7 +51,7 @@ void main() {
           ({
             required snapshot,
             revalidate,
-            defaultCreatedWalletIds = const {},
+            defaultCreatedWalletPreferences = const [],
             callerSettlesFence = false,
             deadline,
           }) async {
@@ -133,7 +133,7 @@ Future<bool?> _revalidated(WalletBackupRemoteHead Function() head) async {
         ({
           required snapshot,
           revalidate,
-          defaultCreatedWalletIds = const {},
+          defaultCreatedWalletPreferences = const [],
           callerSettlesFence = false,
           deadline,
         }) async {

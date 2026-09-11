@@ -1,5 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
@@ -16,7 +17,7 @@ class RecoverOnboardingWalletUsecase {
   });
 
   @useResult
-  Future<Result<Set<String>, OnboardingFailure>> execute({
+  Future<Result<List<WalletPreferences>, OnboardingFailure>> execute({
     required List<String> mnemonicWords,
   }) async {
     final DefaultWalletsResult restored;
@@ -44,6 +45,6 @@ class RecoverOnboardingWalletUsecase {
       return const Err(OnboardingBackupVerificationFailure());
     }
 
-    return Ok(restored.createdWalletIds);
+    return Ok(restored.createdWalletPreferences);
   }
 }

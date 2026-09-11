@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
@@ -30,15 +31,24 @@ Future<void> main({bool isInitialized = false}) async {
       final result = await restore.execute(
         decryptedVault: DecryptedVault(mnemonic: words),
       );
-      expect(result, isA<Ok<List<String>, RecoverBullCoreFailure>>());
+      expect(
+        result,
+        isA<Ok<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+      );
       final created =
-          (result as Ok<List<String>, RecoverBullCoreFailure>).value;
+          (result as Ok<List<WalletPreferences>, RecoverBullCoreFailure>).value;
       final recovered = await wallets.getWallets(onlyDefaults: true);
       expect(recovered, hasLength(2));
       expect(recovered.where((wallet) => wallet.isBitcoin), hasLength(1));
       expect(recovered.where((wallet) => wallet.isLiquid), hasLength(1));
-      expect(created, unorderedEquals(recovered.map((wallet) => wallet.id)));
-      expect(created.toSet(), await wallets.getStoredWalletIds());
+      expect(
+        created.map((item) => item.walletRef),
+        unorderedEquals(recovered.map((wallet) => wallet.id)),
+      );
+      expect(
+        created.map((item) => item.walletRef).toSet(),
+        await wallets.getStoredWalletIds(),
+      );
       expect(
         recovered.every((wallet) => wallet.latestEncryptedBackup != null),
         isTrue,
@@ -54,12 +64,18 @@ Future<void> main({bool isInitialized = false}) async {
       final repeated = await restore.execute(
         decryptedVault: DecryptedVault(mnemonic: words),
       );
-      expect(repeated, isA<Ok<List<String>, RecoverBullCoreFailure>>());
       expect(
-        (repeated as Ok<List<String>, RecoverBullCoreFailure>).value,
+        repeated,
+        isA<Ok<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+      );
+      expect(
+        (repeated as Ok<List<WalletPreferences>, RecoverBullCoreFailure>).value,
         isEmpty,
       );
-      expect(await wallets.getStoredWalletIds(), created.toSet());
+      expect(
+        await wallets.getStoredWalletIds(),
+        created.map((item) => item.walletRef).toSet(),
+      );
       expect(
         (await seeds.get(fingerprint) as MnemonicSeed).mnemonicWords,
         words,
@@ -76,12 +92,19 @@ Future<void> main({bool isInitialized = false}) async {
       final unrelated = await restore.execute(
         decryptedVault: DecryptedVault(mnemonic: unrelatedWords),
       );
-      expect(unrelated, isA<Err<List<String>, RecoverBullCoreFailure>>());
       expect(
-        (unrelated as Err<List<String>, RecoverBullCoreFailure>).failure,
+        unrelated,
+        isA<Err<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+      );
+      expect(
+        (unrelated as Err<List<WalletPreferences>, RecoverBullCoreFailure>)
+            .failure,
         isA<InvalidVaultFileFailure>(),
       );
-      expect(await wallets.getStoredWalletIds(), created.toSet());
+      expect(
+        await wallets.getStoredWalletIds(),
+        created.map((item) => item.walletRef).toSet(),
+      );
       expect(await seeds.exists(unrelatedFingerprint), isFalse);
       final afterUnrelatedRestore = await wallets.getWallets(
         onlyDefaults: true,

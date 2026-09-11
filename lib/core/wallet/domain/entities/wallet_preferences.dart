@@ -34,6 +34,12 @@ final class WalletPreferences {
 
   bool get hasRepresentedValue =>
       label != null || hideOnHome != null || autoSweepEnabled != null;
+
+  bool hasSameValues(WalletPreferences other) =>
+      walletRef == other.walletRef &&
+      label == other.label &&
+      hideOnHome == other.hideOnHome &&
+      autoSweepEnabled == other.autoSweepEnabled;
 }
 
 /// One recovery write guarded by the preference state that was classified.

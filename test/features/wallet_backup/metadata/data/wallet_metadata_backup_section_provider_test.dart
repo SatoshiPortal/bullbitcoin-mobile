@@ -23,6 +23,79 @@ void main() {
 
   setUp(() => labels = _Labels());
 
+  for (final field in ['label', 'visibility', 'auto-sweep']) {
+    for (final duringWrite in [false, true]) {
+      test(
+        'preserves a $field edit ${duringWrite ? 'during the conditional write' : 'since creation'}',
+        () async {
+          final initial = WalletPreferences(
+            walletRef: 'wallet',
+            label: 'Initial',
+          );
+          final edited = WalletPreferences(
+            walletRef: 'wallet',
+            label: field == 'label' ? 'Local edit' : 'Initial',
+            hideOnHome: field == 'visibility' ? false : null,
+            autoSweepEnabled: field == 'auto-sweep' ? true : null,
+          );
+          var current = duringWrite ? initial : edited;
+          when(labels.fetchAllStrict).thenAnswer((_) async => const Ok([]));
+          final backup = WalletMetadataBackupImpl(
+            labels: labels,
+            getFrozenOutpoints: () async => const [],
+            restoreFrozenOutpoints: (_) async {},
+            getPreferences: () async => Ok([current]),
+            applyPreferences: (updates) async {
+              if (duringWrite) current = edited;
+              final applied = <String>{};
+              final conflicted = <String>{};
+              for (final update in updates) {
+                if (current.hasSameValues(update.expected)) {
+                  current = update.recovered;
+                  applied.add(current.walletRef);
+                } else {
+                  conflicted.add(update.expected.walletRef);
+                }
+              }
+              return Ok(
+                WalletPreferencesRecoveryApplyResult(
+                  appliedWalletRefs: applied,
+                  conflictedWalletRefs: conflicted,
+                ),
+              );
+            },
+            readPortableSettings: () async => portableSettingsFixture(),
+            restorePortableSettings: (_) async {},
+            changeStreams: const [],
+          );
+          addTearDown(backup.dispose);
+          final result = await backup.recover(
+            snapshot: WalletMetadataSnapshot(
+              labels: const [],
+              frozenOutpoints: const [],
+              walletPreferences: [
+                WalletPreferences(
+                  walletRef: 'wallet',
+                  label: 'Recovered',
+                  hideOnHome: true,
+                  autoSweepEnabled: false,
+                ),
+              ],
+              settings: portableSettingsFixture(),
+            ),
+            createdWalletPreferences: [initial],
+          );
+          expect(result, isA<Ok<bool, WalletMetadataBackupFailure>>());
+          expect(
+            (result as Ok<bool, WalletMetadataBackupFailure>).value,
+            isFalse,
+          );
+          expect(current, same(edited));
+        },
+      );
+    }
+  }
+
   test('rejects a snapshot whose labels the label store would refuse', () {
     final backup = WalletMetadataBackupImpl(
       labels: labels,
@@ -153,7 +226,7 @@ void main() {
 
     final result = await backup.recover(
       snapshot: payload,
-      createdWalletRefs: {'wallet-1'},
+      createdWalletPreferences: [WalletPreferences(walletRef: 'wallet-1')],
     );
 
     expect((result as Ok<bool, dynamic>).value, isFalse);
@@ -193,7 +266,7 @@ void main() {
       expect(
         await backup.recover(
           snapshot: emptySnapshot,
-          createdWalletRefs: const {},
+          createdWalletPreferences: const [],
         ),
         isA<Err<bool, WalletMetadataBackupFailure>>().having(
           (result) => result.failure,
@@ -223,7 +296,7 @@ void main() {
       expect(
         await backup.recover(
           snapshot: labelSnapshot,
-          createdWalletRefs: const {},
+          createdWalletPreferences: const [],
         ),
         isA<Err<bool, WalletMetadataBackupFailure>>().having(
           (result) => result.failure,

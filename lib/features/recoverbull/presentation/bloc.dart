@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
@@ -54,7 +55,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final FetchVaultKeyFromServerUsecase _fetchVaultKeyFromServerUsecase;
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
-  final Future<bool> Function(Set<String> walletIds) _onSeedRecovered;
+  final Future<bool> Function(List<WalletPreferences> preferences)
+  _onSeedRecovered;
   final EnsureRecoverBullTorSessionUsecase _ensureRecoverBullTorSessionUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
@@ -573,7 +575,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     )) {
       case Ok(:final value):
         if (isClosed || _closingBloc) return;
-        final dataBackupRecovered = await _onSeedRecovered(value.toSet());
+        final dataBackupRecovered = await _onSeedRecovered(value);
         if (isClosed || _closingBloc) return;
         _walletBloc.add(const WalletStarted());
         log.fine('Vault recovered');

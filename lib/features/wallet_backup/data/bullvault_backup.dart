@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -91,7 +92,7 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
     var restored = 0;
     var skipped = 0;
     var failed = 0;
-    final created = <String>[];
+    final created = <WalletPreferences>[];
     final ordered = [...entries]..sort(WalletBackupVaultEntry.compare);
     for (var index = 0; index < ordered.length; index++) {
       final entry = ordered[index];
@@ -111,7 +112,14 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
         )) {
           case Ok(:final value):
             restored++;
-            if (!existed) created.add(value.wallet.id);
+            if (!existed) {
+              created.add(
+                WalletPreferences(
+                  walletRef: value.wallet.id,
+                  label: value.wallet.label,
+                ),
+              );
+            }
           case Err(:final failure):
             failed++;
             log.warning(
@@ -132,7 +140,7 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
         restoredCount: restored,
         skippedCount: skipped,
         failedCount: failed,
-        createdWalletRefs: created,
+        createdWalletPreferences: created,
       ),
     );
   }

@@ -46,7 +46,9 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                 state.onboardingStepStatus == OnboardingStepStatus.success) {
               context.goNamed(
                 WalletRoute.walletHome.name,
-                extra: WalletHomeRecoveryContext(state.defaultCreatedWalletIds),
+                extra: WalletHomeRecoveryContext(
+                  state.defaultCreatedWalletPreferences,
+                ),
               );
             }
           },

@@ -5,12 +5,24 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 
 typedef DefaultWalletsResult = ({
   List<Wallet> wallets,
   Set<String> createdWalletIds,
 });
+
+extension DefaultWalletsRecoveryPreferences on DefaultWalletsResult {
+  /// Initial persisted values, not a later read that could include user edits.
+  /// Newly created defaults have no visibility or auto-sweep preference yet.
+  List<WalletPreferences> get createdWalletPreferences => List.unmodifiable([
+    if (createdWalletIds.isNotEmpty)
+      for (final wallet in wallets)
+        if (createdWalletIds.contains(wallet.id))
+          WalletPreferences(walletRef: wallet.id, label: wallet.label),
+  ]);
+}
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;

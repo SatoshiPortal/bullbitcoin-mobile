@@ -12,7 +12,8 @@ sealed class OnboardingState with _$OnboardingState {
     OnboardingStepStatus onboardingStepStatus,
     OnboardingFailure? failure,
     @Default(false) bool transitioning,
-    @Default(<String>{}) Set<String> defaultCreatedWalletIds,
+    @Default(<WalletPreferences>[])
+    List<WalletPreferences> defaultCreatedWalletPreferences,
   }) = _OnboardingState;
   const OnboardingState._();
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
@@ -84,7 +85,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         emit(
           state.copyWith(
             onboardingStepStatus: OnboardingStepStatus.success,
-            defaultCreatedWalletIds: value,
+            defaultCreatedWalletPreferences: value,
           ),
         );
       case Err(:final failure):

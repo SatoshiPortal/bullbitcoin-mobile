@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_enabled_usecase.dart';
@@ -30,7 +31,9 @@ void main() {
     });
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      ({Set<String> defaultCreatedWalletIds = const {}}) async {
+      ({
+        List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+      }) async {
         calls.add('recover');
         return const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.noBackup,
@@ -53,7 +56,9 @@ void main() {
   test('does not enable or publish when recovery fails', () async {
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      ({Set<String> defaultCreatedWalletIds = const {}}) async {
+      ({
+        List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+      }) async {
         calls.add('recover');
         return const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.invalid,
@@ -86,10 +91,11 @@ void main() {
     ).thenAnswer((_) async => const Err(WalletBackupStorageFailure()));
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      ({Set<String> defaultCreatedWalletIds = const {}}) async =>
-          const WalletBackupRecoveryResult(
-            status: WalletBackupRecoveryStatus.restored,
-          ),
+      ({
+        List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+      }) async => const WalletBackupRecoveryResult(
+        status: WalletBackupRecoveryStatus.restored,
+      ),
       register,
       () async {
         calls.add('publish');
@@ -112,7 +118,9 @@ void main() {
     register = () async => const Err(WalletBackupWalletUnavailableFailure());
     final usecase = SetWalletBackupEnabledUsecase(
       state,
-      ({Set<String> defaultCreatedWalletIds = const {}}) async {
+      ({
+        List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+      }) async {
         calls.add('recover');
         return const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.noBackup,

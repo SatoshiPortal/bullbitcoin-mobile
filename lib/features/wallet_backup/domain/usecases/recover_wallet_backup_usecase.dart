@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
@@ -13,7 +14,7 @@ typedef ApplyFetchedWalletBackup =
     Future<WalletBackupRecoveryResult> Function({
       required Result<WalletBackupSnapshot?, WalletBackupFailure> snapshot,
       ValidateWalletBackupRecovery? revalidate,
-      Set<String> defaultCreatedWalletIds,
+      List<WalletPreferences> defaultCreatedWalletPreferences,
       bool callerSettlesFence,
       DateTime? deadline,
     });
@@ -33,7 +34,7 @@ final class RecoverWalletBackupUsecase {
   });
 
   Future<WalletBackupRecoveryResult> execute({
-    Set<String> defaultCreatedWalletIds = const {},
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
   }) async {
     final WalletBackupRemoteHead initialHead;
     switch (await _fetchRemote()) {
@@ -42,12 +43,12 @@ final class RecoverWalletBackupUsecase {
       case Err(:final failure):
         return _apply(
           snapshot: Err(failure),
-          defaultCreatedWalletIds: defaultCreatedWalletIds,
+          defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
         );
     }
     final snapshot = await _fetchImport(initialHead);
     return _apply(
-      defaultCreatedWalletIds: defaultCreatedWalletIds,
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
       snapshot: snapshot,
       revalidate: () async => switch (await _fetchRemote()) {
         Ok(:final value) => Ok(_sameRemoteObject(value, initialHead)),

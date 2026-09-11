@@ -3,11 +3,11 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dar
 
 Future<bool> recoverWalletDataAfterSeedRestore(
   WalletBackupFacade walletBackup, {
-  required Set<String> defaultCreatedWalletIds,
+  required List<WalletPreferences> defaultCreatedWalletPreferences,
 }) async {
   try {
     final result = await walletBackup.recover(
-      defaultCreatedWalletIds: defaultCreatedWalletIds,
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
     );
     final complete =
         result.status == WalletBackupRecoveryStatus.noBackup ||

@@ -61,6 +61,8 @@ void main() {
         ).thenAnswer((_) async => seed);
         when(() => bitcoin.id).thenReturn('bitcoin');
         when(() => liquid.id).thenReturn('liquid');
+        when(() => bitcoin.label).thenReturn('Initial Bitcoin');
+        when(() => liquid.label).thenReturn('Initial Liquid');
         for (final entry in {
           Network.bitcoinMainnet: bitcoin,
           Network.liquidMainnet: liquid,
@@ -88,6 +90,20 @@ void main() {
           'liquid',
           if (!adoptedBitcoin) 'bitcoin',
         });
+        expect(
+          result.createdWalletPreferences.map(
+            (item) => (
+              item.walletRef,
+              item.label,
+              item.hideOnHome,
+              item.autoSweepEnabled,
+            ),
+          ),
+          [
+            ('liquid', 'Initial Liquid', null, null),
+            if (!adoptedBitcoin) ('bitcoin', 'Initial Bitcoin', null, null),
+          ],
+        );
         verify(wallets.getStoredWalletIds).called(1);
         verifyNever(
           () => wallets.deleteWallet(walletId: any(named: 'walletId')),
@@ -125,6 +141,7 @@ void main() {
     ).execute(mnemonicWords: const ['abandon']);
     expect(result.wallets, [bitcoin, liquid]);
     expect(result.createdWalletIds, isEmpty);
+    expect(result.createdWalletPreferences, isEmpty);
     verifyNever(wallets.getStoredWalletIds);
     verifyZeroInteractions(seeds);
   });

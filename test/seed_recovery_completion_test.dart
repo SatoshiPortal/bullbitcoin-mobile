@@ -6,6 +6,14 @@ import 'package:mocktail/mocktail.dart';
 class _MockWalletBackupFacade extends Mock implements WalletBackupFacade {}
 
 void main() {
+  final bitcoin = WalletPreferences(
+    walletRef: 'bitcoin',
+    label: 'Initial Bitcoin',
+  );
+  final liquid = WalletPreferences(
+    walletRef: 'liquid',
+    label: 'Initial Liquid',
+  );
   late _MockWalletBackupFacade backup;
 
   setUp(() {
@@ -18,13 +26,14 @@ void main() {
   ]) {
     test('$status completes optional Data Backup recovery', () async {
       when(
-        () => backup.recover(defaultCreatedWalletIds: {'bitcoin', 'liquid'}),
+        () =>
+            backup.recover(defaultCreatedWalletPreferences: [bitcoin, liquid]),
       ).thenAnswer((_) async => WalletBackupRecoveryResult(status: status));
 
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
-          defaultCreatedWalletIds: {'bitcoin', 'liquid'},
+          defaultCreatedWalletPreferences: [bitcoin, liquid],
         ),
         isTrue,
       );
@@ -35,7 +44,8 @@ void main() {
     'reports an incomplete optional recovery without failing money recovery',
     () async {
       when(
-        () => backup.recover(defaultCreatedWalletIds: {'bitcoin', 'liquid'}),
+        () =>
+            backup.recover(defaultCreatedWalletPreferences: [bitcoin, liquid]),
       ).thenAnswer(
         (_) async => const WalletBackupRecoveryResult(
           status: WalletBackupRecoveryStatus.partiallyRestored,
@@ -47,7 +57,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
-          defaultCreatedWalletIds: {'bitcoin', 'liquid'},
+          defaultCreatedWalletPreferences: [bitcoin, liquid],
         ),
         isFalse,
       );
@@ -58,13 +68,14 @@ void main() {
     'an optional backup exception cannot invalidate seed recovery',
     () async {
       when(
-        () => backup.recover(defaultCreatedWalletIds: {'bitcoin', 'liquid'}),
+        () =>
+            backup.recover(defaultCreatedWalletPreferences: [bitcoin, liquid]),
       ).thenThrow(const FormatException('synthetic unreadable backup'));
 
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
-          defaultCreatedWalletIds: {'bitcoin', 'liquid'},
+          defaultCreatedWalletPreferences: [bitcoin, liquid],
         ),
         isFalse,
       );
@@ -78,12 +89,12 @@ void main() {
   )) {
     test('$status is not reported as a complete metadata recovery', () async {
       when(
-        () => backup.recover(defaultCreatedWalletIds: {'bitcoin'}),
+        () => backup.recover(defaultCreatedWalletPreferences: [bitcoin]),
       ).thenAnswer((_) async => WalletBackupRecoveryResult(status: status));
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
-          defaultCreatedWalletIds: {'bitcoin'},
+          defaultCreatedWalletPreferences: [bitcoin],
         ),
         isFalse,
       );

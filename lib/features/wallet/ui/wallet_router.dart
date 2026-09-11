@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
@@ -33,9 +34,9 @@ class WalletRouter {
           },
           child: WalletHomeScreen(
             featureWarningsBuilder: featureWarningsBuilder,
-            takeDefaultCreatedWalletIds: switch (state.extra) {
+            takeDefaultCreatedWalletPreferences: switch (state.extra) {
               final WalletHomeRecoveryContext recovery =>
-                recovery.takeCreatedWalletIds,
+                recovery.takeCreatedWalletPreferences,
               _ => null,
             },
           ),
@@ -61,14 +62,14 @@ class WalletRouter {
 
 /// One navigation's physical-seed recovery context; never persisted for retries.
 class WalletHomeRecoveryContext {
-  Set<String> _defaultCreatedWalletIds;
+  List<WalletPreferences> _defaultCreatedWalletPreferences;
 
-  WalletHomeRecoveryContext(Set<String> walletIds)
-    : _defaultCreatedWalletIds = Set.unmodifiable(walletIds);
+  WalletHomeRecoveryContext(List<WalletPreferences> preferences)
+    : _defaultCreatedWalletPreferences = List.unmodifiable(preferences);
 
-  Set<String> takeCreatedWalletIds() {
-    final ids = _defaultCreatedWalletIds;
-    _defaultCreatedWalletIds = const {};
-    return ids;
+  List<WalletPreferences> takeCreatedWalletPreferences() {
+    final preferences = _defaultCreatedWalletPreferences;
+    _defaultCreatedWalletPreferences = const [];
+    return preferences;
   }
 }
