@@ -3950,7 +3950,7 @@
   },
   "fundExchangeErrorOrdCsrcp400": "Please activate the virtual payment option for this SEPA recipient",
   "@fundExchangeErrorOrdCsrcp400": {
-    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Retranslation needed: the previous copy named the IBAN."
+    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Copy deliberately omits the IBAN, so it carries no placeholder."
   },
   "fundExchangeErrorTitleRcp400": "Invalid Request",
   "@fundExchangeErrorTitleRcp400": {

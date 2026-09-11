@@ -5897,6 +5897,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE не е наличен",
   "fundExchangeErrorTitleOrdKyc400": "Липсващи изисквания за KYC",
   "fundExchangeErrorOrdKyc400": "Нямате необходимите изисквания за KYC за това действие",
+  "fundExchangeErrorOrdCsrcp400": "Моля, активирайте опцията за виртуално плащане за този получател по SEPA",
   "fundExchangeErrorTitleOrdCop400": "Невалидни данни за финансиране в COP",
   "fundExchangeErrorOrdCop400": "Невалидни данни за заявка за финансиране в COP",
   "fundExchangeErrorTitleOrdCsrcp400": "Виртуалното плащане не е активирано",

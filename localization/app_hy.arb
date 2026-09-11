@@ -295,6 +295,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE-ն հասանելի չէ",
   "fundExchangeErrorTitleOrdKyc400": "KYC-ի պահանջները բացակայում են",
   "fundExchangeErrorOrdKyc400": "Դուք չունեք այս գործողության համար անհրաժեշտ KYC-ի պահանջները",
+  "fundExchangeErrorOrdCsrcp400": "Խնդրում ենք ակտիվացնել վիրտուալ վճարման տարբերակը այս SEPA ստացողի համար",
   "fundExchangeErrorTitleOrdCop400": "COP ֆինանսավորման անվավեր տվյալներ",
   "fundExchangeErrorOrdCop400": "Անվավեր հարցման տվյալներ COP ֆինանսավորման համար",
   "fundExchangeErrorTitleOrdCsrcp400": "Վիրտուալ վճարումը ակտիվացված չէ",

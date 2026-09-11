@@ -7508,6 +7508,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE není k dispozici",
   "fundExchangeErrorTitleOrdKyc400": "Chybějící požadavky KYC",
   "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci",
+  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro tohoto příjemce SEPA",
   "fundExchangeErrorTitleOrdCop400": "Neplatná data financování COP",
   "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtuální platba není aktivována",

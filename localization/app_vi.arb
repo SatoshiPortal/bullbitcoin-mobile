@@ -296,6 +296,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE không khả dụng",
   "fundExchangeErrorTitleOrdKyc400": "Thiếu yêu cầu KYC",
   "fundExchangeErrorOrdKyc400": "Bạn không có các yêu cầu KYC cần thiết cho hành động này",
+  "fundExchangeErrorOrdCsrcp400": "Vui lòng kích hoạt tùy chọn thanh toán ảo cho người nhận SEPA này",
   "fundExchangeErrorTitleOrdCop400": "Dữ liệu nạp tiền COP không hợp lệ",
   "fundExchangeErrorOrdCop400": "Dữ liệu yêu cầu không hợp lệ để nạp tiền COP",
   "fundExchangeErrorTitleOrdCsrcp400": "Chưa kích hoạt thanh toán ảo",

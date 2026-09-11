@@ -7572,6 +7572,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ไม่พร้อมใช้งาน",
   "fundExchangeErrorTitleOrdKyc400": "ขาดข้อกำหนด KYC",
   "fundExchangeErrorOrdKyc400": "คุณไม่มีข้อกำหนด KYC ที่จำเป็นสำหรับการดำเนินการนี้",
+  "fundExchangeErrorOrdCsrcp400": "โปรดเปิดใช้งานตัวเลือกการชำระเงินเสมือนสำหรับผู้รับ SEPA รายนี้",
   "fundExchangeErrorTitleOrdCop400": "ข้อมูลการเติมเงิน COP ไม่ถูกต้อง",
   "fundExchangeErrorOrdCop400": "ข้อมูลคำขอไม่ถูกต้องสำหรับการเติมเงิน COP",
   "fundExchangeErrorTitleOrdCsrcp400": "ยังไม่ได้เปิดใช้งานการชำระเงินเสมือน",

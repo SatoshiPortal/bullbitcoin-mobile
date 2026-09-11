@@ -7572,6 +7572,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE उपलब्ध नहीं",
   "fundExchangeErrorTitleOrdKyc400": "KYC आवश्यकताएँ अनुपस्थित",
   "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं",
+  "fundExchangeErrorOrdCsrcp400": "कृपया इस SEPA प्राप्तकर्ता के लिए वर्चुअल भुगतान विकल्प सक्रिय करें",
   "fundExchangeErrorTitleOrdCop400": "अमान्य COP फंडिंग डेटा",
   "fundExchangeErrorOrdCop400": "COP फंडिंग के लिए अमान्य अनुरोध डेटा",
   "fundExchangeErrorTitleOrdCsrcp400": "वर्चुअल भुगतान सक्रिय नहीं",

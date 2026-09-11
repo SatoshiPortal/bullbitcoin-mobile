@@ -492,6 +492,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ხელმისაწვდომი არ არის",
   "fundExchangeErrorTitleOrdKyc400": "KYC მოთხოვნები აკლია",
   "fundExchangeErrorOrdKyc400": "თქვენ არ გაქვთ ამ მოქმედებისთვის საჭირო KYC მოთხოვნები",
+  "fundExchangeErrorOrdCsrcp400": "გთხოვთ, გაააქტიუროთ ვირტუალური გადახდის ვარიანტი ამ SEPA მიმღებისთვის",
   "fundExchangeErrorTitleOrdCop400": "COP დაფინანსების არასწორი მონაცემები",
   "fundExchangeErrorOrdCop400": "არასწორი მოთხოვნის მონაცემები COP დაფინანსებისთვის",
   "fundExchangeErrorTitleOrdCsrcp400": "ვირტუალური გადახდა არ არის გააქტიურებული",

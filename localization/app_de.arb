@@ -2396,6 +2396,7 @@
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE nicht verfügbar",
   "fundExchangeErrorTitleOrdKyc400": "Fehlende KYC-Anforderungen",
   "fundExchangeErrorOrdKyc400": "Sie erfüllen nicht die KYC-Anforderungen für diese Aktion",
+  "fundExchangeErrorOrdCsrcp400": "Bitte aktivieren Sie die virtuelle Zahlungsoption für diesen SEPA-Empfänger",
   "fundExchangeErrorTitleOrdCop400": "Ungültige COP-Finanzierungsdaten",
   "fundExchangeErrorOrdCop400": "Ungültige Anfragedaten für COP-Finanzierung",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtuelle Zahlung nicht aktiviert",
