@@ -4,6 +4,8 @@ Started 2026-09-09. This is an execution log, not a release-readiness claim.
 
 Latest consolidated code checkpoint: `2eaef4cc236fdce75abe7845a39896f2ab8844f7`. All applicable distributed donor work is on this integration branch; the separate-child proposal is superseded by the user's one-branch requirement. Normal commit hooks, targeted suites and full-workspace `make checks` passed: 3,484 root tests plus 180 package tests, 3,664 total, zero failures and three deliberate live/export skips. A normal production-flavor Android x64 debug APK also built successfully; no new-source emulator recovery run is claimed. The earlier 3,573-test/local-server Android results below belong to source `39370cd5f`. Production distributed-backup wiring and final integration/release approval remain incomplete.
 
+Latest product decisions, 2026-09-11: [roadmap section 1](distributed-backups-roadmap.md#1-locked-product-decisions--2026-09-11) records the user's explicit lock after one-by-one discussion. It supersedes historical claims below requiring an extra password-encrypted server descriptor record. This documentation update does not change the code checkpoint, implement any missing flow or approve the remaining roadmap/UX/UI proposals.
+
 ## Inputs and preservation
 
 - Ben PR #2793: `309819e31ca49c73ab48701c8c3b274e3375d10f`, rechecked via GitHub on 2026-09-09.
@@ -807,3 +809,11 @@ No public backup was published, no network fee was spent, no backend source was 
 ### Upstream delivery arrangement
 
 Continue review, polish and the remaining approved feature work on `integration/bullvault-metadata-deterministic-keys-v2`. Its pinned Ben ancestor is `309819e31`; this operation did not refresh or silently change that upstream pin. The old core and distributed branches remain archives only. Ben's PR can be reviewed alongside ours, with Ben landing first. After upstream lands Ben, replay our commits onto the actual upstream merge result so our eventual PR contains only our delta, accounting for whether Ben was merged with preserved history or squashed. Do not merge the obsolete donor histories or create another distributed delivery branch. Pushing, opening/retargeting PRs and release approval are separate actions and were not performed here.
+
+## Product decisions locked — 2026-09-11
+
+The user confirmed that the 12-word password is always present, derived on demand through the established BIP85 path, viewable in Data Backup and Vault settings, and supplies the same encryption key for metadata and vault descriptors. Every vault also has a separate BIP138 representation. Three backup types are approved: metadata on BULL encrypted with the password-derived key; BIP138 descriptor on BULL; password-encrypted descriptor on Nostr and Bitcoin OP_RETURN. No separate password-encrypted server descriptor record is required or permitted by this model.
+
+The locked recovery routes are BULL+BIP138+eligible cosigner public key; BULL+backup words through metadata extraction; Nostr+backup words; Bitcoin+backup words; a supplied descriptor; and the local BIP138-file+public-key variant. All converge on descriptor validation, policy/key-capability review and import. Acquiring a descriptor is not spending authority. Missing metadata prevents words-only server recovery but does not remove the other routes.
+
+Updated the roadmap, existing UI proposal and reviewer handoff/instructions to remove contradictory extra-server-copy requirements. UX/UI and the rest of the agent-written feature/architecture proposals remain for continued one-by-one review. Only documentation changed; no new tests, builds, backend changes, publication or application implementation were performed for this product-decision lock.
