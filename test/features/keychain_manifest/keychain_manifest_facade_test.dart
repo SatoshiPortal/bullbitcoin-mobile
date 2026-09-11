@@ -121,6 +121,50 @@ void main() {
     );
   });
 
+  for (final isTestnet in [false, true]) {
+    test(
+      'retains Bitcoin and Liquid defaults through inventory and codec (testnet: $isTestnet)',
+      () async {
+        final networks = isTestnet
+            ? [Network.bitcoinTestnet, Network.liquidTestnet]
+            : [Network.bitcoinMainnet, Network.liquidMainnet];
+        final result = await facade.replaceSeedWalletInventory(
+          parentFingerprint: manifestFingerprint,
+          wallets: [
+            for (final network in networks)
+              KeychainManifestWalletInventoryBinding(
+                walletId: network.name,
+                seedFingerprint: manifestFingerprint,
+                network: network,
+                scriptType: ScriptType.bip84,
+                provenance: WalletProvenance.defaultSeed,
+                derivationPath: "m/84'/${network.coinType}'/0'",
+                seedPassphraseUsed: false,
+              ),
+          ],
+        );
+        expect(result, isA<Ok<bool, KeychainManifestFailure>>());
+        final built = await _buildPayload(facade, manifestFingerprint);
+        expect(built, isA<Ok<String, KeychainManifestFailure>>());
+        final parsed = facade.parseManifestFilePayload(
+          (built as Ok<String, KeychainManifestFailure>).value,
+          expectedParentFingerprint: manifestFingerprint,
+        );
+        expect(parsed, isA<Ok<KeychainManifest, KeychainManifestFailure>>());
+        final manifest =
+            (parsed as Ok<KeychainManifest, KeychainManifestFailure>).value;
+        expect(
+          manifest.wallets.map((wallet) => wallet.walletId),
+          unorderedEquals(networks.map((network) => network.name)),
+        );
+        expect(
+          manifest.wallets.map((wallet) => wallet.network),
+          unorderedEquals(networks),
+        );
+      },
+    );
+  }
+
   test('records seed-derived wallet facts without descriptors', () async {
     expect(
       await facade.replaceSeedWalletInventory(

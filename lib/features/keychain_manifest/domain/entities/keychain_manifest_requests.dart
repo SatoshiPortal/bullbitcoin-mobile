@@ -79,6 +79,7 @@ final class KeychainManifestWalletInventoryBinding {
       derivationKind: KeychainManifestDerivationKind.bip32,
       derivationPath: derivationPath,
       seedFingerprint: seedFingerprint,
+      network: network,
     );
     return KeychainManifestEntry(
       parentFingerprint: parentFingerprint,

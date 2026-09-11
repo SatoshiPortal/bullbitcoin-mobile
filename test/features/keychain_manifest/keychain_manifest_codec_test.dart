@@ -281,6 +281,7 @@ void main() {
         derivationKind: KeychainManifestDerivationKind.bip32,
         derivationPath: path,
         seedFingerprint: childFingerprint,
+        network: Network.bitcoinMainnet,
       );
       final payload = codec.encode(
         manifest(

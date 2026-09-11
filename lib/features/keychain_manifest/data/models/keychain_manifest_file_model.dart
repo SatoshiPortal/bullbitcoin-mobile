@@ -234,15 +234,19 @@ final class _EntryModel {
         updatedAt < createdAt) {
       return null;
     }
-    final seedFingerprint =
+    final wallet =
         kind == KeychainManifestDerivationKind.bip32 &&
             materializations.length == 1
-        ? Fingerprint.tryParse(
-            materializations.single.childSeedFingerprint ?? '',
-          )
+        ? materializations.single
         : null;
+    final seedFingerprint = Fingerprint.tryParse(
+      wallet?.childSeedFingerprint ?? '',
+    );
+    final network = Network.values
+        .where((value) => value.name == wallet?.network)
+        .firstOrNull;
     if (kind == KeychainManifestDerivationKind.bip32 &&
-        seedFingerprint == null) {
+        (seedFingerprint == null || network == null)) {
       return null;
     }
     final entryId = KeychainManifestEntry.entryIdFor(
@@ -250,6 +254,7 @@ final class _EntryModel {
       derivationKind: kind,
       derivationPath: derivationPath,
       seedFingerprint: seedFingerprint,
+      network: network,
     );
     final items = <KeychainManifestMaterialization>[];
     for (final item in materializations) {

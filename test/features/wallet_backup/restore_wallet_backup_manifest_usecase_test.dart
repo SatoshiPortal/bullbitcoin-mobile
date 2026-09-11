@@ -246,6 +246,7 @@ KeychainManifestEntry _walletEntry({
     derivationKind: KeychainManifestDerivationKind.bip32,
     derivationPath: path,
     seedFingerprint: seedFingerprint,
+    network: network,
   );
   return KeychainManifestEntry(
     parentFingerprint: parent,

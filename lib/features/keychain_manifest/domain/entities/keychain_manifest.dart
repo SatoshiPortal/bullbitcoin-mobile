@@ -106,6 +106,9 @@ final class KeychainManifestEntry {
         ? (materializations.single as KeychainManifestWallet)
               .childSeedFingerprint
         : null,
+    network: derivationKind == KeychainManifestDerivationKind.bip32
+        ? (materializations.single as KeychainManifestWallet).network
+        : null,
   );
 
   static String entryIdFor({
@@ -113,11 +116,17 @@ final class KeychainManifestEntry {
     required KeychainManifestDerivationKind derivationKind,
     required String derivationPath,
     Fingerprint? seedFingerprint,
+    Network? network,
   }) {
     final path = canonicalPath(derivationKind, derivationPath);
-    return derivationKind == KeychainManifestDerivationKind.bip85
-        ? '${parentFingerprint.hex}:$path'
-        : '${parentFingerprint.hex}:${seedFingerprint!.hex}:$path';
+    if (derivationKind == KeychainManifestDerivationKind.bip85) {
+      return '${parentFingerprint.hex}:$path';
+    }
+    if (seedFingerprint == null || network == null) {
+      throw ArgumentError('BIP32 manifest identity requires seed and network');
+    }
+    // Bitcoin and Liquid testnet share coin type 1 and the same account path.
+    return '${parentFingerprint.hex}:${seedFingerprint.hex}:${network.name}:$path';
   }
 
   static String canonicalPath(

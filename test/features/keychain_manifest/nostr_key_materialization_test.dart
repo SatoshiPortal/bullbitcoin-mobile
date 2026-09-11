@@ -144,6 +144,7 @@ void main() {
                 derivationKind: KeychainManifestDerivationKind.bip32,
                 derivationPath: path,
                 seedFingerprint: child,
+                network: wallet.Network.bitcoinMainnet,
               ),
               childSeedFingerprint: child,
               network: wallet.Network.bitcoinMainnet,

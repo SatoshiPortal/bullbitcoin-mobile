@@ -73,6 +73,7 @@ void main() {
       derivationKind: KeychainManifestDerivationKind.bip32,
       derivationPath: "m/84'/0'/0'",
       seedFingerprint: fingerprint,
+      network: Network.bitcoinMainnet,
     );
     final manifest = KeychainManifest(
       parentFingerprint: fingerprint,

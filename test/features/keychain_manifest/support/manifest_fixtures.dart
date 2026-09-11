@@ -61,6 +61,7 @@ KeychainManifestEntry passphraseWalletEntry({
           derivationKind: KeychainManifestDerivationKind.bip32,
           derivationPath: path,
           seedFingerprint: child,
+          network: Network.bitcoinMainnet,
         ),
         childSeedFingerprint: child,
         network: Network.bitcoinMainnet,

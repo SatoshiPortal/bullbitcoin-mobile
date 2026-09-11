@@ -158,6 +158,7 @@ KeychainManifestEntry _passphraseEntry() => KeychainManifestEntry(
         derivationKind: KeychainManifestDerivationKind.bip32,
         derivationPath: "m/84'/0'/0'",
         seedFingerprint: Fingerprint('a1b2c3d4'),
+        network: Network.bitcoinMainnet,
       ),
       childSeedFingerprint: Fingerprint('a1b2c3d4'),
       network: Network.bitcoinMainnet,
