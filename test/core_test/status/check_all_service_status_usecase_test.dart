@@ -434,7 +434,8 @@ void main() {
   test(
     'opens one route during a complete check with both probes active',
     () async {
-      final pool = TorRoutePool();
+      final clock = _ManualTimers();
+      final pool = TorRoutePool(timerFactory: clock.create);
       final events = <TorRoutePoolEvent>[];
       final callsStarted = Completer<void>();
       final leasesAcquired = Completer<void>();
@@ -490,6 +491,9 @@ void main() {
         hasLength(1),
       );
       expect(events.map((event) => event.holders), containsAll([1, 2]));
+      expect(closes, 0);
+      clock.elapse();
+      await Future<void>.delayed(Duration.zero);
       expect(closes, 1);
     },
   );
@@ -597,4 +601,36 @@ CheckAllServiceStatusUsecase _usecase({
     recoverBullHealthProbe: recoverBullHealthProbe,
     recoverBullStatusProbe: recoverBullStatusProbe,
   );
+}
+
+final class _ManualTimers {
+  final List<_ManualTimer> _timers = [];
+
+  TorRoutePoolTimer create(Duration _, void Function() callback) {
+    final timer = _ManualTimer(callback);
+    _timers.add(timer);
+    return timer;
+  }
+
+  void elapse() {
+    for (final timer in List<_ManualTimer>.from(_timers)) {
+      timer.fire();
+    }
+  }
+}
+
+final class _ManualTimer implements TorRoutePoolTimer {
+  final void Function() _callback;
+  bool cancelled = false;
+
+  _ManualTimer(this._callback);
+
+  @override
+  void cancel() => cancelled = true;
+
+  void fire() {
+    if (cancelled) return;
+    cancelled = true;
+    _callback();
+  }
 }

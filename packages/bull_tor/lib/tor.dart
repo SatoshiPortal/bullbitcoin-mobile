@@ -15,6 +15,7 @@ export 'src/domain/entities/tor_session.dart';
 export 'src/domain/entities/tor_transport.dart';
 export 'src/domain/onion_connection_failure.dart';
 export 'src/domain/tor_route_pool.dart';
+export 'src/domain/tor_route_pool_invalidator.dart';
 export 'src/domain/tor_failure.dart';
 export 'src/domain/usecases/ensure_tor_ready_usecase.dart';
 export 'src/domain/usecases/retry_tor_connection_usecase.dart';
