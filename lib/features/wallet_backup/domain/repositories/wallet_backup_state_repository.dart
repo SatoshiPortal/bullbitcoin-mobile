@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_r
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class WalletBackupStateRepository {
@@ -19,6 +20,13 @@ abstract interface class WalletBackupStateRepository {
   /// inside its own transaction, and answers the revision it produced.
   @useResult
   Future<Result<int, WalletBackupFailure>> recordLocalMutation();
+
+  /// Reconciles Payjoin's independent database, including after a restart.
+  /// Identical observations do not create a new backup revision.
+  @useResult
+  Future<Result<int, WalletBackupFailure>> recordObservedPayjoinPolicy(
+    WalletPayjoinSettings policy,
+  );
 
   /// Acknowledges [publishedRevision] as stored remotely. Anything committed
   /// during the store keeps the backup dirty, because the local revision has

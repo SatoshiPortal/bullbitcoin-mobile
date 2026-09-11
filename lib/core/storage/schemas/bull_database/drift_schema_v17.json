@@ -2470,6 +2470,16 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "observed_payjoin_policy",
+            "getter_name": "observedPayjoinPolicy",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -4133,7 +4143,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_backup_states\" (\"id\" INTEGER NOT NULL DEFAULT 1, \"enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"enabled\" IN (0, 1)), \"local_revision\" INTEGER NOT NULL DEFAULT 0, \"uploaded_revision\" INTEGER NOT NULL DEFAULT 0, \"last_succeeded_at\" INTEGER NULL, \"last_recovery_status\" TEXT NULL, \"unsupported_version\" INTEGER NULL, \"recovery_state\" TEXT NOT NULL DEFAULT 'idle', \"server_url\" TEXT NULL, \"remote_generation\" INTEGER NULL, \"remote_etag\" TEXT NULL, \"remote_ciphertext_hash\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_backup_states\" (\"id\" INTEGER NOT NULL DEFAULT 1, \"enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"enabled\" IN (0, 1)), \"local_revision\" INTEGER NOT NULL DEFAULT 0, \"uploaded_revision\" INTEGER NOT NULL DEFAULT 0, \"last_succeeded_at\" INTEGER NULL, \"last_recovery_status\" TEXT NULL, \"unsupported_version\" INTEGER NULL, \"recovery_state\" TEXT NOT NULL DEFAULT 'idle', \"server_url\" TEXT NULL, \"remote_generation\" INTEGER NULL, \"remote_etag\" TEXT NULL, \"remote_ciphertext_hash\" TEXT NULL, \"observed_payjoin_policy\" TEXT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },

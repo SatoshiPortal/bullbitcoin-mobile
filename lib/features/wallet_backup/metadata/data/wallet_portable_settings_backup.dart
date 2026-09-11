@@ -74,7 +74,6 @@ final class WalletPortableSettingsBackup {
         ),
       );
     }
-    final payjoinValue = _value(await payjoin.load());
     return WalletPortableSettings(
       bitcoinUnit: app.bitcoinUnit,
       fiatCurrency: app.currencyCode,
@@ -91,11 +90,16 @@ final class WalletPortableSettingsBackup {
       ),
       electrum: electrum,
       mempool: mempool,
-      payjoin: WalletPayjoinSettings(
-        enabled: payjoinValue.enabled,
-        minimumAmountSats: payjoinValue.minimumAmount.value.toInt(),
-        sessionLifetimeSeconds: payjoinValue.sessionLifetime.inSeconds,
-      ),
+      payjoin: await readPayjoin(),
+    );
+  }
+
+  Future<WalletPayjoinSettings> readPayjoin() async {
+    final policy = _value(await payjoin.load());
+    return WalletPayjoinSettings(
+      enabled: policy.enabled,
+      minimumAmountSats: policy.minimumAmount.value.toInt(),
+      sessionLifetimeSeconds: policy.sessionLifetime.inSeconds,
     );
   }
 

@@ -47,6 +47,7 @@ const walletBackupStateColumns = [
   'remote_generation',
   'remote_etag',
   'remote_ciphertext_hash',
+  'observed_payjoin_policy',
 ];
 
 const walletMetadataColumnsAdded = [
@@ -120,6 +121,7 @@ void main() {
     expect(fresh.remoteGeneration, isNull);
     expect(fresh.remoteEtag, isNull);
     expect(fresh.remoteCiphertextHash, isNull);
+    expect(fresh.observedPayjoinPolicy, isNull);
 
     await migrated.customStatement(
       'UPDATE wallet_backup_states SET remote_generation = 4, '

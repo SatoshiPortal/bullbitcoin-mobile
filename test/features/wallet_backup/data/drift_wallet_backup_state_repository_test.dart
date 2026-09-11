@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
+import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -24,6 +25,104 @@ void main() {
   });
 
   tearDown(() => database.close());
+
+  test(
+    'Payjoin observations are durable and deduplicated by represented values',
+    () async {
+      final initial = WalletPayjoinSettings(
+        enabled: false,
+        minimumAmountSats: 10000,
+        sessionLifetimeSeconds: 3600,
+      );
+      expect(
+        (await repository.recordObservedPayjoinPolicy(initial) as Ok).value,
+        1,
+      );
+      final reopened = DriftWalletBackupStateRepository(database);
+      expect(
+        (await reopened.recordObservedPayjoinPolicy(
+                  WalletPayjoinSettings(
+                    enabled: false,
+                    minimumAmountSats: 10000,
+                    sessionLifetimeSeconds: 3600,
+                  ),
+                )
+                as Ok)
+            .value,
+        1,
+      );
+      expect(
+        (await reopened.recordObservedPayjoinPolicy(
+                  WalletPayjoinSettings(
+                    enabled: true,
+                    minimumAmountSats: 10000,
+                    sessionLifetimeSeconds: 3600,
+                  ),
+                )
+                as Ok)
+            .value,
+        2,
+      );
+      expect(
+        (await reopened.recordObservedPayjoinPolicy(
+                  WalletPayjoinSettings(
+                    enabled: true,
+                    minimumAmountSats: 20000,
+                    sessionLifetimeSeconds: 3600,
+                  ),
+                )
+                as Ok)
+            .value,
+        3,
+      );
+      expect(
+        (await reopened.recordObservedPayjoinPolicy(
+                  WalletPayjoinSettings(
+                    enabled: true,
+                    minimumAmountSats: 20000,
+                    sessionLifetimeSeconds: 7200,
+                  ),
+                )
+                as Ok)
+            .value,
+        4,
+      );
+    },
+  );
+
+  test(
+    'failed Payjoin revision recording also rolls back its observed value',
+    () async {
+      final initial = WalletPayjoinSettings(
+        enabled: false,
+        minimumAmountSats: 10000,
+        sessionLifetimeSeconds: 3600,
+      );
+      expect(await repository.recordObservedPayjoinPolicy(initial), isA<Ok>());
+      final before = await database
+          .select(database.walletBackupStates)
+          .getSingle();
+      await database.customStatement('''
+      CREATE TRIGGER reject_payjoin_backup_revision
+      BEFORE UPDATE OF local_revision ON wallet_backup_states
+      BEGIN SELECT RAISE(ABORT, 'injected revision failure'); END
+    ''');
+      expect(
+        await repository.recordObservedPayjoinPolicy(
+          WalletPayjoinSettings(
+            enabled: true,
+            minimumAmountSats: 10000,
+            sessionLifetimeSeconds: 3600,
+          ),
+        ),
+        isA<Err>(),
+      );
+      expect(
+        await database.select(database.walletBackupStates).getSingle(),
+        before,
+      );
+    },
+  );
 
   test('an idle backup state subscription can be cancelled', () async {
     final first = Completer<void>();

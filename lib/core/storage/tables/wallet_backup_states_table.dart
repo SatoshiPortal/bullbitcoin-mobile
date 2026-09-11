@@ -23,6 +23,10 @@ class WalletBackupStates extends Table {
   TextColumn get remoteEtag => text().nullable()();
   TextColumn get remoteCiphertextHash => text().nullable()();
 
+  /// Last policy observed in Payjoin's separate database. Comparing on startup
+  /// catches writes whose in-memory notification was lost before a crash.
+  TextColumn get observedPayjoinPolicy => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

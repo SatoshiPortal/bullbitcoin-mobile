@@ -9308,6 +9308,7 @@ final class Schema17 extends i0.VersionedSchema {
         _column_355,
         _column_356,
         _column_357,
+        _column_358,
       ],
       attachedDatabase: database,
     ),
@@ -9836,6 +9837,8 @@ class Shape55 extends i0.VersionedTable {
       columnsByName['remote_etag']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<String> get remoteCiphertextHash =>
       columnsByName['remote_ciphertext_hash']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get observedPayjoinPolicy =>
+      columnsByName['observed_payjoin_policy']! as i1.GeneratedColumn<String>;
 }
 
 i1.GeneratedColumn<int> _column_346(String aliasedName) =>
@@ -9934,6 +9937,14 @@ i1.GeneratedColumn<String> _column_356(String aliasedName) =>
 i1.GeneratedColumn<String> _column_357(String aliasedName) =>
     i1.GeneratedColumn<String>(
       'remote_ciphertext_hash',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_358(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'observed_payjoin_policy',
       aliasedName,
       true,
       type: i1.DriftSqlType.string,

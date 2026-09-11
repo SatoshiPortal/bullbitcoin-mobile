@@ -44,6 +44,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wall
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/reconcile_payjoin_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/refresh_wallet_recovery_manifest_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
@@ -181,7 +182,9 @@ final class _WalletBackupGraph {
           locator<ApplyRecoveredWalletPreferencesUsecase>().execute,
       readPortableSettings: portableSettings.read,
       restorePortableSettings: portableSettings.restore,
-      changeStreams: [payjoin.watch().skip(1).map((_) {})],
+      // Reconcile the initial policy too: its previous notification may have
+      // been lost. The durable comparison prevents unchanged-startup uploads.
+      changeStreams: [payjoin.watch().map((_) {})],
     );
     final keychainManifest = locator<KeychainManifestFacade>();
     final codec = WalletBackupSnapshotCodec(
@@ -301,7 +304,10 @@ final class _WalletBackupGraph {
       unrecordedChanges: metadata.changes,
       syncResults: locator<WatchElectrumSyncResultsUsecase>().execute(),
       runner: runner,
-      recordMutation: state.recordLocalMutation,
+      recordMutation: ReconcilePayjoinBackupUsecase(
+        state,
+        portableSettings.readPayjoin,
+      ).execute,
     );
     final facade = WalletBackupFacade(
       GetWalletBackupContentsUsecase(

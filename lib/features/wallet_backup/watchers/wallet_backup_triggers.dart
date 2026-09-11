@@ -27,6 +27,9 @@ final class WalletBackupTriggers with WidgetsBindingObserver {
 
   final Stream<ElectrumSyncResult> syncResults;
   final WalletBackupJobRunner runner;
+
+  /// Reconciles external owners with their durable last-observed values.
+  /// Called on events and resume; unchanged values must not add a revision.
   final RecordWalletBackupMutation recordMutation;
 
   final List<StreamSubscription<void>> _subscriptions = [];
@@ -64,7 +67,7 @@ final class WalletBackupTriggers with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _requestPublish();
+    if (state == AppLifecycleState.resumed) _recordThenPublish();
   }
 
   Future<void> dispose() async {

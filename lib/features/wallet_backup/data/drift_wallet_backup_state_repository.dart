@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_s
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart';
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 
@@ -77,6 +78,27 @@ final class DriftWalletBackupStateRepository
       });
     });
   }
+
+  @override
+  @useResult
+  Future<Result<int, WalletBackupFailure>> recordObservedPayjoinPolicy(
+    WalletPayjoinSettings policy,
+  ) => _read(
+    'observe Payjoin policy',
+    () => _database.transaction(() async {
+      final current = await _current();
+      final observed =
+          '${policy.enabled}:${policy.minimumAmountSats}:${policy.sessionLifetimeSeconds}';
+      if (current.observedPayjoinPolicy == observed) {
+        return current.localRevision;
+      }
+      await _update(
+        WalletBackupStatesCompanion(observedPayjoinPolicy: Value(observed)),
+      );
+      await _revisions.recordCommittedMutation();
+      return (await _current()).localRevision;
+    }),
+  );
 
   @override
   @useResult

@@ -9490,6 +9490,15 @@ class WalletBackupStates extends Table
         requiredDuringInsert: false,
         $customConstraints: 'NULL',
       );
+  late final GeneratedColumn<String> observedPayjoinPolicy =
+      GeneratedColumn<String>(
+        'observed_payjoin_policy',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -9504,6 +9513,7 @@ class WalletBackupStates extends Table
     remoteGeneration,
     remoteEtag,
     remoteCiphertextHash,
+    observedPayjoinPolicy,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -9564,6 +9574,10 @@ class WalletBackupStates extends Table
         DriftSqlType.string,
         data['${effectivePrefix}remote_ciphertext_hash'],
       ),
+      observedPayjoinPolicy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}observed_payjoin_policy'],
+      ),
     );
   }
 
@@ -9592,6 +9606,7 @@ class WalletBackupStatesData extends DataClass
   final int? remoteGeneration;
   final String? remoteEtag;
   final String? remoteCiphertextHash;
+  final String? observedPayjoinPolicy;
   const WalletBackupStatesData({
     required this.id,
     required this.enabled,
@@ -9605,6 +9620,7 @@ class WalletBackupStatesData extends DataClass
     this.remoteGeneration,
     this.remoteEtag,
     this.remoteCiphertextHash,
+    this.observedPayjoinPolicy,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -9634,6 +9650,9 @@ class WalletBackupStatesData extends DataClass
     }
     if (!nullToAbsent || remoteCiphertextHash != null) {
       map['remote_ciphertext_hash'] = Variable<String>(remoteCiphertextHash);
+    }
+    if (!nullToAbsent || observedPayjoinPolicy != null) {
+      map['observed_payjoin_policy'] = Variable<String>(observedPayjoinPolicy);
     }
     return map;
   }
@@ -9666,6 +9685,9 @@ class WalletBackupStatesData extends DataClass
       remoteCiphertextHash: remoteCiphertextHash == null && nullToAbsent
           ? const Value.absent()
           : Value(remoteCiphertextHash),
+      observedPayjoinPolicy: observedPayjoinPolicy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(observedPayjoinPolicy),
     );
   }
 
@@ -9691,6 +9713,9 @@ class WalletBackupStatesData extends DataClass
       remoteCiphertextHash: serializer.fromJson<String?>(
         json['remoteCiphertextHash'],
       ),
+      observedPayjoinPolicy: serializer.fromJson<String?>(
+        json['observedPayjoinPolicy'],
+      ),
     );
   }
   @override
@@ -9709,6 +9734,9 @@ class WalletBackupStatesData extends DataClass
       'remoteGeneration': serializer.toJson<int?>(remoteGeneration),
       'remoteEtag': serializer.toJson<String?>(remoteEtag),
       'remoteCiphertextHash': serializer.toJson<String?>(remoteCiphertextHash),
+      'observedPayjoinPolicy': serializer.toJson<String?>(
+        observedPayjoinPolicy,
+      ),
     };
   }
 
@@ -9725,6 +9753,7 @@ class WalletBackupStatesData extends DataClass
     Value<int?> remoteGeneration = const Value.absent(),
     Value<String?> remoteEtag = const Value.absent(),
     Value<String?> remoteCiphertextHash = const Value.absent(),
+    Value<String?> observedPayjoinPolicy = const Value.absent(),
   }) => WalletBackupStatesData(
     id: id ?? this.id,
     enabled: enabled ?? this.enabled,
@@ -9748,6 +9777,9 @@ class WalletBackupStatesData extends DataClass
     remoteCiphertextHash: remoteCiphertextHash.present
         ? remoteCiphertextHash.value
         : this.remoteCiphertextHash,
+    observedPayjoinPolicy: observedPayjoinPolicy.present
+        ? observedPayjoinPolicy.value
+        : this.observedPayjoinPolicy,
   );
   WalletBackupStatesData copyWithCompanion(WalletBackupStatesCompanion data) {
     return WalletBackupStatesData(
@@ -9781,6 +9813,9 @@ class WalletBackupStatesData extends DataClass
       remoteCiphertextHash: data.remoteCiphertextHash.present
           ? data.remoteCiphertextHash.value
           : this.remoteCiphertextHash,
+      observedPayjoinPolicy: data.observedPayjoinPolicy.present
+          ? data.observedPayjoinPolicy.value
+          : this.observedPayjoinPolicy,
     );
   }
 
@@ -9798,7 +9833,8 @@ class WalletBackupStatesData extends DataClass
           ..write('serverUrl: $serverUrl, ')
           ..write('remoteGeneration: $remoteGeneration, ')
           ..write('remoteEtag: $remoteEtag, ')
-          ..write('remoteCiphertextHash: $remoteCiphertextHash')
+          ..write('remoteCiphertextHash: $remoteCiphertextHash, ')
+          ..write('observedPayjoinPolicy: $observedPayjoinPolicy')
           ..write(')'))
         .toString();
   }
@@ -9817,6 +9853,7 @@ class WalletBackupStatesData extends DataClass
     remoteGeneration,
     remoteEtag,
     remoteCiphertextHash,
+    observedPayjoinPolicy,
   );
   @override
   bool operator ==(Object other) =>
@@ -9833,7 +9870,8 @@ class WalletBackupStatesData extends DataClass
           other.serverUrl == this.serverUrl &&
           other.remoteGeneration == this.remoteGeneration &&
           other.remoteEtag == this.remoteEtag &&
-          other.remoteCiphertextHash == this.remoteCiphertextHash);
+          other.remoteCiphertextHash == this.remoteCiphertextHash &&
+          other.observedPayjoinPolicy == this.observedPayjoinPolicy);
 }
 
 class WalletBackupStatesCompanion
@@ -9850,6 +9888,7 @@ class WalletBackupStatesCompanion
   final Value<int?> remoteGeneration;
   final Value<String?> remoteEtag;
   final Value<String?> remoteCiphertextHash;
+  final Value<String?> observedPayjoinPolicy;
   const WalletBackupStatesCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
@@ -9863,6 +9902,7 @@ class WalletBackupStatesCompanion
     this.remoteGeneration = const Value.absent(),
     this.remoteEtag = const Value.absent(),
     this.remoteCiphertextHash = const Value.absent(),
+    this.observedPayjoinPolicy = const Value.absent(),
   });
   WalletBackupStatesCompanion.insert({
     this.id = const Value.absent(),
@@ -9877,6 +9917,7 @@ class WalletBackupStatesCompanion
     this.remoteGeneration = const Value.absent(),
     this.remoteEtag = const Value.absent(),
     this.remoteCiphertextHash = const Value.absent(),
+    this.observedPayjoinPolicy = const Value.absent(),
   });
   static Insertable<WalletBackupStatesData> custom({
     Expression<int>? id,
@@ -9891,6 +9932,7 @@ class WalletBackupStatesCompanion
     Expression<int>? remoteGeneration,
     Expression<String>? remoteEtag,
     Expression<String>? remoteCiphertextHash,
+    Expression<String>? observedPayjoinPolicy,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -9907,6 +9949,8 @@ class WalletBackupStatesCompanion
       if (remoteEtag != null) 'remote_etag': remoteEtag,
       if (remoteCiphertextHash != null)
         'remote_ciphertext_hash': remoteCiphertextHash,
+      if (observedPayjoinPolicy != null)
+        'observed_payjoin_policy': observedPayjoinPolicy,
     });
   }
 
@@ -9923,6 +9967,7 @@ class WalletBackupStatesCompanion
     Value<int?>? remoteGeneration,
     Value<String?>? remoteEtag,
     Value<String?>? remoteCiphertextHash,
+    Value<String?>? observedPayjoinPolicy,
   }) {
     return WalletBackupStatesCompanion(
       id: id ?? this.id,
@@ -9937,6 +9982,8 @@ class WalletBackupStatesCompanion
       remoteGeneration: remoteGeneration ?? this.remoteGeneration,
       remoteEtag: remoteEtag ?? this.remoteEtag,
       remoteCiphertextHash: remoteCiphertextHash ?? this.remoteCiphertextHash,
+      observedPayjoinPolicy:
+          observedPayjoinPolicy ?? this.observedPayjoinPolicy,
     );
   }
 
@@ -9981,6 +10028,11 @@ class WalletBackupStatesCompanion
         remoteCiphertextHash.value,
       );
     }
+    if (observedPayjoinPolicy.present) {
+      map['observed_payjoin_policy'] = Variable<String>(
+        observedPayjoinPolicy.value,
+      );
+    }
     return map;
   }
 
@@ -9998,7 +10050,8 @@ class WalletBackupStatesCompanion
           ..write('serverUrl: $serverUrl, ')
           ..write('remoteGeneration: $remoteGeneration, ')
           ..write('remoteEtag: $remoteEtag, ')
-          ..write('remoteCiphertextHash: $remoteCiphertextHash')
+          ..write('remoteCiphertextHash: $remoteCiphertextHash, ')
+          ..write('observedPayjoinPolicy: $observedPayjoinPolicy')
           ..write(')'))
         .toString();
   }
