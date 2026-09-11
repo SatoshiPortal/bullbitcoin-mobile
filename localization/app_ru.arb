@@ -2504,11 +2504,8 @@
   "fundExchangeErrorTitleRcpPo404": "Способ оплаты недоступен",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE недоступен",
   "fundExchangeErrorTitleOrdKyc400": "Отсутствуют требования KYC",
-  "fundExchangeErrorOrdKyc400": "У вас нет требований KYC для этого действия: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Неверные данные для пополнения в COP",
-  "fundExchangeErrorOrdCop400": "Неверные данные запроса для пополнения в COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Виртуальный платёж не активирован",
-  "fundExchangeErrorOrdCsrcp400": "Пожалуйста, активируйте опцию виртуального платежа для получателя SEPA с IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Неверный запрос",
   "fundExchangeErrorRcp400": "Неверный запрос",
   "fundExchangeErrorOrdPo404": "Нет доступного способа оплаты",
@@ -4898,5 +4895,7 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "fundExchangeErrorOrdCop400": "Неверные данные запроса для пополнения в COP",
+  "fundExchangeErrorOrdKyc400": "У вас нет требований KYC для этого действия"
 }

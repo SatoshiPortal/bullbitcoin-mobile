@@ -5,21 +5,19 @@ sealed class FundExchangeState with _$FundExchangeState {
   const factory FundExchangeState({
     @Default(false) bool isStarted,
     UserSummary? userSummary,
-    GetExchangeUserSummaryException? getUserSummaryException,
     @Default(false) bool isLoadingFundingInstitutions,
     List<FundingInstitution>? fundingInstitutions,
-    FundExchangePresentationError? listFundingInstitutionsException,
+    FundExchangeFailure? listFundingInstitutionsFailure,
     @Default(false) bool isLoadingFundingDetails,
     FundingDetails? fundingDetails,
-    FundExchangePresentationError? getExchangeFundingDetailsException,
+    FundExchangeFailure? getFundingDetailsFailure,
     @Default(false) bool isSubmittingScamWarningConsent,
-    FundExchangePresentationError? submitScamWarningConsentException,
+    FundExchangeFailure? submitScamWarningConsentFailure,
     PendingConsentAction? pendingConsentAction,
   }) = _FundExchangeState;
   const FundExchangeState._();
 
-  bool get failedToLoadFundingDetails =>
-      getExchangeFundingDetailsException != null;
+  bool get failedToLoadFundingDetails => getFundingDetailsFailure != null;
 
   bool get isFundingRestricted => userSummary?.isFundingRestricted ?? false;
 

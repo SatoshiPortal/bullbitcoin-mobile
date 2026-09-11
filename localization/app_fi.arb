@@ -882,11 +882,8 @@
   "fundExchangeErrorTitleRcpPo404": "Maksuvaihtoehto ei ole saatavilla",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ei ole saatavilla",
   "fundExchangeErrorTitleOrdKyc400": "KYC-vaatimukset puuttuvat",
-  "fundExchangeErrorOrdKyc400": "Sinulla ei ole KYC-vaatimuksia tätä toimintoa varten: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Virheelliset COP-rahoitustiedot",
-  "fundExchangeErrorOrdCop400": "Virheelliset pyyntötiedot COP-rahoitukselle: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtuaalimaksua ei aktivoitu",
-  "fundExchangeErrorOrdCsrcp400": "Aktivoi virtuaalinen maksuvaihtoehto SEPA-vastaanottajalle IBANilla: {iban}",
   "fundExchangeErrorTitleRcp400": "Virheellinen pyyntö",
   "fundExchangeErrorRcp400": "Virheellinen pyyntö",
   "fundExchangeErrorOrdPo404": "Maksuvaihtoehtoa ei ole saatavilla",
@@ -4880,5 +4877,7 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "fundExchangeErrorOrdCop400": "Virheelliset pyyntötiedot COP-rahoitukselle",
+  "fundExchangeErrorOrdKyc400": "Sinulla ei ole KYC-vaatimuksia tätä toimintoa varten"
 }

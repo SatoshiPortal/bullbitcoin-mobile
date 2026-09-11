@@ -3012,11 +3012,8 @@
   "fundExchangeErrorTitleRcpPo404": "Payment Option Uplabdh Nahin Hai",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Uplabdh Nahin",
   "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing Hain",
-  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Galat COP Funding Data",
-  "fundExchangeErrorOrdCop400": "COP funding ke liye invalid request data: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Activate Nahin Hai",
-  "fundExchangeErrorOrdCsrcp400": "Kripya IBAN: {iban} wale SEPA recipient ke liye virtual payment option activate karein",
   "fundExchangeErrorTitleRcp400": "Galat Request",
   "fundExchangeErrorRcp400": "Galat request",
   "fundExchangeErrorOrdPo404": "Koi payment option uplabdh nahin hai",
@@ -12532,5 +12529,7 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "fundExchangeErrorOrdCop400": "COP funding ke liye invalid request data",
+  "fundExchangeErrorOrdKyc400": "Is action ke liye aapke paas zaroori KYC requirements nahin hain"
 }

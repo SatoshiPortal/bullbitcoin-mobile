@@ -7383,11 +7383,8 @@
   "fundExchangeErrorTitleRcpPo404": "گزینه پرداخت موجود نیست",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE در دسترس نیست",
   "fundExchangeErrorTitleOrdKyc400": "الزامات KYC ناقص است",
-  "fundExchangeErrorOrdKyc400": "شما الزامات KYC لازم برای این عمل را ندارید: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "داده‌های تأمین مالی COP نامعتبر است",
-  "fundExchangeErrorOrdCop400": "داده‌های درخواست برای تأمین مالی COP نامعتبر است: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "پرداخت مجازی فعال نشده است",
-  "fundExchangeErrorOrdCsrcp400": "لطفاً گزینه پرداخت مجازی را برای گیرنده SEPA با IBAN فعال کنید: {iban}",
   "fundExchangeErrorTitleRcp400": "درخواست نامعتبر",
   "fundExchangeErrorRcp400": "درخواست نامعتبر",
   "fundExchangeErrorOrdPo404": "گزینه پرداختی در دسترس نیست",
@@ -12147,5 +12144,7 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "fundExchangeErrorOrdCop400": "داده‌های درخواست برای تأمین مالی COP نامعتبر است",
+  "fundExchangeErrorOrdKyc400": "شما الزامات KYC لازم برای این عمل را ندارید"
 }

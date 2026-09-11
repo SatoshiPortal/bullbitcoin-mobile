@@ -7661,11 +7661,8 @@
   "fundExchangeErrorTitleRcpPo404": "결제 옵션을 사용할 수 없음",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE 사용 불가",
   "fundExchangeErrorTitleOrdKyc400": "KYC 요건 미충족",
-  "fundExchangeErrorOrdKyc400": "이 작업에 필요한 KYC 요건을 충족하지 않습니다: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "잘못된 COP 자금 조달 데이터",
-  "fundExchangeErrorOrdCop400": "COP 자금 조달을 위한 요청 데이터가 잘못되었습니다: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "가상 결제가 활성화되지 않음",
-  "fundExchangeErrorOrdCsrcp400": "IBAN이 {iban}인 SEPA 수취인에 대해 가상 결제 옵션을 활성화해 주세요.",
   "fundExchangeErrorTitleRcp400": "잘못된 요청",
   "fundExchangeErrorRcp400": "잘못된 요청",
   "fundExchangeErrorOrdPo404": "사용 가능한 결제 옵션이 없습니다",
@@ -12147,5 +12144,7 @@
   "sendErrorExchangeOrderMismatch": "이 결제가 주문과 더 이상 일치하지 않습니다. 결제를 다시 시작하세요.",
   "sellUnexpectedError": "판매 주문을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
   "sellErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
-  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요."
+  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "fundExchangeErrorOrdCop400": "COP 자금 조달을 위한 요청 데이터가 잘못되었습니다",
+  "fundExchangeErrorOrdKyc400": "이 작업에 필요한 KYC 요건을 충족하지 않습니다"
 }

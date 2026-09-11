@@ -3942,40 +3942,13 @@
   "@fundExchangeErrorTitleOrdKyc400": {
     "description": "bb-exchange errorTitleOrdKyc400"
   },
-  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action: {missingFields}",
-  "@fundExchangeErrorOrdKyc400": {
-    "description": "bb-exchange errorMsgOrdKyc400",
-    "placeholders": {
-      "missingFields": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
   "@fundExchangeErrorTitleOrdCop400": {
     "description": "bb-exchange errorTitleOrdCop400"
   },
-  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding: {error}",
-  "@fundExchangeErrorOrdCop400": {
-    "description": "bb-exchange errorMsgOrdCop400",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
   "@fundExchangeErrorTitleOrdCsrcp400": {
     "description": "bb-exchange errorTitleOrdCsrcp400"
-  },
-  "fundExchangeErrorOrdCsrcp400": "Please activate virtual payment option for the SEPA recipient with IBAN: {iban}",
-  "@fundExchangeErrorOrdCsrcp400": {
-    "description": "bb-exchange errorMsgOrdCsrcp400",
-    "placeholders": {
-      "iban": {
-        "type": "String"
-      }
-    }
   },
   "fundExchangeErrorTitleRcp400": "Invalid Request",
   "@fundExchangeErrorTitleRcp400": {
@@ -14605,5 +14578,17 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "fundExchangeErrorOrdCsrcp400": "Please activate the virtual payment option for this SEPA recipient",
+  "@fundExchangeErrorOrdCsrcp400": {
+    "description": "bb-exchange errorMsgOrdCsrcp400. The API returns the recipient IBAN in messageData.iban; it is backend-controlled text, kept to logs only (#1895). Retranslation needed: the previous copy named the IBAN."
+  },
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action",
+  "@fundExchangeErrorOrdKyc400": {
+    "description": "bb-exchange errorMsgOrdKyc400. The API names the missing fields in messageData.missingFields; that is backend-controlled text, kept to logs only (#1895)."
+  },
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding",
+  "@fundExchangeErrorOrdCop400": {
+    "description": "bb-exchange errorMsgOrdCop400. The API's raw error sentence is kept to logs only (#1895)."
   }
 }

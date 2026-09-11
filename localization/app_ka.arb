@@ -492,11 +492,8 @@
   "fundExchangeErrorTitleRcpPo404": "გადახდის ვარიანტი ხელმისაწვდომი არ არის",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE ხელმისაწვდომი არ არის",
   "fundExchangeErrorTitleOrdKyc400": "KYC მოთხოვნები აკლია",
-  "fundExchangeErrorOrdKyc400": "თქვენ არ გაქვთ ამ მოქმედებისთვის საჭირო KYC მოთხოვნები: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "COP დაფინანსების არასწორი მონაცემები",
-  "fundExchangeErrorOrdCop400": "არასწორი მოთხოვნის მონაცემები COP დაფინანსებისთვის: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "ვირტუალური გადახდა არ არის გააქტიურებული",
-  "fundExchangeErrorOrdCsrcp400": "გთხოვთ, გაააქტიუროთ ვირტუალური გადახდის ვარიანტი SEPA მიმღებისთვის შემდეგი IBAN-ით: {iban}",
   "fundExchangeErrorTitleRcp400": "არასწორი მოთხოვნა",
   "fundExchangeErrorRcp400": "არასწორი მოთხოვნა",
   "fundExchangeErrorOrdPo404": "გადახდის ვარიანტი არ არის ხელმისაწვდომი",
@@ -3721,5 +3718,7 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "fundExchangeErrorOrdCop400": "არასწორი მოთხოვნის მონაცემები COP დაფინანსებისთვის",
+  "fundExchangeErrorOrdKyc400": "თქვენ არ გაქვთ ამ მოქმედებისთვის საჭირო KYC მოთხოვნები"
 }

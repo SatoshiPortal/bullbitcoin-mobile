@@ -295,11 +295,8 @@
   "fundExchangeErrorTitleRcpPo404": "Վճարման տարբերակը հասանելի չէ",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE-ն հասանելի չէ",
   "fundExchangeErrorTitleOrdKyc400": "KYC-ի պահանջները բացակայում են",
-  "fundExchangeErrorOrdKyc400": "Դուք չունեք այս գործողության համար անհրաժեշտ KYC-ի պահանջները՝ {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "COP ֆինանսավորման անվավեր տվյալներ",
-  "fundExchangeErrorOrdCop400": "Անվավեր հարցման տվյալներ COP ֆինանսավորման համար՝ {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Վիրտուալ վճարումը ակտիվացված չէ",
-  "fundExchangeErrorOrdCsrcp400": "Խնդրում ենք ակտիվացնել վիրտուալ վճարման տարբերակը SEPA ստացողի համար հետևյալ IBAN-ով՝ {iban}",
   "fundExchangeErrorTitleRcp400": "Անվավեր հարցում",
   "fundExchangeErrorRcp400": "Անվավեր հարցում",
   "fundExchangeErrorOrdPo404": "Վճարման տարբերակ հասանելի չէ",
@@ -3574,5 +3571,7 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "fundExchangeErrorOrdCop400": "Անվավեր հարցման տվյալներ COP ֆինանսավորման համար",
+  "fundExchangeErrorOrdKyc400": "Դուք չունեք այս գործողության համար անհրաժեշտ KYC-ի պահանջները"
 }

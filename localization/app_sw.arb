@@ -312,11 +312,8 @@
   "fundExchangeErrorTitleRcpPo404": "Chaguo la Malipo Halipatikani",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Haipatikani",
   "fundExchangeErrorTitleOrdKyc400": "Mahitaji ya KYC Yamekosekana",
-  "fundExchangeErrorOrdKyc400": "Huna mahitaji ya KYC kwa ajili ya kitendo hiki: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Data ya Ufadhili wa COP si Sahihi",
-  "fundExchangeErrorOrdCop400": "Data ya ombi si sahihi kwa ufadhili wa COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Malipo ya Mtandaoni Hayajawashwa",
-  "fundExchangeErrorOrdCsrcp400": "Tafadhali washa chaguo la malipo ya mtandaoni kwa mpokeaji wa SEPA mwenye IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Ombi si Sahihi",
   "fundExchangeErrorRcp400": "Ombi si sahihi",
   "fundExchangeErrorOrdPo404": "Hakuna chaguo la malipo linalopatikana",
@@ -3586,5 +3583,7 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "fundExchangeErrorOrdCop400": "Data ya ombi si sahihi kwa ufadhili wa COP",
+  "fundExchangeErrorOrdKyc400": "Huna mahitaji ya KYC kwa ajili ya kitendo hiki"
 }

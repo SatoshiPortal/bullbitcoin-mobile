@@ -7594,11 +7594,8 @@
   "fundExchangeErrorTitleRcpPo404": "Ödeme Seçeneği Mevcut Değil",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Kullanılamıyor",
   "fundExchangeErrorTitleOrdKyc400": "KYC Gereksinimleri Eksik",
-  "fundExchangeErrorOrdKyc400": "Bu işlem için gerekli KYC gereksinimlerine sahip değilsiniz: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Geçersiz COP Fonlama Verisi",
-  "fundExchangeErrorOrdCop400": "COP fonlaması için geçersiz istek verisi: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Sanal Ödeme Etkinleştirilmedi",
-  "fundExchangeErrorOrdCsrcp400": "Lütfen şu IBAN'a sahip SEPA alıcısı için sanal ödeme seçeneğini etkinleştirin: {iban}",
   "fundExchangeErrorTitleRcp400": "Geçersiz İstek",
   "fundExchangeErrorRcp400": "Geçersiz istek",
   "fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
@@ -12147,5 +12144,7 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "fundExchangeErrorOrdCop400": "COP fonlaması için geçersiz istek verisi",
+  "fundExchangeErrorOrdKyc400": "Bu işlem için gerekli KYC gereksinimlerine sahip değilsiniz"
 }

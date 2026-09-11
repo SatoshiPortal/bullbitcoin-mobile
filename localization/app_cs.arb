@@ -7592,11 +7592,8 @@
   "fundExchangeErrorTitleRcpPo404": "Platební možnost není dostupná",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE není k dispozici",
   "fundExchangeErrorTitleOrdKyc400": "Chybějící požadavky KYC",
-  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Neplatná data financování COP",
-  "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtuální platba není aktivována",
-  "fundExchangeErrorOrdCsrcp400": "Aktivujte prosím možnost virtuální platby pro příjemce SEPA s IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Neplatný požadavek",
   "fundExchangeErrorRcp400": "Neplatný požadavek",
   "fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
@@ -12147,5 +12144,7 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "fundExchangeErrorOrdCop400": "Neplatná data požadavku pro financování COP",
+  "fundExchangeErrorOrdKyc400": "Nesplňujete požadavky KYC pro tuto akci"
 }

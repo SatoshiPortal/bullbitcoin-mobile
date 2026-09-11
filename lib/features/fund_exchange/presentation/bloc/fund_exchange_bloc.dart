@@ -1,26 +1,33 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/pending_consent_action.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:primitives/primitives.dart';
 
 part 'fund_exchange_event.dart';
 part 'fund_exchange_state.dart';
 part 'fund_exchange_bloc.freezed.dart';
 
 class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
+  final GetFundExchangeUserSummaryUsecase _getFundExchangeUserSummaryUsecase;
+  final GetFundingDetailsUsecase _getFundingDetailsUsecase;
+  final ListFundingInstitutionsUsecase _listFundingInstitutionsUsecase;
+  final RegisterResponsibilityConsentUsecase
+  _registerResponsibilityConsentUsecase;
+
   FundExchangeBloc({
-    required this._getExchangeUserSummaryUsecase,
+    required this._getFundExchangeUserSummaryUsecase,
     required this._getFundingDetailsUsecase,
     required this._listFundingInstitutionsUsecase,
     required this._registerResponsibilityConsentUsecase,
@@ -35,24 +42,22 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     on<FundExchangeFundingDetailsErrorCleared>(_onFundingDetailsErrorCleared);
   }
 
-  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final GetFundingDetailsUsecase _getFundingDetailsUsecase;
-  final ListFundingInstitutionsUsecase _listFundingInstitutionsUsecase;
-  final RegisterResponsibilityConsentUsecase
-  _registerResponsibilityConsentUsecase;
-
   Future<void> _onStarted(
     FundExchangeStarted event,
     Emitter<FundExchangeState> emit,
   ) async {
-    try {
-      final summary = await _getExchangeUserSummaryUsecase.execute();
-      emit(state.copyWith(userSummary: summary));
-    } on GetExchangeUserSummaryException catch (e) {
-      emit(state.copyWith(getUserSummaryException: e));
-    } finally {
-      emit(state.copyWith(isStarted: true));
+    final result = await _getFundExchangeUserSummaryUsecase.execute();
+
+    switch (result) {
+      case Ok(:final value):
+        emit(state.copyWith(userSummary: value));
+      case Err(:final failure):
+        // Not surfaced: the screen degrades to the unrestricted, consent-less
+        // default rather than blocking on a summary it can do without.
+        log.warning(failure.logMessage ?? 'Failed to load user summary');
     }
+
+    emit(state.copyWith(isStarted: true));
   }
 
   Future<void> _onFundingInstitutionsRequested(
@@ -63,37 +68,30 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       emit(state.copyWith(pendingConsentAction: const PendingCopInputAction()));
       return;
     }
-    try {
-      emit(
-        state.copyWith(
-          fundingInstitutions: null,
-          listFundingInstitutionsException: null,
-          isLoadingFundingInstitutions: true,
-          pendingConsentAction: null,
-        ),
-      );
 
-      final result = await _listFundingInstitutionsUsecase.execute(
-        ListFundingInstitutionsQuery(jurisdictionCode: event.jurisdiction.code),
-      );
+    emit(
+      state.copyWith(
+        fundingInstitutions: null,
+        listFundingInstitutionsFailure: null,
+        isLoadingFundingInstitutions: true,
+        pendingConsentAction: null,
+      ),
+    );
 
-      if (result.institutions.isEmpty) {
-        throw const FetchInstitutionsFailed.emptyList();
-      }
+    final result = await _listFundingInstitutionsUsecase.execute(
+      ListFundingInstitutionsQuery(jurisdiction: event.jurisdiction),
+    );
 
-      emit(state.copyWith(fundingInstitutions: result.institutions));
-    } on FundExchangeApplicationError catch (e) {
-      emit(
-        state.copyWith(
-          listFundingInstitutionsException:
-              FundExchangePresentationError.fromApplicationError(e),
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(listFundingInstitutionsException: UnexpectedError()));
-    } finally {
-      emit(state.copyWith(isLoadingFundingInstitutions: false));
-    }
+    emit(switch (result) {
+      Ok(:final value) => state.copyWith(
+        fundingInstitutions: value.institutions,
+        isLoadingFundingInstitutions: false,
+      ),
+      Err(:final failure) => state.copyWith(
+        listFundingInstitutionsFailure: failure,
+        isLoadingFundingInstitutions: false,
+      ),
+    });
   }
 
   Future<void> _onFundingDetailsRequested(
@@ -110,127 +108,108 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       );
       return;
     }
-    try {
-      emit(
-        state.copyWith(
-          fundingDetails: null,
-          getExchangeFundingDetailsException: null,
-          isLoadingFundingDetails: true,
-          pendingConsentAction: null,
-        ),
-      );
 
-      GetFundingDetailsQuery query;
-      switch (event.fundingMethod) {
-        case EmailETransfer():
-          query = GetEmailETransferDetails();
-          break;
-        case BankTransferWire():
-          query = GetBankTransferWireDetails();
-          break;
-        case OnlineBillPayment():
-          query = GetOnlineBillPaymentDetails();
-          break;
-        case CanadaPost():
-          query = GetCanadaPostDetails();
-          break;
-        case InstantSepa():
-          query = GetInstantSepaDetails();
-          break;
-        case RegularSepa():
-          query = GetRegularSepaDetails();
-          break;
-        case SpeiTransfer():
-          query = GetSpeiTransferDetails();
-          break;
-        case CrIbanCrc():
-          query = GetCrIbanCrcDetails();
-          break;
-        case CrIbanUsd():
-          query = GetCrIbanUsdDetails();
-          break;
-        case Sinpe():
-          query = GetSinpeDetails();
-          break;
-        case ArsBankTransfer():
-          query = GetArsBankTransferDetails();
-          break;
-        case CopBankTransfer(:final bankCode, :final amountCop):
-          query = GetCopBankTransferDetails(
-            bankCode: bankCode,
-            amountCop: amountCop,
-          );
-          break;
-      }
+    emit(
+      state.copyWith(
+        fundingDetails: null,
+        getFundingDetailsFailure: null,
+        isLoadingFundingDetails: true,
+        pendingConsentAction: null,
+      ),
+    );
 
-      final fundingDetails = await _getFundingDetailsUsecase.execute(query);
-      emit(state.copyWith(fundingDetails: fundingDetails.fundingDetails));
-    } on FundExchangeApplicationError catch (e) {
-      emit(
-        state.copyWith(
-          getExchangeFundingDetailsException:
-              FundExchangePresentationError.fromApplicationError(e),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(getExchangeFundingDetailsException: UnexpectedError()),
-      );
-    } finally {
-      emit(state.copyWith(isLoadingFundingDetails: false));
-    }
+    final query = switch (event.fundingMethod) {
+      EmailETransfer() => const GetEmailETransferDetails(),
+      BankTransferWire() => const GetBankTransferWireDetails(),
+      OnlineBillPayment() => const GetOnlineBillPaymentDetails(),
+      CanadaPost() => const GetCanadaPostDetails(),
+      InstantSepa() => const GetInstantSepaDetails(),
+      RegularSepa() => const GetRegularSepaDetails(),
+      SpeiTransfer() => const GetSpeiTransferDetails(),
+      CrIbanCrc() => const GetCrIbanCrcDetails(),
+      CrIbanUsd() => const GetCrIbanUsdDetails(),
+      Sinpe() => const GetSinpeDetails(),
+      ArsBankTransfer() => const GetArsBankTransferDetails(),
+      CopBankTransfer(:final bankCode, :final amountCop) =>
+        GetCopBankTransferDetails(bankCode: bankCode, amountCop: amountCop),
+    };
+
+    final result = await _getFundingDetailsUsecase.execute(query);
+
+    emit(switch (result) {
+      Ok(:final value) => state.copyWith(
+        fundingDetails: value.fundingDetails,
+        isLoadingFundingDetails: false,
+      ),
+      Err(:final failure) => state.copyWith(
+        getFundingDetailsFailure: failure,
+        isLoadingFundingDetails: false,
+      ),
+    });
   }
 
   Future<void> _onScamWarningConsentSubmitted(
     FundExchangeScamWarningConsentSubmitted event,
     Emitter<FundExchangeState> emit,
   ) async {
-    try {
+    emit(
+      state.copyWith(
+        submitScamWarningConsentFailure: null,
+        isSubmittingScamWarningConsent: true,
+      ),
+    );
+
+    final consent = await _registerResponsibilityConsentUsecase.execute(
+      const RegisterResponsibilityConsentCommand(),
+    );
+
+    if (consent case Err(:final failure)) {
       emit(
         state.copyWith(
-          submitScamWarningConsentException: null,
-          isSubmittingScamWarningConsent: true,
+          submitScamWarningConsentFailure: failure,
+          isSubmittingScamWarningConsent: false,
         ),
       );
+      return;
+    }
 
-      await _registerResponsibilityConsentUsecase.execute(
-        const RegisterResponsibilityConsentCommand(),
-      );
+    // Fetch and update user summary to reflect consent.
+    final summary = await _getFundExchangeUserSummaryUsecase.execute();
 
-      // Fetch and update user summary to reflect consent
-      final updatedSummary = await _getExchangeUserSummaryUsecase.execute();
-      emit(state.copyWith(userSummary: updatedSummary));
+    switch (summary) {
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            submitScamWarningConsentFailure: failure,
+            isSubmittingScamWarningConsent: false,
+          ),
+        );
+        return;
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            userSummary: value,
+            isSubmittingScamWarningConsent: false,
+          ),
+        );
+    }
 
-      // Re-dispatch the pending action now that consent is confirmed.
-      // Clear the action first so shouldShowScamWarningConsent=false prevents
-      // the consent check from triggering again on re-dispatch.
-      final action = state.pendingConsentAction;
-      emit(state.copyWith(pendingConsentAction: null));
-      switch (action) {
-        case PendingFundingDetailsAction(:final method):
-          add(FundExchangeEvent.fundingDetailsRequested(fundingMethod: method));
-        case PendingCopInputAction():
-          add(
-            const FundExchangeEvent.fundingInstitutionsRequested(
-              jurisdiction: FundingJurisdiction.colombia,
-            ),
-          );
-        case null:
-          break;
-      }
-    } on FundExchangeApplicationError catch (e) {
-      emit(
-        state.copyWith(
-          submitScamWarningConsentException:
-              FundExchangePresentationError.fromApplicationError(e),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(submitScamWarningConsentException: UnexpectedError()),
-      );
-    } finally {
-      emit(state.copyWith(isSubmittingScamWarningConsent: false));
+    // Re-dispatch the pending action now that consent is confirmed.
+    // Clear the action first so shouldShowScamWarningConsent=false prevents
+    // the consent check from triggering again on re-dispatch.
+    final action = state.pendingConsentAction;
+    emit(state.copyWith(pendingConsentAction: null));
+    switch (action) {
+      case PendingFundingDetailsAction(:final method):
+        add(FundExchangeEvent.fundingDetailsRequested(fundingMethod: method));
+      case PendingCopInputAction():
+        add(
+          const FundExchangeEvent.fundingInstitutionsRequested(
+            jurisdiction: FundingJurisdiction.colombia,
+          ),
+        );
+      case null:
+        break;
     }
   }
 
@@ -247,8 +226,8 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   ) async {
     emit(
       state.copyWith(
-        getExchangeFundingDetailsException: null,
-        listFundingInstitutionsException: null,
+        getFundingDetailsFailure: null,
+        listFundingInstitutionsFailure: null,
         fundingInstitutions: event.resetInstitutions
             ? null
             : state.fundingInstitutions,

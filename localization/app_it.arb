@@ -2504,11 +2504,8 @@
   "fundExchangeErrorTitleRcpPo404": "Opzione di pagamento non disponibile",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE non disponibile",
   "fundExchangeErrorTitleOrdKyc400": "Requisiti KYC mancanti",
-  "fundExchangeErrorOrdKyc400": "Non hai i requisiti KYC per questa azione: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Dati di finanziamento COP non validi",
-  "fundExchangeErrorOrdCop400": "Dati di richiesta non validi per il finanziamento COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Pagamento virtuale non attivato",
-  "fundExchangeErrorOrdCsrcp400": "Si prega di attivare l'opzione di pagamento virtuale per il destinatario SEPA con IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Richiesta non valida",
   "fundExchangeErrorRcp400": "Richiesta non valida",
   "fundExchangeErrorOrdPo404": "Nessuna opzione di pagamento disponibile",
@@ -4892,5 +4889,7 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "fundExchangeErrorOrdCop400": "Dati di richiesta non validi per il finanziamento COP",
+  "fundExchangeErrorOrdKyc400": "Non hai i requisiti KYC per questa azione"
 }

@@ -2446,11 +2446,8 @@
   "fundExchangeErrorTitleRcpPo404": "Zahlungsoption nicht verfügbar",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE nicht verfügbar",
   "fundExchangeErrorTitleOrdKyc400": "Fehlende KYC-Anforderungen",
-  "fundExchangeErrorOrdKyc400": "Sie erfüllen nicht die KYC-Anforderungen für diese Aktion: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Ungültige COP-Finanzierungsdaten",
-  "fundExchangeErrorOrdCop400": "Ungültige Anfragedaten für COP-Finanzierung: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Virtuelle Zahlung nicht aktiviert",
-  "fundExchangeErrorOrdCsrcp400": "Bitte aktivieren Sie die virtuelle Zahlungsoption für den SEPA-Empfänger mit IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Ungültige Anfrage",
   "fundExchangeErrorRcp400": "Ungültige Anfrage",
   "fundExchangeErrorOrdPo404": "Keine Zahlungsoption verfügbar",
@@ -4930,5 +4927,7 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet."
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "fundExchangeErrorOrdCop400": "Ungültige Anfragedaten für COP-Finanzierung",
+  "fundExchangeErrorOrdKyc400": "Sie erfüllen nicht die KYC-Anforderungen für diese Aktion"
 }

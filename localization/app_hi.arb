@@ -7661,11 +7661,8 @@
   "fundExchangeErrorTitleRcpPo404": "भुगतान विकल्प उपलब्ध नहीं",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE उपलब्ध नहीं",
   "fundExchangeErrorTitleOrdKyc400": "KYC आवश्यकताएँ अनुपस्थित",
-  "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "अमान्य COP फंडिंग डेटा",
-  "fundExchangeErrorOrdCop400": "COP फंडिंग के लिए अमान्य अनुरोध डेटा: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "वर्चुअल भुगतान सक्रिय नहीं",
-  "fundExchangeErrorOrdCsrcp400": "कृपया IBAN: {iban} वाले SEPA प्राप्तकर्ता के लिए वर्चुअल भुगतान विकल्प सक्रिय करें",
   "fundExchangeErrorTitleRcp400": "अमान्य अनुरोध",
   "fundExchangeErrorRcp400": "अमान्य अनुरोध",
   "fundExchangeErrorOrdPo404": "कोई भुगतान विकल्प उपलब्ध नहीं है",
@@ -12334,5 +12331,7 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "fundExchangeErrorOrdCop400": "COP फंडिंग के लिए अमान्य अनुरोध डेटा",
+  "fundExchangeErrorOrdKyc400": "इस क्रिया के लिए आपके पास आवश्यक KYC आवश्यकताएँ नहीं हैं"
 }

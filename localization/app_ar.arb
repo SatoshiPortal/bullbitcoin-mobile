@@ -7148,11 +7148,8 @@
   "fundExchangeErrorTitleRcpPo404": "خيار الدفع غير متوفر",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE غير متاح",
   "fundExchangeErrorTitleOrdKyc400": "متطلبات KYC مفقودة",
-  "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "بيانات تمويل COP غير صالحة",
-  "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "الدفع الافتراضي غير مُفعّل",
-  "fundExchangeErrorOrdCsrcp400": "يرجى تفعيل خيار الدفع الافتراضي لمستلم SEPA صاحب IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "طلب غير صالح",
   "fundExchangeErrorRcp400": "طلب غير صالح",
   "fundExchangeErrorOrdPo404": "لا يوجد خيار دفع متاح",
@@ -12150,5 +12147,7 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "fundExchangeErrorOrdCop400": "بيانات الطلب غير صالحة لتمويل COP",
+  "fundExchangeErrorOrdKyc400": "ليس لديك متطلبات KYC اللازمة لهذا الإجراء"
 }

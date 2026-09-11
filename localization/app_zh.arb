@@ -2506,11 +2506,8 @@
   "fundExchangeErrorTitleRcpPo404": "付款方式不可用",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE 不可用",
   "fundExchangeErrorTitleOrdKyc400": "缺少 KYC 要求",
-  "fundExchangeErrorOrdKyc400": "您不满足执行此操作所需的 KYC 要求：{missingFields}",
   "fundExchangeErrorTitleOrdCop400": "无效的 COP 充值数据",
-  "fundExchangeErrorOrdCop400": "COP 充值的请求数据无效：{error}",
   "fundExchangeErrorTitleOrdCsrcp400": "虚拟付款未激活",
-  "fundExchangeErrorOrdCsrcp400": "请为 IBAN 为 {iban} 的 SEPA 收款人激活虚拟付款选项。",
   "fundExchangeErrorTitleRcp400": "无效请求",
   "fundExchangeErrorRcp400": "无效请求",
   "fundExchangeErrorOrdPo404": "没有可用的付款方式",
@@ -4892,5 +4889,7 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "fundExchangeErrorOrdCop400": "COP 充值的请求数据无效",
+  "fundExchangeErrorOrdKyc400": "您不满足执行此操作所需的 KYC 要求"
 }

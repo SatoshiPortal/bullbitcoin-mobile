@@ -296,11 +296,8 @@
   "fundExchangeErrorTitleRcpPo404": "Phương thức thanh toán không khả dụng",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE không khả dụng",
   "fundExchangeErrorTitleOrdKyc400": "Thiếu yêu cầu KYC",
-  "fundExchangeErrorOrdKyc400": "Bạn không có các yêu cầu KYC cần thiết cho hành động này: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Dữ liệu nạp tiền COP không hợp lệ",
-  "fundExchangeErrorOrdCop400": "Dữ liệu yêu cầu không hợp lệ để nạp tiền COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Chưa kích hoạt thanh toán ảo",
-  "fundExchangeErrorOrdCsrcp400": "Vui lòng kích hoạt tùy chọn thanh toán ảo cho người nhận SEPA có IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Yêu cầu không hợp lệ",
   "fundExchangeErrorRcp400": "Yêu cầu không hợp lệ",
   "fundExchangeErrorOrdPo404": "Không có phương thức thanh toán nào",
@@ -3574,5 +3571,7 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "fundExchangeErrorOrdCop400": "Dữ liệu yêu cầu không hợp lệ để nạp tiền COP",
+  "fundExchangeErrorOrdKyc400": "Bạn không có các yêu cầu KYC cần thiết cho hành động này"
 }

@@ -920,11 +920,8 @@
   "fundExchangeErrorTitleRcpPo404": "Option de paiement non disponible",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE non disponible",
   "fundExchangeErrorTitleOrdKyc400": "Exigences KYC manquantes",
-  "fundExchangeErrorOrdKyc400": "Vous ne remplissez pas les exigences KYC pour cette action : {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Données de financement COP invalides",
-  "fundExchangeErrorOrdCop400": "Données de demande invalides pour le financement COP : {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Paiement virtuel non activé",
-  "fundExchangeErrorOrdCsrcp400": "Veuillez activer l'option de paiement virtuel pour le destinataire SEPA avec IBAN : {iban}",
   "fundExchangeErrorTitleRcp400": "Requête invalide",
   "fundExchangeErrorRcp400": "Requête invalide",
   "fundExchangeErrorOrdPo404": "Aucune option de paiement disponible",
@@ -4938,5 +4935,8 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "fundExchangeErrorOrdCsrcp400": "Veuillez activer l'option de paiement virtuel pour ce destinataire SEPA",
+  "fundExchangeErrorOrdCop400": "Données de demande invalides pour le financement COP",
+  "fundExchangeErrorOrdKyc400": "Vous ne remplissez pas les exigences KYC pour cette action"
 }

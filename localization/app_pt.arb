@@ -2487,11 +2487,8 @@
   "fundExchangeErrorTitleRcpPo404": "Opção de Pagamento Não Disponível",
   "fundExchangeErrorTitleRcpPosinpe404": "SINPE Não Disponível",
   "fundExchangeErrorTitleOrdKyc400": "Requisitos de KYC em Falta",
-  "fundExchangeErrorOrdKyc400": "Não cumpre os requisitos de KYC para esta ação: {missingFields}",
   "fundExchangeErrorTitleOrdCop400": "Dados de Financiamento COP Inválidos",
-  "fundExchangeErrorOrdCop400": "Dados de pedido inválidos para o financiamento COP: {error}",
   "fundExchangeErrorTitleOrdCsrcp400": "Pagamento Virtual Não Ativado",
-  "fundExchangeErrorOrdCsrcp400": "Por favor, ative a opção de pagamento virtual para o destinatário SEPA com o IBAN: {iban}",
   "fundExchangeErrorTitleRcp400": "Pedido Inválido",
   "fundExchangeErrorRcp400": "Pedido inválido",
   "fundExchangeErrorOrdPo404": "Nenhuma opção de pagamento disponível",
@@ -4938,5 +4935,7 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "fundExchangeErrorOrdCop400": "Dados de pedido inválidos para o financiamento COP",
+  "fundExchangeErrorOrdKyc400": "Não cumpre os requisitos de KYC para esta ação"
 }
