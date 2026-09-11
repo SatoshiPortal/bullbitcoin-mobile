@@ -28,8 +28,10 @@ extension FundExchangeFailureL10n on FundExchangeFailure {
     FundExchangeRequestInvalidFailure() => context.loc.fundExchangeErrorRcp400,
     FundExchangeNoInstitutionsFailure() =>
       context.loc.fundExchangeErrorFetchingBankCodes,
+    // The same string the scam-warning sheet shows, so this failure reads
+    // correctly wherever it is rendered — not just in that sheet.
     FundExchangeConsentRegistrationFailure() =>
-      context.loc.fundExchangeErrorLoadingDetails,
+      context.loc.fundExchangeScamConsentError,
     // Never `logMessage`. That arm used to carry the API's `apiError.en`
     // string — and, for COP and SEPA, its `messageData` payload — straight to
     // the funding screens.

@@ -143,9 +143,6 @@ void main() {
 
       for (final failure in _everyFailure) {
         if (failure is FundExchangeUnexpectedFailure) continue;
-        // The consent failure deliberately shares the generic copy: there is
-        // nothing actionable to say beyond "try again".
-        if (failure is FundExchangeConsentRegistrationFailure) continue;
         expect(
           await _translate(tester, failure),
           isNot(generic),
