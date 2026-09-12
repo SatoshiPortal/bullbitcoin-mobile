@@ -8,6 +8,55 @@ import 'package:socks5_proxy/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test(
+    'cancelling a task absorbs synchronous socket destruction failures',
+    () async {
+      final errors = <Object>[];
+      final task = cancelSocket(() => throw StateError('already bound'));
+
+      await runZonedGuarded(() => task, (error, _) => errors.add(error));
+
+      expect(errors, isEmpty);
+    },
+  );
+
+  test(
+    'cancelling a task absorbs asynchronous socket destruction failures',
+    () async {
+      final errors = <Object>[];
+      final task = cancelSocket(() async => throw StateError('already bound'));
+
+      await runZonedGuarded(() => task, (error, _) => errors.add(error));
+
+      expect(errors, isEmpty);
+    },
+  );
+
+  test('cancelling a task releases its socket', () async {
+    final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final accepted = Completer<Socket>();
+    final closed = Completer<void>();
+    server.listen((socket) {
+      accepted.complete(socket);
+      socket.listen((_) {}, onDone: closed.complete);
+    });
+    addTearDown(server.close);
+
+    final socket = await Socket.connect(
+      InternetAddress.loopbackIPv4,
+      server.port,
+    );
+    final remote = await accepted.future;
+    final task = ConnectionTask.fromSocket(
+      Future.value(socket),
+      () => cancelSocket(socket.destroy),
+    );
+
+    task.cancel();
+    await closed.future.timeout(const Duration(seconds: 1));
+    remote.destroy();
+  });
+
   test('sends destination hostnames to SOCKS5 as domain names', () async {
     final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     final requestSeen = Completer<List<int>>();
@@ -140,6 +189,52 @@ void main() {
     );
     await closed.future.timeout(const Duration(seconds: 2));
   });
+
+  test(
+    'cancelling pending HTTPS negotiation destroys the raw socket',
+    () async {
+      final proxy = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final proxyClosed = Completer<void>();
+      final tunnelConnected = Completer<void>();
+      final underlyingReady = Completer<void>();
+      proxy.listen((socket) {
+        var greeted = false;
+        var connected = false;
+        final bytes = <int>[];
+        socket.listen(
+          (chunk) {
+            bytes.addAll(chunk);
+            if (!greeted && bytes.length >= 3) {
+              greeted = true;
+              bytes.clear();
+              socket.add([0x05, 0x00]);
+            } else if (greeted && !connected && bytes.length >= 7) {
+              connected = true;
+              socket.add([0x05, 0x00, 0x00, 0x01, 127, 0, 0, 1, 0, 443]);
+              bytes.clear();
+              tunnelConnected.complete();
+            }
+          },
+          onDone: () {
+            if (!proxyClosed.isCompleted) proxyClosed.complete();
+          },
+        );
+      });
+      addTearDown(proxy.close);
+      final task = await const TorHttpClientFactory().createTaskForTesting(
+        Uri.parse('https://destination.invalid/'),
+        TorProxyEndpoint(host: '127.0.0.1', port: proxy.port),
+        onUnderlyingReady: underlyingReady.complete,
+      );
+      await tunnelConnected.future.timeout(const Duration(seconds: 1));
+      await underlyingReady.future.timeout(const Duration(seconds: 1));
+      task.cancel();
+      await proxyClosed.future.timeout(
+        const Duration(seconds: 1),
+        onTimeout: () => throw StateError('proxy socket was not closed'),
+      );
+    },
+  );
 
   test('records and rethrows a connection-factory failure', () async {
     final recorder = TorConnectionFailureRecorder();

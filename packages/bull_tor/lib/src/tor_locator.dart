@@ -12,6 +12,7 @@ import 'domain/ports/socket_port.dart';
 import 'domain/entities/tor_transport.dart';
 import 'domain/tor_repository.dart';
 import 'domain/tor_route_pool.dart';
+import 'domain/tor_route_pool_invalidator.dart';
 import 'domain/usecases/close_tor_usecase.dart';
 import 'domain/usecases/ensure_tor_ready_usecase.dart';
 import 'domain/usecases/get_tor_connection_usecase.dart';
@@ -63,6 +64,8 @@ final class TorLocator {
         initialMode: initialMode,
         lastSuccessfulTransport: lastSuccessfulTransport,
         onSuccessfulTransport: onSuccessfulTransport,
+        onSessionInvalidated: () =>
+            locator<TorRoutePoolTorInvalidator>().invalidateEmbedded(),
       ),
     );
   }
@@ -98,6 +101,13 @@ final class TorLocator {
     locator.registerFactory<SetTorTransportModeUsecase>(
       () => SetTorTransportModeUsecase(locator<TorRepository>()),
     );
+    locator.registerLazySingleton<TorRoutePoolTorInvalidator>(
+      () => TorRoutePoolTorInvalidator(
+        locator<TorRepository>().watch(),
+        locator<TorRoutePool>(),
+      ),
+    );
+    locator<TorRoutePoolTorInvalidator>();
     locator.registerLazySingleton<Tor>(
       () => Tor(
         EmbeddedTor(
