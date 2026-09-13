@@ -4,15 +4,22 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 String describeBitcoinPolicyNode(
   BuildContext context,
   BitcoinPolicyNode node,
   Wallet? wallet, {
   bool summarizeConjunctions = false,
+  bool includeLocalSignerFingerprint = false,
 }) => switch (node) {
   BitcoinSignaturePolicyNode(:final key) => context.loc.walletPolicySignWith(
-    bitcoinPolicySignerName(context, key, wallet),
+    bitcoinPolicySignerName(
+      context,
+      key,
+      wallet,
+      includeLocalFingerprint: includeLocalSignerFingerprint,
+    ),
   ),
   BitcoinRelativeTimelockPolicyNode(
     type: BitcoinRelativeTimelockType.blocks,
@@ -44,8 +51,13 @@ String describeBitcoinPolicyNode(
               ? context.loc.walletDetailsAllConditionsRequired
               : children
                     .map(
-                      (child) =>
-                          describeBitcoinPolicyNode(context, child, wallet),
+                      (child) => describeBitcoinPolicyNode(
+                        context,
+                        child,
+                        wallet,
+                        includeLocalSignerFingerprint:
+                            includeLocalSignerFingerprint,
+                      ),
                     )
                     .join(' + ')
         : context.loc.walletPolicyConditionsRequired(
@@ -54,11 +66,23 @@ String describeBitcoinPolicyNode(
           ),
 };
 
-String formatBitcoinPolicyTimestamp(BuildContext context, int timestamp) {
-  final date = DateTime.fromMillisecondsSinceEpoch(
+String formatBitcoinPolicyTimestamp(
+  BuildContext context,
+  int timestamp, {
+  bool compact = false,
+}) {
+  final utc = DateTime.fromMillisecondsSinceEpoch(
     timestamp * Duration.millisecondsPerSecond,
     isUtc: true,
-  ).toLocal();
+  );
+  if (compact) {
+    final format = DateFormat.yMMMd(
+      Localizations.localeOf(context).toLanguageTag(),
+    );
+    final clock = utc.second == 0 ? format.add_Hm() : format.add_Hms();
+    return '${clock.format(utc)} ${utc.timeZoneName}';
+  }
+  final date = utc.toLocal();
   final localizations = MaterialLocalizations.of(context);
   return '${localizations.formatFullDate(date)} '
       '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(date))}';
@@ -69,6 +93,7 @@ String bitcoinPolicySignerName(
   BitcoinPolicyKey key,
   Wallet? wallet, {
   String? localSignerName,
+  bool includeLocalFingerprint = false,
 }) {
   WalletSigner? signer;
   for (final candidate in wallet?.signers ?? const <WalletSigner>[]) {
@@ -78,7 +103,10 @@ String bitcoinPolicySignerName(
     }
   }
   if (signer?.signer == SignerEntity.local) {
-    return localSignerName ?? context.loc.walletPolicyThisDevice;
+    final name = localSignerName ?? context.loc.walletPolicyThisDevice;
+    return includeLocalFingerprint && signer!.displayFingerprint.isNotEmpty
+        ? '$name · ${signer.displayFingerprint}'
+        : name;
   }
   if (signer?.signerDevice != null) {
     final device = signer!.signerDevice!.displayName;
