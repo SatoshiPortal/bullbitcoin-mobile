@@ -1,58 +1,6 @@
 # BULLVAULT: descriptor backup, additional protection and recovery UI
 
-Status: living UI/product specification, initially proposed 2026-09-09. Adds the user's requested flows to [ben-upstream-integration-plan.md](ben-upstream-integration-plan.md) and gives UI acceptance criteria to [distributed-backups-roadmap.md](distributed-backups-roadmap.md). The latest locked decisions and implementation checkpoint below distinguish approved requirements from older proposals and unimplemented screens. This document is not permission to publish/pay.
-
-Decision update, 2026-09-11: [the roadmap's locked product decisions](distributed-backups-roadmap.md#1-locked-product-decisions--2026-09-11) are authoritative for credentials and backup destinations. The password is mandatory, viewable on demand in Data Backup and Vault settings, and supplies the same encryption key for metadata and public descriptor backups. The server stores metadata and BIP138 descriptors only; words-based server recovery extracts a descriptor from metadata. The latest recovery decisions below supersede conflicting older proposals in this document; other proposed controls are not implicitly approved.
-
-## Locked recovery decisions — updated 2026-09-13
-
-### Recover independently; reuse Ben's policy viewer
-
-- Opening Recover BULLVAULT searches Data Backup, then Nostr, then Bitcoin using the current Mobile wallet's deterministic backup credential. Check all three sources even after finding a valid backup; a later source may contain another generation. Show per-source progress and keep **Recover BULLVAULT manually** available.
-- Automatically found supported vaults are imported and synced as found. Manual recovery operates independently; opening it does not cancel automatic discovery, and automatic results do not interrupt manual navigation. No global confirmation gate or new recovery orchestration engine.
-- Manual entry has four choices: **Import descriptor**, **Import cosigner public key**, **Import magic backup words**, and **Import Mobile cosigner key**. Local BIP138 file plus eligible public account key remains an acquisition variant. These inputs have different purposes; backup words never become a signing key implicitly.
-- Deduplicate the same validated normalized descriptor and network. A changed expiry means a different descriptor: retain both versions and their independently checked balances. Preserve source information and optional metadata without turning unknown birthday, failed sync or unavailable sources into invented facts.
-- After import, show the vault's policy and signing access. Descriptor recovery does not require a private key and does not establish the ability to spend. Keep the imported vault viewable if the user declines signer import.
-- **Reuse Ben's existing Wallet details → Spending conditions viewer**, including its policy model, descriptions and condition rendering. Make that viewer available within recovery and retain it in wallet details. Do not add a second BullVault policy parser, spending-rule engine or duplicated timeline logic. A future timeline illustration is a presentation of the same policy.
-- Show matching local keys, passphrase/unlock requirements and missing keys inside the policy's spending options, not a separate key inventory. Wallet settings and recovery use one policy page with key-availability states, not duplicate policy screens. A stored signer label is not proof of an unlocked private key. Available-now claims require checked chain conditions; key presence alone is insufficient.
-- **View policy** and **View keys** are separate inspection screens with matching typography, cards, signer icons, fingerprints and availability badges. No tabs or bottom action buttons. Policy shows spending conditions; Keys shows public signer details. Reuse the existing policy and signer-details components, not parallel renderers. External/unassigned keys have the existing signer-device dropdown; local/locked-local keys do not. Every extended public account key has Copy and QR, exporting the same key with its recorded origin when available. Editing the device label never imports a private key or changes signing availability.
-- The selected vault settings page contains **Import cosigner key**, **Register vault on another device** and **Sign PSBT** in an Actions section. Neither inspection screen contains those actions. Remove the standalone external-signer explanation page. External signing remains part of the existing Send flow.
-- **Backup & recovery** combines the three recovery kits, saved descriptor copies and independent metadata/BIP138/Nostr/Bitcoin retrieval results on one page. Instructions open from the relevant kit entry. Mobile and Cold kits allow a passphrase hint, not the passphrase itself; Inheritance includes its passphrase. Printing or exporting must not be treated as proof of safe storage or successful recovery. General Data Backup remains a separate setting.
-- **Export descriptor file** belongs on Backup & recovery. The descriptor viewer retains the complete descriptor, QR and text-copy control, without a separate file-export button.
-
-### Descriptor recovery verification dates — approved 2026-09-13
-
-Show the last successful test independently for five methods: manual import (QR/paste/file), BULL Data Backup metadata, the same server's BIP138 descriptor record, Nostr and Bitcoin OP_RETURN. Reuse **BackupTestStatusRow**, extracted from Wallet Recovery's mnemonic-backup `_StatusRow`, for both products: the same localized **Tested / Not Tested**, date/time formatting and theme styling. No separate timestamp design or formatter for BullVault. Keep the latest attempt's result separate from that historical date: an offline service today must not erase an earlier verified recovery or appear successful because of it.
-
-The minimal production record is a nullable `lastVerifiedAt` per method and exact vault descriptor/network. Use the existing normalized descriptor identity, not a wallet label, four-byte fingerprint, signer set or vault lineage. A changed expiry is a new descriptor even when the keys have not changed. Do not carry the old generation's verification dates onto its replacement; retain old records with the old descriptor.
-
-Record the completion time only after that method actually supplies its bytes, authenticated decryption succeeds when encrypted, and the existing parser validates a supported public descriptor whose full policy and network match the selected vault. For metadata, extract and validate this vault's descriptor without applying unrelated metadata. For BIP138, record which cosigner account key was used; success with one key does not prove recovery with every eligible key. A public fingerprint is a display label, not sufficient matching evidence.
-
-Manual verification means reading the saved QR, pasted descriptor or imported file and comparing it with the expected vault; displaying, copying, exporting, opening a file picker or ticking a box never records success. A remote method must actually retrieve its own copy, not reuse a local descriptor or a result obtained through a different source. Automatic/manual recovery can record the method that genuinely supplied the validated descriptor after successful import; other methods remain unchanged.
-
-On timeout, cancellation, missing data, wrong credentials, malformed input, unsupported format, wrong network or another valid vault/generation, leave `lastVerifiedAt` untouched and show the latest attempt's actual result separately. Persist the successful record before claiming its date was saved. Reopening a page or restarting the app does not manufacture a test. Record UTC completion time and let the shared widget present local date/time exactly as for mnemonic backups; never substitute an upload time, server record date or attempt-start time. These are descriptor recovery tests, not signing tests or guarantees of future service availability.
-
-Acceptance tests must cover all five success writers independently, failures after a previous success, a never-verified method, method/source isolation, restart persistence and a renewal where only the expiry changed. The current HTML demonstrates fixed success-history and checking/failure states; production persistence and the five completion hooks are not implemented by the preview work.
-
-### Import cosigner key — approved route and pre-entry warning
-
-The selected vault settings page offers **Import cosigner key** directly; the Policy and Keys inspection pages do not. Import cosigner key means a signing wallet's seed words and optional BIP39 passphrase, not a public account key and not the 12 backup words. It must work for the matching Cold, Inheritance or Mobile signer without replacing the app's current main wallet.
-
-Before rendering any seed-entry fields, show a confirmation pop-up titled **Are you sure?** The user's requested warning is:
-
-> Doing this will make funds available for spending by this wallet. Only do this if you want to permanently remove funds from the vault. This is acceptable if you are the beneficiary of an inheritance key, or if the other cosign devices are not available.
-
-Include the following accuracy clarification in the same pop-up, not hidden in a help page:
-
-> The vault's required signatures and timelocks still apply. Importing a key does not move funds; you must separately review and approve a transaction.
-
-Actions: **Cancel** and **Continue to key import**. Cancel, back or dismiss must return without displaying, deriving or saving a key. Direct navigation to the import route must not bypass this warning.
-
-After consent, use protected mnemonic/passphrase entry and verify the derived account public key against the selected vault's actual descriptor keys. Matching only a four-byte fingerprint is insufficient. A valid seed with a wrong passphrase must fail without changing signer ownership or storing the candidate. Successful import attaches the existing cosigner; it never changes the descriptor, thresholds, recovery dates or default Mobile wallet. Return to the same vault's policy/access view and update signing access; no automatic transaction or transfer.
-
-Implementation decision, 2026-09-13: cosigner import reuses Ben's existing canonical-seed and signer-ownership handling with encrypted local retention, disclosed in the pre-entry warning. The passphrase is never persisted. No new private-session mechanism was introduced. Import retains the canonical mnemonic even when a passphrase is required to derive the matching cosigner; the UI reports that key as requiring its passphrase, not as unlocked. See the storage-failure and idempotent-retry limitation in the implementation report.
-
-Implementation checkpoint, 2026-09-13: the shared viewer, separate native Policy/Keys pages, selected-vault hub, combined Backup & recovery, manual/metadata verification dates, printable kits and protected cosigner import are now implemented on `distributed-resiliant-backups`. Local-file and server-based View Backup Key are also included. All-source distributed discovery, production password/server/public-destination alignment and the other missing flows remain required work. [The implementation and review report](distributed-ui-implementation.md) records exact scope, commits, tests, emulator evidence and remaining blockers; this plan is not a claim that the whole product is merge-ready.
+Status: UI/product proposal, 2026-09-09. Adds the user's requested flows to [ben-upstream-integration-plan.md](ben-upstream-integration-plan.md) and gives UI acceptance criteria to [distributed-backups-roadmap.md](distributed-backups-roadmap.md). This is a design plan, not implemented screens or permission to publish/pay. No app or backend code changed.
 
 ## 1. Product direction
 
@@ -83,7 +31,7 @@ Preserve the current BullVault entry points and design system. No new “family 
 - The server option is prominently recommended; Nostr is free but unreliable; Bitcoin requires explicit network-fee approval and offers long-term on-chain storage.
 - Recovery starts with **Import descriptor**, **Import cosigner public keys**, or **Import magic backup key**. The last option is labeled with its input: **12 backup words—not signing-wallet words**.
 - After seed import, automatically derive the established backup credential and check Bull Backup; notify on home only after successful vault import. Manual magic-word discovery searches Bull Backup → Nostr → Bitcoin in that order.
-- The Bull server must support eligible-cosigner lookup of BIP138 copies and magic-word-derived lookup/decryption of metadata, from which the descriptor is extracted without automatically applying unrelated metadata. There is no standalone password-encrypted server descriptor record. These are required target capabilities, not existing-backend claims.
+- The Bull server must support both eligible-cosigner lookup of BIP138 copies and magic-word-derived lookup of password-encrypted descriptor copies. These are required target capabilities, not existing-backend claims.
 - A supported BIP138 encrypted descriptor file plus an eligible cosigner public account key must support local decryption without backup words, a server, a Mobile seed or signing-key import. This is a user-required flow; network access is needed later for transaction history and broadcast, not for opening the supplied file.
 - The backup words are the encryption/discovery credential, not a spending wallet seed, hardware passphrase or six-digit RecoverBull PIN.
 
@@ -93,7 +41,7 @@ Preserve the current BullVault entry points and design system. No new “family 
 
 **D2 — Resolved at the product level by the user's scenarios:** an eligible cosigner public account key is sufficient input for lookup and decryption of its server BIP138 copy; no additional user-held access secret is specified. The backend must implement this explicit access model. Anyone with that same account key can retrieve/decrypt the copy: this is not independent secret authentication. Protocol details, abuse controls and privacy review remain implementation gates. This supersedes the older roadmap's open private-access choice for this UI target; do not silently retain an extra-credential requirement or remove private-versus-public storage separation. A local file still needs no server at all.
 
-Other defaults in this document are recommendations for approval, not hidden protocol choices. In particular: optional backup failure does not block access to already-funded vaults; selecting a destination is not consent to unlimited future spending. The user's words-first server lookup uses the metadata backup; the older separate password-encrypted server descriptor proposal is rejected. Neither requirement authorizes a deployment or publication during planning.
+Other defaults in this document are recommendations for approval, not hidden protocol choices. In particular: optional backup failure does not block access to already-funded vaults; selecting a destination is not consent to unlimited future spending. The user's words-first server lookup now requires the separately addressable password-encrypted descriptor representation previously proposed in the roadmap. Neither requirement authorizes a deployment or publication during planning.
 
 ## 2. Current code and the changes this design requires
 
@@ -192,9 +140,9 @@ Suggested copy avoids overpromising:
 
 Expanded details can show what credential recovers each copy. Keep the terms BIP138, account xpub and OP_RETURN in help/details, not required first-screen vocabulary.
 
-### S3 — Mandatory backup password; recording UX remains to decide
+### S3 — Record your 12 backup words, when needed
 
-The password exists for every vault regardless of selected public destinations. Derive it on demand and make it viewable in Data Backup settings and Vault settings. Do not create a new password for each destination or renewal. The timing and controls of the proposed recording/confirmation flow below remain a UX decision.
+Show this once when Nostr or Bitcoin is selected, and for any server representation/access flow that uses the same credential. Do not create a new password for each destination or renewal.
 
 **Headline:** Write down your 12 backup words
 
@@ -212,7 +160,7 @@ If the correct originating seed is unavailable, allow entry of existing backup w
 
 Server and Nostr use one common results layout, with independent rows. They may run concurrently once their prerequisites are satisfied; one failure must not cancel the other or clear its successful receipt.
 
-**Bull Bitcoin server:** establish the agreed BIP138 lookup/record contract → encrypt the current descriptor with BIP138 → store the exact generation → fetch/decrypt/compare → report success for that copy. Full metadata is a separate backup using the shared password-derived key; its success is not implied by BIP138 success, or vice versa. Do not add a password-encrypted server descriptor record.
+**Bull Bitcoin server:** establish the agreed access/record contract → encrypt the current descriptor representation(s) → store the exact generation → fetch/decrypt/compare → report success for those exact bytes. If only one of the server's promised recovery representations succeeds, show partial protection and the working credential, not a generic green “Server backed up.”
 
 **Nostr:** encrypt the full public descriptor artifact using the backup words → persist the exact signed event before transmission → publish to the selected/configured relays → verify retrieval/decryption. Show “Available from 2 of 3 relays” rather than hiding partial success. Acknowledged but not read back is a distinct pending-verification state. Retry only failed destinations/relays and reuse the existing event.
 
@@ -376,7 +324,7 @@ The [pinned BIP138 draft used by the codec](https://github.com/pythcoiner/bips/b
 
 Protected input, explicit paste, word-count/checksum validation and no telemetry. Do not add a passphrase field here: the frozen credential profile has no extra passphrase. A valid BIP39 phrase does not prove it is the correct backup credential; no-result/decrypt failures must not be mislabeled as a definite wrong password.
 
-Show the search order **Bull Backup → Nostr → Bitcoin** above **Find my vault**; do not make users pick sources to get the normal fallback. Keep **Open encrypted backup file** as a local alternative. The words-only Bull step fetches/decrypts metadata and extracts the vault descriptor; explain this source and do not automatically apply unrelated metadata. If metadata is absent or unavailable, continue to the other sources or offer cosigner-key recovery. Do not attempt to open BIP138 bytes with the backup password.
+Show the search order **Bull Backup → Nostr → Bitcoin** above **Find my vault**; do not make users pick sources to get the normal fallback. Keep **Open encrypted backup file** as a local alternative. The words-only Bull step requires the separate password-encrypted descriptor copy. Do not fetch all metadata invisibly to extract the vault or attempt to open BIP138 bytes with the password.
 
 One explicit search action starts the disclosed fallback sequence. No contact merely from entering words. Check Bull Backup first; if there is no usable descriptor, it is unavailable, its response is invalid or its bounded lookup fails, record that outcome and continue to Nostr, then Bitcoin. Do not let one offline source block the next indefinitely. Preserve source-specific failure states and existing proxy policy; no silent clearnet fallback. Configured defaults make discovery usable without an event ID/txid; custom forgotten endpoints cannot be found magically from words.
 
@@ -388,14 +336,14 @@ Display per-source progress/outcome. Derive the public lookup identities locally
 
 ### Credential/source matrix
 
-| Available input | Descriptor file | Local BIP138 file | Bull server BIP138 | Bull server metadata | Nostr public password copy | Bitcoin public password copy |
-| --- | --- | --- | --- | --- | --- | --- |
-| Complete public descriptor | Direct local import | Not needed | Not needed | Not needed | Not needed | Not needed |
-| Eligible cosigner account key | Cannot reconstruct a missing descriptor by itself | Decrypt locally | Matching record + service + D2 access rule | Needs backup words | Needs backup words | Needs backup words |
-| Correct 12 backup words | Not needed if descriptor already supplied | Also needs cosigner key | Also needs cosigner key | Available metadata backup; extract descriptor without applying unrelated metadata | Available relay retaining the correct artifact | Compatible history source retaining the transaction |
-| Signing seed/PIN/device passphrase only | Use the separate signing-wallet recovery path; it does not replace a missing descriptor | Derive/export the correct eligible public account key through its owning wallet first | Same, plus service/access conditions | Original Mobile seed may regenerate its own backup words; arbitrary cosigner seeds cannot | Same backup-word requirement | Same backup-word requirement |
+| Available input | Descriptor file | Local BIP138 file | Bull server BIP138 | Nostr public password copy | Bitcoin public password copy |
+| --- | --- | --- | --- | --- | --- |
+| Complete public descriptor | Direct local import | Not needed | Not needed | Not needed | Not needed |
+| Eligible cosigner account key | Cannot reconstruct a missing descriptor by itself | Decrypt locally | Matching record + service + D2 access rule | Needs backup words | Needs backup words |
+| Correct 12 backup words | Not needed if descriptor already supplied | Also needs cosigner key | Also needs cosigner key; password server representation is a separate route | Available relay retaining the correct artifact | Compatible history source retaining the transaction |
+| Signing seed/PIN/device passphrase only | Use the separate signing-wallet recovery path; it does not replace a missing descriptor | Derive/export the correct eligible public account key through its owning wallet first | Same, plus service/access conditions | Original Mobile seed may regenerate its own backup words through the existing derivation flow; arbitrary cosigner seeds cannot | Same credential requirement |
 
-Words-only server recovery depends on an available metadata backup under the shared credential. The current metadata credential/lookup integration must be aligned before claiming that flow works. A server BIP138 record alone does not provide words-only recovery, and no extra password-encrypted descriptor record is part of the locked design.
+The required Bull server password-encrypted descriptor representation lets backup words retrieve/decrypt that record independently of BIP138. Until implemented, this part of the intended flow is unavailable; password words do not decrypt the BIP138 file itself.
 
 ## 6. Common recovery screens
 
@@ -532,7 +480,7 @@ All work remains small, reviewable chunks. The integration restack stays separat
 | U2: common descriptor review/import | Restore screen/Cubit/use case and facade, policy viewer, app recovery route | Direct file/paste/scan reaches preview without seed; no mutation before import; normal persistent wallet, repeated import/conflict, unsupported policy and scan-interruption tests. | Roadmap P7 importer/boot/sync changes. |
 | U3: additional protection and credentials | New scoped step in existing setup flow, portable protected password lifecycle, destination intents/results | Eight selection combinations; selected is not saved; canceled credential entry sends nothing; no lost successful row after another fails. | Roadmap P2/P3 contracts; actual destination execution added in following chunks. |
 | U4a: local BIP138 file recovery | Existing BullVault codec/repository, shared public account-key input, R1D under Import descriptor and key-first convergence | All eligible Mobile/Cold/Inheritance account keys independently decrypt a fixture; wrong/excluded key, malformed file and cancellation rejected safely; airplane-mode decrypt/review/import; public-key-only import cannot sign; no server request. | U2 plus supported BIP138 profile validation; independent of backend work. |
-| U4b: Bull server and xpub discovery | BIP138 record lookup, metadata-based words recovery and common descriptor import; reuse existing owners and U4a/U2 | Server absent vs offline; BIP138 retrieved with eligible account key alone; words extract the descriptor from metadata without applying unrelated metadata; missing metadata cannot open BIP138; no words leak or extra server descriptor representation. | D2 plus roadmap P0/P4/P6 and U4a; metadata credential alignment. |
+| U4b: Bull server and xpub discovery | Private descriptor repository/facade, backend records/lookup/access, server progress UI; reuse U4a opening and U2 import | Server absent vs offline vs access denied; no raw-key/words leaks; required password representation and BIP138 representation individually verified through their respective credentials. | D2 plus roadmap P0/P4/P6 and U4a. |
 | U5: public Nostr and word discovery | Production portable facade, recovery source picker, candidate list, per-relay rows | Real password-derived publication/fetch/import on isolated emulator; failed relay, lost ACK, unknown profile, multiple generations and incomplete history. | Roadmap P8 and U2/U3. |
 | U6: Bitcoin procedure and word discovery | Existing fee/sign/broadcast flows, durable intent, Electrum history, Bitcoin result card | Explicit fee consent; no funded-wallet deadlock; cancel/signing/lost broadcast result/reorg; spent marker and fresh-emulator restoration of the actual password-profile artifact. | Roadmap P9/P10 and U2/U3. |
 | U7: lifecycle and settings polish | Selected vault backup protection screen, renewal, existing recovery/signing routes and copy | New-generation proof required; old receipts never satisfy new copy; failed optional service cannot block existing funds; partial recovery and destination status truthful. | Roadmap P11; U1–U6 as applicable. |
@@ -570,4 +518,4 @@ Emulator proof uses an isolated disposable profile and synthetic credentials. Ca
 
 Remove the checkbox-only path, stale confirmation setters/booleans where superseded, duplicate progress screens, orphaned translations/mocks and obsolete export-success assumptions. Keep necessary historical recovery readers, the entire descriptor text and original test evidence. Do not remove old funded generations or saved artifacts to simplify the UI.
 
-Historical planning methods do not establish user approval of owner boundaries, states or chunk gates. The 2026-09-11 lock covers credentials, destinations and recovery routes only; UX/UI is deferred. D1 remains open. D2's eligible-public-key input remains required, while words-only server recovery now explicitly uses metadata instead of an extra descriptor record. Backend protocol/security verification is still required before claiming those routes work.
+The planning skill shaped the owner boundaries, testable states and chunk gates. This document was prepared and challenged by one planner; it does not claim implementation or independent multi-agent review. D1 remains open. The user's scenario specification resolves D2's input model and requires the password-encrypted server descriptor representation; backend protocol/security verification is still required before implementation can claim those routes work.
