@@ -1,11 +1,17 @@
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/view_backup_key_page.dart';
+import 'package:bb_mobile/features/recoverbull/ui/pages/derive_vault_key_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecoverBullFlowNavigator extends StatefulWidget {
-  const RecoverBullFlowNavigator({super.key});
+  final bool viewKeyMethodSelection;
+  const RecoverBullFlowNavigator({
+    super.key,
+    this.viewKeyMethodSelection = false,
+  });
 
   @override
   State<RecoverBullFlowNavigator> createState() =>
@@ -20,7 +26,9 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final bloc = context.read<RecoverBullBloc>();
-      if (bloc.state.flow != RecoverBullFlow.settings) {
+      if (bloc.state.flow != RecoverBullFlow.settings &&
+          !widget.viewKeyMethodSelection &&
+          !bloc.state.deriveKeyLocally) {
         // Tor initialization chains the server check. Start it once per flow,
         // not on rebuild, and never connect merely to edit server settings.
         bloc.add(const OnTorInitialization());
@@ -30,6 +38,10 @@ class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.viewKeyMethodSelection) return const ViewBackupKeyPage();
+    if (context.read<RecoverBullBloc>().state.deriveKeyLocally) {
+      return const DeriveVaultKeyPage();
+    }
     final page = switch (context.read<RecoverBullBloc>().state.flow) {
       RecoverBullFlow.settings => const SettingsPage(),
       _ => const ConnectingPage(),

@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
@@ -15,6 +18,8 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/derive_vault_key_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/ui/widgets/vault_key_access_gate.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -35,12 +40,14 @@ class RecoverBullFlowsExtra {
   final RecoverBullFlow flow;
   final EncryptedVault? vault;
   final bool returnToCaller;
+  final bool deriveKeyLocally;
   final String? seedFingerprint;
 
   RecoverBullFlowsExtra({
     required this.flow,
     required this.vault,
     this.returnToCaller = false,
+    this.deriveKeyLocally = false,
     this.seedFingerprint,
   });
 }
@@ -64,12 +71,13 @@ class RecoverBullRouter {
     builder: (context, state) {
       final RecoverBullFlowsExtra extra = state.extra! as RecoverBullFlowsExtra;
 
-      return BlocProvider(
+      Widget buildFlow(BuildContext context) => BlocProvider(
         create: (context) => RecoverBullBloc(
           flow: extra.flow,
           returnToCaller: extra.returnToCaller,
           seedFingerprint: extra.seedFingerprint,
           preSelectedVault: extra.vault,
+          deriveKeyLocally: extra.deriveKeyLocally,
           pickVaultUsecase: locator<PickVaultUsecase>(),
           saveFileToSystemUsecase: locator<SaveFileToSystemUsecase>(),
           createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
@@ -83,6 +91,10 @@ class RecoverBullRouter {
           fetchVaultKeyFromServerUsecase:
               locator<FetchVaultKeyFromServerUsecase>(),
           decryptVaultUsecase: locator<DecryptVaultUsecase>(),
+          deriveVaultKeyUsecase: DeriveVaultKeyUsecase(
+            GetAllSeedsUsecase(seedRepository: locator<SeedRepository>()),
+            locator<RecoverBullRepository>(),
+          ),
           restoreVaultUsecase: locator<RestoreVaultUsecase>(),
           onSeedRecovered: onSeedRecovered,
           connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
@@ -96,8 +108,18 @@ class RecoverBullRouter {
               locator<UpdateLatestEncryptedVaultTestUsecase>(),
           watchTorConnectionUsecase: locator<WatchTorConnectionUsecase>(),
         ),
-        child: const RecoverBullFlowNavigator(),
+        child: RecoverBullFlowNavigator(
+          viewKeyMethodSelection:
+              extra.flow == RecoverBullFlow.viewVaultKey && extra.vault == null,
+        ),
       );
+
+      // Neither local seed reads nor a server key request can start until the
+      // user authenticates and the capture-protection request has completed.
+      if (extra.flow == RecoverBullFlow.viewVaultKey && extra.vault != null) {
+        return VaultKeyAccessGate(builder: buildFlow);
+      }
+      return buildFlow(context);
     },
   );
 }

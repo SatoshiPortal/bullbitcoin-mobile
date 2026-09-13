@@ -196,6 +196,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   // Mirrors the legacy `ServerError.fromException`, null-safe on the 429 path.
   RecoverBullCoreFailure _mapKeyServer(recoverbull.KeyServerException e) {
     final code = e.code;
+    if (code == 404) return const KeyServerRecordNotFoundFailure();
     if (code == 401) return KeyServerInvalidCredentialsFailure(e.toString());
     if (code == 429) {
       final requestedAt = e.requestedAt;

@@ -4,6 +4,14 @@ sealed class RecoverBullEvent {
   const RecoverBullEvent();
 }
 
+class OnVaultKeyDerivation extends RecoverBullEvent {
+  const OnVaultKeyDerivation();
+}
+
+class OnVaultKeyCleared extends RecoverBullEvent {
+  const OnVaultKeyCleared();
+}
+
 class OnVaultProviderSelection extends RecoverBullEvent {
   const OnVaultProviderSelection({required this.provider});
   final VaultProvider provider;

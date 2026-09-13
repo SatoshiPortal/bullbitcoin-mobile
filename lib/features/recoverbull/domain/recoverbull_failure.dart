@@ -49,6 +49,22 @@ final class VaultDecryptionFailure extends RecoverBullFailure {
   const VaultDecryptionFailure();
 }
 
+final class VaultKeyPathUnavailableFailure extends RecoverBullFailure {
+  const VaultKeyPathUnavailableFailure();
+}
+
+final class VaultSeedUnavailableFailure extends RecoverBullFailure {
+  const VaultSeedUnavailableFailure();
+}
+
+final class VaultLocalKeyMismatchFailure extends RecoverBullFailure {
+  const VaultLocalKeyMismatchFailure();
+}
+
+final class VaultKeyNotFoundFailure extends RecoverBullFailure {
+  const VaultKeyNotFoundFailure();
+}
+
 final class VaultRecoveryFailure extends RecoverBullFailure {
   const VaultRecoveryFailure();
 }

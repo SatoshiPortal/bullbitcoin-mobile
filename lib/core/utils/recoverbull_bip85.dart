@@ -9,6 +9,14 @@ class RecoverbullBip85Utils {
   static const vaultKeyNamespace = 0;
   static const maxVaultKeyIndex = (1 << 31) - 2;
 
+  /// Accept only the historical money-backup namespace, never a guessed path.
+  static bool isSupportedBackupKeyPath(String path) {
+    final match = RegExp(r"^(?:m/)?1608'/0'/([0-9]{1,10})'?$").firstMatch(path);
+    if (match == null || match.end != path.length) return false;
+    final index = int.tryParse(match.group(1)!);
+    return index != null && index < (1 << 31);
+  }
+
   static String get vaultKeyPathPrefix =>
       "${recoverbullApplication.number}'/$vaultKeyNamespace'/";
 

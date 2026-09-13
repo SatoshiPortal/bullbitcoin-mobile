@@ -18,6 +18,11 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       context.loc.torSettingsExternalProxyUnavailableDescription,
     VaultKeyFetchFailure() => context.loc.recoverbullErrorFetchKeyFailed,
     VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,
+    VaultKeyPathUnavailableFailure() =>
+      context.loc.recoverbullKeyPathUnavailable,
+    VaultSeedUnavailableFailure() => context.loc.recoverbullKeySeedUnavailable,
+    VaultLocalKeyMismatchFailure() => context.loc.recoverbullKeyLocalMismatch,
+    VaultKeyNotFoundFailure() => context.loc.recoverbullKeyRecordNotFound,
     VaultRecoveryFailure() => context.loc.walletSetupErrorTryAgain,
     InvalidVaultCredentialsFailure() =>
       context.loc.recoverbullErrorInvalidCredentials,

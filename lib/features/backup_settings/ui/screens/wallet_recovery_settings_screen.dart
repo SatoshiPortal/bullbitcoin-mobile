@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/backup_test_status_row.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -9,7 +10,7 @@ import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/wallet_recovery_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_routes.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:bb_mobile/locator.dart';
@@ -70,14 +71,14 @@ class _WalletRecoveryView extends StatelessWidget {
                               ),
                               child: Column(
                                 children: [
-                                  _StatusRow(
+                                  BackupTestStatusRow(
                                     label: context
                                         .loc
                                         .backupSettingsPhysicalBackup,
                                     testedAt: state.lastPhysicalBackup,
                                   ),
                                   const Gap(15),
-                                  _StatusRow(
+                                  BackupTestStatusRow(
                                     label: context
                                         .loc
                                         .backupSettingsEncryptedVault,
@@ -102,8 +103,7 @@ class _WalletRecoveryView extends StatelessWidget {
                               ),
                             ],
                             const Gap(24),
-                            if (state.hasEncryptedBackup)
-                              const _ViewVaultKeyButton(),
+                            const _ViewVaultKeyButton(),
                             if (state.hasEncryptedBackup ||
                                 state.hasPhysicalBackup)
                               SettingsEntryItem(
@@ -352,51 +352,6 @@ class _HeroCard extends StatelessWidget {
   }
 }
 
-class _StatusRow extends StatelessWidget {
-  final String label;
-  final DateTime? testedAt;
-
-  const _StatusRow({required this.label, required this.testedAt});
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        children: [
-          Text(label, style: context.font.bodyMedium),
-          const Spacer(),
-          Text(
-            testedAt != null
-                ? context.loc.backupSettingsTested
-                : context.loc.backupSettingsNotTested,
-            style: context.font.bodyMedium?.copyWith(
-              color: testedAt != null
-                  ? context.appColors.success
-                  : context.appColors.error,
-            ),
-          ),
-        ],
-      ),
-      if (testedAt != null)
-        Text(
-          context.loc.backupSettingsTestedOn(
-            _formatDateTime(context, testedAt!.toLocal()),
-          ),
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.onSurfaceVariant,
-          ),
-        ),
-    ],
-  );
-}
-
-String _formatDateTime(BuildContext context, DateTime value) {
-  final localizations = MaterialLocalizations.of(context);
-  return '${localizations.formatMediumDate(value)}, '
-      '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(value))}';
-}
-
 class _ViewVaultKeyButton extends StatelessWidget {
   const _ViewVaultKeyButton();
 
@@ -404,17 +359,6 @@ class _ViewVaultKeyButton extends StatelessWidget {
   Widget build(BuildContext context) => SettingsEntryItem(
     icon: Icons.vpn_key_outlined,
     title: context.loc.backupSettingsViewVaultKey,
-    onTap: () async {
-      final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
-      if (confirmed == true && context.mounted) {
-        await context.pushNamed(
-          RecoverBullRoute.recoverbullFlows.name,
-          extra: RecoverBullFlowsExtra(
-            flow: RecoverBullFlow.viewVaultKey,
-            vault: null,
-          ),
-        );
-      }
-    },
+    onTap: () => RecoverBullFacade.openViewVaultKey(context),
   );
 }

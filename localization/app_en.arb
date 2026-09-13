@@ -7507,7 +7507,7 @@
   "@backupSettingsExporting": {
     "description": "Button text while vault export is in progress"
   },
-  "backupSettingsViewVaultKey": "View Vault Key",
+  "backupSettingsViewVaultKey": "View Backup Key",
   "@backupSettingsViewVaultKey": {
     "description": "Button text to view vault decryption key"
   },
@@ -7539,11 +7539,11 @@
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
   },
-  "backupSettingsKeyWarningMessage": "It is critically important that you do not save the backup key at the same place where you save your backup file. Always store them on separate devices or separate cloud providers.",
+  "backupSettingsKeyWarningMessage": "Anyone with this key and your encrypted backup file can access your wallet. They will not need your backup PIN or the RecoverBull server.",
   "@backupSettingsKeyWarningMessage": {
     "description": "Detailed warning about storing backup key separately"
   },
-  "backupSettingsKeyWarningExample": "For example, if you used Google Drive for your backup file, do not use Google Drive for your backup key.",
+  "backupSettingsKeyWarningExample": "Store the key separately from the backup file. Do not share it with support. Only reveal or copy it in a private place.",
   "@backupSettingsKeyWarningExample": {
     "description": "Example explaining backup key storage separation"
   },
@@ -8463,7 +8463,7 @@
   "@recoverbullVaultImportedSuccess": {
     "description": "Success message after vault import"
   },
-  "recoverbullVaultKey": "Vault Key",
+  "recoverbullVaultKey": "Backup Key",
   "@recoverbullVaultKey": {
     "description": "Screen title and label for vault key"
   },
@@ -17566,5 +17566,85 @@
   "walletPolicyEarlierOptions": "Earlier options remain available. Dates do not move funds automatically.",
   "@walletPolicyEarlierOptions": {
     "description": "Reminder beneath alternative spending options, without claiming current chain or key availability."
+  },
+  "recoverbullKeyChooseMethod": "View the encryption key for your Encrypted Vault. Choose how to get it.",
+  "@recoverbullKeyChooseMethod": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyFromFile": "From backup file",
+  "@recoverbullKeyFromFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyFromFileDescription": "Use the file and the matching wallet on this device.",
+  "@recoverbullKeyFromFileDescription": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyFromServer": "From recovery server",
+  "@recoverbullKeyFromServer": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyFromServerDescription": "Use the file and its backup PIN or password.",
+  "@recoverbullKeyFromServerDescription": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyFileRequired": "Both methods need your Encrypted Vault backup file. The file alone or the PIN alone is not enough.",
+  "@recoverbullKeyFileRequired": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyLocalInstructions": "Select your encrypted backup file. BULL will use its original backup path and the wallet seeds on this device to find the matching key, then check that it opens the file. No backup PIN or server connection is needed. This does not test your PIN or server recovery.",
+  "@recoverbullKeyLocalInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyServerInstructions": "Select your encrypted backup file, then enter its backup PIN or password. BULL will contact your RecoverBull server over Tor and check that the returned key opens this file. The original wallet seed does not need to be on this device. This is not your device PIN or a wallet passphrase.",
+  "@recoverbullKeyServerInstructions": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyChooseFile": "Choose backup file",
+  "@recoverbullKeyChooseFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyChooseAnotherFile": "Choose another file",
+  "@recoverbullKeyChooseAnotherFile": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUnlockAndDerive": "Unlock & derive key",
+  "@recoverbullKeyUnlockAndDerive": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseServer": "Use server instead",
+  "@recoverbullKeyUseServer": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyUseLocal": "Use local wallet instead",
+  "@recoverbullKeyUseLocal": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyChecking": "Checking your backup",
+  "@recoverbullKeyChecking": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyCheckingDescription": "Deriving the key from this file’s original backup path, then checking that it opens the backup. On this device only.",
+  "@recoverbullKeyCheckingDescription": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyOtherMethod": "Choose another file or method",
+  "@recoverbullKeyOtherMethod": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyPathUnavailable": "This backup’s original key-derivation path is missing or unsupported. BULL cannot safely guess it. Try another saved copy, or use the server if it still has the matching record.",
+  "@recoverbullKeyPathUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeySeedUnavailable": "The wallet seed needed to derive this key is not available. Unlock the matching wallet and try again, or use this file and its backup PIN or password with the server.",
+  "@recoverbullKeySeedUnavailable": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyLocalMismatch": "No wallet on this device could open this backup. It may belong to another wallet, or the file may be damaged. No key has been revealed. Try another copy or use the server.",
+  "@recoverbullKeyLocalMismatch": {
+    "description": "RecoverBull View Backup Key"
+  },
+  "recoverbullKeyRecordNotFound": "No matching backup record was found on this server. Check the selected file and server. A PIN cannot recreate a missing record; try the local method if the matching wallet is on this device.",
+  "@recoverbullKeyRecordNotFound": {
+    "description": "RecoverBull View Backup Key"
   }
 }

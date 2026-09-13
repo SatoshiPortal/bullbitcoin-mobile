@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/widgets/backup_test_status_row.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_reminder.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
@@ -56,6 +57,24 @@ void main() {
   });
 
   tearDown(locator.reset);
+
+  testWidgets('physical and encrypted backups use the shared timestamp row', (
+    tester,
+  ) async {
+    final physical = DateTime.utc(2026, 2, 3, 12, 30);
+    final encrypted = DateTime.utc(2026, 3, 4, 15, 45);
+    when(loadStatus).thenAnswer(
+      (_) async => [_status(physical: physical, encrypted: encrypted)],
+    );
+    await _pump(tester);
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widgetList<BackupTestStatusRow>(find.byType(BackupTestStatusRow))
+          .map((row) => row.testedAt),
+      [physical, encrypted],
+    );
+  });
 
   testWidgets('does not flash the urgent hero while recovery status loads', (
     tester,

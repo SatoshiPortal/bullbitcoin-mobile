@@ -55,7 +55,11 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
     super.didChangeDependencies();
 
     final route = ModalRoute.of(context);
-    if (route != null && route.isCurrent && _hasNavigatedAway) {
+    if (route != null &&
+        route.isCurrent &&
+        _hasNavigatedAway &&
+        context.read<RecoverBullBloc>().state.flow !=
+            RecoverBullFlow.viewVaultKey) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           Navigator.of(context).pop();
@@ -84,6 +88,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             current.vaultKey != null && previous.vaultKey != current.vaultKey ||
             previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
+          if (_hasNavigatedAway) return;
           if (state.failure != null) {
             if (state.failure is ExternalTorProxyUnavailableFailure) {
               final router = GoRouter.of(context);
@@ -111,16 +116,17 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             context.goNamed(WalletRoute.walletHome.name);
             return;
           }
+          if (state.flow == RecoverBullFlow.viewVaultKey &&
+              state.vaultKey != null) {
+            _hasNavigatedAway = true;
+            ViewVaultKeyPage.showVerified(context);
+            return;
+          }
           if (state.decryptedVault != null && state.vaultKey != null) {
             _hasNavigatedAway = true;
             switch (state.flow) {
               case RecoverBullFlow.viewVaultKey:
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ViewVaultKeyPage(vaultKey: state.vaultKey!),
-                  ),
-                );
+                break;
               case RecoverBullFlow.testVault:
                 Navigator.of(context).push(
                   MaterialPageRoute(

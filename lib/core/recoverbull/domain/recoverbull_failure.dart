@@ -22,6 +22,10 @@ final class KeyServerInvalidCredentialsFailure extends RecoverBullCoreFailure {
   const KeyServerInvalidCredentialsFailure([super.logMessage]);
 }
 
+final class KeyServerRecordNotFoundFailure extends RecoverBullCoreFailure {
+  const KeyServerRecordNotFoundFailure();
+}
+
 /// Key server rate-limited the request (HTTP 429). [retryIn] is the remaining
 /// cooldown when the server provided it, else null.
 final class KeyServerRateLimitedFailure extends RecoverBullCoreFailure {

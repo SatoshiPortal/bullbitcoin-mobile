@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:go_router/go_router.dart';
 
 class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
   const ViewVaultKeyWarningBottomSheet({super.key});
@@ -89,7 +88,7 @@ class ViewVaultKeyWarningBottomSheet extends StatelessWidget {
                       Expanded(
                         child: BBButton.big(
                           label: context.loc.sendContinue,
-                          onPressed: () => context.pop(true),
+                          onPressed: () => Navigator.of(context).pop(true),
                           bgColor: context.appColors.secondary,
                           textStyle: context.font.headlineLarge,
                           textColor: context.appColors.onSecondary,

@@ -24,6 +24,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
+import 'package:bb_mobile/features/recoverbull/domain/usecases/derive_vault_key_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -49,6 +50,8 @@ class _MockCheckConnection extends Mock
 class _MockFetchKey extends Mock implements FetchVaultKeyFromServerUsecase {}
 
 class _MockDecrypt extends Mock implements DecryptVaultUsecase {}
+
+class _MockDerive extends Mock implements DeriveVaultKeyUsecase {}
 
 class _MockRestore extends Mock implements RestoreVaultUsecase {}
 
@@ -87,6 +90,7 @@ void main() {
   late _MockCheckConnection checkConnection;
   late _MockFetchKey fetchKey;
   late _MockDecrypt decrypt;
+  late _MockDerive derive;
   late _MockRestore restore;
   late _MockConnectDrive connectDrive;
   late _MockSaveDrive saveDrive;
@@ -98,6 +102,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(_MockEncryptedVault());
+    registerFallbackValue(const DecryptedVault());
   });
 
   setUp(() {
@@ -114,6 +119,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(true));
     fetchKey = _MockFetchKey();
     decrypt = _MockDecrypt();
+    derive = _MockDerive();
     restore = _MockRestore();
     connectDrive = _MockConnectDrive();
     saveDrive = _MockSaveDrive();
@@ -139,11 +145,13 @@ void main() {
     bool returnToCaller = false,
     String? seedFingerprint,
     EncryptedVault? preSelectedVault,
+    bool deriveKeyLocally = false,
   }) => RecoverBullBloc(
     flow: flow,
     returnToCaller: returnToCaller,
     seedFingerprint: seedFingerprint,
     preSelectedVault: preSelectedVault,
+    deriveKeyLocally: deriveKeyLocally,
     pickVaultUsecase: pickVault,
     saveFileToSystemUsecase: saveFile,
     createEncryptedVaultUsecase: createVault,
@@ -157,6 +165,7 @@ void main() {
     ),
     fetchVaultKeyFromServerUsecase: fetchKey,
     decryptVaultUsecase: decrypt,
+    deriveVaultKeyUsecase: derive,
     restoreVaultUsecase: restore,
     onSeedRecovered: (walletIds) {
       completionCalls.add(walletIds);
@@ -291,10 +300,7 @@ void main() {
     },
   );
 
-  for (final flow in [
-    RecoverBullFlow.testVault,
-    RecoverBullFlow.viewVaultKey,
-  ]) {
+  for (final flow in [RecoverBullFlow.testVault]) {
     for (final matches in [false, true]) {
       test(
         '$flow still verifies an existing wallet (matches: $matches)',
@@ -398,6 +404,166 @@ void main() {
 
     verify(() => createVault.execute(fingerprint: 'deadbeef')).called(1);
     await bloc.close();
+  });
+
+  group('View Backup Key is read-only', () {
+    const words = [
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'about',
+    ];
+    const secret = 'private-backup-key-fixture';
+    const decrypted = DecryptedVault(mnemonic: words);
+
+    void expectNoWalletWrites() {
+      verifyZeroInteractions(updateLatest);
+      verifyZeroInteractions(restore);
+      verifyZeroInteractions(walletBloc);
+      verifyZeroInteractions(createVault);
+      verifyZeroInteractions(storeKey);
+    }
+
+    test('chooser does not subscribe to Tor or start a server check', () async {
+      final bloc = buildBloc(flow: RecoverBullFlow.viewVaultKey);
+      bloc.add(const OnTorInitialization());
+      bloc.add(const OnServerCheck());
+      await pumpEventQueue();
+      verifyZeroInteractions(watchTor);
+      verifyZeroInteractions(checkConnection);
+      verifyZeroInteractions(ensureRecoverBullTorSession);
+      verifyZeroInteractions(derive);
+      await bloc.close();
+    });
+
+    test(
+      'local derivation never contacts server, tests or restores wallet',
+      () async {
+        final vault = _MockEncryptedVault();
+        when(
+          () => derive.execute(vault),
+        ).thenAnswer((_) async => const Ok(secret));
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.viewVaultKey,
+          preSelectedVault: vault,
+          deriveKeyLocally: true,
+        );
+        bloc.add(const OnVaultKeyDerivation());
+        bloc.add(const OnTorInitialization());
+        bloc.add(const OnServerCheck());
+        bloc.add(const OnVaultPasswordSet(password: 'must-not-be-used'));
+        await pumpEventQueue();
+        expect(bloc.state.vaultKey, secret);
+        expect(bloc.state.vaultPassword, isNull);
+        expect(bloc.state.decryptedVault, isNull);
+        verifyZeroInteractions(watchTor);
+        verifyZeroInteractions(fetchKey);
+        verifyZeroInteractions(checkConnection);
+        verifyZeroInteractions(ensureRecoverBullTorSession);
+        expectNoWalletWrites();
+        expect(bloc.state.toString(), isNot(contains(secret)));
+        await bloc.close();
+        expect(bloc.state.vaultKey, isNull);
+      },
+    );
+
+    test(
+      'server viewing does not depend on matching local wallet or change its status',
+      () async {
+        final vault = _MockEncryptedVault();
+        when(
+          () => fetchKey.execute(vault: vault, password: 'backup-pin'),
+        ).thenAnswer((_) async => const Ok(secret));
+        when(
+          () => decrypt.execute(vault: vault, vaultKey: secret),
+        ).thenReturn(const Ok(decrypted));
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.viewVaultKey,
+          preSelectedVault: vault,
+        );
+        bloc.add(const OnVaultPasswordSet(password: 'backup-pin'));
+        await pumpEventQueue();
+        expect(bloc.state.vaultKey, secret);
+        expect(bloc.state.decryptedVault, isNull);
+        expect(bloc.state.vaultPassword, isNull);
+        expectNoWalletWrites();
+        verifyZeroInteractions(derive);
+        bloc.add(const OnVaultKeyCleared());
+        await pumpEventQueue();
+        expect(bloc.state.vaultKey, isNull);
+        await bloc.close();
+      },
+    );
+
+    test('a returned server key is not exposed if decryption fails', () async {
+      final vault = _MockEncryptedVault();
+      when(
+        () => fetchKey.execute(vault: vault, password: 'pin'),
+      ).thenAnswer((_) async => const Ok(secret));
+      when(
+        () => decrypt.execute(vault: vault, vaultKey: secret),
+      ).thenReturn(const Err(core.RecoverBullUnexpectedCoreFailure()));
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.viewVaultKey,
+        preSelectedVault: vault,
+      );
+      final emissions = <RecoverBullState>[];
+      final subscription = bloc.stream.listen(emissions.add);
+      bloc.add(const OnVaultPasswordSet(password: 'pin'));
+      await pumpEventQueue();
+      expect(bloc.state.failure, isA<VaultDecryptionFailure>());
+      expect(emissions.every((s) => s.vaultKey == null), isTrue);
+      expectNoWalletWrites();
+      await subscription.cancel();
+      await bloc.close();
+    });
+
+    test('Test backup still records a successful test', () async {
+      final vault = _MockEncryptedVault();
+      when(
+        () => decrypt.execute(vault: vault, vaultKey: secret),
+      ).thenReturn(const Ok(decrypted));
+      when(
+        () => updateLatest.execute(decryptedVault: decrypted),
+      ).thenAnswer((_) async => const Ok(null));
+      final bloc = buildBloc(
+        flow: RecoverBullFlow.testVault,
+        preSelectedVault: vault,
+      );
+      bloc.add(const OnVaultDecryption(vaultKey: secret));
+      await pumpEventQueue();
+      expect(bloc.state.decryptedVault, decrypted);
+      verify(() => updateLatest.execute(decryptedVault: decrypted)).called(1);
+      await bloc.close();
+    });
+
+    test(
+      'a completed local operation cannot reveal a key after leaving',
+      () async {
+        final vault = _MockEncryptedVault();
+        final pending = Completer<Result<String, RecoverBullFailure>>();
+        when(() => derive.execute(vault)).thenAnswer((_) => pending.future);
+        final bloc = buildBloc(
+          flow: RecoverBullFlow.viewVaultKey,
+          preSelectedVault: vault,
+          deriveKeyLocally: true,
+        );
+        bloc.add(const OnVaultKeyDerivation());
+        await pumpEventQueue();
+        final closed = bloc.close();
+        pending.complete(const Ok(secret));
+        await closed;
+        expect(bloc.state.vaultKey, isNull);
+      },
+    );
   });
 
   group('OnVaultPasswordSet guard', () {
