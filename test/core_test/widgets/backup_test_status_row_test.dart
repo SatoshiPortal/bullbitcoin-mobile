@@ -16,7 +16,7 @@ void main() {
   });
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     testWidgets(
-      'uses the existing local mnemonic-backup date format (${theme.name})',
+      'shared backup date includes the year and local time (${theme.name})',
       (tester) async {
         final testedAt = DateTime.utc(2026, 9, 12, 16, 42);
         await tester.pumpWidget(_app(theme, testedAt: testedAt));
@@ -24,12 +24,13 @@ void main() {
         final material = MaterialLocalizations.of(context);
         final local = testedAt.toLocal();
         final date =
-            '${material.formatMediumDate(local)}, '
+            '${material.formatFullDate(local)}, '
             '${material.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
         expect(
           find.text(context.loc.backupSettingsTestedOn(date)),
           findsOneWidget,
         );
+        expect(date, contains(local.year.toString()));
         expect(find.text(context.loc.backupSettingsTested), findsOneWidget);
         final text = tester.widget<Text>(
           find.text(context.loc.backupSettingsTested),
@@ -59,7 +60,13 @@ void main() {
     tester.view.physicalSize = const Size(320, 915);
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(_app(AppThemeType.light, textScale: 2));
+    await tester.pumpWidget(
+      _app(
+        AppThemeType.light,
+        testedAt: DateTime.utc(2026, 9, 12),
+        textScale: 2,
+      ),
+    );
     expect(find.byType(BackupTestStatusRow), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

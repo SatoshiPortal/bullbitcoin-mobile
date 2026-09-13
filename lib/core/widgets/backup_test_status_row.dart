@@ -50,6 +50,6 @@ class BackupTestStatusRow extends StatelessWidget {
 
 String _formatDateTime(BuildContext context, DateTime value) {
   final localizations = MaterialLocalizations.of(context);
-  return '${localizations.formatMediumDate(value)}, '
+  return '${localizations.formatFullDate(value)}, '
       '${localizations.formatTimeOfDay(TimeOfDay.fromDateTime(value))}';
 }

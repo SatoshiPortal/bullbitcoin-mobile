@@ -93,6 +93,21 @@ void main() {
       await tester.pumpAndSettle();
       final card = find.textContaining('01234567');
       expect(card, findsOneWidget);
+      final policy = created.record.recoveryPackage.policy;
+      final createdYear = policy.createdAt!.toLocal().year;
+      final recoveryYear = DateTime.fromMillisecondsSinceEpoch(
+        policy.recoveryActivationTimestamp! * 1000,
+        isUtc: true,
+      ).toLocal().year;
+      expect(find.textContaining('Created:'), findsOneWidget);
+      expect(
+        tester.widget<Text>(find.textContaining('Created:')).data,
+        contains(createdYear.toString()),
+      );
+      expect(
+        tester.widget<Text>(find.textContaining('First recovery:')).data,
+        contains(recoveryYear.toString()),
+      );
       expect(find.textContaining('Balance'), findsNothing);
       expect(
         tester.getTopLeft(card).dy,

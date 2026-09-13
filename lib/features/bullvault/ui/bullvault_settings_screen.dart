@@ -220,7 +220,7 @@ class _VaultCard extends StatelessWidget {
     final expiry = dates.firstOrNull;
     String date(DateTime? value) => value == null
         ? context.loc.walletDetailsUnavailableLabel
-        : MaterialLocalizations.of(context).formatMediumDate(value.toLocal());
+        : MaterialLocalizations.of(context).formatFullDate(value.toLocal());
     return Semantics(
       button: onTap != null,
       child: InkWell(
