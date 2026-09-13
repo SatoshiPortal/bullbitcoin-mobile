@@ -49,6 +49,11 @@ final class InvalidVaultFileFailure extends RecoverBullCoreFailure {
   const InvalidVaultFileFailure([super.logMessage]);
 }
 
+/// The picker was dismissed without selecting a file; not a user-facing error.
+final class VaultSelectionCancelledFailure extends RecoverBullCoreFailure {
+  const VaultSelectionCancelledFailure();
+}
+
 /// Catch-all (decrypt failure, Google Drive, file I/O, raw-string throws).
 /// [logMessage] is for logs ONLY and MUST never reach the UI.
 final class RecoverBullUnexpectedCoreFailure extends RecoverBullCoreFailure {

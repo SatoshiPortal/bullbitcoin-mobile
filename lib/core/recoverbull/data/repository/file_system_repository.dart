@@ -17,14 +17,15 @@ class FileSystemRepository {
   Future<Result<EncryptedVault, RecoverBullCoreFailure>> pickVault() async {
     try {
       final file = await _fileStorageDataSource.pickFile();
+      if (file == null) return const Err(VaultSelectionCancelledFailure());
       final fileContent = await file.readAsString();
       if (!EncryptedVault.isValid(fileContent)) {
         return const Err(InvalidVaultFileFailure());
       }
       return Ok(EncryptedVault(file: fileContent));
     } catch (e, st) {
-      log.severe(message: 'pickVault failed', error: e, trace: st);
-      return Err(RecoverBullUnexpectedCoreFailure(e.toString()));
+      log.severe(message: 'pickVault failed', error: e.runtimeType, trace: st);
+      return const Err(RecoverBullUnexpectedCoreFailure());
     }
   }
 

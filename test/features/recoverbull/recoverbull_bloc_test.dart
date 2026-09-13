@@ -233,6 +233,33 @@ void main() {
     await bloc.close();
   });
 
+  for (final flow in [
+    RecoverBullFlow.viewVaultKey,
+    RecoverBullFlow.recoverVault,
+    RecoverBullFlow.testVault,
+  ]) {
+    test('$flow file-picker cancellation leaves no error or loading', () async {
+      when(() => pickVault.execute()).thenAnswer(
+        (_) async => const Err(core.VaultSelectionCancelledFailure()),
+      );
+      final bloc = buildBloc(flow: flow);
+      addTearDown(bloc.close);
+
+      bloc.add(const OnVaultSelection(provider: VaultProvider.customLocation));
+      await pumpEventQueue();
+
+      verify(() => pickVault.execute()).called(1);
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.failure, isNull);
+      expect(bloc.state.vault, isNull);
+      expect(bloc.state.vaultKey, isNull);
+      verifyZeroInteractions(derive);
+      verifyZeroInteractions(fetchKey);
+      verifyZeroInteractions(restore);
+      verifyZeroInteractions(updateLatest);
+    });
+  }
+
   for (final dataRecovered in [false, true]) {
     test(
       'fresh seed recovery completes with metadata recovered: $dataRecovered',

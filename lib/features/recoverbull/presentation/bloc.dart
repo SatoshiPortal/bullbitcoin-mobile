@@ -679,8 +679,9 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   }
 
   // Maps a core failure surfaced while selecting/fetching a vault.
-  RecoverBullFailure _selectFailure(core.RecoverBullCoreFailure failure) =>
+  RecoverBullFailure? _selectFailure(core.RecoverBullCoreFailure failure) =>
       switch (failure) {
+        core.VaultSelectionCancelledFailure() => null,
         core.InvalidVaultFileFailure() => const InvalidVaultFileFormatFailure(),
         _ => const SelectVaultFailure(),
       };

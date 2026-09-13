@@ -6,14 +6,13 @@ import 'package:file_picker/file_picker.dart';
 class FileStorageDatasource {
   FileStorageDatasource();
 
-  Future<File> pickFile({List<String>? extensions}) async {
+  Future<File?> pickFile({List<String>? extensions}) async {
     final result = await FilePicker.platform.pickFiles(
       allowedExtensions: extensions,
       type: extensions != null ? FileType.custom : FileType.any,
     );
-    if (result != null) return File(result.files.single.path!);
-
-    throw FileStorageException('File not selected');
+    if (result == null) return null;
+    return File(result.files.single.path!);
   }
 
   Future<void> saveFile(String content, String filename) async {
