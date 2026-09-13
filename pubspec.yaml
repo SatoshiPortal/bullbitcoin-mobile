@@ -54,6 +54,7 @@ dependencies:
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
   file_picker: 10.3.6
+  pdf: ^3.13.0
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk

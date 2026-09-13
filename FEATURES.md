@@ -166,6 +166,9 @@ graph TB
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
+    BULLVAULT -->|Selected vault signing action| PSBT_SIGNING
+    BULLVAULT -->|Step-up authentication before cosigner import| APP_UNLOCK
+    BACKUP_SETTINGS -->|Descriptor recovery verification and printable kits| BULLVAULT
     SETTINGS --> KEYCHAIN_MANIFEST
     SETTINGS --> PASSPHRASE_WALLETS
     SETTINGS --> BACKUP_SETTINGS

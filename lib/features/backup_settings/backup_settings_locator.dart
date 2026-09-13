@@ -20,13 +20,47 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_ba
 import 'package:bb_mobile/features/backup_settings/domain/usecases/watch_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
+import 'package:bb_mobile/features/backup_settings/data/vault_backup_test_repository_impl.dart';
+import 'package:bb_mobile/features/backup_settings/domain/repositories/vault_backup_test_repository.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/verify_vault_descriptor_backup_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/data/vault_recovery_kit_repository_impl.dart';
+import 'package:bb_mobile/features/backup_settings/domain/repositories/vault_recovery_kit_repository.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/create_vault_recovery_kit_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_kit_cubit.dart';
 
 class BackupSettingsLocator {
   static void setup(GetIt locator) {
     final walletBackup = locator<WalletBackupFacade>();
     final files = FilePickerWalletBackupFileRepository();
+    locator.registerLazySingleton<VaultRecoveryKitRepository>(
+      VaultRecoveryKitRepositoryImpl.new,
+    );
+    locator.registerFactory<CreateVaultRecoveryKitUsecase>(
+      () => CreateVaultRecoveryKitUsecase(locator()),
+    );
+    locator.registerFactory<VaultRecoveryKitCubit>(
+      () => VaultRecoveryKitCubit(locator()),
+    );
+    locator.registerLazySingleton<VaultBackupTestRepository>(
+      VaultBackupTestRepositoryImpl.new,
+    );
+    locator.registerFactory<VerifyVaultDescriptorBackupUsecase>(
+      () => VerifyVaultDescriptorBackupUsecase(
+        locator<BullVaultFacade>(),
+        walletBackup,
+        locator<BitcoinDescriptorPort>(),
+        locator<VaultBackupTestRepository>(),
+        files,
+      ),
+    );
+    locator.registerFactoryParam<VaultBackupCubit, String, void>(
+      (walletId, _) => VaultBackupCubit(locator(), walletId),
+    );
     locator.registerLazySingleton<BackupReminderRepository>(
       BackupReminderRepositoryImpl.new,
     );

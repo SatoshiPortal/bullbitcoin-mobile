@@ -549,18 +549,46 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
   void markRecoveryPackageExported() =>
       emit(state.copyWith(recoveryPackageExported: true));
 
-  Future<void> confirmRecoveryPackage() async {
+  Future<void> importRecoveryPackage() async {
     final walletId = state.result?.wallet.id;
-    if (walletId == null || !state.recoveryPackageExported) return;
+    if (walletId == null) return;
+    final updated = await _updateBullVaultSetupUsecase.importRecoveryFile(
+      walletId,
+    );
+    if (isClosed) return;
+    switch (updated) {
+      case Ok(value: null):
+        return;
+      case Ok():
+        emit(
+          state.copyWith(
+            recoveryPackageExported: true,
+            recoveryPackageConfirmed: true,
+            clearFailure: true,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+    }
+  }
+
+  Future<void> confirmRecoveryPackage(String descriptor) async {
+    final walletId = state.result?.wallet.id;
+    if (walletId == null) return;
     final updated = await _updateBullVaultSetupUsecase.execute(
       walletId: walletId,
       recoveryPackageConfirmed: true,
+      descriptorReadBack: descriptor,
     );
     if (isClosed) return;
     switch (updated) {
       case Ok():
         emit(
-          state.copyWith(recoveryPackageConfirmed: true, clearFailure: true),
+          state.copyWith(
+            recoveryPackageExported: true,
+            recoveryPackageConfirmed: true,
+            clearFailure: true,
+          ),
         );
       case Err(:final failure):
         emit(state.copyWith(failure: failure));

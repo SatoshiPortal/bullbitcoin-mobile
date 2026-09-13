@@ -49,6 +49,11 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/inspect_bullvault_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/import_bullvault_cosigner_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_backup_changes_usecase.dart';
 
@@ -56,21 +61,34 @@ abstract final class BullVaultLocator {
   static void setup(GetIt locator) {
     locator<SettingsFacade>().registerEntry(
       SettingsEntryContribution(
-        id: 'bullvault-create',
+        id: 'bullvault',
         section: SettingsEntrySection.wallet,
-        title: (localization) => localization.bullVaultCreateEntry,
+        title: (localization) => localization.bullVaultWalletLabel,
         icon: Icons.security,
-        open: (context) => context.pushNamed(BullVaultFacade.createRouteName),
+        open: (context) => context.pushNamed(BullVaultFacade.menuRouteName),
       ),
     );
-    locator<SettingsFacade>().registerEntry(
-      SettingsEntryContribution(
-        id: 'bullvault-restore',
-        section: SettingsEntrySection.wallet,
-        title: (localization) => localization.bullVaultRestoreEntry,
-        icon: Icons.restore_page_outlined,
-        open: (context) => context.pushNamed(BullVaultFacade.restoreRouteName),
+    locator.registerFactory<InspectBullVaultUsecase>(
+      () => InspectBullVaultUsecase(
+        locator<BullVaultRepository>(),
+        locator<GetWalletUsecase>(),
+        locator<GetSettingsUsecase>(),
+        locator<SeedVerificationPort>(),
       ),
+    );
+    locator.registerFactory<BullVaultSettingsCubit>(
+      () => BullVaultSettingsCubit(locator()),
+    );
+    locator.registerFactory<ImportBullVaultCosignerUsecase>(
+      () => ImportBullVaultCosignerUsecase(
+        locator<BullVaultRepository>(),
+        locator<GetWalletUsecase>(),
+        locator<EnsureCanonicalSeedUsecase>(),
+        locator<WalletSignerOwnershipPort>(),
+      ),
+    );
+    locator.registerFactory<BullVaultCosignerCubit>(
+      () => BullVaultCosignerCubit(locator()),
     );
     locator.registerLazySingleton<BullVaultMetadataDatasource>(
       () => BullVaultMetadataDatasource(locator()),
@@ -182,7 +200,7 @@ abstract final class BullVaultLocator {
       () => LoadBullVaultRenewalUsecase(locator(), locator(), locator()),
     );
     locator.registerLazySingleton<UpdateBullVaultSetupUsecase>(
-      () => UpdateBullVaultSetupUsecase(locator(), locator()),
+      () => UpdateBullVaultSetupUsecase(locator(), locator(), locator()),
     );
     locator.registerFactory<UpdateBullVaultRegistrationNameUsecase>(
       () => UpdateBullVaultRegistrationNameUsecase(locator()),

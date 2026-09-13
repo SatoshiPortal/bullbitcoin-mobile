@@ -6,6 +6,9 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_
 import 'package:meta/meta.dart';
 
 abstract interface class BullVaultRepository {
+  @useResult
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile();
+
   /// Initial state and committed changes to the vault backup contribution.
   Stream<void> watchBackupChanges();
 

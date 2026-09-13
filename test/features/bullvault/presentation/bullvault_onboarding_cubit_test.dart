@@ -428,6 +428,7 @@ void main() {
         () => update.execute(
           walletId: result.wallet.id,
           recoveryPackageConfirmed: true,
+          descriptorReadBack: result.record.recoveryPackage.policy.descriptor,
         ),
       ).thenAnswer((_) async => Ok(result.record));
       when(() => encode.execute(result.recoveryPackage)).thenReturn('{}');
@@ -437,7 +438,9 @@ void main() {
       expect(cubit.state.step, BullVaultOnboardingStep.recoveryPackage);
 
       cubit.markRecoveryPackageExported();
-      await cubit.confirmRecoveryPackage();
+      await cubit.confirmRecoveryPackage(
+        result.record.recoveryPackage.policy.descriptor,
+      );
       await cubit.next();
       expect(cubit.state.step, BullVaultOnboardingStep.hardwareSetup);
 

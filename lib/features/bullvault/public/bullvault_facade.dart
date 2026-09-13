@@ -24,6 +24,12 @@ class BullVaultFacade {
   static const createRouteName = 'bullVaultCreate';
   static const restoreRouteName = 'bullVaultRestore';
   static const settingsRouteName = 'bullVaultSettings';
+  static const menuRouteName = 'bullVaultMenu';
+  static const policyRouteName = 'bullVaultPolicy';
+  static const keysRouteName = 'bullVaultKeys';
+  static const backupRouteName = 'bullVaultBackupRecovery';
+  static const renewRouteName = 'bullVaultRenew';
+  static const importCosignerRouteName = 'bullVaultImportCosigner';
 
   final CanDeleteBullVaultWalletUsecase _canDeleteWalletUsecase;
   final BullVaultRepository _repository;

@@ -25,6 +25,8 @@ BullVaultRecoveryPackageCodec testBullVaultRecoveryPackageCodec() {
   );
 }
 
+BitcoinDescriptorPort testBullVaultDescriptorPort() => _TestDescriptorPort();
+
 BullVaultRecoveryPackage testBullVaultRecoveryPackage({
   String? previousVaultId,
   String? lineageId,

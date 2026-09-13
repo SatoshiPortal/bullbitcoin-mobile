@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullInputText, BullPasteInput, Gap;
 import 'package:file_picker/file_picker.dart';
@@ -19,6 +20,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screen_privacy/screen_privacy.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_policy_panel.dart';
+import 'package:bb_mobile/locator.dart';
 
 class BullVaultRestoreScreen extends StatefulWidget {
   const BullVaultRestoreScreen({super.key});
@@ -226,41 +230,62 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     );
   }
 
-  Widget _restored(BuildContext context, BullVaultRestoreResult result) =>
-      ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text(
-            context.loc.bullVaultRestoreCompleteTitle,
-            style: context.font.titleLarge,
-          ),
-          const Gap(16),
-          Text(switch (result.mobileAccess) {
-            BullVaultMobileAccess.available =>
-              context.loc.bullVaultRestoreMobileAvailable,
-            BullVaultMobileAccess.recoveryOnly =>
-              context.loc.bullVaultRestoreRecoveryOnly,
-            BullVaultMobileAccess.unavailable =>
-              context.loc.bullVaultRestoreWatchOnly,
-          }, style: context.font.bodyLarge),
-          const Gap(16),
-          Text(
-            context.loc.bullVaultRestoreHardwareSetup,
-            style: context.font.bodyMedium,
-          ),
-          const Gap(32),
-          BullButton.big(
-            label: context.loc.continueButton,
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
-            onPressed: () => context.pushReplacementNamed(
-              BullVaultFacade.settingsRouteName,
-              pathParameters: {'walletId': result.wallet.id},
-              extra: result.wallet.label ?? context.loc.bullVaultWalletLabel,
-            ),
-          ),
-        ],
-      );
+  Widget _restored(
+    BuildContext context,
+    BullVaultRestoreResult result,
+  ) => ListView(
+    padding: const EdgeInsets.all(24),
+    children: [
+      Text(
+        context.loc.bullVaultRestoreCompleteTitle,
+        style: context.font.titleLarge,
+      ),
+      const Gap(16),
+      Text(switch (result.mobileAccess) {
+        BullVaultMobileAccess.available =>
+          context.loc.bullVaultRestoreMobileAvailable,
+        BullVaultMobileAccess.recoveryOnly =>
+          context.loc.bullVaultRestoreRecoveryOnly,
+        BullVaultMobileAccess.unavailable =>
+          context.loc.bullVaultRestoreWatchOnly,
+      }, style: context.font.bodyLarge),
+      const Gap(16),
+      Text(
+        context.loc.bullVaultRestoreHardwareSetup,
+        style: context.font.bodyMedium,
+      ),
+      const Gap(24),
+      BlocProvider(
+        create: (_) =>
+            locator<BullVaultSettingsCubit>()..load(result.wallet.id),
+        child: BlocBuilder<BullVaultSettingsCubit, BullVaultSettingsState>(
+          builder: (context, state) {
+            if (state.loading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final inspection = state.inspection;
+            if (inspection != null) {
+              return BullVaultPolicyPanel(inspection: inspection);
+            }
+            // The descriptor is already restored. A failed private-key probe
+            // must not hide its policy or turn restoration into a failure.
+            return WalletPolicyView(wallet: result.wallet);
+          },
+        ),
+      ),
+      const Gap(32),
+      BullButton.big(
+        label: context.loc.continueButton,
+        bgColor: context.appColors.primary,
+        textColor: context.appColors.onPrimary,
+        onPressed: () => context.pushReplacementNamed(
+          BullVaultFacade.settingsRouteName,
+          pathParameters: {'walletId': result.wallet.id},
+          extra: result.wallet.label ?? context.loc.bullVaultWalletLabel,
+        ),
+      ),
+    ],
+  );
 
   Future<void> _pickPackage() async {
     try {

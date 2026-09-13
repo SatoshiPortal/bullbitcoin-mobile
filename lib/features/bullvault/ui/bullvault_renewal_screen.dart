@@ -612,9 +612,11 @@ final class _RenewalSetup extends StatelessWidget {
     return switch (state.step) {
       BullVaultRenewalStep.review => const SizedBox.shrink(),
       BullVaultRenewalStep.recoveryPackage => BullVaultRecoveryPackageStep(
+        descriptor: result.record.recoveryPackage.policy.descriptor,
         exported: state.recoveryPackageExported,
         confirmed: state.recoveryPackageConfirmed,
         onSave: () => _shareRecoveryPackage(context, state),
+        onImport: context.read<BullVaultRenewalCubit>().importRecoveryPackage,
         onConfirm: context.read<BullVaultRenewalCubit>().confirmRecoveryPackage,
       ),
       BullVaultRenewalStep.hardwareSetup => BullVaultHardwareSetupStep(

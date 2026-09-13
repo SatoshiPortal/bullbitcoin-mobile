@@ -10,11 +10,74 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_settings_screen.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_cosigner_screen.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
 
 abstract final class BullVaultRouter {
   static const scannerRouteName = 'bullVaultScanner';
 
-  static final routes = [route, scannerRoute, restoreRoute, settingsRoute];
+  static final routes = [
+    route,
+    scannerRoute,
+    restoreRoute,
+    menuRoute,
+    settingsRoute,
+    policyRoute,
+    keysRoute,
+    renewalRoute,
+    importCosignerRoute,
+  ];
+
+  static final importCosignerRoute = GoRoute(
+    name: BullVaultFacade.importCosignerRouteName,
+    path: '/bullvault/:walletId/import-cosigner',
+    builder: (_, state) => BlocProvider(
+      create: (_) => locator<BullVaultCosignerCubit>(),
+      child: BullVaultCosignerScreen(
+        walletId: state.pathParameters['walletId']!,
+      ),
+    ),
+  );
+
+  static GoRoute _inspectionRoute(
+    String name,
+    String path,
+    BullVaultSettingsPage page,
+  ) => GoRoute(
+    name: name,
+    path: path,
+    builder: (_, state) => BlocProvider(
+      create: (_) =>
+          locator<BullVaultSettingsCubit>()
+            ..load(state.pathParameters['walletId']),
+      child: BullVaultSettingsScreen(
+        walletId: state.pathParameters['walletId'],
+        page: page,
+      ),
+    ),
+  );
+  static final menuRoute = _inspectionRoute(
+    BullVaultFacade.menuRouteName,
+    '/bullvault',
+    BullVaultSettingsPage.menu,
+  );
+  static final settingsRoute = _inspectionRoute(
+    BullVaultFacade.settingsRouteName,
+    '/bullvault/:walletId/settings',
+    BullVaultSettingsPage.selected,
+  );
+  static final policyRoute = _inspectionRoute(
+    BullVaultFacade.policyRouteName,
+    '/bullvault/:walletId/policy',
+    BullVaultSettingsPage.policy,
+  );
+  static final keysRoute = _inspectionRoute(
+    BullVaultFacade.keysRouteName,
+    '/bullvault/:walletId/keys',
+    BullVaultSettingsPage.keys,
+  );
 
   static final route = GoRoute(
     name: BullVaultFacade.createRouteName,
@@ -47,9 +110,9 @@ abstract final class BullVaultRouter {
     ),
   );
 
-  static final settingsRoute = GoRoute(
-    name: BullVaultFacade.settingsRouteName,
-    path: '/bullvault/:walletId/settings',
+  static final renewalRoute = GoRoute(
+    name: BullVaultFacade.renewRouteName,
+    path: '/bullvault/:walletId/renew',
     builder: (context, state) {
       final walletId = state.pathParameters['walletId']!;
       return BlocProvider(

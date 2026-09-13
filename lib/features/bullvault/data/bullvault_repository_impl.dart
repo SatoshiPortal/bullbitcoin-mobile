@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
@@ -23,6 +26,34 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
 
   @override
   Stream<void> watchBackupChanges() => _datasource.watchBackupChanges();
+
+  @override
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile() async {
+    const maximumBytes = 128 * 1024;
+    try {
+      final selected = await FilePicker.platform.pickFiles(
+        withReadStream: true,
+      );
+      if (selected == null) return const Ok(null);
+      if (selected.files.length != 1) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final file = selected.files.single;
+      if (file.size > maximumBytes || file.readStream == null) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final bytes = BytesBuilder(copy: false);
+      await for (final chunk in file.readStream!) {
+        if (bytes.length + chunk.length > maximumBytes) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        bytes.add(chunk);
+      }
+      return Ok(utf8.decode(bytes.takeBytes()));
+    } on Exception {
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+  }
 
   @override
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(

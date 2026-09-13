@@ -311,6 +311,8 @@ void main() {
         () => update.execute(
           walletId: renewal.replacement.wallet.id,
           recoveryPackageConfirmed: true,
+          descriptorReadBack:
+              renewal.replacement.record.recoveryPackage.policy.descriptor,
         ),
       ).thenAnswer(
         (_) async => Ok(
@@ -370,7 +372,9 @@ void main() {
       expect(request.timeReference, same(reference));
 
       cubit.markRecoveryPackageExported();
-      await cubit.confirmRecoveryPackage();
+      await cubit.confirmRecoveryPackage(
+        renewal.replacement.record.recoveryPackage.policy.descriptor,
+      );
       cubit.continueSetup();
       expect(cubit.state.step, BullVaultRenewalStep.hardwareSetup);
 

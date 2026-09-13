@@ -439,10 +439,10 @@ List<SettingsItem> buildSettingsItems({
       id: SettingsItemId.signingKeyExport,
       section: SettingsItemSection.wallet,
       title: localization.signingKeyExportTitle,
-      path: path(
-        SettingsItemSection.wallet,
+      path: [
+        ...path(SettingsItemSection.wallet, localization.bullVaultWalletLabel),
         localization.signingKeyExportTitle,
-      ),
+      ],
       icon: Icons.key,
       open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
       keywords: _keywords(

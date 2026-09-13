@@ -81,6 +81,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  barcode:
+    dependency: transitive
+    description:
+      name: barcode
+      sha256: "7b6729c37e3b7f34233e2318d866e8c48ddb46c1f7ad01ff7bb2a8de1da2b9f4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.9"
   base85:
     dependency: transitive
     description:
@@ -130,6 +138,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+  bidi:
+    dependency: transitive
+    description:
+      name: bidi
+      sha256: "77f475165e94b261745cf1032c751e2032b8ed92ccb2bf5716036db79320637d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.13"
   bip21_uri:
     dependency: "direct main"
     description:
@@ -1567,6 +1583,14 @@ packages:
       url: "https://github.com/SatoshiPortal/payjoin-rust"
     source: git
     version: "0.2.1+payjoin-1.0.0-rc.8"
+  pdf:
+    dependency: "direct main"
+    description:
+      name: pdf
+      sha256: "517df47af468734a23c8b513c0c6a8a62357403ab1b8ab7fad1606576a9dbdd0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.13.0"
   permission_handler:
     dependency: "direct main"
     description:

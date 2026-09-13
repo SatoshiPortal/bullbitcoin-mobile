@@ -20,7 +20,8 @@ class WalletSettingsScreen extends StatelessWidget {
                 for (final id in walletSettingsItemOrder)
                   items.byId(id).buildTile(context),
                 for (final item in items.inSection(SettingsItemSection.wallet))
-                  if (!walletSettingsItemOrder.contains(item.id))
+                  if (!walletSettingsItemOrder.contains(item.id) &&
+                      item.id != SettingsItemId.signingKeyExport)
                     item.buildTile(context),
               ],
             ),

@@ -329,19 +329,43 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     emit(state.copyWith(recoveryPackageExported: true));
   }
 
-  Future<void> confirmRecoveryPackage() async {
+  Future<void> importRecoveryPackage() async {
     final renewal = state.renewal;
-    if (!state.recoveryPackageExported || renewal == null) return;
-    final confirmed = !state.recoveryPackageConfirmed;
+    if (renewal == null) return;
+    final updated = await _updateSetupUsecase.importRecoveryFile(
+      renewal.replacement.wallet.id,
+    );
+    if (isClosed) return;
+    switch (updated) {
+      case Ok(value: null):
+        return;
+      case Ok():
+        emit(
+          state.copyWith(
+            recoveryPackageExported: true,
+            recoveryPackageConfirmed: true,
+            clearFailure: true,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+    }
+  }
+
+  Future<void> confirmRecoveryPackage(String descriptor) async {
+    final renewal = state.renewal;
+    if (renewal == null) return;
     final result = await _updateSetupUsecase.execute(
       walletId: renewal.replacement.wallet.id,
-      recoveryPackageConfirmed: confirmed,
+      recoveryPackageConfirmed: true,
+      descriptorReadBack: descriptor,
     );
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
         emit(
           state.copyWith(
+            recoveryPackageExported: true,
             recoveryPackageConfirmed: value.recoveryPackageConfirmed,
             clearFailure: true,
           ),
