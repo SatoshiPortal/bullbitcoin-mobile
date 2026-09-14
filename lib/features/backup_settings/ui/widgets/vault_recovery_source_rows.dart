@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/backup_test_status_row.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
@@ -9,10 +9,6 @@ import 'package:flutter/material.dart';
 /// The three sources are independent rows on purpose: one that cannot be
 /// reached is not the same as one that answered and held nothing, and the
 /// Bitcoin row is a fixed Coming soon that never turns into a pending request.
-///
-/// New widget: `BackupTestStatusRow` is about a source's last *successful test*
-/// date and cannot express "checking" or "search incomplete"; nothing in
-/// `lib/core/widgets/` or `packages/bull_ui/` renders a live per-source search.
 class VaultRecoverySourceRows extends StatelessWidget {
   final Map<VaultRecoverySource, VaultRecoverySourceStatus> sources;
 
@@ -23,24 +19,13 @@ class VaultRecoverySourceRows extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       for (final source in VaultRecoverySource.values) ...[
-        Row(
-          children: [
-            Expanded(
-              child: Text(switch (source) {
-                VaultRecoverySource.dataBackup =>
-                  context.loc.bullVaultTestMetadata,
-                VaultRecoverySource.nostr => context.loc.bullVaultTestNostr,
-                VaultRecoverySource.bitcoin => context.loc.bullVaultTestBitcoin,
-              }, style: context.font.bodyMedium),
-            ),
-            const Gap(12),
-            Text(
-              _status(context, source),
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurfaceVariant,
-              ),
-            ),
-          ],
+        BackupTestStatusRow.state(
+          label: switch (source) {
+            VaultRecoverySource.dataBackup => context.loc.bullVaultTestMetadata,
+            VaultRecoverySource.nostr => context.loc.bullVaultTestNostr,
+            VaultRecoverySource.bitcoin => context.loc.bullVaultTestBitcoin,
+          },
+          state: _status(context, source),
         ),
         const Gap(12),
       ],

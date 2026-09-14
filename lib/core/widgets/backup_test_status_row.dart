@@ -18,17 +18,31 @@ class BackupTestStatusRow extends StatelessWidget {
   /// A destination the app cannot use yet: neutral, never tested or untested.
   final bool unavailable;
 
+  /// A state of its own instead of a test verdict, shown neutral: a search
+  /// still running, or a destination nobody has chosen yet.
+  final String? state;
+
   const BackupTestStatusRow({
     super.key,
     required this.label,
     required this.testedAt,
     this.latestAttempt,
-  }) : unavailable = false;
+  }) : unavailable = false,
+       state = null;
 
   const BackupTestStatusRow.unavailable({super.key, required this.label})
     : testedAt = null,
       latestAttempt = null,
-      unavailable = true;
+      unavailable = true,
+      state = null;
+
+  const BackupTestStatusRow.state({
+    super.key,
+    required this.label,
+    required String this.state,
+  }) : testedAt = null,
+       latestAttempt = null,
+       unavailable = false;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -39,13 +53,14 @@ class BackupTestStatusRow extends StatelessWidget {
           Expanded(child: Text(label, style: context.font.bodyMedium)),
           const Gap(12),
           Text(
-            unavailable
-                ? context.loc.backupSettingsComingSoon
-                : testedAt != null
-                ? context.loc.backupSettingsTested
-                : context.loc.backupSettingsNotTested,
+            state ??
+                (unavailable
+                    ? context.loc.backupSettingsComingSoon
+                    : testedAt != null
+                    ? context.loc.backupSettingsTested
+                    : context.loc.backupSettingsNotTested),
             style: context.font.bodyMedium?.copyWith(
-              color: unavailable
+              color: state != null || unavailable
                   ? context.appColors.onSurfaceVariant
                   : testedAt != null
                   ? context.appColors.success
