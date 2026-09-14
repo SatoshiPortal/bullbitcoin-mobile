@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/bullvault/domain/entities/nostr_descriptor_ba
 import 'package:bb_mobile/features/bullvault/domain/entities/vault_descriptor_publication.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 /// Publishes one vault's descriptor, sealed to its backup words, on the
@@ -99,7 +100,16 @@ final class PublishDescriptorToNostrUsecase {
             walletId: walletId,
             destination: VaultBackupDestination.nostr,
           );
-    if (recorded case Err(:final failure)) return Err(failure);
+    if (recorded case Err(:final failure)) {
+      // The outcome is lost, not the artifact: the row still owes the same
+      // bytes and a retry resends the very same event. Reporting a storage
+      // failure instead of what the relays said would leave the caller unable
+      // to tell a refused send from one that never happened.
+      log.warning(
+        'Descriptor publication outcome not recorded',
+        error: failure.runtimeType,
+      );
+    }
     return publication.accepted
         ? Ok(publication)
         : const Err(BullVaultNostrUnreachableFailure());

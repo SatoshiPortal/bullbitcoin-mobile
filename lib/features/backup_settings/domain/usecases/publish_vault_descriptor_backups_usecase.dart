@@ -84,12 +84,15 @@ final class PublishVaultDescriptorBackupsUsecase {
     };
   }
 
-  /// The relay publisher writes its own outcome down, because it is the only
-  /// thing that knows which relays answered. It records nothing when it gives
-  /// up before sending, so that failure is recorded here instead: a row left
-  /// idle would read as a publication still to come and offer no retry.
+  /// The relay publisher writes the outcome of a send down itself, because it
+  /// is the only thing that knows which relays answered; recording a refusal
+  /// here as well would count one send twice. What it cannot record is giving
+  /// up before it asked any relay, so that failure is recorded here: a row
+  /// left idle would read as a publication still to come and offer no retry.
   Future<void> _toNostr(String walletId) async {
-    if (await _vaults.publishDescriptorToNostr(walletId) case Err()) {
+    if (await _vaults.publishDescriptorToNostr(walletId) case Err(
+      :final failure,
+    ) when failure is! BullVaultNostrUnreachableFailure) {
       await _record(walletId, VaultBackupDestination.nostr, accepted: false);
     }
   }

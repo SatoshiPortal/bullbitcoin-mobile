@@ -311,6 +311,22 @@ void main() {
     expect(stored.outstanding, isTrue);
   });
 
+  test('a rejected relay send is counted once', () async {
+    await enable(VaultBackupDestination.nostr);
+    vaults.relaysAccept = false;
+
+    await ran(publish.execute('vault'));
+
+    final stored = await row(VaultBackupDestination.nostr);
+    expect(stored!.state, VaultPublicationState.failed);
+    expect(
+      stored.attempts,
+      1,
+      reason: 'the publisher already wrote the refusal down',
+    );
+    expect(stored.outstanding, isTrue);
+  });
+
   test('a relay failure does not stop the server destination', () async {
     await enable(VaultBackupDestination.server);
     await enable(VaultBackupDestination.nostr);
