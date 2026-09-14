@@ -22,11 +22,14 @@ final class BackupWordsCubit extends Cubit<BackupWordsState> {
 
   /// The twelve words, or null when they could not be derived.
   ///
+  /// [originFingerprint] names the wallet a selected vault belongs to, so this
+  /// device's words are never shown as that vault's credential.
+  ///
   /// Each emitted state is a fresh object: a canonicalised `const` state would
   /// compare equal to the initial one and the finished emit would be dropped.
-  Future<List<String>?> reveal() async {
+  Future<List<String>?> reveal({String? originFingerprint}) async {
     emit(BackupWordsState(loading: true));
-    final result = await _reveal.execute();
+    final result = await _reveal.execute(originFingerprint: originFingerprint);
     if (isClosed) return null;
     switch (result) {
       case Ok(:final value):

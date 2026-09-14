@@ -58,7 +58,14 @@ class NostrIdentityFacade {
 
   /// The twelve backup words, derived at the point of use for a protected
   /// reveal screen. They are never cached, here or below.
+  ///
+  /// [expectedOriginFingerprint] refuses the reveal when this device's wallet
+  /// is not the one the caller named, so another wallet's words are never
+  /// presented as a given vault's credential.
   @useResult
-  Future<Result<String, NostrIdentityFailure>> revealBackupWords() =>
-      _credential.revealWords();
+  Future<Result<String, NostrIdentityFailure>> revealBackupWords({
+    String? expectedOriginFingerprint,
+  }) => _credential.revealWords(
+    expectedOriginFingerprint: expectedOriginFingerprint,
+  );
 }

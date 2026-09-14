@@ -310,7 +310,7 @@ void main() {
       );
     });
 
-    test('a stored event from another credential is never resent', () async {
+    test('a stored event from another credential is never replaced', () async {
       final record = vault();
       repository.records[record.walletId] = record;
       await published(record.walletId);
@@ -323,11 +323,23 @@ void main() {
         _FakeIdentity(words: _otherWords),
         nostr,
       );
-      await published(record.walletId);
+      final result = await publish.execute(record.walletId);
 
-      final replaced = await row(record.walletId, VaultBackupDestination.nostr);
-      expect(replaced!.artifact, isNot(original!.artifact));
-      expect(relays.first.events, hasLength(2));
+      expect(
+        result,
+        isA<Err<NostrDescriptorPublication, BullVaultFailure>>().having(
+          (value) => value.failure,
+          'failure',
+          isA<BullVaultForeignBackupCredentialFailure>(),
+        ),
+      );
+      final kept = await row(record.walletId, VaultBackupDestination.nostr);
+      expect(kept!.artifact, original!.artifact);
+      expect(
+        relays.first.events,
+        hasLength(1),
+        reason: 'a foreign credential never re-keys a published descriptor',
+      );
     });
 
     test('acceptance is not retention, so it is not verification', () async {

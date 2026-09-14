@@ -21,9 +21,15 @@ import 'package:screen_privacy/screen_privacy.dart';
 class BackupWordsScreen extends StatefulWidget {
   final AppUnlockFacade appUnlock;
 
+  /// The wallet a selected vault records as its own. The Data Backup entry
+  /// asks for this device's own words and passes none; a vault asks for the
+  /// words that open its backups, which another phone may hold.
+  final String? originFingerprint;
+
   const BackupWordsScreen({
     super.key,
     this.appUnlock = const AppUnlockFacade(),
+    this.originFingerprint,
   });
 
   @override
@@ -54,7 +60,9 @@ class _BackupWordsScreenState extends State<BackupWordsScreen>
       protection: _privacy,
       unprotected: const PrivacyUnavailableNotice(),
       builder: (context) {
-        _words ??= context.read<BackupWordsCubit>().reveal();
+        _words ??= context.read<BackupWordsCubit>().reveal(
+          originFingerprint: widget.originFingerprint,
+        );
         return FutureBuilder<List<String>?>(
           future: _words,
           builder: (context, snapshot) {

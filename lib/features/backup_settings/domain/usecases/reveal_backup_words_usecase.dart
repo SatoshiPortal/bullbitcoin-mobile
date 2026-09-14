@@ -12,9 +12,18 @@ final class RevealBackupWordsUsecase {
 
   const RevealBackupWordsUsecase(this._identity);
 
-  Future<Result<List<String>, BackupSettingsFailure>> execute() async =>
-      switch (await _identity.revealBackupWords()) {
-        Ok(:final value) => Ok(value.split(' ')),
-        Err() => const Err(BackupSettingsBackupWordsUnavailableFailure()),
-      };
+  /// [originFingerprint] is the wallet a vault records as its own. Without it
+  /// the reveal is the device's own backup words, as the Data Backup entry
+  /// asks for.
+  Future<Result<List<String>, BackupSettingsFailure>> execute({
+    String? originFingerprint,
+  }) async => switch (await _identity.revealBackupWords(
+    expectedOriginFingerprint: originFingerprint,
+  )) {
+    Ok(:final value) => Ok(value.split(' ')),
+    Err(failure: NostrIdentityForeignCredentialFailure()) => const Err(
+      BackupSettingsForeignBackupWordsFailure(),
+    ),
+    Err() => const Err(BackupSettingsBackupWordsUnavailableFailure()),
+  };
 }

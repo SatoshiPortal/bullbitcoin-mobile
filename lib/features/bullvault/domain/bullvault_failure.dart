@@ -63,6 +63,16 @@ final class BullVaultBackupCredentialFailure extends BullVaultFailure {
   const BullVaultBackupCredentialFailure([super.logMessage]);
 }
 
+/// This vault's descriptor is already published under another wallet's backup
+/// credential, which this device does not hold.
+///
+/// Sealing a replacement under this device's credential would move the vault
+/// into a second recovery namespace, where a kit holding the original words
+/// can never find it.
+final class BullVaultForeignBackupCredentialFailure extends BullVaultFailure {
+  const BullVaultForeignBackupCredentialFailure([super.logMessage]);
+}
+
 /// The submitted backup words are not the frozen twelve-word form.
 ///
 /// It carries nothing about what was typed: the words are the credential.

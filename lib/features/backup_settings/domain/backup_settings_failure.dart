@@ -96,3 +96,13 @@ final class BackupSettingsInvalidAccountKeyFailure
     extends BackupSettingsFailure {
   const BackupSettingsInvalidAccountKeyFailure();
 }
+
+/// This vault was backed up from another wallet, so the words this device can
+/// derive are not the ones that open it.
+///
+/// Kept apart from [BackupSettingsBackupWordsUnavailableFailure], which is a
+/// device that can derive no words at all.
+final class BackupSettingsForeignBackupWordsFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsForeignBackupWordsFailure();
+}

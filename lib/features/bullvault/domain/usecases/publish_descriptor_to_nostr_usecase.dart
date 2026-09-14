@@ -65,9 +65,13 @@ final class PublishDescriptorToNostrUsecase {
         rows = value;
     }
     final policy = record.recoveryPackage.policy;
+    final stored = _storedEvent(rows);
+    if (stored != null && stored.author != credential.nostrPublicKeyHex) {
+      return const Err(BullVaultForeignBackupCredentialFailure());
+    }
     final NostrDescriptorPublication publication;
     try {
-      var event = _storedEvent(rows, credential);
+      var event = stored;
       if (event == null) {
         event = await _nostr.seal(
           credential: credential,
@@ -101,27 +105,23 @@ final class PublishDescriptorToNostrUsecase {
         : const Err(BullVaultNostrUnreachableFailure());
   }
 
-  /// The event this vault already owes the relays, or null when there is none
-  /// this credential can still stand behind.
+  /// The event this vault already owes the relays, or null when it has none.
   ///
-  /// A vault recovered onto another phone carries no right to republish under
-  /// that phone's identity, so an event authored by a different credential is
-  /// discarded rather than resent.
-  NostrEvent? _storedEvent(
-    List<VaultDescriptorPublication> rows,
-    BackupCredential credential,
-  ) {
+  /// The caller compares its author with the credential in hand: a vault
+  /// recovered onto another phone carries no right to republish under that
+  /// phone's identity, and re-sealing one rather than keeping it is what moves
+  /// the vault into a second recovery namespace.
+  NostrEvent? _storedEvent(List<VaultDescriptorPublication> rows) {
     final artifact = rows
         .where((row) => row.destination == VaultBackupDestination.nostr)
         .map((row) => row.artifact)
         .firstOrNull;
     if (artifact == null) return null;
     try {
-      final event = NostrEvent.parse(
+      return NostrEvent.parse(
         jsonDecode(utf8.decode(artifact)) as Map<String, dynamic>,
         maxContentBytes: NostrDescriptorRepository.maxContentBytes,
       );
-      return event.author == credential.nostrPublicKeyHex ? event : null;
     } on Exception {
       return null;
     }

@@ -30,12 +30,25 @@ class BackupCredentialResolver {
 
   /// The twelve words themselves, derived at the point of use for a protected
   /// reveal. Nothing else in the feature hands them out.
+  ///
+  /// [expectedOriginFingerprint] is the canonical seed the caller believes owns
+  /// the words, as a vault records the wallet it was created on. When it names
+  /// another wallet nothing is derived: this device's words are not that
+  /// vault's recovery credential, and showing them as if they were sends the
+  /// person away with the wrong twelve words.
   @useResult
-  Future<Result<String, NostrIdentityFailure>> revealWords() async {
+  Future<Result<String, NostrIdentityFailure>> revealWords({
+    String? expectedOriginFingerprint,
+  }) async {
     switch (await _seed()) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
+        if (expectedOriginFingerprint != null &&
+            expectedOriginFingerprint.toLowerCase() !=
+                value.masterFingerprint.toLowerCase()) {
+          return const Err(NostrIdentityForeignCredentialFailure());
+        }
         return Ok(BackupCredential.deriveWords(value));
     }
   }

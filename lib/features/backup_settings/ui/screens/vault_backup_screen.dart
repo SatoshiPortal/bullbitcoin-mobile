@@ -105,8 +105,13 @@ class VaultBackupScreen extends StatelessWidget {
               SettingsEntryItem(
                 icon: Icons.password_outlined,
                 title: context.loc.backupWordsEntry,
-                onTap: () =>
-                    context.pushNamed(BackupSettingsSubroute.backupWords.name),
+                onTap: () => context.pushNamed(
+                  BackupSettingsSubroute.backupWords.name,
+                  // The vault names the wallet it was created on, so a vault
+                  // recovered from another phone is told whose words open it
+                  // rather than shown this phone's.
+                  extra: inspection.record.mobileSeedFingerprint,
+                ),
               ),
               const Gap(32),
               for (final kind in [

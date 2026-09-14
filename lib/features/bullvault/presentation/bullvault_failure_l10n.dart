@@ -29,5 +29,7 @@ extension BullVaultFailureL10n on BullVaultFailure {
     BullVaultBackupCredentialFailure() ||
     BullVaultBackupWordsFailure() ||
     BullVaultNostrUnreachableFailure() => context.loc.oopsSomethingWentWrong,
+    BullVaultForeignBackupCredentialFailure() =>
+      context.loc.backupWordsForeignWallet,
   };
 }

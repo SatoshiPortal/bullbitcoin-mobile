@@ -48,6 +48,11 @@ void main() {
   late _Identity identity;
   Completer<bool>? protection;
 
+  Future<Result<String, NostrIdentityFailure>> reveal() =>
+      identity.revealBackupWords(
+        expectedOriginFingerprint: any(named: 'expectedOriginFingerprint'),
+      );
+
   setUp(() {
     Device.screen = const Size(411, 890);
     identity = _Identity();
@@ -68,17 +73,21 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  Future<void> open(WidgetTester tester) => tester.pumpWidget(
-    MaterialApp(
-      theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: BlocProvider(
-        create: (_) => BackupWordsCubit(RevealBackupWordsUsecase(identity)),
-        child: BackupWordsScreen(appUnlock: _Unlock()),
-      ),
-    ),
-  );
+  Future<void> open(WidgetTester tester, {String? originFingerprint}) =>
+      tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: BlocProvider(
+            create: (_) => BackupWordsCubit(RevealBackupWordsUsecase(identity)),
+            child: BackupWordsScreen(
+              appUnlock: _Unlock(),
+              originFingerprint: originFingerprint,
+            ),
+          ),
+        ),
+      );
 
   void expectNoWords() {
     for (final word in words.split(' ')) {
@@ -90,7 +99,7 @@ void main() {
     tester,
   ) async {
     protection = Completer<bool>();
-    when(identity.revealBackupWords).thenAnswer((_) async => const Ok(words));
+    when(reveal).thenAnswer((_) async => const Ok(words));
 
     await open(tester);
     await tester.pump();
@@ -110,14 +119,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('abandon'), findsOneWidget);
     expect(find.text('crop'), findsOneWidget);
-    verify(identity.revealBackupWords).called(1);
+    verify(reveal).called(1);
   });
 
   testWidgets('refused capture protection never derives the words', (
     tester,
   ) async {
     protection = Completer<bool>()..complete(false);
-    when(identity.revealBackupWords).thenAnswer((_) async => const Ok(words));
+    when(reveal).thenAnswer((_) async => const Ok(words));
 
     await open(tester);
     await tester.pumpAndSettle();
@@ -133,7 +142,7 @@ void main() {
     tester,
   ) async {
     when(
-      identity.revealBackupWords,
+      reveal,
     ).thenAnswer((_) async => const Err(NostrIdentityUnavailableFailure()));
 
     await open(tester);
@@ -146,8 +155,27 @@ void main() {
     expectNoWords();
   });
 
+  testWidgets('a vault from another wallet is told which words it needs', (
+    tester,
+  ) async {
+    when(reveal).thenAnswer(
+      (_) async => const Err(NostrIdentityForeignCredentialFailure()),
+    );
+
+    await open(tester, originFingerprint: 'deadbeef');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Authenticate fixture'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(loc.backupWordsForeignWallet), findsOneWidget);
+    expectNoWords();
+    verify(
+      () => identity.revealBackupWords(expectedOriginFingerprint: 'deadbeef'),
+    ).called(1);
+  });
+
   test('the cubit keeps a flag, never the words', () async {
-    when(identity.revealBackupWords).thenAnswer((_) async => const Ok(words));
+    when(reveal).thenAnswer((_) async => const Ok(words));
     final cubit = BackupWordsCubit(RevealBackupWordsUsecase(identity));
     final states = <BackupWordsState>[];
     final subscription = cubit.stream.listen(states.add);

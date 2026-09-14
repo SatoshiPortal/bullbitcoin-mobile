@@ -127,9 +127,9 @@ class BackupSettingsSettingsRouter {
     GoRoute(
       name: BackupSettingsSubroute.backupWords.name,
       path: BackupSettingsSubroute.backupWords.path,
-      builder: (_, _) => BlocProvider(
+      builder: (_, state) => BlocProvider(
         create: (_) => locator<BackupWordsCubit>(),
-        child: const BackupWordsScreen(),
+        child: BackupWordsScreen(originFingerprint: state.extra as String?),
       ),
     ),
     GoRoute(

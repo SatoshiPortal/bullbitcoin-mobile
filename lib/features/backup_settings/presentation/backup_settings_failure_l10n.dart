@@ -32,5 +32,7 @@ extension BackupSettingsFailureL10n on BackupSettingsFailure {
       context.loc.vaultRecoveryInvalidWords,
     BackupSettingsInvalidAccountKeyFailure() =>
       context.loc.vaultRecoveryInvalidAccountKey,
+    BackupSettingsForeignBackupWordsFailure() =>
+      context.loc.backupWordsForeignWallet,
   };
 }
