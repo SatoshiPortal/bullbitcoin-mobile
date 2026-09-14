@@ -20,21 +20,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BackupWordsScreen extends StatelessWidget {
   final AppUnlockFacade appUnlock;
 
-  /// The wallet a selected vault records as its own. The Data Backup entry
-  /// asks for this device's own words and passes none; a vault asks for the
-  /// words that open its backups, which another phone may hold.
+  /// The wallet a selected vault records as its own, and whether a vault is
+  /// what asked at all.
+  ///
+  /// The Data Backup entry asks for this device's own words; a vault asks for
+  /// the words that open its backups, which another phone may hold, and a
+  /// vault that records no origin names no wallet this device can answer for.
   final String? originFingerprint;
+  final bool forVault;
 
-  const BackupWordsScreen({
+  /// This device's own magic backup words.
+  const BackupWordsScreen({super.key, this.appUnlock = const AppUnlockFacade()})
+    : originFingerprint = null,
+      forVault = false;
+
+  /// The words that open one vault's backups, whoever holds them.
+  const BackupWordsScreen.forVault({
     super.key,
+    required this.originFingerprint,
     this.appUnlock = const AppUnlockFacade(),
-    this.originFingerprint,
-  });
+  }) : forVault = true;
 
   @override
   Widget build(BuildContext context) => SecretRevealGate(
     appUnlock: appUnlock,
-    builder: (_) => _RevealedBackupWords(originFingerprint: originFingerprint),
+    builder: (_) => _RevealedBackupWords(
+      originFingerprint: originFingerprint,
+      forVault: forVault,
+    ),
   );
 }
 
@@ -42,8 +55,12 @@ class BackupWordsScreen extends StatelessWidget {
 /// unmounts it, which is what releases the words it derived.
 class _RevealedBackupWords extends StatefulWidget {
   final String? originFingerprint;
+  final bool forVault;
 
-  const _RevealedBackupWords({required this.originFingerprint});
+  const _RevealedBackupWords({
+    required this.originFingerprint,
+    required this.forVault,
+  });
 
   @override
   State<_RevealedBackupWords> createState() => _RevealedBackupWordsState();
@@ -52,7 +69,10 @@ class _RevealedBackupWords extends StatefulWidget {
 class _RevealedBackupWordsState extends State<_RevealedBackupWords> {
   late final Future<List<String>?> _words = context
       .read<BackupWordsCubit>()
-      .reveal(originFingerprint: widget.originFingerprint);
+      .reveal(
+        originFingerprint: widget.originFingerprint,
+        forVault: widget.forVault,
+      );
 
   @override
   Widget build(BuildContext context) => FutureBuilder<List<String>?>(

@@ -129,7 +129,15 @@ class BackupSettingsSettingsRouter {
       path: BackupSettingsSubroute.backupWords.path,
       builder: (_, state) => BlocProvider(
         create: (_) => locator<BackupWordsCubit>(),
-        child: BackupWordsScreen(originFingerprint: state.extra as String?),
+        // Only a vault entry names an origin wallet, and it is offered only by
+        // a vault that records one; everything else asks for this device's own
+        // words.
+        child: switch (state.extra) {
+          final String origin => BackupWordsScreen.forVault(
+            originFingerprint: origin,
+          ),
+          _ => const BackupWordsScreen(),
+        },
       ),
     ),
     GoRoute(

@@ -73,21 +73,28 @@ void main() {
         .setMockMethodCallHandler(channel, null);
   });
 
-  Future<void> open(WidgetTester tester, {String? originFingerprint}) =>
-      tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider(
-            create: (_) => BackupWordsCubit(RevealBackupWordsUsecase(identity)),
-            child: BackupWordsScreen(
-              appUnlock: _Unlock(),
-              originFingerprint: originFingerprint,
-            ),
-          ),
-        ),
-      );
+  /// The Data Backup journey by default, and the vault journey when [forVault]
+  /// is set, which is the only one that names an origin wallet.
+  Future<void> open(
+    WidgetTester tester, {
+    String? originFingerprint,
+    bool forVault = false,
+  }) => tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.themeData(AppThemeType.light),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: BlocProvider(
+        create: (_) => BackupWordsCubit(RevealBackupWordsUsecase(identity)),
+        child: forVault
+            ? BackupWordsScreen.forVault(
+                appUnlock: _Unlock(),
+                originFingerprint: originFingerprint,
+              )
+            : BackupWordsScreen(appUnlock: _Unlock()),
+      ),
+    ),
+  );
 
   void expectNoWords() {
     for (final word in words.split(' ')) {
@@ -192,7 +199,7 @@ void main() {
       (_) async => const Err(NostrIdentityForeignCredentialFailure()),
     );
 
-    await open(tester, originFingerprint: 'deadbeef');
+    await open(tester, originFingerprint: 'deadbeef', forVault: true);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Authenticate fixture'));
     await tester.pumpAndSettle();
@@ -202,6 +209,19 @@ void main() {
     verify(
       () => identity.revealBackupWords(expectedOriginFingerprint: 'deadbeef'),
     ).called(1);
+  });
+
+  testWidgets('a vault that records no origin derives nothing', (tester) async {
+    when(reveal).thenAnswer((_) async => const Ok(words));
+
+    await open(tester, forVault: true);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Authenticate fixture'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(loc.backupWordsForeignWallet), findsOneWidget);
+    expectNoWords();
+    verifyZeroInteractions(identity);
   });
 
   test('the cubit keeps a flag, never the words', () async {

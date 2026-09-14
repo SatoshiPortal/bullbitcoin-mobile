@@ -102,17 +102,20 @@ class VaultBackupScreen extends StatelessWidget {
                   pathParameters: {'walletId': inspection.record.walletId},
                 ),
               ),
-              SettingsEntryItem(
-                icon: Icons.password_outlined,
-                title: context.loc.backupWordsEntry,
-                onTap: () => context.pushNamed(
-                  BackupSettingsSubroute.backupWords.name,
-                  // The vault names the wallet it was created on, so a vault
-                  // recovered from another phone is told whose words open it
-                  // rather than shown this phone's.
-                  extra: inspection.record.mobileSeedFingerprint,
+              // The vault names the wallet it was created on, so a vault
+              // recovered from another phone is told whose words open it
+              // rather than shown this phone's. A vault this phone kept no
+              // Mobile seed for names none, and there is nothing honest to
+              // offer: its backups were sealed to words held elsewhere.
+              if (inspection.record.mobileSeedFingerprint case final origin?)
+                SettingsEntryItem(
+                  icon: Icons.password_outlined,
+                  title: context.loc.backupWordsEntry,
+                  onTap: () => context.pushNamed(
+                    BackupSettingsSubroute.backupWords.name,
+                    extra: origin,
+                  ),
                 ),
-              ),
               const Gap(32),
               for (final kind in [
                 VaultRecoveryKitKind.mobile,

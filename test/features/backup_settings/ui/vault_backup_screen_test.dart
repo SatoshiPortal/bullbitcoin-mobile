@@ -191,6 +191,27 @@ void main() {
     });
   }
 
+  testWidgets('a vault this phone kept no seed for offers no words', (
+    tester,
+  ) async {
+    final foreign = testBullVaultCreateResult(usesBullMobile: false).record;
+    expect(foreign.mobileSeedFingerprint, isNull);
+    when(() => vaults.listRecords()).thenAnswer((_) async => Ok([foreign]));
+    when(
+      () => vaults.encodeRecoveryPackage(foreign.recoveryPackage),
+    ).thenReturn(codec.encode(foreign.recoveryPackage));
+    await cubit.load();
+
+    final context = await pump(tester, AppThemeType.light);
+
+    expect(find.text(context.loc.backupWordsEntry), findsNothing);
+    expect(
+      find.text(context.loc.bullVaultExportDescriptor),
+      findsOneWidget,
+      reason: 'every other recovery action is still offered',
+    );
+  });
+
   testWidgets('check again never records an on-chain test date', (
     tester,
   ) async {
