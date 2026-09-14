@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
@@ -36,6 +37,7 @@ void main() {
       BullVaultMetadataDatasource(database),
       BullVaultRecordMapper(codec),
       codec,
+      Bip138Codec(),
     );
     return WalletBackupBehaviorHarness.create(
       database: database,

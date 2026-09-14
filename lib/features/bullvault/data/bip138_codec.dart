@@ -10,6 +10,12 @@ import 'package:pointycastle/export.dart';
 /// Descriptor grammar and key eligibility are validated by the caller before encode.
 final class Bip138Codec {
   static const maxBytes = 32768;
+
+  /// BIP341's unspendable H point, x only. A descriptor names it as a Taproot
+  /// internal key nobody can sign for, so it is never a backup recipient.
+  static const numsXOnlyKey =
+      '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0';
+
   final Random _random;
 
   Bip138Codec() : _random = Random.secure();
@@ -22,12 +28,7 @@ final class Bip138Codec {
     final keys = xOnlyKeys.map(hex.encode).toSet().toList()..sort();
     if (keys.isEmpty ||
         keys.length > 5 ||
-        keys.any(
-          (key) =>
-              key.length != 64 ||
-              key ==
-                  '50929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0',
-        )) {
+        keys.any((key) => key.length != 64 || key == numsXOnlyKey)) {
       throw const FormatException('Unsupported recipients');
     }
     final secret = taggedHash(

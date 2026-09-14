@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usecase.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
@@ -23,6 +24,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bu
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_onboarding_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_recovery_package_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/encode_private_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_details_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_funded_predecessor_usecase.dart';
@@ -104,6 +106,7 @@ abstract final class BullVaultLocator {
         locator(),
         BullVaultRecordMapper(codec),
         codec,
+        Bip138Codec(),
       );
     });
     locator.registerLazySingleton<CreateBullVaultUsecase>(
@@ -217,6 +220,7 @@ abstract final class BullVaultLocator {
         locator<BullVaultRepository>(),
         locator<RestoreBullVaultUsecase>(),
         WatchBullVaultBackupChangesUsecase(locator<BullVaultRepository>()),
+        EncodePrivateDescriptorBackupUsecase(locator<BullVaultRepository>()),
       ),
     );
     locator.registerFactory<BullVaultOnboardingCubit>(

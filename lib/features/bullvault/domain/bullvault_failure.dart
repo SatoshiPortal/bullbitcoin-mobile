@@ -43,3 +43,13 @@ final class BullVaultRenewalHasFundsFailure extends BullVaultFailure {
 final class BullVaultInvalidRecoveryFailure extends BullVaultFailure {
   const BullVaultInvalidRecoveryFailure([super.logMessage]);
 }
+
+/// The vault's descriptor names more account keys than BIP138 can address, so
+/// no private backup can cover every cosigner.
+///
+/// Encrypting for a convenient subset instead would let the app claim a backup
+/// route for a signer that has none (plan 5.1).
+final class BullVaultDescriptorBackupUnsupportedFailure
+    extends BullVaultFailure {
+  const BullVaultDescriptorBackupUnsupportedFailure([super.logMessage]);
+}

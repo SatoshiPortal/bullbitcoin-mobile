@@ -20,5 +20,9 @@ extension BullVaultFailureL10n on BullVaultFailure {
       context.loc.bullVaultCancelRenewalHasFunds,
     BullVaultInvalidRecoveryFailure() =>
       context.loc.bullVaultFailureInvalidRecovery,
+    // A policy can hold five signer keys at most, so no vault this app creates
+    // can reach it; C12 gives it a message if publication ever surfaces one.
+    BullVaultDescriptorBackupUnsupportedFailure() =>
+      context.loc.oopsSomethingWentWrong,
   };
 }

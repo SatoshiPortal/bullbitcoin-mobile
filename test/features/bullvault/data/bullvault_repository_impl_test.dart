@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
@@ -951,6 +952,7 @@ BullVaultRepositoryImpl _repository(SqliteDatabase storage) {
     BullVaultMetadataDatasource(storage),
     BullVaultRecordMapper(codec),
     codec,
+    Bip138Codec(),
   );
 }
 

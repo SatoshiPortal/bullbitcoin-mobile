@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/descriptor_backup_key.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:convert/convert.dart';
 
 /// Shared account-key and public-descriptor validation for descriptor backups.
 abstract final class DescriptorBackupParser {
@@ -68,5 +70,25 @@ abstract final class DescriptorBackupParser {
       descriptor: source,
       isTestnet: key.isTestnet,
     );
+  }
+
+  /// Every account a descriptor entrusts with funds, deduplicated by complete
+  /// account identity and in the order the descriptor names them.
+  ///
+  /// BDK already drops an unspendable Taproot internal key from its signing
+  /// keys; the NUMS point is refused again here so eligibility never depends on
+  /// that, and a key the app cannot recognise as an account stops the whole
+  /// backup rather than quietly shrinking its recipient list.
+  static List<DescriptorBackupKey> eligibleAccountKeys(
+    BdkTwoPathDescriptor parsed,
+  ) {
+    final accounts = <DescriptorBackupKey>[];
+    for (final key in parsed.keys) {
+      final account = DescriptorBackupKey.parse(key.xpub);
+      if (hex.encode(account.xOnly) == Bip138Codec.numsXOnlyKey) continue;
+      if (accounts.any(account.sameAccount)) continue;
+      accounts.add(account);
+    }
+    return accounts;
   }
 }

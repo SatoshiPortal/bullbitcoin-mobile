@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:meta/meta.dart';
@@ -17,6 +20,24 @@ abstract interface class BullVaultRepository {
   );
 
   String encodeRecoveryPackage(BullVaultRecoveryPackage recoveryPackage);
+
+  /// Encrypts [descriptor] for every account it entrusts, so any one cosigner
+  /// can recover the vault from the artifact alone.
+  @useResult
+  Result<BullVaultDescriptorBackup, BullVaultFailure>
+  encodePrivateDescriptorBackup({
+    required String descriptor,
+    required Network network,
+  });
+
+  /// Opens an artifact with one account key and proves the descriptor inside
+  /// really names that exact account.
+  @useResult
+  Result<BullVaultDescriptorBackup, BullVaultFailure>
+  decodePrivateDescriptorBackup({
+    required Uint8List bytes,
+    required String accountKeyInput,
+  });
 
   @useResult
   Future<Result<int, BullVaultFailure>> reserveNextGeneration(

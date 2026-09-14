@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullvault/data/descriptor_backup_parser.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/encode_private_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
@@ -10,6 +15,7 @@ import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_backup_changes_usecase.dart';
 
 export 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
+export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
@@ -35,12 +41,14 @@ class BullVaultFacade {
   final BullVaultRepository _repository;
   final RestoreBullVaultUsecase _restoreUsecase;
   final WatchBullVaultBackupChangesUsecase _watchBackupChanges;
+  final EncodePrivateDescriptorBackupUsecase _encodePrivateDescriptor;
 
   const BullVaultFacade(
     this._canDeleteWalletUsecase,
     this._repository,
     this._restoreUsecase,
     this._watchBackupChanges,
+    this._encodePrivateDescriptor,
   );
 
   /// Initial wake-up and committed changes whose revisions are already saved.
@@ -73,6 +81,47 @@ class BullVaultFacade {
         source: source,
         label: label,
       );
+
+  /// Restores a vault from its bare descriptor, without the extra facts a
+  /// recovery package carries. Every rule the package path applies still holds.
+  @useResult
+  Future<Result<BullVaultRestoreResult, BullVaultFailure>>
+  restoreFromDescriptor({required String source, required String label}) =>
+      _restoreUsecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: source,
+        label: label,
+      );
+
+  /// The vault's descriptor sealed for each of its cosigners, with the lookup
+  /// alias each of them can find it under.
+  @useResult
+  Future<Result<BullVaultDescriptorBackup, BullVaultFailure>>
+  encodePrivateDescriptorBackup(String walletId) =>
+      _encodePrivateDescriptor.execute(walletId);
+
+  /// Opens a private descriptor backup with one cosigner's account key, proving
+  /// the descriptor inside names that exact account before returning it.
+  @useResult
+  Result<BullVaultDescriptorBackup, BullVaultFailure>
+  decodePrivateDescriptorBackup({
+    required Uint8List bytes,
+    required String accountKeyInput,
+  }) => _repository.decodePrivateDescriptorBackup(
+    bytes: bytes,
+    accountKeyInput: accountKeyInput,
+  );
+
+  /// The lookup alias an account key publishes under, or null when the input is
+  /// not an account key. Accepts a bare xpub, an origin-qualified expression or
+  /// a descriptor naming one account.
+  String? descriptorLookupToken(String accountKeyInput) {
+    try {
+      return DescriptorBackupParser.inputKey(accountKeyInput).lookupToken;
+    } on FormatException {
+      return null;
+    }
+  }
 
   @useResult
   Future<Result<bool, BullVaultFailure>> isBullVaultWallet(
