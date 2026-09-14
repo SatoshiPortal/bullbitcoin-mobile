@@ -16,10 +16,12 @@ abstract interface class WalletBackupEncryptionRepository {
     WalletBackupSnapshot envelope,
   );
 
+  /// Decodes canonical bytes. A null [expectedParentFingerprint] skips the
+  /// parent check and nothing else; see [decrypt].
   @useResult
   Result<WalletBackupSnapshot, WalletBackupFailure> decodeCanonical({
     required Uint8List bytes,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   });
 
   @useResult
@@ -28,10 +30,13 @@ abstract interface class WalletBackupEncryptionRepository {
     required WalletBackupEncryptionKey key,
   });
 
+  /// Decrypts and decodes. A null [expectedParentFingerprint] skips the parent
+  /// check for a words-only read that has no seed to compare against; the
+  /// decrypted fingerprint is then a source fact, not an ownership claim.
   @useResult
   Result<WalletBackupSnapshot, WalletBackupFailure> decrypt({
     required WalletBackupCiphertext ciphertext,
     required WalletBackupEncryptionKey key,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   });
 }

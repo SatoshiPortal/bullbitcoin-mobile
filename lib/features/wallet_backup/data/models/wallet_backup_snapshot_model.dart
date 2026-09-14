@@ -100,9 +100,16 @@ final class WalletBackupSnapshotCodec {
     return encoded;
   }
 
+  /// Decodes one backup document.
+  ///
+  /// A null [expectedParentFingerprint] skips only the parent check, for a read
+  /// that is authorised by the backup words alone and has no seed to compare
+  /// against (plan 5.2). Every other structural rule still applies, and the
+  /// fingerprint the document carries stays a source fact, never proof of
+  /// ownership.
   WalletBackupSnapshot decode(
     String payload, {
-    required Fingerprint expectedParentFingerprint,
+    required Fingerprint? expectedParentFingerprint,
   }) {
     _checkSize(payload);
     try {
@@ -118,7 +125,8 @@ final class WalletBackupSnapshotCodec {
       final parentFingerprint = _fingerprint(
         _string(root, 'parentFingerprint'),
       );
-      if (parentFingerprint != expectedParentFingerprint) {
+      if (expectedParentFingerprint != null &&
+          parentFingerprint != expectedParentFingerprint) {
         throw const WalletBackupSnapshotCodecException(
           reason:
               WalletBackupSnapshotCodecFailureReason.parentFingerprintMismatch,

@@ -39,7 +39,7 @@ final class RecoverBullWalletBackupEncryptionRepository
   @override
   Result<WalletBackupSnapshot, WalletBackupFailure> decodeCanonical({
     required Uint8List bytes,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   }) => _decode(
     () => const Utf8Decoder(allowMalformed: false).convert(bytes),
     expectedParentFingerprint,
@@ -75,7 +75,7 @@ final class RecoverBullWalletBackupEncryptionRepository
   Result<WalletBackupSnapshot, WalletBackupFailure> decrypt({
     required WalletBackupCiphertext ciphertext,
     required WalletBackupEncryptionKey key,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   }) => _decode(
     () => utf8.decode(
       RecoverBull.restoreBackup(
@@ -94,12 +94,19 @@ final class RecoverBullWalletBackupEncryptionRepository
 
   Result<WalletBackupSnapshot, WalletBackupFailure> _decode(
     String Function() plaintext,
-    String expectedParentFingerprint,
+    String? expectedParentFingerprint,
     String operation,
   ) {
-    final fingerprint = Fingerprint.tryParse(expectedParentFingerprint);
-    if (fingerprint == null) {
-      return const Err(WalletBackupParentFingerprintMismatchFailure());
+    // Null is a words-only read with no seed to compare against; anything else
+    // has to parse, so an unusable fingerprint never passes for "skip it".
+    final Fingerprint? fingerprint;
+    if (expectedParentFingerprint == null) {
+      fingerprint = null;
+    } else {
+      fingerprint = Fingerprint.tryParse(expectedParentFingerprint);
+      if (fingerprint == null) {
+        return const Err(WalletBackupParentFingerprintMismatchFailure());
+      }
     }
     try {
       return Ok(

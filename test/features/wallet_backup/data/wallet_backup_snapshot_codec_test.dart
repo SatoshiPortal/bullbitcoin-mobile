@@ -95,6 +95,54 @@ void main() {
     });
   });
 
+  group('words-only reads', () {
+    test('no expected parent skips that check and nothing else', () {
+      final decoded = codec.decode(
+        _fixture('full'),
+        expectedParentFingerprint: null,
+      );
+
+      expect(decoded.parentFingerprint, canonicalParentFingerprint);
+      expect(decoded.vaults, isNotEmpty);
+      expect(
+        decoded.recoveryManifest.parentFingerprint,
+        decoded.parentFingerprint,
+      );
+    });
+
+    test('a foreign document still decodes without an expected parent', () {
+      final foreign = _fixture('full')
+          .replaceAll('"deadbeef"', '"feedface"')
+          .replaceAll('deadbeef/', 'feedface/');
+
+      final decoded = codec.decode(foreign, expectedParentFingerprint: null);
+
+      expect(decoded.parentFingerprint, Fingerprint('feedface'));
+      expect(
+        () => codec.decode(
+          foreign,
+          expectedParentFingerprint: canonicalParentFingerprint,
+        ),
+        _throwsReason(
+          WalletBackupSnapshotCodecFailureReason.parentFingerprintMismatch,
+        ),
+      );
+    });
+
+    test('structural rules still apply with no expected parent', () {
+      for (final broken in [
+        _fixture('full').replaceFirst('"version":1,', '"version":2,'),
+        _fixture('full').replaceFirst('"format"', '"formats"'),
+        '{"not":"a backup"}',
+      ]) {
+        expect(
+          () => codec.decode(broken, expectedParentFingerprint: null),
+          throwsA(isA<WalletBackupSnapshotCodecException>()),
+        );
+      }
+    });
+  });
+
   group('rejections', () {
     test('a foreign parent fingerprint is a wrong-seed failure', () {
       expect(

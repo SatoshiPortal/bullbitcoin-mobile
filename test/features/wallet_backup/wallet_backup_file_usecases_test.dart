@@ -1074,7 +1074,7 @@ final class _Encryption implements WalletBackupEncryptionRepository {
   @override
   Result<WalletBackupSnapshot, WalletBackupFailure> decodeCanonical({
     required Uint8List bytes,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   }) => acceptPlaintext
       ? Ok(_fileSnapshot())
       : const Err(WalletBackupInvalidEnvelopeFailure());
@@ -1083,7 +1083,7 @@ final class _Encryption implements WalletBackupEncryptionRepository {
   Result<WalletBackupSnapshot, WalletBackupFailure> decrypt({
     required WalletBackupCiphertext ciphertext,
     required WalletBackupEncryptionKey key,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   }) => const Err(WalletBackupInvalidEnvelopeFailure());
 
   @override

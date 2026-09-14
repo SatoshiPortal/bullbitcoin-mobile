@@ -121,7 +121,7 @@ final class _EncryptionRepository implements WalletBackupEncryptionRepository {
   @override
   Result<WalletBackupSnapshot, WalletBackupFailure> decodeCanonical({
     required Uint8List bytes,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   }) => throw UnimplementedError();
 
   @override
@@ -138,7 +138,7 @@ final class _EncryptionRepository implements WalletBackupEncryptionRepository {
   Result<WalletBackupSnapshot, WalletBackupFailure> decrypt({
     required WalletBackupCiphertext ciphertext,
     required WalletBackupEncryptionKey key,
-    required String expectedParentFingerprint,
+    required String? expectedParentFingerprint,
   }) => throw UnimplementedError();
 }
 

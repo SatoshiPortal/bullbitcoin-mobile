@@ -106,6 +106,45 @@ void main() {
     );
   });
 
+  test(
+    'a words-only read skips the parent check, an unusable one does not',
+    () {
+      final encrypted = repository.encrypt(
+        envelope: canonicalMinimalSnapshot(),
+        key: key,
+      );
+      final ciphertext =
+          (encrypted as Ok<WalletBackupCiphertext, WalletBackupFailure>).value;
+
+      final wordsOnly = repository.decrypt(
+        ciphertext: ciphertext,
+        key: key,
+        expectedParentFingerprint: null,
+      );
+
+      expect(wordsOnly, isA<Ok<WalletBackupSnapshot, WalletBackupFailure>>());
+      expect(
+        (wordsOnly as Ok<WalletBackupSnapshot, WalletBackupFailure>)
+            .value
+            .parentFingerprint
+            .hex,
+        'deadbeef',
+      );
+      expect(
+        repository.decrypt(
+          ciphertext: ciphertext,
+          key: key,
+          expectedParentFingerprint: 'not-a-fingerprint',
+        ),
+        isA<Err<WalletBackupSnapshot, WalletBackupFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<WalletBackupParentFingerprintMismatchFailure>(),
+        ),
+      );
+    },
+  );
+
   test('rejects oversized Base64 before decoding it', () {
     expect(
       () => WalletBackupCiphertext(
