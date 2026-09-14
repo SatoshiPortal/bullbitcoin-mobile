@@ -13,6 +13,11 @@ import 'dart:typed_data';
 /// The format tag is the one the prototype froze, so artifacts produced before
 /// this move still open. Publication over Nostr, and any decision to advance
 /// that tag, belong to chunk C8.
+///
+/// This frame only says what the encrypted bytes are; it does not describe a
+/// vault. The app's vault document is [BullVaultRecoveryPackageCodec], and its
+/// output is what `descriptor` is expected to carry. C8 should decide whether
+/// the two collapse into one versioned document rather than keep both.
 final class DescriptorArtifact {
   static const profile = 'bullbitcoin-portable-backup-recoverbull-prototype-1';
 

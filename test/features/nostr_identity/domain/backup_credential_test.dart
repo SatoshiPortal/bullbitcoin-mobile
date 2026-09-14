@@ -8,7 +8,7 @@ import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'fixtures/backup_credential_vectors.dart';
+import '../fixtures/backup_credential_vectors.dart';
 
 Seed _seed() => Seed.bytes(
   bytes: backupCredentialVectorSeed,
