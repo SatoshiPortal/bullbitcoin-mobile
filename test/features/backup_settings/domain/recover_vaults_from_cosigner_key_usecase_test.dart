@@ -209,6 +209,83 @@ void main() {
     );
   });
 
+  test('a package reaches the importer for a vault already here', () async {
+    when(() => vaults.listRecords()).thenAnswer((_) async => Ok([record]));
+    when(
+      () => vaults.restoreFromRecoveryPackage(
+        source: any(named: 'source'),
+        label: any(named: 'label'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok(
+        BullVaultRestoreResult(
+          wallet: Wallet(
+            origin: record.walletId,
+            network: policy.network,
+            signers: const [],
+            scriptType: null,
+            publicDescriptor: policy.descriptor,
+            balanceSat: BigInt.zero,
+            isHidden: true,
+          ),
+          record: record,
+          mobileAccess: BullVaultMobileAccess.unavailable,
+        ),
+      ),
+    );
+
+    final outcome = await openArtifact.importDescriptor(
+      descriptor: policy.descriptor,
+      network: policy.network,
+      recoveryPackage: '{"package":"richer"}',
+    );
+
+    expect(outcome.status, VaultRecoveryStatus.alreadyPresent);
+    expect(outcome.walletId, record.walletId);
+    verify(
+      () => vaults.restoreFromRecoveryPackage(
+        source: '{"package":"richer"}',
+        label: RecoverVaultFromBip138FileUsecase.fallbackLabel,
+      ),
+    ).called(1);
+  });
+
+  test('a package the importer refuses leaves the vault as it was', () async {
+    when(() => vaults.listRecords()).thenAnswer((_) async => Ok([record]));
+    when(
+      () => vaults.restoreFromRecoveryPackage(
+        source: any(named: 'source'),
+        label: any(named: 'label'),
+      ),
+    ).thenAnswer((_) async => const Err(BullVaultInvalidRecoveryFailure()));
+
+    final outcome = await openArtifact.importDescriptor(
+      descriptor: policy.descriptor,
+      network: policy.network,
+      recoveryPackage: '{"package":"refused"}',
+    );
+
+    expect(outcome.status, VaultRecoveryStatus.alreadyPresent);
+    expect(outcome.walletId, record.walletId);
+  });
+
+  test('a bare descriptor adds nothing to a vault already here', () async {
+    when(() => vaults.listRecords()).thenAnswer((_) async => Ok([record]));
+
+    final outcome = await openArtifact.importDescriptor(
+      descriptor: policy.descriptor,
+      network: policy.network,
+    );
+
+    expect(outcome.status, VaultRecoveryStatus.alreadyPresent);
+    verifyNever(
+      () => vaults.restoreFromDescriptor(
+        source: any(named: 'source'),
+        label: any(named: 'label'),
+      ),
+    );
+  });
+
   test('a descriptor the vault feature refuses is reported as such', () async {
     when(
       () => vaults.restoreFromDescriptor(

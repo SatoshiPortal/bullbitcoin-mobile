@@ -76,7 +76,12 @@ final class RecoverVaultFromBip138FileUsecase {
     String? recoveryPackage,
   }) async {
     final existing = await _existingWalletFor(descriptor, network);
-    if (existing != null) {
+    // A bare descriptor adds nothing to a vault that is already here. A
+    // recovery package does: birth height, schedule and lineage the existing
+    // record may never have had, which the importer has a validated path for
+    // merging. Whether this created the vault or only enriched it is decided
+    // afterwards, from what was here before.
+    if (existing != null && recoveryPackage == null) {
       return VaultRecoveryOutcome(
         VaultRecoveryStatus.alreadyPresent,
         walletId: existing,
@@ -94,9 +99,16 @@ final class RecoverVaultFromBip138FileUsecase {
             label: fallbackLabel,
           );
     return switch (restored) {
+      // Refusing the extra facts does not take the vault away.
+      Err() when existing != null => VaultRecoveryOutcome(
+        VaultRecoveryStatus.alreadyPresent,
+        walletId: existing,
+      ),
       Err() => const VaultRecoveryOutcome(VaultRecoveryStatus.unsupported),
       Ok(:final value) => VaultRecoveryOutcome(
-        VaultRecoveryStatus.imported,
+        existing == null
+            ? VaultRecoveryStatus.imported
+            : VaultRecoveryStatus.alreadyPresent,
         walletId: value.wallet.id,
       ),
     };
