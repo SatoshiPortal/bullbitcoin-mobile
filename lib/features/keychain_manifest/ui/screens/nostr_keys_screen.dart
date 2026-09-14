@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
-import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_l10n.dart';
+import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_failure_l10n.dart';
 import 'package:bb_mobile/features/keychain_manifest/presentation/nostr_keys_cubit.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_routes.dart';
 import 'package:flutter/material.dart';

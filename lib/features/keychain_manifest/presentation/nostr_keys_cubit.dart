@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_default
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-enum NostrKeyFormError {
+enum NostrKeyFormFailure {
   nameRequired,
   nameTooLong,
   descriptionTooLong,
@@ -19,7 +19,7 @@ final class NostrKeysState {
   final bool busy;
   final bool showSystemKeys;
   final KeychainManifestFailure? failure;
-  final NostrKeyFormError? formError;
+  final NostrKeyFormFailure? formFailure;
 
   const NostrKeysState({
     this.keys = const [],
@@ -27,7 +27,7 @@ final class NostrKeysState {
     this.busy = false,
     this.showSystemKeys = false,
     this.failure,
-    this.formError,
+    this.formFailure,
   });
 
   List<KeychainManifestEntry> get userKeys =>
@@ -42,16 +42,16 @@ final class NostrKeysState {
     bool? busy,
     bool? showSystemKeys,
     KeychainManifestFailure? failure,
-    NostrKeyFormError? formError,
+    NostrKeyFormFailure? formFailure,
     bool clearFailure = false,
-    bool clearFormError = false,
+    bool clearFormFailure = false,
   }) => NostrKeysState(
     keys: keys ?? this.keys,
     loading: loading ?? this.loading,
     busy: busy ?? this.busy,
     showSystemKeys: showSystemKeys ?? this.showSystemKeys,
     failure: clearFailure ? null : (failure ?? this.failure),
-    formError: clearFormError ? null : (formError ?? this.formError),
+    formFailure: clearFormFailure ? null : (formFailure ?? this.formFailure),
   );
 }
 
@@ -81,12 +81,14 @@ final class NostrKeysCubit extends Cubit<NostrKeysState> {
 
   Future<bool> create(String name, {String? description}) async {
     if (isClosed || state.busy) return false;
-    final formError = validateNostrKeyForm(name, description);
-    if (formError != null) {
-      emit(state.copyWith(formError: formError));
+    final formFailure = validateNostrKeyForm(name, description);
+    if (formFailure != null) {
+      emit(state.copyWith(formFailure: formFailure));
       return false;
     }
-    emit(state.copyWith(busy: true, clearFailure: true, clearFormError: true));
+    emit(
+      state.copyWith(busy: true, clearFailure: true, clearFormFailure: true),
+    );
     return switch (await _create.execute(
       purpose: name,
       description: description,
@@ -96,9 +98,9 @@ final class NostrKeysCubit extends Cubit<NostrKeysState> {
     };
   }
 
-  void clearFormError() {
-    if (!isClosed && state.formError != null) {
-      emit(state.copyWith(clearFormError: true));
+  void clearFormFailure() {
+    if (!isClosed && state.formFailure != null) {
+      emit(state.copyWith(clearFormFailure: true));
     }
   }
 
@@ -126,7 +128,7 @@ final class NostrKeysCubit extends Cubit<NostrKeysState> {
   }
 }
 
-NostrKeyFormError? validateNostrKeyForm(String name, String? description) {
+NostrKeyFormFailure? validateNostrKeyForm(String name, String? description) {
   final normalizedDescription = description?.trim();
   if (KeychainManifestNostrKey.tryNormalizePurpose(name) != null &&
       (normalizedDescription?.length ?? 0) <=
@@ -138,16 +140,16 @@ NostrKeyFormError? validateNostrKeyForm(String name, String? description) {
     return null;
   }
   final trimmed = name.trim();
-  if (trimmed.isEmpty) return NostrKeyFormError.nameRequired;
+  if (trimmed.isEmpty) return NostrKeyFormFailure.nameRequired;
   if (trimmed.length > KeychainManifestNostrKey.maxPurposeLength) {
-    return NostrKeyFormError.nameTooLong;
+    return NostrKeyFormFailure.nameTooLong;
   }
   if ((description?.trim().length ?? 0) >
       KeychainManifestEntry.maxDescriptionLength) {
-    return NostrKeyFormError.descriptionTooLong;
+    return NostrKeyFormFailure.descriptionTooLong;
   }
   if (KeychainManifestNostrKey.hasControlCharacter(trimmed)) {
-    return NostrKeyFormError.invalidNameCharacters;
+    return NostrKeyFormFailure.invalidNameCharacters;
   }
-  return NostrKeyFormError.invalidDescriptionCharacters;
+  return NostrKeyFormFailure.invalidDescriptionCharacters;
 }

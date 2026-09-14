@@ -18,16 +18,16 @@ extension KeychainManifestFailureL10n on KeychainManifestFailure {
   };
 }
 
-extension NostrKeyFormErrorL10n on NostrKeyFormError {
+extension NostrKeyFormFailureL10n on NostrKeyFormFailure {
   String toTranslated(BuildContext context) => switch (this) {
-    NostrKeyFormError.nameRequired =>
+    NostrKeyFormFailure.nameRequired =>
       context.loc.settingsNostrKeysNameRequiredError,
-    NostrKeyFormError.nameTooLong =>
+    NostrKeyFormFailure.nameTooLong =>
       context.loc.settingsNostrKeysNameTooLongError,
-    NostrKeyFormError.descriptionTooLong =>
+    NostrKeyFormFailure.descriptionTooLong =>
       context.loc.settingsNostrKeysDescriptionTooLongError,
-    NostrKeyFormError.invalidNameCharacters ||
-    NostrKeyFormError.invalidDescriptionCharacters =>
+    NostrKeyFormFailure.invalidNameCharacters ||
+    NostrKeyFormFailure.invalidDescriptionCharacters =>
       context.loc.settingsNostrKeysInvalidCharactersError,
   };
 }

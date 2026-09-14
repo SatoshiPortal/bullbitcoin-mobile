@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_ma
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/revealed_nostr_secret.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/reveal_keychain_manifest_nostr_key_usecase.dart';
-import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_l10n.dart';
+import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

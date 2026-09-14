@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
-import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_l10n.dart';
+import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_failure_l10n.dart';
 import 'package:bb_mobile/features/keychain_manifest/presentation/nostr_keys_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,17 +46,17 @@ final class _NostrKeyFormScreenState extends State<NostrKeyFormScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<NostrKeysCubit, NostrKeysState>(
       builder: (context, state) {
-        final error = state.formError;
+        final failure = state.formFailure;
         final nameError =
-            error == NostrKeyFormError.nameRequired ||
-                error == NostrKeyFormError.nameTooLong ||
-                error == NostrKeyFormError.invalidNameCharacters
-            ? error!.toTranslated(context)
+            failure == NostrKeyFormFailure.nameRequired ||
+                failure == NostrKeyFormFailure.nameTooLong ||
+                failure == NostrKeyFormFailure.invalidNameCharacters
+            ? failure!.toTranslated(context)
             : null;
         final descriptionError =
-            error == NostrKeyFormError.descriptionTooLong ||
-                error == NostrKeyFormError.invalidDescriptionCharacters
-            ? error!.toTranslated(context)
+            failure == NostrKeyFormFailure.descriptionTooLong ||
+                failure == NostrKeyFormFailure.invalidDescriptionCharacters
+            ? failure!.toTranslated(context)
             : null;
         return Scaffold(
           appBar: AppBar(title: Text(context.loc.settingsNostrKeysCreate)),
@@ -68,7 +68,7 @@ final class _NostrKeyFormScreenState extends State<NostrKeyFormScreen> {
                 value: _name.text,
                 maxLength: KeychainManifestNostrKey.maxPurposeLength,
                 onChanged: (_) =>
-                    context.read<NostrKeysCubit>().clearFormError(),
+                    context.read<NostrKeysCubit>().clearFormFailure(),
                 label: context.loc.settingsNostrKeysName,
                 hint: context.loc.settingsNostrKeysNameHint,
                 errorText: nameError,
@@ -80,7 +80,7 @@ final class _NostrKeyFormScreenState extends State<NostrKeyFormScreen> {
                 minLines: 2,
                 maxLines: 4,
                 onChanged: (_) =>
-                    context.read<NostrKeysCubit>().clearFormError(),
+                    context.read<NostrKeysCubit>().clearFormFailure(),
                 label: context.loc.settingsNostrKeysDescription,
                 hint: context.loc.settingsNostrKeysDescriptionHint,
                 errorText: descriptionError,
