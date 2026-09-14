@@ -64,7 +64,14 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
   Future<void> retryPublications() async {
     if (state.busy) return;
     final inspection = state.inspection;
-    emit(VaultBackupState(inspection: inspection, busy: true));
+    final publications = state.publications;
+    emit(
+      VaultBackupState(
+        inspection: inspection,
+        publications: publications,
+        busy: true,
+      ),
+    );
     final resent = await _publish.retryPendingPublications(walletId);
     if (isClosed) return;
     emit(switch (resent) {
@@ -74,7 +81,7 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
       ),
       Err(:final failure) => VaultBackupState(
         inspection: inspection,
-        publications: state.publications,
+        publications: publications,
         failure: failure,
       ),
     });
@@ -92,11 +99,26 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
   Future<void> checkAgain() async {
     if (state.busy) return;
     final inspection = state.inspection;
-    emit(VaultBackupState(inspection: inspection, busy: true));
+    // Checking a backup says nothing about what was published where, so the
+    // rows and their Retry button stay put while it runs.
+    final publications = state.publications;
+    emit(
+      VaultBackupState(
+        inspection: inspection,
+        publications: publications,
+        busy: true,
+      ),
+    );
     final result = await _verify.checkAgain(walletId);
     if (isClosed) return;
     if (result case Err(:final failure)) {
-      emit(VaultBackupState(inspection: inspection, failure: failure));
+      emit(
+        VaultBackupState(
+          inspection: inspection,
+          publications: publications,
+          failure: failure,
+        ),
+      );
       return;
     }
     final latest =
@@ -107,11 +129,12 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
       Ok(:final value) => VaultBackupState(
         inspection: value,
         latest: latest,
-        publications: state.publications,
+        publications: publications,
         verified: latest.containsValue(VaultBackupCheckStatus.success),
       ),
       Err(:final failure) => VaultBackupState(
         inspection: inspection,
+        publications: publications,
         failure: failure,
       ),
     });
@@ -123,11 +146,25 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
   ) async {
     if (state.busy) return;
     final inspection = state.inspection;
-    emit(VaultBackupState(inspection: inspection, busy: true));
+    final publications = state.publications;
+    final latest = state.latest;
+    emit(
+      VaultBackupState(
+        inspection: inspection,
+        publications: publications,
+        busy: true,
+      ),
+    );
     final result = await operation();
     if (isClosed) return;
     if (result case Err(:final failure)) {
-      emit(VaultBackupState(inspection: inspection, failure: failure));
+      emit(
+        VaultBackupState(
+          inspection: inspection,
+          publications: publications,
+          failure: failure,
+        ),
+      );
       return;
     }
     final updated = await _verify.load(walletId);
@@ -135,13 +172,14 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
     emit(switch (updated) {
       Ok(:final value) => VaultBackupState(
         inspection: value,
-        latest: state.latest,
-        publications: state.publications,
+        latest: latest,
+        publications: publications,
         verified: (result as Ok<bool?, BackupSettingsFailure>).value,
         checkedSource: source,
       ),
       Err(:final failure) => VaultBackupState(
         inspection: inspection,
+        publications: publications,
         failure: failure,
       ),
     });

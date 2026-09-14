@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -40,6 +41,7 @@ void main() {
   late VaultBackupTestRepositoryImpl history;
   late VaultBackupCubit cubit;
   late _Metadata metadata;
+  late _Vaults vaults;
   final record = testBullVaultCreateResult().record;
   final codec = testBullVaultRecoveryPackageCodec();
 
@@ -47,7 +49,7 @@ void main() {
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    final vaults = _Vaults();
+    vaults = _Vaults();
     when(() => vaults.listRecords()).thenAnswer((_) async => Ok([record]));
     // Neither remote descriptor route can answer for this vault, so a check
     // has three honest results and no date to record.
@@ -126,6 +128,33 @@ void main() {
     await tester.pumpAndSettle();
     return tester.element(find.byType(VaultBackupScreen));
   }
+
+  test('checking a backup keeps the publication rows it had', () async {
+    when(() => vaults.descriptorPublications(record.walletId)).thenAnswer(
+      (_) async => Ok<List<VaultDescriptorPublication>, BullVaultFailure>([
+        VaultDescriptorPublication(
+          walletId: record.walletId,
+          destination: VaultBackupDestination.server,
+          enabled: true,
+          artifact: Uint8List.fromList(const [1, 2, 3]),
+          artifactSha256: 'a' * 64,
+          state: VaultPublicationState.failed,
+          attempts: 1,
+          updatedAt: DateTime.utc(2027),
+        ),
+      ]),
+    );
+    await cubit.load();
+    expect(cubit.state.hasOutstandingPublication, isTrue);
+
+    await cubit.checkAgain();
+
+    expect(
+      cubit.state.hasOutstandingPublication,
+      isTrue,
+      reason: 'a check says nothing about what was published where',
+    );
+  });
 
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
     testWidgets('bitcoin reads coming soon, never untested (${theme.name})', (
