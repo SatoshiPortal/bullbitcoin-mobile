@@ -129,13 +129,15 @@ void main() {
     late _MockVaults vaults;
     late _MockIdentity identity;
     late RecoverVaultsFromBackupWordsUsecase discover;
+    late List<BullVaultRecord> present;
     final record = testBullVaultCreateResult().record;
     final policy = record.recoveryPackage.policy;
 
     setUp(() {
       vaults = _MockVaults();
       identity = _MockIdentity();
-      when(() => vaults.listRecords()).thenAnswer((_) async => const Ok([]));
+      present = [];
+      when(() => vaults.listRecords()).thenAnswer((_) async => Ok(present));
       when(
         () => identity.walletBackupPublicKey(),
       ).thenAnswer((_) async => Ok('a' * 64));
@@ -164,8 +166,9 @@ void main() {
           source: any(named: 'source'),
           label: any(named: 'label'),
         ),
-      ).thenAnswer(
-        (_) async => Ok(
+      ).thenAnswer((_) async {
+        present = [...present, record];
+        return Ok(
           BullVaultRestoreResult(
             wallet: Wallet(
               origin: record.walletId,
@@ -179,8 +182,21 @@ void main() {
             record: record,
             mobileAccess: BullVaultMobileAccess.unavailable,
           ),
-        ),
-      );
+        );
+      });
+    }
+
+    /// A vault the metadata recovery persisted, which the relays do not also
+    /// hand back.
+    void metadataRestored() {
+      when(
+        () => backup.recover(defaultCreatedWalletPreferences: [bitcoin]),
+      ).thenAnswer((_) async {
+        present = [...present, record];
+        return const WalletBackupRecoveryResult(
+          status: WalletBackupRecoveryStatus.restored,
+        );
+      });
     }
 
     test('a persisted vault is announced exactly once', () async {
@@ -236,36 +252,86 @@ void main() {
       verifyNever(() => vaults.recordVaultRecovered());
     });
 
-    test(
-      'an incomplete Data Backup recovery never reaches the relays',
-      () async {
-        when(
-          () => backup.recover(defaultCreatedWalletPreferences: [bitcoin]),
-        ).thenAnswer(
-          (_) async => const WalletBackupRecoveryResult(
-            status: WalletBackupRecoveryStatus.unavailable,
-          ),
-        );
+    test('a Data Backup outage is exactly when the relays are '
+        'needed', () async {
+      when(
+        () => backup.recover(defaultCreatedWalletPreferences: [bitcoin]),
+      ).thenAnswer(
+        (_) async => const WalletBackupRecoveryResult(
+          status: WalletBackupRecoveryStatus.unavailable,
+        ),
+      );
+      relaysHold([
+        NostrDescriptorRecord(
+          descriptor: policy.descriptor,
+          network: policy.network,
+          createdAt: DateTime.utc(2027),
+        ),
+      ]);
+      restores();
 
-        expect(
-          await recoverWalletDataAfterSeedRestore(
-            backup,
-            defaultCreatedWalletPreferences: [bitcoin],
-            discoverVaults: discover,
-            vaults: vaults,
-          ),
-          isFalse,
-        );
+      expect(
+        await recoverWalletDataAfterSeedRestore(
+          backup,
+          defaultCreatedWalletPreferences: [bitcoin],
+          discoverVaults: discover,
+          vaults: vaults,
+        ),
+        isFalse,
+        reason: 'the metadata half really did not finish',
+      );
 
-        verifyNever(
-          () => vaults.discoverDescriptorsOnNostr(
-            words: any(named: 'words'),
-            session: any(named: 'session'),
-          ),
-        );
-        verifyNever(() => vaults.recordVaultRecovered());
-      },
-    );
+      verify(
+        () => vaults.discoverDescriptorsOnNostr(
+          words: any(named: 'words'),
+          session: any(named: 'session'),
+        ),
+      ).called(1);
+      verify(() => vaults.recordVaultRecovered()).called(1);
+    });
+
+    test('a vault only the metadata backup held is announced too', () async {
+      metadataRestored();
+      relaysHold(const []);
+
+      expect(
+        await recoverWalletDataAfterSeedRestore(
+          backup,
+          defaultCreatedWalletPreferences: [bitcoin],
+          discoverVaults: discover,
+          vaults: vaults,
+        ),
+        isTrue,
+      );
+
+      verify(() => vaults.recordVaultRecovered()).called(1);
+    });
+
+    test('nothing is searched or announced without the vault half', () async {
+      when(
+        () => backup.recover(defaultCreatedWalletPreferences: [bitcoin]),
+      ).thenAnswer(
+        (_) async => const WalletBackupRecoveryResult(
+          status: WalletBackupRecoveryStatus.restored,
+        ),
+      );
+
+      expect(
+        await recoverWalletDataAfterSeedRestore(
+          backup,
+          defaultCreatedWalletPreferences: [bitcoin],
+        ),
+        isTrue,
+      );
+
+      verifyNever(
+        () => vaults.discoverDescriptorsOnNostr(
+          words: any(named: 'words'),
+          session: any(named: 'session'),
+        ),
+      );
+      verifyNever(() => vaults.recordVaultRecovered());
+    });
 
     test('a relay failure cannot invalidate seed recovery', () async {
       when(
