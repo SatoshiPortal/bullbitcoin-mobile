@@ -19,7 +19,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypt
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/connect_to_key_server_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/derive_vault_key_usecase.dart';
-import 'package:bb_mobile/features/recoverbull/ui/widgets/vault_key_access_gate.dart';
+import 'package:bb_mobile/core/widgets/secret_reveal_gate.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -117,7 +117,7 @@ class RecoverBullRouter {
       // Neither local seed reads nor a server key request can start until the
       // user authenticates and the capture-protection request has completed.
       if (extra.flow == RecoverBullFlow.viewVaultKey && extra.vault != null) {
-        return VaultKeyAccessGate(builder: buildFlow);
+        return SecretRevealGate(builder: buildFlow);
       }
       return buildFlow(context);
     },

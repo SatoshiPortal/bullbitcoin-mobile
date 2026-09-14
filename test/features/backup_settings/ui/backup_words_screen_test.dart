@@ -103,19 +103,20 @@ void main() {
 
     await open(tester);
     await tester.pump();
-    // The PIN gate is first: nothing has been derived yet.
+    // Capture protection is the first gate: no PIN prompt and no derivation
+    // until it confirms.
+    expect(find.text('Authenticate fixture'), findsNothing);
+    expectNoWords();
+    verifyZeroInteractions(identity);
+
+    protection!.complete(true);
+    await tester.pumpAndSettle();
+    // The PIN gate is next, and it is still the words that wait on it.
     expect(find.text('Authenticate fixture'), findsOneWidget);
     expectNoWords();
     verifyZeroInteractions(identity);
 
     await tester.tap(find.text('Authenticate fixture'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-    // Capture protection has not confirmed yet, so still no derivation.
-    expectNoWords();
-    verifyZeroInteractions(identity);
-
-    protection!.complete(true);
     await tester.pumpAndSettle();
     expect(find.text('abandon'), findsOneWidget);
     expect(find.text('crop'), findsOneWidget);
@@ -130,10 +131,9 @@ void main() {
 
     await open(tester);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Authenticate fixture'));
-    await tester.pumpAndSettle();
 
     expect(find.byType(PrivacyUnavailableNotice), findsOneWidget);
+    expect(find.text('Authenticate fixture'), findsNothing);
     expectNoWords();
     verifyZeroInteractions(identity);
   });
@@ -153,6 +153,36 @@ void main() {
     expect(find.text(loc.backupWordsUnavailable), findsOneWidget);
     expect(find.text(loc.backupWordsExplanation), findsOneWidget);
     expectNoWords();
+  });
+
+  testWidgets('backgrounding the app takes the words away again', (
+    tester,
+  ) async {
+    when(reveal).thenAnswer((_) async => const Ok(words));
+
+    await open(tester);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Authenticate fixture'));
+    await tester.pumpAndSettle();
+    expect(find.text('abandon'), findsOneWidget);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+
+    expectNoWords();
+    expect(find.text('Authenticate fixture'), findsOneWidget);
+
+    await tester.tap(find.text('Authenticate fixture'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('abandon'), findsOneWidget);
+    verify(reveal).called(2);
   });
 
   testWidgets('a vault from another wallet is told which words it needs', (

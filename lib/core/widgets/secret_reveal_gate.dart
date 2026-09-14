@@ -6,23 +6,26 @@ import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
-/// Holds capture protection and step-up authentication around key processing.
-/// The child is not built (so cannot start reading secrets) before both gates.
-class VaultKeyAccessGate extends StatefulWidget {
+/// Holds capture protection and step-up authentication around a secret.
+///
+/// The child is not built, so cannot start reading anything, before both gates
+/// pass, and it is dropped again when the app goes to the background: whatever
+/// it derived goes with it, and coming back asks for the PIN again.
+class SecretRevealGate extends StatefulWidget {
   final WidgetBuilder builder;
   final AppUnlockFacade appUnlock;
 
-  const VaultKeyAccessGate({
+  const SecretRevealGate({
     super.key,
     required this.builder,
     this.appUnlock = const AppUnlockFacade(),
   });
 
   @override
-  State<VaultKeyAccessGate> createState() => _VaultKeyAccessGateState();
+  State<SecretRevealGate> createState() => _SecretRevealGateState();
 }
 
-class _VaultKeyAccessGateState extends State<VaultKeyAccessGate>
+class _SecretRevealGateState extends State<SecretRevealGate>
     with PrivacyScreen, WidgetsBindingObserver {
   late final Future<void> _privacy;
   bool _unlocked = false;

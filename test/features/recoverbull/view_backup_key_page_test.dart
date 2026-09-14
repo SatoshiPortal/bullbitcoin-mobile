@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/view_vault_key_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/fetch_vault_key_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
-import 'package:bb_mobile/features/recoverbull/ui/widgets/vault_key_access_gate.dart';
+import 'package:bb_mobile/core/widgets/secret_reveal_gate.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -212,7 +212,7 @@ void main() {
     var privateWork = 0;
     await tester.pumpWidget(
       app(
-        VaultKeyAccessGate(
+        SecretRevealGate(
           appUnlock: _Unlock(),
           builder: (_) {
             privateWork++;
@@ -242,7 +242,7 @@ void main() {
     var privateWork = 0;
     await tester.pumpWidget(
       app(
-        VaultKeyAccessGate(
+        SecretRevealGate(
           appUnlock: _Unlock(),
           builder: (_) {
             privateWork++;
@@ -266,7 +266,7 @@ void main() {
     var reads = 0;
     await tester.pumpWidget(
       app(
-        VaultKeyAccessGate(
+        SecretRevealGate(
           appUnlock: _Unlock(),
           builder: (_) {
             reads++;
@@ -288,7 +288,7 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         app(
-          VaultKeyAccessGate(
+          SecretRevealGate(
             appUnlock: _Unlock(),
             builder: (_) => const Text('Private child'),
           ),
