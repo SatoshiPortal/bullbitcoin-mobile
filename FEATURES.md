@@ -27,8 +27,7 @@ graph TB
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
     BIP85[BIP85]
-    NOSTR_IDENTITY[Nostr Identity]
-    PORTABLE_BACKUP[Portable Backup Prototype<br/>---<br/>Two RecoverBull files, password-derived<br/>Nostr identity; standalone harness]
+    NOSTR_IDENTITY[Nostr Identity<br/>---<br/>The backup credential: twelve words,<br/>their encryption key and the separate<br/>artifact and server identities]
     WALLET_BACKUP[Wallet Backup<br/>---<br/>Typed backup snapshot & codec,<br/>remote protocol, durable state,<br/>serialized job runner]
     KEYCHAIN_MANIFEST[Keychain Manifest<br/>---<br/>Wallet inventory, Nostr keys,<br/>passphrase wallet records]
     PASSPHRASE_WALLETS[Passphrase Wallets<br/>---<br/>Passphrase entry, derivation,<br/>scan port; keeps no secret at rest]
@@ -304,4 +303,4 @@ To verify no cyclic dependencies exist, you can:
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
 
-The `portable_backup` prototype is a leaf feature composed only by `tools/portable_backup_prototype_app.dart`. It uses the existing RecoverBull encryptor and shared Nostr infrastructure, has no cross-feature imports, and is not registered in the production router or locator. BullVault no longer publishes descriptors over Nostr itself.
+`NOSTR_IDENTITY` owns the one backup credential. The twelve backup words come from the reserved BIP85 path on the default seed; they derive the metadata encryption key, the identity that authors public backup artifacts and the separate identity the backup server account is named by. `WALLET_BACKUP` is its only consumer today: it encrypts with that key and signs server requests as that account, and it can do both from words a recovering user supplies instead of from the default seed. BullVault keeps the descriptor artifact codec those words will seal, and publishes nothing over Nostr yet.
