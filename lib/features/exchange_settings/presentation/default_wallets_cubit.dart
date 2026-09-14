@@ -1,21 +1,27 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/delete_exchange_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_exchange_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/usecases/save_exchange_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart';
 
 class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
-  DefaultWalletsCubit({
-    required this._getDefaultWalletsUsecase,
-    required this._saveDefaultWalletUsecase,
-    required this._deleteDefaultWalletUsecase,
-  }) : super(const DefaultWalletsState());
+  final GetExchangeDefaultWalletsUsecase _getExchangeDefaultWalletsUsecase;
+  final SaveExchangeDefaultWalletUsecase _saveExchangeDefaultWalletUsecase;
+  final DeleteExchangeDefaultWalletUsecase _deleteExchangeDefaultWalletUsecase;
 
-  final GetDefaultWalletsUsecase _getDefaultWalletsUsecase;
-  final SaveDefaultWalletUsecase _saveDefaultWalletUsecase;
-  final DeleteDefaultWalletUsecase _deleteDefaultWalletUsecase;
+  /// Incremented per save so a stale success-tick timer can identify itself.
+  int _saveSuccessGeneration = 0;
+
+  DefaultWalletsCubit({
+    required GetExchangeDefaultWalletsUsecase getDefaultWalletsUsecase,
+    required SaveExchangeDefaultWalletUsecase saveDefaultWalletUsecase,
+    required DeleteExchangeDefaultWalletUsecase deleteDefaultWalletUsecase,
+  }) : _getExchangeDefaultWalletsUsecase = getDefaultWalletsUsecase,
+       _saveExchangeDefaultWalletUsecase = saveDefaultWalletUsecase,
+       _deleteExchangeDefaultWalletUsecase = deleteDefaultWalletUsecase,
+       super(const DefaultWalletsState());
 
   Future<void> init() async {
     await loadDefaultWallets();
@@ -25,41 +31,32 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     emit(
       state.copyWith(
         isLoading: true,
-        loadError: null,
-        saveError: null,
+        loadFailure: null,
+        saveFailure: null,
         saveSuccess: false,
       ),
     );
 
-    try {
-      final wallets = await _getDefaultWalletsUsecase.execute();
+    final result = await _getExchangeDefaultWalletsUsecase.execute();
+    if (isClosed) return;
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          defaultWallets: wallets,
-          bitcoinAddressInput: wallets.bitcoinAddress,
-          lightningAddressInput: wallets.lightningAddress,
-          liquidAddressInput: wallets.liquidAddress,
-        ),
-      );
-    } catch (e) {
-      log.severe(
-        message: 'Failed to load default wallets',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(
-          isLoading: false,
-          loadError: 'Failed to load default wallets',
-        ),
-      );
-    }
+    emit(switch (result) {
+      Ok(:final value) => state.copyWith(
+        isLoading: false,
+        defaultWallets: value,
+        bitcoinAddressInput: value.bitcoinAddress,
+        lightningAddressInput: value.lightningAddress,
+        liquidAddressInput: value.liquidAddress,
+      ),
+      Err(:final failure) => state.copyWith(
+        isLoading: false,
+        loadFailure: failure,
+      ),
+    });
   }
 
   void startEditing(WalletAddressType type) {
-    emit(state.copyWith(editingWalletType: type, saveError: null));
+    emit(state.copyWith(editingWalletType: type, saveFailure: null));
   }
 
   void cancelEditing() {
@@ -69,7 +66,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         bitcoinAddressInput: state.currentBitcoinAddress,
         lightningAddressInput: state.currentLightningAddress,
         liquidAddressInput: state.currentLiquidAddress,
-        saveError: null,
+        saveFailure: null,
       ),
     );
   }
@@ -100,101 +97,90 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   Future<void> saveWallet(WalletAddressType type) async {
     final address = state.getInputValue(type);
 
-    if (address.isEmpty) {
-      emit(state.copyWith(saveError: 'Address cannot be empty'));
+    // Rejected synchronously so an instant validation error does not flash a
+    // progress indicator. The use-case enforces the same rule regardless.
+    final invalid = SaveExchangeDefaultWalletUsecase.validate(address);
+    if (invalid != null) {
+      emit(state.copyWith(saveFailure: invalid, saveSuccess: false));
       return;
     }
 
-    emit(state.copyWith(isSaving: true, saveError: null, saveSuccess: false));
+    emit(state.copyWith(isSaving: true, saveFailure: null, saveSuccess: false));
 
-    try {
-      final existingWallet = state.defaultWallets?.getWallet(type);
+    final existingWallet = state.defaultWallets?.getWallet(type);
 
-      final savedWallet = await _saveDefaultWalletUsecase.execute(
-        walletType: type,
-        address: address,
-        existingRecipientId: existingWallet?.recipientId,
-      );
+    final result = await _saveExchangeDefaultWalletUsecase.execute(
+      walletType: type,
+      address: address,
+      existingRecipientId: existingWallet?.recipientId,
+    );
+    if (isClosed) return;
 
-      final updatedWallets = _updateWalletInState(type, savedWallet);
-
-      emit(
-        state.copyWith(
-          isSaving: false,
-          defaultWallets: updatedWallets,
-          editingWalletType: null,
-          saveSuccess: true,
-        ),
-      );
-
-      await Future<void>.delayed(const Duration(seconds: 2));
-      if (!isClosed) {
-        emit(state.copyWith(saveSuccess: false));
-      }
-    } catch (e) {
-      log.severe(
-        message: 'Failed to save wallet',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(
-          isSaving: false,
-          saveError: 'Failed to save wallet address',
-        ),
-      );
+    switch (result) {
+      case Err(:final failure):
+        emit(state.copyWith(isSaving: false, saveFailure: failure));
+        return;
+      case Ok(:final value):
+        emit(
+          state.copyWith(
+            isSaving: false,
+            defaultWallets: _updateWalletInState(type, value),
+            editingWalletType: null,
+            saveSuccess: true,
+          ),
+        );
     }
+
+    await _clearSaveSuccessAfterDelay();
   }
 
   Future<void> deleteWallet(WalletAddressType type) async {
     final existingWallet = state.defaultWallets?.getWallet(type);
+    final recipientId = existingWallet?.recipientId;
 
-    if (existingWallet?.recipientId == null) {
+    if (existingWallet == null || recipientId == null) {
       return;
     }
 
-    emit(state.copyWith(isSaving: true, saveError: null));
+    emit(state.copyWith(isSaving: true, saveFailure: null));
 
-    try {
-      await _deleteDefaultWalletUsecase.execute(
-        recipientId: existingWallet!.recipientId!,
-        walletType: type,
-        address: existingWallet.address,
-      );
+    final result = await _deleteExchangeDefaultWalletUsecase.execute(
+      recipientId: recipientId,
+      walletType: type,
+      address: existingWallet.address,
+    );
+    if (isClosed) return;
 
-      final updatedWallets = _removeWalletFromState(type);
-
-      emit(
-        state.copyWith(
-          isSaving: false,
-          defaultWallets: updatedWallets,
-          saveSuccess: true,
-        ),
-      );
-
-      _clearInputForType(type);
-
-      await Future<void>.delayed(const Duration(seconds: 2));
-      if (!isClosed) {
-        emit(state.copyWith(saveSuccess: false));
-      }
-    } catch (e) {
-      log.severe(
-        message: 'Failed to delete wallet',
-        error: e,
-        trace: StackTrace.current,
-      );
-      emit(
-        state.copyWith(
-          isSaving: false,
-          saveError: 'Failed to delete wallet address',
-        ),
-      );
+    switch (result) {
+      case Err(:final failure):
+        emit(state.copyWith(isSaving: false, saveFailure: failure));
+        return;
+      case Ok():
+        emit(
+          state.copyWith(
+            isSaving: false,
+            defaultWallets: _removeWalletFromState(type),
+            saveSuccess: true,
+          ),
+        );
     }
+
+    _clearInputForType(type);
+    await _clearSaveSuccessAfterDelay();
   }
 
   void clearError() {
-    emit(state.copyWith(saveError: null, loadError: null));
+    emit(state.copyWith(saveFailure: null, loadFailure: null));
+  }
+
+  /// The success tick is transient; drop it once the user has had time to see
+  /// it. Each call claims a generation so an earlier timer cannot clear a
+  /// later save's tick, and a closed cubit is never emitted into.
+  Future<void> _clearSaveSuccessAfterDelay() async {
+    final generation = ++_saveSuccessGeneration;
+    await Future<void>.delayed(const Duration(seconds: 2));
+    if (isClosed || generation != _saveSuccessGeneration) return;
+    emit(state.copyWith(saveSuccess: false));
   }
 
   DefaultWallets _updateWalletInState(

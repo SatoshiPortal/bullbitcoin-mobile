@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,15 +35,18 @@ class _ExchangeBitcoinWalletsScreenState
     return BlocListener<DefaultWalletsCubit, DefaultWalletsState>(
       listenWhen: (previous, current) =>
           (!previous.saveSuccess && current.saveSuccess) ||
-          (previous.saveError == null && current.saveError != null),
+          (previous.saveFailure == null && current.saveFailure != null),
       listener: (context, state) {
         if (state.saveSuccess) {
           SnackBarUtils.showSnackBar(
             context,
             context.loc.exchangeBitcoinWalletsSaveSuccess,
           );
-        } else if (state.saveError != null) {
-          SnackBarUtils.showSnackBar(context, state.saveError!);
+        } else if (state.saveFailure != null) {
+          SnackBarUtils.showSnackBar(
+            context,
+            state.saveFailure!.toTranslated(context),
+          );
         }
       },
       child: Scaffold(
@@ -77,18 +81,18 @@ class _ExchangeBitcoinWalletsScreenState
 
   Widget _buildContent(BuildContext context, DefaultWalletsState state) {
     if (state.isLoading &&
-        state.loadError == null &&
+        state.loadFailure == null &&
         state.defaultWallets == null) {
       return const SizedBox.shrink();
     }
 
-    if (state.loadError != null) {
+    if (state.loadFailure != null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BBText(
-              state.loadError!,
+              state.loadFailure!.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
