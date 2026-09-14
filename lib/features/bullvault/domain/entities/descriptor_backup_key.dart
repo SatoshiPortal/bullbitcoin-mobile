@@ -1,12 +1,20 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:bs58check/bs58check.dart' as base58;
 import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 
 /// The exact public account key, independent of display prefix and origin.
 final class DescriptorBackupKey {
+  /// Domain separator of the descriptor record lookup alias, version 1.
+  ///
+  /// The server treats the token as 32 opaque bytes, so the rule lives here
+  /// and a new version is a new label rather than a server change.
+  static const lookupDomain = 'bullbitcoin-descriptor-lookup-v1';
+
   final String xpub;
   final bool isTestnet;
   final Uint8List canonicalBytes;
@@ -58,6 +66,17 @@ final class DescriptorBackupKey {
   }
 
   Uint8List get xOnly => Uint8List.sublistView(canonicalBytes, 2, 34);
+
+  /// The lookup alias this account is published under, as lowercase hex.
+  ///
+  /// It covers the complete account identity — network, public point and chain
+  /// code — so two accounts sharing only an x coordinate never collide, and a
+  /// bare xpub reproduces it without the optional origin.
+  String get lookupToken => sha256.convert([
+    ...utf8.encode(lookupDomain),
+    0,
+    ...canonicalBytes,
+  ]).toString();
 
   bool sameAccount(DescriptorBackupKey other) {
     if (canonicalBytes.length != other.canonicalBytes.length) return false;
