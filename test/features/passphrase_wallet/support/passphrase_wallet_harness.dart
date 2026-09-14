@@ -95,7 +95,6 @@ buildManifest() {
       ReplaceSeedWalletInventoryUsecase(repository),
       RecordPassphraseWalletUsecase(repository),
       RestoreManifestSnapshotUsecase(repository),
-      RecordKeychainManifestNostrKeyUsecase(repository),
       RestoreKeychainManifestNostrKeyUsecase(
         KeychainManifestNostrKeyDeriver(_MockSettings(), _MockDefaultSeed()),
         RecordKeychainManifestNostrKeyUsecase(repository),

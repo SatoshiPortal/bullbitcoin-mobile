@@ -25,9 +25,10 @@ import 'package:bb_mobile/features/keychain_manifest/domain/usecases/restore_key
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/update_passphrase_label_hint_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/watch_keychain_manifest_changes_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/get_nostr_public_key_usecase.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_key_resolver.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/sign_nostr_hash_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/recoverbull_wallet_backup_encryption_repository.dart';
@@ -419,8 +420,6 @@ final class WalletBackupBehaviorHarness {
     final registerRecoveryMaterial =
         RegisterWalletBackupRecoveryMaterialUsecase(
           resolveKey,
-          nostrIdentity,
-          keychainManifest,
           refreshManifest,
         );
     final fetchImport = FetchWalletBackupSnapshotUsecase(
@@ -638,7 +637,6 @@ KeychainManifestFacade _manifestFacade({
     ReplaceSeedWalletInventoryUsecase(repository),
     RecordPassphraseWalletUsecase(repository),
     RestoreManifestSnapshotUsecase(repository),
-    RecordKeychainManifestNostrKeyUsecase(repository),
     RestoreKeychainManifestNostrKeyUsecase(
       KeychainManifestNostrKeyDeriver(settings, defaultSeed),
       RecordKeychainManifestNostrKeyUsecase(repository),
@@ -652,10 +650,11 @@ NostrIdentityFacade _nostrIdentity(
   GetSettingsUsecase settings,
   GetDefaultSeedUsecase defaultSeed,
 ) {
-  final resolver = NostrIdentityKeyResolver(settings, defaultSeed);
+  final resolver = BackupCredentialResolver(settings, defaultSeed);
   return NostrIdentityFacade(
-    GetNostrPublicKeyUsecase(resolver),
-    SignNostrHashUsecase(resolver),
+    GetBackupIdentityPublicKeyUsecase(resolver),
+    SignBackupIdentityHashUsecase(resolver),
+    RevealBackupWordsUsecase(resolver),
   );
 }
 

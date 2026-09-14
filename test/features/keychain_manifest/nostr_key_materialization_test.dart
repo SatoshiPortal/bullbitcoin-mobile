@@ -258,7 +258,7 @@ KeychainManifestEntry _reservedEntry(
   Seed seed,
   KeychainManifestNostrKeyDeriver deriver,
 ) {
-  const path = "128002'/100'/1'";
+  const path = "128002'/101'/1'";
   final parent = Fingerprint(seed.masterFingerprint);
   final entryId = '${parent.hex}:$path';
   final publicKey = deriver.derivePublicKey(seed, path);
@@ -272,7 +272,7 @@ KeychainManifestEntry _reservedEntry(
         entryId: entryId,
         publicKeyHex: publicKey,
         keyKind: KeychainManifestNostrKeyKind.reserved,
-        purpose: 'Wallet backup',
+        purpose: 'Nostr Bullnym Auth',
         createdAt: 1,
         updatedAt: 1,
       ),

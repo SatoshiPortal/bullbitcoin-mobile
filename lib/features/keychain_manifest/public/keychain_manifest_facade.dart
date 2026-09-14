@@ -1,11 +1,9 @@
-import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_requests.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_nostr_key_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_passphrase_wallet_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/remove_passphrase_wallet_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/replace_seed_wallet_inventory_usecase.dart';
@@ -39,7 +37,6 @@ final class KeychainManifestFacade {
   final ReplaceSeedWalletInventoryUsecase _replaceSeedInventory;
   final RecordPassphraseWalletUsecase _recordWallet;
   final RestoreManifestSnapshotUsecase _restoreSnapshot;
-  final RecordKeychainManifestNostrKeyUsecase _recordNostrKey;
   final RestoreKeychainManifestNostrKeyUsecase _restoreNostrKey;
   final UpdatePassphraseLabelHintUsecase _updateLabelHint;
   final RemovePassphraseWalletUsecase _removeWallet;
@@ -52,7 +49,6 @@ final class KeychainManifestFacade {
     this._replaceSeedInventory,
     this._recordWallet,
     this._restoreSnapshot,
-    this._recordNostrKey,
     this._restoreNostrKey,
     this._updateLabelHint,
     this._removeWallet,
@@ -134,21 +130,6 @@ final class KeychainManifestFacade {
   }) => _removeWallet.execute(
     parentFingerprint: parentFingerprint,
     walletId: walletId,
-  );
-
-  @useResult
-  Future<Result<bool, KeychainManifestFailure>> recordWalletBackupNostrKey({
-    required Fingerprint parentFingerprint,
-    required String publicKeyHex,
-    required DateTime now,
-  }) => _recordNostrKey.execute(
-    reservationId: Bip85Reservations.nostrWalletBackupKey.id,
-    parentFingerprint: parentFingerprint,
-    derivationPath: Bip85Reservations.nostrWalletBackupKey.path,
-    publicKeyHex: publicKeyHex,
-    keyKind: KeychainManifestNostrKeyKind.reserved,
-    purpose: 'Wallet backup',
-    now: now,
   );
 
   @useResult

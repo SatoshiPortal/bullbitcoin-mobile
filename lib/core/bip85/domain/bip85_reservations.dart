@@ -3,6 +3,10 @@ import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 enum Bip85ReservationPurpose {
   walletSeed,
   nonWalletNostrKey,
+
+  /// The reserved path the whole backup credential comes from: the twelve
+  /// backup words, the encryption key they derive and the two signing
+  /// identities that follow it.
   backupEncryptionKey,
 }
 
@@ -66,13 +70,6 @@ abstract final class Bip85Reservations {
     path: "39'/0'/12'/103'",
     index: 103,
   );
-  static const nostrWalletBackupKey = Bip85Reservation(
-    id: 'nostr_wallet_backup_key',
-    deterministicAlias: 'Nostr Wallet Backup',
-    purpose: Bip85ReservationPurpose.nonWalletNostrKey,
-    path: "128002'/100'/1'",
-    index: 100,
-  );
   static const nostrBullnymServerAuthKey = Bip85Reservation(
     id: 'nostr_bullnym_server_auth_key',
     deterministicAlias: 'Nostr Bullnym Auth',
@@ -100,7 +97,6 @@ abstract final class Bip85Reservations {
     lightningAddressWalletSeed,
     paymentPageWalletSeed,
     pointOfSaleWalletSeed,
-    nostrWalletBackupKey,
     nostrBullnymServerAuthKey,
     nostrNip05PublicNymVerificationKey,
     walletBackupEncryptionKey,
@@ -109,9 +105,17 @@ abstract final class Bip85Reservations {
   static final reservedWalletSeedIndices = Set<int>.unmodifiable(
     all.where((item) => item.isWalletSeed).map((item) => item.walletIndex),
   );
-  static final reservedPaths = Set<String>.unmodifiable(
-    all.map((item) => item.path),
-  );
+
+  /// Retired, never reassigned: `128002'/100'/1'` derived the wallet backup
+  /// Nostr identity before the backup credential became the twelve words at
+  /// `walletBackupEncryptionKey`. It stays claimed so nothing derives from it
+  /// again.
+  static const retiredWalletBackupNostrKeyPath = "128002'/100'/1'";
+
+  static final reservedPaths = Set<String>.unmodifiable({
+    ...all.map((item) => item.path),
+    retiredWalletBackupNostrKeyPath,
+  });
   static final reservedPathPrefixes = Set<String>.unmodifiable({
     RecoverbullBip85Utils.vaultKeyPathPrefix,
   });

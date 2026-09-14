@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
@@ -20,9 +21,10 @@ import 'package:bb_mobile/features/keychain_manifest/domain/usecases/restore_key
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/watch_keychain_manifest_changes_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/update_passphrase_label_hint_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/get_nostr_public_key_usecase.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_key_resolver.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/sign_nostr_hash_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_snapshot_model.dart';
@@ -287,13 +289,10 @@ void main() {
   });
 
   test('builds one snapshot from the manifest and metadata sections', () async {
-    final identity = _nostrIdentity(settings, defaultSeed);
     final definitions = _DefinitionsBackup();
     expect(
       await RegisterWalletBackupRecoveryMaterialUsecase(
         ResolveWalletBackupKeyUsecase(settings, defaultSeed),
-        identity,
-        manifest,
         RefreshWalletRecoveryManifestUsecase(() async => const [], manifest),
       ).execute(),
       isA<Ok<void, WalletBackupFailure>>(),
@@ -315,21 +314,20 @@ void main() {
     expect(snapshot.metadata, same(metadataSnapshot));
     expect(snapshot.externalWalletDefinitions, isEmpty);
     expect(snapshot.recoveryManifest.parentFingerprint.hex, _fingerprint);
-    final entries = snapshot.recoveryManifest.entries;
-    expect(entries, hasLength(1));
-    expect(entries.single.derivationPath, "128002'/100'/1'");
-    expect(
-      entries.map((entry) => entry.derivationPath),
-      isNot(contains("128002'/101'/1'")),
-    );
-    expect(
-      entries.map((entry) => entry.derivationPath),
-      isNot(contains("128002'/102'/1'")),
-    );
-    final materialization =
-        entries.single.materializations.single as KeychainManifestNostrKey;
-    expect(materialization.keyKind, KeychainManifestNostrKeyKind.reserved);
-    expect(materialization.purpose, 'Wallet backup');
+    // The backup identity comes from the twelve words, not from a BIP85 path,
+    // so registering recovery material records no reserved key at all.
+    expect(snapshot.recoveryManifest.entries, isEmpty);
+    for (final reserved in [
+      Bip85Reservations.retiredWalletBackupNostrKeyPath,
+      "1642'/0'/1'",
+      "128002'/101'/1'",
+      "128002'/102'/1'",
+    ]) {
+      expect(
+        snapshot.recoveryManifest.entries.map((entry) => entry.derivationPath),
+        isNot(contains(reserved)),
+      );
+    }
   });
 
   test("a vault's wallet is carried by the vaults section only", () async {
@@ -481,7 +479,6 @@ KeychainManifestFacade _manifestFacade({
     ReplaceSeedWalletInventoryUsecase(repository),
     RecordPassphraseWalletUsecase(repository),
     RestoreManifestSnapshotUsecase(repository),
-    RecordKeychainManifestNostrKeyUsecase(repository),
     RestoreKeychainManifestNostrKeyUsecase(
       KeychainManifestNostrKeyDeriver(settings, defaultSeed),
       RecordKeychainManifestNostrKeyUsecase(repository),
@@ -495,10 +492,11 @@ NostrIdentityFacade _nostrIdentity(
   GetSettingsUsecase settings,
   GetDefaultSeedUsecase defaultSeed,
 ) {
-  final resolver = NostrIdentityKeyResolver(settings, defaultSeed);
+  final resolver = BackupCredentialResolver(settings, defaultSeed);
   return NostrIdentityFacade(
-    GetNostrPublicKeyUsecase(resolver),
-    SignNostrHashUsecase(resolver),
+    GetBackupIdentityPublicKeyUsecase(resolver),
+    SignBackupIdentityHashUsecase(resolver),
+    RevealBackupWordsUsecase(resolver),
   );
 }
 

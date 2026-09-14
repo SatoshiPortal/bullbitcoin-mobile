@@ -1,39 +1,55 @@
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/get_nostr_public_key_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/backup_identity_scope.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_failure.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/sign_nostr_hash_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:meta/meta.dart';
 
+export 'package:bb_mobile/features/nostr_identity/domain/backup_credential.dart'
+    show BackupCredential, InvalidBackupWordsException;
 export 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_failure.dart';
 
+/// The owner of the one backup credential.
+///
+/// Both identities and the words themselves come from the twelve words the
+/// default seed derives, so a holder of those words reproduces everything this
+/// facade serves without the seed.
 class NostrIdentityFacade {
-  final GetNostrPublicKeyUsecase _getPublicKey;
-  final SignNostrHashUsecase _signHash;
+  final GetBackupIdentityPublicKeyUsecase _getPublicKey;
+  final SignBackupIdentityHashUsecase _signHash;
+  final RevealBackupWordsUsecase _revealWords;
 
-  const NostrIdentityFacade(this._getPublicKey, this._signHash);
+  const NostrIdentityFacade(
+    this._getPublicKey,
+    this._signHash,
+    this._revealWords,
+  );
 
+  /// The author of public backup artifacts, and the key a backup file is
+  /// signed under.
   @useResult
   Future<Result<String, NostrIdentityFailure>> walletBackupPublicKey() =>
-      _getPublicKey.execute();
+      _getPublicKey.execute(scope: BackupIdentityScope.nostr);
 
   @useResult
   Future<Result<String, NostrIdentityFailure>> signWalletBackupHash(
     String hashHex,
-  ) => _signHash.execute(hashHex);
+  ) => _signHash.execute(hashHex, scope: BackupIdentityScope.nostr);
+
+  /// The name of the backup server account.
+  @useResult
+  Future<Result<String, NostrIdentityFailure>> walletBackupServerPublicKey() =>
+      _getPublicKey.execute(scope: BackupIdentityScope.server);
 
   @useResult
-  Future<Result<String, NostrIdentityFailure>> descriptorBackupPublicKey(
-    String lookup,
-  ) => _getPublicKey.execute(descriptorLookup: lookup);
+  Future<Result<String, NostrIdentityFailure>> signWalletBackupServerHash(
+    String hashHex,
+  ) => _signHash.execute(hashHex, scope: BackupIdentityScope.server);
 
+  /// The twelve backup words, derived at the point of use for a protected
+  /// reveal screen. They are never cached, here or below.
   @useResult
-  Future<Result<String, NostrIdentityFailure>> signDescriptorBackupHash({
-    required String lookup,
-    required String hashHex,
-    required String expectedPublicKey,
-  }) => _signHash.execute(
-    hashHex,
-    descriptorLookup: lookup,
-    expectedPublicKey: expectedPublicKey,
-  );
+  Future<Result<String, NostrIdentityFailure>> revealBackupWords() =>
+      _revealWords.execute();
 }

@@ -78,7 +78,6 @@ abstract final class KeychainManifestLocator {
         ),
         RecordPassphraseWalletUsecase(locator<KeychainManifestRepository>()),
         RestoreManifestSnapshotUsecase(locator<KeychainManifestRepository>()),
-        recordNostr(),
         RestoreKeychainManifestNostrKeyUsecase(deriver(), recordNostr()),
         UpdatePassphraseLabelHintUsecase(locator<KeychainManifestRepository>()),
         RemovePassphraseWalletUsecase(locator<KeychainManifestRepository>()),

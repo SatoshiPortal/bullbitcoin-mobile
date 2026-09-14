@@ -54,7 +54,7 @@ WalletBackupSnapshot canonicalFullSnapshot() => WalletBackupSnapshot(
       _passphraseEntry(),
       KeychainManifestEntry(
         parentFingerprint: canonicalParentFingerprint,
-        derivationPath: Bip85Reservations.nostrWalletBackupKey.path,
+        derivationPath: Bip85Reservations.nostrBullnymServerAuthKey.path,
         createdAt: 1788100000,
         updatedAt: 1788100000,
         materializations: [
@@ -62,12 +62,12 @@ WalletBackupSnapshot canonicalFullSnapshot() => WalletBackupSnapshot(
             entryId: KeychainManifestEntry.entryIdFor(
               parentFingerprint: canonicalParentFingerprint,
               derivationKind: KeychainManifestDerivationKind.bip85,
-              derivationPath: Bip85Reservations.nostrWalletBackupKey.path,
+              derivationPath: Bip85Reservations.nostrBullnymServerAuthKey.path,
             ),
             publicKeyHex:
                 '9c1b0e6a8f2d4c3b5a6978e0f1d2c3b4a596877665544332211000ffeeddccbb',
             keyKind: KeychainManifestNostrKeyKind.reserved,
-            purpose: 'Wallet backup',
+            purpose: 'Nostr Bullnym Auth',
             createdAt: 1788100000,
             updatedAt: 1788100000,
           ),

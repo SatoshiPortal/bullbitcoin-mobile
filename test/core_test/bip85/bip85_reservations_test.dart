@@ -15,15 +15,23 @@ void main() {
       'lightning_address_wallet_seed',
       'payment_page_wallet_seed',
       'pos_wallet_seed',
-      'nostr_wallet_backup_key',
       'nostr_bullnym_server_auth_key',
       'nostr_nip05_public_nym_verification_key',
       'wallet_backup_encryption_key',
     ]);
     expect(Bip85Reservations.reservedWalletSeedIndices, {100, 101, 102, 103});
+    expect(Bip85Reservations.reservedPaths, {
+      ...Bip85Reservations.all.map((item) => item.path),
+      // Retired with the old backup identity; claimed so it is never reused.
+      "128002'/100'/1'",
+    });
     expect(
-      Bip85Reservations.reservedPaths,
-      Bip85Reservations.all.map((item) => item.path).toSet(),
+      Bip85Reservations.retiredWalletBackupNostrKeyPath,
+      "128002'/100'/1'",
+    );
+    expect(
+      Bip85Reservations.all.map((item) => item.path),
+      isNot(contains(Bip85Reservations.retiredWalletBackupNostrKeyPath)),
     );
     expect(Bip85Reservations.reservedPathPrefixes, {"1608'/0'/"});
     expect(

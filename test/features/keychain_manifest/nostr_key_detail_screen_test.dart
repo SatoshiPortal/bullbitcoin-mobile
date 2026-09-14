@@ -185,7 +185,7 @@ Future<void> _pump(WidgetTester tester, KeychainManifestEntry entry) async {
 }
 
 KeychainManifestEntry _systemEntry() {
-  const path = "128002'/100'/1'";
+  const path = "128002'/101'/1'";
   final entryId = '${manifestFingerprint.hex}:$path';
   return KeychainManifestEntry(
     parentFingerprint: manifestFingerprint,
