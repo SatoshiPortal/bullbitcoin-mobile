@@ -1,15 +1,18 @@
-import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
-import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:meta/meta.dart';
 
+/// The key this wallet's own backup is sealed with, plus the fingerprint that
+/// says whose backup it is.
+///
+/// The key is the one the twelve backup words derive, so an heir who has only
+/// the words opens the same ciphertext (plan 5.2).
 typedef WalletBackupKey = ({
   String parentFingerprint,
   WalletBackupEncryptionKey encryptionKey,
@@ -32,15 +35,11 @@ final class ResolveWalletBackupKeyUsecase {
         case Err():
           return const Err(WalletBackupWalletUnavailableFailure());
       }
-      final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
-        xprvBase58: Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes),
-        path: bip85.Bip85HardenedPath(
-          Bip85Reservations.walletBackupEncryptionKey.path,
-        ),
-      );
       return Ok((
         parentFingerprint: seed.masterFingerprint.toLowerCase(),
-        encryptionKey: WalletBackupEncryptionKey(entropy.substring(0, 64)),
+        encryptionKey: WalletBackupEncryptionKey(
+          BackupCredential.fromSeed(seed).encryptionKeyHex,
+        ),
       ));
     } on Exception catch (error, trace) {
       log.warning(

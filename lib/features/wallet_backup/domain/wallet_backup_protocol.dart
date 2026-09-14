@@ -40,6 +40,12 @@ final class WalletBackupAuthentication {
   }
 }
 
+/// Signs server requests as the backup account.
+///
+/// The account is named by the credential's server identity, never by the
+/// public artifact author (decision 6). [sign] takes the credential of a reader
+/// who supplied their own backup words; with none it uses the default seed's,
+/// and the bytes signed are identical either way.
 final class WalletBackupAuthenticator {
   final NostrIdentityFacade _identity;
   final int Function() _nowSecs;
@@ -55,14 +61,18 @@ final class WalletBackupAuthenticator {
     required String expectedEtag,
     required String ciphertextSha256,
     required int ciphertextBytes,
+    BackupCredential? credential,
   }) async {
-    final publicKeyResult = await _identity.walletBackupPublicKey();
     final String publicKey;
-    switch (publicKeyResult) {
-      case Err():
-        return const Err(WalletBackupSigningFailure());
-      case Ok(:final value):
-        publicKey = value;
+    if (credential != null) {
+      publicKey = credential.serverPublicKeyHex;
+    } else {
+      switch (await _identity.walletBackupServerPublicKey()) {
+        case Err():
+          return const Err(WalletBackupSigningFailure());
+        case Ok(:final value):
+          publicKey = value;
+      }
     }
     final timestamp = _nowSecs();
     final message = buildWalletBackupSigningMessage(
@@ -78,17 +88,31 @@ final class WalletBackupAuthenticator {
       return const Err(WalletBackupSigningFailure());
     }
     final digest = sha256.convert(message).toString();
-    return switch (await _identity.signWalletBackupHash(digest)) {
-      Err() => const Err(WalletBackupSigningFailure()),
-      Ok(:final value) when _signaturePattern.hasMatch(value) => Ok(
-        WalletBackupAuthentication(
-          publicKeyHex: publicKey,
-          signatureHex: value,
-          timestamp: timestamp,
-        ),
+    final String signature;
+    if (credential != null) {
+      try {
+        signature = credential.signServerHash(digest);
+      } on Exception {
+        return const Err(WalletBackupSigningFailure());
+      }
+    } else {
+      switch (await _identity.signWalletBackupServerHash(digest)) {
+        case Err():
+          return const Err(WalletBackupSigningFailure());
+        case Ok(:final value):
+          signature = value;
+      }
+    }
+    if (!_signaturePattern.hasMatch(signature)) {
+      return const Err(WalletBackupSigningFailure());
+    }
+    return Ok(
+      WalletBackupAuthentication(
+        publicKeyHex: publicKey,
+        signatureHex: signature,
+        timestamp: timestamp,
       ),
-      Ok() => const Err(WalletBackupSigningFailure()),
-    };
+    );
   }
 }
 

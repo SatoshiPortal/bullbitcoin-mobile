@@ -197,8 +197,13 @@ final metadataSnapshot = WalletMetadataSnapshot(
   walletPreferences: const [],
   settings: portableSettingsFixture(),
 );
+// The key the twelve words derive, reproduced independently in Python.
 const _expectedEncryptionKey =
-    '321154f080538350e83f2ebf866595a778ab671e55aacfe0638305ba95a48830';
+    'f282cd95c7252487a8dfcee00c5992ca3be78b1dc08adc24fb1dd75c3d10bdf6';
+const _expectedServerPublicKey =
+    'b83e4c3ce576c3d5c98d35549fc4e63912ddade166bfed36fc9d913e0ecb1732';
+const _expectedArtifactPublicKey =
+    '5aaf0e2e3052791f7ad96eaf656e7f7cd94ee3039522407d48e5decf0beec6a9';
 
 void main() {
   late Seed seed;
@@ -261,7 +266,7 @@ void main() {
     );
   });
 
-  test('derives the frozen backup key from the reserved BIP85 path', () async {
+  test('derives the frozen backup key from the twelve words', () async {
     final result = await ResolveWalletBackupKeyUsecase(
       settings,
       defaultSeed,
@@ -367,6 +372,15 @@ void main() {
     expect(
       harness.remote.storeAuthentication?.publicKeyHex,
       harness.remote.fetchAuthentications.single.publicKeyHex,
+    );
+    expect(
+      harness.remote.storeAuthentication?.publicKeyHex,
+      _expectedServerPublicKey,
+    );
+    expect(
+      harness.remote.storeAuthentication?.publicKeyHex,
+      isNot(_expectedArtifactPublicKey),
+      reason: 'the account is never named by the public artifact author',
     );
     expect(harness.remote.storeAuthentication?.signatureHex, isNot(isEmpty));
     expect(harness.remote.storedAgainst, isNull);
