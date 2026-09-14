@@ -73,29 +73,18 @@ void main() {
     expect(() => codec.decode(legacy), throwsA(isA<FormatException>()));
   });
 
-  test('reads existing version-2 files without inventing signer facts', () {
-    final original = _definition('saved-v2', descriptor);
+  test('a version this app never wrote is rejected, not decoded', () {
     final document =
-        jsonDecode(codec.encode([original])) as Map<String, dynamic>;
-    document['version'] = 2;
-    for (final definition in document['definitions'] as List) {
-      for (final signer in definition['signers'] as List) {
-        (signer as Map).remove('registrationName');
-        signer.remove('localSeedFingerprint');
-        for (final key in signer['descriptorKeys'] as List) {
-          (key as Map).remove('requiresPassphrase');
-        }
-      }
+        jsonDecode(codec.encode([_definition('saved', descriptor)]))
+            as Map<String, dynamic>;
+    for (final version in [1, 2, 4]) {
+      document['version'] = version;
+      expect(
+        () => codec.decode(jsonEncode(document)),
+        throwsFormatException,
+        reason: 'version $version',
+      );
     }
-    final restored = codec.decode(jsonEncode(document)).single;
-    expect(restored.signers, original.signers);
-    expect(restored.signers.single.registrationName, isNull);
-    expect(restored.signers.single.localSeedFingerprint, isNull);
-    expect(
-      restored.signers.single.descriptorKeys.single.requiresPassphrase,
-      isFalse,
-    );
-    expect(jsonDecode(codec.encode([restored]))['version'], 3);
   });
 
   test('rejects non-integer versions and missing version-3 signer facts', () {

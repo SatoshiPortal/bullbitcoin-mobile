@@ -12,12 +12,10 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 /// The definitions section: every wallet that is not recoverable from the seed
 /// alone, with the descriptor and the signer roster needed to bring it back.
 ///
-/// Version 2 replaced the single `signerDevice` of version 1 with a full
-/// `signers` list so multi-signature and Miniscript descriptors round-trip
-/// every key's signer kind and device. No version-1 document was ever
-/// published, so version 1 is rejected, not decoded.
-/// Version 3 preserves canonical seed references, per-key passphrase flags
-/// and hardware registration names. Existing version-2 files remain readable.
+/// Version 3 is the only version this app has ever written: it carries the
+/// signer roster, canonical seed references, per-key passphrase flags and
+/// hardware registration names. Every other version is rejected rather than
+/// guessed at, including one a future release writes.
 final class WalletDefinitionsCodec {
   static const currentVersion = 3;
   static const _payloadKeys = {'version', 'definitions'};
@@ -29,26 +27,23 @@ final class WalletDefinitionsCodec {
     'birthdayUnix',
     'provenance',
   };
-  static const _signerKeysV2 = {
+  static const _signerKeys = {
     'id',
     'signer',
     'signerDevice',
     'descriptorKeys',
-  };
-  static const _signerKeys = {
-    ..._signerKeysV2,
     'registrationName',
     'localSeedFingerprint',
   };
-  static const _keyKeysV2 = {
+  static const _keyKeys = {
     'id',
     'masterFingerprint',
     'xpubFingerprint',
     'xpub',
     'derivationPath',
     'descriptorPath',
+    'requiresPassphrase',
   };
-  static const _keyKeys = {..._keyKeysV2, 'requiresPassphrase'};
 
   /// Canonicalizes a descriptor for the wire. Defaults to the same parser the
   /// wallet import path uses, so a stored and a backed-up descriptor never
@@ -77,7 +72,9 @@ final class WalletDefinitionsCodec {
     final object = _object(decoded, 'wallet definitions');
     _exactKeys(object, _payloadKeys, 'wallet definitions');
     final version = object['version'];
-    if (version is! int || (version != 2 && version != currentVersion)) {
+    // A double that happens to equal the version is not the version: the
+    // document was written by something that is not this codec.
+    if (version is! int || version != currentVersion) {
       throw const FormatException('Unsupported wallet definitions version');
     }
     final values = object['definitions'];
@@ -88,7 +85,6 @@ final class WalletDefinitionsCodec {
         .map(
           (value) => WalletDefinitionModel.fromJson(
             _object(value, 'wallet definition'),
-            version: version,
           ),
         )
         .toList(growable: false);
@@ -174,10 +170,7 @@ final class WalletDefinitionModel {
         provenance: definition.provenance.name,
       );
 
-  factory WalletDefinitionModel.fromJson(
-    Map<String, Object?> json, {
-    required int version,
-  }) {
+  factory WalletDefinitionModel.fromJson(Map<String, Object?> json) {
     _exactKeys(
       json,
       WalletDefinitionsCodec._definitionKeys,
@@ -215,7 +208,6 @@ final class WalletDefinitionModel {
         for (final value in signers)
           WalletDefinitionSignerModel.fromJson(
             _object(value, 'wallet definition signer'),
-            version: version,
           ).toEntity(),
       ],
       birthday: birthday is int
@@ -298,17 +290,8 @@ final class WalletDefinitionSignerModel {
     );
   }
 
-  factory WalletDefinitionSignerModel.fromJson(
-    Map<String, Object?> json, {
-    required int version,
-  }) {
-    _exactKeys(
-      json,
-      version == 2
-          ? WalletDefinitionsCodec._signerKeysV2
-          : WalletDefinitionsCodec._signerKeys,
-      'definition signer',
-    );
+  factory WalletDefinitionSignerModel.fromJson(Map<String, Object?> json) {
+    _exactKeys(json, WalletDefinitionsCodec._signerKeys, 'definition signer');
     final id = _string(json, 'id').trim();
     final signerName = _string(json, 'signer');
     final signer = SignerEntity.values
@@ -321,12 +304,8 @@ final class WalletDefinitionSignerModel {
               .where((value) => value.name == deviceName)
               .firstOrNull;
     final keys = json['descriptorKeys'];
-    final registrationName = version == 2
-        ? null
-        : _nullableString(json, 'registrationName');
-    final localSeedFingerprint = version == 2
-        ? null
-        : _nullableString(json, 'localSeedFingerprint');
+    final registrationName = _nullableString(json, 'registrationName');
+    final localSeedFingerprint = _nullableString(json, 'localSeedFingerprint');
     if (id.isEmpty ||
         signer == null ||
         (deviceName != null && device == null) ||
@@ -349,7 +328,6 @@ final class WalletDefinitionSignerModel {
           WalletDefinitionKeyModel.fromJson(
             _object(value, 'definition key'),
             signerId: id,
-            version: version,
           ),
       ],
     );
@@ -411,20 +389,11 @@ final class WalletDefinitionKeyModel {
   factory WalletDefinitionKeyModel.fromJson(
     Map<String, Object?> json, {
     required String signerId,
-    required int version,
   }) {
-    _exactKeys(
-      json,
-      version == 2
-          ? WalletDefinitionsCodec._keyKeysV2
-          : WalletDefinitionsCodec._keyKeys,
-      'definition key',
-    );
+    _exactKeys(json, WalletDefinitionsCodec._keyKeys, 'definition key');
     final id = _string(json, 'id').trim();
     final xpub = _string(json, 'xpub').trim();
-    final requiresPassphrase = version == 2
-        ? false
-        : json['requiresPassphrase'];
+    final requiresPassphrase = json['requiresPassphrase'];
     if (id.isEmpty || xpub.isEmpty || requiresPassphrase is! bool) {
       throw const FormatException('Invalid wallet definition key');
     }

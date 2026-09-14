@@ -18,15 +18,6 @@ void main() {
   final codec = canonicalCodec();
 
   group('golden fixtures', () {
-    test('reads the archived version-2 definitions and writes version 3', () {
-      final legacy = File(
-        'test/features/wallet_backup/fixtures/canonical_v1_full.json',
-      ).readAsStringSync();
-      final decoded = _decode(codec, legacy);
-      expect(codec.differences(decoded, canonicalFullSnapshot()), isEmpty);
-      expect(codec.encode(decoded), _fixture('full'));
-    });
-
     test('a full backup encodes to the frozen bytes', () {
       expect(codec.encode(canonicalFullSnapshot()), _fixture('full'));
     });
@@ -310,12 +301,9 @@ void main() {
   });
 }
 
-String _fixture(String name) {
-  final suffix = name == 'full' ? 'full_signers_v3' : name;
-  return File(
-    'test/features/wallet_backup/fixtures/canonical_v1_$suffix.json',
-  ).readAsStringSync().trimRight();
-}
+String _fixture(String name) => File(
+  'test/features/wallet_backup/fixtures/canonical_v1_$name.json',
+).readAsStringSync().trimRight();
 
 WalletBackupSnapshot _decode(WalletBackupSnapshotCodec codec, String payload) =>
     codec.decode(
