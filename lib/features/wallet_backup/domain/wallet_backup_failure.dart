@@ -107,6 +107,14 @@ final class WalletBackupDeleteRequiresDisabledFailure
   const WalletBackupDeleteRequiresDisabledFailure();
 }
 
+/// The submitted backup words are not the frozen twelve-word form.
+///
+/// It says nothing about what was wrong with them, on purpose: the words are
+/// the credential.
+final class WalletBackupInvalidBackupWordsFailure extends WalletBackupFailure {
+  const WalletBackupInvalidBackupWordsFailure();
+}
+
 final class WalletBackupUnexpectedFailure extends WalletBackupFailure {
   const WalletBackupUnexpectedFailure([super.logMessage]);
 }

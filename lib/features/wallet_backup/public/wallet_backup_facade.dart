@@ -22,6 +22,10 @@ export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_r
     show WalletBackupRecoveryResult, WalletBackupRecoveryStatus;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart'
     show WalletBackupRecoveryState, WalletBackupState;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart'
+    show WalletBackupVaultEntry;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart'
+    show WalletBackupWordsExtraction;
 export 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 export 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
 
@@ -31,10 +35,12 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_f
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_export_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
@@ -63,6 +69,7 @@ class WalletBackupFacade {
   final CompareWalletBackupFileUsecase _compareFile;
   final RecoverWalletBackupFileUsecase _recoverFile;
   final GetRemoteWalletBackupContentsUsecase _getRemoteContents;
+  final ExtractVaultsWithBackupWordsUsecase _extractWithWords;
 
   const WalletBackupFacade(
     this._getContents,
@@ -77,6 +84,7 @@ class WalletBackupFacade {
     this._compareFile,
     this._recoverFile,
     this._getRemoteContents,
+    this._extractWithWords,
   );
 
   @useResult
@@ -88,6 +96,15 @@ class WalletBackupFacade {
   @useResult
   Future<Result<WalletBackupContents?, WalletBackupFailure>>
   fetchRemoteContents() => _runner.run(_getRemoteContents.execute);
+
+  /// The vaults a backup holds, read with its twelve words alone.
+  ///
+  /// Null when the server holds no backup for those words. Nothing local is
+  /// read or written: this is the path for someone recovering onto a fresh
+  /// install, or reading a backup that is not this wallet's own.
+  @useResult
+  Future<Result<WalletBackupWordsExtraction?, WalletBackupFailure>>
+  fetchVaultsWithBackupWords(String words) => _extractWithWords.execute(words);
 
   @useResult
   Stream<Result<WalletBackupState, WalletBackupFailure>> watchState() =>

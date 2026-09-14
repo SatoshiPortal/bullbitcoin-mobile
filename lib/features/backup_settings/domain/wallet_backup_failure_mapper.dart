@@ -35,6 +35,9 @@ BackupSettingsFailure mapWalletBackupFailure(
   WalletBackupStorageFailure() => const BackupSettingsStorageFailure(),
   WalletBackupRecoveryBlockedFailure() =>
     const BackupSettingsRecoveryNeedsAttentionFailure(),
+  // C10 gives the words-entry screen its own message; until that screen exists
+  // no user path can reach this.
+  WalletBackupInvalidBackupWordsFailure() ||
   WalletBackupKeyDerivationFailure() ||
   WalletBackupWalletUnavailableFailure() ||
   WalletBackupConfirmationRequiredFailure() ||

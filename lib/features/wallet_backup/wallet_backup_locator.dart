@@ -39,6 +39,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/decode_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
@@ -370,6 +371,9 @@ final class _WalletBackupGraph {
         fetchImport: fetchImport.execute,
         inspectVault: inspectVault,
       ),
+      // Deliberately outside the job runner and the state repository: a
+      // words-only read belongs to no local account (plan 5.2).
+      ExtractVaultsWithBackupWordsUsecase(fetchRemote, encryption),
     );
     return _WalletBackupGraph(
       metadata: metadata,

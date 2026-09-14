@@ -44,6 +44,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/decode_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
@@ -556,6 +557,7 @@ final class WalletBackupBehaviorHarness {
         fetchImport: fetchImport.execute,
         inspectVault: inspectVault,
       ),
+      ExtractVaultsWithBackupWordsUsecase(fetchRemote, encryption),
     );
 
     final key = switch (await resolveKey.execute()) {
