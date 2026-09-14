@@ -672,6 +672,7 @@ NostrIdentityFacade _nostrIdentity(
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
     RevealBackupWordsUsecase(resolver),
+    resolver,
   );
 }
 

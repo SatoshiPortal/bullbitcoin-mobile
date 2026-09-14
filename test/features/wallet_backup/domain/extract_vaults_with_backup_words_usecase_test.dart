@@ -311,6 +311,7 @@ void main() {
         GetBackupIdentityPublicKeyUsecase(resolver),
         SignBackupIdentityHashUsecase(resolver),
         RevealBackupWordsUsecase(resolver),
+        resolver,
       ),
       () => 1234,
     );
@@ -415,5 +416,6 @@ NostrIdentityFacade _seedlessIdentity() {
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
     RevealBackupWordsUsecase(resolver),
+    resolver,
   );
 }

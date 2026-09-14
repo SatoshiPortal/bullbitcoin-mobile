@@ -77,6 +77,7 @@ NostrIdentityFacade _identity({required bool hasSeed}) {
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
     RevealBackupWordsUsecase(resolver),
+    resolver,
   );
 }
 

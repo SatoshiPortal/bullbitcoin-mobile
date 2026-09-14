@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:meta/meta.dart';
 
@@ -25,11 +24,7 @@ final class EncodePrivateDescriptorBackupUsecase {
       case Ok(value: null):
         return const Err(BullVaultInvalidRecoveryFailure());
       case Ok(value: final record?):
-        // A pending vault was never activated and a cancelled one was
-        // abandoned, so neither can hold funds worth a recovery route. A
-        // migrating vault still can, until its successor is funded.
-        if (record.status == BullVaultLifecycleStatus.pending ||
-            record.status == BullVaultLifecycleStatus.cancelled) {
+        if (!record.mayHoldFunds) {
           return const Err(BullVaultInvalidRecoveryFailure());
         }
         final policy = record.recoveryPackage.policy;

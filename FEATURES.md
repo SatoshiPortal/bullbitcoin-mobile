@@ -160,6 +160,7 @@ graph TB
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
     BULLVAULT -->|Mnemonic display, verification and backup status| BACKUPS
+    BULLVAULT -->|Backup credential for sealing and authoring<br/>descriptor events on public relays| NOSTR_IDENTITY
     BULLVAULT --> RECOVERBULL
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
@@ -303,4 +304,4 @@ To verify no cyclic dependencies exist, you can:
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
 
-`NOSTR_IDENTITY` owns the one backup credential. The twelve backup words come from the reserved BIP85 path on the default seed; they derive the metadata encryption key, the identity that authors public backup artifacts and the separate identity the backup server account is named by. `WALLET_BACKUP` is its only consumer today: it encrypts with that key and signs server requests as that account, and it can do both from words a recovering user supplies instead of from the default seed. BullVault keeps the descriptor artifact codec those words will seal, and publishes nothing over Nostr yet.
+`NOSTR_IDENTITY` owns the one backup credential. The twelve backup words come from the reserved BIP85 path on the default seed; they derive the metadata encryption key, the identity that authors public backup artifacts and the separate identity the backup server account is named by. It has two consumers. `WALLET_BACKUP` encrypts with that key and signs server requests as that account, and it can do both from words a recovering user supplies instead of from the default seed. `BULLVAULT` seals each vault descriptor with the same key and publishes it, authored by the artifact identity, on a compiled-in list of public relays; discovery runs from supplied words alone, so an heir needs no seed and no local database.

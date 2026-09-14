@@ -5,6 +5,18 @@ import 'package:bb_mobile/core/nostr/nostr_event.dart';
 import 'package:bb_mobile/core/nostr/nostr_session.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+/// A relay answered a publication and refused it.
+///
+/// Kept apart from every transport failure: a refusal is the relay's decision
+/// about this event, which retrying the same bytes elsewhere cannot fix, while
+/// an unreachable relay says nothing about the event at all.
+final class NostrRelayRejectedException implements Exception {
+  const NostrRelayRejectedException();
+
+  @override
+  String toString() => 'NostrRelayRejectedException';
+}
+
 /// Finite Nostr exchanges with bounded frames, events and connection lifetime.
 final class NostrRelayDatasource {
   static const maxFrameBytes = 65536;
@@ -46,7 +58,7 @@ final class NostrRelayDatasource {
             message[1] == event.id;
       });
       if (_parse(response)![2] != true) {
-        throw const FormatException('Relay rejected publication');
+        throw const NostrRelayRejectedException();
       }
     });
   }

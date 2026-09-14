@@ -24,5 +24,10 @@ extension BullVaultFailureL10n on BullVaultFailure {
     // can reach it; C12 gives it a message if publication ever surfaces one.
     BullVaultDescriptorBackupUnsupportedFailure() =>
       context.loc.oopsSomethingWentWrong,
+    // C11's destination screens and C10's words entry are the first screens
+    // that can reach these three, and they give each one its wording.
+    BullVaultBackupCredentialFailure() ||
+    BullVaultBackupWordsFailure() ||
+    BullVaultNostrUnreachableFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

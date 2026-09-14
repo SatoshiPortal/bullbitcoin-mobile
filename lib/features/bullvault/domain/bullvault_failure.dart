@@ -53,3 +53,27 @@ final class BullVaultDescriptorBackupUnsupportedFailure
     extends BullVaultFailure {
   const BullVaultDescriptorBackupUnsupportedFailure([super.logMessage]);
 }
+
+/// This device cannot derive the backup credential: no default seed, or a
+/// keystore that would not open.
+///
+/// Nothing is wrong with the vault or its backups; the words themselves still
+/// reach every destination from another device.
+final class BullVaultBackupCredentialFailure extends BullVaultFailure {
+  const BullVaultBackupCredentialFailure([super.logMessage]);
+}
+
+/// The submitted backup words are not the frozen twelve-word form.
+///
+/// It carries nothing about what was typed: the words are the credential.
+final class BullVaultBackupWordsFailure extends BullVaultFailure {
+  const BullVaultBackupWordsFailure([super.logMessage]);
+}
+
+/// No configured relay accepted the descriptor event.
+///
+/// Distinct from a refusal by one relay, which the per-relay outcomes carry:
+/// this is the case where the vault gained no public backup route at all.
+final class BullVaultNostrUnreachableFailure extends BullVaultFailure {
+  const BullVaultNostrUnreachableFailure([super.logMessage]);
+}

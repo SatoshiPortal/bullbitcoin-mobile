@@ -15,6 +15,8 @@ import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_recovery_package_codec.dart';
+import 'package:bb_mobile/features/bullvault/data/nostr_descriptor_repository.dart';
+import 'package:bb_mobile/features/bullvault/data/vault_descriptor_publication_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_descriptor_service.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/check_bullvault_mobile_backups_usecase.dart';
@@ -24,7 +26,11 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bu
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/create_bullvault_onboarding_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_bullvault_recovery_package_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/discover_descriptors_on_nostr_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_private_descriptor_backup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_server_descriptor_backup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/publish_descriptor_to_nostr_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/verify_nostr_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_details_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_funded_predecessor_usecase.dart';
@@ -45,12 +51,16 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/nostr/nostr_relay_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/recoverbull_encryption.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/inspect_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
@@ -214,6 +224,21 @@ abstract final class BullVaultLocator {
     locator.registerFactory<CanDeleteBullVaultWalletUsecase>(
       () => CanDeleteBullVaultWalletUsecase(locator()),
     );
+    locator.registerLazySingleton<VaultDescriptorPublicationRepository>(
+      () => VaultDescriptorPublicationRepository(locator<SqliteDatabase>()),
+    );
+    locator.registerLazySingleton<NostrDescriptorRepository>(
+      () => NostrDescriptorRepository(
+        const RecoverBullEncryption(),
+        const NostrRelayDatasource(),
+      ),
+    );
+    locator.registerFactory<DiscoverDescriptorsOnNostrUsecase>(
+      () => DiscoverDescriptorsOnNostrUsecase(
+        locator<NostrIdentityFacade>(),
+        locator<NostrDescriptorRepository>(),
+      ),
+    );
     locator.registerFactory<BullVaultFacade>(
       () => BullVaultFacade(
         locator(),
@@ -221,6 +246,22 @@ abstract final class BullVaultLocator {
         locator<RestoreBullVaultUsecase>(),
         WatchBullVaultBackupChangesUsecase(locator<BullVaultRepository>()),
         EncodePrivateDescriptorBackupUsecase(locator<BullVaultRepository>()),
+        PublishDescriptorToNostrUsecase(
+          locator<BullVaultRepository>(),
+          locator<VaultDescriptorPublicationRepository>(),
+          locator<NostrIdentityFacade>(),
+          locator<NostrDescriptorRepository>(),
+        ),
+        locator<DiscoverDescriptorsOnNostrUsecase>(),
+        VerifyNostrDescriptorBackupUsecase(
+          locator<BullVaultRepository>(),
+          locator<DiscoverDescriptorsOnNostrUsecase>(),
+        ),
+        PrepareServerDescriptorBackupUsecase(
+          EncodePrivateDescriptorBackupUsecase(locator<BullVaultRepository>()),
+          locator<VaultDescriptorPublicationRepository>(),
+        ),
+        locator<VaultDescriptorPublicationRepository>(),
       ),
     );
     locator.registerFactory<BullVaultOnboardingCubit>(

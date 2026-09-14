@@ -22,6 +22,16 @@ final class BullVaultRecord {
   final bool mobileBackupDeferred;
   final DateTime createdAt;
 
+  /// Whether this vault can still hold funds, and so deserves a recovery route.
+  ///
+  /// A pending vault was never activated and a cancelled one was abandoned;
+  /// a migrating vault still holds coins until its successor is funded. Every
+  /// descriptor backup destination uses this one rule, so they cover exactly
+  /// the same set of vaults.
+  bool get mayHoldFunds =>
+      status == BullVaultLifecycleStatus.active ||
+      status == BullVaultLifecycleStatus.migrating;
+
   BullVaultRecord({
     required this.walletId,
     required this.lineageId,

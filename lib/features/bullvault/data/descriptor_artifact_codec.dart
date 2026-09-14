@@ -10,16 +10,16 @@ import 'dart:typed_data';
 /// carries no fingerprint, label, lineage or date — nothing a relay could read
 /// (plan 5.4). Only the descriptor itself, its network and the format tag.
 ///
-/// The format tag is the one the prototype froze, so artifacts produced before
-/// this move still open. Publication over Nostr, and any decision to advance
-/// that tag, belong to chunk C8.
+/// [profile] doubles as the public purpose tag of the Nostr event that carries
+/// the sealed bytes, so it names what this is rather than where it came from.
 ///
 /// This frame only says what the encrypted bytes are; it does not describe a
-/// vault. The app's vault document is [BullVaultRecoveryPackageCodec], and its
-/// output is what `descriptor` is expected to carry. C8 should decide whether
-/// the two collapse into one versioned document rather than keep both.
+/// vault. The app's vault document is `BullVaultRecoveryPackageCodec`, which
+/// carries the lineage, generation and dates a relay must never see, so the two
+/// stay separate: publishing that document would publish exactly the plaintext
+/// identifiers this frame exists to leave out.
 final class DescriptorArtifact {
-  static const profile = 'bullbitcoin-portable-backup-recoverbull-prototype-1';
+  static const profile = 'bullbitcoin-vault-descriptor-v1';
 
   /// The only kind this codec speaks. The prototype also framed a metadata
   /// document here; metadata keeps its own snapshot codec and is never

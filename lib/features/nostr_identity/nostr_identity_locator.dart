@@ -18,6 +18,7 @@ class NostrIdentityLocator {
         GetBackupIdentityPublicKeyUsecase(resolver),
         SignBackupIdentityHashUsecase(resolver),
         RevealBackupWordsUsecase(resolver),
+        resolver,
       );
     });
   }

@@ -309,5 +309,6 @@ NostrIdentityFacade _facade(
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
     RevealBackupWordsUsecase(resolver),
+    resolver,
   );
 }
