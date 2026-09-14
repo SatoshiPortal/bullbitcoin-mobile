@@ -230,7 +230,7 @@ final class _Harness {
           },
         ),
       );
-    repository = MetadataBackupHttpRepository(
+    repository = MetadataBackupHttpRepository.fromDio(
       dio,
       origin ?? () async => Uri.parse('https://backup.example'),
       now: now,

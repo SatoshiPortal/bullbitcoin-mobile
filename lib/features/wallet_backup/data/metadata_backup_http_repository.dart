@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wallet_backup/data/backup_server_http_transport.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
@@ -11,32 +11,24 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_con
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
-const walletBackupConnectTimeout = Duration(seconds: 10);
-const walletBackupReceiveTimeout = Duration(seconds: 15);
-
 final class MetadataBackupHttpRepository
     implements WalletBackupRemoteRepository {
-  final Dio _dio;
-  final WalletBackupOriginProvider _origin;
-  final DateTime Function() _now;
-  DateTime? _notBefore;
+  final BackupServerHttpTransport _transport;
 
-  MetadataBackupHttpRepository(
-    this._dio,
-    this._origin, {
+  const MetadataBackupHttpRepository(this._transport);
+
+  factory MetadataBackupHttpRepository.fromDio(
+    Dio dio,
+    WalletBackupOriginProvider origin, {
     DateTime Function()? now,
-  }) : _now = now ?? DateTime.now;
+  }) => MetadataBackupHttpRepository(
+    BackupServerHttpTransport(dio, origin, now: now),
+  );
 
   factory MetadataBackupHttpRepository.defaults({
     WalletBackupOriginProvider origin = defaultWalletBackupOrigin,
   }) => MetadataBackupHttpRepository(
-    Dio(
-      BaseOptions(
-        connectTimeout: walletBackupConnectTimeout,
-        receiveTimeout: walletBackupReceiveTimeout,
-      ),
-    ),
-    origin,
+    BackupServerHttpTransport.defaults(origin: origin),
   );
 
   @override
@@ -131,78 +123,18 @@ final class MetadataBackupHttpRepository
     required String method,
     required String path,
     required Map<String, Object?> body,
-  }) async {
-    final notBefore = _notBefore;
-    if (notBefore != null) {
-      final remaining = notBefore.difference(_now().toUtc());
-      if (!remaining.isNegative && remaining != Duration.zero) {
-        return Err(WalletBackupRateLimitedFailure(remaining));
-      }
-    }
-    final Uri origin;
-    try {
-      origin = await _origin();
-    } on Exception {
-      return const Err(WalletBackupInvalidServerOriginFailure());
-    }
-    try {
-      final response = await _dio.requestUri<Object?>(
-        origin.resolve(path),
-        data: body,
-        options: Options(
-          method: method,
-          followRedirects: false,
-          responseType: ResponseType.json,
-          validateStatus: (status) => status != null && status < 600,
-        ),
-      );
-      return _handleResponse(response);
-    } on DioException catch (error, trace) {
-      if (error.response case final response?) {
-        return _handleResponse(response);
-      }
-      log.warning(
-        'Wallet backup network request failed',
-        error: error.runtimeType,
-        trace: trace,
-      );
-      return const Err(WalletBackupRemoteUnavailableFailure());
-    } on Exception catch (error, trace) {
-      log.warning(
-        'Wallet backup request failed unexpectedly',
-        error: error.runtimeType,
-        trace: trace,
-      );
-      return const Err(WalletBackupUnexpectedFailure());
-    }
-  }
-
-  Result<Map<String, Object?>, WalletBackupFailure> _handleResponse(
-    Response<Object?> response,
-  ) {
-    final json = _object(response.data);
-    if (json == null) return const Err(WalletBackupInvalidRemoteFailure());
-    if (json['status'] == 'ERROR') {
-      return Err(
-        _decodeServerFailure(response.statusCode, response.headers, json),
-      );
-    }
-    final status = response.statusCode;
-    return status != null && status >= 200 && status < 300
-        ? Ok(json)
-        : const Err(WalletBackupInvalidRemoteFailure());
-  }
+  }) => _transport.request(
+    method: method,
+    path: path,
+    body: body,
+    decodeServerFailure: _decodeServerFailure,
+  );
 
   WalletBackupFailure _decodeServerFailure(
     int? status,
     Headers headers,
     Map<String, Object?> json,
   ) {
-    if (!_hasOnly(json, const {'status', 'code', 'reason'}) ||
-        json['code'] is! String ||
-        json['reason'] is! String) {
-      return const WalletBackupInvalidRemoteFailure();
-    }
     final code = json['code'];
     return switch ((status, code)) {
       (400, 'BackupInvalidRequest') =>
@@ -210,7 +142,7 @@ final class MetadataBackupHttpRepository
       (401, 'BackupAuthError') => const WalletBackupSigningFailure(),
       (409, 'BackupHeadConflict') => const WalletBackupHeadConflictFailure(),
       (413, 'BackupBlobTooLarge') => const WalletBackupTooLargeFailure(),
-      (429, 'RateLimited') => _rateLimited(headers),
+      (429, 'RateLimited') => _transport.rateLimited(headers),
       (503, 'BackupCapacityExceeded') =>
         const WalletBackupRemoteUnavailableFailure(),
       (500, 'InternalError') => const WalletBackupRemoteUnavailableFailure(),
@@ -218,21 +150,11 @@ final class MetadataBackupHttpRepository
     };
   }
 
-  WalletBackupFailure _rateLimited(Headers headers) {
-    final seconds = int.tryParse(headers.value('retry-after') ?? '');
-    if (seconds == null || seconds < 0) {
-      return const WalletBackupInvalidRemoteFailure();
-    }
-    final retryAfter = Duration(seconds: seconds);
-    _notBefore = _now().toUtc().add(retryAfter);
-    return WalletBackupRateLimitedFailure(retryAfter);
-  }
-
   Result<WalletBackupRemoteHead, WalletBackupFailure> _decodeHead(
     Map<String, Object?> json,
     String publicKeyHex,
   ) {
-    if (!_hasOnly(json, const {
+    if (!backupServerHasOnly(json, const {
           'version',
           'found',
           'generation',
@@ -318,7 +240,7 @@ final class MetadataBackupHttpRepository
     required String? expectedEtag,
     required String? ciphertextSha256,
   }) {
-    if (!_hasOnly(json, const {'version', 'generation', 'etag'}) ||
+    if (!backupServerHasOnly(json, const {'version', 'generation', 'etag'}) ||
         json['version'] != walletBackupProtocolVersion ||
         json['generation'] != generation ||
         expectedEtag == null ||
@@ -342,16 +264,3 @@ Map<String, Object?> _authenticationBody(
   'timestamp': authentication.timestamp,
   'signature': authentication.signatureHex,
 };
-
-Map<String, Object?>? _object(Object? value) {
-  if (value is! Map) return null;
-  final result = <String, Object?>{};
-  for (final entry in value.entries) {
-    if (entry.key is! String) return null;
-    result[entry.key as String] = entry.value;
-  }
-  return result;
-}
-
-bool _hasOnly(Map<String, Object?> json, Set<String> allowed) =>
-    json.keys.every(allowed.contains);
