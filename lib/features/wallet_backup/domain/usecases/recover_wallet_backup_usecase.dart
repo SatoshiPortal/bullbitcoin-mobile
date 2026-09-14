@@ -14,6 +14,7 @@ typedef ApplyFetchedWalletBackup =
     Future<WalletBackupRecoveryResult> Function({
       required Result<WalletBackupSnapshot?, WalletBackupFailure> snapshot,
       ValidateWalletBackupRecovery? revalidate,
+      WalletBackupRemoteCheckpoint? appliedCheckpoint,
       List<WalletPreferences> defaultCreatedWalletPreferences,
       bool callerSettlesFence,
       DateTime? deadline,
@@ -50,6 +51,7 @@ final class RecoverWalletBackupUsecase {
     return _apply(
       defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
       snapshot: snapshot,
+      appliedCheckpoint: initialHead.checkpoint,
       revalidate: () async => switch (await _fetchRemote()) {
         Ok(:final value) => Ok(_sameRemoteObject(value, initialHead)),
         Err(:final failure) => Err(failure),

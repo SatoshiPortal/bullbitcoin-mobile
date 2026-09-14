@@ -20,6 +20,7 @@ void main() {
           ({
             required snapshot,
             revalidate,
+            appliedCheckpoint,
             defaultCreatedWalletPreferences = const [],
             callerSettlesFence = false,
             deadline,
@@ -51,6 +52,7 @@ void main() {
           ({
             required snapshot,
             revalidate,
+            appliedCheckpoint,
             defaultCreatedWalletPreferences = const [],
             callerSettlesFence = false,
             deadline,
@@ -83,6 +85,33 @@ void main() {
     });
 
     expect(unchanged, isFalse);
+  });
+
+  test('hands the apply owner the head it actually applied', () async {
+    final head = _present(generation: 4, ciphertextSha256: _contents);
+    WalletBackupRemoteCheckpoint? applied;
+    final usecase = RecoverWalletBackupUsecase(
+      fetchImport: (_) async => const Ok(null),
+      fetchRemote: () async => Ok(head),
+      apply:
+          ({
+            required snapshot,
+            revalidate,
+            appliedCheckpoint,
+            defaultCreatedWalletPreferences = const [],
+            callerSettlesFence = false,
+            deadline,
+          }) async {
+            applied = appliedCheckpoint;
+            return const WalletBackupRecoveryResult(
+              status: WalletBackupRecoveryStatus.restored,
+            );
+          },
+    );
+
+    await usecase.execute();
+
+    expect(applied, same(head.checkpoint));
   });
 
   // The three cases below run on two real checkpoints, which is the only way
@@ -133,6 +162,7 @@ Future<bool?> _revalidated(WalletBackupRemoteHead Function() head) async {
         ({
           required snapshot,
           revalidate,
+          appliedCheckpoint,
           defaultCreatedWalletPreferences = const [],
           callerSettlesFence = false,
           deadline,

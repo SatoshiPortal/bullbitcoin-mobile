@@ -134,16 +134,20 @@ final class _EncryptionRepository implements WalletBackupEncryptionRepository {
     return Ok(ciphertext);
   }
 
+  /// Only a document this harness did not write ever reaches here, and such a
+  /// document does not decrypt under this account's key.
   @override
   Result<WalletBackupSnapshot, WalletBackupFailure> decrypt({
     required WalletBackupCiphertext ciphertext,
     required WalletBackupEncryptionKey key,
     required String? expectedParentFingerprint,
-  }) => throw UnimplementedError();
+  }) => const Err(WalletBackupInvalidEnvelopeFailure());
 }
 
 final class _RemoteRepository implements WalletBackupRemoteRepository {
-  final WalletBackupRemoteHead head = WalletBackupRemoteHead.absent(
+  /// What the account already holds. Absent until a test installs a document
+  /// another publisher wrote.
+  WalletBackupRemoteHead head = WalletBackupRemoteHead.absent(
     generation: 0,
     etag: null,
   );
@@ -152,6 +156,23 @@ final class _RemoteRepository implements WalletBackupRemoteRepository {
   WalletBackupRemoteCheckpoint? storedAgainst;
   WalletBackupCiphertext? storedCiphertext;
   String? storedCiphertextSha256;
+
+  /// Publishes [ciphertext] at [generation] as if another device had written
+  /// it, so a store that does not name that exact head is rejected.
+  void install(
+    WalletBackupCiphertext ciphertext, {
+    required int generation,
+    required String etag,
+  }) {
+    head = WalletBackupRemoteHead.present(
+      generation: generation,
+      etag: etag,
+      ciphertext: ciphertext,
+      ciphertextSha256: sha256
+          .convert(base64.decode(ciphertext.value))
+          .toString(),
+    );
+  }
 
   @override
   Future<Result<WalletBackupRemoteHead, WalletBackupFailure>> fetch({
@@ -170,6 +191,10 @@ final class _RemoteRepository implements WalletBackupRemoteRepository {
   }) async {
     storeAuthentication = authentication;
     storedAgainst = current;
+    if ((current?.generation ?? 0) != head.generation ||
+        current?.etag != head.etag) {
+      return const Err(WalletBackupHeadConflictFailure());
+    }
     storedCiphertext = ciphertext;
     storedCiphertextSha256 = ciphertextSha256;
     return Ok(
@@ -366,13 +391,12 @@ void main() {
       result,
       isA<Ok<WalletBackupRemoteCheckpoint, WalletBackupFailure>>(),
     );
-    expect(harness.remote.fetchAuthentications, hasLength(1));
-    expect(harness.remote.fetchAuthentications.single.timestamp, 1234);
-    expect(harness.remote.storeAuthentication?.timestamp, 1234);
     expect(
-      harness.remote.storeAuthentication?.publicKeyHex,
-      harness.remote.fetchAuthentications.single.publicKeyHex,
+      harness.remote.fetchAuthentications,
+      isEmpty,
+      reason: 'a publication never adopts a head it has not authenticated',
     );
+    expect(harness.remote.storeAuthentication?.timestamp, 1234);
     expect(
       harness.remote.storeAuthentication?.publicKeyHex,
       _expectedServerPublicKey,
@@ -403,6 +427,11 @@ void main() {
       etag: 'f' * 64,
       ciphertextSha256: 'a' * 64,
     );
+    harness.remote.install(
+      WalletBackupCiphertext(base64.encode(List.filled(96, 3))),
+      generation: 5,
+      etag: 'f' * 64,
+    );
 
     final result = await harness.publish.execute(checkpoint);
 
@@ -416,6 +445,27 @@ void main() {
     );
     expect(harness.remote.fetchAuthentications, isEmpty);
     expect(harness.remote.storedAgainst, same(checkpoint));
+  });
+
+  test('without a checkpoint a newer document is never overwritten', () async {
+    final harness = _publication(settings, defaultSeed, manifest);
+    harness.remote.install(
+      WalletBackupCiphertext(base64.encode(List.filled(96, 3))),
+      generation: 5,
+      etag: 'f' * 64,
+    );
+
+    final result = await harness.publish.execute(null);
+
+    expect(
+      result,
+      isA<Err<WalletBackupRemoteCheckpoint, WalletBackupFailure>>(),
+    );
+    expect(
+      harness.remote.storedCiphertext,
+      isNull,
+      reason: "another publisher's document is not replaced",
+    );
   });
 }
 

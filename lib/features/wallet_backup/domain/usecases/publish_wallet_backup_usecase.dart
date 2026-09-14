@@ -20,10 +20,12 @@ import 'package:primitives/primitives.dart';
 /// what the remote holds, so a record removed locally is gone from the next
 /// publication and a recovery cannot resurrect it.
 ///
-/// With a trusted checkpoint the store goes straight out, with no preceding
-/// fetch. A head conflict is fetched and authenticated once. Identical content
-/// is already safely stored (including a lost-reply retry); different content
-/// leaves local work dirty and the decision with the user.
+/// The store goes straight out against the last authenticated checkpoint, with
+/// no preceding fetch; no checkpoint means this installation has never read the
+/// remote object, so the store is a create. A head conflict is fetched and
+/// authenticated once. Identical content is already safely stored (including a
+/// lost-reply retry); different content leaves local work dirty and the
+/// decision with the user.
 final class PublishWalletBackupUsecase {
   final BuildWalletBackupSnapshotUsecase _buildSnapshot;
   final ResolveWalletBackupKeyUsecase _resolveKey;
@@ -57,16 +59,6 @@ final class PublishWalletBackupUsecase {
         return Err(failure);
     }
 
-    var current = checkpoint;
-    if (current == null) {
-      switch (await _fetchRemote.execute()) {
-        case Ok(:final value):
-          current = value.checkpoint;
-        case Err(:final failure):
-          return Err(failure);
-      }
-    }
-
     final WalletBackupSnapshot local;
     switch (await _buildSnapshot.execute(
       parentFingerprint: backupKey.parentFingerprint,
@@ -89,8 +81,12 @@ final class PublishWalletBackupUsecase {
         return Err(failure);
     }
 
+    // The checkpoint is the only head this installation has authenticated.
+    // Without one the store is a create, which the server refuses while a
+    // document exists; fetching the head here instead would adopt content this
+    // client never read and publish straight over it.
     return switch (await _storeRemote.execute(
-      current: current,
+      current: checkpoint,
       ciphertext: ciphertext,
     )) {
       Ok(:final value) => Ok(value),

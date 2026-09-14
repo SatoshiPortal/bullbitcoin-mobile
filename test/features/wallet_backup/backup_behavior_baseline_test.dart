@@ -291,6 +291,36 @@ void main() {
       expect(device.remote.storedCiphertext, published);
       expect(device.remote.storeCount, storesAfterEnabling);
     });
+
+    test('a write made after a recovery is never overwritten by the '
+        'recovered device', () async {
+      final server = FakeWalletBackupRemote();
+      final device = await _device(remote: server);
+      expect(await device.facade.setEnabled(true), _succeeds);
+      final otherDevice = await _device(remote: server);
+      expect(await otherDevice.facade.setEnabled(true), _succeeds);
+
+      expect(
+        (await device.facade.recover()).status,
+        WalletBackupRecoveryStatus.restored,
+      );
+      await _addWallet(otherDevice, walletId: 'elsewhere', label: 'Elsewhere');
+      expect(await otherDevice.facade.backupNow(), _succeeds);
+      final published = server.storedCiphertext;
+
+      await _addWallet(device, walletId: 'here', label: 'Here');
+      expect(
+        await device.facade.backupNow(),
+        isA<Err<void, WalletBackupFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<WalletBackupHeadConflictFailure>(),
+        ),
+      );
+
+      expect(server.storedCiphertext, published);
+      expect((await device.readState()).recoveryBlocked, isTrue);
+    });
   });
 
   group('backup files', () {

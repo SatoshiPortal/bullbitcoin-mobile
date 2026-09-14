@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/restore_wallet_backup_manifest_usecase.dart';
@@ -69,6 +70,7 @@ final class ApplyBackupSnapshotUsecase {
   Future<WalletBackupRecoveryResult> execute({
     required Result<WalletBackupSnapshot?, WalletBackupFailure> snapshot,
     ValidateWalletBackupRecovery? revalidate,
+    WalletBackupRemoteCheckpoint? appliedCheckpoint,
     List<WalletPreferences> defaultCreatedWalletPreferences = const [],
     bool callerSettlesFence = false,
     DateTime? deadline,
@@ -81,6 +83,7 @@ final class ApplyBackupSnapshotUsecase {
         Ok(:final value) => await _apply(
           snapshot: value,
           revalidate: revalidate,
+          appliedCheckpoint: appliedCheckpoint,
           defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
           deadline: budget,
           settleFence: !callerSettlesFence,
@@ -113,6 +116,7 @@ final class ApplyBackupSnapshotUsecase {
   Future<WalletBackupRecoveryResult> _apply({
     required WalletBackupSnapshot? snapshot,
     required ValidateWalletBackupRecovery? revalidate,
+    required WalletBackupRemoteCheckpoint? appliedCheckpoint,
     required List<WalletPreferences> defaultCreatedWalletPreferences,
     required DateTime deadline,
     required bool settleFence,
@@ -262,7 +266,16 @@ final class ApplyBackupSnapshotUsecase {
       definitions: definitionsRestored,
       vaults: vaultsRestored,
     );
-    return complete && settleFence ? _lower(result) : result;
+    if (!complete || !settleFence) return result;
+    // Revalidation just proved the remote object is still the one this apply
+    // read, so that head is what the next publication must store against.
+    // Publishing from no checkpoint at all would have to take whatever head it
+    // finds, which is how a device that wrote after this recovery loses its
+    // work.
+    if (await _state.saveRemoteCheckpoint(appliedCheckpoint) case Err()) {
+      return _localFailure(result);
+    }
+    return _lower(result);
   }
 
   /// Lowers the fence after a complete apply. Anything short of complete keeps
