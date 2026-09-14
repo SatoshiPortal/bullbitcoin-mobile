@@ -4,15 +4,15 @@ import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver_port.dart';
 import 'package:flutter/foundation.dart';
 
-/// [PassphraseWalletDeriver] over the wallet metadata and descriptor domain.
+/// [PassphraseWalletDeriverPort] over the wallet metadata and descriptor domain.
 ///
 /// The combined public descriptor and the wallet id both come from the same
 /// derivation, so identity is the descriptor rather than the four-byte
 /// fingerprint the record also carries.
-final class BdkPassphraseWalletDeriver implements PassphraseWalletDeriver {
+final class BdkPassphraseWalletDeriver implements PassphraseWalletDeriverPort {
   const BdkPassphraseWalletDeriver();
 
   @override

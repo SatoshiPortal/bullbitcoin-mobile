@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 /// The implementation owns the BDK and Electrum details and uses the user's
 /// already configured Electrum path — this capability introduces no second
 /// service, and it never logs the descriptor it was given.
-abstract interface class PassphraseWalletScanner {
+abstract interface class PassphraseWalletScannerPort {
   /// Throws [PassphraseWalletScanException] when the scan cannot complete.
   Future<BigInt> scan({
     required String combinedPublicDescriptor,

@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/passphrase_wallet/domain/entities/passphrase_wallet.dart';
 import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_failure.dart';
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver_port.dart';
 import 'package:bb_mobile/features/passphrase_wallet/domain/usecases/get_passphrase_wallets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 
@@ -18,7 +18,7 @@ final class PreparePassphraseWalletUsecase {
   final GetDefaultSeedUsecase _getDefaultSeed;
   final GetSettingsUsecase _getSettings;
   final GetPassphraseWalletsUsecase _getWallets;
-  final PassphraseWalletDeriver _deriver;
+  final PassphraseWalletDeriverPort _deriver;
 
   const PreparePassphraseWalletUsecase(
     this._getDefaultSeed,

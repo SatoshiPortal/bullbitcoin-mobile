@@ -3,14 +3,15 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_net
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner_port.dart';
 
-/// [PassphraseWalletScanner] over the wallet's existing BDK datasource and the
+/// [PassphraseWalletScannerPort] over the wallet's existing BDK datasource and the
 /// user's configured Electrum servers.
 ///
 /// This is the one file in the feature that knows either of them exists: the
 /// port keeps BDK and Electrum out of the passphrase domain and presentation.
-final class ElectrumPassphraseWalletScanner implements PassphraseWalletScanner {
+final class ElectrumPassphraseWalletScanner
+    implements PassphraseWalletScannerPort {
   final BdkWalletDatasource _bdk;
   final ElectrumServersPort _servers;
 

@@ -27,8 +27,8 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/passphrase_wallet/domain/entities/passphrase_wallet.dart';
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver.dart';
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver_port.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner_port.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';
@@ -307,7 +307,7 @@ final class FakeWalletFacade implements WalletFacade {
   }
 }
 
-final class FakePassphraseWalletDeriver implements PassphraseWalletDeriver {
+final class FakePassphraseWalletDeriver implements PassphraseWalletDeriverPort {
   /// Passphrase to the wallet it derives. Anything else derives a wallet the
   /// app has never seen.
   final Map<String, ({String walletId, String descriptor})> wallets;
@@ -344,7 +344,7 @@ final class FakePassphraseWalletDeriver implements PassphraseWalletDeriver {
   }
 }
 
-final class FakePassphraseWalletScanner implements PassphraseWalletScanner {
+final class FakePassphraseWalletScanner implements PassphraseWalletScannerPort {
   final scanned = <String>[];
   final Map<String, BigInt> balances;
   final failing = <String>{};

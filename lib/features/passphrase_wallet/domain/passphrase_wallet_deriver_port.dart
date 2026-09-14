@@ -28,7 +28,7 @@ final class PassphraseWalletDerivation {
 /// UI thread; the use case above it sees domain values only. Failure is an
 /// exception rather than a typed value here: nothing but "we could not derive"
 /// can be said about it without describing the passphrase.
-abstract interface class PassphraseWalletDeriver {
+abstract interface class PassphraseWalletDeriverPort {
   Future<PassphraseWalletDerivation> derive({
     required MnemonicSeed parentSeed,
     required String passphrase,

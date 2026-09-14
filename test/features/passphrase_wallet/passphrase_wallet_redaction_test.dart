@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver.dart';
-import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_deriver_port.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner_port.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/passphrase_wallet_harness.dart';
