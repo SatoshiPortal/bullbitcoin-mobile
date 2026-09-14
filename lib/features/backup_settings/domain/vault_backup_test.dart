@@ -17,7 +17,7 @@ typedef VaultBackupCheckResults =
 /// What a BIP138 check found, counted over the vault's eligible cosigners.
 ///
 /// A receipt is recorded only when every one of them could retrieve and open
-/// the descriptor (decision 8): a vault where two of three cosigners can
+/// the descriptor: a vault where two of three cosigners can
 /// recover is not a vault with a backup. The partial counts are for telling the
 /// person which is which, and are never persisted.
 final class VaultBackupBip138Check {

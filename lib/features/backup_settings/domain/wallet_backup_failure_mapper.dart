@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dar
 ///
 /// The switch is exhaustive on purpose: a new [WalletBackupFailure] has to be
 /// given a user meaning here rather than silently collapsing into
-/// "something went wrong" (spec F17, 21.2).
+/// "something went wrong".
 BackupSettingsFailure mapWalletBackupFailure(
   WalletBackupFailure failure,
 ) => switch (failure) {
@@ -52,7 +52,7 @@ BackupSettingsFailure mapWalletBackupFailure(
 
 /// The user meaning of a finished recovery, or null when it finished cleanly.
 ///
-/// A recovery that only got part way is never reported as success (spec 21.1).
+/// A recovery that only got part way is never reported as success.
 BackupSettingsFailure? mapWalletBackupRecoveryStatus(
   WalletBackupRecoveryStatus status,
 ) => switch (status) {

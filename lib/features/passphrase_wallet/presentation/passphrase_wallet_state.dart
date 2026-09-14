@@ -46,7 +46,7 @@ final class PassphraseWalletCardState {
 /// the wallet feature and writes it here, and the widgets read it from here.
 /// Nothing on the page asks a repository or a session what is loaded while it
 /// builds, which is how a loaded wallet used to end up under a card still
-/// saying Locked (spec F20).
+/// saying Locked.
 ///
 /// Value equality is part of that guarantee: recomputing the same page state
 /// produces no transition at all, so "one event, one transition" holds even

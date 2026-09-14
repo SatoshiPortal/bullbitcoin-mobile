@@ -10,7 +10,7 @@ typedef PublishWalletBackupSnapshot =
       WalletBackupRemoteCheckpoint? checkpoint,
     );
 
-/// One publication pass, as the job runner runs it (spec 19.3).
+/// One publication pass, as the job runner runs it.
 ///
 /// It exits cheaply when there is nothing to send, captures the local revision
 /// it is about to publish, and acknowledges only that revision. A mutation

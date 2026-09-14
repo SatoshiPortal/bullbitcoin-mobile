@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/usecases/mount_passp
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
-/// Creates a passphrase wallet the app has never seen (spec 20.5).
+/// Creates a passphrase wallet the app has never seen.
 ///
 /// The manifest record is written before the mount, so an interrupted creation
 /// leaves a locked card the user can unlock again rather than a wallet with no

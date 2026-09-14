@@ -9,8 +9,7 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_sc
 /// user's configured Electrum servers.
 ///
 /// This is the one file in the feature that knows either of them exists: the
-/// port keeps BDK and Electrum out of the passphrase domain and presentation
-/// (spec 14, 20.7).
+/// port keeps BDK and Electrum out of the passphrase domain and presentation.
 final class ElectrumPassphraseWalletScanner implements PassphraseWalletScanner {
   final BdkWalletDatasource _bdk;
   final ElectrumServersPort _servers;

@@ -5,9 +5,9 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_me
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
-/// Edits a passphrase wallet's label and hint (spec 6.6).
+/// Edits a passphrase wallet's label and hint.
 ///
-/// The manifest is canonical for both (decision 2), so it is written first and
+/// The manifest is canonical for both, so it is written first and
 /// alone decides whether the edit happened. The mounted wallet's label is a
 /// projection of it: failing to refresh that leaves the manifest truth intact
 /// and only means the wallet shows its old name until it is mounted again.

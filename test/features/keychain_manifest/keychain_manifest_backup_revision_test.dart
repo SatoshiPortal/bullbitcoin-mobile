@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 import 'support/manifest_fixtures.dart';
 
 /// The manifest raises Bull backup's dirty signal inside the transaction that
-/// earns it (decision 7).
+/// earns it.
 ///
 /// Forget correctness depends on this: if a crash between the delete and the
 /// signal could lose the signal, the forgotten wallet would still be in the

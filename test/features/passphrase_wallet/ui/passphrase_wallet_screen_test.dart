@@ -1,4 +1,4 @@
-// What the Passphrase page actually renders (spec 25.6, 25.7, 25.8).
+// What the Passphrase page actually renders.
 //
 // The Cubit suite proves the page state; this proves the card that reads it.
 // Both halves are needed: the bug F20 records — a loaded wallet under a card

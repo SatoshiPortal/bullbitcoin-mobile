@@ -47,8 +47,7 @@ final class WalletBackupRemoteUnavailableFailure extends WalletBackupFailure {
 /// The server refused the call and said when it will accept another.
 ///
 /// The gate that honours [retryAfter] is in-memory only and lives in the job
-/// runner: the server enforces its own limits, so nothing about it is durable
-/// (decision 8).
+/// runner: the server enforces its own limits, so nothing about it is durable.
 final class WalletBackupRateLimitedFailure extends WalletBackupFailure {
   final Duration retryAfter;
 
@@ -100,8 +99,7 @@ final class WalletBackupConfirmationRequiredFailure
   const WalletBackupConfirmationRequiredFailure();
 }
 
-/// Remote deletion was asked for while automatic backup was still on
-/// (decision 9).
+/// Remote deletion was asked for while automatic backup was still on.
 final class WalletBackupDeleteRequiresDisabledFailure
     extends WalletBackupFailure {
   const WalletBackupDeleteRequiresDisabledFailure();

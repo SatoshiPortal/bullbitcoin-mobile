@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 /// would open it.
 ///
 /// The caller takes ownership of [seed] the moment this is returned and is
-/// responsible for clearing it (spec 20.3).
+/// responsible for clearing it.
 final class PassphraseWalletDerivation {
   final String walletId;
   final String combinedPublicDescriptor;

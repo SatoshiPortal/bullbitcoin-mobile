@@ -60,7 +60,7 @@ class _MockSettings extends Mock implements GetSettingsUsecase {}
 class _MockDefaultSeed extends Mock implements GetDefaultSeedUsecase {}
 
 /// The seed and settings owner contracts the passphrase use cases read through,
-/// answering for one mainnet device with one active mnemonic (spec 6.1).
+/// answering for one mainnet device with one active mnemonic.
 ({GetDefaultSeedUsecase seed, GetSettingsUsecase settings})
 fakeSeedAndSettings() {
   final settings = _MockSettings();
@@ -108,7 +108,7 @@ buildManifest() {
 
 /// Delegates to a real manifest repository, and fails the writes a test asks it
 /// to fail — the only way to reach the interrupted halves of Forget and of a
-/// metadata edit (spec 25.9).
+/// metadata edit.
 final class FaultInjectingManifestRepository
     implements KeychainManifestRepository {
   final KeychainManifestRepository _inner;

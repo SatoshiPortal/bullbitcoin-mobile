@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 /// says whose backup it is.
 ///
 /// The key is the one the twelve backup words derive, so an heir who has only
-/// the words opens the same ciphertext (plan 5.2).
+/// the words opens the same ciphertext.
 typedef WalletBackupKey = ({
   String parentFingerprint,
   WalletBackupEncryptionKey encryptionKey,

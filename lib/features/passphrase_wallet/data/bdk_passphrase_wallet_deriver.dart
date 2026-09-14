@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart';
 ///
 /// The combined public descriptor and the wallet id both come from the same
 /// derivation, so identity is the descriptor rather than the four-byte
-/// fingerprint the record also carries (spec 6.5).
+/// fingerprint the record also carries.
 final class BdkPassphraseWalletDeriver implements PassphraseWalletDeriver {
   const BdkPassphraseWalletDeriver();
 

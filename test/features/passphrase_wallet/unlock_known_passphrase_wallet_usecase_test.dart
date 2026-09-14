@@ -57,7 +57,7 @@ void main() {
 
   test('refuses a known record whose descriptor differs', () async {
     // A four-byte fingerprint or a wallet id that happens to line up is not
-    // identity; the combined descriptor is (spec 6.5).
+    // identity; the combined descriptor is.
     final preparation = fakePreparation(
       record: fakeRecord(descriptor: firstDescriptor),
       known: fakeRecord(descriptor: secondDescriptor),

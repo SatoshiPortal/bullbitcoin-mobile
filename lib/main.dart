@@ -99,12 +99,12 @@ void resumePayjoinsOnAppResume(
   }
 }
 
-/// The app's single lifecycle owner for private signing material (spec F15).
+/// The app's single lifecycle owner for private signing material.
 ///
 /// Clearing happens on the first sign of leaving the foreground, before the
 /// app can be snapshotted or killed. Navigation back to the locked Passphrase
 /// page waits for the resume, and is driven by the lock the wallet feature
-/// published rather than by a flag this widget keeps for itself (decision 5).
+/// published rather than by a flag this widget keeps for itself.
 /// Returns whether the caller should navigate.
 @visibleForTesting
 bool applyWalletLockOnAppLifecycle(

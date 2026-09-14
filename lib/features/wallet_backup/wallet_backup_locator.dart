@@ -382,7 +382,7 @@ final class _WalletBackupGraph {
         inspectVault: inspectVault,
       ),
       // Deliberately outside the job runner and the state repository: a
-      // words-only read belongs to no local account (plan 5.2).
+      // words-only read belongs to no local account.
       ExtractVaultsWithBackupWordsUsecase(
         fetchRemote,
         encryption,

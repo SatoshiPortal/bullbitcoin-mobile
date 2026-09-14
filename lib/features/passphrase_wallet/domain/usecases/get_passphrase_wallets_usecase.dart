@@ -9,11 +9,11 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_fa
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 
 /// Reads every passphrase wallet the active mnemonic has created, from the
-/// manifest that is canonical for them (spec 20.1, decision 2).
+/// manifest that is canonical for them.
 ///
 /// Loaded and locked are deliberately not decided here: the wallet feature owns
 /// that fact and the page Cubit reads it from there, so the page has one
-/// observer of it rather than two disagreeing ones (spec F20).
+/// observer of it rather than two disagreeing ones.
 final class GetPassphraseWalletsUsecase {
   final GetDefaultSeedUsecase _getDefaultSeed;
   final GetSettingsUsecase _getSettings;

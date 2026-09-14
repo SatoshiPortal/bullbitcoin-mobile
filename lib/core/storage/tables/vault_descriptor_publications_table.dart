@@ -4,8 +4,8 @@ import 'package:drift/drift.dart';
 ///
 /// One row per vault and destination. It holds the exact bytes that were signed
 /// or sealed, written before the first send, so a retry after a lost
-/// acknowledgement resends the same artifact instead of making a second one
-/// (plan 7). Nothing here is a schedule: retries happen when a person asks.
+/// acknowledgement resends the same artifact instead of making a second one.
+/// Nothing here is a schedule: retries happen when a person asks.
 @DataClassName('VaultDescriptorPublicationRow')
 class VaultDescriptorPublications extends Table {
   TextColumn get walletId => text()();

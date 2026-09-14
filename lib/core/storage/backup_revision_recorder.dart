@@ -5,7 +5,7 @@ import 'package:drift/drift.dart';
 ///
 /// Owners whose data lives in this database call it from inside the same
 /// transaction as the write it records, so no crash window can lose the dirty
-/// signal (spec decision 7). Forgetting a wallet depends on that: a lost
+/// signal. Forgetting a wallet depends on that: a lost
 /// signal would leave the forgotten wallet in the next published snapshot.
 ///
 /// The contract lives in the storage layer rather than in Bull backup so that

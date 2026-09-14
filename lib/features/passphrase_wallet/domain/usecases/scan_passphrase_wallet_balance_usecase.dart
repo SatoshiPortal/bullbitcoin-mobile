@@ -3,11 +3,10 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_fa
 import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
-/// Reads one locked wallet's balance from its public descriptor (spec 20.7).
+/// Reads one locked wallet's balance from its public descriptor.
 ///
 /// Scanning is driven from the Passphrase page and nowhere else: the page Cubit
-/// runs these one card at a time on entry, and there is no background scan
-/// (spec 6.4).
+/// runs these one card at a time on entry, and there is no background scan.
 final class ScanPassphraseWalletBalanceUsecase {
   final PassphraseWalletScanner _scanner;
 

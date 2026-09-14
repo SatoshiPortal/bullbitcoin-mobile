@@ -22,7 +22,7 @@ import 'package:meta/meta.dart';
 ///
 /// The signed event is written down before the first send and reused for every
 /// later one, so an interrupted publication resends the same event rather than
-/// sealing a second one for a descriptor that already has one (plan 7).
+/// sealing a second one for a descriptor that already has one.
 final class PublishDescriptorToNostrUsecase {
   final BullVaultRepository _repository;
   final VaultDescriptorPublicationRepository _publications;
@@ -106,7 +106,7 @@ final class PublishDescriptorToNostrUsecase {
   ///
   /// A vault recovered onto another phone carries no right to republish under
   /// that phone's identity, so an event authored by a different credential is
-  /// discarded rather than resent (plan C11).
+  /// discarded rather than resent.
   NostrEvent? _storedEvent(
     List<VaultDescriptorPublication> rows,
     BackupCredential credential,

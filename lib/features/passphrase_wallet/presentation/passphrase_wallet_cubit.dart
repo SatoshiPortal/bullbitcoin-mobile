@@ -19,8 +19,7 @@ import 'package:primitives/primitives.dart' show Err, Ok, Result;
 enum PassphraseWalletEntryStatus { openedKnown, newWallet }
 
 /// What one submitted passphrase turned out to be, so the page can run the
-/// approved disclaimer sequence for a new wallet and skip it for a known one
-/// (spec 6.7).
+/// approved disclaimer sequence for a new wallet and skip it for a known one.
 final class PassphraseWalletEntryResult {
   final PassphraseWalletEntryStatus status;
   final bool hasHistory;
@@ -31,13 +30,13 @@ final class PassphraseWalletEntryResult {
   });
 }
 
-/// The Passphrase page's only state owner (spec F20, F24).
+/// The Passphrase page's only state owner.
 ///
 /// It holds the page's whole state, including which wallet is loaded, which it
 /// reads from the wallet feature's published catalog rather than letting the
 /// widgets ask a session object while they build. The candidate private
 /// material of an entry in progress lives in a private field here and never in
-/// [PassphraseWalletState] (spec 20.3).
+/// [PassphraseWalletState].
 final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
   final GetPassphraseWalletsUsecase _getWallets;
   final PreparePassphraseWalletUsecase _prepare;
@@ -55,7 +54,7 @@ final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
   var _entryGeneration = 0;
 
   /// Bumped by every page load and by close, so results from a scan or a load
-  /// the user has already left behind are dropped (spec 6.4).
+  /// the user has already left behind are dropped.
   var _generation = 0;
 
   PassphraseWalletCubit(
@@ -74,7 +73,7 @@ final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
   /// Reads the page's wallets, then scans each locked descriptor once.
   ///
   /// This is the only automatic balance scan in the app: entering the page runs
-  /// it, and nothing else does (spec 6.4).
+  /// it, and nothing else does.
   Future<void> load() async {
     final generation = ++_generation;
     emit(state.copyWith(status: PassphraseWalletLoadStatus.loading));
@@ -113,8 +112,7 @@ final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
   void startEntering() => emit(state.copyWith(isEntering: true));
 
   /// Creating another passphrase wallet unloads the current one first, so the
-  /// user is never entering a second passphrase while a first wallet is live
-  /// (spec 6.8).
+  /// user is never entering a second passphrase while a first wallet is live.
   void startCreatingAnother() {
     _cancelEntryAttempt();
     _wallets.unloadPrivateWalletSession();
@@ -234,7 +232,7 @@ final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
   }
 
   /// Abandons the entry entirely: the app is leaving the foreground, or the
-  /// page is going away (spec 6.2).
+  /// page is going away.
   void cancelEntry() {
     _cancelEntryAttempt();
     if (isClosed) return;
@@ -270,7 +268,7 @@ final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
   }
 
   /// Forgets [wallet], keeping its card when only part of that succeeded so the
-  /// user can retry it (decision 6).
+  /// user can retry it.
   Future<bool> forget(PassphraseWalletRecord wallet) async {
     switch (await _forgetWallet.execute(wallet)) {
       case Err(:final failure):
@@ -293,7 +291,7 @@ final class PassphraseWalletCubit extends Cubit<PassphraseWalletState> {
 
   /// The wallet feature republishes its visible catalog whenever a private
   /// capability is loaded or cleared, and a locked passphrase wallet is absent
-  /// from it (spec 20.2). That makes catalog membership the published form of
+  /// from it. That makes catalog membership the published form of
   /// loaded-versus-locked, and this the page's one observer of it.
   void _onCatalogChanged(List<Wallet> catalog) {
     if (isClosed) return;

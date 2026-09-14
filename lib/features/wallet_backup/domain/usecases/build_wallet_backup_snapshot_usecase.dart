@@ -17,7 +17,7 @@ typedef ReadWalletMetadataSnapshot =
 DateTime _systemNowUtc() => DateTime.now().toUtc();
 
 /// One read-only capture of the manifest, the external wallet definitions, the
-/// BullVault recovery packages and the protected-data section (spec 16).
+/// BullVault recovery packages and the protected-data section.
 ///
 /// A vault's wallet is carried by the vaults section only: its recovery
 /// package restores the wallet together with the vault record, so it is left
@@ -25,9 +25,9 @@ DateTime _systemNowUtc() => DateTime.now().toUtc();
 ///
 /// Building a snapshot writes nothing: the invariant recovery material a
 /// published document must carry is registered when the feature starts or is
-/// enabled, by [RegisterWalletBackupRecoveryMaterialUsecase] (spec F5). Each
+/// enabled, by [RegisterWalletBackupRecoveryMaterialUsecase]. Each
 /// owner is read exactly once per call, so the result is a snapshot that
-/// actually existed (spec F6).
+/// actually existed.
 final class BuildWalletBackupSnapshotUsecase {
   final KeychainManifestFacade _keychainManifest;
   final WalletDefinitionsBackup _definitions;

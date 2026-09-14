@@ -12,7 +12,7 @@ typedef PublishWalletBackup =
 /// Publish, recover, import, delete remote, and change server are the only
 /// jobs, and exactly one of them touches the server at a time. There is no
 /// separate lease, deferred completer, or lifecycle tail: a job either owns
-/// the runner or waits for it (spec 18, F8).
+/// the runner or waits for it.
 ///
 /// Publication is additionally coalesced. Triggers arriving while a
 /// publication runs collapse into one further pass, and the durable revisions
@@ -34,7 +34,7 @@ final class WalletBackupJobRunner {
   ///
   /// A rate-limited server closes the gate for the interval it asked for, and
   /// jobs reaching the runner before then fail without a request. The gate is
-  /// deliberately in memory only (decision 8).
+  /// deliberately in memory only.
   @useResult
   Future<Result<T, WalletBackupFailure>> run<T>(
     Future<Result<T, WalletBackupFailure>> Function() job,

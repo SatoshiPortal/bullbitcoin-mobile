@@ -1,7 +1,7 @@
 /// The relays this app publishes and reads vault descriptors on.
 ///
 /// The list is a compiled-in constant. Nothing fetches it, no recovered backup
-/// can add to it and no screen can edit it (plan 5.4): a relay URL that arrives
+/// can add to it and no screen can edit it: a relay URL that arrives
 /// with the data it is supposed to authenticate is an attacker's choice of
 /// destination, not a configuration.
 ///

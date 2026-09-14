@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_fa
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_repository.dart';
 import 'package:primitives/primitives.dart';
 
-/// Edits the label and hint the manifest owns for one wallet (decision 2).
+/// Edits the label and hint the manifest owns for one wallet.
 final class UpdatePassphraseLabelHintUsecase {
   final KeychainManifestRepository _repository;
 

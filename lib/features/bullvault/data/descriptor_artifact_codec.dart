@@ -7,8 +7,8 @@ import 'dart:typed_data';
 ///
 /// The bytes are gzip-compressed, self-describing UTF-8 JSON. They are sealed
 /// with the backup credential's encryption key before publication, so the frame
-/// carries no fingerprint, label, lineage or date — nothing a relay could read
-/// (plan 5.4). Only the descriptor itself, its network and the format tag.
+/// carries no fingerprint, label, lineage or date — nothing a relay could read.
+/// Only the descriptor itself, its network and the format tag.
 ///
 /// [profile] doubles as the public purpose tag of the Nostr event that carries
 /// the sealed bytes, so it names what this is rather than where it came from.

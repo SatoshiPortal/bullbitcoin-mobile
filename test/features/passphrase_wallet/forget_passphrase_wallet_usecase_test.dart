@@ -56,7 +56,7 @@ void main() {
       isA<Ok<void, PassphraseWalletFailure>>(),
     );
 
-    // Decision 6: an interruption at any point here leaves a locked card, never
+    // An interruption at any point here leaves a locked card, never
     // a wallet still on Home.
     expect(wallets.events, ['unload', 'deleteProjection:wallet']);
     expect(wallets.loadedWalletId, isNull);

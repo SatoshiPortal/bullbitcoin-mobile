@@ -17,7 +17,7 @@ final class KeychainManifestRepositoryImpl
   final SqliteDatabase _database;
 
   /// Bull backup's dirty signal, raised inside the same transaction as the
-  /// write that earned it (decision 7). Forgetting a wallet depends on it: a
+  /// write that earned it. Forgetting a wallet depends on it: a
   /// signal lost to a crash would leave the forgotten wallet in the next
   /// published snapshot.
   final BackupRevisionRecorder _backupRevisions;
@@ -523,7 +523,7 @@ final class KeychainManifestRepositoryImpl
     final stored = bound.single;
     // The four-byte seed fingerprint that keys the entry id is a lookup hint,
     // so two descriptors can land on one entry. They are separate wallets and
-    // must never be merged (spec 6.5).
+    // must never be merged.
     return stored.childSeedFingerprint == wallet.childSeedFingerprint.hex &&
             stored.network == wallet.network.name &&
             stored.scriptType == wallet.scriptType.name &&

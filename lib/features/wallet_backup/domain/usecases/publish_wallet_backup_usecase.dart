@@ -18,7 +18,7 @@ import 'package:primitives/primitives.dart';
 ///
 /// The published bytes are exactly the local snapshot: nothing is merged with
 /// what the remote holds, so a record removed locally is gone from the next
-/// publication and a recovery cannot resurrect it (decision 1, spec F1/F2).
+/// publication and a recovery cannot resurrect it.
 ///
 /// With a trusted checkpoint the store goes straight out, with no preceding
 /// fetch. A head conflict is fetched and authenticated once. Identical content

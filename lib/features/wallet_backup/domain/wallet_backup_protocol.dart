@@ -44,7 +44,7 @@ final class WalletBackupAuthentication {
 /// Signs server requests as the backup account.
 ///
 /// The account is named by the credential's server identity, never by the
-/// public artifact author (decision 6). [sign] takes the credential of a reader
+/// public artifact author. [sign] takes the credential of a reader
 /// who supplied their own backup words; with none it uses the default seed's,
 /// and the bytes signed are identical either way.
 final class WalletBackupAuthenticator {

@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
 
 /// Materializes a wallet's public projection and hands the wallet domain the
-/// temporary signing capability that goes with it (spec 20.4, 20.5).
+/// temporary signing capability that goes with it.
 ///
 /// The capability is loaded last: a conflicting definition must leave no
 /// private material behind, and a caller that never reaches this use case

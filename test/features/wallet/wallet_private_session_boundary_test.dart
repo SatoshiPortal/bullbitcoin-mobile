@@ -1,4 +1,4 @@
-// End-to-end proof of the private-session boundary (spec F13, 20.2, 20.6).
+// End-to-end proof of the private-session boundary.
 //
 // The four consumers that used to read WalletUnlockSession directly — Bitcoin
 // signing, address generation, wallet storage/visibility and Payjoin — are
@@ -350,7 +350,7 @@ void main() {
         isNot(contains(mountedId)),
       );
       expect(facade.isPrivateWalletSessionLoaded(mountedId), isFalse);
-      // The public projection stays in storage for a cheap remount (spec 20.2).
+      // The public projection stays in storage for a cheap remount.
       expect(await metadataStore.fetch(mountedId), isNotNull);
     });
 

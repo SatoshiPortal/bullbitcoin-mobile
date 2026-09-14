@@ -20,7 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_visible_wallet_catal
 /// session and the resolver that reads it stay inside `lib/core/wallet`: no
 /// seed, no session object and no signing material crosses this boundary, in
 /// either direction except the one place ownership is deliberately handed over
-/// — [mountPassphraseWallet] (spec F13, 13.5).
+/// — [mountPassphraseWallet].
 class WalletFacade {
   final MountWalletWithPrivateCapabilityUsecase _mount;
   final LockPrivateWalletSessionUsecase _lock;
@@ -65,7 +65,7 @@ class WalletFacade {
   ///
   /// The app lifecycle owner is the only caller; the return-to-Passphrase
   /// request it creates is collected on the next resume with
-  /// [takePendingLockNavigationRequest] (decision 5).
+  /// [takePendingLockNavigationRequest].
   bool lockPrivateWalletSession() => _lock.forBackground();
 
   /// Clears the loaded private signing material at the user's own request —

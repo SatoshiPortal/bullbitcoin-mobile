@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 ///
 /// Deliberately not a generated data model: value equality over a mnemonic
 /// turns `==` into a guessing oracle, and a generated `toString` would put the
-/// words into every exception, log line and collection dump (spec F14).
+/// words into every exception, log line and collection dump.
 final class WalletSigningMaterial {
   final List<String> mnemonicWords;
   final String? passphrase;
@@ -26,8 +26,7 @@ final class WalletSigningMaterial {
 }
 
 /// The one place that decides where a wallet's private signing material comes
-/// from, and the only thing outside [WalletUnlockSession] that touches it
-/// (spec F13).
+/// from, and the only thing outside [WalletUnlockSession] that touches it.
 ///
 /// A passphrase wallet's material exists solely in the volatile session for as
 /// long as the user keeps it loaded; every other wallet resolves from the
@@ -102,7 +101,7 @@ final class WalletSigningMaterialResolver {
 
   /// [clearPrivateCapability] for the app losing the foreground, which also
   /// records the return-to-Passphrase request collected by
-  /// [takePendingLockNavigationRequest] on resume (decision 5).
+  /// [takePendingLockNavigationRequest] on resume.
   bool clearPrivateCapabilityForBackground() => _session.lockForBackground();
 
   /// Consumes the navigation request published by the last background lock.

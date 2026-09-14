@@ -104,8 +104,7 @@ class WalletLocator {
       ),
     );
     // The one resolver every signing, address and storage path goes through.
-    // It is the only holder of WalletUnlockSession outside the session itself
-    // (spec F13).
+    // It is the only holder of WalletUnlockSession outside the session itself.
     locator.registerLazySingleton<WalletSigningMaterialResolver>(
       () => WalletSigningMaterialResolver(
         seedDatasource: locator<SeedDatasource>(),

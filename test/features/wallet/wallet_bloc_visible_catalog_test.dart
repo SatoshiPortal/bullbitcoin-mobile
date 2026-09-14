@@ -1,4 +1,4 @@
-// Home follows the wallet facade's published catalog (spec 20.2): a passphrase
+// Home follows the wallet facade's published catalog: a passphrase
 // wallet's card is on screen while its private session is loaded and gone the
 // moment it is locked, without the bloc deciding visibility for itself.
 import 'dart:async';

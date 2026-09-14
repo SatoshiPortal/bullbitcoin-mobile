@@ -51,7 +51,7 @@ final class PassphraseWalletBalance {
 /// The wallet one entered passphrase would open, holding the private material
 /// derived for it until somebody takes ownership of it or clears it.
 ///
-/// Exactly one of [release] and [clear] must run on every path (spec 20.3):
+/// Exactly one of [release] and [clear] must run on every path:
 /// [release] when the wallet session has taken the material and must keep it
 /// alive, [clear] everywhere else. Both are idempotent, so a cancel path may
 /// clear a candidate that was already released without zeroing a loaded
@@ -116,7 +116,7 @@ enum PassphraseWalletOpenStatus { opened, savedButNotOpened }
 
 /// Whether a metadata edit reached both the manifest and the mounted wallet.
 ///
-/// The manifest is canonical (decision 2), so a projection that could not be
+/// The manifest is canonical, so a projection that could not be
 /// refreshed is not a lost edit — it is a label the wallet shows again after
 /// its next mount.
 enum PassphraseWalletMetadataStatus { updated, savedRemountNeeded }

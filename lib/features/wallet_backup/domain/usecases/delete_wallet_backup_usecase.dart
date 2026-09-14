@@ -28,7 +28,7 @@ final class DeleteWalletBackupUsecase {
     final WalletBackupRemoteCheckpoint? checkpoint;
     switch (await _state.get()) {
       case Ok(:final value):
-        // Decision 9: automatic backup has to be off first. It is also what
+        // Automatic backup has to be off first. It is also what
         // stops a publication queued behind this job from recreating the
         // object this one is about to remove.
         if (value.enabled) {
@@ -40,7 +40,7 @@ final class DeleteWalletBackupUsecase {
     }
 
     // A trusted checkpoint deletes without a fetch; without one, or when the
-    // checkpoint turns out to be stale, the current head decides (spec 19.6).
+    // checkpoint turns out to be stale, the current head decides.
     if (checkpoint != null) {
       switch (await _deleteRemote.execute(current: checkpoint)) {
         case Ok():

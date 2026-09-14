@@ -44,7 +44,7 @@ final class BackupSettingsInvalidFileFailure extends BackupSettingsFailure {
 ///
 /// Kept apart from [BackupSettingsInvalidFileFailure] because a readable backup
 /// from the wrong seed is not a damaged one, and telling the user otherwise
-/// sends them looking for a corrupt file (spec F17, 21.2).
+/// sends them looking for a corrupt file.
 final class BackupSettingsSeedMismatchFailure extends BackupSettingsFailure {
   const BackupSettingsSeedMismatchFailure();
 }

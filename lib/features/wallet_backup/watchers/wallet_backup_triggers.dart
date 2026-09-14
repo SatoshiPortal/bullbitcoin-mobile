@@ -12,12 +12,12 @@ typedef RecordWalletBackupMutation =
 
 /// Turns app events into runner requests, and nothing else.
 ///
-/// A change stream does exactly two things (spec 18): make sure the mutation
+/// A change stream does exactly two things: make sure the mutation
 /// is recorded durably, then ask the runner for a coalesced publication. All
 /// serialization, queueing, and back-off live in the runner.
 final class WalletBackupTriggers with WidgetsBindingObserver {
   /// Owners that already incremented the local revision inside the same
-  /// database transaction as their write (decision 7). Nothing is recorded
+  /// database transaction as their write. Nothing is recorded
   /// here; the change only asks for a publication.
   final Stream<void> recordedChanges;
 

@@ -10,7 +10,7 @@ import 'package:primitives/primitives.dart';
 
 import 'support/manifest_fixtures.dart';
 
-/// Every manifest write is one named intent (spec F11).
+/// Every manifest write is one named intent.
 ///
 /// What is asserted here is that each intent answers a collision the way its
 /// own caller needs: a local edit, a re-derivation, and a recovery apply are
@@ -101,7 +101,7 @@ void main() {
 
         // Same four-byte child fingerprint and path, so the same entry id, but
         // a different passphrase produced it. The fingerprint is a lookup hint,
-        // never an identity (spec 6.5).
+        // never an identity.
         expect(
           await repository.upsertPassphraseWallet(
             passphraseWalletEntry(

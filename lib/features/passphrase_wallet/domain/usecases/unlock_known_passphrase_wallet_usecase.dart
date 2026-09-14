@@ -4,8 +4,7 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/usecases/mount_passp
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Err, Result;
 
-/// Loads a passphrase wallet the app already has a manifest record for
-/// (spec 20.4).
+/// Loads a passphrase wallet the app already has a manifest record for.
 ///
 /// It writes no manifest record and shows no creation disclaimer: nothing about
 /// the user's keys is new. The match must be exact on both the wallet id and

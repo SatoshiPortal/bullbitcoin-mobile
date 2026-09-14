@@ -16,8 +16,8 @@ import 'package:convert/convert.dart';
 /// Password-encrypted vault descriptors on public relays.
 ///
 /// One ordinary event per descriptor generation, in the stored kind range, so
-/// nothing a relay keeps can be replaced out from under a still-funded vault
-/// (plan 5.4). Everything a relay can read is the author key, the kind, the
+/// nothing a relay keeps can be replaced out from under a still-funded vault.
+/// Everything a relay can read is the author key, the kind, the
 /// purpose tag and ciphertext: no descriptor, hash, label, fingerprint, xpub or
 /// date travels in the clear.
 final class NostrDescriptorRepository {

@@ -21,7 +21,7 @@ abstract interface class WalletDefinitionsBackup {
 
   /// The definitions to publish, read from local state alone. An empty list
   /// leaves the section out of the published snapshot, which is how the last
-  /// external wallet is deleted (spec F1, F2).
+  /// external wallet is deleted.
   @useResult
   Future<Result<List<WalletDefinition>, WalletBackupFailure>> read();
 

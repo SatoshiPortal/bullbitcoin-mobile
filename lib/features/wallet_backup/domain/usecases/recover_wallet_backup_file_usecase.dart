@@ -31,7 +31,7 @@ typedef StoreSelectedWalletBackup =
 
 /// File import: decode the file into the same typed snapshot remote recovery
 /// produces, check that the comparison the user acted on is still current, and
-/// delegate the apply to the shared fenced path (spec F21, 19.8).
+/// delegate the apply to the shared fenced path.
 ///
 /// Unlike remote recovery, applying is only half the job: when automatic
 /// backup is on, the selected snapshot also has to replace the remote head.

@@ -1082,7 +1082,7 @@ class WalletRepository
   }
 
   /// A passphrase wallet's public projection stays in storage while it is
-  /// locked, but is not part of the catalog anyone can spend from (spec 20.2).
+  /// locked, but is not part of the catalog anyone can spend from.
   bool _isVisible(WalletMetadataModel metadata) =>
       _signingMaterial.hasPrivateCapability(
         provenance: metadata.provenance,

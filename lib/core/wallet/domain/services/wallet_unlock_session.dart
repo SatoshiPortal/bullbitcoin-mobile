@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 ///
 /// Internal to `lib/core/wallet`: everything outside it reaches this state
 /// through [WalletSigningMaterialResolver] and the wallet public facade, never
-/// by holding the session itself (spec F13).
+/// by holding the session itself.
 final class WalletUnlockSession {
   final StreamController<void> _changes = StreamController<void>.broadcast(
     sync: true,
@@ -77,7 +77,7 @@ final class WalletUnlockSession {
   ///
   /// Clears the seed immediately and records that the user is owed a return to
   /// the locked Passphrase page, which the lifecycle owner collects with
-  /// [takePendingResumeNavigation] once the app resumes (decision 5). Locks
+  /// [takePendingResumeNavigation] once the app resumes. Locks
   /// from any other cause — forgetting a wallet, loading another one — use
   /// [lock] and request no navigation.
   bool lockForBackground() {

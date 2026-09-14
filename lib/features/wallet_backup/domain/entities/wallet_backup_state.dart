@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_r
 /// The one durable fence around applying a snapshot to local storage.
 ///
 /// It replaces the former recoveryBlocked and reconciliationPending pair, so
-/// a half-applied recovery and a head conflict cannot disagree with each other
-/// (spec F9, 17).
+/// a half-applied recovery and a head conflict cannot disagree with each other.
 enum WalletBackupRecoveryState {
   /// Nothing is being applied and nothing needs the user.
   idle,
@@ -38,7 +37,7 @@ final class WalletBackupState {
   /// The last authenticated remote head, or null while none is trusted.
   ///
   /// A publication with a checkpoint stores straight against it; without one it
-  /// fetches the head first (spec 17, F7).
+  /// fetches the head first.
   final WalletBackupRemoteCheckpoint? remoteCheckpoint;
 
   WalletBackupState({

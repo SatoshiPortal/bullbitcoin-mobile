@@ -12,7 +12,7 @@ enum NostrRelayOutcome { accepted, rejected, unreachable }
 /// [descriptor] is canonical: it has been decrypted, parsed as a public
 /// two-path descriptor and re-serialised, so two spellings of one vault are one
 /// record. [createdAt] is the event's own claim about when it was published and
-/// is a display fact, never evidence of lineage or order (plan 6).
+/// is a display fact, never evidence of lineage or order.
 final class NostrDescriptorRecord {
   final String descriptor;
   final Network network;
@@ -31,7 +31,7 @@ final class NostrDescriptorRecord {
 /// hit its event cap, said there was more, could not be reached, or the search
 /// was cancelled. One silent relay is enough, because it may be the one holding
 /// a generation. Nostr offers no way to prove the opposite, so the honest result
-/// is reported rather than an invented guarantee (decision 5).
+/// is reported rather than an invented guarantee.
 typedef NostrDescriptorSearch = ({
   List<NostrDescriptorRecord> descriptors,
   bool incomplete,
@@ -41,7 +41,7 @@ typedef NostrDescriptorSearch = ({
 ///
 /// Acceptance is not retention and not verification: [accepted] only says some
 /// relay took the bytes. Proof that the descriptor can be recovered is a
-/// separate read-back (plan 5.4).
+/// separate read-back.
 final class NostrDescriptorPublication {
   final String eventId;
   final Map<Uri, NostrRelayOutcome> outcomes;

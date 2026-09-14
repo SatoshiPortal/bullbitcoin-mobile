@@ -82,7 +82,7 @@ void main() {
       final storesAfterDelete = device.remote.storeCount;
 
       // A change arriving after the delete cannot recreate the object, because
-      // deletion required automatic backup to be off first (decision 9).
+      // deletion required automatic backup to be off first.
       device.startCoordinator();
       await _addWallet(device, walletId: 'after-delete', label: 'After');
       await device.runner.settle();

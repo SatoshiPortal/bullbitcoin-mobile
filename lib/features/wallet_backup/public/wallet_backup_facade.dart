@@ -145,7 +145,7 @@ class WalletBackupFacade {
 
   /// Enabling recovers the account's backup and publishes once, all inside one
   /// runner job: the recovery and the first publication must not be separated
-  /// by anything else touching the server (spec 19.1).
+  /// by anything else touching the server.
   @useResult
   Future<Result<void, WalletBackupFailure>> setEnabled(
     bool enabled, {

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 
-/// The label and hint rules both manifest writers apply (spec 6.6).
+/// The label and hint rules both manifest writers apply.
 ///
 /// Creation and later edits have to agree on them: a hint the app accepts at
 /// creation but refuses to edit, or the other way round, is a rule that has

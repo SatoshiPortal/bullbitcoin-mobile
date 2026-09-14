@@ -15,8 +15,8 @@ import 'package:screen_privacy/screen_privacy.dart';
 /// Shows the twelve magic backup words behind the PIN and the capture block.
 ///
 /// The words are derived only after both gates have passed, so nothing secret
-/// is built, held or handed to another widget until then. No quiz follows them
-/// (decision 9): writing them down is what the person came here to do, and a
+/// is built, held or handed to another widget until then. No quiz follows them:
+/// writing them down is what the person came here to do, and a
 /// recorded answer would not make the words any safer.
 class BackupWordsScreen extends StatefulWidget {
   final AppUnlockFacade appUnlock;

@@ -113,7 +113,7 @@ void main() {
               PassphraseWalletMetadataStatus.savedRemountNeeded,
             ),
       );
-      // Decision 2: the manifest is canonical, so the edit did happen.
+      // The manifest is canonical, so the edit did happen.
       expect((await stored()).label, 'Savings');
     },
   );

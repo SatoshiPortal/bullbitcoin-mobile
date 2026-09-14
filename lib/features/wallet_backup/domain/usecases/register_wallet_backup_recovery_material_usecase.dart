@@ -9,7 +9,7 @@ import 'package:primitives/primitives.dart';
 ///
 /// This is the write that used to happen inside snapshot construction. It runs
 /// when the feature starts and when the user enables backup, so that taking a
-/// snapshot mutates nothing and emits no manifest change (spec F5).
+/// snapshot mutates nothing and emits no manifest change.
 ///
 /// The backup identity is no longer part of it: it comes from the twelve backup
 /// words rather than from a BIP85 path, so the keychain manifest — an inventory

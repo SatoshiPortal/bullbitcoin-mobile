@@ -29,7 +29,7 @@ typedef RestoreWalletMetadataSnapshot =
 /// The one path that writes a backup snapshot into local storage.
 ///
 /// Remote recovery and file import both come through here, so there is a
-/// single durable fence rather than one per entry point (spec F21, 19.7).
+/// single durable fence rather than one per entry point.
 /// The fence is [WalletBackupState.recoveryState]: applying before the first
 /// local write, then idle on a complete, revalidated apply, or needs-attention
 /// on anything else. A process that dies mid-apply leaves applying behind,

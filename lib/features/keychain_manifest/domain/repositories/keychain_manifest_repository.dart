@@ -28,7 +28,7 @@ final class KeychainManifestRestoreReport {
 
 /// The persistent recovery inventory.
 ///
-/// Every write is one named intent (spec F11). There is deliberately no generic
+/// Every write is one named intent. There is deliberately no generic
 /// save: a local edit, a deterministic re-derivation, and a recovery apply want
 /// different conflict answers, and a shared helper can only guess.
 abstract interface class KeychainManifestRepository {
@@ -56,15 +56,14 @@ abstract interface class KeychainManifestRepository {
   /// Identity is the combined public descriptor the record carries, or its
   /// wallet id when it carries none. A stored record whose identity differs is
   /// a conflict even when the four-byte seed fingerprint matches — that
-  /// fingerprint is a lookup hint, never an identity (spec 6.5). Label and hint
+  /// fingerprint is a lookup hint, never an identity. Label and hint
   /// are not identity: changing them updates the stored record.
   @useResult
   Future<Result<void, KeychainManifestFailure>> upsertPassphraseWallet(
     KeychainManifestEntry record,
   );
 
-  /// Updates the display label and passphrase hint the manifest owns
-  /// (decision 2).
+  /// Updates the display label and passphrase hint the manifest owns.
   ///
   /// Monotonic: [updatedAt] must be newer than the stored revision. Two
   /// different texts claiming the same instant cannot be ordered, so an equal

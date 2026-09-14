@@ -20,7 +20,7 @@ typedef ApplyFetchedWalletBackup =
     });
 
 /// Remote recovery: fetch the head, turn it into the shared typed snapshot,
-/// and hand it to the one fenced apply path (spec F21, 19.7).
+/// and hand it to the one fenced apply path.
 final class RecoverWalletBackupUsecase {
   final FetchWalletBackupImport _fetchImport;
   final Future<Result<WalletBackupRemoteHead, WalletBackupFailure>> Function()

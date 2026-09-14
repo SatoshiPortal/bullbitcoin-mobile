@@ -53,8 +53,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<VerifyBackupStatus>(_onVerifyBackupStatus);
     // Home follows the wallet feature's published catalog rather than deciding
     // for itself which wallets are visible: a passphrase wallet appears while
-    // its private session is loaded and disappears the moment it is locked
-    // (spec 20.2).
+    // its private session is loaded and disappears the moment it is locked.
     _visibleCatalogSubscription = walletFacade
         ?.watchVisibleWalletCatalog()
         .listen((wallets) => add(WalletCatalogReloaded(wallets: wallets)));

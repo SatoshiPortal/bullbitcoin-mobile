@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 ///
 /// A locked passphrase wallet keeps its public projection in local storage so
 /// remounting stays cheap, but drops out of this catalog and out of normal
-/// receive/send flows until it is loaded again (spec 20.2).
+/// receive/send flows until it is loaded again.
 final class WatchVisibleWalletCatalogUsecase {
   final WalletRepository _wallets;
   final SettingsRepository _settings;

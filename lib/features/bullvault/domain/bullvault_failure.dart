@@ -48,7 +48,7 @@ final class BullVaultInvalidRecoveryFailure extends BullVaultFailure {
 /// no private backup can cover every cosigner.
 ///
 /// Encrypting for a convenient subset instead would let the app claim a backup
-/// route for a signer that has none (plan 5.1).
+/// route for a signer that has none.
 final class BullVaultDescriptorBackupUnsupportedFailure
     extends BullVaultFailure {
   const BullVaultDescriptorBackupUnsupportedFailure([super.logMessage]);

@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_e
 /// The last authenticated remote head, durable across app restarts.
 ///
 /// A routine publication conditional-stores straight against this instead of
-/// re-fetching the head first (spec 17 and F7). [ciphertextSha256] is null when
+/// re-fetching the head first. [ciphertextSha256] is null when
 /// the remote object is absent, which is how a delete tombstone is represented.
 final class WalletBackupRemoteCheckpoint {
   final int generation;

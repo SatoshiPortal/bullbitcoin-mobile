@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 /// Mounts [candidate]'s public projection and hands its private material to the
-/// wallet's session, the one place ownership of a passphrase seed changes hands
-/// (spec 20.3 steps 8-9).
+/// wallet's session, the one place ownership of a passphrase seed changes hands.
 ///
 /// Shared by unlocking a known wallet and creating a new one so the ownership
 /// rule is written once: the session keeps the material only when the mount

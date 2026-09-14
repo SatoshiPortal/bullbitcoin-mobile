@@ -18,7 +18,7 @@ import 'package:meta/meta.dart';
 ///
 /// It is deliberately inert locally. It touches no backup state, no recovery
 /// fence and no writer checkpoint, so reading someone else's backup can never
-/// move this installation's own (plan 5.2). An unsupported envelope version is
+/// move this installation's own. An unsupported envelope version is
 /// reported as a failure and never blocks anything locally, because there is no
 /// local account to block.
 final class ExtractVaultsWithBackupWordsUsecase {

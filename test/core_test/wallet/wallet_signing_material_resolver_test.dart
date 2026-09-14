@@ -1,4 +1,4 @@
-// The wallet domain's private signing-material boundary (spec F13).
+// The wallet domain's private signing-material boundary.
 //
 // Every consumer that used to read WalletUnlockSession directly — Bitcoin
 // signing, address generation, wallet storage and Payjoin — now resolves

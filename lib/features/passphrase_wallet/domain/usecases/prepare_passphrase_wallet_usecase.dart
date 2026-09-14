@@ -9,11 +9,11 @@ import 'package:bb_mobile/features/passphrase_wallet/domain/usecases/get_passphr
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 
 /// Turns one entered passphrase into the wallet it opens, and decides whether
-/// the app has seen that wallet before (spec 20.3).
+/// the app has seen that wallet before.
 ///
 /// The decision is exact combined-descriptor equality. A wallet id or a
 /// four-byte fingerprint that matches while the descriptor does not is a
-/// conflict, never a merge (spec 6.5).
+/// conflict, never a merge.
 final class PreparePassphraseWalletUsecase {
   final GetDefaultSeedUsecase _getDefaultSeed;
   final GetSettingsUsecase _getSettings;

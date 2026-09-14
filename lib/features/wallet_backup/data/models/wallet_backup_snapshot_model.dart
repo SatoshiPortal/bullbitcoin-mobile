@@ -104,7 +104,7 @@ final class WalletBackupSnapshotCodec {
   ///
   /// A null [expectedParentFingerprint] skips only the parent check, for a read
   /// that is authorised by the backup words alone and has no seed to compare
-  /// against (plan 5.2). Every other structural rule still applies, and the
+  /// against. Every other structural rule still applies, and the
   /// fingerprint the document carries stays a source fact, never proof of
   /// ownership.
   WalletBackupSnapshot decode(

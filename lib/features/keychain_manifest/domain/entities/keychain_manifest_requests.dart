@@ -47,7 +47,7 @@ final class KeychainManifestWalletInventoryBinding {
   ///
   /// Watch-only and external-signer wallets have no seed to recover from, and a
   /// passphrase wallet without its combined public descriptor cannot be
-  /// re-derived, so neither is recordable recovery truth (spec 20.1).
+  /// re-derived, so neither is recordable recovery truth.
   bool get isRecordable =>
       (provenance == WalletProvenance.defaultSeed ||
           provenance == WalletProvenance.defaultSeedPassphrase ||

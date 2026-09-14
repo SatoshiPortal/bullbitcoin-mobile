@@ -16,7 +16,7 @@ import 'package:pointycastle/key_derivators/hkdf.dart';
 /// Which of the credential's two signing identities an operation uses.
 ///
 /// One credential, two scalars: the public artifact author and the private
-/// server account are deliberately not the same public key (decision 6).
+/// server account are deliberately not the same public key.
 enum BackupIdentityScope { nostr, server }
 
 /// The submitted backup words are not the frozen twelve-word form.
@@ -132,7 +132,7 @@ final class BackupCredential {
   ///
   /// It is a second scalar from the same credential rather than a second user
   /// secret, so a public event and a private server account cannot be joined by
-  /// their public keys alone (decision 6).
+  /// their public keys alone.
   late final String serverPublicKeyHex = hex.encode(
     _server.getPublic().toXOnly(),
   );

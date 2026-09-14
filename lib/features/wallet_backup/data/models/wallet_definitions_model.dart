@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 /// Version 2 replaced the single `signerDevice` of version 1 with a full
 /// `signers` list so multi-signature and Miniscript descriptors round-trip
 /// every key's signer kind and device. No version-1 document was ever
-/// published, so version 1 is rejected, not decoded (decision 4).
+/// published, so version 1 is rejected, not decoded.
 /// Version 3 preserves canonical seed references, per-key passphrase flags
 /// and hardware registration names. Existing version-2 files remain readable.
 final class WalletDefinitionsCodec {
