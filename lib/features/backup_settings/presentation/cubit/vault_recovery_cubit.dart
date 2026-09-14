@@ -231,9 +231,13 @@ final class VaultRecoveryCubit extends Cubit<VaultRecoveryState> {
     }
   }
 
+  /// A search that did not finish is reported as unfinished even when it
+  /// found something: the vaults it did find are in [VaultRecoveryState
+  /// .outcomes] either way, and calling the source done would tell someone
+  /// every generation had been seen when the older ones may not have been.
   VaultRecoverySourceStatus _statusOf(VaultRecoveryResult result) {
-    if (result.recovered.isNotEmpty) return VaultRecoverySourceStatus.found;
     if (result.incomplete) return VaultRecoverySourceStatus.incomplete;
+    if (result.recovered.isNotEmpty) return VaultRecoverySourceStatus.found;
     return VaultRecoverySourceStatus.none;
   }
 }

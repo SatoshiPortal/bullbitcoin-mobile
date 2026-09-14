@@ -261,6 +261,33 @@ void main() {
     );
   });
 
+  test('a hit does not erase an unfinished search', () async {
+    when(
+      () => metadata.fetchRemoteContents(),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => vaults.discoverDescriptorsOnNostr(
+        words: any(named: 'words'),
+        session: any(named: 'session'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok((
+        descriptors: [relayRecord(policy.descriptor, policy.network)],
+        incomplete: true,
+      )),
+    );
+    importsInto(record);
+
+    await cubit.discover();
+
+    expect(
+      cubit.state.sources[VaultRecoverySource.nostr],
+      VaultRecoverySourceStatus.incomplete,
+      reason: 'other generations may still be out there, unseen',
+    );
+    expect(cubit.state.recovered, hasLength(1));
+  });
+
   test('bitcoin is never searched', () async {
     when(
       () => metadata.fetchRemoteContents(),
