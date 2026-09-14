@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keych
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
 
-import 'support/manifest_fixtures.dart';
+import '../support/manifest_fixtures.dart';
 
 void main() {
   const codec = KeychainManifestFileCodec();

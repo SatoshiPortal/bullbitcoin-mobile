@@ -18,8 +18,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-import 'metadata/support/portable_settings_fixture.dart';
-import 'support/fake_bullvault_backup.dart';
+import '../metadata/support/portable_settings_fixture.dart';
+import '../support/fake_bullvault_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_vaults_section.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 

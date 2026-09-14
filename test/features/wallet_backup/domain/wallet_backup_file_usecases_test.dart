@@ -30,9 +30,9 @@ import 'package:convert/convert.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 
-import '../keychain_manifest/support/manifest_fixtures.dart';
-import 'metadata/support/portable_settings_fixture.dart';
-import 'support/canonical_backup_snapshot.dart';
+import '../../keychain_manifest/support/manifest_fixtures.dart';
+import '../metadata/support/portable_settings_fixture.dart';
+import '../support/canonical_backup_snapshot.dart';
 
 class _MockNostrIdentityFacade extends Mock implements NostrIdentityFacade {}
 

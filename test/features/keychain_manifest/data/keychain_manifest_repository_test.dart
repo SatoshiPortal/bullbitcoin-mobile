@@ -8,7 +8,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import 'support/manifest_fixtures.dart';
+import '../support/manifest_fixtures.dart';
 
 /// Every manifest write is one named intent.
 ///

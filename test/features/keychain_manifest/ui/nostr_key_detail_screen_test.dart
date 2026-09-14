@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
-import 'support/manifest_fixtures.dart';
+import '../support/manifest_fixtures.dart';
 
 const _noScreenshotChannel = MethodChannel(
   'com.flutterplaza.no_screenshot_methods',
