@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_server_editor_dialog.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInputText;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,7 +21,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('https://backup.bull-wallet.com'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField), 'http://example.com');
+    await tester.enterText(find.byType(BullInputText), 'http://example.com');
     await tester.pump();
     expect(
       tester
@@ -30,7 +31,7 @@ void main() {
     );
 
     await tester.enterText(
-      find.byType(TextFormField),
+      find.byType(BullInputText),
       'https://backup.example.com',
     );
     tester.testTextInput.hide();

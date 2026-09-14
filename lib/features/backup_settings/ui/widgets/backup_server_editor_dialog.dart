@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
 import 'package:flutter/material.dart';
 
 Future<String?> showBackupServerEditorDialog(
@@ -7,22 +8,23 @@ Future<String?> showBackupServerEditorDialog(
   String? current,
 }) => showDialog<String>(
   context: context,
-  builder: (_) => BackupServerEditorDialog(
+  builder: (_) => _BackupServerEditorDialog(
     initialValue: current ?? walletBackupDefaultServerUrl,
   ),
 );
 
-class BackupServerEditorDialog extends StatefulWidget {
+final class _BackupServerEditorDialog extends StatefulWidget {
   final String initialValue;
 
-  const BackupServerEditorDialog({required this.initialValue, super.key});
+  const _BackupServerEditorDialog({required this.initialValue});
 
   @override
-  State<BackupServerEditorDialog> createState() =>
+  State<_BackupServerEditorDialog> createState() =>
       _BackupServerEditorDialogState();
 }
 
-class _BackupServerEditorDialogState extends State<BackupServerEditorDialog> {
+final class _BackupServerEditorDialogState
+    extends State<_BackupServerEditorDialog> {
   late String _value = widget.initialValue;
   String? _error;
 
@@ -41,21 +43,18 @@ class _BackupServerEditorDialogState extends State<BackupServerEditorDialog> {
     title: Text(context.loc.walletBackupSettingsServer),
     content: Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(context.loc.walletBackupSettingsServerChangeWarning),
-        const SizedBox(height: 16),
-        TextFormField(
-          initialValue: widget.initialValue,
-          autocorrect: false,
-          keyboardType: TextInputType.url,
+        const Gap(16),
+        BullInputText(
+          value: _value,
           onChanged: _changed,
-          decoration: InputDecoration(
-            labelText: context.loc.walletBackupSettingsServerUrl,
-            helperText: _error == null
-                ? context.loc.walletBackupSettingsServerHelp
-                : null,
-            errorText: _error,
-          ),
+          label: context.loc.walletBackupSettingsServerUrl,
+          hint: context.loc.walletBackupSettingsServerHelp,
+          errorText: _error,
+          autocorrect: false,
+          maxLines: 1,
         ),
       ],
     ),
