@@ -260,6 +260,8 @@ void main() {
             .inSection(SettingsItemSection.help)
             .map((item) => item.id),
         [
+          SettingsItemId.supportChat,
+          SettingsItemId.github,
           SettingsItemId.termsOfService,
           SettingsItemId.servicesStatus,
           SettingsItemId.logs,

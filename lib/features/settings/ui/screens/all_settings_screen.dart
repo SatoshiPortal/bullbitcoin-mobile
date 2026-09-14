@@ -1,9 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
@@ -12,9 +8,7 @@ import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AllSettingsScreen extends StatelessWidget {
   const AllSettingsScreen({super.key});
@@ -51,15 +45,13 @@ class AllSettingsScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        height: 150,
+        height: 72,
         padding: EdgeInsets.zero,
         color: context.appColors.transparent,
         child: SafeArea(
-          child: Column(
-            mainAxisSize: .min,
-            children: [
-              if (appVersion != null)
-                ListTile(
+          child: appVersion == null
+              ? const SizedBox.shrink()
+              : ListTile(
                   tileColor: context.appColors.surfaceContainerHighest,
                   title: Center(
                     child: Text(
@@ -73,76 +65,6 @@ class AllSettingsScreen extends StatelessWidget {
                     Clipboard.setData(ClipboardData(text: appVersion));
                   },
                 ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: Row(
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
-                          SettingsConstants.githubSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/icons/github.svg',
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(
-                              context.appColors.onSurface,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGithubLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
-                          );
-                        } else {
-                          context.goNamed(ExchangeSupportChatFacade.routeName);
-                        }
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          Icon(
-                            Icons.headset_mic,
-                            color: context.appColors.onSurface,
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGetHelpLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

@@ -1,6 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
@@ -29,6 +33,10 @@ import 'package:mocktail/mocktail.dart';
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 class _MockServiceStatusCubit extends Mock implements ServiceStatusCubit {}
+
+class _MockExchangeCubit extends Mock implements ExchangeCubit {}
+
+class _MockExchangeState extends Mock implements ExchangeState {}
 
 void main() {
   final english = AppLocalizationsEn();
@@ -84,6 +92,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(_tileTitles(tester), [
+      english.settingsGetHelpLabel,
+      english.settingsGithubLabel,
       english.settingsTermsOfServiceTitle,
       english.settingsServiceStatusTitle,
       english.logSettingsLogsTitle,
@@ -163,6 +173,32 @@ void main() {
     expect(_tileTitles(tester), isNot(contains(english.allSeedViewTitle)));
   });
 
+  testWidgets('support chat asks a signed-out user to sign in first', (
+    tester,
+  ) async {
+    await _pumpSettings(tester);
+
+    await tester.tap(find.text(english.settingsHelpAndInfoTitle));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(english.settingsGetHelpLabel));
+    await tester.pumpAndSettle();
+
+    expect(find.text('destination: sign in for support'), findsOneWidget);
+  });
+
+  testWidgets('support chat opens directly for a signed-in user', (
+    tester,
+  ) async {
+    await _pumpSettings(tester, isLoggedIn: true);
+
+    await tester.tap(find.text(english.settingsHelpAndInfoTitle));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(english.settingsGetHelpLabel));
+    await tester.pumpAndSettle();
+
+    expect(find.text('destination: support chat'), findsOneWidget);
+  });
+
   test('the production router registers the real swap restore screens', () {
     final names = _routeNames([SettingsRouter.route()]);
 
@@ -209,10 +245,18 @@ Future<void> _pumpSettings(
   WidgetTester tester, {
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
+  bool isLoggedIn = false,
 }) async {
   final english = AppLocalizationsEn();
   final settingsCubit = _MockSettingsCubit();
   final serviceStatusCubit = _MockServiceStatusCubit();
+  final exchangeCubit = _MockExchangeCubit();
+  final exchangeState = _MockExchangeState();
+  when(() => exchangeState.notLoggedIn).thenReturn(!isLoggedIn);
+  when(() => exchangeCubit.state).thenReturn(exchangeState);
+  when(
+    () => exchangeCubit.stream,
+  ).thenAnswer((_) => const Stream<ExchangeState>.empty());
   when(() => settingsCubit.state).thenReturn(
     SettingsState(
       storedSettings: SettingsEntity(
@@ -347,6 +391,16 @@ Future<void> _pumpSettings(
         english.settingsServiceStatusTitle,
       ),
       destination('logs', '/logs', english.logSettingsLogsTitle),
+      destination(
+        ExchangeRoute.exchangeLoginForSupport.name,
+        ExchangeRoute.exchangeLoginForSupport.path,
+        'sign in for support',
+      ),
+      destination(
+        ExchangeSupportChatFacade.routeName,
+        '/support-chat',
+        'support chat',
+      ),
       destination('bullvault-menu', '/bullvault', 'BullVault (miniscript)'),
     ],
   );
@@ -362,6 +416,7 @@ Future<void> _pumpSettings(
         providers: [
           BlocProvider<SettingsCubit>.value(value: settingsCubit),
           BlocProvider<ServiceStatusCubit>.value(value: serviceStatusCubit),
+          BlocProvider<ExchangeCubit>.value(value: exchangeCubit),
         ],
         child: child!,
       ),

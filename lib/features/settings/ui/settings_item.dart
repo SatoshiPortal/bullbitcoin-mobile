@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_routes.dart';
 import 'package:bb_mobile/features/labels/router.dart';
@@ -42,6 +43,8 @@ enum SettingsItemId {
   tools,
   helpAndInfo,
   btcMap,
+  supportChat,
+  github,
   termsOfService,
   servicesStatus,
   importWallet,
@@ -599,6 +602,41 @@ List<SettingsItem> buildSettingsItems({
         ),
         isSuperuser: true,
       ),
+    SettingsItem(
+      id: SettingsItemId.supportChat,
+      section: SettingsItemSection.help,
+      title: localization.settingsGetHelpLabel,
+      path: path(SettingsItemSection.help, localization.settingsGetHelpLabel),
+      icon: Icons.headset_mic,
+      open: (context) {
+        // Signing in for support returns to the chat, so the entry is a
+        // `go`, exactly as the settings footer used to do it.
+        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+        if (notLoggedIn) {
+          context.goNamed(ExchangeRoute.exchangeLoginForSupport.name);
+        } else {
+          context.goNamed(ExchangeSupportChatFacade.routeName);
+        }
+      },
+      keywords: [
+        english.settingsGetHelpLabel,
+        'support',
+        'support chat',
+        'contact',
+      ],
+    ),
+    SettingsItem(
+      id: SettingsItemId.github,
+      section: SettingsItemSection.help,
+      title: localization.settingsGithubLabel,
+      path: path(SettingsItemSection.help, localization.settingsGithubLabel),
+      icon: Icons.code,
+      open: (_) => launchUrl(
+        Uri.parse(SettingsConstants.githubSupportLink),
+        mode: LaunchMode.externalApplication,
+      ),
+      keywords: [english.settingsGithubLabel, 'github', 'source code', 'issue'],
+    ),
     SettingsItem(
       id: SettingsItemId.termsOfService,
       section: SettingsItemSection.help,
