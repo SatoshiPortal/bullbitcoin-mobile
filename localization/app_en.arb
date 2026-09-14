@@ -16563,8 +16563,6 @@
   "settingsNostrKeysUserNsecWarningTitle": "Show your nsec",
   "settingsNostrKeysUserNsecWarningMessage": "Your nsec is the private key for this identity. Anyone who has it controls the identity. DO NOT SHARE WITH ANYONE.",
   "settingsNostrKeysWarningUnderstand": "I understand",
-  "settingsNostrKeysSystemMetadataBackup": "Metadata backup",
-  "settingsNostrKeysSystemMetadataBackupDescription": "Identifies and signs your encrypted metadata backup.",
   "settingsNostrKeysSystemNsecWarningTitle": "Show system nsec",
   "@settingsNostrKeysSystemNsecWarningTitle": {
     "description": "Title shown before revealing a system Nostr private key."
@@ -17343,94 +17341,6 @@
         "type": "int"
       }
     }
-  },
-  "portableBackupTitle": "Backup recovery prototype",
-  "@portableBackupTitle": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupNotice": "Use your 12 backup words to recover the vault from Nostr. Wallet metadata stays in a separate local encrypted file. Both files are decrypted on this device.",
-  "@portableBackupNotice": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupWords": "12 backup words",
-  "@portableBackupWords": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupDeriveDemo": "Derive demo backup words",
-  "@portableBackupDeriveDemo": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupShowWords": "Show backup words",
-  "@portableBackupShowWords": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupHideWords": "Hide backup words",
-  "@portableBackupHideWords": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupFetch": "Find vault backup",
-  "@portableBackupFetch": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupPreparePublish": "Create both demo files and publish vault",
-  "@portableBackupPreparePublish": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupLocalFile": "Local metadata file (base64-encoded encrypted file)",
-  "@portableBackupLocalFile": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupOpenMetadata": "Unlock local metadata",
-  "@portableBackupOpenMetadata": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupPublished": "Encrypted vault accepted by relay",
-  "@portableBackupPublished": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupCopyMetadata": "Copy encrypted metadata file (base64)",
-  "@portableBackupCopyMetadata": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupCopyVault": "Copy encrypted vault file (base64)",
-  "@portableBackupCopyVault": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupCopied": "Encrypted file copied",
-  "@portableBackupCopied": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupMetadataOpened": "Local metadata unlocked successfully",
-  "@portableBackupMetadataOpened": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupEmpty": "No matching vault backup was found.",
-  "@portableBackupEmpty": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupRecovered": "Recovered vault descriptor",
-  "@portableBackupRecovered": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupClear": "Clear recovery",
-  "@portableBackupClear": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupInvalidWords": "Enter a valid 12-word backup password.",
-  "@portableBackupInvalidWords": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupInvalidFile": "This backup file is invalid or incompatible.",
-  "@portableBackupInvalidFile": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupDecryptFailed": "This backup could not be unlocked with these words.",
-  "@portableBackupDecryptFailed": {
-    "description": "Portable encrypted backup prototype"
-  },
-  "portableBackupNetworkFailed": "The relay could not complete the request. Check the relay and try again.",
-  "@portableBackupNetworkFailed": {
-    "description": "Portable encrypted backup prototype"
   },
   "walletPolicyFromStart": "From the start",
   "@walletPolicyFromStart": {
