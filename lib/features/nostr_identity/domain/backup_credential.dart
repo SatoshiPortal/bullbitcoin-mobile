@@ -13,6 +13,12 @@ import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/hkdf.dart';
 
+/// Which of the credential's two signing identities an operation uses.
+///
+/// One credential, two scalars: the public artifact author and the private
+/// server account are deliberately not the same public key (decision 6).
+enum BackupIdentityScope { nostr, server }
+
 /// The submitted backup words are not the frozen twelve-word form.
 ///
 /// It carries nothing about the input: the words are the credential, so even a

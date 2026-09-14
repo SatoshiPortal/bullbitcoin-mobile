@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/backup_identity_scope.dart';
+import 'package:bb_mobile/features/nostr_identity/domain/backup_credential.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_failure.dart';
 import 'package:meta/meta.dart';
 
