@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_remote_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_remote_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_remote_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:meta/meta.dart';
 

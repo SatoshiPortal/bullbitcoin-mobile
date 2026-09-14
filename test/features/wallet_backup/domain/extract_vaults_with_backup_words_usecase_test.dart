@@ -19,7 +19,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_remote_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_remote_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_protocol.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;

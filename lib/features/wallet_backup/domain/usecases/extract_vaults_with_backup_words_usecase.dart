@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_e
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_remote_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_remote_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:meta/meta.dart';

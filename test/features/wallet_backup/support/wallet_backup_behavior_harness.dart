@@ -48,7 +48,8 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/private_descriptor_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_private_descriptor_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/lookup_private_descriptors_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/refresh_wallet_recovery_manifest_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
@@ -58,7 +59,9 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/store_selected_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/register_wallet_backup_recovery_material_usecase.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_remote_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_backup_remote_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/store_wallet_backup_remote_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_remote_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/watch_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_definitions_section.dart';

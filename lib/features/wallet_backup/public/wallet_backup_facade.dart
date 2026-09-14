@@ -46,7 +46,8 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_b
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/private_descriptor_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_private_descriptor_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/lookup_private_descriptors_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_enabled_usecase.dart';

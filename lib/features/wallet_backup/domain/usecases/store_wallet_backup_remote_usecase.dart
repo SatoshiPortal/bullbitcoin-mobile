@@ -1,0 +1,40 @@
+import 'dart:convert';
+
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_protocol.dart';
+import 'package:crypto/crypto.dart';
+
+final class StoreWalletBackupRemoteUsecase {
+  final WalletBackupRemoteRepository _repository;
+  final WalletBackupAuthenticator _authenticator;
+
+  const StoreWalletBackupRemoteUsecase(this._repository, this._authenticator);
+
+  Future<Result<WalletBackupRemoteCheckpoint, WalletBackupFailure>> execute({
+    required WalletBackupRemoteCheckpoint? current,
+    required WalletBackupCiphertext ciphertext,
+  }) async {
+    final generation = (current?.generation ?? 0) + 1;
+    final hash = sha256.convert(base64.decode(ciphertext.value)).toString();
+    final authentication = await _authenticator.sign(
+      action: WalletBackupAction.store,
+      generation: generation,
+      expectedEtag: current?.etag ?? '',
+      ciphertextSha256: hash,
+      ciphertextBytes: ciphertext.byteLength,
+    );
+    return switch (authentication) {
+      Err(:final failure) => Err(failure),
+      Ok(:final value) => _repository.store(
+        authentication: value,
+        current: current,
+        ciphertext: ciphertext,
+        ciphertextSha256: hash,
+      ),
+    };
+  }
+}

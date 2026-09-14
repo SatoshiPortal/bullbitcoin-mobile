@@ -14,7 +14,8 @@ import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_ha
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/private_descriptor_protocol.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/private_descriptor_usecases.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_private_descriptor_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/lookup_private_descriptors_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_protocol.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
