@@ -49,6 +49,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/private_descriptor_usecases.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/refresh_wallet_recovery_manifest_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/resolve_wallet_backup_key_usecase.dart';
@@ -80,6 +81,7 @@ import 'package:primitives/primitives.dart';
 
 import '../metadata/support/portable_settings_fixture.dart';
 import 'fake_bullvault_backup.dart';
+import 'fake_private_descriptor_remote.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 
@@ -387,6 +389,7 @@ final class WalletBackupBehaviorHarness {
     final encryption = RecoverBullWalletBackupEncryptionRepository(codec);
     final state = DriftWalletBackupStateRepository(walletDatabase);
     final backupRemote = remote ?? FakeWalletBackupRemote();
+    final descriptorRemote = FakePrivateDescriptorRemote();
     final definitions = FakeWalletDefinitionsSection();
     final vaults = FakeBullVaultBackupSection();
     final backedUpVaults = vaultSection ?? vaults;
@@ -562,6 +565,14 @@ final class WalletBackupBehaviorHarness {
         encryption,
         inspectVault,
       ),
+      PublishPrivateDescriptorUsecase(
+        // No behaviour here publishes a descriptor: the vault feature is not
+        // wired into this harness at all.
+        (_) async => throw UnimplementedError(),
+        authenticator,
+        descriptorRemote,
+      ),
+      LookupPrivateDescriptorsUsecase((_) => null, descriptorRemote),
     );
 
     final key = switch (await resolveKey.execute()) {

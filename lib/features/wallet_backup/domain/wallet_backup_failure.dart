@@ -115,6 +115,22 @@ final class WalletBackupInvalidBackupWordsFailure extends WalletBackupFailure {
   const WalletBackupInvalidBackupWordsFailure();
 }
 
+/// The text offered as a cosigner account key is not one.
+///
+/// It says nothing further: the input is a public key, but echoing a mistyped
+/// one back is how a wallet teaches people to paste secrets into it.
+final class WalletBackupInvalidAccountKeyFailure extends WalletBackupFailure {
+  const WalletBackupInvalidAccountKeyFailure();
+}
+
+/// This publisher already holds the maximum number of descriptor records.
+///
+/// Unlike a rate limit it does not pass with time: a renewal is another record,
+/// and the server has no delete operation in this version.
+final class WalletBackupPublisherQuotaFailure extends WalletBackupFailure {
+  const WalletBackupPublisherQuotaFailure();
+}
+
 final class WalletBackupUnexpectedFailure extends WalletBackupFailure {
   const WalletBackupUnexpectedFailure([super.logMessage]);
 }

@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/bullvault_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/data/descriptor_backup_http_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/metadata_backup_http_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_snapshot_model.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_vaults_model.dart';
@@ -44,6 +45,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/fetch_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_recovery_inventory_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/private_descriptor_usecases.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/reconcile_payjoin_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
@@ -209,6 +211,11 @@ final class _WalletBackupGraph {
     }
 
     final remote = MetadataBackupHttpRepository.defaults(
+      origin: originProvider,
+    );
+    // Its own transport instance, so a descriptor rate limit never closes the
+    // gate on metadata backup: the server counts them separately.
+    final descriptorRemote = DescriptorBackupHttpRepository.defaults(
       origin: originProvider,
     );
     final nostrIdentity = locator<NostrIdentityFacade>();
@@ -377,6 +384,15 @@ final class _WalletBackupGraph {
         fetchRemote,
         encryption,
         inspectVault,
+      ),
+      PublishPrivateDescriptorUsecase(
+        (walletId) => bullVault().encodePrivateDescriptorBackup(walletId),
+        authenticator,
+        descriptorRemote,
+      ),
+      LookupPrivateDescriptorsUsecase(
+        (input) => bullVault().descriptorLookupToken(input),
+        descriptorRemote,
       ),
     );
     return _WalletBackupGraph(

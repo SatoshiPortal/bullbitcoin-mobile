@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/private_descriptor_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:crypto/crypto.dart';
 
@@ -75,15 +76,59 @@ final class WalletBackupAuthenticator {
       }
     }
     final timestamp = _nowSecs();
-    final message = buildWalletBackupSigningMessage(
-      action: action,
-      publicKeyHex: publicKey,
-      generation: generation,
-      expectedEtag: expectedEtag,
-      ciphertextSha256: ciphertextSha256,
-      ciphertextBytes: ciphertextBytes,
+    return _signed(
+      publicKey: publicKey,
       timestamp: timestamp,
+      message: buildWalletBackupSigningMessage(
+        action: action,
+        publicKeyHex: publicKey,
+        generation: generation,
+        expectedEtag: expectedEtag,
+        ciphertextSha256: ciphertextSha256,
+        ciphertextBytes: ciphertextBytes,
+        timestamp: timestamp,
+      ),
+      credential: credential,
     );
+  }
+
+  /// Signs a descriptor record store under the descriptor protocol's own
+  /// domain, binding the publisher, the exact ciphertext and the whole token
+  /// set. The account is the same one wallet backup uses.
+  Future<Result<WalletBackupAuthentication, WalletBackupFailure>>
+  signDescriptorStore({
+    required String ciphertextSha256,
+    required int ciphertextBytes,
+    required List<String> lookupTokens,
+  }) async {
+    final String publicKey;
+    switch (await _identity.walletBackupServerPublicKey()) {
+      case Err():
+        return const Err(WalletBackupSigningFailure());
+      case Ok(:final value):
+        publicKey = value;
+    }
+    final timestamp = _nowSecs();
+    return _signed(
+      publicKey: publicKey,
+      timestamp: timestamp,
+      message: buildPrivateDescriptorSigningMessage(
+        publicKeyHex: publicKey,
+        ciphertextSha256: ciphertextSha256,
+        ciphertextBytes: ciphertextBytes,
+        lookupTokens: lookupTokens,
+        timestamp: timestamp,
+      ),
+      credential: null,
+    );
+  }
+
+  Future<Result<WalletBackupAuthentication, WalletBackupFailure>> _signed({
+    required String publicKey,
+    required int timestamp,
+    required Uint8List? message,
+    required BackupCredential? credential,
+  }) async {
     if (message == null) {
       return const Err(WalletBackupSigningFailure());
     }

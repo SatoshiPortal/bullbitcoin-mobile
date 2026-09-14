@@ -18,6 +18,8 @@ export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_f
         WalletBackupImportSituation,
         WalletBackupImportSource,
         WalletBackupSnapshotSummary;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart'
+    show PrivateDescriptorLookup, PrivateDescriptorRecord;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart'
     show WalletBackupRecoveryResult, WalletBackupRecoveryStatus;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart'
@@ -28,6 +30,7 @@ export 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.da
 export 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
@@ -41,6 +44,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_b
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/private_descriptor_usecases.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_enabled_usecase.dart';
@@ -68,6 +72,8 @@ class WalletBackupFacade {
   final RecoverWalletBackupFileUsecase _recoverFile;
   final GetRemoteWalletBackupContentsUsecase _getRemoteContents;
   final ExtractVaultsWithBackupWordsUsecase _extractWithWords;
+  final PublishPrivateDescriptorUsecase _publishPrivateDescriptor;
+  final LookupPrivateDescriptorsUsecase _lookupPrivateDescriptors;
 
   const WalletBackupFacade(
     this._getContents,
@@ -83,6 +89,8 @@ class WalletBackupFacade {
     this._recoverFile,
     this._getRemoteContents,
     this._extractWithWords,
+    this._publishPrivateDescriptor,
+    this._lookupPrivateDescriptors,
   );
 
   @useResult
@@ -103,6 +111,25 @@ class WalletBackupFacade {
   @useResult
   Future<Result<WalletBackupWordsExtraction?, WalletBackupFailure>>
   fetchVaultsWithBackupWords(String words) => _extractWithWords.execute(words);
+
+  /// Publishes a vault's descriptor, sealed so only its own cosigners can read
+  /// it, and returns the time the server filed it under.
+  ///
+  /// Deliberately outside the job runner: a descriptor record is immutable and
+  /// shares no head, checkpoint or fence with the metadata backup, so nothing
+  /// it does has to be serialised against a publication.
+  @useResult
+  Future<Result<DateTime, WalletBackupFailure>> publishPrivateDescriptor(
+    String walletId,
+  ) => _publishPrivateDescriptor.execute(walletId);
+
+  /// Every descriptor record published under one cosigner's account key, by any
+  /// publisher. The records are untrusted candidates the caller must open and
+  /// verify, and the result says whether the search finished.
+  @useResult
+  Future<Result<PrivateDescriptorLookup, WalletBackupFailure>>
+  lookupPrivateDescriptors(String accountKeyInput) =>
+      _lookupPrivateDescriptors.execute(accountKeyInput);
 
   @useResult
   Stream<Result<WalletBackupState, WalletBackupFailure>> watchState() =>
