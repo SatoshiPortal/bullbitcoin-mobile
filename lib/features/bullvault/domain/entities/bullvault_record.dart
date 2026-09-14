@@ -25,12 +25,22 @@ final class BullVaultRecord {
   /// Whether this vault can still hold funds, and so deserves a recovery route.
   ///
   /// A pending vault was never activated and a cancelled one was abandoned;
-  /// a migrating vault still holds coins until its successor is funded. Every
-  /// descriptor backup destination uses this one rule, so they cover exactly
-  /// the same set of vaults.
+  /// a migrating vault still holds coins until its successor is funded.
   bool get mayHoldFunds =>
       status == BullVaultLifecycleStatus.active ||
       status == BullVaultLifecycleStatus.migrating;
+
+  /// Whether this vault's descriptor is worth backing up.
+  ///
+  /// Setup and renewal hand the descriptor over and confirm it before the
+  /// separate activation, and offer its destinations in between, so a confirmed
+  /// pending vault must be publishable while it still holds nothing: it can be
+  /// funded the moment setup ends. A cancelled vault is excluded either way.
+  /// Every descriptor backup destination uses this one rule, so they cover
+  /// exactly the same set of vaults.
+  bool get deservesDescriptorBackup =>
+      mayHoldFunds ||
+      (status == BullVaultLifecycleStatus.pending && recoveryPackageConfirmed);
 
   BullVaultRecord({
     required this.walletId,

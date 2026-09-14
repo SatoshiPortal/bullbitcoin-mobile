@@ -28,6 +28,10 @@ final class _FakeVaults extends Fake implements BullVaultFacade {
   }
 
   BullVaultFailure? sealFailure;
+
+  /// A failure the relay publisher reports before it records any outcome of
+  /// its own, as an unavailable credential does.
+  BullVaultFailure? publishFailure;
   bool relaysAccept = true;
   int nostrPublications = 0;
   int preparations = 0;
@@ -83,6 +87,7 @@ final class _FakeVaults extends Fake implements BullVaultFacade {
   Future<Result<NostrDescriptorPublication, BullVaultFailure>>
   publishDescriptorToNostr(String walletId, {NostrSession? session}) async {
     nostrPublications++;
+    if (publishFailure != null) return Err(publishFailure!);
     final relay = Uri.parse('wss://relay.example');
     await _write(
       publications.prepare(
@@ -278,7 +283,7 @@ void main() {
     },
   );
 
-  test('an artifact that cannot be sealed records no attempt', () async {
+  test('an artifact that cannot be sealed is a failure to retry', () async {
     await enable(VaultBackupDestination.server);
     vaults.sealFailure = const BullVaultInvalidRecoveryFailure();
 
@@ -286,8 +291,24 @@ void main() {
 
     expect(server.sent, isEmpty);
     final stored = await row(VaultBackupDestination.server);
-    expect(stored!.state, VaultPublicationState.idle);
-    expect(stored.attempts, 0);
+    expect(stored!.state, VaultPublicationState.failed);
+    expect(stored.artifact, isNull);
+    expect(
+      stored.outstanding,
+      isTrue,
+      reason: 'the retry is what builds the artifact',
+    );
+  });
+
+  test('a relay publisher that failed early is retried too', () async {
+    await enable(VaultBackupDestination.nostr);
+    vaults.publishFailure = const BullVaultBackupCredentialFailure();
+
+    await ran(publish.execute('vault'));
+
+    final stored = await row(VaultBackupDestination.nostr);
+    expect(stored!.state, VaultPublicationState.failed);
+    expect(stored.outstanding, isTrue);
   });
 
   test('a relay failure does not stop the server destination', () async {

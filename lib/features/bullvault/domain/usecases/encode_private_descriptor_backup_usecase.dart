@@ -24,7 +24,7 @@ final class EncodePrivateDescriptorBackupUsecase {
       case Ok(value: null):
         return const Err(BullVaultInvalidRecoveryFailure());
       case Ok(value: final record?):
-        if (!record.mayHoldFunds) {
+        if (!record.deservesDescriptorBackup) {
           return const Err(BullVaultInvalidRecoveryFailure());
         }
         final policy = record.recoveryPackage.policy;

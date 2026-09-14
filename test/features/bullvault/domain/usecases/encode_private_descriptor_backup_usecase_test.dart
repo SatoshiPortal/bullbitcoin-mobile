@@ -101,6 +101,31 @@ void main() {
     );
   });
 
+  test('a confirmed pending vault is backed up before activation', () async {
+    final record = recordWith(BullVaultLifecycleStatus.pending);
+    repository.records['vault-wallet'] = record.copyWith(
+      recoveryPackageConfirmed: true,
+    );
+
+    expect(
+      await usecase.execute('vault-wallet'),
+      isA<Ok<BullVaultDescriptorBackup, BullVaultFailure>>(),
+    );
+  });
+
+  test('a cancelled vault is refused however it was confirmed', () async {
+    final record = recordWith(BullVaultLifecycleStatus.cancelled);
+    repository.records['vault-wallet'] = record.copyWith(
+      recoveryPackageConfirmed: true,
+    );
+
+    expect(
+      await usecase.execute('vault-wallet'),
+      isA<Err<BullVaultDescriptorBackup, BullVaultFailure>>(),
+    );
+    expect(repository.encodedDescriptor, isNull);
+  });
+
   test('a storage failure is reported, never treated as absence', () async {
     recordWith(BullVaultLifecycleStatus.active);
     repository.readFailure = const BullVaultBackupStatusFailure();

@@ -85,16 +85,22 @@ final class PublishVaultDescriptorBackupsUsecase {
   }
 
   /// The relay publisher writes its own outcome down, because it is the only
-  /// thing that knows which relays answered.
-  Future<void> _toNostr(String walletId) =>
-      _vaults.publishDescriptorToNostr(walletId);
+  /// thing that knows which relays answered. It records nothing when it gives
+  /// up before sending, so that failure is recorded here instead: a row left
+  /// idle would read as a publication still to come and offer no retry.
+  Future<void> _toNostr(String walletId) async {
+    if (await _vaults.publishDescriptorToNostr(walletId) case Err()) {
+      await _record(walletId, VaultBackupDestination.nostr, accepted: false);
+    }
+  }
 
   Future<void> _toServer(String walletId) async {
     final BullVaultDescriptorBackup prepared;
     switch (await _vaults.prepareServerDescriptorBackup(walletId)) {
       case Err():
-        // The artifact could not even be built, so there was no attempt to
-        // record against the destination.
+        // The artifact could not even be built. Recording that failure is what
+        // makes the destination retryable; the retry seals it.
+        await _record(walletId, VaultBackupDestination.server, accepted: false);
         return;
       case Ok(:final value):
         prepared = value;
@@ -103,10 +109,22 @@ final class PublishVaultDescriptorBackupsUsecase {
       walletId,
       prepared: prepared,
     );
+    await _record(
+      walletId,
+      VaultBackupDestination.server,
+      accepted: stored is Ok<DateTime, WalletBackupFailure>,
+    );
+  }
+
+  Future<void> _record(
+    String walletId,
+    VaultBackupDestination destination, {
+    required bool accepted,
+  }) async {
     final recorded = await _vaults.recordDescriptorPublicationSent(
       walletId: walletId,
-      destination: VaultBackupDestination.server,
-      accepted: stored is Ok<DateTime, WalletBackupFailure>,
+      destination: destination,
+      accepted: accepted,
     );
     if (recorded case Err(:final failure)) {
       // The outcome is lost, not the artifact: the row stays pending and the

@@ -188,6 +188,22 @@ void main() {
     );
 
     test(
+      'a pending vault publishes once its descriptor is confirmed',
+      () async {
+        final record = vault(
+          status: BullVaultLifecycleStatus.pending,
+        ).copyWith(recoveryPackageConfirmed: true);
+        repository.records[record.walletId] = record;
+
+        expect(
+          await publish.execute(record.walletId),
+          isA<Ok<NostrDescriptorPublication, BullVaultFailure>>(),
+        );
+        expect(relays.first.publications, 1);
+      },
+    );
+
+    test(
       'an unknown vault and a storage failure never reach a relay',
       () async {
         expect(

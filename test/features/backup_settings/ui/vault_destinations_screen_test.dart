@@ -69,6 +69,13 @@ void main() {
       ];
       return const Ok<void, BullVaultFailure>(null);
     });
+    when(
+      () => vaults.recordDescriptorPublicationSent(
+        walletId: any(named: 'walletId'),
+        destination: any(named: 'destination'),
+        accepted: any(named: 'accepted'),
+      ),
+    ).thenAnswer((_) async => const Ok<void, BullVaultFailure>(null));
     when(() => metadata.watchState()).thenAnswer(
       (_) => Stream.value(
         Ok(

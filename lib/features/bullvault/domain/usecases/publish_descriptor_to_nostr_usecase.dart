@@ -45,7 +45,7 @@ final class PublishDescriptorToNostrUsecase {
     switch (await _repository.getByWalletId(walletId)) {
       case Err(:final failure):
         return Err(failure);
-      case Ok(value: final stored?) when stored.mayHoldFunds:
+      case Ok(value: final stored?) when stored.deservesDescriptorBackup:
         record = stored;
       case Ok():
         return const Err(BullVaultInvalidRecoveryFailure());

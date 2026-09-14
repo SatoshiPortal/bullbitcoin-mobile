@@ -41,9 +41,12 @@ final class VaultDescriptorPublication {
        updatedAt = updatedAt.toUtc();
 
   /// Whether this destination still owes the vault a send.
+  ///
+  /// A destination that failed before it could even build its artifact is
+  /// owed one too: building it is what the retry does. A row nobody has tried
+  /// yet is not owed anything until the first publication runs.
   bool get outstanding =>
       enabled &&
-      artifact != null &&
-      (state == VaultPublicationState.pending ||
-          state == VaultPublicationState.failed);
+      (state == VaultPublicationState.failed ||
+          (artifact != null && state == VaultPublicationState.pending));
 }
