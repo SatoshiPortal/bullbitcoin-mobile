@@ -994,10 +994,6 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payOrderAlreadyConfirmed": "Αυτή η διαταγή πληρωμής έχει ήδη επιβεβαιωθεί.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "Υπογραφή συναλλαγής",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1187,10 +1183,6 @@
   "buyYouPay": "Πληρώνετε",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Αυτή η διαταγή πληρωμής έχει ήδη επιβεβαιωθεί.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο διαβατήριο. Βάλτε το.",
   "@passportStep12": {
@@ -1617,10 +1609,6 @@
   "receivePaymentReceived": "Η πληρωμή έλαβε!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
-  },
-  "payOrderNotFound": "Η διαταγή πληρωμής δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο Coldcard. Βάλτε το.",
   "@coldcardStep13": {
@@ -7589,10 +7577,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "Δεν είστε αυθεντικοί. Παρακαλούμε συνδεθείτε για να συνεχίσετε.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "Αριθμός αναφοράς",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -7990,10 +7974,6 @@
   "ledgerErrorInvalidPsbt": "Εντοπίστηκε μη έγκυρη μορφή PSBT.",
   "ledgerErrorMissingDerivationPath": "Απαιτείται διαδρομή παραγώγησης",
   "ledgerErrorMissingScriptType": "Απαιτείται τύπος σεναρίου",
-  "payBelowMinAmount": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "Παρακαλούμε επιβεβαιώστε τη διεύθυνση στη συσκευή Ledger σας.",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -8294,10 +8274,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "Δείτε τις οδηγίες SeedSigner",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "Η διαταγή πληρωμής δεν βρέθηκε. Παρακαλώ δοκιμάστε ξανά.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "Κάντε κλικ στο \"I'm do\" στο πορτοφόλι Bitcoin Bull.",
   "@jadeStep12": {
@@ -8756,10 +8732,6 @@
   "@coreSwapsActionRefund": {
     "description": "Action label for refunding a swap"
   },
-  "payInsufficientBalance": "Η ανεπαρκής ισορροπία στο επιλεγμένο πορτοφόλι για την ολοκλήρωση αυτής της παραγγελίας πληρωμής.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "View logs",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -9028,10 +9000,6 @@
   "transactionNoteUpdateButton": "Ενημέρωση",
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
-  },
-  "payAboveMaxAmount": "Προσπαθείτε να πληρώσετε πάνω από το μέγιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
   },
   "receiveNetworkUnavailable": "{network} σήμερα δεν είναι διαθέσιμη",
   "@receiveNetworkUnavailable": {

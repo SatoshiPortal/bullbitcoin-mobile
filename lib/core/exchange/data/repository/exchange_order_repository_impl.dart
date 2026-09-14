@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
@@ -270,8 +269,12 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null || !apiKeyModel.isActive) {
-        throw const PayError.unauthenticated();
+      if (apiKeyModel == null) {
+        throw ApiKeyNotFoundException();
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw ApiKeyInactiveException();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.createPayOrder(
@@ -287,18 +290,15 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
           orderModel.toEntity(isTestnet: _isTestnet) as FiatPaymentOrder;
 
       return order;
-    } on BullBitcoinApiMinAmountException catch (e) {
-      throw PayError.belowMinAmount(
-        minAmount: e.minAmount,
-        currency: e.currency,
-      );
-    } on BullBitcoinApiMaxAmountException catch (e) {
-      throw PayError.aboveMaxAmount(
-        maxAmount: e.maxAmount,
-        currency: e.currency,
-      );
-    } catch (e) {
-      throw Exception('Failed to place pay order: $e');
+    } on BullBitcoinApiMinAmountException {
+      rethrow;
+    } on BullBitcoinApiMaxAmountException {
+      rethrow;
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      // Keep the original trace: see refreshPayOrder.
+      Error.throwWithStackTrace(Exception('Failed to place pay order: $e'), st);
     }
   }
 
@@ -465,15 +465,11 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+        throw ApiKeyNotFoundException();
       }
 
       if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
+        throw ApiKeyInactiveException();
       }
 
       final orderModel = await _bullbitcoinApiDatasource.refreshOrder(
@@ -484,15 +480,20 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final order = orderModel.toEntity(isTestnet: _isTestnet);
 
       if (order is! FiatPaymentOrder) {
-        throw const PayError.unexpected(
-          message:
-              'Expected FiatPaymentOrder but received a different order type',
-        );
+        throw UnexpectedOrderTypeException('FiatPaymentOrder');
       }
 
       return order;
-    } catch (e) {
-      throw PayError.unexpected(message: 'Failed to refresh pay order: $e');
+    } on ApiKeyException {
+      rethrow;
+    } catch (e, st) {
+      // Keep the original trace: the use-case logs the trace it catches, so
+      // wrapping without it would point every report at this line instead of
+      // at the call that actually failed.
+      Error.throwWithStackTrace(
+        Exception('Failed to refresh pay order: $e'),
+        st,
+      );
     }
   }
 

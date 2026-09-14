@@ -8,21 +8,30 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/place_pay_order_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 
 import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 
@@ -66,35 +75,95 @@ class PayLocator {
         settingsRepository: locator(),
       ),
     );
+
+    locator.registerFactory<PreparePayBitcoinPayinUsecase>(
+      () => PreparePayBitcoinPayinUsecase(
+        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+      ),
+    );
+    locator.registerFactory<PreparePayLiquidPayinUsecase>(
+      () => PreparePayLiquidPayinUsecase(
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+      ),
+    );
+    locator.registerFactory<SignPayPayinUsecase>(
+      () => SignPayPayinUsecase(
+        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+      ),
+    );
+    locator.registerFactory<BroadcastPayPayinUsecase>(
+      () => BroadcastPayPayinUsecase(
+        broadcastBitcoinTransactionUsecase:
+            locator<BroadcastBitcoinTransactionUsecase>(),
+        broadcastLiquidTransactionUsecase:
+            locator<BroadcastLiquidTransactionUsecase>(),
+      ),
+    );
+    locator.registerFactory<LoadPayWalletUtxosUsecase>(
+      () => LoadPayWalletUtxosUsecase(
+        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
+      ),
+    );
+    locator.registerFactory<LoadPayUserSummaryUsecase>(
+      () => LoadPayUserSummaryUsecase(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetPayOrderUsecase>(
+      () => GetPayOrderUsecase(getOrderUsecase: locator<GetOrderUsecase>()),
+    );
+    locator.registerFactory<LoadPayNetworkFeesUsecase>(
+      () => LoadPayNetworkFeesUsecase(
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+      ),
+    );
+    locator.registerFactory<GetPayPayinAddressUsecase>(
+      () => GetPayPayinAddressUsecase(
+        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
+      ),
+    );
+    locator.registerFactory<CalculatePayAbsoluteFeesUsecase>(
+      () => CalculatePayAbsoluteFeesUsecase(
+        calculateBitcoinAbsoluteFeesUsecase:
+            locator<CalculateBitcoinAbsoluteFeesUsecase>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+      ),
+    );
+    locator.registerFactory<EstimatePayPayinFeesUsecase>(
+      () => EstimatePayPayinFeesUsecase(
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getPayPayinAddressUsecase: locator<GetPayPayinAddressUsecase>(),
+        loadPayNetworkFeesUsecase: locator<LoadPayNetworkFeesUsecase>(),
+        preparePayBitcoinPayinUsecase: locator<PreparePayBitcoinPayinUsecase>(),
+        preparePayLiquidPayinUsecase: locator<PreparePayLiquidPayinUsecase>(),
+        calculatePayAbsoluteFeesUsecase:
+            locator<CalculatePayAbsoluteFeesUsecase>(),
+      ),
+    );
   }
 
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<PayBloc>(
       () => PayBloc(
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        loadPayUserSummaryUsecase: locator<LoadPayUserSummaryUsecase>(),
         placePayOrderUsecase: locator<PlacePayOrderUsecase>(),
         refreshPayOrderUsecase: locator<RefreshPayOrderUsecase>(),
-        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
-        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
-        signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
-        signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
-        broadcastBitcoinTransactionUsecase:
-            locator<BroadcastBitcoinTransactionUsecase>(),
-        broadcastLiquidTransactionUsecase:
-            locator<BroadcastLiquidTransactionUsecase>(),
+        getPayOrderUsecase: locator<GetPayOrderUsecase>(),
+        estimatePayPayinFeesUsecase: locator<EstimatePayPayinFeesUsecase>(),
+        preparePayBitcoinPayinUsecase: locator<PreparePayBitcoinPayinUsecase>(),
+        preparePayLiquidPayinUsecase: locator<PreparePayLiquidPayinUsecase>(),
+        signPayPayinUsecase: locator<SignPayPayinUsecase>(),
+        broadcastPayPayinUsecase: locator<BroadcastPayPayinUsecase>(),
+        loadPayWalletUtxosUsecase: locator<LoadPayWalletUtxosUsecase>(),
+        loadPayNetworkFeesUsecase: locator<LoadPayNetworkFeesUsecase>(),
+        calculatePayAbsoluteFeesUsecase:
+            locator<CalculatePayAbsoluteFeesUsecase>(),
+        getPayPayinAddressUsecase: locator<GetPayPayinAddressUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinUsecase: locator<GetPayjoinUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        calculateLiquidAbsoluteFeesUsecase:
-            locator<CalculateLiquidAbsoluteFeesUsecase>(),
-        calculateBitcoinAbsoluteFeesUsecase:
-            locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
-        getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
-        getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
-        getOrderUsecase: locator<GetOrderUsecase>(),
         previewBitcoinFeeUsecase: locator<PreviewBitcoinFeeUsecase>(),
         previewBitcoinFeePresetsUsecase:
             locator<PreviewBitcoinFeePresetsUsecase>(),

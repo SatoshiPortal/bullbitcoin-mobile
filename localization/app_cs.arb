@@ -1387,10 +1387,6 @@
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
   },
-  "payOrderAlreadyConfirmed": "Tato objednávka byla potvrzena.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "ledgerProcessingSign": "Přihlášení Transakce",
   "@ledgerProcessingSign": {
     "description": "Status message shown while signing transaction with Ledger"
@@ -1591,10 +1587,6 @@
   "buyYouPay": "Platit",
   "@buyYouPay": {
     "description": "Label for amount user pays"
-  },
-  "payOrderAlreadyConfirmedError": "Tato objednávka byla potvrzena.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
   },
   "passportStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na pasu. Skenovat.",
   "@passportStep12": {
@@ -2109,10 +2101,6 @@
   "howToDecideBackupText1": "Jedním z nejčastějších způsobů, jak lidé ztratí svůj Bitcoin je proto, že ztratí fyzickou zálohu. Každý, kdo zjistí, že vaše fyzické zálohování bude schopen vzít všechny vaše Bitcoin. Pokud jste velmi přesvědčeni, že ho můžete dobře skrýt a nikdy neztratíte, je to dobrá volba.",
   "@howToDecideBackupText1": {
     "description": "First paragraph explaining backup method decision"
-  },
-  "payOrderNotFound": "Nenašli jsem pro Vás. Prosím, zkuste to znovu.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
   },
   "coldcardStep13": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na studené kartě. Skenovat.",
   "@coldcardStep13": {
@@ -8891,10 +8879,6 @@
   "@kruxInstructionsTitle": {
     "description": "Title for Krux signing instructions modal"
   },
-  "payNotAuthenticated": "Nejste autentická. Přihlaste se a pokračujte.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
   "paySinpeNumeroComprobante": "Referenční číslo",
   "@paySinpeNumeroComprobante": {
     "description": "Label for reference number in SINPE details"
@@ -9373,10 +9357,6 @@
   "ledgerErrorInvalidPsbt": "Byl zjištěn neplatný formát PSBT.",
   "ledgerErrorMissingDerivationPath": "Je vyžadována odvozovací cesta",
   "ledgerErrorMissingScriptType": "Je vyžadován typ skriptu",
-  "payBelowMinAmount": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
   "ledgerProcessingVerifySubtext": "Prosíme o potvrzení adresy ve vašem zařízení Ledger.",
   "@ledgerProcessingVerifySubtext": {
     "description": "Processing subtext shown while verifying address"
@@ -9714,10 +9694,6 @@
   "importQrDeviceSeedsignerInstructionsTitle": "SeedSigner pokyny",
   "@importQrDeviceSeedsignerInstructionsTitle": {
     "description": "Title for SeedSigner setup instructions"
-  },
-  "payOrderNotFoundError": "Nenašli jsem pro Vás. Prosím, zkuste to znovu.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
   },
   "jadeStep12": "Klikněte na \"I'm udělal\" v peněžence Bull Bitcoin.",
   "@jadeStep12": {
@@ -10241,10 +10217,6 @@
   "@backupSettingsTestBackup": {
     "description": "Button text to test existing backup"
   },
-  "payInsufficientBalance": "Nedostatečná rovnováha ve zvolené peněžence dokončit tuto objednávku.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
-  },
   "viewLogsLabel": "Zobrazit protokoly",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -10533,10 +10505,6 @@
   "transactionNoteUpdateButton": "Aktualizovat",
   "@transactionNoteUpdateButton": {
     "description": "Button label to update a note"
-  },
-  "payAboveMaxAmount": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
   },
   "receiveNetworkUnavailable": "{network} je v současné době nedostupná",
   "@receiveNetworkUnavailable": {

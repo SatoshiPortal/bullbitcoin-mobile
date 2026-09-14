@@ -2359,14 +2359,6 @@
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
   },
-  "payOrderNotFoundError": "The pay order was not found. Please try again.",
-  "@payOrderNotFoundError": {
-    "description": "Error message for order not found"
-  },
-  "payOrderAlreadyConfirmedError": "This pay order has already been confirmed.",
-  "@payOrderAlreadyConfirmedError": {
-    "description": "Error message for already confirmed order"
-  },
   "paySelectNetwork": "Select Network",
   "@paySelectNetwork": {
     "description": "Screen title for network selection"
@@ -2559,26 +2551,6 @@
   "@payBitcoinOnchain": {
     "description": "Option for Bitcoin on-chain payment"
   },
-  "payAboveMaxAmount": "You are trying to pay above the maximum amount that can be paid with this wallet.",
-  "@payAboveMaxAmount": {
-    "description": "Error message when payment amount exceeds maximum"
-  },
-  "payBelowMinAmount": "You are trying to pay below the minimum amount that can be paid with this wallet.",
-  "@payBelowMinAmount": {
-    "description": "Error message when payment amount is below minimum"
-  },
-  "payNotAuthenticated": "You are not authenticated. Please log in to continue.",
-  "@payNotAuthenticated": {
-    "description": "Error message when user is not authenticated"
-  },
-  "payOrderNotFound": "The pay order was not found. Please try again.",
-  "@payOrderNotFound": {
-    "description": "Error message when pay order is not found"
-  },
-  "payOrderAlreadyConfirmed": "This pay order has already been confirmed.",
-  "@payOrderAlreadyConfirmed": {
-    "description": "Error message when pay order is already confirmed"
-  },
   "payPaymentInProgress": "Payment In Progress!",
   "@payPaymentInProgress": {
     "description": "Title for payment in progress screen"
@@ -2650,10 +2622,6 @@
   "payExternalWalletDescription": "Pay from another Bitcoin wallet",
   "@payExternalWalletDescription": {
     "description": "Description for external wallet option"
-  },
-  "payInsufficientBalance": "Insufficient balance in the selected wallet to complete this pay order.",
-  "@payInsufficientBalance": {
-    "description": "Error message for insufficient balance"
   },
   "payRbfActivated": "Replace-by-fee activated",
   "@payRbfActivated": {
@@ -14693,5 +14661,17 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
+  "@payUnexpectedError": {
+    "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
+  },
+  "payErrorFeeBelowRelayFloor": "Network fee too low. Choose a higher fee.",
+  "@payErrorFeeBelowRelayFloor": {
+    "description": "Shown when a built pay payin's fee is under the network relay floor, so no node would accept it. Actionable: the user must raise the fee."
+  },
+  "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
+  "@payErrorFeesUnavailable": {
+    "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
   }
 }

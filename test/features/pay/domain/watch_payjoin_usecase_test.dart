@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,12 +31,15 @@ void main() {
 
     final updates = WatchPayjoinUsecase(sessions).execute(payjoin.id);
 
-    expect(await updates.single, payjoin);
+    expect(
+      (await updates.single as Ok<PayjoinSession, PayFailure>).value,
+      payjoin,
+    );
     verify(() => sessions.byId(payjoin.id)).called(1);
     verify(() => sessions.watch(sessionIds: {payjoin.id})).called(1);
   });
 
-  test('maps a package failure to the Pay feature exception', () async {
+  test('maps a package failure to a value, never a thrown error', () async {
     final sessions = _MockPayjoinSessions();
     when(
       () => sessions.byId('session-1'),
@@ -48,6 +52,31 @@ void main() {
 
     final updates = WatchPayjoinUsecase(sessions).execute('session-1');
 
-    await expectLater(updates, emitsError(isA<WatchPayjoinException>()));
+    // A watcher failure must arrive as a value the bloc can switch on, and it
+    // must end the stream so the caller decides whether to re-subscribe.
+    final emitted = await updates.toList();
+
+    expect(emitted, hasLength(1));
+    expect(
+      (emitted.single as Err<PayjoinSession, PayFailure>).failure,
+      isA<PayUnexpectedFailure>(),
+    );
+  });
+
+  test('a throwing session store becomes a value too', () async {
+    // The store reports its own problems as Err, but if it ever throws the
+    // stream would carry an error the caller has no arm for — the watch would
+    // die without a resubscribe.
+    final sessions = _MockPayjoinSessions();
+    when(() => sessions.byId('session-1')).thenThrow(StateError('db closed'));
+
+    final updates = WatchPayjoinUsecase(sessions).execute('session-1');
+    final emitted = await updates.toList();
+
+    expect(emitted, hasLength(1));
+    expect(
+      (emitted.single as Err<PayjoinSession, PayFailure>).failure,
+      isA<PayUnexpectedFailure>(),
+    );
   });
 }
