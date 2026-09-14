@@ -98,7 +98,7 @@ graph TB
     WALLET_BACKUP --> NOSTR_IDENTITY
     WALLET_BACKUP --> KEYCHAIN_MANIFEST
     WALLET_BACKUP --> LABELS
-    WALLET_BACKUP -->|Recovery packages and committed backup changes| BULLVAULT
+    WALLET_BACKUP -->|Recovery packages, committed backup changes,<br/>private descriptor sealing and lookup aliases| BULLVAULT
     BACKUP_SETTINGS --> WALLET_BACKUP
     BACKUP_SETTINGS --> LABELS
     BACKUP_SETTINGS --> TX_HISTORY
@@ -166,7 +166,7 @@ graph TB
     BULLVAULT --> SETTINGS
     BULLVAULT -->|Selected vault signing action| PSBT_SIGNING
     BULLVAULT -->|Step-up authentication before cosigner import| APP_UNLOCK
-    BACKUP_SETTINGS -->|Descriptor recovery verification and printable kits| BULLVAULT
+    BACKUP_SETTINGS -->|Descriptor recovery and verification,<br/>private descriptor import, printable kits| BULLVAULT
     SETTINGS --> KEYCHAIN_MANIFEST
     SETTINGS --> PASSPHRASE_WALLETS
     SETTINGS --> BACKUP_SETTINGS

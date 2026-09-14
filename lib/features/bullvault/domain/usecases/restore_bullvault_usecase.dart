@@ -142,15 +142,15 @@ class RestoreBullVaultUsecase {
         }
         decodedPackage = BullVaultRecoveryPackage(policy: policy);
       }
-      final Seed seed;
-      switch (await _getDefaultSeedUsecase.execute(
+      // A descriptor is public, so a device with no key of its own can still
+      // watch the vault. Without a default seed there is simply nothing to
+      // verify against, and mobile access stays unavailable.
+      final Seed? defaultSeed = switch (await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
       )) {
-        case Ok(:final value):
-          seed = value;
-        case Err():
-          return const Err(BullVaultInvalidRecoveryFailure());
-      }
+        Ok(:final value) => value,
+        Err() => null,
+      };
       Seed? verifiedSeed;
       var policy = decodedPackage.policy.withEverydayOwnership(
         SignerEntity.none,
@@ -178,7 +178,7 @@ class RestoreBullVaultUsecase {
         }
       }
 
-      verifySeed(seed);
+      if (defaultSeed != null) verifySeed(defaultSeed);
       if (verifiedSeed == null) {
         switch (await _getAllSeedsUsecase.execute()) {
           case Err():

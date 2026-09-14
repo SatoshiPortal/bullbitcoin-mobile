@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/ensure_canonical_seed_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -654,6 +655,83 @@ void main() {
       );
       repository.records.clear();
     }
+  });
+
+  test('imports a vault watch only when the device has no seed', () async {
+    when(
+      () => getDefaultSeed.execute(environment: Environment.testnet),
+    ).thenAnswer((_) async => const Err(DefaultSeedNotFoundFailure()));
+
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.descriptor,
+      source: policy.descriptor,
+      label: 'Watch only vault',
+    );
+
+    expect(result, isA<Ok<BullVaultRestoreResult, BullVaultFailure>>());
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+    expect(restored.mobileAccess, BullVaultMobileAccess.unavailable);
+    expect(
+      restored.record.recoveryPackage.policy.everydayKey.signer,
+      SignerEntity.none,
+    );
+    expect(restored.record.mobileAccount, isNull);
+    expect(restored.record.mobileSeedFingerprint, isNull);
+    // Hidden on arrival and reachable through the ordinary listing, exactly as
+    // a seed-backed restoration is.
+    expect(descriptorPort.importedWallet!.isHidden, isTrue);
+    expect(repository.publishedWalletIds, contains(restored.wallet.id));
+    expect(
+      (await repository.getAll() as Ok<List<BullVaultRecord>, BullVaultFailure>)
+          .value
+          .map((record) => record.walletId),
+      contains(restored.wallet.id),
+    );
+    // Nothing was written to seed storage and no account was reserved.
+    expect(seedDatasource.seeds, isEmpty);
+    verifyNever(
+      () => reserveAccount.execute(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+        account: any(named: 'account'),
+      ),
+    );
+  });
+
+  test('a passphrase claim is still refused without a seed to check', () async {
+    when(
+      () => getDefaultSeed.execute(environment: Environment.testnet),
+    ).thenAnswer((_) async => const Err(DefaultSeedNotFoundFailure()));
+
+    expect(
+      await usecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: policy.descriptor,
+        label: 'Watch only vault',
+        mobilePassphrase: 'vault passphrase',
+      ),
+      isA<Err<BullVaultRestoreResult, BullVaultFailure>>(),
+    );
+  });
+
+  test('unreadable seed storage still stops a restoration', () async {
+    when(
+      () => getDefaultSeed.execute(environment: Environment.testnet),
+    ).thenAnswer((_) async => const Err(DefaultSeedNotFoundFailure()));
+    when(
+      () => getAllSeeds.execute(),
+    ).thenAnswer((_) async => const Err(SeedFetchFailure()));
+
+    expect(
+      await usecase.execute(
+        kind: BullVaultRestoreInputKind.descriptor,
+        source: policy.descriptor,
+        label: 'Watch only vault',
+      ),
+      isA<Err<BullVaultRestoreResult, BullVaultFailure>>(),
+      reason: 'a locked keystore is not the same as owning no key',
+    );
   });
 
   test('restores an unverified mobile key as unavailable', () async {
