@@ -15659,6 +15659,456 @@ class BullVaultGenerationReservationsCompanion
   }
 }
 
+class VaultDescriptorPublications extends Table
+    with
+        TableInfo<
+          VaultDescriptorPublications,
+          VaultDescriptorPublicationsData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  VaultDescriptorPublications(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> destination = GeneratedColumn<String>(
+    'destination',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> enabled = GeneratedColumn<int>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (enabled IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<i2.Uint8List> artifact =
+      GeneratedColumn<i2.Uint8List>(
+        'artifact',
+        aliasedName,
+        true,
+        type: DriftSqlType.blob,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> artifactSha256 = GeneratedColumn<String>(
+    'artifact_sha256',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'idle\'',
+    defaultValue: const CustomExpression('\'idle\''),
+  );
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    walletId,
+    destination,
+    enabled,
+    artifact,
+    artifactSha256,
+    state,
+    attempts,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'vault_descriptor_publications';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walletId, destination};
+  @override
+  VaultDescriptorPublicationsData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return VaultDescriptorPublicationsData(
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      )!,
+      destination: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}enabled'],
+      )!,
+      artifact: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}artifact'],
+      ),
+      artifactSha256: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}artifact_sha256'],
+      ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  VaultDescriptorPublications createAlias(String alias) {
+    return VaultDescriptorPublications(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(wallet_id, destination)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class VaultDescriptorPublicationsData extends DataClass
+    implements Insertable<VaultDescriptorPublicationsData> {
+  final String walletId;
+  final String destination;
+  final int enabled;
+  final i2.Uint8List? artifact;
+  final String? artifactSha256;
+  final String state;
+  final int attempts;
+  final int updatedAt;
+  const VaultDescriptorPublicationsData({
+    required this.walletId,
+    required this.destination,
+    required this.enabled,
+    this.artifact,
+    this.artifactSha256,
+    required this.state,
+    required this.attempts,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wallet_id'] = Variable<String>(walletId);
+    map['destination'] = Variable<String>(destination);
+    map['enabled'] = Variable<int>(enabled);
+    if (!nullToAbsent || artifact != null) {
+      map['artifact'] = Variable<i2.Uint8List>(artifact);
+    }
+    if (!nullToAbsent || artifactSha256 != null) {
+      map['artifact_sha256'] = Variable<String>(artifactSha256);
+    }
+    map['state'] = Variable<String>(state);
+    map['attempts'] = Variable<int>(attempts);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  VaultDescriptorPublicationsCompanion toCompanion(bool nullToAbsent) {
+    return VaultDescriptorPublicationsCompanion(
+      walletId: Value(walletId),
+      destination: Value(destination),
+      enabled: Value(enabled),
+      artifact: artifact == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artifact),
+      artifactSha256: artifactSha256 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artifactSha256),
+      state: Value(state),
+      attempts: Value(attempts),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory VaultDescriptorPublicationsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return VaultDescriptorPublicationsData(
+      walletId: serializer.fromJson<String>(json['walletId']),
+      destination: serializer.fromJson<String>(json['destination']),
+      enabled: serializer.fromJson<int>(json['enabled']),
+      artifact: serializer.fromJson<i2.Uint8List?>(json['artifact']),
+      artifactSha256: serializer.fromJson<String?>(json['artifactSha256']),
+      state: serializer.fromJson<String>(json['state']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walletId': serializer.toJson<String>(walletId),
+      'destination': serializer.toJson<String>(destination),
+      'enabled': serializer.toJson<int>(enabled),
+      'artifact': serializer.toJson<i2.Uint8List?>(artifact),
+      'artifactSha256': serializer.toJson<String?>(artifactSha256),
+      'state': serializer.toJson<String>(state),
+      'attempts': serializer.toJson<int>(attempts),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  VaultDescriptorPublicationsData copyWith({
+    String? walletId,
+    String? destination,
+    int? enabled,
+    Value<i2.Uint8List?> artifact = const Value.absent(),
+    Value<String?> artifactSha256 = const Value.absent(),
+    String? state,
+    int? attempts,
+    int? updatedAt,
+  }) => VaultDescriptorPublicationsData(
+    walletId: walletId ?? this.walletId,
+    destination: destination ?? this.destination,
+    enabled: enabled ?? this.enabled,
+    artifact: artifact.present ? artifact.value : this.artifact,
+    artifactSha256: artifactSha256.present
+        ? artifactSha256.value
+        : this.artifactSha256,
+    state: state ?? this.state,
+    attempts: attempts ?? this.attempts,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  VaultDescriptorPublicationsData copyWithCompanion(
+    VaultDescriptorPublicationsCompanion data,
+  ) {
+    return VaultDescriptorPublicationsData(
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      destination: data.destination.present
+          ? data.destination.value
+          : this.destination,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      artifact: data.artifact.present ? data.artifact.value : this.artifact,
+      artifactSha256: data.artifactSha256.present
+          ? data.artifactSha256.value
+          : this.artifactSha256,
+      state: data.state.present ? data.state.value : this.state,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VaultDescriptorPublicationsData(')
+          ..write('walletId: $walletId, ')
+          ..write('destination: $destination, ')
+          ..write('enabled: $enabled, ')
+          ..write('artifact: $artifact, ')
+          ..write('artifactSha256: $artifactSha256, ')
+          ..write('state: $state, ')
+          ..write('attempts: $attempts, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    walletId,
+    destination,
+    enabled,
+    $driftBlobEquality.hash(artifact),
+    artifactSha256,
+    state,
+    attempts,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is VaultDescriptorPublicationsData &&
+          other.walletId == this.walletId &&
+          other.destination == this.destination &&
+          other.enabled == this.enabled &&
+          $driftBlobEquality.equals(other.artifact, this.artifact) &&
+          other.artifactSha256 == this.artifactSha256 &&
+          other.state == this.state &&
+          other.attempts == this.attempts &&
+          other.updatedAt == this.updatedAt);
+}
+
+class VaultDescriptorPublicationsCompanion
+    extends UpdateCompanion<VaultDescriptorPublicationsData> {
+  final Value<String> walletId;
+  final Value<String> destination;
+  final Value<int> enabled;
+  final Value<i2.Uint8List?> artifact;
+  final Value<String?> artifactSha256;
+  final Value<String> state;
+  final Value<int> attempts;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const VaultDescriptorPublicationsCompanion({
+    this.walletId = const Value.absent(),
+    this.destination = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.artifact = const Value.absent(),
+    this.artifactSha256 = const Value.absent(),
+    this.state = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  VaultDescriptorPublicationsCompanion.insert({
+    required String walletId,
+    required String destination,
+    this.enabled = const Value.absent(),
+    this.artifact = const Value.absent(),
+    this.artifactSha256 = const Value.absent(),
+    this.state = const Value.absent(),
+    this.attempts = const Value.absent(),
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : walletId = Value(walletId),
+       destination = Value(destination),
+       updatedAt = Value(updatedAt);
+  static Insertable<VaultDescriptorPublicationsData> custom({
+    Expression<String>? walletId,
+    Expression<String>? destination,
+    Expression<int>? enabled,
+    Expression<i2.Uint8List>? artifact,
+    Expression<String>? artifactSha256,
+    Expression<String>? state,
+    Expression<int>? attempts,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walletId != null) 'wallet_id': walletId,
+      if (destination != null) 'destination': destination,
+      if (enabled != null) 'enabled': enabled,
+      if (artifact != null) 'artifact': artifact,
+      if (artifactSha256 != null) 'artifact_sha256': artifactSha256,
+      if (state != null) 'state': state,
+      if (attempts != null) 'attempts': attempts,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  VaultDescriptorPublicationsCompanion copyWith({
+    Value<String>? walletId,
+    Value<String>? destination,
+    Value<int>? enabled,
+    Value<i2.Uint8List?>? artifact,
+    Value<String?>? artifactSha256,
+    Value<String>? state,
+    Value<int>? attempts,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return VaultDescriptorPublicationsCompanion(
+      walletId: walletId ?? this.walletId,
+      destination: destination ?? this.destination,
+      enabled: enabled ?? this.enabled,
+      artifact: artifact ?? this.artifact,
+      artifactSha256: artifactSha256 ?? this.artifactSha256,
+      state: state ?? this.state,
+      attempts: attempts ?? this.attempts,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (destination.present) {
+      map['destination'] = Variable<String>(destination.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<int>(enabled.value);
+    }
+    if (artifact.present) {
+      map['artifact'] = Variable<i2.Uint8List>(artifact.value);
+    }
+    if (artifactSha256.present) {
+      map['artifact_sha256'] = Variable<String>(artifactSha256.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VaultDescriptorPublicationsCompanion(')
+          ..write('walletId: $walletId, ')
+          ..write('destination: $destination, ')
+          ..write('enabled: $enabled, ')
+          ..write('artifact: $artifact, ')
+          ..write('artifactSha256: $artifactSha256, ')
+          ..write('state: $state, ')
+          ..write('attempts: $attempts, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV17 extends GeneratedDatabase {
   DatabaseAtV17(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
@@ -15699,6 +16149,8 @@ class DatabaseAtV17 extends GeneratedDatabase {
   late final BullVaultRecords bullVaultRecords = BullVaultRecords(this);
   late final BullVaultGenerationReservations bullVaultGenerationReservations =
       BullVaultGenerationReservations(this);
+  late final VaultDescriptorPublications vaultDescriptorPublications =
+      VaultDescriptorPublications(this);
   late final Index orderSwapsRequestId = Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -15769,6 +16221,7 @@ class DatabaseAtV17 extends GeneratedDatabase {
     sendTransactionPolicyChoices,
     bullVaultRecords,
     bullVaultGenerationReservations,
+    vaultDescriptorPublications,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,

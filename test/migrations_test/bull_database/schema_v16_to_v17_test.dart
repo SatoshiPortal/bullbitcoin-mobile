@@ -50,6 +50,19 @@ const walletBackupStateColumns = [
   'observed_payjoin_policy',
 ];
 
+/// What each vault agreed to publish where, and the exact bytes it owes. It
+/// belongs to the same pending step: no feature gets a schema version of its own.
+const vaultDescriptorPublicationColumns = [
+  'wallet_id',
+  'destination',
+  'enabled',
+  'artifact',
+  'artifact_sha256',
+  'state',
+  'attempts',
+  'updated_at',
+];
+
 const walletMetadataColumnsAdded = [
   'hide_on_home',
   'auto_sweep_enabled',
@@ -101,6 +114,54 @@ void main() {
       walletBackupStateColumns,
     );
     expect(await migrated.select(migrated.walletBackupStates).get(), isEmpty);
+    expect(
+      await columnsOf(migrated, 'vault_descriptor_publications'),
+      vaultDescriptorPublicationColumns,
+    );
+    expect(
+      await migrated.select(migrated.vaultDescriptorPublications).get(),
+      isEmpty,
+    );
+  });
+
+  test('a publication row keeps its artifact and defaults', () async {
+    final schema = await verifier.schemaAt(16);
+    final db = SqliteDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 17);
+    await db.close();
+
+    final migrated = v17.DatabaseAtV17(schema.newConnection());
+    addTearDown(migrated.close);
+
+    await migrated
+        .into(migrated.vaultDescriptorPublications)
+        .insert(
+          v17.VaultDescriptorPublicationsCompanion.insert(
+            walletId: 'vault',
+            destination: 'nostr',
+            updatedAt: 1700000000,
+          ),
+        );
+    final fresh = await migrated
+        .select(migrated.vaultDescriptorPublications)
+        .getSingle();
+    // The generated snapshot keeps SQLite's own types, so a boolean is 0 or 1.
+    expect(fresh.enabled, 0);
+    expect(fresh.state, 'idle');
+    expect(fresh.attempts, 0);
+    expect(fresh.artifact, isNull);
+    expect(fresh.artifactSha256, isNull);
+
+    await migrated.customStatement(
+      'UPDATE vault_descriptor_publications '
+      "SET artifact = X'00ff10', artifact_sha256 = 'hash', state = 'pending'",
+    );
+    final stored = await migrated
+        .select(migrated.vaultDescriptorPublications)
+        .getSingle();
+    expect(stored.artifact, orderedEquals([0, 255, 16]));
+    expect(stored.artifactSha256, 'hash');
+    expect(stored.state, 'pending');
   });
 
   test('the migrated backup state carries a nullable checkpoint', () async {
@@ -156,6 +217,7 @@ void main() {
       'keychain_manifest_wallet_bindings',
       'keychain_manifest_nostr_keys',
       'wallet_backup_states',
+      'vault_descriptor_publications',
     ]) {
       expect(
         await columnsOf(upgraded, table),

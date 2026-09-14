@@ -8879,6 +8879,7 @@ final class Schema17 extends i0.VersionedSchema {
     sendTransactionPolicyChoices,
     bullVaultRecords,
     bullVaultGenerationReservations,
+    vaultDescriptorPublications,
     orderSwapsRequestId,
     orderSwapsLocalStatus,
     orderSwapsSourceWallet,
@@ -9535,6 +9536,26 @@ final class Schema17 extends i0.VersionedSchema {
     ),
     alias: null,
   );
+  late final Shape56 vaultDescriptorPublications = Shape56(
+    source: i0.VersionedTable(
+      entityName: 'vault_descriptor_publications',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(wallet_id, destination)'],
+      columns: [
+        _column_161,
+        _column_255,
+        _column_347,
+        _column_359,
+        _column_360,
+        _column_361,
+        _column_362,
+        _column_338,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
   final i1.Index orderSwapsRequestId = i1.Index(
     'order_swaps_request_id',
     'CREATE UNIQUE INDEX order_swaps_request_id ON order_swaps (request_id)',
@@ -9949,6 +9970,61 @@ i1.GeneratedColumn<String> _column_358(String aliasedName) =>
       true,
       type: i1.DriftSqlType.string,
       $customConstraints: 'NULL',
+    );
+
+class Shape56 extends i0.VersionedTable {
+  Shape56({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get walletId =>
+      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get destination =>
+      columnsByName['destination']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get enabled =>
+      columnsByName['enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<i2.Uint8List> get artifact =>
+      columnsByName['artifact']! as i1.GeneratedColumn<i2.Uint8List>;
+  i1.GeneratedColumn<String> get artifactSha256 =>
+      columnsByName['artifact_sha256']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get state =>
+      columnsByName['state']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get attempts =>
+      columnsByName['attempts']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<i2.Uint8List> _column_359(String aliasedName) =>
+    i1.GeneratedColumn<i2.Uint8List>(
+      'artifact',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.blob,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_360(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'artifact_sha256',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_361(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'state',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL DEFAULT \'idle\'',
+      defaultValue: const i1.CustomExpression('\'idle\''),
+    );
+i1.GeneratedColumn<int> _column_362(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'attempts',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0',
+      defaultValue: const i1.CustomExpression('0'),
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

@@ -25,6 +25,7 @@ import 'package:bb_mobile/core/storage/tables/send_transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
+import 'package:bb_mobile/core/storage/tables/vault_descriptor_publications_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_backup_states_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
@@ -70,6 +71,7 @@ part 'sqlite_database.g.dart';
     SendTransactionPolicyChoices,
     BullVaultRecords,
     BullVaultGenerationReservations,
+    VaultDescriptorPublications,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {

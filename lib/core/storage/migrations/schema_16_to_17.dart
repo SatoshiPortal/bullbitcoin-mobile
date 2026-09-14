@@ -3,8 +3,8 @@ import 'package:drift/drift.dart';
 
 /// Adds the persistence required by deterministic products, backup, and
 /// recovery on top of the normalized signer schema of v16: wallet preference
-/// and provenance columns, the keychain manifest tables, and the durable
-/// wallet-backup state.
+/// and provenance columns, the keychain manifest tables, the durable
+/// wallet-backup state, and the per-destination descriptor publication state.
 ///
 class Schema16To17 {
   static Future<void> migrate(Migrator m, Schema17 schema) async {
@@ -49,5 +49,6 @@ class Schema16To17 {
     await m.createTable(schema.keychainManifestWalletBindings);
     await m.createTable(schema.keychainManifestNostrKeys);
     await m.createTable(schema.walletBackupStates);
+    await m.createTable(schema.vaultDescriptorPublications);
   }
 }

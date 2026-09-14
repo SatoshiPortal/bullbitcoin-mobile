@@ -3805,6 +3805,108 @@
     },
     {
       "id": 29,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "vault_descriptor_publications",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "wallet_id",
+            "getter_name": "walletId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "destination",
+            "getter_name": "destination",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "enabled",
+            "getter_name": "enabled",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"enabled\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "artifact",
+            "getter_name": "artifact",
+            "moor_type": "blob",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "artifact_sha256",
+            "getter_name": "artifactSha256",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "state",
+            "getter_name": "state",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'idle\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "attempts",
+            "getter_name": "attempts",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "wallet_id",
+          "destination"
+        ]
+      }
+    },
+    {
+      "id": 30,
       "references": [
         23
       ],
@@ -3823,7 +3925,7 @@
       }
     },
     {
-      "id": 30,
+      "id": 31,
       "references": [
         23
       ],
@@ -3842,7 +3944,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 32,
       "references": [
         23
       ],
@@ -3861,7 +3963,7 @@
       }
     },
     {
-      "id": 32,
+      "id": 33,
       "references": [
         23
       ],
@@ -3880,7 +3982,7 @@
       }
     },
     {
-      "id": 33,
+      "id": 34,
       "references": [
         23
       ],
@@ -3899,7 +4001,7 @@
       }
     },
     {
-      "id": 34,
+      "id": 35,
       "references": [
         23
       ],
@@ -3918,7 +4020,7 @@
       }
     },
     {
-      "id": 35,
+      "id": 36,
       "references": [
         23
       ],
@@ -3937,7 +4039,7 @@
       }
     },
     {
-      "id": 36,
+      "id": 37,
       "references": [
         24
       ],
@@ -3956,7 +4058,7 @@
       }
     },
     {
-      "id": 37,
+      "id": 38,
       "references": [
         24
       ],
@@ -4234,6 +4336,15 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"bull_vault_generation_reservations\" (\"lineage_id\" TEXT NOT NULL, \"generation\" INTEGER NOT NULL, PRIMARY KEY (\"lineage_id\", \"generation\"));"
+        }
+      ]
+    },
+    {
+      "name": "vault_descriptor_publications",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"vault_descriptor_publications\" (\"wallet_id\" TEXT NOT NULL, \"destination\" TEXT NOT NULL, \"enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"enabled\" IN (0, 1)), \"artifact\" BLOB NULL, \"artifact_sha256\" TEXT NULL, \"state\" TEXT NOT NULL DEFAULT 'idle', \"attempts\" INTEGER NOT NULL DEFAULT 0, \"updated_at\" INTEGER NOT NULL, PRIMARY KEY (\"wallet_id\", \"destination\"));"
         }
       ]
     },
