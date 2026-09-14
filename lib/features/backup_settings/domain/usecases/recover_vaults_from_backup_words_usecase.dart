@@ -46,8 +46,13 @@ final class RecoverVaultsFromBackupWordsUsecase {
   }
 
   /// The vaults the Data Backup server holds for this credential.
+  ///
+  /// [abandoned] is asked before every import, so a journey the person has
+  /// left writes nothing more. Imports it already made stay: they are real
+  /// vaults on this device.
   Future<Result<VaultRecoveryResult, BackupSettingsFailure>> fromDataBackup({
     String? words,
+    bool Function()? abandoned,
   }) async {
     final List<WalletBackupVaultSummary> vaults;
     if (words == null) {
@@ -67,6 +72,9 @@ final class RecoverVaultsFromBackupWordsUsecase {
     }
     final outcomes = <VaultRecoveryOutcome>[];
     for (final vault in vaults) {
+      if (abandoned?.call() ?? false) {
+        return Ok(VaultRecoveryResult(outcomes: outcomes, incomplete: true));
+      }
       outcomes.add(
         await _import.importDescriptor(
           descriptor: vault.descriptor,
@@ -79,9 +87,13 @@ final class RecoverVaultsFromBackupWordsUsecase {
   }
 
   /// The vault descriptors this credential published on the relays.
+  ///
+  /// [abandoned] stops the import loop the same way it stops the server one;
+  /// [session] is what stops the relay request itself.
   Future<Result<VaultRecoveryResult, BackupSettingsFailure>> fromNostr({
     String? words,
     NostrSession? session,
+    bool Function()? abandoned,
   }) async {
     final NostrDescriptorSearch search;
     switch (await _vaults.discoverDescriptorsOnNostr(
@@ -95,6 +107,9 @@ final class RecoverVaultsFromBackupWordsUsecase {
     }
     final outcomes = <VaultRecoveryOutcome>[];
     for (final record in search.descriptors) {
+      if (abandoned?.call() ?? false) {
+        return Ok(VaultRecoveryResult(outcomes: outcomes, incomplete: true));
+      }
       outcomes.add(
         await _import.importDescriptor(
           descriptor: record.descriptor,

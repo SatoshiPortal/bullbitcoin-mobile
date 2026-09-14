@@ -112,9 +112,12 @@ final class VaultRecoveryCubit extends Cubit<VaultRecoveryState> {
       return;
     }
     emit(state.copyWith(credentialAvailable: true, busy: true));
-    await _run(() => _words.fromDataBackup(), VaultRecoverySource.dataBackup);
     await _run(
-      () => _words.fromNostr(session: _newSession()),
+      () => _words.fromDataBackup(abandoned: _abandoned),
+      VaultRecoverySource.dataBackup,
+    );
+    await _run(
+      () => _words.fromNostr(session: _newSession(), abandoned: _abandoned),
       VaultRecoverySource.nostr,
     );
     if (isClosed) return;
@@ -129,11 +132,15 @@ final class VaultRecoveryCubit extends Cubit<VaultRecoveryState> {
     if (state.busy) return;
     emit(state.copyWith(busy: true, clearFailure: true));
     await _run(
-      () => _words.fromDataBackup(words: words),
+      () => _words.fromDataBackup(words: words, abandoned: _abandoned),
       VaultRecoverySource.dataBackup,
     );
     await _run(
-      () => _words.fromNostr(words: words, session: _newSession()),
+      () => _words.fromNostr(
+        words: words,
+        session: _newSession(),
+        abandoned: _abandoned,
+      ),
       VaultRecoverySource.nostr,
     );
     if (isClosed) return;
@@ -185,6 +192,11 @@ final class VaultRecoveryCubit extends Cubit<VaultRecoveryState> {
   });
 
   NostrSession _newSession() => _session = NostrSession();
+
+  /// Whether this journey is over. A search whose answer arrives afterwards
+  /// must not go on writing vaults to a device the person has walked away
+  /// from; what it already wrote stays.
+  bool _abandoned() => isClosed;
 
   Future<void> _single(
     Future<Result<VaultRecoveryResult, BackupSettingsFailure>> Function()

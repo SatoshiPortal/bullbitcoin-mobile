@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bb_mobile/core/nostr/nostr_session.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
@@ -309,6 +310,105 @@ void main() {
       VaultRecoverySourceStatus.idle,
     );
   });
+
+  test('a response that lands after the journey closed imports '
+      'nothing', () async {
+    final started = Completer<void>();
+    final arrived = Completer<void>();
+    when(() => metadata.fetchRemoteContents()).thenAnswer((_) async {
+      if (!started.isCompleted) started.complete();
+      await arrived.future;
+      return Ok(
+        WalletBackupContents(
+          vaults: [summaryOf(record)],
+          labelCount: 0,
+          frozenCoinCount: 0,
+          walletPreferenceCount: 0,
+        ),
+      );
+    });
+    when(
+      () => vaults.discoverDescriptorsOnNostr(
+        words: any(named: 'words'),
+        session: any(named: 'session'),
+      ),
+    ).thenAnswer(
+      (_) async =>
+          const Ok((descriptors: <NostrDescriptorRecord>[], incomplete: false)),
+    );
+    importsInto(record);
+
+    final running = cubit.discover();
+    await started.future;
+    await cubit.close();
+    arrived.complete();
+    await running;
+
+    expect(imports, 0, reason: 'the person left before anything was written');
+  });
+
+  test(
+    'closing between two imports stops at the one already written',
+    () async {
+      final started = Completer<void>();
+      final arrived = Completer<void>();
+      when(() => metadata.fetchRemoteContents()).thenAnswer(
+        (_) async => Ok(
+          WalletBackupContents(
+            vaults: [summaryOf(record), summaryOf(otherRecord)],
+            labelCount: 0,
+            frozenCoinCount: 0,
+            walletPreferenceCount: 0,
+          ),
+        ),
+      );
+      when(
+        () => vaults.discoverDescriptorsOnNostr(
+          words: any(named: 'words'),
+          session: any(named: 'session'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok((
+          descriptors: <NostrDescriptorRecord>[],
+          incomplete: false,
+        )),
+      );
+      when(
+        () => vaults.restoreFromRecoveryPackage(
+          source: any(named: 'source'),
+          label: any(named: 'label'),
+        ),
+      ).thenAnswer((_) async {
+        imports++;
+        if (!started.isCompleted) started.complete();
+        await arrived.future;
+        present = [...present, record];
+        return Ok(
+          BullVaultRestoreResult(
+            wallet: Wallet(
+              origin: record.walletId,
+              network: record.recoveryPackage.policy.network,
+              signers: const [],
+              scriptType: null,
+              publicDescriptor: record.recoveryPackage.policy.descriptor,
+              balanceSat: BigInt.zero,
+              isHidden: true,
+            ),
+            record: record,
+            mobileAccess: BullVaultMobileAccess.unavailable,
+          ),
+        );
+      });
+
+      final running = cubit.discover();
+      await started.future;
+      await cubit.close();
+      arrived.complete();
+      await running;
+
+      expect(imports, 1, reason: 'the second import never started');
+    },
+  );
 
   test('closing the journey cancels the relay search it started', () async {
     NostrSession? handed;
