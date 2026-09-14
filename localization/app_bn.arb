@@ -12442,5 +12442,17 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorLoadingStatistics": "আপনার ট্রেডিং পরিসংখ্যান লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorLoadingWallets": "আপনার পেআউট ওয়ালেট লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorAddressEmpty": "সংরক্ষণ করার আগে একটি ঠিকানা লিখুন।",
+  "exchangeSettingsErrorSavingWallet": "ঠিকানাটি সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorDeletingWallet": "ঠিকানাটি সরানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorLoadingAccount": "আপনার অ্যাকাউন্টের বিবরণ লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "ইতিমধ্যে একটি নথি জমা দেওয়া হয়েছে।",
+  "exchangeSettingsErrorDocumentEmpty": "সেই ফাইলটি খালি। অন্য একটি বেছে নিন।",
+  "exchangeSettingsErrorDocumentTooLarge": "সেই ফাইলটি খুব বড়। ছোট একটি বেছে নিন।",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "সেই ফাইলের ধরন গ্রহণযোগ্য নয়। অন্য একটি বেছে নিন।",
+  "exchangeSettingsErrorDocumentUnreadable": "সেই ফাইলটি পড়া যায়নি। অন্য একটি বেছে নিন।",
+  "exchangeSettingsErrorUploadingDocument": "নথিটি আপলোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
 }

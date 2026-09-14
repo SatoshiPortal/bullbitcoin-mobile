@@ -3596,5 +3596,17 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "exchangeSettingsErrorLoadingStatistics": "Չհաջողվեց բեռնել ձեր առևտրի վիճակագրությունը։ Խնդրում ենք փորձել կրկին։",
+  "exchangeSettingsErrorLoadingWallets": "Չհաջողվեց բեռնել ձեր վճարման դրամապանակները։ Խնդրում ենք փորձել կրկին։",
+  "exchangeSettingsErrorAddressEmpty": "Պահպանելուց առաջ մուտքագրեք հասցե։",
+  "exchangeSettingsErrorSavingWallet": "Չհաջողվեց պահպանել հասցեն։ Խնդրում ենք փորձել կրկին։",
+  "exchangeSettingsErrorDeletingWallet": "Չհաջողվեց հեռացնել հասցեն։ Խնդրում ենք փորձել կրկին։",
+  "exchangeSettingsErrorLoadingAccount": "Չհաջողվեց բեռնել ձեր հաշվի տվյալները։ Խնդրում ենք փորձել կրկին։",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Փաստաթուղթն արդեն ներկայացվել է։",
+  "exchangeSettingsErrorDocumentEmpty": "Այդ ֆայլը դատարկ է։ Ընտրեք մեկ ուրիշը։",
+  "exchangeSettingsErrorDocumentTooLarge": "Այդ ֆայլը չափազանց մեծ է։ Ընտրեք ավելի փոքրը։",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Ֆայլի այդ տեսակը չի ընդունվում։ Ընտրեք մեկ ուրիշը։",
+  "exchangeSettingsErrorDocumentUnreadable": "Չհաջողվեց կարդալ այդ ֆայլը։ Ընտրեք մեկ ուրիշը։",
+  "exchangeSettingsErrorUploadingDocument": "Չհաջողվեց վերբեռնել փաստաթուղթը։ Խնդրում ենք փորձել կրկին։"
 }

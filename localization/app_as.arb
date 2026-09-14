@@ -9344,5 +9344,17 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorLoadingStatistics": "আপোনাৰ ট্ৰেডিং পৰিসংখ্যা ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorLoadingWallets": "আপোনাৰ পৰিশোধ ৱালেটসমূহ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorAddressEmpty": "সংৰক্ষণ কৰাৰ আগতে এটা ঠিকনা দিয়ক।",
+  "exchangeSettingsErrorSavingWallet": "ঠিকনাটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorDeletingWallet": "ঠিকনাটো আঁতৰাব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorLoadingAccount": "আপোনাৰ একাউণ্টৰ বিৱৰণ ল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "ইতিমধ্যে এখন নথি দাখিল কৰা হৈছে।",
+  "exchangeSettingsErrorDocumentEmpty": "সেই ফাইলটো খালী। আন এটা বাছনি কৰক।",
+  "exchangeSettingsErrorDocumentTooLarge": "সেই ফাইলটো অতি ডাঙৰ। সৰু এটা বাছনি কৰক।",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "সেই ফাইল প্ৰকাৰ গ্ৰহণ কৰা নহয়। আন এটা বাছনি কৰক।",
+  "exchangeSettingsErrorDocumentUnreadable": "সেই ফাইলটো পঢ়িব পৰা নগ'ল। আন এটা বাছনি কৰক।",
+  "exchangeSettingsErrorUploadingDocument": "নথিখন আপল'ড কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

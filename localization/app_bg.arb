@@ -10233,5 +10233,17 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "exchangeSettingsErrorLoadingStatistics": "Вашата търговска статистика не можа да бъде заредена. Моля, опитайте отново.",
+  "exchangeSettingsErrorLoadingWallets": "Вашите портфейли за изплащане не можаха да бъдат заредени. Моля, опитайте отново.",
+  "exchangeSettingsErrorAddressEmpty": "Въведете адрес, преди да запазите.",
+  "exchangeSettingsErrorSavingWallet": "Адресът не можа да бъде запазен. Моля, опитайте отново.",
+  "exchangeSettingsErrorDeletingWallet": "Адресът не можа да бъде премахнат. Моля, опитайте отново.",
+  "exchangeSettingsErrorLoadingAccount": "Данните за акаунта ви не можаха да бъдат заредени. Моля, опитайте отново.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Вече е подаден документ.",
+  "exchangeSettingsErrorDocumentEmpty": "Този файл е празен. Изберете друг.",
+  "exchangeSettingsErrorDocumentTooLarge": "Този файл е твърде голям. Изберете по-малък.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Този тип файл не се приема. Изберете друг.",
+  "exchangeSettingsErrorDocumentUnreadable": "Този файл не можа да бъде прочетен. Изберете друг.",
+  "exchangeSettingsErrorUploadingDocument": "Документът не можа да бъде качен. Моля, опитайте отново."
 }

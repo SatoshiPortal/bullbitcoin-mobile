@@ -12232,5 +12232,17 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "exchangeSettingsErrorLoadingStatistics": "آمار معاملات شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSettingsErrorLoadingWallets": "کیف‌پول‌های پرداخت شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSettingsErrorAddressEmpty": "پیش از ذخیره، یک آدرس وارد کنید.",
+  "exchangeSettingsErrorSavingWallet": "آدرس ذخیره نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSettingsErrorDeletingWallet": "آدرس حذف نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSettingsErrorLoadingAccount": "اطلاعات حساب شما بارگذاری نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "یک سند قبلاً ارسال شده است.",
+  "exchangeSettingsErrorDocumentEmpty": "این فایل خالی است. فایل دیگری انتخاب کنید.",
+  "exchangeSettingsErrorDocumentTooLarge": "این فایل بسیار بزرگ است. فایل کوچک‌تری انتخاب کنید.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "این نوع فایل پذیرفته نمی‌شود. فایل دیگری انتخاب کنید.",
+  "exchangeSettingsErrorDocumentUnreadable": "این فایل خوانده نشد. فایل دیگری انتخاب کنید.",
+  "exchangeSettingsErrorUploadingDocument": "سند بارگذاری نشد. لطفاً دوباره تلاش کنید."
 }

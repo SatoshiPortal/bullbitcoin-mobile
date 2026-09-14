@@ -4920,5 +4920,17 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "exchangeSettingsErrorLoadingStatistics": "Не удалось загрузить вашу торговую статистику. Пожалуйста, попробуйте снова.",
+  "exchangeSettingsErrorLoadingWallets": "Не удалось загрузить ваши кошельки для выплат. Пожалуйста, попробуйте снова.",
+  "exchangeSettingsErrorAddressEmpty": "Введите адрес перед сохранением.",
+  "exchangeSettingsErrorSavingWallet": "Не удалось сохранить адрес. Пожалуйста, попробуйте снова.",
+  "exchangeSettingsErrorDeletingWallet": "Не удалось удалить адрес. Пожалуйста, попробуйте снова.",
+  "exchangeSettingsErrorLoadingAccount": "Не удалось загрузить данные вашего аккаунта. Пожалуйста, попробуйте снова.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Документ уже отправлен.",
+  "exchangeSettingsErrorDocumentEmpty": "Этот файл пуст. Выберите другой.",
+  "exchangeSettingsErrorDocumentTooLarge": "Этот файл слишком большой. Выберите файл поменьше.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Этот тип файла не принимается. Выберите другой.",
+  "exchangeSettingsErrorDocumentUnreadable": "Не удалось прочитать этот файл. Выберите другой.",
+  "exchangeSettingsErrorUploadingDocument": "Не удалось загрузить документ. Пожалуйста, попробуйте снова."
 }

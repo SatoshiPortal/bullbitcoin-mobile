@@ -4911,5 +4911,17 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "exchangeSettingsErrorLoadingStatistics": "Не вдалося завантажити вашу торгову статистику. Будь ласка, спробуйте ще раз.",
+  "exchangeSettingsErrorLoadingWallets": "Не вдалося завантажити ваші гаманці для виплат. Будь ласка, спробуйте ще раз.",
+  "exchangeSettingsErrorAddressEmpty": "Введіть адресу перед збереженням.",
+  "exchangeSettingsErrorSavingWallet": "Не вдалося зберегти адресу. Будь ласка, спробуйте ще раз.",
+  "exchangeSettingsErrorDeletingWallet": "Не вдалося видалити адресу. Будь ласка, спробуйте ще раз.",
+  "exchangeSettingsErrorLoadingAccount": "Не вдалося завантажити дані вашого облікового запису. Будь ласка, спробуйте ще раз.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Документ уже надіслано.",
+  "exchangeSettingsErrorDocumentEmpty": "Цей файл порожній. Виберіть інший.",
+  "exchangeSettingsErrorDocumentTooLarge": "Цей файл завеликий. Виберіть менший.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Цей тип файлу не приймається. Виберіть інший.",
+  "exchangeSettingsErrorDocumentUnreadable": "Не вдалося прочитати цей файл. Виберіть інший.",
+  "exchangeSettingsErrorUploadingDocument": "Не вдалося завантажити документ. Будь ласка, спробуйте ще раз."
 }

@@ -12232,5 +12232,17 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "exchangeSettingsErrorLoadingStatistics": "Δεν ήταν δυνατή η φόρτωση των στατιστικών συναλλαγών σας. Παρακαλώ δοκιμάστε ξανά.",
+  "exchangeSettingsErrorLoadingWallets": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών πληρωμής σας. Παρακαλώ δοκιμάστε ξανά.",
+  "exchangeSettingsErrorAddressEmpty": "Εισαγάγετε μια διεύθυνση πριν την αποθήκευση.",
+  "exchangeSettingsErrorSavingWallet": "Δεν ήταν δυνατή η αποθήκευση της διεύθυνσης. Παρακαλώ δοκιμάστε ξανά.",
+  "exchangeSettingsErrorDeletingWallet": "Δεν ήταν δυνατή η αφαίρεση της διεύθυνσης. Παρακαλώ δοκιμάστε ξανά.",
+  "exchangeSettingsErrorLoadingAccount": "Δεν ήταν δυνατή η φόρτωση των στοιχείων του λογαριασμού σας. Παρακαλώ δοκιμάστε ξανά.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Έχει ήδη υποβληθεί ένα έγγραφο.",
+  "exchangeSettingsErrorDocumentEmpty": "Αυτό το αρχείο είναι κενό. Επιλέξτε άλλο.",
+  "exchangeSettingsErrorDocumentTooLarge": "Αυτό το αρχείο είναι πολύ μεγάλο. Επιλέξτε μικρότερο.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Αυτός ο τύπος αρχείου δεν γίνεται δεκτός. Επιλέξτε άλλο.",
+  "exchangeSettingsErrorDocumentUnreadable": "Δεν ήταν δυνατή η ανάγνωση αυτού του αρχείου. Επιλέξτε άλλο.",
+  "exchangeSettingsErrorUploadingDocument": "Δεν ήταν δυνατή η μεταφόρτωση του εγγράφου. Παρακαλώ δοκιμάστε ξανά."
 }

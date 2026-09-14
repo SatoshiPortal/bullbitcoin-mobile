@@ -4914,5 +4914,17 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "exchangeSettingsErrorLoadingStatistics": "Non è stato possibile caricare le tue statistiche di trading. Si prega di riprovare.",
+  "exchangeSettingsErrorLoadingWallets": "Non è stato possibile caricare i tuoi portafogli di pagamento. Si prega di riprovare.",
+  "exchangeSettingsErrorAddressEmpty": "Inserisci un indirizzo prima di salvare.",
+  "exchangeSettingsErrorSavingWallet": "Non è stato possibile salvare l'indirizzo. Si prega di riprovare.",
+  "exchangeSettingsErrorDeletingWallet": "Non è stato possibile rimuovere l'indirizzo. Si prega di riprovare.",
+  "exchangeSettingsErrorLoadingAccount": "Non è stato possibile caricare i dettagli del tuo account. Si prega di riprovare.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Un documento è già stato inviato.",
+  "exchangeSettingsErrorDocumentEmpty": "Questo file è vuoto. Scegline un altro.",
+  "exchangeSettingsErrorDocumentTooLarge": "Questo file è troppo grande. Scegline uno più piccolo.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Questo tipo di file non è accettato. Scegline un altro.",
+  "exchangeSettingsErrorDocumentUnreadable": "Non è stato possibile leggere questo file. Scegline un altro.",
+  "exchangeSettingsErrorUploadingDocument": "Non è stato possibile caricare il documento. Si prega di riprovare."
 }
