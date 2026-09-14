@@ -18,7 +18,7 @@ import 'package:bull_ui/bull_ui.dart' show BullSwitch, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/features/settings/ui/settings_route.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
 class WalletRecoverySettingsScreen extends StatelessWidget {
   const WalletRecoverySettingsScreen({super.key});

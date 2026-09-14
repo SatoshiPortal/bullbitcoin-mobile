@@ -9,6 +9,8 @@ export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_c
         WalletBackupContents,
         WalletBackupVaultSummary,
         WalletBackupWalletSummary;
+export 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart'
+    show WalletAutoswapSettings, WalletPayjoinSettings, WalletPortableSettings;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart'
     show WalletBackupExport, WalletBackupFileProtection;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart'

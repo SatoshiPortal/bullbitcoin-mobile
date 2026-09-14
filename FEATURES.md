@@ -106,7 +106,10 @@ graph TB
     BACKUP_SETTINGS --> TX_HISTORY
     BACKUP_SETTINGS --> RECOVERBULL
     BACKUP_SETTINGS --> BACKUPS
+    BACKUP_SETTINGS -->|Data Backup route, wallet settings entries| SETTINGS
+    BACKUP_SETTINGS -->|Whether the metadata backup choice was made| WIZARD
     PASSPHRASE_WALLETS --> KEYCHAIN_MANIFEST
+    PASSPHRASE_WALLETS --> SETTINGS
     PASSPHRASE_WALLETS --> WALLETS
     %% Metadata follow-up after seed recovery is composed by the app router;
     %% RecoverBull receives a completion callback, not a WalletBackup dependency.
