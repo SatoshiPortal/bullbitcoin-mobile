@@ -95,6 +95,14 @@ class VaultBackupScreen extends StatelessWidget {
                 onTap: state.busy ? null : () => _verifySavedCopy(context),
               ),
               SettingsEntryItem(
+                icon: Icons.cloud_upload_outlined,
+                title: context.loc.vaultDestinationsEntry,
+                onTap: () => context.pushNamed(
+                  BullVaultFacade.backupDestinationsRouteName,
+                  pathParameters: {'walletId': inspection.record.walletId},
+                ),
+              ),
+              SettingsEntryItem(
                 icon: Icons.password_outlined,
                 title: context.loc.backupWordsEntry,
                 onTap: () =>
@@ -124,6 +132,43 @@ class VaultBackupScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+              const Gap(32),
+              Text(
+                context.loc.vaultDestinationsTitle,
+                style: context.font.titleLarge,
+              ),
+              const Gap(16),
+              for (final destination in VaultBackupDestination.values) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(switch (destination) {
+                        VaultBackupDestination.server =>
+                          context.loc.vaultDestinationsServer,
+                        VaultBackupDestination.nostr =>
+                          context.loc.vaultDestinationsNostr,
+                      }, style: context.font.bodyMedium),
+                    ),
+                    const Gap(12),
+                    Text(
+                      _publicationStatus(context, state, destination),
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                const Gap(12),
+              ],
+              if (state.hasOutstandingPublication)
+                BullButton.big(
+                  label: context.loc.retry,
+                  disabled: state.busy,
+                  outlined: true,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
+                  onPressed: cubit.retryPublications,
                 ),
               const Gap(32),
               Text(
@@ -183,6 +228,26 @@ class VaultBackupScreen extends StatelessWidget {
       ),
     ),
   );
+
+  String _publicationStatus(
+    BuildContext context,
+    VaultBackupState state,
+    VaultBackupDestination destination,
+  ) {
+    final row = state.publications
+        .where((row) => row.destination == destination)
+        .firstOrNull;
+    if (row == null || !row.enabled) {
+      return context.loc.vaultDestinationsNotSelected;
+    }
+    return switch (row.state) {
+      VaultPublicationState.verified => context.loc.vaultDestinationsVerified,
+      VaultPublicationState.sent => context.loc.vaultDestinationsSent,
+      VaultPublicationState.failed => context.loc.vaultDestinationsFailed,
+      VaultPublicationState.idle ||
+      VaultPublicationState.pending => context.loc.vaultDestinationsPending,
+    };
+  }
 
   Future<void> _verifySavedCopy(BuildContext context) async {
     final cubit = context.read<VaultBackupCubit>();

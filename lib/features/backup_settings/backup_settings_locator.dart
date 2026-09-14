@@ -112,7 +112,7 @@ class BackupSettingsLocator {
       ),
     );
     locator.registerFactoryParam<VaultBackupCubit, String, void>(
-      (walletId, _) => VaultBackupCubit(locator(), walletId),
+      (walletId, _) => VaultBackupCubit(locator(), locator(), walletId),
     );
     locator.registerLazySingleton<BackupReminderRepository>(
       BackupReminderRepositoryImpl.new,

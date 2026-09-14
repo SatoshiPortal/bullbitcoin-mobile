@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/backup_test_status_row.dart';
 import 'package:bb_mobile/features/backup_settings/data/vault_backup_test_repository_impl.dart';
 import 'package:bb_mobile/features/backup_settings/domain/repositories/wallet_backup_file_repository.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/publish_vault_descriptor_backups_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/verify_vault_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/vault_backup_test.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
@@ -75,6 +76,11 @@ void main() {
     when(
       () => vaults.encodeRecoveryPackage(record.recoveryPackage),
     ).thenReturn(codec.encode(record.recoveryPackage));
+    // No destination was ever chosen for this vault.
+    when(() => vaults.descriptorPublications(any())).thenAnswer(
+      (_) async =>
+          const Ok<List<VaultDescriptorPublication>, BullVaultFailure>([]),
+    );
     history = VaultBackupTestRepositoryImpl();
     metadata = _Metadata();
     // The server holds no backup for this seed: an honest "no remote copy".
@@ -89,6 +95,7 @@ void main() {
         history,
         _Files(),
       ),
+      PublishVaultDescriptorBackupsUsecase(vaults, metadata),
       record.walletId,
     );
     await cubit.load();
