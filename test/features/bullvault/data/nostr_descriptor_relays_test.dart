@@ -4,12 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('the configured relays are reviewed, canonical wss endpoints', () {
-    expect(NostrDescriptorRelays.configured, hasLength(4));
+    expect(NostrDescriptorRelays.configured, hasLength(5));
     expect(NostrDescriptorRelays.configured.map((relay) => relay.toString()), [
-      'wss://relay.damus.io',
       'wss://nos.lol',
       'wss://relay.primal.net',
-      'wss://relay.nostr.band',
+      'wss://nostr.mom',
+      'wss://offchain.pub',
+      'wss://nostr.oxtr.dev',
     ]);
     for (final relay in NostrDescriptorRelays.configured) {
       expect(relay.scheme, 'wss');
