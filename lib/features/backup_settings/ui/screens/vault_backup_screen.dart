@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/domain/vault_backup_test.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullPasteInput, Gap;
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_kit
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_kit_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:go_router/go_router.dart';
 
 class VaultBackupScreen extends StatelessWidget {
   const VaultBackupScreen({super.key});
@@ -91,6 +93,12 @@ class VaultBackupScreen extends StatelessWidget {
                 icon: Icons.verified_outlined,
                 title: context.loc.bullVaultVerifyDescriptor,
                 onTap: state.busy ? null : () => _verifySavedCopy(context),
+              ),
+              SettingsEntryItem(
+                icon: Icons.password_outlined,
+                title: context.loc.backupWordsEntry,
+                onTap: () =>
+                    context.pushNamed(BackupSettingsSubroute.backupWords.name),
               ),
               const Gap(32),
               for (final kind in [

@@ -317,6 +317,12 @@ class _ProtectedDataSection extends StatelessWidget {
                 title: context.loc.walletBackupContentsRetry,
                 onTap: context.read<BackupSettingsCubit>().loadContents,
               ),
+            SettingsEntryItem(
+              icon: Icons.password_outlined,
+              title: context.loc.backupWordsEntry,
+              onTap: () =>
+                  context.pushNamed(BackupSettingsSubroute.backupWords.name),
+            ),
           ],
         );
       },

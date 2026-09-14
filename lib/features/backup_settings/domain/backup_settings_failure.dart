@@ -70,3 +70,14 @@ final class BackupSettingsRecoveryNeedsAttentionFailure
     extends BackupSettingsFailure {
   const BackupSettingsRecoveryNeedsAttentionFailure();
 }
+
+/// The twelve magic backup words cannot be derived on this device, because no
+/// default seed is available to derive them from.
+///
+/// Kept apart from [BackupSettingsUnavailableFailure], which is about a server
+/// this app could not reach: nothing is wrong here, the words simply live with
+/// a wallet this phone does not hold.
+final class BackupSettingsBackupWordsUnavailableFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsBackupWordsUnavailableFailure();
+}

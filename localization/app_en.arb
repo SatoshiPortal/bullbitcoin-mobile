@@ -17817,5 +17817,21 @@
   "bullVaultCheckLatestIncomplete": "Last search could not be completed",
   "@bullVaultCheckLatestIncomplete": {
     "description": "BullVault settings and recovery"
+  },
+  "backupWordsEntry": "View magic backup words",
+  "@backupWordsEntry": {
+    "description": "Entry that opens the protected reveal of the twelve backup words"
+  },
+  "backupWordsTitle": "Magic backup words",
+  "@backupWordsTitle": {
+    "description": "Title of the protected backup words screen"
+  },
+  "backupWordsExplanation": "Your wallet has two different sets of words. Your wallet recovery phrase restores your bitcoin and can spend it. These magic backup words are different: they unlock the wallet details and vault descriptors Bull has backed up for you, and they cannot spend your bitcoin. Write both down, and keep them apart.",
+  "@backupWordsExplanation": {
+    "description": "Explains the difference between the wallet recovery phrase and the backup words"
+  },
+  "backupWordsUnavailable": "These words come from the wallet seed on this phone, and no seed is available here. Restore your wallet first, or recover your vault with the words you wrote down.",
+  "@backupWordsUnavailable": {
+    "description": "Shown when no default seed exists to derive the backup words from"
   }
 }

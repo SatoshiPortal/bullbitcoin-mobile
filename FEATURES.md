@@ -100,6 +100,8 @@ graph TB
     WALLET_BACKUP --> LABELS
     WALLET_BACKUP -->|Recovery packages, committed backup changes,<br/>private descriptor sealing and lookup aliases| BULLVAULT
     BACKUP_SETTINGS --> WALLET_BACKUP
+    BACKUP_SETTINGS -->|Revealing the twelve magic backup words| NOSTR_IDENTITY
+    BACKUP_SETTINGS -->|Step-up authentication before the words reveal| APP_UNLOCK
     BACKUP_SETTINGS --> LABELS
     BACKUP_SETTINGS --> TX_HISTORY
     BACKUP_SETTINGS --> RECOVERBULL
@@ -304,4 +306,4 @@ To verify no cyclic dependencies exist, you can:
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
 
-`NOSTR_IDENTITY` owns the one backup credential. The twelve backup words come from the reserved BIP85 path on the default seed; they derive the metadata encryption key, the identity that authors public backup artifacts and the separate identity the backup server account is named by. It has two consumers. `WALLET_BACKUP` encrypts with that key and signs server requests as that account, and it can do both from words a recovering user supplies instead of from the default seed. `BULLVAULT` seals each vault descriptor with the same key and publishes it, authored by the artifact identity, on a compiled-in list of public relays; discovery runs from supplied words alone, so an heir needs no seed and no local database.
+`NOSTR_IDENTITY` owns the one backup credential. The twelve backup words come from the reserved BIP85 path on the default seed; they derive the metadata encryption key, the identity that authors public backup artifacts and the separate identity the backup server account is named by. It has three consumers. `WALLET_BACKUP` encrypts with that key and signs server requests as that account, and it can do both from words a recovering user supplies instead of from the default seed. `BULLVAULT` seals each vault descriptor with the same key and publishes it, authored by the artifact identity, on a compiled-in list of public relays; discovery runs from supplied words alone, so an heir needs no seed and no local database. `BACKUP_SETTINGS` reveals the words themselves, behind the PIN and the capture block, and derives a credential from seed words someone types in while recovering.

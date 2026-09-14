@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/backup_settings/domain/repositories/backup_re
 import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_backup_reminders_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_words_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/wallet_recovery_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/data/file_picker_wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
@@ -19,9 +20,11 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/publish_vault
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vault_from_bip138_file_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_cosigner_key_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/reveal_backup_words_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_server_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/watch_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
@@ -76,6 +79,11 @@ class BackupSettingsLocator {
     );
     locator.registerFactory<RecoverVaultsFromCosignerKeyUsecase>(
       () => RecoverVaultsFromCosignerKeyUsecase(walletBackup, locator()),
+    );
+    locator.registerFactory<BackupWordsCubit>(
+      () => BackupWordsCubit(
+        RevealBackupWordsUsecase(locator<NostrIdentityFacade>()),
+      ),
     );
     locator.registerFactory<ExportPrivateDescriptorFileUsecase>(
       () =>

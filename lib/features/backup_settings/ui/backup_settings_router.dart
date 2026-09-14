@@ -1,4 +1,6 @@
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_words_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_options_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/backup_words_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_metadata_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_manifest_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_vaults_screen.dart';
@@ -26,6 +28,7 @@ final class BackupOptionsArgs {
 
 enum BackupSettingsSubroute {
   backupOptions('backup-options'),
+  backupWords('backup-words'),
   walletManifest('wallet-manifest'),
   walletMetadata('wallet-metadata'),
   walletVaults('wallet-vaults');
@@ -59,6 +62,14 @@ class BackupSettingsSettingsRouter {
   ];
 
   static final dataBackupRoutes = <RouteBase>[
+    GoRoute(
+      name: BackupSettingsSubroute.backupWords.name,
+      path: BackupSettingsSubroute.backupWords.path,
+      builder: (_, _) => BlocProvider(
+        create: (_) => locator<BackupWordsCubit>(),
+        child: const BackupWordsScreen(),
+      ),
+    ),
     GoRoute(
       name: BullVaultFacade.backupRouteName,
       path: 'bullvault/:walletId',
