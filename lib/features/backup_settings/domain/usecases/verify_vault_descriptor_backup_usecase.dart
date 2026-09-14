@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -167,6 +169,76 @@ final class VerifyVaultDescriptorBackupUsecase {
     } on Exception {
       return const Err(BackupSettingsInvalidFileFailure());
     }
+  }
+
+  /// Checks that every eligible cosigner can find and open the descriptor.
+  ///
+  /// The recipients come from re-sealing the active descriptor: encoding is the
+  /// one place that decides which accounts a vault entrusts, and its answer is
+  /// deterministic even though the bytes are not. The freshly sealed artifact
+  /// itself is discarded; only what the server already holds is checked.
+  Future<Result<VaultBackupBip138Check, BackupSettingsFailure>> verifyBip138(
+    String walletId,
+  ) async {
+    final loaded = await load(walletId);
+    if (loaded case Err(:final failure)) return Err(failure);
+    final inspection =
+        (loaded as Ok<VaultBackupInspection, BackupSettingsFailure>).value;
+    final policy = inspection.record.recoveryPackage.policy;
+    final encoded = await _vaults.encodePrivateDescriptorBackup(walletId);
+    if (encoded case Err()) {
+      return const Err(BackupSettingsUnavailableFailure());
+    }
+    final recipients =
+        (encoded as Ok<BullVaultDescriptorBackup, BullVaultFailure>)
+            .value
+            .recipients;
+    var found = 0;
+    var incomplete = false;
+    for (final recipient in recipients) {
+      final page = await _metadata.lookupPrivateDescriptors(recipient);
+      // A server that refused one cosigner cannot support a partial verdict
+      // about the others, so the whole check stops rather than guessing.
+      if (page case Err(:final failure)) {
+        return Err(mapWalletBackupFailure(failure));
+      }
+      final lookup =
+          (page as Ok<PrivateDescriptorLookup, WalletBackupFailure>).value;
+      incomplete = incomplete || lookup.incomplete;
+      for (final record in lookup.records) {
+        final opened = _vaults.decodePrivateDescriptorBackup(
+          bytes: Uint8List.fromList(record.ciphertext),
+          accountKeyInput: recipient,
+        );
+        if (opened is! Ok<BullVaultDescriptorBackup, BullVaultFailure>) {
+          continue;
+        }
+        if (opened.value.network != policy.network) continue;
+        try {
+          if (!_matches(
+            opened.value.descriptor,
+            policy.descriptor,
+            policy.network,
+          )) {
+            continue;
+          }
+        } on Exception {
+          continue;
+        }
+        found++;
+        break;
+      }
+    }
+    final check = VaultBackupBip138Check(
+      eligibleKeys: recipients.length,
+      foundKeys: found,
+      incomplete: incomplete,
+    );
+    if (!check.complete) return Ok(check);
+    return switch (await _record(inspection, VaultBackupSource.bip138)) {
+      Ok() => Ok(check),
+      Err(:final failure) => Err(failure),
+    };
   }
 
   bool _matches(String candidate, String expected, Network network) =>

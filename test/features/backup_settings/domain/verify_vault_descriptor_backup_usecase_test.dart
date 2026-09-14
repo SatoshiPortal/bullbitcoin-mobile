@@ -7,6 +7,12 @@ import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failur
 import 'package:bb_mobile/features/backup_settings/domain/repositories/vault_backup_test_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/verify_vault_descriptor_backup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
+import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
+import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
+import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:drift/native.dart';
 import 'package:bb_mobile/features/backup_settings/domain/vault_backup_test.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
@@ -383,4 +389,171 @@ void main() {
       expect(verify.export(inspection), codec.encode(record.recoveryPackage));
     },
   );
+
+  group('bip138', () {
+    late SqliteDatabase descriptorStorage;
+    late BullVaultRepositoryImpl codecs;
+    late BullVaultDescriptorBackup artifact;
+    final asked = <String>[];
+    // The same cosigners, one generation on: it decrypts with the same keys
+    // but it is not the descriptor this vault is being checked for.
+    final otherPolicy = testBullVaultRecoveryPackage(
+      previousVaultId: record.walletId,
+      lineageId: policy.lineageId,
+      generation: 1,
+      includesInheritance: true,
+    ).policy;
+
+    setUpAll(() => registerFallbackValue(Uint8List(0)));
+
+    setUp(() {
+      asked.clear();
+      descriptorStorage = SqliteDatabase(NativeDatabase.memory());
+      final packageCodec = testBullVaultRecoveryPackageCodec();
+      codecs = BullVaultRepositoryImpl(
+        BullVaultMetadataDatasource(descriptorStorage),
+        BullVaultRecordMapper(packageCodec),
+        packageCodec,
+        Bip138Codec(),
+      );
+      artifact =
+          (codecs.encodePrivateDescriptorBackup(
+                    descriptor: policy.descriptor,
+                    network: policy.network,
+                  )
+                  as Ok<BullVaultDescriptorBackup, BullVaultFailure>)
+              .value;
+      when(
+        () => vaults.encodePrivateDescriptorBackup(record.walletId),
+      ).thenAnswer((_) async => Ok(artifact));
+      when(
+        () => vaults.decodePrivateDescriptorBackup(
+          bytes: any(named: 'bytes'),
+          accountKeyInput: any(named: 'accountKeyInput'),
+        ),
+      ).thenAnswer(
+        (call) => codecs.decodePrivateDescriptorBackup(
+          bytes: call.namedArguments[#bytes] as Uint8List,
+          accountKeyInput: call.namedArguments[#accountKeyInput] as String,
+        ),
+      );
+    });
+    tearDown(() => descriptorStorage.close());
+
+    void answerLookups(
+      Map<String, List<Uint8List>> byRecipient, {
+      bool incomplete = false,
+    }) {
+      when(() => metadata.lookupPrivateDescriptors(any())).thenAnswer((
+        call,
+      ) async {
+        final key = call.positionalArguments.single as String;
+        asked.add(key);
+        return Ok(
+          PrivateDescriptorLookup(
+            records: [
+              for (final bytes in byRecipient[key] ?? const <Uint8List>[])
+                PrivateDescriptorRecord(
+                  ciphertext: bytes,
+                  ciphertextSha256: 'a' * 64,
+                  createdAt: now,
+                ),
+            ],
+            incomplete: incomplete,
+          ),
+        );
+      });
+    }
+
+    test('a date is recorded only when every cosigner can recover', () async {
+      answerLookups({
+        for (final recipient in artifact.recipients)
+          recipient: [artifact.bytes],
+      });
+
+      final result = await verify.verifyBip138(record.walletId);
+
+      final check =
+          (result as Ok<VaultBackupBip138Check, BackupSettingsFailure>).value;
+      expect(check.eligibleKeys, artifact.recipients.length);
+      expect(check.foundKeys, artifact.recipients.length);
+      expect(check.complete, isTrue);
+      expect(check.incomplete, isFalse);
+      expect(await dates(), {VaultBackupSource.bip138: now});
+      // Every eligible cosigner was asked, none was assumed.
+      expect(asked, artifact.recipients);
+    });
+
+    test('a partial result is reported and never written down', () async {
+      answerLookups({
+        artifact.recipients.first: [artifact.bytes],
+      });
+
+      final result = await verify.verifyBip138(record.walletId);
+
+      final check =
+          (result as Ok<VaultBackupBip138Check, BackupSettingsFailure>).value;
+      expect(check.foundKeys, 1);
+      expect(check.eligibleKeys, artifact.recipients.length);
+      expect(check.complete, isFalse);
+      expect(await dates(), isEmpty);
+    });
+
+    test('a record for another descriptor does not count', () async {
+      final elsewhere =
+          (codecs.encodePrivateDescriptorBackup(
+                    descriptor: otherPolicy.descriptor,
+                    network: otherPolicy.network,
+                  )
+                  as Ok<BullVaultDescriptorBackup, BullVaultFailure>)
+              .value;
+      answerLookups({
+        for (final recipient in artifact.recipients)
+          recipient: [elsewhere.bytes],
+      });
+
+      final result = await verify.verifyBip138(record.walletId);
+
+      expect(
+        (result as Ok<VaultBackupBip138Check, BackupSettingsFailure>)
+            .value
+            .foundKeys,
+        0,
+      );
+      expect(await dates(), isEmpty);
+    });
+
+    test('a truncated search is carried through with the counts', () async {
+      answerLookups({
+        for (final recipient in artifact.recipients)
+          recipient: [artifact.bytes],
+      }, incomplete: true);
+
+      final result = await verify.verifyBip138(record.walletId);
+
+      final check =
+          (result as Ok<VaultBackupBip138Check, BackupSettingsFailure>).value;
+      expect(check.incomplete, isTrue);
+      // Every key was retrieved, so the vault is backed up whatever else the
+      // truncated page might also hold.
+      expect(check.complete, isTrue);
+      expect(await dates(), {VaultBackupSource.bip138: now});
+    });
+
+    test('a refused lookup stops the check rather than guessing', () async {
+      when(() => metadata.lookupPrivateDescriptors(any())).thenAnswer(
+        (_) async => const Err(WalletBackupRemoteUnavailableFailure()),
+      );
+
+      expect(
+        await verify.verifyBip138(record.walletId),
+        isA<Err<VaultBackupBip138Check, BackupSettingsFailure>>().having(
+          (value) => value.failure,
+          'failure',
+          isA<BackupSettingsUnavailableFailure>(),
+        ),
+      );
+      expect(await dates(), isEmpty);
+    });
+  });
 }

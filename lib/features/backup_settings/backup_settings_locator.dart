@@ -9,11 +9,14 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/wallet_rec
 import 'package:bb_mobile/features/backup_settings/data/file_picker_wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/backup_wallet_now_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/delete_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/export_private_descriptor_file_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/export_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/fetch_remote_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_recovery_status_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/import_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vault_from_bip138_file_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_cosigner_key_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_enabled_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/set_wallet_backup_server_usecase.dart';
@@ -57,6 +60,19 @@ class BackupSettingsLocator {
         locator<VaultBackupTestRepository>(),
         files,
       ),
+    );
+    locator.registerFactory<RecoverVaultFromBip138FileUsecase>(
+      () => RecoverVaultFromBip138FileUsecase(
+        locator<BullVaultFacade>(),
+        locator<BitcoinDescriptorPort>(),
+      ),
+    );
+    locator.registerFactory<RecoverVaultsFromCosignerKeyUsecase>(
+      () => RecoverVaultsFromCosignerKeyUsecase(walletBackup, locator()),
+    );
+    locator.registerFactory<ExportPrivateDescriptorFileUsecase>(
+      () =>
+          ExportPrivateDescriptorFileUsecase(locator<BullVaultFacade>(), files),
     );
     locator.registerFactoryParam<VaultBackupCubit, String, void>(
       (walletId, _) => VaultBackupCubit(locator(), walletId),
