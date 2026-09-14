@@ -290,6 +290,26 @@ void main() {
     expect(search.incomplete, isTrue);
   });
 
+  test('a full page is incomplete even when every event is valid', () async {
+    final event = await sealed();
+    for (var index = 0; index < NostrRelayDatasource.maxEvents; index++) {
+      relays[0].events.add(
+        _resigned(event, credential, createdAt: event.createdAt - index),
+      );
+    }
+
+    final search = await repository.discover(
+      credential: credential,
+      session: NostrSession(),
+    );
+
+    expect(relays[0].events, hasLength(NostrRelayDatasource.maxEvents));
+    // One descriptor, republished: the cap says nothing was proved about what
+    // else that relay holds.
+    expect(search.descriptors, hasLength(1));
+    expect(search.incomplete, isTrue);
+  });
+
   test('a search no relay answered is incomplete, not an absence', () async {
     for (final relay in relays) {
       relay.unreachable = true;
@@ -384,10 +404,11 @@ Map<String, dynamic> _resigned(
   BackupCredential credential, {
   List<List<String>>? tags,
   int? kind,
+  int? createdAt,
 }) {
   final id = NostrEvent.hash(
     author: event.author,
-    createdAt: event.createdAt,
+    createdAt: createdAt ?? event.createdAt,
     kind: kind ?? event.kind,
     tags: tags ?? event.tags,
     content: event.content,
@@ -395,7 +416,7 @@ Map<String, dynamic> _resigned(
   return {
     'id': id,
     'pubkey': event.author,
-    'created_at': event.createdAt,
+    'created_at': createdAt ?? event.createdAt,
     'kind': kind ?? event.kind,
     'tags': tags ?? event.tags,
     'content': event.content,
