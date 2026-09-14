@@ -19,7 +19,7 @@ import '../test/features/bullvault/support/bip138_prototype_fixture.dart';
 import '../test/features/wallet_backup/support/canonical_backup_snapshot.dart';
 import '../tools/portable_backup_prototype_app.dart';
 
-void main() {
+Future<void> main({bool isInitialized = false}) async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   testWidgets(
     'RecoverBull files and fresh password-only recovery over real Nostr',
