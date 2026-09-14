@@ -228,6 +228,10 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     FundExchangePaymentLinkOpenRequested event,
     Emitter<FundExchangeState> emit,
   ) async {
+    // The button is disabled while a launch is in flight; this makes the
+    // same guarantee independent of the UI.
+    if (state.isOpeningPaymentLink) return;
+
     emit(
       state.copyWith(openPaymentLinkFailure: null, isOpeningPaymentLink: true),
     );

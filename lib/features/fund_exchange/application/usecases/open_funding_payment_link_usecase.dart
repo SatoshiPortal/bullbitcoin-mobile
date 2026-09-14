@@ -13,6 +13,9 @@ class OpenFundingPaymentLinkResult {
   const OpenFundingPaymentLinkResult();
 }
 
+/// A payment link is a web address. Nothing else is launchable from here.
+const _allowedSchemes = {'http', 'https'};
+
 class OpenFundingPaymentLinkUsecase {
   final ExternalLinkPort _externalLink;
 
@@ -25,7 +28,10 @@ class OpenFundingPaymentLinkUsecase {
     // The link is backend-supplied, so an unparseable value is a normal
     // failure rather than a bug — `tryParse` keeps it out of the throw path.
     final url = Uri.tryParse(command.paymentLink);
-    if (url == null || !url.hasScheme) {
+    // Only web links may be opened. The browser launch would reject anything
+    // else anyway, but stating it here keeps a compromised or malformed
+    // backend response from reaching the platform channel at all.
+    if (url == null || !_allowedSchemes.contains(url.scheme)) {
       return const Err(FundExchangePaymentLinkUnavailableFailure());
     }
 
