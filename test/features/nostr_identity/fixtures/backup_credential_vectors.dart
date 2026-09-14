@@ -1,18 +1,16 @@
 /// Frozen backup-credential vectors, on a public synthetic seed.
 ///
 /// Every value below was reproduced by an independent Python implementation of
-/// BIP32, BIP85, HKDF-SHA256, BIP39 and BIP340 that shares no code with the app
-/// (scripted during T3, 2026-09-14). The words, the word entropy and the Nostr
-/// public key are the same bytes the earlier portable prototype had already
-/// pinned, so `mnemonic-v1`, `encryption-v1` and `nostr-auth-v1` are carried
-/// over unchanged; `server-auth-v1` is the value this task adds.
+/// BIP32, BIP85, HKDF-SHA256, BIP39 and BIP340 that shares no code with the app.
+/// A change to any of them changes what an heir's words open, so they are
+/// frozen: a failure here is a compatibility break, not a stale expectation.
 ///
 /// Test material only. This seed holds no funds and must never hold any.
 library;
 
 import 'dart:typed_data';
 
-/// 32 bytes of 99: the prototype's public publishing seed.
+/// 32 bytes of 99: a public synthetic seed, chosen for being unmistakable.
 final backupCredentialVectorSeed = Uint8List.fromList(List.filled(32, 99));
 
 /// BIP85 entropy at `m/83696968'/1642'/0'/1'`, the reserved backup path.

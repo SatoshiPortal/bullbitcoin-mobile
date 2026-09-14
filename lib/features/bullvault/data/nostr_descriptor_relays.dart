@@ -10,14 +10,12 @@
 /// availability, not anonymity, and acceptance by any of them is not a
 /// retention promise.
 abstract final class NostrDescriptorRelays {
-  /// Five independent public operators. Each one was asked to store a
-  /// disposable descriptor event on 2026-09-14 and to hand it back afterwards,
-  /// and each did; a historical list is not evidence that a relay works today.
-  ///
-  /// Dropped after the same check: `relay.damus.io` and `relay.nostr.band` did
-  /// not answer at all, `nostr.bitcoiner.social` and `nostr21.com` refused the
-  /// event, and `nostr.wine` only accepts paying publishers. A relay that will
-  /// not take the event cannot carry a backup, whatever its reputation.
+  /// Five independent public operators, each of which accepted a disposable
+  /// descriptor event and handed it back. Reputation is not the test: several
+  /// well-known relays are absent because they refused the event, answered
+  /// nothing, or only take paying publishers. Neither is a past result, so the
+  /// live round trip in `nostr_descriptor_relay_test.dart` re-runs it on
+  /// demand.
   static const urls = [
     'wss://nos.lol',
     'wss://relay.primal.net',

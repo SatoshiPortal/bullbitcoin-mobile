@@ -15,7 +15,7 @@ import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/bip138_prototype_fixture.dart';
+import '../support/bullvault_descriptor_fixture.dart';
 import '../support/fake_nostr_relay.dart';
 
 /// The frozen public vectors: the words a synthetic seed derives, and a second
@@ -26,7 +26,7 @@ const _otherWords =
     'smoke merit develop rug defy when swallow pink raven negative twin glass';
 
 void main() {
-  final fixture = Bip138PrototypeFixture();
+  final fixture = BullVaultDescriptorFixture();
   final descriptor = fixture.descriptor();
   final canonical = DescriptorBackupParser.parseDescriptor(
     descriptor,

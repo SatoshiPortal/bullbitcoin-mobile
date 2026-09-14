@@ -10,12 +10,12 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_ke
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:convert/convert.dart';
 
-/// Public deterministic TEST fixture, compiled only into the prototype entrypoint.
-/// Test coins only; never real funds. The ordinary wallet entrypoint does not
-/// import this file.
-final class Bip138PrototypeFixture {
+/// A deterministic 2-of-3 vault policy on a public synthetic seed.
+///
+/// Test material only: these keys hold no funds and must never hold any.
+final class BullVaultDescriptorFixture {
   final List<BullVaultSignerKey> signers;
-  Bip138PrototypeFixture()
+  BullVaultDescriptorFixture()
     : signers = List.generate(3, (i) {
         final root = Bip32Keys.fromSeed(
           Uint8List.fromList(List.filled(32, i + 71)),
@@ -34,8 +34,8 @@ final class Bip138PrototypeFixture {
           signer: SignerEntity.remote,
           signerDevice: null,
           accountKey: WalletDescriptorKey(
-            id: 'prototype-$i',
-            signerId: 'prototype-$i',
+            id: 'fixture-$i',
+            signerId: 'fixture-$i',
             masterFingerprint: hex.encode(root.fingerprint),
             xpubFingerprint: hex.encode(account.fingerprint),
             xpub: account.toBase58(),

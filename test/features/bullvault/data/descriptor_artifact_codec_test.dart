@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/bullvault/data/descriptor_artifact_codec.dart
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/bip138_prototype_fixture.dart';
+import '../support/bullvault_descriptor_fixture.dart';
 
 /// A public synthetic 32-byte key. The credential that produces the real one
 /// lives in `nostr_identity`; this codec only ever sees bytes.
@@ -19,7 +19,7 @@ final _key = Uint8List.fromList(
 final _otherKey = Uint8List.fromList(List.filled(32, 7));
 
 void main() {
-  final descriptor = Bip138PrototypeFixture().descriptor();
+  final descriptor = BullVaultDescriptorFixture().descriptor();
   const encryption = RecoverBullEncryption();
 
   test('an artifact survives encryption and decryption unchanged', () async {

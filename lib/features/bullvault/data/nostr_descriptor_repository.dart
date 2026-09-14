@@ -21,8 +21,8 @@ import 'package:convert/convert.dart';
 /// purpose tag and ciphertext: no descriptor, hash, label, fingerprint, xpub or
 /// date travels in the clear.
 final class NostrDescriptorRepository {
-  /// A regular kind (1000..9999): relays store it and never replace it. 1089 is
-  /// the value the deleted prototype used and no NIP claims it.
+  /// A regular kind (1000..9999): relays store it and never replace it. No NIP
+  /// claims 1089.
   static const eventKind = 1089;
 
   /// The one static tag every BULL descriptor event carries. It is the frame's

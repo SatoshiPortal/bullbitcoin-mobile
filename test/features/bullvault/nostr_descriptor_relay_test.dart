@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.d
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 
-import 'support/bip138_prototype_fixture.dart';
+import 'support/bullvault_descriptor_fixture.dart';
 
 /// Publishes one disposable vault descriptor to the real configured relays and
 /// reads it back words-only, the way an heir would.
@@ -36,7 +36,7 @@ void main() {
       final random = Random.secure();
       final entropy = List.generate(16, (_) => random.nextInt(256));
       final words = bip39.Mnemonic(entropy, bip39.Language.english).sentence;
-      final descriptor = Bip138PrototypeFixture().descriptor();
+      final descriptor = BullVaultDescriptorFixture().descriptor();
       final canonical = DescriptorBackupParser.parseDescriptor(
         descriptor,
       ).descriptor;

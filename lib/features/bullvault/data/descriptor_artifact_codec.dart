@@ -21,9 +21,8 @@ import 'dart:typed_data';
 final class DescriptorArtifact {
   static const profile = 'bullbitcoin-vault-descriptor-v1';
 
-  /// The only kind this codec speaks. The prototype also framed a metadata
-  /// document here; metadata keeps its own snapshot codec and is never
-  /// published, so that kind is gone and is rejected on decode.
+  /// The only kind this codec speaks. Metadata keeps its own snapshot codec
+  /// and is never published, so any other kind is rejected on decode.
   static const kind = 'vault';
 
   static const maxBytes = 1024 * 1024;
