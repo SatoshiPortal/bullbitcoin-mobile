@@ -53,6 +53,7 @@ enum SettingsItemId {
   mempool,
   testnetMode,
   seedViewer,
+  swapRestore,
   bip85,
   language,
   theme,
@@ -89,6 +90,7 @@ const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
   SettingsItemId.extension,
   SettingsItemId.seedViewer,
+  SettingsItemId.swapRestore,
 ];
 
 typedef OpenSettingsItem = void Function(BuildContext context);
@@ -430,6 +432,21 @@ List<SettingsItem> buildSettingsItems({
         ),
         isSuperuser: true,
       ),
+    SettingsItem(
+      id: SettingsItemId.swapRestore,
+      section: SettingsItemSection.wallet,
+      title: localization.swapRestoreTitle,
+      path: path(SettingsItemSection.wallet, localization.swapRestoreTitle),
+      icon: Icons.restore,
+      open: (context) => context.pushNamed(SettingsRoute.swapRestore.name),
+      keywords: [
+        english.swapRestoreTitle,
+        'swap',
+        'stuck swap',
+        'rescue',
+        'lightning',
+      ],
+    ),
     SettingsItem(
       id: SettingsItemId.signingKeyExport,
       section: SettingsItemSection.wallet,

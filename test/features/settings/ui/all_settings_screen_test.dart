@@ -66,6 +66,7 @@ void main() {
       english.settingsBtcMapTitle,
       english.bitcoinSettingsBip85EntropiesTitle,
     ]) {
+      await tester.ensureVisible(find.text(title));
       await tester.tap(find.text(title));
       await tester.pumpAndSettle();
       expect(find.text('destination: $title'), findsOneWidget);
@@ -92,6 +93,7 @@ void main() {
       english.settingsServiceStatusTitle,
       english.logSettingsLogsTitle,
     ]) {
+      await tester.ensureVisible(find.text(title));
       await tester.tap(find.text(title));
       await tester.pumpAndSettle();
       expect(find.text('destination: $title'), findsOneWidget);
@@ -133,9 +135,11 @@ void main() {
       english.bitcoinSettingsPayjoinTitle,
       english.settingsBullVaultEntryTitle,
       english.allSeedViewTitle,
+      english.swapRestoreTitle,
     ]);
 
     for (final title in _tileTitles(tester)) {
+      await tester.ensureVisible(find.text(title));
       await tester.tap(find.text(title));
       await tester.pumpAndSettle();
       expect(
@@ -159,6 +163,18 @@ void main() {
     expect(_tileTitles(tester), isNot(contains(english.allSeedViewTitle)));
   });
 
+  test('the production router registers the real swap restore screens', () {
+    final names = _routeNames([SettingsRouter.route()]);
+
+    expect(
+      names,
+      containsAll([
+        SettingsRoute.swapRestore.name,
+        SettingsRoute.swapRescue.name,
+      ]),
+    );
+  });
+
   testWidgets('the old backup-settings deep link still lands on the screen', (
     tester,
   ) async {
@@ -175,6 +191,13 @@ void main() {
       findsOneWidget,
     );
   });
+}
+
+Iterable<String> _routeNames(List<RouteBase> routes) sync* {
+  for (final route in routes) {
+    if (route is GoRoute && route.name != null) yield route.name!;
+    yield* _routeNames(route.routes);
+  }
 }
 
 List<String> _tileTitles(WidgetTester tester) => tester
@@ -275,6 +298,11 @@ Future<void> _pumpSettings(
             SettingsRoute.btcMap.name,
             SettingsRoute.btcMap.path,
             english.settingsBtcMapTitle,
+          ),
+          destination(
+            SettingsRoute.swapRestore.name,
+            SettingsRoute.swapRestore.path,
+            english.swapRestoreTitle,
           ),
         ],
       ),

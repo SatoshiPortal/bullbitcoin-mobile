@@ -22,9 +22,14 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_s
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_export_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_registration_screen.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
@@ -158,6 +163,25 @@ class SettingsRouter {
         name: SettingsRoute.walletSettings.name,
         path: SettingsRoute.walletSettings.path,
         builder: (context, state) => const WalletSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.swapRestore.name,
+        path: SettingsRoute.swapRestore.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<SwapRestoreCubit>()..restore(),
+          child: const SwapRestoreScreen(),
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.swapRescue.name,
+        path: SettingsRoute.swapRescue.path,
+        builder: (context, state) {
+          final restorable = state.extra! as RestorableSwap;
+          return BlocProvider(
+            create: (_) => locator<SwapRescueCubit>(param1: restorable.swap),
+            child: SwapRescueDetailsScreen(restorable: restorable),
+          );
+        },
       ),
       GoRoute(
         name: SettingsRoute.tools.name,
