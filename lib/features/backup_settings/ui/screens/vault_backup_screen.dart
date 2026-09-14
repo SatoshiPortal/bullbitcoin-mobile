@@ -15,8 +15,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/features/backup_settings/domain/vault_recovery_kit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_kit_screen.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_kit_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_qr_scanner.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:go_router/go_router.dart';
 
 class VaultBackupScreen extends StatelessWidget {
@@ -74,7 +74,7 @@ class VaultBackupScreen extends StatelessWidget {
                 onTap: () => Navigator.of(context).push<void>(
                   MaterialPageRoute(
                     builder: (_) =>
-                        VaultDescriptorScreen(descriptor: policy.descriptor),
+                        _VaultDescriptorScreen(descriptor: policy.descriptor),
                   ),
                 ),
               ),
@@ -260,9 +260,10 @@ class VaultBackupScreen extends StatelessWidget {
   }
 }
 
-class VaultDescriptorScreen extends StatelessWidget {
+final class _VaultDescriptorScreen extends StatelessWidget {
   final String descriptor;
-  const VaultDescriptorScreen({super.key, required this.descriptor});
+
+  const _VaultDescriptorScreen({required this.descriptor});
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -308,47 +309,35 @@ class _VerifyDescriptorScreenState extends State<_VerifyDescriptorScreen> {
             maxLines: 10,
             enabled: !_busy,
             onScan: () async {
-              var delivered = false;
-              final scanned = await Navigator.of(context).push<String>(
-                MaterialPageRoute(
-                  builder: (_) => Scaffold(
-                    appBar: AppBar(
-                      title: Text(context.loc.bullVaultScanDescriptor),
-                    ),
-                    body: QrScannerWidget(
-                      onScanned: (value) {
-                        if (delivered) return;
-                        delivered = true;
-                        Navigator.of(context).pop(value);
-                      },
-                    ),
-                  ),
-                ),
+              final scanned = await pushVaultQrScanner(
+                context,
+                title: context.loc.bullVaultScanDescriptor,
               );
               if (mounted && scanned != null) setState(() => _text = scanned);
             },
           ),
           const Gap(16),
-          FilledButton(
-            onPressed: _busy
-                ? null
-                : () {
-                    if (_text.trim().isNotEmpty) {
-                      Navigator.of(context).pop(_text);
-                    }
-                  },
-            child: Text(context.loc.bullVaultVerifyDescriptor),
+          BullButton.big(
+            label: context.loc.bullVaultVerifyDescriptor,
+            disabled: _busy,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
+            onPressed: () {
+              if (_text.trim().isNotEmpty) Navigator.of(context).pop(_text);
+            },
           ),
           const Gap(16),
-          OutlinedButton(
-            onPressed: _busy
-                ? null
-                : () async {
-                    setState(() => _busy = true);
-                    await widget.onImport();
-                    if (context.mounted) Navigator.of(context).pop();
-                  },
-            child: Text(context.loc.bullVaultImportFile),
+          BullButton.big(
+            label: context.loc.bullVaultImportFile,
+            disabled: _busy,
+            outlined: true,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+            onPressed: () async {
+              setState(() => _busy = true);
+              await widget.onImport();
+              if (context.mounted) Navigator.of(context).pop();
+            },
           ),
         ],
       ),

@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_qr_scanner.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullPasteInput, Gap;
 import 'package:flutter/material.dart';
@@ -32,20 +32,9 @@ class _VaultCosignerKeyRecoveryScreenState
   String _accountKey = '';
 
   Future<void> _scan() async {
-    var delivered = false;
-    final scanned = await Navigator.of(context).push<String>(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(title: Text(context.loc.bullVaultScanPublicKey)),
-          body: QrScannerWidget(
-            onScanned: (value) {
-              if (delivered) return;
-              delivered = true;
-              Navigator.of(context).pop(value);
-            },
-          ),
-        ),
-      ),
+    final scanned = await pushVaultQrScanner(
+      context,
+      title: context.loc.bullVaultScanPublicKey,
     );
     if (mounted && scanned != null) setState(() => _accountKey = scanned);
   }
