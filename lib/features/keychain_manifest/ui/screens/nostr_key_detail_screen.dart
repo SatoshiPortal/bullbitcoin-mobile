@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
-import 'package:bb_mobile/features/keychain_manifest/presentation/keychain_manifest_l10n.dart';
 import 'package:bb_mobile/features/keychain_manifest/ui/widgets/nostr_nsec_reveal_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -39,9 +38,9 @@ final class _NostrKeyDetailScreenState extends State<NostrKeyDetailScreen> {
               items: [
                 DetailsTableItem(
                   label: context.loc.settingsNostrKeysName,
-                  displayValue: entry.displayName(context),
+                  displayValue: key.purpose,
                 ),
-                if (entry.displayDescription(context) case final description?)
+                if (entry.description case final description?)
                   DetailsTableItem(
                     label: context.loc.settingsNostrKeysDescription,
                     displayValue: description,

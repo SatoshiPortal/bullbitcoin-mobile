@@ -160,7 +160,7 @@ final class _KeyList extends StatelessWidget {
       icon: system.keyKind == KeychainManifestNostrKeyKind.reserved
           ? Icons.settings_suggest
           : Icons.key,
-      title: entry.displayName(context),
+      title: system.purpose,
       iconColor: system.keyKind == KeychainManifestNostrKeyKind.reserved
           ? context.appColors.textMuted
           : null,
