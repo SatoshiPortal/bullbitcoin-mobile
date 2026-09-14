@@ -14,21 +14,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
-/// Recovers vaults from the twelve magic backup words of another wallet.
+/// Which twelve words the screen asks for: the ones the backup itself is keyed
+/// by, or the recovery phrase of the Bull wallet that made the vaults.
+enum _VaultWordsSource { backupWords, mobileSeed }
+
+/// Recovers vaults from twelve words typed behind the capture block.
 ///
 /// Both remote sources always run: the Data Backup server and the relays hold
 /// different things, and a hit on one says nothing about the other. Nothing is
 /// applied but the vaults themselves — no metadata, no seed, no default wallet.
-class VaultBackupWordsRecoveryScreen extends StatefulWidget {
-  const VaultBackupWordsRecoveryScreen({super.key});
+/// A seed entered through [VaultWordsRecoveryScreen.mobileKey] is used to work
+/// out that wallet's backup words and then dropped; attaching the signing key
+/// is the separate, explicitly consented cosigner import the result invites.
+class VaultWordsRecoveryScreen extends StatefulWidget {
+  final _VaultWordsSource _source;
+
+  const VaultWordsRecoveryScreen.backupWords({super.key})
+    : _source = _VaultWordsSource.backupWords;
+
+  const VaultWordsRecoveryScreen.mobileKey({super.key})
+    : _source = _VaultWordsSource.mobileSeed;
 
   @override
-  State<VaultBackupWordsRecoveryScreen> createState() =>
-      _VaultBackupWordsRecoveryScreenState();
+  State<VaultWordsRecoveryScreen> createState() =>
+      _VaultWordsRecoveryScreenState();
 }
 
-class _VaultBackupWordsRecoveryScreenState
-    extends State<VaultBackupWordsRecoveryScreen>
+class _VaultWordsRecoveryScreenState extends State<VaultWordsRecoveryScreen>
     with PrivacyScreen {
   late final Future<void> _privacy = enableScreenPrivacy();
 
@@ -40,7 +52,14 @@ class _VaultBackupWordsRecoveryScreenState
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.loc.vaultRecoveryImportBackupWords)),
+    appBar: AppBar(
+      title: Text(switch (widget._source) {
+        _VaultWordsSource.backupWords =>
+          context.loc.vaultRecoveryImportBackupWords,
+        _VaultWordsSource.mobileSeed =>
+          context.loc.vaultRecoveryImportMobileKey,
+      }),
+    ),
     body: SafeArea(
       child: PrivacyGate(
         protection: _privacy,
@@ -55,27 +74,45 @@ class _VaultBackupWordsRecoveryScreenState
     ),
   );
 
+  Widget _notice(BuildContext context) => switch (widget._source) {
+    _VaultWordsSource.backupWords => BullInfoCard(
+      description: context.loc.vaultRecoveryBackupWordsHelp,
+      tagColor: context.appColors.secondary,
+      bgColor: context.appColors.secondaryFixedDim,
+    ),
+    _VaultWordsSource.mobileSeed => BullInfoCard(
+      description: context.loc.vaultRecoveryMobileKeyWarning,
+      tagColor: context.appColors.warning,
+      bgColor: context.appColors.warningContainer,
+    ),
+  };
+
+  void _submit(BuildContext context, Mnemonic mnemonic) {
+    final cubit = context.read<VaultRecoveryCubit>();
+    switch (widget._source) {
+      case _VaultWordsSource.backupWords:
+        cubit.searchWithWords(mnemonic.words.join(' '));
+      case _VaultWordsSource.mobileSeed:
+        cubit.searchWithMobileSeed(
+          mnemonic: mnemonic.words,
+          passphrase: mnemonic.passphrase,
+        );
+    }
+  }
+
   Widget _entry(BuildContext context, VaultRecoveryState state) => Column(
     children: [
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: BullInfoCard(
-          description: context.loc.vaultRecoveryBackupWordsHelp,
-          tagColor: context.appColors.secondary,
-          bgColor: context.appColors.secondaryFixedDim,
-        ),
-      ),
+      Padding(padding: const EdgeInsets.all(16), child: _notice(context)),
       Expanded(
         child: MnemonicWidget(
           initialLength: bip39.MnemonicLength.words12,
-          allowPassphrase: false,
+          allowPassphrase: widget._source == _VaultWordsSource.mobileSeed,
           allowLabel: false,
-          allowMultipleMnemonicLength: false,
+          allowMultipleMnemonicLength:
+              widget._source == _VaultWordsSource.mobileSeed,
           submitLabel: context.loc.vaultRecoverySearch,
           externalError: state.failure?.toTranslated(context),
-          onSubmit: (mnemonic) => context
-              .read<VaultRecoveryCubit>()
-              .searchWithWords(mnemonic.words.join(' ')),
+          onSubmit: (mnemonic) => _submit(context, mnemonic),
         ),
       ),
     ],

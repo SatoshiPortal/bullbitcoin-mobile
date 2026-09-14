@@ -9,9 +9,8 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vault
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_backup_words_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_cosigner_key_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/vault_backup_words_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_words_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_cosigner_key_recovery_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/vault_mobile_key_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_screen.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -228,7 +227,7 @@ void main() {
   testWidgets('twelve backup words search both sources', (tester) async {
     noVaultsFound();
 
-    await open(tester, const VaultBackupWordsRecoveryScreen());
+    await open(tester, const VaultWordsRecoveryScreen.backupWords());
     await tester.pumpAndSettle();
     expect(find.text(loc.vaultRecoveryBackupWordsHelp), findsOneWidget);
 
@@ -263,7 +262,7 @@ void main() {
       ),
     ).thenAnswer((_) async => const Err(BullVaultBackupWordsFailure()));
 
-    await open(tester, const VaultBackupWordsRecoveryScreen());
+    await open(tester, const VaultWordsRecoveryScreen.backupWords());
     await cubit.searchWithWords('not the words');
     await tester.pumpAndSettle();
 
@@ -275,7 +274,7 @@ void main() {
   ) async {
     noVaultsFound();
 
-    await open(tester, const VaultMobileKeyRecoveryScreen());
+    await open(tester, const VaultWordsRecoveryScreen.mobileKey());
     await tester.pumpAndSettle();
     expect(find.text(loc.vaultRecoveryMobileKeyWarning), findsOneWidget);
 

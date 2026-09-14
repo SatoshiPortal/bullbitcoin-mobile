@@ -5,10 +5,9 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_dest
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_options_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_words_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/vault_backup_words_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_words_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_cosigner_key_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_destinations_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/vault_mobile_key_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_metadata_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_manifest_screen.dart';
@@ -87,7 +86,7 @@ class BackupSettingsSettingsRouter {
           path: BackupSettingsSubroute.vaultRecoveryBackupWords.path,
           builder: (_, _) => BlocProvider(
             create: (_) => locator<VaultRecoveryCubit>(),
-            child: const VaultBackupWordsRecoveryScreen(),
+            child: const VaultWordsRecoveryScreen.backupWords(),
           ),
         ),
         GoRoute(
@@ -95,7 +94,7 @@ class BackupSettingsSettingsRouter {
           path: BackupSettingsSubroute.vaultRecoveryMobileKey.path,
           builder: (_, _) => BlocProvider(
             create: (_) => locator<VaultRecoveryCubit>(),
-            child: const VaultMobileKeyRecoveryScreen(),
+            child: const VaultWordsRecoveryScreen.mobileKey(),
           ),
         ),
       ],
