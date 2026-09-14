@@ -235,10 +235,76 @@ final class VerifyVaultDescriptorBackupUsecase {
       incomplete: incomplete,
     );
     if (!check.complete) return Ok(check);
+    final verified = await _vaults.recordDescriptorPublicationVerified(
+      walletId: walletId,
+      destination: VaultBackupDestination.server,
+    );
+    if (verified case Err()) return const Err(BackupSettingsStorageFailure());
     return switch (await _record(inspection, VaultBackupSource.bip138)) {
       Ok() => Ok(check),
       Err(:final failure) => Err(failure),
     };
+  }
+
+  /// Recovers the descriptor from the relays and compares it with the one in
+  /// force. Only a genuine read-back can advance the Nostr date.
+  Future<Result<NostrDescriptorVerification, BackupSettingsFailure>>
+  verifyNostr(String walletId) async {
+    final loaded = await load(walletId);
+    if (loaded case Err(:final failure)) return Err(failure);
+    final inspection =
+        (loaded as Ok<VaultBackupInspection, BackupSettingsFailure>).value;
+    final result = await _vaults.verifyNostrDescriptorBackup(walletId);
+    if (result case Err()) {
+      return const Err(BackupSettingsUnavailableFailure());
+    }
+    final verification =
+        (result as Ok<NostrDescriptorVerification, BullVaultFailure>).value;
+    if (!verification.found) return Ok(verification);
+    final verified = await _vaults.recordDescriptorPublicationVerified(
+      walletId: walletId,
+      destination: VaultBackupDestination.nostr,
+    );
+    if (verified case Err()) return const Err(BackupSettingsStorageFailure());
+    return switch (await _record(inspection, VaultBackupSource.nostr)) {
+      Ok() => Ok(verification),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
+  /// Tests every remote source this build can test, each on its own credential.
+  ///
+  /// The sources are independent: one that is unreachable neither stops the
+  /// others nor changes their dates. Manual verification is not here, because
+  /// it needs the saved copy the person supplies, and Bitcoin is deferred.
+  Future<Result<VaultBackupCheckResults, BackupSettingsFailure>> checkAgain(
+    String walletId,
+  ) async {
+    final loaded = await load(walletId);
+    if (loaded case Err(:final failure)) return Err(failure);
+    return Ok({
+      VaultBackupSource.metadata: switch (await verifyMetadata(walletId)) {
+        Ok(value: true) => VaultBackupCheckStatus.success,
+        Ok() => VaultBackupCheckStatus.failed,
+        Err() => VaultBackupCheckStatus.unavailable,
+      },
+      VaultBackupSource.bip138: switch (await verifyBip138(walletId)) {
+        Ok(value: final check) when check.complete =>
+          VaultBackupCheckStatus.success,
+        Ok(value: final check) when check.incomplete =>
+          VaultBackupCheckStatus.incomplete,
+        Ok() => VaultBackupCheckStatus.failed,
+        Err() => VaultBackupCheckStatus.unavailable,
+      },
+      VaultBackupSource.nostr: switch (await verifyNostr(walletId)) {
+        Ok(value: (found: true, incomplete: _)) =>
+          VaultBackupCheckStatus.success,
+        Ok(value: (found: false, incomplete: true)) =>
+          VaultBackupCheckStatus.incomplete,
+        Ok() => VaultBackupCheckStatus.failed,
+        Err() => VaultBackupCheckStatus.unavailable,
+      },
+    });
   }
 
   bool _matches(String candidate, String expected, Network network) =>

@@ -9,13 +9,20 @@ final class VaultBackupState {
   final bool busy;
   final BackupSettingsFailure? failure;
   final bool? verified;
+
+  /// The source a single check tested, or null when every remote source was.
   final VaultBackupSource? checkedSource;
+
+  /// What the last check made of each source, beside its historical date. A
+  /// failed attempt appears here and never in [VaultBackupInspection.testedAt].
+  final VaultBackupCheckResults latest;
   const VaultBackupState({
     this.inspection,
     this.busy = false,
     this.failure,
     this.verified,
     this.checkedSource,
+    this.latest = const {},
   });
 }
 
@@ -41,10 +48,34 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
   );
   Future<void> importFile() =>
       _check(VaultBackupSource.manual, () => _verify.importFile(walletId));
-  Future<void> checkAgain() => _check(
-    VaultBackupSource.metadata,
-    () => _verify.verifyMetadata(walletId),
-  );
+
+  /// Tests every remote source independently and keeps each result.
+  Future<void> checkAgain() async {
+    if (state.busy) return;
+    final inspection = state.inspection;
+    emit(VaultBackupState(inspection: inspection, busy: true));
+    final result = await _verify.checkAgain(walletId);
+    if (isClosed) return;
+    if (result case Err(:final failure)) {
+      emit(VaultBackupState(inspection: inspection, failure: failure));
+      return;
+    }
+    final latest =
+        (result as Ok<VaultBackupCheckResults, BackupSettingsFailure>).value;
+    final updated = await _verify.load(walletId);
+    if (isClosed) return;
+    emit(switch (updated) {
+      Ok(:final value) => VaultBackupState(
+        inspection: value,
+        latest: latest,
+        verified: latest.containsValue(VaultBackupCheckStatus.success),
+      ),
+      Err(:final failure) => VaultBackupState(
+        inspection: inspection,
+        failure: failure,
+      ),
+    });
+  }
 
   Future<void> _check(
     VaultBackupSource source,
@@ -64,6 +95,7 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
     emit(switch (updated) {
       Ok(:final value) => VaultBackupState(
         inspection: value,
+        latest: state.latest,
         verified: (result as Ok<bool?, BackupSettingsFailure>).value,
         checkedSource: source,
       ),

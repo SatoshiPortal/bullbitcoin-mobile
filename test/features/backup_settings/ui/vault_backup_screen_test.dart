@@ -42,10 +42,36 @@ void main() {
   final record = testBullVaultCreateResult().record;
   final codec = testBullVaultRecoveryPackageCodec();
 
+  setUpAll(() => registerFallbackValue(VaultBackupDestination.nostr));
+
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     final vaults = _Vaults();
     when(() => vaults.listRecords()).thenAnswer((_) async => Ok([record]));
+    // Neither remote descriptor route can answer for this vault, so a check
+    // has three honest results and no date to record.
+    when(() => vaults.encodePrivateDescriptorBackup(any())).thenAnswer(
+      (_) async => const Err<BullVaultDescriptorBackup, BullVaultFailure>(
+        BullVaultInvalidRecoveryFailure(),
+      ),
+    );
+    when(
+      () => vaults.verifyNostrDescriptorBackup(
+        any(),
+        session: any(named: 'session'),
+      ),
+    ).thenAnswer(
+      (_) async => const Ok<NostrDescriptorVerification, BullVaultFailure>((
+        found: false,
+        incomplete: true,
+      )),
+    );
+    when(
+      () => vaults.recordDescriptorPublicationVerified(
+        walletId: any(named: 'walletId'),
+        destination: any(named: 'destination'),
+      ),
+    ).thenAnswer((_) async => const Ok<void, BullVaultFailure>(null));
     when(
       () => vaults.encodeRecoveryPackage(record.recoveryPackage),
     ).thenReturn(codec.encode(record.recoveryPackage));
@@ -136,13 +162,59 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
     }
     expect(cubit.state.busy, isFalse);
-    expect(cubit.state.checkedSource, VaultBackupSource.metadata);
+    expect(
+      cubit.state.checkedSource,
+      isNull,
+      reason: 'every remote source was checked, not one',
+    );
+    expect(cubit.state.latest.keys, {
+      VaultBackupSource.metadata,
+      VaultBackupSource.bip138,
+      VaultBackupSource.nostr,
+    });
     final policy = record.recoveryPackage.policy;
     final dates =
         await history.load(
               VaultBackupTest.identity(policy.descriptor, policy.network.name),
             )
             as Ok<Map<VaultBackupSource, DateTime>, dynamic>;
-    expect(dates.value.containsKey(VaultBackupSource.bitcoin), isFalse);
+    expect(dates.value, isEmpty);
+  });
+
+  testWidgets('a failed check shows beside the date, never as one', (
+    tester,
+  ) async {
+    final context = await pump(tester, AppThemeType.light);
+    await tester.tap(find.text(context.loc.bullVaultCheckAgain));
+    for (var i = 0; i < 20 && cubit.state.busy; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    await tester.pumpAndSettle();
+
+    final rows = tester
+        .widgetList<BackupTestStatusRow>(find.byType(BackupTestStatusRow))
+        .toList();
+    String? noteFor(String label) =>
+        rows.singleWhere((row) => row.label == label).latestAttempt;
+    expect(
+      noteFor(context.loc.bullVaultTestMetadata),
+      context.loc.bullVaultCheckLatestFailed,
+    );
+    expect(
+      noteFor(context.loc.bullVaultTestBip138),
+      context.loc.bullVaultCheckLatestUnavailable,
+    );
+    expect(
+      noteFor(context.loc.bullVaultTestNostr),
+      context.loc.bullVaultCheckLatestIncomplete,
+    );
+    expect(noteFor(context.loc.bullVaultTestManual), isNull);
+    expect(noteFor(context.loc.bullVaultTestBitcoin), isNull);
+    // A failed attempt never becomes a tested date.
+    expect(
+      find.text(context.loc.backupSettingsNotTested),
+      findsNWidgets(VaultBackupSource.values.length - 1),
+    );
+    expect(find.text(context.loc.backupSettingsTested), findsNothing);
   });
 }

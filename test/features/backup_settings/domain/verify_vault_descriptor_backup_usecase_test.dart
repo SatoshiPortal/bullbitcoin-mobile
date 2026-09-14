@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/backup_settings/domain/vault_backup_test.dart
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart' as verify_ show verify, verifyNever;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../bullvault/bullvault_test_fixture.dart';
@@ -62,6 +63,8 @@ void main() {
   );
   final codec = testBullVaultRecoveryPackageCodec();
 
+  setUpAll(() => registerFallbackValue(VaultBackupDestination.nostr));
+
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     vaults = _Vaults();
@@ -79,6 +82,12 @@ void main() {
     when(
       () => vaults.encodeRecoveryPackage(record.recoveryPackage),
     ).thenReturn(codec.encode(record.recoveryPackage));
+    when(
+      () => vaults.recordDescriptorPublicationVerified(
+        walletId: any(named: 'walletId'),
+        destination: any(named: 'destination'),
+      ),
+    ).thenAnswer((_) async => const Ok<void, BullVaultFailure>(null));
     verify = VerifyVaultDescriptorBackupUsecase(
       vaults,
       metadata,
@@ -554,6 +563,203 @@ void main() {
         ),
       );
       expect(await dates(), isEmpty);
+    });
+  });
+
+  group('nostr', () {
+    void answerNostr({required bool found, bool incomplete = false}) {
+      when(
+        () => vaults.verifyNostrDescriptorBackup(
+          any(),
+          session: any(named: 'session'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<NostrDescriptorVerification, BullVaultFailure>((
+          found: found,
+          incomplete: incomplete,
+        )),
+      );
+    }
+
+    test('a genuine read-back records the date and the destination', () async {
+      answerNostr(found: true);
+
+      final result = await verify.verifyNostr(record.walletId);
+
+      expect(
+        (result as Ok<NostrDescriptorVerification, BackupSettingsFailure>)
+            .value
+            .found,
+        isTrue,
+      );
+      expect(await dates(), {VaultBackupSource.nostr: now});
+      verify_
+          .verify(
+            () => vaults.recordDescriptorPublicationVerified(
+              walletId: record.walletId,
+              destination: VaultBackupDestination.nostr,
+            ),
+          )
+          .called(1);
+    });
+
+    test('nothing found and an unfinished search record nothing', () async {
+      answerNostr(found: false);
+      expect(
+        await verify.verifyNostr(record.walletId),
+        isA<Ok<NostrDescriptorVerification, BackupSettingsFailure>>(),
+      );
+      expect(await dates(), isEmpty);
+
+      answerNostr(found: false, incomplete: true);
+      final truncated = await verify.verifyNostr(record.walletId);
+      expect(
+        (truncated as Ok<NostrDescriptorVerification, BackupSettingsFailure>)
+            .value
+            .incomplete,
+        isTrue,
+      );
+      expect(await dates(), isEmpty);
+      verify_.verifyNever(
+        () => vaults.recordDescriptorPublicationVerified(
+          walletId: any(named: 'walletId'),
+          destination: any(named: 'destination'),
+        ),
+      );
+    });
+
+    test('a search that could not run changes no date', () async {
+      when(
+        () => vaults.verifyNostrDescriptorBackup(
+          any(),
+          session: any(named: 'session'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<NostrDescriptorVerification, BullVaultFailure>(
+          BullVaultBackupCredentialFailure(),
+        ),
+      );
+
+      expect(
+        await verify.verifyNostr(record.walletId),
+        isA<Err<NostrDescriptorVerification, BackupSettingsFailure>>().having(
+          (value) => value.failure,
+          'failure',
+          isA<BackupSettingsUnavailableFailure>(),
+        ),
+      );
+      expect(await dates(), isEmpty);
+    });
+  });
+
+  group('checkAgain', () {
+    setUp(() {
+      when(() => vaults.encodePrivateDescriptorBackup(any())).thenAnswer(
+        (_) async => const Err<BullVaultDescriptorBackup, BullVaultFailure>(
+          BullVaultInvalidRecoveryFailure(),
+        ),
+      );
+      when(
+        () => vaults.verifyNostrDescriptorBackup(
+          any(),
+          session: any(named: 'session'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok<NostrDescriptorVerification, BullVaultFailure>((
+          found: false,
+          incomplete: false,
+        )),
+      );
+      when(metadata.fetchRemoteContents).thenAnswer(
+        (_) async => const Err<WalletBackupContents?, WalletBackupFailure>(
+          WalletBackupRemoteUnavailableFailure(),
+        ),
+      );
+    });
+
+    test(
+      'each source answers for itself and only manual is left out',
+      () async {
+        final results =
+            (await verify.checkAgain(record.walletId)
+                    as Ok<VaultBackupCheckResults, BackupSettingsFailure>)
+                .value;
+
+        expect(results, {
+          VaultBackupSource.metadata: VaultBackupCheckStatus.unavailable,
+          VaultBackupSource.bip138: VaultBackupCheckStatus.unavailable,
+          VaultBackupSource.nostr: VaultBackupCheckStatus.failed,
+        });
+        expect(await dates(), isEmpty);
+      },
+    );
+
+    test('one source succeeding never dates the ones that failed', () async {
+      when(
+        () => vaults.verifyNostrDescriptorBackup(
+          any(),
+          session: any(named: 'session'),
+        ),
+      ).thenAnswer(
+        (_) async => const Ok<NostrDescriptorVerification, BullVaultFailure>((
+          found: true,
+          incomplete: false,
+        )),
+      );
+
+      final results =
+          (await verify.checkAgain(record.walletId)
+                  as Ok<VaultBackupCheckResults, BackupSettingsFailure>)
+              .value;
+
+      expect(results[VaultBackupSource.nostr], VaultBackupCheckStatus.success);
+      expect(
+        results[VaultBackupSource.metadata],
+        VaultBackupCheckStatus.unavailable,
+      );
+      expect(await dates(), {VaultBackupSource.nostr: now});
+    });
+
+    test(
+      'an unfinished cosigner search is incomplete, not a failure',
+      () async {
+        when(() => vaults.encodePrivateDescriptorBackup(any())).thenAnswer(
+          (_) async => Ok(
+            BullVaultDescriptorBackup(
+              descriptor: policy.descriptor,
+              network: policy.network,
+              bytes: Uint8List.fromList([1, 2, 3]),
+              recipients: const ['tpub-one'],
+              lookupTokens: ['b' * 64],
+            ),
+          ),
+        );
+        when(() => metadata.lookupPrivateDescriptors(any())).thenAnswer(
+          (_) async =>
+              Ok(PrivateDescriptorLookup(records: const [], incomplete: true)),
+        );
+
+        final results =
+            (await verify.checkAgain(record.walletId)
+                    as Ok<VaultBackupCheckResults, BackupSettingsFailure>)
+                .value;
+
+        expect(
+          results[VaultBackupSource.bip138],
+          VaultBackupCheckStatus.incomplete,
+        );
+        expect(await dates(), isEmpty);
+      },
+    );
+
+    test('an unknown vault is refused before any source is tried', () async {
+      when(() => vaults.listRecords()).thenAnswer((_) async => Ok([]));
+
+      expect(
+        await verify.checkAgain(record.walletId),
+        isA<Err<VaultBackupCheckResults, BackupSettingsFailure>>(),
+      );
+      verifyZeroInteractions(metadata);
     });
   });
 }

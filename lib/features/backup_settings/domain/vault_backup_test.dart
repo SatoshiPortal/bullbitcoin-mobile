@@ -3,6 +3,17 @@ import 'package:crypto/crypto.dart';
 
 enum VaultBackupSource { manual, metadata, bip138, nostr, bitcoin }
 
+/// What the most recent check of one source did, beside its historical date.
+///
+/// Only [success] ever moves a date. [incomplete] is the honest answer when a
+/// source could not be read to the end, and is not the same as [failed]: the
+/// vault may be there, unseen.
+enum VaultBackupCheckStatus { success, failed, unavailable, incomplete }
+
+/// The latest attempt per source. A source that was not checked is absent.
+typedef VaultBackupCheckResults =
+    Map<VaultBackupSource, VaultBackupCheckStatus>;
+
 /// What a BIP138 check found, counted over the vault's eligible cosigners.
 ///
 /// A receipt is recorded only when every one of them could retrieve and open

@@ -17801,5 +17801,21 @@
   "backupSettingsComingSoon": "Coming soon",
   "@backupSettingsComingSoon": {
     "description": "Neutral status for a backup destination that is not available yet"
+  },
+  "bullVaultBackupsChecked": "Backup check finished. Each source is reported on its own below.",
+  "@bullVaultBackupsChecked": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCheckLatestFailed": "Last check did not find this vault",
+  "@bullVaultCheckLatestFailed": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCheckLatestUnavailable": "Last check could not reach this source",
+  "@bullVaultCheckLatestUnavailable": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCheckLatestIncomplete": "Last search could not be completed",
+  "@bullVaultCheckLatestIncomplete": {
+    "description": "BullVault settings and recovery"
   }
 }

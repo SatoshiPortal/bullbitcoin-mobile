@@ -28,13 +28,15 @@ class VaultBackupScreen extends StatelessWidget {
         listener: (context, state) {
           final message =
               state.failure?.toTranslated(context) ??
-              switch (state.verified) {
-                true => context.loc.bullVaultDescriptorVerified,
-                false =>
-                  state.checkedSource == VaultBackupSource.manual
-                      ? context.loc.bullVaultDescriptorMismatch
-                      : context.loc.bullVaultNoRemoteDescriptor,
-                null => null,
+              switch ((state.verified, state.checkedSource)) {
+                // Every remote source was tested, and each row says what it
+                // found; one sentence cannot stand in for all of them.
+                (final bool _, null) => context.loc.bullVaultBackupsChecked,
+                (true, _) => context.loc.bullVaultDescriptorVerified,
+                (false, VaultBackupSource.manual) =>
+                  context.loc.bullVaultDescriptorMismatch,
+                (false, _) => context.loc.bullVaultNoRemoteDescriptor,
+                (null, _) => null,
               };
           if (message != null) {
             ScaffoldMessenger.of(
@@ -133,6 +135,15 @@ class VaultBackupScreen extends StatelessWidget {
                   )
                 else
                   BackupTestStatusRow(
+                    latestAttempt: switch (state.latest[source]) {
+                      null || VaultBackupCheckStatus.success => null,
+                      VaultBackupCheckStatus.failed =>
+                        context.loc.bullVaultCheckLatestFailed,
+                      VaultBackupCheckStatus.unavailable =>
+                        context.loc.bullVaultCheckLatestUnavailable,
+                      VaultBackupCheckStatus.incomplete =>
+                        context.loc.bullVaultCheckLatestIncomplete,
+                    },
                     label: switch (source) {
                       VaultBackupSource.manual =>
                         context.loc.bullVaultTestManual,
