@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_setup_banner_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;

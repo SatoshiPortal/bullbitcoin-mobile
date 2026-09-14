@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_setup_banner_cubit.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:flutter_test/flutter_test.dart';

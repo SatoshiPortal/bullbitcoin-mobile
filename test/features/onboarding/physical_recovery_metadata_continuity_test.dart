@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart'
     show WalletPreferencesRecoveryApplyResult;
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_setup_banner_cubit.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';

@@ -37,7 +37,7 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_back
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_destinations_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
-import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_setup_banner_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/data/vault_recovery_kit_repository_impl.dart';
 import 'package:bb_mobile/features/backup_settings/domain/repositories/vault_recovery_kit_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/create_vault_recovery_kit_usecase.dart';
