@@ -127,9 +127,9 @@ final class ApplyBackupSnapshotUsecase {
       }
     }
     // Applying a foreign snapshot invalidates whatever this installation
-    // believed the remote head to be, so the next publication fetches it
-    // afresh. Raising the fence first keeps that off the race with a
-    // publication the runner may start the moment this job ends.
+    // believed the remote head to be, so a publication cannot store against a
+    // head this apply replaced. Raising the fence first keeps that off the
+    // race with a publication the runner may start the moment this job ends.
     if (await _state.setRecoveryState(WalletBackupRecoveryState.applying)
         case Err()) {
       return _result(WalletBackupRecoveryStatus.localFailure);
