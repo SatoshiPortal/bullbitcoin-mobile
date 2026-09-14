@@ -13,6 +13,7 @@ final class WizardFacade {
   })
   _applyPendingChoices;
   final Future<bool> Function() _hasPendingChoices;
+  final Future<bool?> Function() _pendingMetadataBackupEnabled;
 
   const WizardFacade({
     required Future<Result<void, WizardFailure>> Function({
@@ -20,9 +21,18 @@ final class WizardFacade {
     })
     applyPendingChoices,
     required Future<bool> Function() hasPendingChoices,
-  }) : this._(applyPendingChoices, hasPendingChoices);
+    required Future<bool?> Function() pendingMetadataBackupEnabled,
+  }) : this._(
+         applyPendingChoices,
+         hasPendingChoices,
+         pendingMetadataBackupEnabled,
+       );
 
-  const WizardFacade._(this._applyPendingChoices, this._hasPendingChoices);
+  const WizardFacade._(
+    this._applyPendingChoices,
+    this._hasPendingChoices,
+    this._pendingMetadataBackupEnabled,
+  );
 
   /// Applies whatever the first-run wizard left for after wallet creation:
   /// settings, and the Data Backup opt-in with its server recovery.
@@ -35,4 +45,13 @@ final class WizardFacade {
 
   /// Whether a wizard choice is still waiting to be applied.
   Future<bool> hasPendingChoices() => _hasPendingChoices();
+
+  /// The Data Backup answer the wizard recorded and has not applied yet, or
+  /// null when no answer is staged.
+  ///
+  /// It is the only record of whether this person asked for their wallet data
+  /// to be backed up at all, so it is also what says whether a recovery may
+  /// go looking for it.
+  Future<bool?> pendingMetadataBackupEnabled() =>
+      _pendingMetadataBackupEnabled();
 }

@@ -3,6 +3,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 
 /// Recovers everything the restored seed's backup credential can reach.
 ///
@@ -12,6 +13,12 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dar
 /// came back partial says nothing about what the relays hold, and the relays
 /// are worth most exactly then.
 ///
+/// Both halves run only when the first-run wizard's Data Backup choice is on.
+/// That choice is the only consent there is for sending a key derived from
+/// these twelve words to the backup server and to public relays, and a choice
+/// that was never recorded counts as off. The manual recovery landing stays
+/// open either way, so nothing is lost, only unasked for.
+///
 /// The return value is the metadata half alone, because that is what the
 /// recovery screen reports as incomplete.
 ///
@@ -19,10 +26,13 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dar
 /// alone; without them no relay search runs and nothing is announced.
 Future<bool> recoverWalletDataAfterSeedRestore(
   WalletBackupFacade walletBackup, {
+  required WizardFacade wizard,
   required List<WalletPreferences> defaultCreatedWalletPreferences,
   RecoverVaultsFromBackupWordsUsecase? discoverVaults,
   BullVaultFacade? vaults,
 }) async {
+  // Nothing was asked for, so nothing is unfinished and nothing is announced.
+  if (await wizard.pendingMetadataBackupEnabled() != true) return true;
   final vaultsBefore = await _vaultCount(vaults);
   var complete = false;
   try {

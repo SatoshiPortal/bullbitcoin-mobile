@@ -22,6 +22,8 @@ class WizardLocator {
       return WizardFacade(
         applyPendingChoices: applyPendingChoices.execute,
         hasPendingChoices: () async => await repository.readPending() != null,
+        pendingMetadataBackupEnabled: () async =>
+            (await repository.readPending())?.metadataBackupEnabled,
       );
     });
   }

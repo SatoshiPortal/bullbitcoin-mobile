@@ -58,6 +58,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/seed_recovery_completion.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -258,6 +259,7 @@ class AppRouter {
       RecoverBullRouter.route(
         onSeedRecovered: (walletIds) => recoverWalletDataAfterSeedRestore(
           locator<WalletBackupFacade>(),
+          wizard: locator<WizardFacade>(),
           defaultCreatedWalletPreferences: walletIds,
           discoverVaults: locator<RecoverVaultsFromBackupWordsUsecase>(),
           vaults: locator<BullVaultFacade>(),

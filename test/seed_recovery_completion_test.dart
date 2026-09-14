@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/seed_recovery_completion.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -40,6 +41,17 @@ void main() {
   );
   late _MockWalletBackupFacade backup;
 
+  /// The Data Backup answer the first-run wizard recorded, as the recovery
+  /// path reads it. `null` is a person who never answered.
+  WizardFacade wizard(bool? consent) => WizardFacade(
+    applyPendingChoices:
+        ({
+          List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+        }) async => const Ok(null),
+    hasPendingChoices: () async => consent != null,
+    pendingMetadataBackupEnabled: () async => consent,
+  );
+
   setUp(() {
     backup = _MockWalletBackupFacade();
   });
@@ -57,6 +69,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin, liquid],
         ),
         isTrue,
@@ -81,6 +94,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin, liquid],
         ),
         isFalse,
@@ -99,6 +113,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin, liquid],
         ),
         isFalse,
@@ -118,6 +133,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
         ),
         isFalse,
@@ -219,6 +235,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
           discoverVaults: discover,
           vaults: vaults,
@@ -242,6 +259,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
           discoverVaults: discover,
           vaults: vaults,
@@ -273,6 +291,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
           discoverVaults: discover,
           vaults: vaults,
@@ -297,6 +316,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
           discoverVaults: discover,
           vaults: vaults,
@@ -319,6 +339,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
         ),
         isTrue,
@@ -331,6 +352,62 @@ void main() {
         ),
       );
       verifyNever(() => vaults.recordVaultRecovered());
+    });
+
+    for (final consent in [false, null]) {
+      test('a Data Backup choice of $consent asks nobody anything', () async {
+        metadataRestored();
+        relaysHold([
+          NostrDescriptorRecord(
+            descriptor: policy.descriptor,
+            network: policy.network,
+            createdAt: DateTime.utc(2027),
+          ),
+        ]);
+        restores();
+
+        expect(
+          await recoverWalletDataAfterSeedRestore(
+            backup,
+            wizard: wizard(consent),
+            defaultCreatedWalletPreferences: [bitcoin],
+            discoverVaults: discover,
+            vaults: vaults,
+          ),
+          isTrue,
+          reason: 'nothing was asked for, so nothing is reported unfinished',
+        );
+
+        verifyZeroInteractions(backup);
+        verifyZeroInteractions(identity);
+        verifyZeroInteractions(vaults);
+      });
+    }
+
+    test('a Data Backup choice of true runs both halves', () async {
+      metadataRestored();
+      relaysHold(const []);
+
+      expect(
+        await recoverWalletDataAfterSeedRestore(
+          backup,
+          wizard: wizard(true),
+          defaultCreatedWalletPreferences: [bitcoin],
+          discoverVaults: discover,
+          vaults: vaults,
+        ),
+        isTrue,
+      );
+
+      verify(
+        () => backup.recover(defaultCreatedWalletPreferences: [bitcoin]),
+      ).called(1);
+      verify(
+        () => vaults.discoverDescriptorsOnNostr(
+          words: any(named: 'words'),
+          session: any(named: 'session'),
+        ),
+      ).called(1);
     });
 
     test('a relay failure cannot invalidate seed recovery', () async {
@@ -351,6 +428,7 @@ void main() {
       expect(
         await recoverWalletDataAfterSeedRestore(
           backup,
+          wizard: wizard(true),
           defaultCreatedWalletPreferences: [bitcoin],
           discoverVaults: discover,
           vaults: vaults,
