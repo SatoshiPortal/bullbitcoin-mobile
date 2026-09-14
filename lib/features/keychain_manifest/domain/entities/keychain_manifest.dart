@@ -111,6 +111,14 @@ final class KeychainManifestEntry {
         : null,
   );
 
+  /// A key the app reserved for itself, which the user did not create and
+  /// cannot delete.
+  bool get isSystemNostrKey {
+    final key = materializations.singleOrNull;
+    return key is KeychainManifestNostrKey &&
+        key.keyKind == KeychainManifestNostrKeyKind.reserved;
+  }
+
   static String entryIdFor({
     required Fingerprint parentFingerprint,
     required KeychainManifestDerivationKind derivationKind,

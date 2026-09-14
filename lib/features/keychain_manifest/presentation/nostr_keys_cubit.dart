@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_display.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/create_keychain_manifest_nostr_key_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/get_default_wallet_nostr_keys_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
