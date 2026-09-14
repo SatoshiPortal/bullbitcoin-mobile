@@ -57,6 +57,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/watch_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_job_runner.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
 import 'package:meta/meta.dart';
 
 /// The one entry point into Bull backup.
@@ -79,6 +80,7 @@ class WalletBackupFacade {
   final ExtractVaultsWithBackupWordsUsecase _extractWithWords;
   final PublishPrivateDescriptorUsecase _publishPrivateDescriptor;
   final LookupPrivateDescriptorsUsecase _lookupPrivateDescriptors;
+  final WalletBackupOriginProvider _origin;
 
   const WalletBackupFacade(
     this._getContents,
@@ -96,7 +98,22 @@ class WalletBackupFacade {
     this._extractWithWords,
     this._publishPrivateDescriptor,
     this._lookupPrivateDescriptors,
+    this._origin,
   );
+
+  /// The origin the server sources answer from right now, normalized.
+  ///
+  /// It is the same one every request goes to, so a receipt can be bound to
+  /// the server that really produced it. An origin this build cannot parse is
+  /// reported as the empty string rather than guessed at.
+  @useResult
+  Future<String> serverOrigin() async {
+    try {
+      return (await _origin()).toString();
+    } on Exception {
+      return '';
+    }
+  }
 
   @useResult
   Future<Result<WalletBackupContents, WalletBackupFailure>> getContents() =>

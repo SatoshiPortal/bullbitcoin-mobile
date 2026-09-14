@@ -87,6 +87,9 @@ void main() {
     when(metadata.fetchRemoteContents).thenAnswer(
       (_) async => const Ok<WalletBackupContents?, WalletBackupFailure>(null),
     );
+    when(
+      metadata.serverOrigin,
+    ).thenAnswer((_) async => 'https://backup.example');
     cubit = VaultBackupCubit(
       VerifyVaultDescriptorBackupUsecase(
         vaults,
@@ -183,6 +186,7 @@ void main() {
     final dates =
         await history.load(
               VaultBackupTest.identity(policy.descriptor, policy.network.name),
+              endpoint: 'https://backup.example',
             )
             as Ok<Map<VaultBackupSource, DateTime>, dynamic>;
     expect(dates.value, isEmpty);

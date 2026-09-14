@@ -71,7 +71,10 @@ final class VerifyVaultDescriptorBackupUsecase {
     } on Exception {
       return const Err(BackupSettingsInvalidFileFailure());
     }
-    return switch (await _history.load(descriptorId)) {
+    return switch (await _history.load(
+      descriptorId,
+      endpoint: await _currentEndpoint(),
+    )) {
       Ok(:final value) => Ok(
         VaultBackupInspection(record, value, descriptorId: descriptorId),
       ),
@@ -150,6 +153,7 @@ final class VerifyVaultDescriptorBackupUsecase {
     if (loaded case Err(:final failure)) return Err(failure);
     final inspection =
         (loaded as Ok<VaultBackupInspection, BackupSettingsFailure>).value;
+    final endpoint = await _currentEndpoint();
     final remote = await _metadata.fetchRemoteContents();
     if (remote case Err(:final failure)) {
       return Err(mapWalletBackupFailure(failure));
@@ -165,7 +169,11 @@ final class VerifyVaultDescriptorBackupUsecase {
             _matches(vault.descriptor, policy.descriptor, policy.network),
       );
       if (!matches) return const Ok(false);
-      return _record(inspection, VaultBackupSource.metadata);
+      return _record(
+        inspection,
+        VaultBackupSource.metadata,
+        endpoint: endpoint,
+      );
     } on Exception {
       return const Err(BackupSettingsInvalidFileFailure());
     }
@@ -185,6 +193,7 @@ final class VerifyVaultDescriptorBackupUsecase {
     final inspection =
         (loaded as Ok<VaultBackupInspection, BackupSettingsFailure>).value;
     final policy = inspection.record.recoveryPackage.policy;
+    final endpoint = await _currentEndpoint();
     final encoded = await _vaults.encodePrivateDescriptorBackup(walletId);
     if (encoded case Err()) {
       return const Err(BackupSettingsUnavailableFailure());
@@ -240,7 +249,11 @@ final class VerifyVaultDescriptorBackupUsecase {
       destination: VaultBackupDestination.server,
     );
     if (verified case Err()) return const Err(BackupSettingsStorageFailure());
-    return switch (await _record(inspection, VaultBackupSource.bip138)) {
+    return switch (await _record(
+      inspection,
+      VaultBackupSource.bip138,
+      endpoint: endpoint,
+    )) {
       Ok() => Ok(check),
       Err(:final failure) => Err(failure),
     };
@@ -317,8 +330,9 @@ final class VerifyVaultDescriptorBackupUsecase {
 
   Future<Result<bool, BackupSettingsFailure>> _record(
     VaultBackupInspection inspected,
-    VaultBackupSource source,
-  ) async {
+    VaultBackupSource source, {
+    String endpoint = VaultBackupTest.anyEndpoint,
+  }) async {
     // A deletion/renewal while fetching must not certify a different descriptor.
     final current = await load(inspected.record.walletId);
     if (current case Err(:final failure)) return Err(failure);
@@ -327,10 +341,18 @@ final class VerifyVaultDescriptorBackupUsecase {
     if (value.descriptorId != inspected.descriptorId) {
       return const Err(BackupSettingsUnverifiedFailure());
     }
+    // The person may have pointed the app somewhere else while the fetch was
+    // running. A date belongs to the server it really came from, so a receipt
+    // is refused rather than filed against the new one.
+    if (endpoint != VaultBackupTest.anyEndpoint &&
+        endpoint != await _currentEndpoint()) {
+      return const Err(BackupSettingsUnverifiedFailure());
+    }
     return switch (await _history.record(
       VaultBackupTest(
         descriptorId: inspected.descriptorId,
         source: source,
+        endpoint: endpoint,
         verifiedAt: _now(),
       ),
     )) {
@@ -338,4 +360,10 @@ final class VerifyVaultDescriptorBackupUsecase {
       Err(:final failure) => Err(failure),
     };
   }
+
+  /// The normalized origin the server sources answer from right now.
+  ///
+  /// The relays are not one endpoint and a saved copy is not remote at all, so
+  /// only the two server sources are bound to this.
+  Future<String> _currentEndpoint() => _metadata.serverOrigin();
 }

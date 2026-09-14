@@ -48,6 +48,12 @@ class _Parser extends Fake implements BitcoinDescriptorPort {
   }
 }
 
+/// The origin every test in this file runs against: no custom server is set,
+/// so the two server sources answer from the default one.
+final _endpoint = parseWalletBackupServerOrigin(
+  walletBackupDefaultServerUrl,
+).toString();
+
 void main() {
   late _Vaults vaults;
   late _Metadata metadata;
@@ -72,6 +78,8 @@ void main() {
     files = _Files();
     history = VaultBackupTestRepositoryImpl();
     when(() => vaults.listRecords()).thenAnswer((_) async => Ok([record]));
+    // No custom server, so every source answers from the default origin.
+    when(() => metadata.serverOrigin()).thenAnswer((_) async => _endpoint);
     when(() => vaults.decodeRecoveryPackage(any())).thenAnswer((call) {
       try {
         return codec.decode(call.positionalArguments.single as String);
@@ -99,7 +107,7 @@ void main() {
   });
 
   Future<Map<VaultBackupSource, DateTime>> dates([String? id]) async =>
-      (await history.load(id ?? descriptorId)
+      (await history.load(id ?? descriptorId, endpoint: _endpoint)
               as Ok<Map<VaultBackupSource, DateTime>, BackupSettingsFailure>)
           .value;
 
@@ -116,7 +124,8 @@ void main() {
         ),
       );
       expect(await dates(), {VaultBackupSource.manual: now});
-      verifyZeroInteractions(metadata);
+      verifyNever(() => metadata.fetchRemoteContents());
+      verifyNever(() => metadata.lookupPrivateDescriptors(any()));
     },
   );
 
@@ -261,6 +270,7 @@ void main() {
         VaultBackupTest(
           descriptorId: descriptorId,
           source: VaultBackupSource.metadata,
+          endpoint: _endpoint,
           verifiedAt: now.subtract(const Duration(days: 2)),
         ),
       );
@@ -285,12 +295,13 @@ void main() {
   test('storage failure is not reported as a successful backup test', () async {
     final failedHistory = _History();
     when(
-      () => failedHistory.load(descriptorId),
+      () => failedHistory.load(descriptorId, endpoint: any(named: 'endpoint')),
     ).thenAnswer((_) async => const Ok({}));
     registerFallbackValue(
       VaultBackupTest(
         descriptorId: descriptorId,
         source: VaultBackupSource.manual,
+        endpoint: VaultBackupTest.anyEndpoint,
         verifiedAt: now,
       ),
     );
@@ -357,12 +368,91 @@ void main() {
     },
   );
 
+  test('a date belongs to the server that produced it', () async {
+    await history.record(
+      VaultBackupTest(
+        descriptorId: descriptorId,
+        source: VaultBackupSource.metadata,
+        endpoint: _endpoint,
+        verifiedAt: now,
+      ),
+    );
+    await history.record(
+      VaultBackupTest(
+        descriptorId: descriptorId,
+        source: VaultBackupSource.manual,
+        endpoint: VaultBackupTest.anyEndpoint,
+        verifiedAt: now,
+      ),
+    );
+
+    final elsewhere =
+        (await history.load(descriptorId, endpoint: 'https://other.example')
+                as Ok<Map<VaultBackupSource, DateTime>, BackupSettingsFailure>)
+            .value;
+
+    expect(
+      elsewhere[VaultBackupSource.metadata],
+      isNull,
+      reason: 'the new server has never been asked for this descriptor',
+    );
+    expect(
+      elsewhere[VaultBackupSource.manual],
+      now,
+      reason: 'a saved copy is not answered by any server',
+    );
+    expect((await dates())[VaultBackupSource.metadata], now);
+  });
+
+  test('a server swapped mid-check never takes the other one\'s date', () async {
+    // The fetch runs against the first server and the person points the app at
+    // the second before the receipt is written.
+    var reads = 0;
+    when(() => metadata.serverOrigin()).thenAnswer(
+      (_) async =>
+          reads++ < 2 ? 'https://first.example' : 'https://second.example',
+    );
+    when(() => metadata.fetchRemoteContents()).thenAnswer(
+      (_) async => Ok(
+        WalletBackupContents(
+          vaults: [
+            WalletBackupVaultSummary(
+              walletRef: record.walletId,
+              status: record.status.name,
+              network: policy.network,
+              lineageId: policy.lineageId,
+              vaultGeneration: policy.vaultGeneration,
+              descriptor: policy.descriptor,
+              birthHeight: policy.birthHeight,
+              recoveryPackage: codec.encode(record.recoveryPackage),
+            ),
+          ],
+          labelCount: 0,
+          frozenCoinCount: 0,
+          walletPreferenceCount: 0,
+        ),
+      ),
+    );
+
+    expect(
+      await verify.verifyMetadata(record.walletId),
+      isA<Err<bool, BackupSettingsFailure>>(),
+    );
+    expect(
+      (await history.load(descriptorId, endpoint: 'https://first.example')
+              as Ok<Map<VaultBackupSource, DateTime>, BackupSettingsFailure>)
+          .value,
+      isEmpty,
+    );
+  });
+
   test('independent source writes survive a new repository instance', () async {
     await Future.wait([
       history.record(
         VaultBackupTest(
           descriptorId: descriptorId,
           source: VaultBackupSource.manual,
+          endpoint: VaultBackupTest.anyEndpoint,
           verifiedAt: now,
         ),
       ),
@@ -370,11 +460,15 @@ void main() {
         VaultBackupTest(
           descriptorId: descriptorId,
           source: VaultBackupSource.metadata,
+          endpoint: _endpoint,
           verifiedAt: now,
         ),
       ),
     ]);
-    final reloaded = await VaultBackupTestRepositoryImpl().load(descriptorId);
+    final reloaded = await VaultBackupTestRepositoryImpl().load(
+      descriptorId,
+      endpoint: _endpoint,
+    );
     expect(
       (reloaded as Ok<Map<VaultBackupSource, DateTime>, BackupSettingsFailure>)
           .value

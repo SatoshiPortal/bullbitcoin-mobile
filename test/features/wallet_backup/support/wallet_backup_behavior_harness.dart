@@ -575,6 +575,7 @@ final class WalletBackupBehaviorHarness {
         descriptorRemote,
       ),
       LookupPrivateDescriptorsUsecase((_) => null, descriptorRemote),
+      () async => Uri.parse('https://backup.example'),
     );
 
     final key = switch (await resolveKey.execute()) {
