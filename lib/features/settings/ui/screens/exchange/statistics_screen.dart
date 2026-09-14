@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -61,13 +62,13 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
       return const SizedBox.shrink();
     }
 
-    if (state.error != null) {
+    if (state.failure != null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BBText(
-              state.error!,
+              state.failure!.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
