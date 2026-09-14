@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/nostr_identity/domain/backup_credential.dart'
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_failure.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -19,21 +18,19 @@ export 'package:bb_mobile/features/nostr_identity/domain/nostr_identity_failure.
 class NostrIdentityFacade {
   final GetBackupIdentityPublicKeyUsecase _getPublicKey;
   final SignBackupIdentityHashUsecase _signHash;
-  final RevealBackupWordsUsecase _revealWords;
   final BackupCredentialResolver _credential;
 
   const NostrIdentityFacade(
     this._getPublicKey,
     this._signHash,
-    this._revealWords,
     this._credential,
   );
 
   /// The whole credential of this wallet, for an operation that has to seal
   /// bytes and sign as the artifact author in one breath.
   ///
-  /// The resolver is held directly rather than behind a fourth use case that
-  /// would only forward to it. Nothing caches the result: it carries the words.
+  /// The resolver is held directly rather than behind a use case that would
+  /// only forward to it. Nothing caches the result: it carries the words.
   @useResult
   Future<Result<BackupCredential, NostrIdentityFailure>> backupCredential() =>
       _credential.resolve();
@@ -63,5 +60,5 @@ class NostrIdentityFacade {
   /// reveal screen. They are never cached, here or below.
   @useResult
   Future<Result<String, NostrIdentityFailure>> revealBackupWords() =>
-      _revealWords.execute();
+      _credential.revealWords();
 }

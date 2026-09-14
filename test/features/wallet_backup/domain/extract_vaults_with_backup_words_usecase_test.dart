@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/recoverbull_wallet_backup_encryption_repository.dart';
@@ -310,7 +309,6 @@ void main() {
       NostrIdentityFacade(
         GetBackupIdentityPublicKeyUsecase(resolver),
         SignBackupIdentityHashUsecase(resolver),
-        RevealBackupWordsUsecase(resolver),
         resolver,
       ),
       () => 1234,
@@ -415,7 +413,6 @@ NostrIdentityFacade _seedlessIdentity() {
   return NostrIdentityFacade(
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
-    RevealBackupWordsUsecase(resolver),
     resolver,
   );
 }

@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart';
@@ -76,7 +75,6 @@ NostrIdentityFacade _identity({required bool hasSeed}) {
   return NostrIdentityFacade(
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
-    RevealBackupWordsUsecase(resolver),
     resolver,
   );
 }

@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/utils/nostr_bech32.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
-import 'package:bb_mobile/features/nostr_identity/domain/reveal_backup_words_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/sign_backup_identity_hash_usecase.dart';
 import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -273,7 +272,6 @@ void main() {
     expect(getIt.isRegistered<BackupCredentialResolver>(), isFalse);
     expect(getIt.isRegistered<GetBackupIdentityPublicKeyUsecase>(), isFalse);
     expect(getIt.isRegistered<SignBackupIdentityHashUsecase>(), isFalse);
-    expect(getIt.isRegistered<RevealBackupWordsUsecase>(), isFalse);
   });
 
   test('does not catch programmer errors', () async {
@@ -308,7 +306,6 @@ NostrIdentityFacade _facade(
   return NostrIdentityFacade(
     GetBackupIdentityPublicKeyUsecase(resolver),
     SignBackupIdentityHashUsecase(resolver),
-    RevealBackupWordsUsecase(resolver),
     resolver,
   );
 }
