@@ -72,11 +72,6 @@ enum SettingsItemId {
 
 enum SettingsItemSection { root, backup, wallet, app, tools, help }
 
-const backupSettingsDataItemOrder = [
-  SettingsItemId.labels,
-  SettingsItemId.transactionHistory,
-];
-
 /// The Wallet and Bitcoin group, in the order it is shown.
 ///
 /// [SettingsItemId.extension] is the slot feature-contributed wallet entries

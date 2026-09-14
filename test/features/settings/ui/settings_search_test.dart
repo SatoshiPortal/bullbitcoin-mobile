@@ -105,10 +105,6 @@ void main() {
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
         'Settings → Wallet and Bitcoin → Import wallet',
       );
-      expect(backupSettingsDataItemOrder, [
-        SettingsItemId.labels,
-        SettingsItemId.transactionHistory,
-      ]);
     });
 
     test('Wallet and Bitcoin holds the requested entries in order', () {
@@ -191,7 +187,10 @@ void main() {
     });
 
     test('the data exports are found under Data Backup', () {
-      for (final id in backupSettingsDataItemOrder) {
+      for (final id in [
+        SettingsItemId.labels,
+        SettingsItemId.transactionHistory,
+      ]) {
         final item = _englishItems().byId(id);
         expect(item.path.sublist(0, 3), [
           'Settings',
