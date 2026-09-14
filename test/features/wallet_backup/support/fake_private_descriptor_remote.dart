@@ -14,9 +14,21 @@ final class FakePrivateDescriptorRemote
     implements PrivateDescriptorRemoteRepository {
   final List<StoredDescriptorRecord> stored = [];
   final List<List<String>> lookedUp = [];
+  final List<String?> cursorsSeen = [];
   WalletBackupFailure? storeFailure;
   WalletBackupFailure? lookupFailure;
-  bool incomplete = false;
+
+  /// How many lookups answer normally before [lookupFailure] starts applying,
+  /// so a test can fail a continuation rather than the first page.
+  int lookupsBeforeFailure = 0;
+
+  /// How many records one page carries. Every record fits in one page unless a
+  /// test asks for a smaller one.
+  int pageSize = 1000;
+
+  /// When set, the fake never runs out of pages: it always hands back another
+  /// cursor, as a service holding more history than the client will read does.
+  bool endlessHistory = false;
   DateTime now = DateTime.utc(2027);
 
   /// Files [ciphertext] under [tokens] as some other publisher would have.
@@ -62,23 +74,34 @@ final class FakePrivateDescriptorRemote
   }
 
   @override
-  Future<Result<PrivateDescriptorLookup, WalletBackupFailure>> lookup(
-    List<String> lookupTokens,
-  ) async {
+  Future<Result<PrivateDescriptorLookupPage, WalletBackupFailure>> lookup(
+    List<String> lookupTokens, {
+    String? cursor,
+  }) async {
     lookedUp.add(lookupTokens);
-    if (lookupFailure case final failure?) return Err(failure);
+    cursorsSeen.add(cursor);
+    if (lookupFailure case final failure?
+        when lookedUp.length > lookupsBeforeFailure) {
+      return Err(failure);
+    }
+    final matching = [
+      for (final record in stored.reversed)
+        if (record.tokens.any(lookupTokens.contains)) record,
+    ];
+    final start = int.tryParse(cursor ?? '0') ?? 0;
+    final end = start + pageSize;
+    final page = matching.skip(start).take(pageSize).toList();
     return Ok(
-      PrivateDescriptorLookup(
+      PrivateDescriptorLookupPage(
         records: [
-          for (final record in stored.reversed)
-            if (record.tokens.any(lookupTokens.contains))
-              PrivateDescriptorRecord(
-                ciphertext: record.ciphertext,
-                ciphertextSha256: record.hash,
-                createdAt: record.createdAt,
-              ),
+          for (final record in page)
+            PrivateDescriptorRecord(
+              ciphertext: record.ciphertext,
+              ciphertextSha256: record.hash,
+              createdAt: record.createdAt,
+            ),
         ],
-        incomplete: incomplete,
+        nextCursor: endlessHistory || end < matching.length ? '$end' : null,
       ),
     );
   }

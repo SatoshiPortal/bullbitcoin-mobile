@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
@@ -6,6 +10,10 @@ import 'package:dio/dio.dart';
 
 const walletBackupConnectTimeout = Duration(seconds: 10);
 const walletBackupReceiveTimeout = Duration(seconds: 15);
+
+/// The largest body this client will read from a request that carries no
+/// ciphertext: an acknowledgement, a head or an error envelope.
+const walletBackupSmallResponseBytes = 64 * 1024;
 
 /// Decides what a server error envelope means for one protocol.
 typedef BackupServerFailureDecoder =
@@ -42,10 +50,14 @@ final class BackupServerHttpTransport {
     origin,
   );
 
+  /// [maxResponseBytes] is read and then the read stops: a server that keeps
+  /// sending cannot make this device allocate past it, and nothing is decoded
+  /// until the whole body is known to fit.
   Future<Result<Map<String, Object?>, WalletBackupFailure>> request({
     required String method,
     required String path,
     required Map<String, Object?> body,
+    required int maxResponseBytes,
     required BackupServerFailureDecoder decodeServerFailure,
   }) async {
     final notBefore = _notBefore;
@@ -62,20 +74,35 @@ final class BackupServerHttpTransport {
       return const Err(WalletBackupInvalidServerOriginFailure());
     }
     try {
-      final response = await _dio.requestUri<Object?>(
+      final response = await _dio.requestUri<ResponseBody>(
         origin.resolve(path),
         data: body,
         options: Options(
           method: method,
           followRedirects: false,
-          responseType: ResponseType.json,
+          responseType: ResponseType.stream,
           validateStatus: (status) => status != null && status < 600,
         ),
       );
-      return _handleResponse(response, decodeServerFailure);
+      return await _handleResponse(
+        response,
+        maxResponseBytes,
+        decodeServerFailure,
+      );
     } on DioException catch (error, trace) {
       if (error.response case final response?) {
-        return _handleResponse(response, decodeServerFailure);
+        return await _handleResponse(
+          Response<ResponseBody>(
+            requestOptions: response.requestOptions,
+            statusCode: response.statusCode,
+            headers: response.headers,
+            data: response.data is ResponseBody
+                ? response.data as ResponseBody
+                : null,
+          ),
+          maxResponseBytes,
+          decodeServerFailure,
+        );
       }
       log.warning(
         'Wallet backup network request failed',
@@ -106,11 +133,25 @@ final class BackupServerHttpTransport {
     return WalletBackupRateLimitedFailure(retryAfter);
   }
 
-  Result<Map<String, Object?>, WalletBackupFailure> _handleResponse(
-    Response<Object?> response,
+  Future<Result<Map<String, Object?>, WalletBackupFailure>> _handleResponse(
+    Response<ResponseBody> response,
+    int maxResponseBytes,
     BackupServerFailureDecoder decodeServerFailure,
-  ) {
-    final json = backupServerObject(response.data);
+  ) async {
+    final body = response.data;
+    if (body == null) return const Err(WalletBackupInvalidRemoteFailure());
+    final Object? decoded;
+    switch (await _read(body.stream, maxResponseBytes)) {
+      case null:
+        return const Err(WalletBackupInvalidRemoteFailure());
+      case final bytes:
+        try {
+          decoded = jsonDecode(utf8.decode(bytes));
+        } on FormatException {
+          return const Err(WalletBackupInvalidRemoteFailure());
+        }
+    }
+    final json = backupServerObject(decoded);
     if (json == null) return const Err(WalletBackupInvalidRemoteFailure());
     if (json['status'] == 'ERROR') {
       if (!backupServerHasOnly(json, const {'status', 'code', 'reason'}) ||
@@ -126,6 +167,26 @@ final class BackupServerHttpTransport {
     return status != null && status >= 200 && status < 300
         ? Ok(json)
         : const Err(WalletBackupInvalidRemoteFailure());
+  }
+
+  /// The whole body when it fits in [limit] bytes, or null when it does not.
+  ///
+  /// The read stops at the first chunk that crosses the limit, so an endless
+  /// answer costs one chunk rather than the device's memory.
+  Future<Uint8List?> _read(Stream<Uint8List> stream, int limit) async {
+    final builder = BytesBuilder(copy: false);
+    final subscription = StreamIterator(stream);
+    try {
+      while (await subscription.moveNext()) {
+        builder.add(subscription.current);
+        if (builder.length > limit) return null;
+      }
+    } on Exception {
+      return null;
+    } finally {
+      await subscription.cancel();
+    }
+    return builder.takeBytes();
   }
 }
 

@@ -177,7 +177,7 @@ void main() {
       );
       expect(
         await harness.repository.lookup(tokens),
-        isA<Err<PrivateDescriptorLookup, WalletBackupFailure>>(),
+        isA<Err<PrivateDescriptorLookupPage, WalletBackupFailure>>(),
       );
     }
     expect(harness.requestCount, 0);
@@ -186,7 +186,7 @@ void main() {
   test('lookup is unsigned and returns verified candidates', () async {
     final harness = _Harness({
       'version': 1,
-      'incomplete': false,
+      'next_cursor': null,
       'records': [
         {
           'ciphertext': _ciphertextBase64,
@@ -205,26 +205,89 @@ void main() {
       'version': 1,
       'lookup_tokens': [_tokens.first],
     });
-    expect(result, isA<Ok<PrivateDescriptorLookup, WalletBackupFailure>>());
+    expect(result, isA<Ok<PrivateDescriptorLookupPage, WalletBackupFailure>>());
     final lookup =
-        (result as Ok<PrivateDescriptorLookup, WalletBackupFailure>).value;
-    expect(lookup.incomplete, isFalse);
+        (result as Ok<PrivateDescriptorLookupPage, WalletBackupFailure>).value;
+    expect(lookup.nextCursor, isNull);
     expect(lookup.records.single.ciphertext, _ciphertext);
     expect(lookup.records.single.ciphertextSha256, _ciphertextSha256);
   });
 
-  test('a truncated page is reported, never as a complete absence', () async {
+  test('a page that stopped carries its cursor back unchanged', () async {
     final harness = _Harness({
       'version': 1,
-      'incomplete': true,
+      'next_cursor': 'AQAAAAAAAAPoAAAAAAAAAAAAAAAAAAAAAA==',
       'records': <Object?>[],
     });
+
     final result = await harness.repository.lookup([_tokens.first]);
+
     expect(
       result,
-      isA<Ok<PrivateDescriptorLookup, WalletBackupFailure>>()
-          .having((value) => value.value.incomplete, 'incomplete', isTrue)
+      isA<Ok<PrivateDescriptorLookupPage, WalletBackupFailure>>()
+          .having(
+            (value) => value.value.nextCursor,
+            'next cursor',
+            'AQAAAAAAAAPoAAAAAAAAAAAAAAAAAAAAAA==',
+          )
           .having((value) => value.value.records, 'records', isEmpty),
+    );
+
+    await harness.repository.lookup([
+      _tokens.first,
+    ], cursor: 'AQAAAAAAAAPoAAAAAAAAAAAAAAAAAAAAAA==');
+
+    expect(harness.request.data, {
+      'version': 1,
+      'lookup_tokens': [_tokens.first],
+      'cursor': 'AQAAAAAAAAPoAAAAAAAAAAAAAAAAAAAAAA==',
+    });
+  });
+
+  test('a page longer than this client holds is never decoded', () async {
+    final harness = _Harness({
+      'version': 1,
+      'next_cursor': null,
+      'records': [
+        for (
+          var index = 0;
+          index < privateDescriptorMaxRecordsPerPage + 1;
+          index++
+        )
+          {
+            'ciphertext': _ciphertextBase64,
+            'ciphertext_sha256': _ciphertextSha256,
+            'ciphertext_bytes': 32,
+            'created_at': _timestamp,
+          },
+      ],
+    });
+
+    expect(
+      await harness.repository.lookup([_tokens.first]),
+      isA<Err<PrivateDescriptorLookupPage, WalletBackupFailure>>().having(
+        (value) => value.failure,
+        'failure',
+        isA<WalletBackupInvalidRemoteFailure>(),
+      ),
+    );
+  });
+
+  test('a response past the read bound is refused, not buffered', () async {
+    final harness = _Harness(
+      null,
+      rawBody:
+          '{"version":1,"next_cursor":null,"records":[],"padding":"'
+          '${'a' * (privateDescriptorMaxLookupResponseBytes + 1)}"}',
+    );
+
+    expect(
+      await harness.repository.lookup([_tokens.first]),
+      isA<Err<PrivateDescriptorLookupPage, WalletBackupFailure>>().having(
+        (value) => value.failure,
+        'failure',
+        isA<WalletBackupInvalidRemoteFailure>(),
+      ),
     );
   });
 
@@ -262,12 +325,12 @@ void main() {
     ]) {
       final harness = _Harness({
         'version': 1,
-        'incomplete': false,
+        'next_cursor': null,
         'records': [record],
       });
       expect(
         await harness.repository.lookup([_tokens.first]),
-        isA<Err<PrivateDescriptorLookup, WalletBackupFailure>>().having(
+        isA<Err<PrivateDescriptorLookupPage, WalletBackupFailure>>().having(
           (value) => value.failure,
           'failure',
           isA<WalletBackupInvalidRemoteFailure>(),
@@ -320,7 +383,7 @@ void main() {
     );
     expect(
       await harness.repository.lookup([_tokens.first]),
-      isA<Err<PrivateDescriptorLookup, WalletBackupFailure>>().having(
+      isA<Err<PrivateDescriptorLookupPage, WalletBackupFailure>>().having(
         (value) => value.failure,
         'failure',
         isA<WalletBackupRateLimitedFailure>().having(
@@ -333,7 +396,7 @@ void main() {
     expect(harness.requestCount, 1);
     expect(
       await harness.repository.lookup([_tokens.first]),
-      isA<Err<PrivateDescriptorLookup, WalletBackupFailure>>(),
+      isA<Err<PrivateDescriptorLookupPage, WalletBackupFailure>>(),
     );
     expect(harness.requestCount, 1, reason: 'the gate answered locally');
   });
@@ -341,6 +404,9 @@ void main() {
 
 final class _Harness {
   Object? response;
+
+  /// A body sent as it stands, for answers no JSON encoder would produce.
+  String? rawBody;
   final int statusCode;
   final Headers headers;
   late RequestOptions request;
@@ -352,6 +418,7 @@ final class _Harness {
     this.statusCode = 200,
     Headers? headers,
     DateTime Function()? now,
+    this.rawBody,
   }) : headers = headers ?? Headers() {
     final dio = Dio()
       ..interceptors.add(
@@ -360,11 +427,14 @@ final class _Harness {
             requestCount++;
             request = options;
             handler.resolve(
-              Response<Object?>(
+              Response<ResponseBody>(
                 requestOptions: options,
                 statusCode: statusCode,
                 headers: this.headers,
-                data: response,
+                data: ResponseBody.fromString(
+                  rawBody ?? jsonEncode(response),
+                  statusCode,
+                ),
               ),
             );
           },

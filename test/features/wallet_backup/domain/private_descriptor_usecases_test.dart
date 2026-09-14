@@ -205,8 +205,11 @@ void main() {
     expect(remote.lookedUp, isEmpty);
   });
 
-  test('a truncated search is carried through, not flattened', () async {
-    remote.incomplete = true;
+  test('a search that could not finish is carried through, not '
+      'flattened', () async {
+    remote
+      ..endlessHistory = true
+      ..pageSize = 1;
     final usecase = LookupPrivateDescriptorsUsecase((_) => _tokenA, remote);
 
     expect(
@@ -214,6 +217,64 @@ void main() {
       isA<Ok<PrivateDescriptorLookup, WalletBackupFailure>>()
           .having((value) => value.value.incomplete, 'incomplete', isTrue)
           .having((value) => value.value.records, 'records', isEmpty),
+    );
+    expect(remote.lookedUp, hasLength(privateDescriptorMaxLookupPages));
+  });
+
+  test('every page of a history is followed to its end', () async {
+    for (var index = 0; index < 5; index++) {
+      remote.publishForeign(
+        ciphertext: Uint8List.fromList([index, index, index]),
+        tokens: const [_tokenA],
+        publisher: 'publisher-$index',
+      );
+    }
+    remote.pageSize = 2;
+    final usecase = LookupPrivateDescriptorsUsecase((_) => _tokenA, remote);
+
+    final result = await usecase.execute('cosigner-key');
+
+    expect(
+      result,
+      isA<Ok<PrivateDescriptorLookup, WalletBackupFailure>>()
+          .having((value) => value.value.records, 'records', hasLength(5))
+          .having((value) => value.value.incomplete, 'incomplete', isFalse),
+    );
+    expect(remote.cursorsSeen, [null, '2', '4']);
+  });
+
+  test('a failure on a continuation keeps what was already read', () async {
+    remote.publishForeign(ciphertext: _artifact, tokens: const [_tokenA]);
+    remote.publishForeign(
+      ciphertext: Uint8List.fromList([7, 7, 7]),
+      tokens: const [_tokenA],
+      publisher: 'second-publisher',
+    );
+    remote
+      ..pageSize = 1
+      ..lookupsBeforeFailure = 1
+      ..lookupFailure = const WalletBackupRemoteUnavailableFailure();
+    final usecase = LookupPrivateDescriptorsUsecase((_) => _tokenA, remote);
+
+    expect(
+      await usecase.execute('cosigner-key'),
+      isA<Ok<PrivateDescriptorLookup, WalletBackupFailure>>()
+          .having((value) => value.value.records, 'records', hasLength(1))
+          .having((value) => value.value.incomplete, 'incomplete', isTrue),
+    );
+  });
+
+  test('a failure on the first page is the failure itself', () async {
+    remote.lookupFailure = const WalletBackupRemoteUnavailableFailure();
+    final usecase = LookupPrivateDescriptorsUsecase((_) => _tokenA, remote);
+
+    expect(
+      await usecase.execute('cosigner-key'),
+      isA<Err<PrivateDescriptorLookup, WalletBackupFailure>>().having(
+        (value) => value.failure,
+        'failure',
+        isA<WalletBackupRemoteUnavailableFailure>(),
+      ),
     );
   });
 }

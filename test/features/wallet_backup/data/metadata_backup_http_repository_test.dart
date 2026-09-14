@@ -220,11 +220,11 @@ final class _Harness {
             requestCount++;
             request = options;
             handler.resolve(
-              Response<Object?>(
+              Response<ResponseBody>(
                 requestOptions: options,
                 statusCode: statusCode,
                 headers: this.headers,
-                data: response,
+                data: ResponseBody.fromString(jsonEncode(response), statusCode),
               ),
             );
           },

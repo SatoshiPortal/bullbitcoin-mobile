@@ -26,11 +26,26 @@ final class PrivateDescriptorRecord {
   }
 }
 
-/// What a lookup found, newest first.
+/// One page of a lookup, newest first.
 ///
-/// [incomplete] is the server saying its page was truncated. There is no
-/// continuation cursor in this version, so it must be shown as a search that
-/// did not finish and never reported as a complete absence.
+/// [nextCursor] is where the server stopped. It is opaque: the only thing to
+/// do with it is send it back to ask for the records that follow. Null means
+/// the history ended with this page.
+final class PrivateDescriptorLookupPage {
+  final List<PrivateDescriptorRecord> records;
+  final String? nextCursor;
+
+  PrivateDescriptorLookupPage({
+    required Iterable<PrivateDescriptorRecord> records,
+    required this.nextCursor,
+  }) : records = List.unmodifiable(records);
+}
+
+/// What a whole lookup found, newest first.
+///
+/// [incomplete] means the search stopped with history still unread, because
+/// the client had followed as far as it will go. It must be shown as a search
+/// that did not finish and never reported as a complete absence.
 final class PrivateDescriptorLookup {
   final List<PrivateDescriptorRecord> records;
   final bool incomplete;

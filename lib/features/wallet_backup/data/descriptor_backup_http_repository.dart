@@ -70,9 +70,10 @@ final class DescriptorBackupHttpRepository
   }
 
   @override
-  Future<Result<PrivateDescriptorLookup, WalletBackupFailure>> lookup(
-    List<String> lookupTokens,
-  ) async {
+  Future<Result<PrivateDescriptorLookupPage, WalletBackupFailure>> lookup(
+    List<String> lookupTokens, {
+    String? cursor,
+  }) async {
     if (!isCanonicalPrivateDescriptorTokens(lookupTokens)) {
       return const Err(WalletBackupRemoteRejectedFailure());
     }
@@ -81,7 +82,9 @@ final class DescriptorBackupHttpRepository
       body: {
         'version': privateDescriptorProtocolVersion,
         'lookup_tokens': lookupTokens,
+        'cursor': ?cursor,
       },
+      maxResponseBytes: privateDescriptorMaxLookupResponseBytes,
     );
     return switch (result) {
       Err(:final failure) => Err(failure),
@@ -92,10 +95,12 @@ final class DescriptorBackupHttpRepository
   Future<Result<Map<String, Object?>, WalletBackupFailure>> _request({
     required String path,
     required Map<String, Object?> body,
+    int maxResponseBytes = walletBackupSmallResponseBytes,
   }) => _transport.request(
     method: 'POST',
     path: path,
     body: body,
+    maxResponseBytes: maxResponseBytes,
     decodeServerFailure: _decodeServerFailure,
   );
 
@@ -140,18 +145,22 @@ final class DescriptorBackupHttpRepository
     return Ok(_time(createdAt));
   }
 
-  Result<PrivateDescriptorLookup, WalletBackupFailure> _decodeLookup(
+  Result<PrivateDescriptorLookupPage, WalletBackupFailure> _decodeLookup(
     Map<String, Object?> json,
   ) {
     final rows = json['records'];
+    final cursor = json['next_cursor'];
     if (!backupServerHasOnly(json, const {
           'version',
-          'incomplete',
+          'next_cursor',
           'records',
         }) ||
         json['version'] != privateDescriptorProtocolVersion ||
-        json['incomplete'] is! bool ||
-        rows is! List) {
+        (cursor != null && cursor is! String) ||
+        rows is! List ||
+        // A page longer than the client will hold was not written by the
+        // service this app talks to; nothing in it is decoded.
+        rows.length > privateDescriptorMaxRecordsPerPage) {
       return const Err(WalletBackupInvalidRemoteFailure());
     }
     final records = <PrivateDescriptorRecord>[];
@@ -190,9 +199,9 @@ final class DescriptorBackupHttpRepository
       );
     }
     return Ok(
-      PrivateDescriptorLookup(
+      PrivateDescriptorLookupPage(
         records: records,
-        incomplete: json['incomplete'] as bool,
+        nextCursor: cursor as String?,
       ),
     );
   }

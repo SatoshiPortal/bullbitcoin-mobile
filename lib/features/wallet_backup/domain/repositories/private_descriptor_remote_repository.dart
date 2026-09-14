@@ -19,13 +19,16 @@ abstract interface class PrivateDescriptorRemoteRepository {
     required List<String> lookupTokens,
   });
 
-  /// Reads every record published under [lookupTokens], by any publisher.
+  /// Reads one page of the records published under [lookupTokens], by any
+  /// publisher, newest first.
   ///
   /// Unsigned: knowing a token is the read capability. An unknown token is an
   /// empty result, not an error, and says nothing about whether the vault was
-  /// ever published.
+  /// ever published. [cursor] is a page's own [PrivateDescriptorLookupPage
+  /// .nextCursor], returned verbatim to read what follows it.
   @useResult
-  Future<Result<PrivateDescriptorLookup, WalletBackupFailure>> lookup(
-    List<String> lookupTokens,
-  );
+  Future<Result<PrivateDescriptorLookupPage, WalletBackupFailure>> lookup(
+    List<String> lookupTokens, {
+    String? cursor,
+  });
 }

@@ -23,6 +23,24 @@ const privateDescriptorMaxTokens = 16;
 /// codec, which refuses it, rather than discarded here as malformed.
 const privateDescriptorMaxCiphertextBytes = 65536;
 
+/// What the client will hold from one lookup response, and how far it will
+/// follow a history before it stops and says the search did not finish.
+///
+/// The server pages a long history rather than hiding its tail, so these bound
+/// a hostile or misconfigured server's ability to make this device work
+/// forever: the records that matter are the newest ones, and a vault with more
+/// generations than this has other problems.
+const privateDescriptorMaxRecordsPerPage = 64;
+const privateDescriptorMaxLookupPages = 8;
+const privateDescriptorMaxLookupRecords = 256;
+
+/// The largest lookup response body this client will even decode.
+///
+/// Every record is bounded and so is the page, so anything past this was not
+/// written by the service this app talks to.
+const privateDescriptorMaxLookupResponseBytes =
+    privateDescriptorMaxRecordsPerPage * privateDescriptorMaxCiphertextBytes;
+
 /// SHA-256 of these bytes is what BIP340 signs for a store request.
 ///
 /// Every field after the domain is preceded by exactly one NUL, fields are the

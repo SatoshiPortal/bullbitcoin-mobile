@@ -127,6 +127,11 @@ final class MetadataBackupHttpRepository
     method: method,
     path: path,
     body: body,
+    // A fetch carries the whole encrypted snapshot; base64 costs a third more
+    // than the bytes it encodes, and the envelope around it is small.
+    maxResponseBytes:
+        WalletBackupCiphertext.maximumByteLength * 2 +
+        walletBackupSmallResponseBytes,
     decodeServerFailure: _decodeServerFailure,
   );
 
