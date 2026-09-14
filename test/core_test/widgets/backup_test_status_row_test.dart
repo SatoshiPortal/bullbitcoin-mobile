@@ -51,6 +51,23 @@ void main() {
       );
       expect(text.style!.color, context.appColors.error);
     });
+
+    testWidgets('unavailable is neutral and dateless (${theme.name})', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(theme, unavailable: true));
+      final context = tester.element(find.byType(BackupTestStatusRow));
+      expect(find.text(context.loc.backupSettingsComingSoon), findsOneWidget);
+      expect(find.text(context.loc.backupSettingsTested), findsNothing);
+      expect(find.text(context.loc.backupSettingsNotTested), findsNothing);
+      expect(find.byType(Text), findsNWidgets(2));
+      final text = tester.widget<Text>(
+        find.text(context.loc.backupSettingsComingSoon),
+      );
+      expect(text.style!.color, context.appColors.onSurfaceVariant);
+      expect(text.style!.color, isNot(context.appColors.error));
+      expect(text.style!.color, isNot(context.appColors.success));
+    });
   }
 
   testWidgets('long source names fit a narrow screen with large text', (
@@ -72,24 +89,30 @@ void main() {
   });
 }
 
-Widget _app(AppThemeType theme, {DateTime? testedAt, double textScale = 1}) =>
-    MaterialApp(
-      theme: AppTheme.themeData(theme),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(textScaler: TextScaler.linear(textScale)),
-        child: child!,
-      ),
-      home: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: BackupTestStatusRow(
-            label: 'BULL Data Backup server · BIP138',
-            testedAt: testedAt,
-          ),
-        ),
-      ),
-    );
+Widget _app(
+  AppThemeType theme, {
+  DateTime? testedAt,
+  double textScale = 1,
+  bool unavailable = false,
+}) => MaterialApp(
+  theme: AppTheme.themeData(theme),
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(
+      context,
+    ).copyWith(textScaler: TextScaler.linear(textScale)),
+    child: child!,
+  ),
+  home: Scaffold(
+    body: Padding(
+      padding: const EdgeInsets.all(20),
+      child: unavailable
+          ? const BackupTestStatusRow.unavailable(label: 'Bitcoin · OP_RETURN')
+          : BackupTestStatusRow(
+              label: 'BULL Data Backup server · BIP138',
+              testedAt: testedAt,
+            ),
+    ),
+  ),
+);

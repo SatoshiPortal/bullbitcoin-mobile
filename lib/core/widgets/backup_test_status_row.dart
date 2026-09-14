@@ -9,11 +9,18 @@ class BackupTestStatusRow extends StatelessWidget {
   final String label;
   final DateTime? testedAt;
 
+  /// A destination the app cannot use yet: neutral, never tested or untested.
+  final bool unavailable;
+
   const BackupTestStatusRow({
     super.key,
     required this.label,
     required this.testedAt,
-  });
+  }) : unavailable = false;
+
+  const BackupTestStatusRow.unavailable({super.key, required this.label})
+    : testedAt = null,
+      unavailable = true;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -24,11 +31,15 @@ class BackupTestStatusRow extends StatelessWidget {
           Expanded(child: Text(label, style: context.font.bodyMedium)),
           const Gap(12),
           Text(
-            testedAt != null
+            unavailable
+                ? context.loc.backupSettingsComingSoon
+                : testedAt != null
                 ? context.loc.backupSettingsTested
                 : context.loc.backupSettingsNotTested,
             style: context.font.bodyMedium?.copyWith(
-              color: testedAt != null
+              color: unavailable
+                  ? context.appColors.onSurfaceVariant
+                  : testedAt != null
                   ? context.appColors.success
                   : context.appColors.error,
             ),

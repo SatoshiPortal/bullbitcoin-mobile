@@ -126,18 +126,26 @@ class VaultBackupScreen extends StatelessWidget {
               ],
               const Gap(24),
               for (final source in VaultBackupSource.values) ...[
-                BackupTestStatusRow(
-                  label: switch (source) {
-                    VaultBackupSource.manual => context.loc.bullVaultTestManual,
-                    VaultBackupSource.metadata =>
-                      context.loc.bullVaultTestMetadata,
-                    VaultBackupSource.bip138 => context.loc.bullVaultTestBip138,
-                    VaultBackupSource.nostr => context.loc.bullVaultTestNostr,
-                    VaultBackupSource.bitcoin =>
-                      context.loc.bullVaultTestBitcoin,
-                  },
-                  testedAt: inspection.testedAt[source],
-                ),
+                if (source == VaultBackupSource.bitcoin)
+                  // On-chain publication is deferred: neutral and never tested.
+                  BackupTestStatusRow.unavailable(
+                    label: context.loc.bullVaultTestBitcoin,
+                  )
+                else
+                  BackupTestStatusRow(
+                    label: switch (source) {
+                      VaultBackupSource.manual =>
+                        context.loc.bullVaultTestManual,
+                      VaultBackupSource.metadata =>
+                        context.loc.bullVaultTestMetadata,
+                      VaultBackupSource.bip138 =>
+                        context.loc.bullVaultTestBip138,
+                      VaultBackupSource.nostr => context.loc.bullVaultTestNostr,
+                      VaultBackupSource.bitcoin =>
+                        context.loc.bullVaultTestBitcoin,
+                    },
+                    testedAt: inspection.testedAt[source],
+                  ),
                 const Gap(24),
               ],
               BullButton.big(

@@ -17797,5 +17797,9 @@
   "bullVaultDescriptorActionHelp": "Copy the descriptor, scan your saved QR code, or import your saved descriptor file to continue. Keep a copy outside this phone. Exporting alone does not complete this step.",
   "@bullVaultDescriptorActionHelp": {
     "description": "BullVault descriptor recovery and key inspection"
+  },
+  "backupSettingsComingSoon": "Coming soon",
+  "@backupSettingsComingSoon": {
+    "description": "Neutral status for a backup destination that is not available yet"
   }
 }
