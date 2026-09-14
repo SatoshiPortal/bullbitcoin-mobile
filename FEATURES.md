@@ -97,7 +97,6 @@ graph TB
     %% Wallet Backup is the only feature that reads the keychain manifest for a
     %% backup; Backup Settings goes through its facade rather than around it.
     WALLET_BACKUP --> NOSTR_IDENTITY
-    BULLVAULT --> NOSTR_IDENTITY
     WALLET_BACKUP --> KEYCHAIN_MANIFEST
     WALLET_BACKUP --> LABELS
     WALLET_BACKUP -->|Recovery packages and committed backup changes| BULLVAULT
@@ -305,4 +304,4 @@ To verify no cyclic dependencies exist, you can:
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
 
-The `portable_backup` prototype is a leaf feature composed only by `tools/portable_backup_prototype_app.dart`. It uses the existing RecoverBull encryptor and shared Nostr infrastructure, has no cross-feature imports, and is not registered in the production router or locator. Existing BullVault Nostr backups reuse the generic relay/event transport without changing their wire profile.
+The `portable_backup` prototype is a leaf feature composed only by `tools/portable_backup_prototype_app.dart`. It uses the existing RecoverBull encryptor and shared Nostr infrastructure, has no cross-feature imports, and is not registered in the production router or locator. BullVault no longer publishes descriptors over Nostr itself.

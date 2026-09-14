@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/descriptor_backup_key.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 
-/// Shared validation for the Nostr and Bitcoin backup transports.
+/// Shared account-key and public-descriptor validation for descriptor backups.
 abstract final class DescriptorBackupParser {
   static DescriptorBackupKey inputKey(String value) {
     final input = value.trim();

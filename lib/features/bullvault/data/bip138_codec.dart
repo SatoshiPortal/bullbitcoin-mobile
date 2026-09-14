@@ -6,8 +6,8 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:pointycastle/export.dart';
 
-/// Binary profile pinned to BIP PR1951 at 5af62cba; see prototype documentation.
-/// Descriptor grammar/key eligibility are checked by the repository before encode.
+/// Binary profile pinned to BIP PR1951 at 5af62cba.
+/// Descriptor grammar and key eligibility are validated by the caller before encode.
 final class Bip138Codec {
   static const maxBytes = 32768;
   final Random _random;

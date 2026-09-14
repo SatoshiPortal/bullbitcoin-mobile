@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
-import 'package:bb_mobile/features/bullvault/data/descriptor_backup_envelope.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/descriptor_backup_key.dart';
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bs58check/bs58check.dart' as base58;
@@ -59,29 +58,17 @@ void main() {
   final descriptor =
       'wsh(sortedmulti(2,${keys.map((key) => '${key.xpub}/<0;1>/*').join(',')}))';
 
-  test(
-    'all recipients open standard inner and independent private envelopes',
-    () {
-      final bytes = codec.encode(
-        descriptor,
-        keys.map((key) => key.xOnly).toList(),
-      );
-      final envelope = DescriptorBackupEnvelope(codec);
-      final copies = keys.map((key) => envelope.seal(bytes, key)).toList();
-      expect(copies.toSet().length, 3);
-      expect(copies.map((copy) => copy.length).toSet().length, 1);
-      expect(keys.map(envelope.lookup).toSet().length, 3);
-      for (var i = 0; i < keys.length; i++) {
-        expect(codec.decode(bytes, keys[i].xOnly), [descriptor]);
-        expect(envelope.open(copies[i], keys[i]), bytes);
-        expect(
-          () => envelope.open(copies[i], keys[(i + 1) % 3]),
-          throwsException,
-        );
-        expect(copies[i], isNot(contains(keys[i].xpub)));
-      }
-    },
-  );
+  test('every eligible recipient decodes the same standard artifact', () {
+    final bytes = codec.encode(
+      descriptor,
+      keys.map((key) => key.xOnly).toList(),
+    );
+    for (var i = 0; i < keys.length; i++) {
+      expect(codec.decode(bytes, keys[i].xOnly), [descriptor]);
+      // The artifact never carries a recipient identity in the clear.
+      expect(latin1.decode(bytes), isNot(contains(keys[i].xpub)));
+    }
+  });
 
   test(
     'header bounds, unknown encryption, tamper and wrong key fail closed',
