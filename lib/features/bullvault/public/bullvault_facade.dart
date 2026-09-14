@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/bullvault/data/descriptor_backup_parser.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_private_descriptor_backup_usecase.dart';
@@ -115,13 +114,8 @@ class BullVaultFacade {
   /// The lookup alias an account key publishes under, or null when the input is
   /// not an account key. Accepts a bare xpub, an origin-qualified expression or
   /// a descriptor naming one account.
-  String? descriptorLookupToken(String accountKeyInput) {
-    try {
-      return DescriptorBackupParser.inputKey(accountKeyInput).lookupToken;
-    } on FormatException {
-      return null;
-    }
-  }
+  String? descriptorLookupToken(String accountKeyInput) =>
+      _repository.descriptorLookupToken(accountKeyInput);
 
   @useResult
   Future<Result<bool, BullVaultFailure>> isBullVaultWallet(

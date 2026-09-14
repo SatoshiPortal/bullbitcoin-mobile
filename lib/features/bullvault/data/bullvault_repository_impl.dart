@@ -129,6 +129,15 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   }
 
   @override
+  String? descriptorLookupToken(String accountKeyInput) {
+    try {
+      return DescriptorBackupParser.inputKey(accountKeyInput).lookupToken;
+    } on FormatException {
+      return null;
+    }
+  }
+
+  @override
   Result<BullVaultDescriptorBackup, BullVaultFailure>
   decodePrivateDescriptorBackup({
     required Uint8List bytes,

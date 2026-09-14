@@ -294,6 +294,24 @@ void main() {
     }
   });
 
+  test('the lookup alias is derivable from any spelling of the key', () {
+    final shape = _policyShapes()['mobile and cold']!;
+    final backup = encode(shape.descriptor);
+    final xpub = backup.recipients.first;
+    final expected = DescriptorBackupKey.parse(xpub).lookupToken;
+    expect(backup.lookupTokens, contains(expected));
+    for (final written in [xpub, '[11223344/48h/1h/0h/2h]$xpub/<0;1>/*']) {
+      expect(repository.descriptorLookupToken(written), expected);
+    }
+    for (final rubbish in ['', 'not a key', 'x' * 9000, shape.descriptor]) {
+      expect(
+        repository.descriptorLookupToken(rubbish),
+        isNull,
+        reason: rubbish.length > 40 ? 'long input' : rubbish,
+      );
+    }
+  });
+
   test('membership needs the whole account, not the x coordinate', () {
     final shape = _policyShapes()['mobile and cold']!;
     final backup = encode(shape.descriptor);

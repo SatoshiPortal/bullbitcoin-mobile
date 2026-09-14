@@ -30,6 +30,11 @@ abstract interface class BullVaultRepository {
     required Network network,
   });
 
+  /// The alias an account key publishes under, or null when the input is not
+  /// an account key. Accepts a bare xpub, an origin-qualified expression or a
+  /// descriptor naming exactly one account.
+  String? descriptorLookupToken(String accountKeyInput);
+
   /// Opens an artifact with one account key and proves the descriptor inside
   /// really names that exact account.
   @useResult
