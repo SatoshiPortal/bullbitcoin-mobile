@@ -30,6 +30,8 @@ export 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.da
 export 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart'
+    show BullVaultDescriptorBackup;
 import 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
@@ -118,10 +120,15 @@ class WalletBackupFacade {
   /// Deliberately outside the job runner: a descriptor record is immutable and
   /// shares no head, checkpoint or fence with the metadata backup, so nothing
   /// it does has to be serialised against a publication.
+  ///
+  /// [prepared] is an artifact the caller has already written down. Passing it
+  /// is what makes a retry reach the same immutable record instead of sealing a
+  /// second one; without it the descriptor is sealed here and sent once.
   @useResult
   Future<Result<DateTime, WalletBackupFailure>> publishPrivateDescriptor(
-    String walletId,
-  ) => _publishPrivateDescriptor.execute(walletId);
+    String walletId, {
+    BullVaultDescriptorBackup? prepared,
+  }) => _publishPrivateDescriptor.execute(walletId, prepared: prepared);
 
   /// Every descriptor record published under one cosigner's account key, by any
   /// publisher. The records are untrusted candidates the caller must open and

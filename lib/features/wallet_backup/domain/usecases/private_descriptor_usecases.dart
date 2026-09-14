@@ -17,11 +17,11 @@ typedef DeriveDescriptorLookupToken = String? Function(String accountKeyInput);
 /// Publishes one vault descriptor, sealed for its own cosigners.
 ///
 /// The record is immutable and addressed by its ciphertext hash, so re-sending
-/// the same bytes is idempotent. This use case encrypts afresh each time, and
-/// a fresh nonce is a different record: until C11 keeps the artifact durably,
-/// publishing twice leaves two generations, which the protocol allows and which
-/// recovery handles by reading all of them. Re-encrypting to "retry" is exactly
-/// what must not happen inside one publication, so there is no retry here.
+/// the same bytes is idempotent. Sealing afresh is not: a fresh nonce is a
+/// different record. A caller that has already written its artifact down passes
+/// it as [prepared], and every retry then reaches the same record; without one
+/// this use case seals the vault's descriptor itself, for a first publication
+/// that nothing has to survive.
 final class PublishPrivateDescriptorUsecase {
   final EncodePrivateDescriptorBackup _encode;
   final WalletBackupAuthenticator _authenticator;
@@ -35,13 +35,20 @@ final class PublishPrivateDescriptorUsecase {
 
   /// The creation time the server assigned, which is the original one when the
   /// same record was already stored.
-  Future<Result<DateTime, WalletBackupFailure>> execute(String walletId) async {
+  Future<Result<DateTime, WalletBackupFailure>> execute(
+    String walletId, {
+    BullVaultDescriptorBackup? prepared,
+  }) async {
     final BullVaultDescriptorBackup backup;
-    switch (await _encode(walletId)) {
-      case Err(:final failure):
-        return Err(WalletBackupVaultsFailure(failure.runtimeType.toString()));
-      case Ok(:final value):
-        backup = value;
+    if (prepared != null) {
+      backup = prepared;
+    } else {
+      switch (await _encode(walletId)) {
+        case Err(:final failure):
+          return Err(WalletBackupVaultsFailure(failure.runtimeType.toString()));
+        case Ok(:final value):
+          backup = value;
+      }
     }
     final ciphertext = Uint8List.fromList(backup.bytes);
     final authentication = await _authenticator.signDescriptorStore(

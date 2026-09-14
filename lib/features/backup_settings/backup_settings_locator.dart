@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/fetch_remote_
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_recovery_status_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/import_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/publish_vault_descriptor_backups_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vault_from_bip138_file_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_cosigner_key_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
@@ -59,6 +60,12 @@ class BackupSettingsLocator {
         locator<BitcoinDescriptorPort>(),
         locator<VaultBackupTestRepository>(),
         files,
+      ),
+    );
+    locator.registerFactory<PublishVaultDescriptorBackupsUsecase>(
+      () => PublishVaultDescriptorBackupsUsecase(
+        locator<BullVaultFacade>(),
+        walletBackup,
       ),
     );
     locator.registerFactory<RecoverVaultFromBip138FileUsecase>(
