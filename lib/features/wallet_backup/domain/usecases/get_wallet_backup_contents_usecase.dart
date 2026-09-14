@@ -56,15 +56,13 @@ final class GetWalletBackupContentsUsecase {
             WalletBackupManifestFailure(failure.runtimeType.toString()),
           );
         case Ok(:final value):
-          return Ok(
-            buildWalletBackupContents(
-              manifest: manifest,
-              definitions: definitions,
-              locallyKeyedWalletIds: locallyKeyedWalletIds,
-              metadata: value,
-              vaults: vaults,
-              inspectVault: _inspectVault,
-            ),
+          return buildWalletBackupContents(
+            manifest: manifest,
+            definitions: definitions,
+            locallyKeyedWalletIds: locallyKeyedWalletIds,
+            metadata: value,
+            vaults: vaults,
+            inspectVault: _inspectVault,
           );
       }
     } on Exception catch (error, trace) {
@@ -81,9 +79,10 @@ final class GetWalletBackupContentsUsecase {
 /// The user-facing inventory of one backup, from its typed sections.
 ///
 /// Shared by the local read and the read of what the server holds, so both
-/// describe a backup the same way. Throws [StateError] on an inventory that
-/// contradicts itself.
-WalletBackupContents buildWalletBackupContents({
+/// describe a backup the same way. An inventory that contradicts itself is a
+/// failure rather than a crash: the bytes come from a backup, and a backup is
+/// not this app's own state to trust.
+Result<WalletBackupContents, WalletBackupFailure> buildWalletBackupContents({
   required KeychainManifest manifest,
   required List<WalletDefinition> definitions,
   required Set<String> locallyKeyedWalletIds,
@@ -101,7 +100,9 @@ WalletBackupContents buildWalletBackupContents({
     for (final wallet
         in entry.materializations.whereType<KeychainManifestWallet>()) {
       if (wallets.containsKey(wallet.walletId)) {
-        throw StateError('Duplicate wallet recovery inventory');
+        return const Err(
+          WalletBackupInvalidEnvelopeFailure('Duplicate wallet inventory'),
+        );
       }
       wallets[wallet.walletId] = WalletBackupWalletSummary(
         label: labels[wallet.walletId] ?? wallet.label,
@@ -121,7 +122,9 @@ WalletBackupContents buildWalletBackupContents({
   )) {
     if (wallets.containsKey(definition.walletRef) ||
         !definition.provenance.backedUpAsDefinition) {
-      throw StateError('Conflicting wallet recovery inventory');
+      return const Err(
+        WalletBackupInvalidEnvelopeFailure('Conflicting wallet inventory'),
+      );
     }
     wallets[definition.walletRef] = WalletBackupWalletSummary(
       label: labels[definition.walletRef],
@@ -134,17 +137,26 @@ WalletBackupContents buildWalletBackupContents({
   }
   final summaries = wallets.values.toList(growable: false)
     ..sort(_compareWallets);
-  return WalletBackupContents(
-    wallets: summaries,
-    vaults: buildWalletBackupVaultSummaries(
-      vaults: vaults,
-      inspectVault: inspectVault,
-      labels: labels,
+  final List<WalletBackupVaultSummary> vaultSummaries;
+  switch (buildWalletBackupVaultSummaries(
+    vaults: vaults,
+    inspectVault: inspectVault,
+    labels: labels,
+  )) {
+    case Ok(:final value):
+      vaultSummaries = value;
+    case Err(:final failure):
+      return Err(failure);
+  }
+  return Ok(
+    WalletBackupContents(
+      wallets: summaries,
+      vaults: vaultSummaries,
+      labelCount: metadata?.labels.length ?? 0,
+      frozenCoinCount: metadata?.frozenOutpoints.length ?? 0,
+      walletPreferenceCount: metadata?.walletPreferences.length ?? 0,
+      settings: metadata?.settings,
     ),
-    labelCount: metadata?.labels.length ?? 0,
-    frozenCoinCount: metadata?.frozenOutpoints.length ?? 0,
-    walletPreferenceCount: metadata?.walletPreferences.length ?? 0,
-    settings: metadata?.settings,
   );
 }
 
@@ -152,9 +164,10 @@ WalletBackupContents buildWalletBackupContents({
 ///
 /// Lineage then generation, whatever order the snapshot held them in, so the
 /// inventory reads the same from this device, from the server, and from a read
-/// that had only the backup words. Throws [StateError] on a package the vault
-/// feature cannot read.
-List<WalletBackupVaultSummary> buildWalletBackupVaultSummaries({
+/// that had only the backup words. A package the vault feature cannot read is
+/// a failure, never a crash.
+Result<List<WalletBackupVaultSummary>, WalletBackupFailure>
+buildWalletBackupVaultSummaries({
   required List<WalletBackupVaultEntry> vaults,
   required InspectVaultRecoveryPackage inspectVault,
   Map<String, String> labels = const {},
@@ -163,7 +176,9 @@ List<WalletBackupVaultSummary> buildWalletBackupVaultSummaries({
   for (final vault in [...vaults]..sort(WalletBackupVaultEntry.compare)) {
     final facts = inspectVault(vault.recoveryPackage);
     if (facts == null) {
-      throw StateError('Unreadable BullVault recovery package');
+      return const Err(
+        WalletBackupInvalidEnvelopeFailure('Unreadable BullVault package'),
+      );
     }
     summaries.add(
       WalletBackupVaultSummary(
@@ -179,7 +194,7 @@ List<WalletBackupVaultSummary> buildWalletBackupVaultSummaries({
       ),
     );
   }
-  return summaries;
+  return Ok(summaries);
 }
 
 int _compareWallets(

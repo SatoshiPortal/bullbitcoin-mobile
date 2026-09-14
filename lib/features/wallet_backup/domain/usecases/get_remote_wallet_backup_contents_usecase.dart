@@ -43,20 +43,14 @@ final class GetRemoteWalletBackupContentsUsecase {
       case Ok(value: null):
         return const Ok(null);
       case Ok(value: final snapshot?):
-        try {
-          return Ok(
-            buildWalletBackupContents(
-              manifest: snapshot.recoveryManifest,
-              definitions: snapshot.externalWalletDefinitions,
-              locallyKeyedWalletIds: const {},
-              metadata: snapshot.metadata,
-              vaults: snapshot.vaults,
-              inspectVault: _inspectVault,
-            ),
-          );
-        } on StateError catch (error) {
-          return Err(WalletBackupInvalidEnvelopeFailure(error.message));
-        }
+        return buildWalletBackupContents(
+          manifest: snapshot.recoveryManifest,
+          definitions: snapshot.externalWalletDefinitions,
+          locallyKeyedWalletIds: const {},
+          metadata: snapshot.metadata,
+          vaults: snapshot.vaults,
+          inspectVault: _inspectVault,
+        );
       case Err(:final failure):
         return Err(failure);
     }

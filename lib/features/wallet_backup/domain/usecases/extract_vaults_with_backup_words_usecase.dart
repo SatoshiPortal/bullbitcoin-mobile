@@ -58,19 +58,18 @@ final class ExtractVaultsWithBackupWordsUsecase {
           case Err(:final failure):
             return Err(failure);
           case Ok(value: final snapshot):
-            try {
-              return Ok(
+            return switch (buildWalletBackupVaultSummaries(
+              vaults: snapshot.vaults,
+              inspectVault: _inspectVault,
+            )) {
+              Ok(:final value) => Ok(
                 WalletBackupWordsExtraction(
-                  vaults: buildWalletBackupVaultSummaries(
-                    vaults: snapshot.vaults,
-                    inspectVault: _inspectVault,
-                  ),
+                  vaults: value,
                   parentFingerprint: snapshot.parentFingerprint.hex,
                 ),
-              );
-            } on StateError catch (error) {
-              return Err(WalletBackupInvalidEnvelopeFailure(error.message));
-            }
+              ),
+              Err(:final failure) => Err(failure),
+            };
         }
     }
   }
