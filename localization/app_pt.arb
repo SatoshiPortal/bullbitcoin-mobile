@@ -4960,5 +4960,17 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "exchangeSettingsErrorLoadingStatistics": "Não foi possível carregar as suas estatísticas de negociação. Por favor, tente novamente.",
+  "exchangeSettingsErrorLoadingWallets": "Não foi possível carregar as suas carteiras de pagamento. Por favor, tente novamente.",
+  "exchangeSettingsErrorAddressEmpty": "Introduza um endereço antes de guardar.",
+  "exchangeSettingsErrorSavingWallet": "Não foi possível guardar o endereço. Por favor, tente novamente.",
+  "exchangeSettingsErrorDeletingWallet": "Não foi possível remover o endereço. Por favor, tente novamente.",
+  "exchangeSettingsErrorLoadingAccount": "Não foi possível carregar os detalhes da sua conta. Por favor, tente novamente.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Já foi submetido um documento.",
+  "exchangeSettingsErrorDocumentEmpty": "Esse ficheiro está vazio. Escolha outro.",
+  "exchangeSettingsErrorDocumentTooLarge": "Esse ficheiro é demasiado grande. Escolha um mais pequeno.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Esse tipo de ficheiro não é aceite. Escolha outro.",
+  "exchangeSettingsErrorDocumentUnreadable": "Não foi possível ler esse ficheiro. Escolha outro.",
+  "exchangeSettingsErrorUploadingDocument": "Não foi possível carregar o documento. Por favor, tente novamente."
 }

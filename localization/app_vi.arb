@@ -3596,5 +3596,17 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "exchangeSettingsErrorLoadingStatistics": "Không thể tải thống kê giao dịch của bạn. Vui lòng thử lại.",
+  "exchangeSettingsErrorLoadingWallets": "Không thể tải ví nhận tiền của bạn. Vui lòng thử lại.",
+  "exchangeSettingsErrorAddressEmpty": "Nhập địa chỉ trước khi lưu.",
+  "exchangeSettingsErrorSavingWallet": "Không thể lưu địa chỉ. Vui lòng thử lại.",
+  "exchangeSettingsErrorDeletingWallet": "Không thể xóa địa chỉ. Vui lòng thử lại.",
+  "exchangeSettingsErrorLoadingAccount": "Không thể tải thông tin tài khoản của bạn. Vui lòng thử lại.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Một tài liệu đã được gửi.",
+  "exchangeSettingsErrorDocumentEmpty": "Tệp đó trống. Hãy chọn tệp khác.",
+  "exchangeSettingsErrorDocumentTooLarge": "Tệp đó quá lớn. Hãy chọn tệp nhỏ hơn.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Loại tệp đó không được chấp nhận. Hãy chọn tệp khác.",
+  "exchangeSettingsErrorDocumentUnreadable": "Không thể đọc tệp đó. Hãy chọn tệp khác.",
+  "exchangeSettingsErrorUploadingDocument": "Không thể tải tài liệu lên. Vui lòng thử lại."
 }

@@ -12232,5 +12232,17 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "exchangeSettingsErrorLoadingStatistics": "Vaše obchodní statistiky se nepodařilo načíst. Zkuste to prosím znovu.",
+  "exchangeSettingsErrorLoadingWallets": "Vaše výplatní peněženky se nepodařilo načíst. Zkuste to prosím znovu.",
+  "exchangeSettingsErrorAddressEmpty": "Před uložením zadejte adresu.",
+  "exchangeSettingsErrorSavingWallet": "Adresu se nepodařilo uložit. Zkuste to prosím znovu.",
+  "exchangeSettingsErrorDeletingWallet": "Adresu se nepodařilo odebrat. Zkuste to prosím znovu.",
+  "exchangeSettingsErrorLoadingAccount": "Údaje o vašem účtu se nepodařilo načíst. Zkuste to prosím znovu.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Dokument již byl odeslán.",
+  "exchangeSettingsErrorDocumentEmpty": "Tento soubor je prázdný. Vyberte jiný.",
+  "exchangeSettingsErrorDocumentTooLarge": "Tento soubor je příliš velký. Vyberte menší.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Tento typ souboru není podporován. Vyberte jiný.",
+  "exchangeSettingsErrorDocumentUnreadable": "Tento soubor se nepodařilo přečíst. Vyberte jiný.",
+  "exchangeSettingsErrorUploadingDocument": "Dokument se nepodařilo nahrát. Zkuste to prosím znovu."
 }

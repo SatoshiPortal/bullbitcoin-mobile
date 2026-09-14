@@ -12235,5 +12235,17 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "exchangeSettingsErrorLoadingStatistics": "تعذر تحميل إحصاءات التداول الخاصة بك. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorLoadingWallets": "تعذر تحميل محافظ الدفع الخاصة بك. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorAddressEmpty": "أدخل عنوانًا قبل الحفظ.",
+  "exchangeSettingsErrorSavingWallet": "تعذر حفظ العنوان. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorDeletingWallet": "تعذر إزالة العنوان. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorLoadingAccount": "تعذر تحميل تفاصيل حسابك. يرجى المحاولة مرة أخرى.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "تم إرسال مستند بالفعل.",
+  "exchangeSettingsErrorDocumentEmpty": "هذا الملف فارغ. اختر ملفًا آخر.",
+  "exchangeSettingsErrorDocumentTooLarge": "هذا الملف كبير جدًا. اختر ملفًا أصغر.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "نوع الملف هذا غير مقبول. اختر ملفًا آخر.",
+  "exchangeSettingsErrorDocumentUnreadable": "تعذرت قراءة هذا الملف. اختر ملفًا آخر.",
+  "exchangeSettingsErrorUploadingDocument": "تعذر رفع المستند. يرجى المحاولة مرة أخرى."
 }

@@ -3743,5 +3743,17 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "exchangeSettingsErrorLoadingStatistics": "თქვენი ვაჭრობის სტატისტიკის ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSettingsErrorLoadingWallets": "თქვენი გადახდის საფულეების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSettingsErrorAddressEmpty": "შენახვამდე შეიყვანეთ მისამართი.",
+  "exchangeSettingsErrorSavingWallet": "მისამართის შენახვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSettingsErrorDeletingWallet": "მისამართის წაშლა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSettingsErrorLoadingAccount": "თქვენი ანგარიშის დეტალების ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "დოკუმენტი უკვე გაგზავნილია.",
+  "exchangeSettingsErrorDocumentEmpty": "ეს ფაილი ცარიელია. აირჩიეთ სხვა.",
+  "exchangeSettingsErrorDocumentTooLarge": "ეს ფაილი ძალიან დიდია. აირჩიეთ უფრო პატარა.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "ფაილის ეს ტიპი არ მიიღება. აირჩიეთ სხვა.",
+  "exchangeSettingsErrorDocumentUnreadable": "ამ ფაილის წაკითხვა ვერ მოხერხდა. აირჩიეთ სხვა.",
+  "exchangeSettingsErrorUploadingDocument": "დოკუმენტის ატვირთვა ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან."
 }

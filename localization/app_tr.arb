@@ -12232,5 +12232,17 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "exchangeSettingsErrorLoadingStatistics": "İşlem istatistikleriniz yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSettingsErrorLoadingWallets": "Ödeme cüzdanlarınız yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSettingsErrorAddressEmpty": "Kaydetmeden önce bir adres girin.",
+  "exchangeSettingsErrorSavingWallet": "Adres kaydedilemedi. Lütfen tekrar deneyin.",
+  "exchangeSettingsErrorDeletingWallet": "Adres kaldırılamadı. Lütfen tekrar deneyin.",
+  "exchangeSettingsErrorLoadingAccount": "Hesap bilgileriniz yüklenemedi. Lütfen tekrar deneyin.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Bir belge zaten gönderildi.",
+  "exchangeSettingsErrorDocumentEmpty": "Bu dosya boş. Başka bir tane seçin.",
+  "exchangeSettingsErrorDocumentTooLarge": "Bu dosya çok büyük. Daha küçük bir tane seçin.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Bu dosya türü kabul edilmiyor. Başka bir tane seçin.",
+  "exchangeSettingsErrorDocumentUnreadable": "Bu dosya okunamadı. Başka bir tane seçin.",
+  "exchangeSettingsErrorUploadingDocument": "Belge yüklenemedi. Lütfen tekrar deneyin."
 }

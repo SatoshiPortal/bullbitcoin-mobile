@@ -4911,5 +4911,17 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "exchangeSettingsErrorLoadingStatistics": "No se pudieron cargar sus estadísticas de operaciones. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorLoadingWallets": "No se pudieron cargar sus carteras de pago. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorAddressEmpty": "Introduzca una dirección antes de guardar.",
+  "exchangeSettingsErrorSavingWallet": "No se pudo guardar la dirección. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorDeletingWallet": "No se pudo eliminar la dirección. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorLoadingAccount": "No se pudieron cargar los datos de su cuenta. Por favor, inténtelo de nuevo.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Ya se ha enviado un documento.",
+  "exchangeSettingsErrorDocumentEmpty": "Ese archivo está vacío. Elija otro.",
+  "exchangeSettingsErrorDocumentTooLarge": "Ese archivo es demasiado grande. Elija uno más pequeño.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Ese tipo de archivo no se acepta. Elija otro.",
+  "exchangeSettingsErrorDocumentUnreadable": "No se pudo leer ese archivo. Elija otro.",
+  "exchangeSettingsErrorUploadingDocument": "No se pudo subir el documento. Por favor, inténtelo de nuevo."
 }

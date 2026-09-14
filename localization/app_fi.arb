@@ -4902,5 +4902,17 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "exchangeSettingsErrorLoadingStatistics": "Kaupankäyntitilastojasi ei voitu ladata. Yritä uudelleen.",
+  "exchangeSettingsErrorLoadingWallets": "Maksulompakoitasi ei voitu ladata. Yritä uudelleen.",
+  "exchangeSettingsErrorAddressEmpty": "Syötä osoite ennen tallentamista.",
+  "exchangeSettingsErrorSavingWallet": "Osoitetta ei voitu tallentaa. Yritä uudelleen.",
+  "exchangeSettingsErrorDeletingWallet": "Osoitetta ei voitu poistaa. Yritä uudelleen.",
+  "exchangeSettingsErrorLoadingAccount": "Tilitietojasi ei voitu ladata. Yritä uudelleen.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Asiakirja on jo lähetetty.",
+  "exchangeSettingsErrorDocumentEmpty": "Tiedosto on tyhjä. Valitse toinen.",
+  "exchangeSettingsErrorDocumentTooLarge": "Tiedosto on liian suuri. Valitse pienempi.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Tätä tiedostotyyppiä ei hyväksytä. Valitse toinen.",
+  "exchangeSettingsErrorDocumentUnreadable": "Tiedostoa ei voitu lukea. Valitse toinen.",
+  "exchangeSettingsErrorUploadingDocument": "Asiakirjaa ei voitu ladata. Yritä uudelleen."
 }

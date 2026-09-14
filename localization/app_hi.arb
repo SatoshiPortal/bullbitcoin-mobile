@@ -12422,5 +12422,17 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "exchangeSettingsErrorLoadingStatistics": "आपके ट्रेडिंग आँकड़े लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "exchangeSettingsErrorLoadingWallets": "आपके भुगतान वॉलेट लोड नहीं हो सके। कृपया पुनः प्रयास करें।",
+  "exchangeSettingsErrorAddressEmpty": "सहेजने से पहले एक पता दर्ज करें।",
+  "exchangeSettingsErrorSavingWallet": "पता सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
+  "exchangeSettingsErrorDeletingWallet": "पता हटाया नहीं जा सका। कृपया पुनः प्रयास करें।",
+  "exchangeSettingsErrorLoadingAccount": "आपके खाते का विवरण लोड नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "एक दस्तावेज़ पहले ही जमा किया जा चुका है।",
+  "exchangeSettingsErrorDocumentEmpty": "वह फ़ाइल खाली है। दूसरी चुनें।",
+  "exchangeSettingsErrorDocumentTooLarge": "वह फ़ाइल बहुत बड़ी है। छोटी फ़ाइल चुनें।",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "वह फ़ाइल प्रकार स्वीकार्य नहीं है। दूसरी चुनें।",
+  "exchangeSettingsErrorDocumentUnreadable": "वह फ़ाइल पढ़ी नहीं जा सकी। दूसरी चुनें।",
+  "exchangeSettingsErrorUploadingDocument": "दस्तावेज़ अपलोड नहीं हो सका। कृपया पुनः प्रयास करें।"
 }

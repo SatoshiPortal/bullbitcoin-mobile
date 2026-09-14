@@ -4914,5 +4914,17 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "exchangeSettingsErrorLoadingStatistics": "无法加载您的交易统计数据。请重试。",
+  "exchangeSettingsErrorLoadingWallets": "无法加载您的收款钱包。请重试。",
+  "exchangeSettingsErrorAddressEmpty": "请先输入地址再保存。",
+  "exchangeSettingsErrorSavingWallet": "无法保存该地址。请重试。",
+  "exchangeSettingsErrorDeletingWallet": "无法删除该地址。请重试。",
+  "exchangeSettingsErrorLoadingAccount": "无法加载您的账户信息。请重试。",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "已提交过文件。",
+  "exchangeSettingsErrorDocumentEmpty": "该文件为空。请选择其他文件。",
+  "exchangeSettingsErrorDocumentTooLarge": "该文件过大。请选择更小的文件。",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "不接受该文件类型。请选择其他文件。",
+  "exchangeSettingsErrorDocumentUnreadable": "无法读取该文件。请选择其他文件。",
+  "exchangeSettingsErrorUploadingDocument": "无法上传该文件。请重试。"
 }

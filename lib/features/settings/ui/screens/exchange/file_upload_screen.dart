@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -59,9 +60,11 @@ class _ErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final error = context.select((FileUploadCubit cubit) => cubit.state.error);
+    final failure = context.select(
+      (FileUploadCubit cubit) => cubit.state.failure,
+    );
 
-    if (error == null) return const SizedBox.shrink();
+    if (failure == null) return const SizedBox.shrink();
 
     return Container(
       width: double.infinity,
@@ -78,7 +81,7 @@ class _ErrorMessage extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: BBText(
-              error,
+              failure.toTranslated(context),
               style: context.font.bodySmall?.copyWith(
                 color: context.appColors.error,
               ),

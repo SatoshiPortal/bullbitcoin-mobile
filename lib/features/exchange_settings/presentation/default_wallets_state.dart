@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
+import 'package:bb_mobile/features/exchange_settings/domain/exchange_settings_failure.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'default_wallets_state.freezed.dart';
@@ -13,8 +14,8 @@ abstract class DefaultWalletsState with _$DefaultWalletsState {
     @Default('') String bitcoinAddressInput,
     @Default('') String lightningAddressInput,
     @Default('') String liquidAddressInput,
-    String? loadError,
-    String? saveError,
+    ExchangeSettingsFailure? loadFailure,
+    ExchangeSettingsFailure? saveFailure,
     @Default(false) bool saveSuccess,
   }) = _DefaultWalletsState;
 

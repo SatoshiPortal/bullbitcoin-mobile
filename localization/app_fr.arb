@@ -4960,5 +4960,17 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "exchangeSettingsErrorLoadingStatistics": "Vos statistiques de trading n'ont pas pu être chargées. Veuillez réessayer.",
+  "exchangeSettingsErrorLoadingWallets": "Vos portefeuilles de paiement n'ont pas pu être chargés. Veuillez réessayer.",
+  "exchangeSettingsErrorAddressEmpty": "Saisissez une adresse avant d'enregistrer.",
+  "exchangeSettingsErrorSavingWallet": "L'adresse n'a pas pu être enregistrée. Veuillez réessayer.",
+  "exchangeSettingsErrorDeletingWallet": "L'adresse n'a pas pu être supprimée. Veuillez réessayer.",
+  "exchangeSettingsErrorLoadingAccount": "Les détails de votre compte n'ont pas pu être chargés. Veuillez réessayer.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Un document a déjà été soumis.",
+  "exchangeSettingsErrorDocumentEmpty": "Ce fichier est vide. Choisissez-en un autre.",
+  "exchangeSettingsErrorDocumentTooLarge": "Ce fichier est trop volumineux. Choisissez-en un plus petit.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Ce type de fichier n'est pas accepté. Choisissez-en un autre.",
+  "exchangeSettingsErrorDocumentUnreadable": "Ce fichier n'a pas pu être lu. Choisissez-en un autre.",
+  "exchangeSettingsErrorUploadingDocument": "Le document n'a pas pu être téléversé. Veuillez réessayer."
 }

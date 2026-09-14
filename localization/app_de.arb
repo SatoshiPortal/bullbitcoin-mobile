@@ -4952,5 +4952,17 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet."
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "exchangeSettingsErrorLoadingStatistics": "Ihre Handelsstatistiken konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "exchangeSettingsErrorLoadingWallets": "Ihre Auszahlungs-Wallets konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "exchangeSettingsErrorAddressEmpty": "Geben Sie eine Adresse ein, bevor Sie speichern.",
+  "exchangeSettingsErrorSavingWallet": "Die Adresse konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+  "exchangeSettingsErrorDeletingWallet": "Die Adresse konnte nicht entfernt werden. Bitte versuchen Sie es erneut.",
+  "exchangeSettingsErrorLoadingAccount": "Ihre Kontodaten konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "Es wurde bereits ein Dokument eingereicht.",
+  "exchangeSettingsErrorDocumentEmpty": "Diese Datei ist leer. Wählen Sie eine andere.",
+  "exchangeSettingsErrorDocumentTooLarge": "Diese Datei ist zu groß. Wählen Sie eine kleinere.",
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "Dieser Dateityp wird nicht akzeptiert. Wählen Sie eine andere Datei.",
+  "exchangeSettingsErrorDocumentUnreadable": "Diese Datei konnte nicht gelesen werden. Wählen Sie eine andere.",
+  "exchangeSettingsErrorUploadingDocument": "Das Dokument konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
 }

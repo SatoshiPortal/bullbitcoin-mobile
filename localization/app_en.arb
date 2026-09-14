@@ -14693,5 +14693,53 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "exchangeSettingsErrorLoadingStatistics": "Your trading statistics could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingStatistics": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingWallets": "Your payout wallets could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingWallets": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorAddressEmpty": "Enter an address before saving.",
+  "@exchangeSettingsErrorAddressEmpty": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorSavingWallet": "The address could not be saved. Please try again.",
+  "@exchangeSettingsErrorSavingWallet": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDeletingWallet": "The address could not be removed. Please try again.",
+  "@exchangeSettingsErrorDeletingWallet": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorLoadingAccount": "Your account details could not be loaded. Please try again.",
+  "@exchangeSettingsErrorLoadingAccount": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentAlreadySubmitted": "A document has already been submitted.",
+  "@exchangeSettingsErrorDocumentAlreadySubmitted": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentEmpty": "That file is empty. Choose another one.",
+  "@exchangeSettingsErrorDocumentEmpty": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentTooLarge": "That file is too large. Choose a smaller one.",
+  "@exchangeSettingsErrorDocumentTooLarge": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentTypeNotAllowed": "That file type is not accepted. Choose another one.",
+  "@exchangeSettingsErrorDocumentTypeNotAllowed": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorDocumentUnreadable": "That file could not be read. Choose another one.",
+  "@exchangeSettingsErrorDocumentUnreadable": {
+    "description": "exchange_settings user-facing failure message (#1895)."
+  },
+  "exchangeSettingsErrorUploadingDocument": "The document could not be uploaded. Please try again.",
+  "@exchangeSettingsErrorUploadingDocument": {
+    "description": "exchange_settings user-facing failure message (#1895)."
   }
 }
