@@ -52,10 +52,15 @@ class _BullVaultSettingsScreenState extends State<BullVaultSettingsScreen>
     }
   }
 
-  Future<void> _open(String route, {String? walletId}) async {
+  Future<void> _open(
+    String route, {
+    String? walletId,
+    Map<String, String> queryParameters = const {},
+  }) async {
     await context.pushNamed(
       route,
       pathParameters: walletId == null ? const {} : {'walletId': walletId},
+      queryParameters: queryParameters,
     );
     if (mounted) {
       await context.read<BullVaultSettingsCubit>().load(widget.walletId);
@@ -114,6 +119,15 @@ class _BullVaultSettingsScreenState extends State<BullVaultSettingsScreen>
                   icon: Icons.key_outlined,
                   title: context.loc.bullVaultUseBullAsSigner,
                   onTap: () => _open(SettingsRoute.signingKeyExport.name),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.science_outlined,
+                  title: context.loc.bullVaultCreatePracticeEntry,
+                  subtitle: context.loc.bullVaultPracticeTimelineDescription,
+                  onTap: () => _open(
+                    BullVaultFacade.createRouteName,
+                    queryParameters: const {'practice': 'true'},
+                  ),
                 ),
               ],
               if (state.inspection case final inspection?)

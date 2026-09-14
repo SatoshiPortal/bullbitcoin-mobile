@@ -86,9 +86,11 @@ abstract final class BullVaultRouter {
     name: BullVaultFacade.createRouteName,
     path: '/bullvault/create',
     builder: (context, state) => BlocProvider(
-      create: (_) =>
-          locator<BullVaultOnboardingCubit>()
-            ..load(walletId: state.uri.queryParameters['walletId']),
+      create: (_) => locator<BullVaultOnboardingCubit>()
+        ..load(
+          walletId: state.uri.queryParameters['walletId'],
+          practice: state.uri.queryParameters['practice'] == 'true',
+        ),
       child: const BullVaultOnboardingScreen(),
     ),
   );

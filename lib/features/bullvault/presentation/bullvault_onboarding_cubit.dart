@@ -68,7 +68,10 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
   }
 
-  Future<void> load({String? walletId}) async {
+  /// [practice] preselects the existing practice timeline for a new vault:
+  /// the same schedule the advanced switch sets, in hours rather than years.
+  /// A resumed vault keeps the schedule it was actually created with.
+  Future<void> load({String? walletId, bool practice = false}) async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _loadBullVaultOnboardingUsecase.execute(
       walletId: walletId,
@@ -78,7 +81,15 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       case Ok(:final value):
         final snapshot = value.snapshot;
         if (snapshot == null) {
-          emit(state.copyWith(network: value.network, isLoading: false));
+          emit(
+            state.copyWith(
+              network: value.network,
+              isLoading: false,
+              schedule: practice
+                  ? state.schedule.copyWith(unit: BullVaultScheduleUnit.hours)
+                  : null,
+            ),
+          );
         } else {
           _restoreCompletionState(value.network, snapshot);
         }

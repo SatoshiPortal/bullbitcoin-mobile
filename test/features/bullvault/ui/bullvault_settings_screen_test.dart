@@ -364,6 +364,67 @@ void main() {
     );
     expect(find.textContaining('${created.record.birthHeight}'), findsNothing);
   });
+
+  testWidgets('the practice entry starts creation on the practice timeline', (
+    tester,
+  ) async {
+    final cubit = BullVaultSettingsCubit(inspect);
+    addTearDown(cubit.close);
+    await cubit.load();
+    String? createdUri;
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => BlocProvider.value(
+            value: cubit,
+            child: const BullVaultSettingsScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/create',
+          name: BullVaultFacade.createRouteName,
+          builder: (_, state) {
+            createdUri = state.uri.toString();
+            return const Scaffold(body: Text('Creation'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final entry = find.text(AppLocalizationsEn().bullVaultCreatePracticeEntry);
+    expect(entry, findsOneWidget);
+    // Secondary: it sits below the three primary entries.
+    expect(
+      tester.getTopLeft(entry).dy,
+      greaterThan(
+        tester
+            .getTopLeft(
+              find.text(AppLocalizationsEn().bullVaultUseBullAsSigner),
+            )
+            .dy,
+      ),
+    );
+    expect(
+      find.text(AppLocalizationsEn().bullVaultPracticeTimelineDescription),
+      findsOneWidget,
+    );
+    await tester.ensureVisible(entry);
+    await tester.tap(entry);
+    await tester.pumpAndSettle();
+
+    expect(createdUri, contains('practice=true'));
+  });
 }
 
 void _registerWalletDetailsCubit(
