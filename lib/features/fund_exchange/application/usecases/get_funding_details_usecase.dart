@@ -1,8 +1,9 @@
-import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 sealed class GetFundingDetailsQuery {
   const GetFundingDetailsQuery();
@@ -73,35 +74,32 @@ class GetFundingDetailsUsecase {
 
   const GetFundingDetailsUsecase({required this._fundingGateway});
 
-  Future<GetFundingDetailsResult> execute(GetFundingDetailsQuery query) async {
-    try {
-      final fundingMethod = switch (query) {
-        GetEmailETransferDetails() => EmailETransfer(),
-        GetBankTransferWireDetails() => BankTransferWire(),
-        GetOnlineBillPaymentDetails() => OnlineBillPayment(),
-        GetCanadaPostDetails() => CanadaPost(),
-        GetInstantSepaDetails() => InstantSepa(),
-        GetRegularSepaDetails() => RegularSepa(),
-        GetSpeiTransferDetails() => SpeiTransfer(),
-        GetSinpeDetails() => Sinpe(),
-        GetCrIbanCrcDetails() => CrIbanCrc(),
-        GetCrIbanUsdDetails() => CrIbanUsd(),
-        GetArsBankTransferDetails() => ArsBankTransfer(),
-        GetCopBankTransferDetails(:final bankCode, :final amountCop) =>
-          CopBankTransfer(bankCode: bankCode, amountCop: amountCop),
-      };
+  @useResult
+  Future<Result<GetFundingDetailsResult, FundExchangeFailure>> execute(
+    GetFundingDetailsQuery query,
+  ) async {
+    final fundingMethod = switch (query) {
+      GetEmailETransferDetails() => EmailETransfer(),
+      GetBankTransferWireDetails() => BankTransferWire(),
+      GetOnlineBillPaymentDetails() => OnlineBillPayment(),
+      GetCanadaPostDetails() => CanadaPost(),
+      GetInstantSepaDetails() => InstantSepa(),
+      GetRegularSepaDetails() => RegularSepa(),
+      GetSpeiTransferDetails() => SpeiTransfer(),
+      GetSinpeDetails() => Sinpe(),
+      GetCrIbanCrcDetails() => CrIbanCrc(),
+      GetCrIbanUsdDetails() => CrIbanUsd(),
+      GetArsBankTransferDetails() => ArsBankTransfer(),
+      GetCopBankTransferDetails(:final bankCode, :final amountCop) =>
+        CopBankTransfer(bankCode: bankCode, amountCop: amountCop),
+    };
 
-      final fundingDetails = await _fundingGateway.getFundingDetails(
-        fundingMethod: fundingMethod,
-      );
+    final result = await _fundingGateway.getFundingDetails(
+      fundingMethod: fundingMethod,
+    );
 
-      return GetFundingDetailsResult(fundingDetails: fundingDetails);
-    } on FundExchangeDomainError catch (e) {
-      throw FundExchangeApplicationError.fromDomainError(e);
-    } on FundExchangeApplicationError {
-      rethrow;
-    } catch (e) {
-      throw FundExchangeUnknownError(message: '$e');
-    }
+    return result.map(
+      (details) => GetFundingDetailsResult(fundingDetails: details),
+    );
   }
 }

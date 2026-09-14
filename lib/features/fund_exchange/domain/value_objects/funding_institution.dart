@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -8,15 +7,18 @@ class FundingInstitution {
 
   const FundingInstitution._({required this._code, required this._name});
 
+  /// Throws [ArgumentError] on a blank code or name. That is a malformed API
+  /// payload, caught per element where institutions are parsed — never a
+  /// modeled failure the user can act on.
   factory FundingInstitution.create({
     required String code,
     required String name,
   }) {
     if (code.trim().isEmpty) {
-      throw const InvalidInstitutionCode();
+      throw ArgumentError.value(code, 'code', 'Institution code is empty');
     }
     if (name.trim().isEmpty) {
-      throw const InvalidInstitutionName();
+      throw ArgumentError.value(name, 'name', 'Institution name is empty');
     }
 
     return FundingInstitution._(code: code.trim(), name: name.trim());

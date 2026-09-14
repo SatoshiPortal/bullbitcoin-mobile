@@ -13,6 +13,9 @@ sealed class FundExchangeEvent with _$FundExchangeEvent {
       FundExchangeScamWarningConsentSubmitted;
   const factory FundExchangeEvent.scamWarningDismissed() =
       FundExchangeScamWarningDismissed;
+  const factory FundExchangeEvent.paymentLinkOpenRequested({
+    required String paymentLink,
+  }) = FundExchangePaymentLinkOpenRequested;
   const factory FundExchangeEvent.fundingDetailsErrorCleared({
     @Default(false) bool resetInstitutions,
   }) = FundExchangeFundingDetailsErrorCleared;

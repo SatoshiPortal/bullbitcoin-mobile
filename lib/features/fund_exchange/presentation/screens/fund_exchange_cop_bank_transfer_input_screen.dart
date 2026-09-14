@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_in
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart'; // FundExchangePresentationError
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +30,7 @@ class _FundExchangeCopBankTransferInputScreenState
   final _formKey = GlobalKey<FormState>();
   FundingInstitution? _selectedInstitution;
   bool isLoadingFundingDetails = false;
-  FundExchangePresentationError? _fundingDetailsError;
+  FundExchangeFailure? _fundingDetailsFailure;
   late final TextEditingController _amountController;
   final FocusNode _amountNode = FocusNode();
   late final StreamSubscription<FundExchangeState> _blocSubscription;
@@ -47,9 +47,9 @@ class _FundExchangeCopBankTransferInputScreenState
           isLoadingFundingDetails = state.isLoadingFundingDetails;
         });
       }
-      if (state.getExchangeFundingDetailsException != _fundingDetailsError) {
+      if (state.getFundingDetailsFailure != _fundingDetailsFailure) {
         setState(() {
-          _fundingDetailsError = state.getExchangeFundingDetailsException;
+          _fundingDetailsFailure = state.getFundingDetailsFailure;
         });
       }
     });
@@ -314,8 +314,8 @@ class _FundExchangeCopBankTransferInputScreenState
                       onFieldSubmitted: (_) => _submitForm(),
                     ),
                     const Gap(32.0),
-                    if (_fundingDetailsError != null) ...[
-                      FundExchangeErrorText(error: _fundingDetailsError!),
+                    if (_fundingDetailsFailure != null) ...[
+                      FundExchangeErrorText(failure: _fundingDetailsFailure!),
                       const Gap(8.0),
                     ],
                     BBButton.big(

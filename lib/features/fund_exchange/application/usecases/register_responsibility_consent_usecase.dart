@@ -1,6 +1,7 @@
-import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 class RegisterResponsibilityConsentCommand {
   const RegisterResponsibilityConsentCommand();
@@ -15,19 +16,11 @@ class RegisterResponsibilityConsentUsecase {
 
   const RegisterResponsibilityConsentUsecase({required this._fundingGateway});
 
-  Future<RegisterResponsibilityConsentResult> execute(
-    RegisterResponsibilityConsentCommand command,
-  ) async {
-    try {
-      await _fundingGateway.registerResponsibilityConsent();
+  @useResult
+  Future<Result<RegisterResponsibilityConsentResult, FundExchangeFailure>>
+  execute(RegisterResponsibilityConsentCommand command) async {
+    final result = await _fundingGateway.registerResponsibilityConsent();
 
-      return RegisterResponsibilityConsentResult();
-    } on FundExchangeDomainError catch (e) {
-      throw FundExchangeApplicationError.fromDomainError(e);
-    } on FundExchangeApplicationError {
-      rethrow;
-    } catch (e) {
-      throw FundExchangeUnknownError(message: '$e');
-    }
+    return result.map((_) => const RegisterResponsibilityConsentResult());
   }
 }

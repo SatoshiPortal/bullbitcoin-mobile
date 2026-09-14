@@ -2,10 +2,14 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/exchange_environment_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
+import 'package:bb_mobile/features/fund_exchange/application/ports/external_link_port.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/get_fund_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/open_funding_payment_link_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/settings_exchange_environment_adapter.dart';
+import 'package:bb_mobile/features/fund_exchange/adapters/url_launcher_external_link_adapter.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
 import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/delegating_funding_gateway.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -24,6 +28,10 @@ class FundExchangeLocator {
       () => SettingsExchangeEnvironmentAdapter(
         getSettingsUsecase: locator<GetSettingsUsecase>(),
       ),
+    );
+
+    locator.registerLazySingleton<ExternalLinkPort>(
+      () => const UrlLauncherExternalLinkAdapter(),
     );
 
     locator.registerLazySingleton<FundingGatewayPort>(
@@ -61,17 +69,31 @@ class FundExchangeLocator {
         fundingGateway: locator<FundingGatewayPort>(),
       ),
     );
+
+    locator.registerFactory<GetFundExchangeUserSummaryUsecase>(
+      () => GetFundExchangeUserSummaryUsecase(
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+      ),
+    );
+
+    locator.registerFactory<OpenFundingPaymentLinkUsecase>(
+      () => OpenFundingPaymentLinkUsecase(
+        externalLink: locator<ExternalLinkPort>(),
+      ),
+    );
   }
 
   static void registerDrivingInterfaceAdapters(GetIt locator) {
     locator.registerFactory<FundExchangeBloc>(
       () => FundExchangeBloc(
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        getFundExchangeUserSummaryUsecase:
+            locator<GetFundExchangeUserSummaryUsecase>(),
         listFundingInstitutionsUsecase:
             locator<ListFundingInstitutionsUsecase>(),
         getFundingDetailsUsecase: locator<GetFundingDetailsUsecase>(),
         registerResponsibilityConsentUsecase:
             locator<RegisterResponsibilityConsentUsecase>(),
+        openFundingPaymentLinkUsecase: locator<OpenFundingPaymentLinkUsecase>(),
       ),
     );
   }

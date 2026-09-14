@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_juris
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_canada_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_costa_rica_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_europe_methods.dart';
@@ -34,8 +34,8 @@ class _FundExchangeMethodSelectionScreenState
   FundingJurisdiction? jurisdiction;
   bool isLoadingFundingDetails = false;
   bool isLoadingFundingInstitutions = false;
-  FundExchangePresentationError? _fundingDetailsError;
-  FundExchangePresentationError? _institutionsError;
+  FundExchangeFailure? _fundingDetailsFailure;
+  FundExchangeFailure? _institutionsFailure;
   late final StreamSubscription<FundExchangeState> _blocSubscription;
 
   @override
@@ -54,23 +54,23 @@ class _FundExchangeMethodSelectionScreenState
       if (state.isLoadingFundingDetails != isLoadingFundingDetails) {
         setState(() {
           isLoadingFundingDetails = state.isLoadingFundingDetails;
-          if (state.isLoadingFundingDetails) _fundingDetailsError = null;
+          if (state.isLoadingFundingDetails) _fundingDetailsFailure = null;
         });
       }
       if (state.isLoadingFundingInstitutions != isLoadingFundingInstitutions) {
         setState(() {
           isLoadingFundingInstitutions = state.isLoadingFundingInstitutions;
-          if (state.isLoadingFundingInstitutions) _institutionsError = null;
+          if (state.isLoadingFundingInstitutions) _institutionsFailure = null;
         });
       }
-      if (state.getExchangeFundingDetailsException != _fundingDetailsError) {
+      if (state.getFundingDetailsFailure != _fundingDetailsFailure) {
         setState(() {
-          _fundingDetailsError = state.getExchangeFundingDetailsException;
+          _fundingDetailsFailure = state.getFundingDetailsFailure;
         });
       }
-      if (state.listFundingInstitutionsException != _institutionsError) {
+      if (state.listFundingInstitutionsFailure != _institutionsFailure) {
         setState(() {
-          _institutionsError = state.listFundingInstitutionsException;
+          _institutionsFailure = state.listFundingInstitutionsFailure;
         });
       }
     });
@@ -149,8 +149,8 @@ class _FundExchangeMethodSelectionScreenState
                         );
                         setState(() {
                           jurisdiction = value;
-                          _fundingDetailsError = null;
-                          _institutionsError = null;
+                          _fundingDetailsFailure = null;
+                          _institutionsFailure = null;
                         });
                       },
                     ),
@@ -201,11 +201,11 @@ class _FundExchangeMethodSelectionScreenState
                         },
                       ),
                     },
-                  if (_fundingDetailsError != null ||
-                      _institutionsError != null) ...[
+                  if (_fundingDetailsFailure != null ||
+                      _institutionsFailure != null) ...[
                     const Gap(16.0),
                     FundExchangeErrorText(
-                      error: _fundingDetailsError ?? _institutionsError!,
+                      failure: _fundingDetailsFailure ?? _institutionsFailure!,
                     ),
                   ],
                 ],
