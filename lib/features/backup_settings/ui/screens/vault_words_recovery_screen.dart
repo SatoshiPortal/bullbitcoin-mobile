@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
-import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result_view.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_source_rows.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;

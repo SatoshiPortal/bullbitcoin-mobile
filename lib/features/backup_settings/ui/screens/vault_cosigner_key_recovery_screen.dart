@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_qr_scanner.dart';
-import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result_view.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullPasteInput, Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_result_view.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/vault_recovery_source_rows.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
