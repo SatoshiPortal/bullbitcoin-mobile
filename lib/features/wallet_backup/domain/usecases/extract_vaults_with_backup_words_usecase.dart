@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/wallet_backup_remote_usecases.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_encryption_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -22,10 +24,12 @@ import 'package:meta/meta.dart';
 final class ExtractVaultsWithBackupWordsUsecase {
   final FetchWalletBackupRemoteUsecase _fetchRemote;
   final WalletBackupEncryptionRepository _encryption;
+  final InspectVaultRecoveryPackage _inspectVault;
 
   const ExtractVaultsWithBackupWordsUsecase(
     this._fetchRemote,
     this._encryption,
+    this._inspectVault,
   );
 
   /// The backup those [words] open, or null when the server holds none.
@@ -46,18 +50,28 @@ final class ExtractVaultsWithBackupWordsUsecase {
       case Ok(:final value):
         final ciphertext = value.ciphertext;
         if (ciphertext == null) return const Ok(null);
-        return _encryption
-            .decrypt(
-              ciphertext: ciphertext,
-              key: WalletBackupEncryptionKey(credential.encryptionKeyHex),
-              expectedParentFingerprint: null,
-            )
-            .map(
-              (snapshot) => WalletBackupWordsExtraction(
-                vaults: snapshot.vaults,
-                parentFingerprint: snapshot.parentFingerprint.hex,
-              ),
-            );
+        switch (_encryption.decrypt(
+          ciphertext: ciphertext,
+          key: WalletBackupEncryptionKey(credential.encryptionKeyHex),
+          expectedParentFingerprint: null,
+        )) {
+          case Err(:final failure):
+            return Err(failure);
+          case Ok(value: final snapshot):
+            try {
+              return Ok(
+                WalletBackupWordsExtraction(
+                  vaults: buildWalletBackupVaultSummaries(
+                    vaults: snapshot.vaults,
+                    inspectVault: _inspectVault,
+                  ),
+                  parentFingerprint: snapshot.parentFingerprint.hex,
+                ),
+              );
+            } on StateError catch (error) {
+              return Err(WalletBackupInvalidEnvelopeFailure(error.message));
+            }
+        }
     }
   }
 }

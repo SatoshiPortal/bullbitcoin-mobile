@@ -22,8 +22,6 @@ export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_r
     show WalletBackupRecoveryResult, WalletBackupRecoveryStatus;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart'
     show WalletBackupRecoveryState, WalletBackupState;
-export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart'
-    show WalletBackupVaultEntry;
 export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart'
     show WalletBackupWordsExtraction;
 export 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';

@@ -29,9 +29,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 
-import '../nostr_identity/fixtures/backup_credential_vectors.dart';
-import 'support/canonical_backup_snapshot.dart';
-import 'support/fake_bullvault_backup.dart';
+import '../../nostr_identity/fixtures/backup_credential_vectors.dart';
+import '../support/canonical_backup_snapshot.dart';
+import '../support/fake_bullvault_backup.dart';
 
 class _MockSettings extends Mock implements GetSettingsUsecase {}
 
@@ -147,6 +147,7 @@ void main() {
         WalletBackupAuthenticator(_seedlessIdentity(), () => 1234),
       ),
       encryption,
+      fakeVaultInspector,
     );
   });
 

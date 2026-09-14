@@ -557,7 +557,11 @@ final class WalletBackupBehaviorHarness {
         fetchImport: fetchImport.execute,
         inspectVault: inspectVault,
       ),
-      ExtractVaultsWithBackupWordsUsecase(fetchRemote, encryption),
+      ExtractVaultsWithBackupWordsUsecase(
+        fetchRemote,
+        encryption,
+        inspectVault,
+      ),
     );
 
     final key = switch (await resolveKey.execute()) {

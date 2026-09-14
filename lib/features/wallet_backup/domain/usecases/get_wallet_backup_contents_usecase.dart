@@ -91,7 +91,7 @@ WalletBackupContents buildWalletBackupContents({
   required List<WalletBackupVaultEntry> vaults,
   required InspectVaultRecoveryPackage inspectVault,
 }) {
-  final labels = {
+  final labels = <String, String>{
     for (final preference in metadata?.walletPreferences ?? const [])
       if (preference.label != null) preference.walletRef: preference.label!,
   };
@@ -134,15 +134,38 @@ WalletBackupContents buildWalletBackupContents({
   }
   final summaries = wallets.values.toList(growable: false)
     ..sort(_compareWallets);
-  // Lineage then generation, whatever order the snapshot held them in, so the
-  // inventory reads the same from this device and from the server.
-  final vaultSummaries = <WalletBackupVaultSummary>[];
+  return WalletBackupContents(
+    wallets: summaries,
+    vaults: buildWalletBackupVaultSummaries(
+      vaults: vaults,
+      inspectVault: inspectVault,
+      labels: labels,
+    ),
+    labelCount: metadata?.labels.length ?? 0,
+    frozenCoinCount: metadata?.frozenOutpoints.length ?? 0,
+    walletPreferenceCount: metadata?.walletPreferences.length ?? 0,
+    settings: metadata?.settings,
+  );
+}
+
+/// The vaults of one backup, as the app describes them.
+///
+/// Lineage then generation, whatever order the snapshot held them in, so the
+/// inventory reads the same from this device, from the server, and from a read
+/// that had only the backup words. Throws [StateError] on a package the vault
+/// feature cannot read.
+List<WalletBackupVaultSummary> buildWalletBackupVaultSummaries({
+  required List<WalletBackupVaultEntry> vaults,
+  required InspectVaultRecoveryPackage inspectVault,
+  Map<String, String> labels = const {},
+}) {
+  final summaries = <WalletBackupVaultSummary>[];
   for (final vault in [...vaults]..sort(WalletBackupVaultEntry.compare)) {
     final facts = inspectVault(vault.recoveryPackage);
     if (facts == null) {
       throw StateError('Unreadable BullVault recovery package');
     }
-    vaultSummaries.add(
+    summaries.add(
       WalletBackupVaultSummary(
         walletRef: vault.walletRef,
         label: labels[vault.walletRef] ?? vault.label,
@@ -156,14 +179,7 @@ WalletBackupContents buildWalletBackupContents({
       ),
     );
   }
-  return WalletBackupContents(
-    wallets: summaries,
-    vaults: vaultSummaries,
-    labelCount: metadata?.labels.length ?? 0,
-    frozenCoinCount: metadata?.frozenOutpoints.length ?? 0,
-    walletPreferenceCount: metadata?.walletPreferences.length ?? 0,
-    settings: metadata?.settings,
-  );
+  return summaries;
 }
 
 int _compareWallets(
