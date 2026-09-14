@@ -139,6 +139,19 @@ void main() {
     );
   });
 
+  testWidgets('the relay destination says whose words seal the copy', (
+    tester,
+  ) async {
+    await open(tester);
+
+    expect(find.text(loc.vaultDestinationsNostrDescription), findsOneWidget);
+    expect(
+      loc.vaultDestinationsNostrDescription,
+      contains('magic backup words'),
+      reason: 'a vault recovered here publishes under this phone\'s words',
+    );
+  });
+
   testWidgets('choosing the server records the choice and keeps it', (
     tester,
   ) async {

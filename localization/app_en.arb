@@ -17768,7 +17768,7 @@
   "@vaultDestinationsNostr": {
     "description": "The Nostr relay destination"
   },
-  "vaultDestinationsNostrDescription": "Free. Public relays, so availability is not guaranteed.",
+  "vaultDestinationsNostrDescription": "Free. Public relays, so availability is not guaranteed. The copy is sealed to this phone's magic backup words.",
   "@vaultDestinationsNostrDescription": {
     "description": "Describes the Nostr destination"
   },
