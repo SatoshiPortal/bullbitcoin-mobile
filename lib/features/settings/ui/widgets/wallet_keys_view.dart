@@ -11,10 +11,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class WalletKeysView extends StatelessWidget {
   final Wallet wallet;
   final Widget Function(BuildContext, WalletSigner) signerSummaryBuilder;
+
+  /// Called once a device label has actually been saved, so a caller that
+  /// derives key availability from the wallet can recompute it. The label
+  /// itself changes no key, but the caller decides that, not this view.
+  final VoidCallback? onSignerDeviceUpdated;
+
   const WalletKeysView({
     super.key,
     required this.wallet,
     required this.signerSummaryBuilder,
+    this.onSignerDeviceUpdated,
   });
 
   @override
@@ -22,12 +29,17 @@ class WalletKeysView extends StatelessWidget {
     key: ValueKey(wallet.id),
     create: (_) => locator<WalletDetailsCubit>(),
     child: BlocConsumer<WalletDetailsCubit, WalletDetailsState>(
+      listenWhen: (previous, current) =>
+          previous.signerUpdateFailure != current.signerUpdateFailure ||
+          previous.updatedWallet != current.updatedWallet,
       listener: (context, state) {
         if (state.signerUpdateFailure != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.loc.oopsSomethingWentWrong)),
           );
+          return;
         }
+        if (state.updatedWallet != null) onSignerDeviceUpdated?.call();
       },
       builder: (context, state) => WalletSignerDetails.inspection(
         signers: (state.updatedWallet ?? wallet).signers,

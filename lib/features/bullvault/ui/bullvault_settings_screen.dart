@@ -139,6 +139,8 @@ class _BullVaultSettingsScreenState extends State<BullVaultSettingsScreen>
           wallet: wallet,
           signerSummaryBuilder: (context, signer) =>
               _signer(context, inspection, signer),
+          onSignerDeviceUpdated: () =>
+              context.read<BullVaultSettingsCubit>().load(widget.walletId),
         ),
       ];
     }
@@ -234,7 +236,7 @@ class _VaultCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '${context.loc.bullVaultWalletLabel} · $shortId',
+                      context.loc.bullVaultWalletLabel,
                       style: context.font.titleLarge,
                     ),
                   ),
@@ -242,6 +244,10 @@ class _VaultCard extends StatelessWidget {
                 ],
               ),
               const Gap(16),
+              // Named, because eight hex characters on their own read as a
+              // master fingerprint. This is the wallet identifier's prefix.
+              Text(context.loc.bullVaultIdentifier(shortId)),
+              const Gap(8),
               Text(context.loc.bullVaultCreatedDate(date(policy.createdAt))),
               const Gap(8),
               Text(
