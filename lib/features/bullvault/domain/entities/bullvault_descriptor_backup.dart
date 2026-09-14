@@ -18,6 +18,10 @@ final class BullVaultDescriptorBackup {
   /// BIP138 allows five recipient masks, decoys included.
   static const maxRecipients = 5;
 
+  /// The application's BIP138 size limit. Bytes beyond it were written by
+  /// something other than this app.
+  static const maxBytes = 32768;
+
   final String descriptor;
   final Network network;
   final Uint8List bytes;
@@ -36,6 +40,7 @@ final class BullVaultDescriptorBackup {
     if (descriptor.isEmpty ||
         !network.isBitcoin ||
         bytes.isEmpty ||
+        bytes.length > maxBytes ||
         this.recipients.isEmpty ||
         this.recipients.length > maxRecipients ||
         this.recipients.toSet().length != this.recipients.length ||

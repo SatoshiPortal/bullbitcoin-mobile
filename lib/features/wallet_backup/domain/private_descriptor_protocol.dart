@@ -82,13 +82,3 @@ bool isCanonicalPrivateDescriptorTokens(List<String> tokens) {
   }
   return true;
 }
-
-/// The canonical form of a caller's tokens: sorted, deduplicated, bounded.
-///
-/// Returns null when nothing is left, or when more than the protocol allows
-/// remain, so a truncated lookup is never passed off as a complete one.
-List<String>? canonicalPrivateDescriptorTokens(Iterable<String> tokens) {
-  final canonical = tokens.map((token) => token.toLowerCase()).toSet().toList()
-    ..sort();
-  return isCanonicalPrivateDescriptorTokens(canonical) ? canonical : null;
-}

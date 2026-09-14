@@ -100,11 +100,6 @@ void main() {
         reason: tokens.toString(),
       );
     }
-    expect(
-      canonicalPrivateDescriptorTokens([_tokens[2], _tokens[0], _tokens[2]]),
-      [_tokens[0], _tokens[2]],
-    );
-    expect(canonicalPrivateDescriptorTokens(const []), isNull);
   });
 
   test(

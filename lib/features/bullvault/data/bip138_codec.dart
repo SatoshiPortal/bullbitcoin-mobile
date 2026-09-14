@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
 import 'package:pointycastle/export.dart';
@@ -9,7 +10,7 @@ import 'package:pointycastle/export.dart';
 /// Binary profile pinned to BIP PR1951 at 5af62cba.
 /// Descriptor grammar and key eligibility are validated by the caller before encode.
 final class Bip138Codec {
-  static const maxBytes = 32768;
+  static const maxBytes = BullVaultDescriptorBackup.maxBytes;
 
   /// BIP341's unspendable H point, x only. A descriptor names it as a Taproot
   /// internal key nobody can sign for, so it is never a backup recipient.

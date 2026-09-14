@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 /// lookup returns.
 final class RecoverVaultFromBip138FileUsecase {
   /// The app's BIP138 bound; a larger file was written by something else.
-  static const maximumFileBytes = 32 * 1024;
+  static const maximumFileBytes = BullVaultDescriptorBackup.maxBytes;
 
   /// Recovered vaults arrive without a name, as they do through the metadata
   /// backup. The vault settings screen renames them.
