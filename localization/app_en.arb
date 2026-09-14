@@ -16164,8 +16164,8 @@
   "@bullVaultCustomizeSetup": {
     "description": "Secondary action for choosing additional BullVault protection and inheritance options."
   },
-  "bullVaultRestoreEntry": "Restore BullVault",
-  "@bullVaultRestoreEntry": {
+  "bullVaultRecoverEntry": "Recover BULLVAULT",
+  "@bullVaultRecoverEntry": {
     "description": "Settings entry for restoring a BullVault"
   },
   "bullVaultRestoreTitle": "Restore BullVault",

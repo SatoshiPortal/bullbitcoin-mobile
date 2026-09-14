@@ -203,7 +203,7 @@ void main() {
       reason: 'The card is the chosen vault, not another selector',
     );
     expect(find.text(AppLocalizationsEn().bullVaultCreateEntry), findsNothing);
-    expect(find.text(AppLocalizationsEn().bullVaultRestoreEntry), findsNothing);
+    expect(find.text(AppLocalizationsEn().bullVaultRecoverEntry), findsNothing);
   });
 
   testWidgets('the policy page carries the policy and no actions', (

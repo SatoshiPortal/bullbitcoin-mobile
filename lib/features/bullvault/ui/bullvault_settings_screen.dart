@@ -112,7 +112,7 @@ class _BullVaultSettingsScreenState extends State<BullVaultSettingsScreen>
                 ),
                 SettingsEntryItem(
                   icon: Icons.restore_page_outlined,
-                  title: context.loc.bullVaultRestoreEntry,
+                  title: context.loc.bullVaultRecoverEntry,
                   onTap: () => _open(BullVaultFacade.restoreRouteName),
                 ),
                 SettingsEntryItem(
