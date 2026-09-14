@@ -161,8 +161,12 @@ final class _WalletBackupGraph {
         isLiquid: false,
       ),
       walletExists: walletsForVaults.containsWallet,
-      restore: ({required source, required label}) =>
-          bullVault().restoreFromRecoveryPackage(source: source, label: label),
+      restore: ({required source, required label, required status}) =>
+          bullVault().restoreFromRecoveryPackage(
+            source: source,
+            label: label,
+            status: status,
+          ),
     );
     final vaultsCodec = WalletBackupVaultsCodec(inspect: inspectVault);
     final labels = locator<LabelsFacade>();

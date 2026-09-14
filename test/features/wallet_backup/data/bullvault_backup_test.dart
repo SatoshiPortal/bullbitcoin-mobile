@@ -65,7 +65,8 @@ void main() {
       walletLabel: (walletId) async => walletId == 'v-1' ? 'Everyday' : null,
       currentNetwork: () async => Network.bitcoinMainnet,
       walletExists: (_) async => false,
-      restore: ({required source, required label}) => throw StateError('no'),
+      restore: ({required source, required label, required status}) =>
+          throw StateError('no'),
     );
 
     final entries = (await section.read() as Ok).value;
@@ -87,7 +88,8 @@ void main() {
       walletLabel: (_) async => null,
       currentNetwork: () async => Network.bitcoinMainnet,
       walletExists: (_) async => false,
-      restore: ({required source, required label}) => throw StateError('no'),
+      restore: ({required source, required label, required status}) =>
+          throw StateError('no'),
     );
 
     expect(
@@ -110,7 +112,7 @@ void main() {
         walletLabel: (_) async => null,
         currentNetwork: () async => Network.bitcoinMainnet,
         walletExists: (walletId) async => walletId == 'already-here',
-        restore: ({required source, required label}) async {
+        restore: ({required source, required label, required status}) async {
           restored.add('$label:$source');
           if (label == 'broken') {
             return const Err(BullVaultInvalidRecoveryFailure());
@@ -182,6 +184,83 @@ void main() {
     },
   );
 
+  test('recover replays each generation under its backed-up status', () async {
+    final replayed = <String, BullVaultLifecycleStatus>{};
+    final section = BullVaultBackupImpl(
+      listRecords: () async => const Ok([]),
+      encodePackage: codec.encode,
+      walletLabel: (_) async => null,
+      currentNetwork: () async => Network.bitcoinMainnet,
+      walletExists: (_) async => false,
+      restore: ({required source, required label, required status}) async {
+        replayed[label] = status;
+        return Ok(
+          BullVaultRestoreResult(
+            wallet: _wallet(label),
+            record: _record(walletId: label, lineageId: 'a', generation: 0),
+            mobileAccess: BullVaultMobileAccess.unavailable,
+          ),
+        );
+      },
+    );
+
+    await section.recover([
+      fakeVaultEntry(
+        walletRef: 'gen-0',
+        label: 'gen-0',
+        lineageId: 'a',
+        vaultGeneration: 0,
+        status: 'migrating',
+      ),
+      fakeVaultEntry(
+        walletRef: 'gen-1',
+        label: 'gen-1',
+        lineageId: 'a',
+        vaultGeneration: 1,
+        status: 'active',
+      ),
+      fakeVaultEntry(
+        walletRef: 'gen-2',
+        label: 'gen-2',
+        lineageId: 'a',
+        vaultGeneration: 2,
+        status: 'pending',
+      ),
+    ]);
+
+    expect(replayed, {
+      'gen-0': BullVaultLifecycleStatus.migrating,
+      'gen-1': BullVaultLifecycleStatus.active,
+      'gen-2': BullVaultLifecycleStatus.pending,
+    });
+  });
+
+  test('recover never guesses a status this build cannot read', () async {
+    var attempts = 0;
+    final section = BullVaultBackupImpl(
+      listRecords: () async => const Ok([]),
+      encodePackage: codec.encode,
+      walletLabel: (_) async => null,
+      currentNetwork: () async => Network.bitcoinMainnet,
+      walletExists: (_) async => false,
+      restore: ({required source, required label, required status}) async {
+        attempts++;
+        return const Err(BullVaultInvalidRecoveryFailure());
+      },
+    );
+
+    final result =
+        (await section.recover([
+                  fakeVaultEntry(walletRef: 'v', status: 'hibernating'),
+                ])
+                as Ok)
+            .value;
+
+    expect(attempts, 0);
+    expect(result.failedCount, 1);
+    expect(result.restoredCount, 0);
+  });
+
   test('recover uses a fallback label when the backup has none', () async {
     String? seen;
     final section = BullVaultBackupImpl(
@@ -190,7 +269,7 @@ void main() {
       walletLabel: (_) async => null,
       currentNetwork: () async => Network.bitcoinMainnet,
       walletExists: (_) async => false,
-      restore: ({required source, required label}) async {
+      restore: ({required source, required label, required status}) async {
         seen = label;
         return const Err(BullVaultInvalidRecoveryFailure());
       },
@@ -209,7 +288,7 @@ void main() {
       walletLabel: (_) async => null,
       currentNetwork: () async => Network.bitcoinMainnet,
       walletExists: (_) async => false,
-      restore: ({required source, required label}) async {
+      restore: ({required source, required label, required status}) async {
         now = now.add(const Duration(minutes: 5));
         return Ok(
           BullVaultRestoreResult(

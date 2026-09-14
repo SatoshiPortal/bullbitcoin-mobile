@@ -17,13 +17,16 @@ typedef RestoreBullVault =
     Future<Result<BullVaultRestoreResult, BullVaultFailure>> Function({
       required String source,
       required String label,
+      required BullVaultLifecycleStatus status,
     });
 
 /// The vaults section over the BullVault feature's public surface.
 ///
 /// Reading takes every record as it is; recovery replays each package through
-/// the feature's own atomic restore. Descriptor restoration does not establish
-/// local ownership of any signing key.
+/// the feature's own atomic restore, under the lifecycle status the record was
+/// backed up with, so a lineage keeps exactly the one vault it had in force.
+/// Descriptor restoration does not establish local ownership of any signing
+/// key.
 final class BullVaultBackupImpl implements BullVaultBackupSection {
   static const fallbackLabel = 'BullVault';
 
@@ -104,11 +107,22 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
         failed += ordered.length - index;
         break;
       }
+      // A status this build cannot read was written by a newer version. It is
+      // left alone rather than replayed as the vault in force.
+      final status = BullVaultLifecycleStatus.values
+          .where((value) => value.name == entry.status)
+          .firstOrNull;
+      if (status == null) {
+        failed++;
+        log.warning('BullVault recovery entry has an unreadable status');
+        continue;
+      }
       try {
         final existed = await _walletExists(entry.walletRef);
         switch (await _restore(
           source: entry.recoveryPackage,
           label: entry.label ?? fallbackLabel,
+          status: status,
         )) {
           case Ok(:final value):
             restored++;

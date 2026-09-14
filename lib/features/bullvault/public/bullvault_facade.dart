@@ -114,14 +114,21 @@ class BullVaultFacade {
 
   /// Restores a vault from its recovery package, creating the wallet if it is
   /// absent and accepting a matching wallet that already exists.
+  ///
+  /// [status] replays a backed-up generation under its own recorded lifecycle
+  /// status instead of making it the vault in force.
   @useResult
   Future<Result<BullVaultRestoreResult, BullVaultFailure>>
-  restoreFromRecoveryPackage({required String source, required String label}) =>
-      _restoreUsecase.execute(
-        kind: BullVaultRestoreInputKind.recoveryPackage,
-        source: source,
-        label: label,
-      );
+  restoreFromRecoveryPackage({
+    required String source,
+    required String label,
+    BullVaultLifecycleStatus status = BullVaultLifecycleStatus.active,
+  }) => _restoreUsecase.execute(
+    kind: BullVaultRestoreInputKind.recoveryPackage,
+    source: source,
+    label: label,
+    status: status,
+  );
 
   /// Restores a vault from its bare descriptor, without the extra facts a
   /// recovery package carries. Every rule the package path applies still holds.

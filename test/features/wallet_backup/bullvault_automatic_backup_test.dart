@@ -49,7 +49,7 @@ void main() {
         walletLabel: (_) async => null,
         currentNetwork: () async => Network.bitcoinMainnet,
         walletExists: (_) async => false,
-        restore: ({required source, required label}) async =>
+        restore: ({required source, required label, required status}) async =>
             const Err(BullVaultInvalidRecoveryFailure()),
       ),
       inspectVault: (source) {

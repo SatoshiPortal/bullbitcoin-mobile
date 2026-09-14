@@ -1298,6 +1298,104 @@ void main() {
     expect(repository.records, isEmpty);
   });
 
+  test('replays a generation under the status it was backed up with', () async {
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.recoveryPackage,
+      source: codec.encode(BullVaultRecoveryPackage(policy: policy)),
+      label: 'Retired vault',
+      status: BullVaultLifecycleStatus.migrating,
+    );
+
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value.record;
+    expect(restored.status, BullVaultLifecycleStatus.migrating);
+    expect(
+      repository.records[restored.walletId]!.status,
+      BullVaultLifecycleStatus.migrating,
+    );
+  });
+
+  test('restores the successor of a predecessor already replayed', () async {
+    const previousWalletId = 'previous-wallet';
+    repository.records[previousWalletId] = BullVaultRecord(
+      walletId: previousWalletId,
+      lineageId: policy.lineageId,
+      vaultGeneration: policy.vaultGeneration,
+      mobileAccount: 0,
+      birthHeight: policy.birthHeight,
+      recoveryPackage: BullVaultRecoveryPackage(policy: policy),
+      status: BullVaultLifecycleStatus.migrating,
+      recoveryPackageConfirmed: true,
+      createdAt: policy.createdAt!,
+    );
+    final renewedPolicy = _policyAtGeneration(
+      descriptorPort: descriptorPort,
+      signers: signers,
+      lineageId: policy.lineageId,
+    );
+
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.recoveryPackage,
+      source: codec.encode(
+        BullVaultRecoveryPackage(
+          previousVaultId: previousWalletId,
+          policy: renewedPolicy,
+        ),
+      ),
+      label: 'Renewed vault',
+      status: BullVaultLifecycleStatus.active,
+    );
+
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value.record;
+    expect(restored.status, BullVaultLifecycleStatus.active);
+    expect(restored.previousVaultId, previousWalletId);
+    expect(
+      repository.records[previousWalletId]!.status,
+      BullVaultLifecycleStatus.migrating,
+    );
+  });
+
+  test('replays a pending successor beside the vault in force', () async {
+    const previousWalletId = 'previous-wallet';
+    repository.records[previousWalletId] = BullVaultRecord(
+      walletId: previousWalletId,
+      lineageId: policy.lineageId,
+      vaultGeneration: policy.vaultGeneration,
+      mobileAccount: 0,
+      birthHeight: policy.birthHeight,
+      recoveryPackage: BullVaultRecoveryPackage(policy: policy),
+      status: BullVaultLifecycleStatus.active,
+      recoveryPackageConfirmed: true,
+      createdAt: policy.createdAt!,
+    );
+    final renewedPolicy = _policyAtGeneration(
+      descriptorPort: descriptorPort,
+      signers: signers,
+      lineageId: policy.lineageId,
+    );
+
+    final result = await usecase.execute(
+      kind: BullVaultRestoreInputKind.recoveryPackage,
+      source: codec.encode(
+        BullVaultRecoveryPackage(
+          previousVaultId: previousWalletId,
+          policy: renewedPolicy,
+        ),
+      ),
+      label: 'Abandoned renewal',
+      status: BullVaultLifecycleStatus.pending,
+    );
+
+    final restored =
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value.record;
+    expect(restored.status, BullVaultLifecycleStatus.pending);
+    expect(
+      repository.records[previousWalletId]!.status,
+      BullVaultLifecycleStatus.active,
+    );
+  });
+
   test('rejects a renewed package beside its active predecessor', () async {
     const previousWalletId = 'previous-wallet';
     repository.records[previousWalletId] = BullVaultRecord(
