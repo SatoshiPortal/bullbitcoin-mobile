@@ -1,6 +1,8 @@
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -10,7 +12,21 @@ import 'package:bull_logger/bull_logger.dart';
 typedef ListBullVaultRecords =
     Future<Result<List<BullVaultRecord>, BullVaultFailure>> Function();
 typedef EncodeBullVaultPackage = String Function(BullVaultRecoveryPackage);
-typedef LookupWalletLabel = Future<String?> Function(String walletId);
+typedef LookupBackedUpWallet = Future<Wallet?> Function(String walletId);
+
+/// The two Keys-screen writes, as the wallet owner already exposes them.
+typedef SetVaultSignerDevice =
+    Future<void> Function({
+      required String walletId,
+      required String signerId,
+      required SignerDeviceEntity? signerDevice,
+    });
+typedef SetVaultSignerRegistrationName =
+    Future<void> Function({
+      required String walletId,
+      required String signerId,
+      required String registrationName,
+    });
 typedef CurrentBitcoinNetwork = Future<Network> Function();
 typedef WalletExists = Future<bool> Function(String walletId);
 typedef RestoreBullVault =
@@ -32,19 +48,23 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
 
   final ListBullVaultRecords _listRecords;
   final EncodeBullVaultPackage _encodePackage;
-  final LookupWalletLabel _walletLabel;
+  final LookupBackedUpWallet _wallet;
   final CurrentBitcoinNetwork _currentNetwork;
   final WalletExists _walletExists;
   final RestoreBullVault _restore;
+  final SetVaultSignerDevice _setSignerDevice;
+  final SetVaultSignerRegistrationName _setSignerRegistrationName;
   final DateTime Function() _nowUtc;
 
   const BullVaultBackupImpl({
     required this._listRecords,
     required this._encodePackage,
-    required this._walletLabel,
+    required this._wallet,
     required this._currentNetwork,
     required this._walletExists,
     required this._restore,
+    required this._setSignerDevice,
+    required this._setSignerRegistrationName,
     this._nowUtc = _systemNowUtc,
   });
 
@@ -62,15 +82,17 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
       final entries = <WalletBackupVaultEntry>[];
       for (final record in records) {
         final policy = record.recoveryPackage.policy;
+        final wallet = await _wallet(record.walletId);
         entries.add(
           WalletBackupVaultEntry(
             walletRef: record.walletId,
-            label: await _walletLabel(record.walletId),
+            label: wallet?.label,
             status: record.status.name,
             network: policy.network,
             lineageId: record.lineageId,
             vaultGeneration: record.vaultGeneration,
             recoveryPackage: _encodePackage(record.recoveryPackage),
+            signers: _annotationsOf(wallet),
           ),
         );
       }
@@ -126,6 +148,7 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
         )) {
           case Ok(:final value):
             restored++;
+            await _restoreAnnotations(value.wallet, entry.signers);
             if (!existed) {
               created.add(
                 WalletPreferences(
@@ -157,6 +180,68 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
         createdWalletPreferences: created,
       ),
     );
+  }
+
+  /// The Keys-screen facts a vault's wallet holds, one per annotated signer.
+  ///
+  /// A signer is named by its account key rather than by its id, because the
+  /// wallet a recovery creates assigns ids of its own.
+  List<WalletBackupVaultSigner> _annotationsOf(Wallet? wallet) => [
+    for (final signer in wallet?.signers ?? const <WalletSigner>[])
+      if (signer.signerDevice != null || signer.registrationName != null)
+        if (signer.descriptorKeys.firstOrNull?.xpub case final xpub?)
+          WalletBackupVaultSigner(
+            accountXpub: xpub,
+            signerDevice: signer.signerDevice,
+            registrationName: signer.registrationName,
+          ),
+  ];
+
+  /// Puts each backed-up annotation back on the signer that holds its account
+  /// key.
+  ///
+  /// An annotation that will not apply is logged and left: the descriptor, the
+  /// policy and the funds are recovered either way, and failing the whole
+  /// vault over a device label would raise the publication fence for a hint.
+  Future<void> _restoreAnnotations(
+    Wallet wallet,
+    List<WalletBackupVaultSigner> signers,
+  ) async {
+    for (final annotation in signers) {
+      if (!annotation.isAnnotated) continue;
+      final signer = wallet.signers
+          .where(
+            (candidate) => candidate.descriptorKeys.any(
+              (key) => key.xpub == annotation.accountXpub,
+            ),
+          )
+          .firstOrNull;
+      if (signer == null) {
+        log.warning('Backed-up vault signer is not in the restored wallet');
+        continue;
+      }
+      try {
+        if (annotation.signerDevice case final device?) {
+          await _setSignerDevice(
+            walletId: wallet.id,
+            signerId: signer.id,
+            signerDevice: device,
+          );
+        }
+        if (annotation.registrationName case final name?) {
+          await _setSignerRegistrationName(
+            walletId: wallet.id,
+            signerId: signer.id,
+            registrationName: name,
+          );
+        }
+      } on Exception catch (error) {
+        log.warning(
+          'Backed-up vault signer annotation was refused',
+          error: error.runtimeType,
+        );
+      }
+    }
   }
 }
 

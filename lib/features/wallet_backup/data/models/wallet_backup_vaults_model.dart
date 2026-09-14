@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 
@@ -20,6 +21,12 @@ final class WalletBackupVaultsCodec {
     'lineageId',
     'vaultGeneration',
     'recoveryPackage',
+    'signers',
+  };
+  static const _signerKeys = {
+    'accountXpub',
+    'signerDevice',
+    'registrationName',
   };
 
   final InspectVaultRecoveryPackage _inspect;
@@ -64,6 +71,14 @@ final class WalletBackupVaultsCodec {
     'lineageId': entry.lineageId,
     'vaultGeneration': entry.vaultGeneration,
     'recoveryPackage': entry.recoveryPackage,
+    'signers': [
+      for (final signer in entry.signers)
+        {
+          'accountXpub': signer.accountXpub,
+          'signerDevice': signer.signerDevice?.name,
+          'registrationName': signer.registrationName,
+        },
+    ],
   };
 
   WalletBackupVaultEntry _fromJson(Map<String, Object?> json) {
@@ -77,6 +92,10 @@ final class WalletBackupVaultsCodec {
     if (network == null || generation is! int) {
       throw const FormatException('Invalid vault entry');
     }
+    final signers = json['signers'];
+    if (signers is! List) {
+      throw const FormatException('Vault signers must be a list');
+    }
     final WalletBackupVaultEntry entry;
     try {
       entry = WalletBackupVaultEntry(
@@ -87,6 +106,10 @@ final class WalletBackupVaultsCodec {
         lineageId: _string(json, 'lineageId'),
         vaultGeneration: generation,
         recoveryPackage: package,
+        signers: [
+          for (final value in signers)
+            _signerFromJson(_object(value, 'signer')),
+        ],
       );
     } on ArgumentError {
       throw const FormatException('Invalid vault entry');
@@ -99,6 +122,23 @@ final class WalletBackupVaultsCodec {
       throw const FormatException('Vault entry does not match its package');
     }
     return entry;
+  }
+
+  /// A device name this build does not know was written by a newer version.
+  /// The signer is still carried, without a device: the annotation is a hint,
+  /// and dropping the whole vault over it would cost the descriptor.
+  WalletBackupVaultSigner _signerFromJson(Map<String, Object?> json) {
+    _exactKeys(json, _signerKeys, 'vault signer');
+    final deviceName = _nullableString(json, 'signerDevice');
+    return WalletBackupVaultSigner(
+      accountXpub: _string(json, 'accountXpub'),
+      signerDevice: deviceName == null
+          ? null
+          : SignerDeviceEntity.values
+                .where((value) => value.name == deviceName)
+                .firstOrNull,
+      registrationName: _nullableString(json, 'registrationName'),
+    );
   }
 
   static void _bound(List<WalletBackupVaultEntry> entries) {

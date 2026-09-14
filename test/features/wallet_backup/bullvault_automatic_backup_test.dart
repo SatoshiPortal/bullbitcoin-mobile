@@ -18,10 +18,23 @@ import 'package:bb_mobile/features/wallet_backup/data/bullvault_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_encryption.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:drift/native.dart';
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../bullvault/bullvault_test_fixture.dart';
 import 'support/wallet_backup_behavior_harness.dart';
+
+Future<void> _unusedDevice({
+  required String walletId,
+  required String signerId,
+  required SignerDeviceEntity? signerDevice,
+}) async => fail('no annotation was expected');
+
+Future<void> _unusedRegistration({
+  required String walletId,
+  required String signerId,
+  required String registrationName,
+}) async => fail('no annotation was expected');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -46,11 +59,13 @@ void main() {
       vaultSection: BullVaultBackupImpl(
         listRecords: repository.getAll,
         encodePackage: repository.encodeRecoveryPackage,
-        walletLabel: (_) async => null,
+        wallet: (_) async => null,
         currentNetwork: () async => Network.bitcoinMainnet,
         walletExists: (_) async => false,
         restore: ({required source, required label, required status}) async =>
             const Err(BullVaultInvalidRecoveryFailure()),
+        setSignerDevice: _unusedDevice,
+        setSignerRegistrationName: _unusedRegistration,
       ),
       inspectVault: (source) {
         final policy = codec.decode(source).policy;

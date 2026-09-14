@@ -152,8 +152,7 @@ final class _WalletBackupGraph {
     final vaults = BullVaultBackupImpl(
       listRecords: () => bullVault().listRecords(),
       encodePackage: (package) => bullVault().encodeRecoveryPackage(package),
-      walletLabel: (walletId) async =>
-          (await walletsForVaults.getWallet(walletId))?.label,
+      wallet: walletsForVaults.getWallet,
       currentNetwork: () async => Network.fromEnvironment(
         isTestnet: (await locator<GetSettingsUsecase>().execute())
             .environment
@@ -166,6 +165,26 @@ final class _WalletBackupGraph {
             source: source,
             label: label,
             status: status,
+          ),
+      setSignerDevice:
+          ({
+            required walletId,
+            required signerId,
+            required signerDevice,
+          }) async => walletsForVaults.updateSignerDevice(
+            walletId: walletId,
+            signerId: signerId,
+            signerDevice: signerDevice,
+          ),
+      setSignerRegistrationName:
+          ({
+            required walletId,
+            required signerId,
+            required registrationName,
+          }) async => walletsForVaults.updateSignerRegistrationName(
+            walletId: walletId,
+            signerId: signerId,
+            registrationName: registrationName,
           ),
     );
     final vaultsCodec = WalletBackupVaultsCodec(inspect: inspectVault);
@@ -401,6 +420,7 @@ final class _WalletBackupGraph {
         (input) => bullVault().descriptorLookupToken(input),
         descriptorRemote,
       ),
+      originProvider,
     );
     return _WalletBackupGraph(
       metadata: metadata,

@@ -127,6 +127,7 @@ WalletBackupVaultEntry fakeVaultEntry({
   Network network = Network.bitcoinMainnet,
   String lineageId = 'lineage-1',
   int vaultGeneration = 0,
+  List<WalletBackupVaultSigner> signers = const [],
 }) => WalletBackupVaultEntry(
   walletRef: walletRef,
   label: label,
@@ -134,6 +135,7 @@ WalletBackupVaultEntry fakeVaultEntry({
   network: network,
   lineageId: lineageId,
   vaultGeneration: vaultGeneration,
+  signers: signers,
   recoveryPackage: fakeVaultPackage(
     lineageId: lineageId,
     vaultGeneration: vaultGeneration,
