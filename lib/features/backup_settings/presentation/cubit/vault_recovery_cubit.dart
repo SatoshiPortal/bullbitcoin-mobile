@@ -142,15 +142,12 @@ final class VaultRecoveryCubit extends Cubit<VaultRecoveryState> {
 
   /// Derives the backup words a mobile seed would have produced, then searches
   /// with them. The seed itself never leaves this call.
-  Future<void> searchWithMobileSeed({
-    required List<String> mnemonic,
-    required String passphrase,
-  }) async {
+  ///
+  /// A vault passphrase belongs to the signing key, not to the credential the
+  /// backups were published under, so it is not asked for here.
+  Future<void> searchWithMobileSeed({required List<String> mnemonic}) async {
     if (state.busy) return;
-    final derived = _words.mobileSeedWords(
-      mnemonic: mnemonic,
-      passphrase: passphrase,
-    );
+    final derived = _words.mobileSeedWords(mnemonic: mnemonic);
     switch (derived) {
       case Err(:final failure):
         emit(state.copyWith(failure: failure));

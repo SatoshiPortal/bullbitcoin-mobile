@@ -93,10 +93,7 @@ class _VaultWordsRecoveryScreenState extends State<VaultWordsRecoveryScreen>
       case _VaultWordsSource.backupWords:
         cubit.searchWithWords(mnemonic.words.join(' '));
       case _VaultWordsSource.mobileSeed:
-        cubit.searchWithMobileSeed(
-          mnemonic: mnemonic.words,
-          passphrase: mnemonic.passphrase,
-        );
+        cubit.searchWithMobileSeed(mnemonic: mnemonic.words);
     }
   }
 
@@ -106,7 +103,10 @@ class _VaultWordsRecoveryScreenState extends State<VaultWordsRecoveryScreen>
       Expanded(
         child: MnemonicWidget(
           initialLength: bip39.MnemonicLength.words12,
-          allowPassphrase: widget._source == _VaultWordsSource.mobileSeed,
+          // Neither journey has anything to do with a passphrase: the words
+          // this screen searches with come from the canonical seed, and the
+          // vault passphrase belongs to the separate cosigner import.
+          allowPassphrase: false,
           allowLabel: false,
           allowMultipleMnemonicLength:
               widget._source == _VaultWordsSource.mobileSeed,

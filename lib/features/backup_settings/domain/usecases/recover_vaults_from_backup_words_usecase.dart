@@ -109,23 +109,27 @@ final class RecoverVaultsFromBackupWordsUsecase {
 
   /// The backup words a mobile wallet's own seed derives.
   ///
+  /// A vault passphrase is deliberately not taken here. Creation derives the
+  /// backup credential from the canonical seed and uses the passphrase only
+  /// for the vault's signing key, so applying it to discovery would search a
+  /// namespace nothing was ever published under, and a vault that exists would
+  /// read as absent. Attaching the passphrase-derived signing key is the
+  /// separate, explicitly consented cosigner import.
+  ///
   /// The seed is built here and dropped here: it is never stored, never becomes
-  /// the default wallet, and its bytes are wiped before this returns. Attaching
-  /// the signing key is a separate, explicitly consented step.
+  /// the default wallet, and its bytes are wiped before this returns.
   Result<String, BackupSettingsFailure> mobileSeedWords({
     required List<String> mnemonic,
-    required String passphrase,
   }) {
     Uint8List? bytes;
     try {
       bytes = Uint8List.fromList(
-        bip39.Mnemonic.fromWords(words: mnemonic, passphrase: passphrase).seed,
+        bip39.Mnemonic.fromWords(words: mnemonic).seed,
       );
       return Ok(
         BackupCredential.deriveWords(
           Seed.mnemonic(
             mnemonicWords: mnemonic,
-            passphrase: passphrase,
             bytes: bytes,
             masterFingerprint: bip32.Bip32Keys.fromSeed(bytes).fingerprintHex,
           ),
