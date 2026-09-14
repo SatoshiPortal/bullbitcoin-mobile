@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
+import 'package:bb_mobile/features/backup_settings/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/vault_recovery_result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 
@@ -23,8 +25,21 @@ final class RecoverVaultFromBip138FileUsecase {
 
   final BullVaultFacade _vaults;
   final BitcoinDescriptorPort _parser;
+  final WalletBackupFileRepository _files;
 
-  const RecoverVaultFromBip138FileUsecase(this._vaults, this._parser);
+  const RecoverVaultFromBip138FileUsecase(
+    this._vaults,
+    this._parser,
+    this._files,
+  );
+
+  /// The artifact the person chose, or null when they dismissed the picker.
+  ///
+  /// Picking lives here rather than in a use case of its own because this is
+  /// the owner of "open one artifact"; the file repository is the same one the
+  /// other backup file journeys already use.
+  Future<Result<Uint8List?, BackupSettingsFailure>> pickFile() =>
+      _files.pick(maximumBytes: maximumFileBytes);
 
   Future<VaultRecoveryOutcome> execute({
     required Uint8List fileBytes,
@@ -42,7 +57,25 @@ final class RecoverVaultFromBip138FileUsecase {
     }
     final content =
         (opened as Ok<BullVaultDescriptorBackup, BullVaultFailure>).value;
-    final existing = await _existingWalletFor(content);
+    return importDescriptor(
+      descriptor: content.descriptor,
+      network: content.network,
+    );
+  }
+
+  /// Imports one validated descriptor, or reports that it is already here.
+  ///
+  /// Every route into the app lands on this one step — an opened BIP138
+  /// artifact, a descriptor a relay handed back, a vault the metadata backup
+  /// carries — so the deduplication and the importer are the same for all of
+  /// them. [recoveryPackage] is used when the source carried one, because it
+  /// adds lineage, generation and birth height the bare descriptor does not.
+  Future<VaultRecoveryOutcome> importDescriptor({
+    required String descriptor,
+    required Network network,
+    String? recoveryPackage,
+  }) async {
+    final existing = await _existingWalletFor(descriptor, network);
     if (existing != null) {
       return VaultRecoveryOutcome(
         VaultRecoveryStatus.alreadyPresent,
@@ -51,10 +84,15 @@ final class RecoverVaultFromBip138FileUsecase {
     }
     // One importer for every route into the app: the vault feature applies the
     // same network, structure, lineage and duplicate rules it always does.
-    final restored = await _vaults.restoreFromDescriptor(
-      source: content.descriptor,
-      label: fallbackLabel,
-    );
+    final restored = recoveryPackage == null
+        ? await _vaults.restoreFromDescriptor(
+            source: descriptor,
+            label: fallbackLabel,
+          )
+        : await _vaults.restoreFromRecoveryPackage(
+            source: recoveryPackage,
+            label: fallbackLabel,
+          );
     return switch (restored) {
       Err() => const VaultRecoveryOutcome(VaultRecoveryStatus.unsupported),
       Ok(:final value) => VaultRecoveryOutcome(
@@ -68,16 +106,16 @@ final class RecoverVaultFromBip138FileUsecase {
   ///
   /// Restoration accepts a vault that is already here, so this is only about
   /// telling the person that nothing changed.
-  Future<String?> _existingWalletFor(BullVaultDescriptorBackup content) async {
+  Future<String?> _existingWalletFor(String descriptor, Network network) async {
     final records = await _vaults.listRecords();
     if (records case Err()) return null;
     for (final record
         in (records as Ok<List<BullVaultRecord>, BullVaultFailure>).value) {
       final policy = record.recoveryPackage.policy;
-      if (policy.network != content.network) continue;
+      if (policy.network != network) continue;
       try {
         if (_canonical(policy.descriptor, policy.network) ==
-            _canonical(content.descriptor, content.network)) {
+            _canonical(descriptor, network)) {
           return record.walletId;
         }
       } on Exception {

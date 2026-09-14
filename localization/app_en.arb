@@ -17833,5 +17833,137 @@
   "backupWordsUnavailable": "These words come from the wallet seed on this phone, and no seed is available here. Restore your wallet first, or recover your vault with the words you wrote down.",
   "@backupWordsUnavailable": {
     "description": "Shown when no default seed exists to derive the backup words from"
+  },
+  "vaultRecoveryTitle": "Recover BullVault",
+  "@vaultRecoveryTitle": {
+    "description": "Title of the vault recovery landing screen"
+  },
+  "vaultRecoveryDescription": "Bull is looking for your vaults in the backups this wallet has. You can also recover manually at any time.",
+  "@vaultRecoveryDescription": {
+    "description": "Explains what the automatic vault search is doing"
+  },
+  "vaultRecoveryNoCredential": "The automatic search is unavailable. Bull finds these backups with the magic backup words derived from this phone's wallet seed, and no seed is available here. Every manual option below still works.",
+  "@vaultRecoveryNoCredential": {
+    "description": "Shown when no default seed exists so the automatic vault search cannot run"
+  },
+  "vaultRecoveryManualTitle": "Recover BullVault manually",
+  "@vaultRecoveryManualTitle": {
+    "description": "Heading above the four manual vault recovery entries"
+  },
+  "vaultRecoveryNone": "No vaults found",
+  "@vaultRecoveryNone": {
+    "description": "One backup source finished and held no vault"
+  },
+  "vaultRecoveryUnavailableSource": "Could not be reached",
+  "@vaultRecoveryUnavailableSource": {
+    "description": "One backup source could not be reached"
+  },
+  "vaultRecoveryIncomplete": "Search could not be completed",
+  "@vaultRecoveryIncomplete": {
+    "description": "One backup source could not be searched to the end"
+  },
+  "vaultRecoveryImported": "Vault recovered",
+  "@vaultRecoveryImported": {
+    "description": "A vault was recovered onto this phone"
+  },
+  "vaultRecoveryAlreadyPresent": "Already on this phone",
+  "@vaultRecoveryAlreadyPresent": {
+    "description": "A recovered vault was already on this phone"
+  },
+  "vaultRecoveryUndecryptable": "This key does not open that backup",
+  "@vaultRecoveryUndecryptable": {
+    "description": "A candidate backup did not open with the supplied key"
+  },
+  "vaultRecoveryUnsupported": "Not a vault this app can rebuild",
+  "@vaultRecoveryUnsupported": {
+    "description": "A backup opened but is not a vault this app can rebuild"
+  },
+  "vaultRecoveryResultTitle": "Recovered vaults",
+  "@vaultRecoveryResultTitle": {
+    "description": "Heading above the list of recovered vaults"
+  },
+  "vaultRecoveryNothingYet": "Nothing recovered yet.",
+  "@vaultRecoveryNothingYet": {
+    "description": "Shown in the result area before anything has been recovered"
+  },
+  "vaultRecoveryNoSpendDisclosure": "Recovering a vault does not move funds. Spending still needs the signatures and timelocks the vault policy requires.",
+  "@vaultRecoveryNoSpendDisclosure": {
+    "description": "States that importing a vault never bypasses signatures or timelocks"
+  },
+  "vaultRecoveryOpenVault": "Open vault",
+  "@vaultRecoveryOpenVault": {
+    "description": "Opens the settings screen of a recovered vault"
+  },
+  "vaultRecoveryImportDescriptor": "Import descriptor",
+  "@vaultRecoveryImportDescriptor": {
+    "description": "Manual recovery entry: a descriptor or recovery file"
+  },
+  "vaultRecoveryImportDescriptorDescription": "Scan, paste, or open a saved descriptor or recovery file.",
+  "@vaultRecoveryImportDescriptorDescription": {
+    "description": "Describes the descriptor recovery entry"
+  },
+  "vaultRecoveryImportCosignerKey": "Import cosigner public key",
+  "@vaultRecoveryImportCosignerKey": {
+    "description": "Manual recovery entry: a cosigner public account key"
+  },
+  "vaultRecoveryImportCosignerKeyDescription": "Use the public account key of one of the vault's signers, on its own or with a saved encrypted descriptor file.",
+  "@vaultRecoveryImportCosignerKeyDescription": {
+    "description": "Describes the cosigner public key recovery entry"
+  },
+  "vaultRecoveryImportBackupWords": "Import magic backup words",
+  "@vaultRecoveryImportBackupWords": {
+    "description": "Manual recovery entry: the twelve magic backup words"
+  },
+  "vaultRecoveryImportBackupWordsDescription": "Use the twelve magic backup words of the wallet that created the vault.",
+  "@vaultRecoveryImportBackupWordsDescription": {
+    "description": "Describes the magic backup words recovery entry"
+  },
+  "vaultRecoveryImportMobileKey": "Import Mobile cosigner key",
+  "@vaultRecoveryImportMobileKey": {
+    "description": "Manual recovery entry: the Bull wallet recovery phrase"
+  },
+  "vaultRecoveryImportMobileKeyDescription": "Use the recovery phrase of the Bull wallet that created the vault.",
+  "@vaultRecoveryImportMobileKeyDescription": {
+    "description": "Describes the Mobile cosigner key recovery entry"
+  },
+  "vaultRecoveryChooseArtifact": "Choose encrypted descriptor file",
+  "@vaultRecoveryChooseArtifact": {
+    "description": "Opens the file picker for an encrypted descriptor backup"
+  },
+  "vaultRecoveryArtifactChosen": "Encrypted descriptor file selected",
+  "@vaultRecoveryArtifactChosen": {
+    "description": "An encrypted descriptor file has been selected"
+  },
+  "vaultRecoverySearch": "Search for vaults",
+  "@vaultRecoverySearch": {
+    "description": "Starts a manual vault search"
+  },
+  "vaultRecoveryBackupWordsHelp": "These are the twelve magic backup words, not your wallet recovery phrase. They open the wallet details and vault descriptors Bull has backed up, and they cannot spend bitcoin.",
+  "@vaultRecoveryBackupWordsHelp": {
+    "description": "Explains which set of words the backup words entry wants"
+  },
+  "vaultRecoveryInvalidWords": "These are not valid magic backup words. Nothing was sent.",
+  "@vaultRecoveryInvalidWords": {
+    "description": "The words entered are not valid magic backup words"
+  },
+  "vaultRecoveryInvalidAccountKey": "This is not a public account key Bull can look up.",
+  "@vaultRecoveryInvalidAccountKey": {
+    "description": "The text entered is not a public account key"
+  },
+  "vaultRecoveryMobileKeyWarning": "Enter the recovery phrase of the Bull wallet that created the vault. Bull uses it here only to work out where that wallet filed its backups. Nothing is saved, and your current wallet is not changed.",
+  "@vaultRecoveryMobileKeyWarning": {
+    "description": "Warning shown before entering a Bull wallet recovery phrase for discovery"
+  },
+  "vaultRecoveryEncryptedFileDetected": "This is an encrypted descriptor backup. Enter the public account key of one of its cosigners to open it.",
+  "@vaultRecoveryEncryptedFileDetected": {
+    "description": "The chosen file is an encrypted descriptor backup and needs a cosigner key"
+  },
+  "vaultRecoveryAttachSigningKey": "This vault is watch only on this phone. Import a cosigner key to sign with it.",
+  "@vaultRecoveryAttachSigningKey": {
+    "description": "Invites setting up a signing key for a watch-only recovered vault"
+  },
+  "vaultRecoveredAlert": "BullVault recovered",
+  "@vaultRecoveredAlert": {
+    "description": "Home screen alert after a vault was recovered from a backup"
   }
 }

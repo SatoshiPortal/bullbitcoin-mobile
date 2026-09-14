@@ -28,5 +28,9 @@ extension BackupSettingsFailureL10n on BackupSettingsFailure {
       context.loc.walletBackupSettingsRecoveryBlocked,
     BackupSettingsBackupWordsUnavailableFailure() =>
       context.loc.backupWordsUnavailable,
+    BackupSettingsInvalidBackupWordsFailure() =>
+      context.loc.vaultRecoveryInvalidWords,
+    BackupSettingsInvalidAccountKeyFailure() =>
+      context.loc.vaultRecoveryInvalidAccountKey,
   };
 }

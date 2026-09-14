@@ -1,6 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_words_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_options_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_words_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_backup_words_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_cosigner_key_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_mobile_key_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_metadata_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_recovery_manifest_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_vaults_screen.dart';
@@ -29,6 +36,9 @@ final class BackupOptionsArgs {
 enum BackupSettingsSubroute {
   backupOptions('backup-options'),
   backupWords('backup-words'),
+  vaultRecoveryCosignerKey('cosigner-key'),
+  vaultRecoveryBackupWords('backup-words-entry'),
+  vaultRecoveryMobileKey('mobile-key'),
   walletManifest('wallet-manifest'),
   walletMetadata('wallet-metadata'),
   walletVaults('wallet-vaults');
@@ -39,6 +49,57 @@ enum BackupSettingsSubroute {
 }
 
 class BackupSettingsSettingsRouter {
+  /// The public `/bullvault/restore` entry, with its four manual children.
+  ///
+  /// The landing lives here because it is the only place that can compose the
+  /// vault feature, the backup server and the relays; the vault feature keeps
+  /// the route name and builds the "Import descriptor" child itself, so no
+  /// BullVault to BackupSettings import is created.
+  static final vaultRecoveryRoutes = <RouteBase>[
+    GoRoute(
+      name: BullVaultFacade.restoreRouteName,
+      path: '/bullvault/restore',
+      builder: (_, _) => BlocProvider(
+        create: (_) => locator<VaultRecoveryCubit>()..discover(),
+        child: const VaultRecoveryScreen(),
+      ),
+      routes: [
+        BullVaultRouter.importDescriptorRoute(
+          onEncryptedDescriptorFile: (context, bytes) => context.pushNamed(
+            BackupSettingsSubroute.vaultRecoveryCosignerKey.name,
+            extra: bytes,
+          ),
+        ),
+        GoRoute(
+          name: BackupSettingsSubroute.vaultRecoveryCosignerKey.name,
+          path: BackupSettingsSubroute.vaultRecoveryCosignerKey.path,
+          builder: (_, state) => BlocProvider(
+            create: (_) => locator<VaultRecoveryCubit>(),
+            child: VaultCosignerKeyRecoveryScreen(
+              initialArtifact: state.extra as Uint8List?,
+            ),
+          ),
+        ),
+        GoRoute(
+          name: BackupSettingsSubroute.vaultRecoveryBackupWords.name,
+          path: BackupSettingsSubroute.vaultRecoveryBackupWords.path,
+          builder: (_, _) => BlocProvider(
+            create: (_) => locator<VaultRecoveryCubit>(),
+            child: const VaultBackupWordsRecoveryScreen(),
+          ),
+        ),
+        GoRoute(
+          name: BackupSettingsSubroute.vaultRecoveryMobileKey.name,
+          path: BackupSettingsSubroute.vaultRecoveryMobileKey.path,
+          builder: (_, _) => BlocProvider(
+            create: (_) => locator<VaultRecoveryCubit>(),
+            child: const VaultMobileKeyRecoveryScreen(),
+          ),
+        ),
+      ],
+    ),
+  ];
+
   static final walletRecoveryRoutes = <RouteBase>[
     GoRoute(
       name: BackupSettingsSubroute.backupOptions.name,

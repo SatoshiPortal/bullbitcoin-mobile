@@ -81,3 +81,18 @@ final class BackupSettingsBackupWordsUnavailableFailure
     extends BackupSettingsFailure {
   const BackupSettingsBackupWordsUnavailableFailure();
 }
+
+/// What was typed is not a valid set of twelve backup words.
+///
+/// It carries nothing about the input: the words are the credential, so even a
+/// word count or a misspelling must not reach a log or a message.
+final class BackupSettingsInvalidBackupWordsFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsInvalidBackupWordsFailure();
+}
+
+/// The text supplied is not a public account key this app can look up under.
+final class BackupSettingsInvalidAccountKeyFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsInvalidAccountKeyFailure();
+}

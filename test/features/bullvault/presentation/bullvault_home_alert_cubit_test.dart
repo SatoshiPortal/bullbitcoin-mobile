@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_funded_predecessor_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/vault_recovery_notice.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_home_alert_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -22,18 +23,18 @@ void main() {
       network: Network.bitcoinTestnet,
     ).wallet;
     when(() => lookup.execute(any())).thenAnswer((_) async => Ok(mainnet.id));
-    final cubit = BullVaultHomeAlertCubit(lookup);
+    final cubit = BullVaultHomeAlertCubit(lookup, VaultRecoveryNotice());
     addTearDown(cubit.close);
     await cubit.load([mainnet]);
-    expect(cubit.state, mainnet.id);
+    expect(cubit.state.fundedPredecessorWalletId, mainnet.id);
 
     when(
       () => lookup.execute(any()),
     ).thenAnswer((_) async => const Err(BullVaultRenewalFailure()));
     await cubit.load([mainnet]);
-    expect(cubit.state, mainnet.id);
+    expect(cubit.state.fundedPredecessorWalletId, mainnet.id);
     await cubit.load([testnet]);
-    expect(cubit.state, isNull);
+    expect(cubit.state.fundedPredecessorWalletId, isNull);
   });
 
   test('keeps the latest deposit alert when loads overlap', () async {
@@ -44,12 +45,15 @@ void main() {
       (_) =>
           calls++ == 0 ? first.future : Future.value(const Ok('active-wallet')),
     );
-    final cubit = BullVaultHomeAlertCubit(getFundedPredecessor);
+    final cubit = BullVaultHomeAlertCubit(
+      getFundedPredecessor,
+      VaultRecoveryNotice(),
+    );
     final stale = cubit.load([]);
     await cubit.load([]);
     first.complete(const Ok(null));
     await stale;
-    expect(cubit.state, 'active-wallet');
+    expect(cubit.state.fundedPredecessorWalletId, 'active-wallet');
     await cubit.close();
   });
 }

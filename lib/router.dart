@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_reminder.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_backup_words_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_reminder_listener.dart';
@@ -244,6 +245,7 @@ class AppRouter {
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
       ...BullVaultRouter.routes,
+      ...BackupSettingsSettingsRouter.vaultRecoveryRoutes,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,
@@ -257,6 +259,8 @@ class AppRouter {
         onSeedRecovered: (walletIds) => recoverWalletDataAfterSeedRestore(
           locator<WalletBackupFacade>(),
           defaultCreatedWalletPreferences: walletIds,
+          discoverVaults: locator<RecoverVaultsFromBackupWordsUsecase>(),
+          vaults: locator<BullVaultFacade>(),
         ),
       ),
       RecoverBullGoogleDriveRouter.route,

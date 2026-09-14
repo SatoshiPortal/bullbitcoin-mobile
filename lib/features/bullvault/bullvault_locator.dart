@@ -68,6 +68,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/import_bullvault_co
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_backup_changes_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/vault_recovery_notice.dart';
 
 abstract final class BullVaultLocator {
   static void setup(GetIt locator) {
@@ -262,6 +263,7 @@ abstract final class BullVaultLocator {
           locator<VaultDescriptorPublicationRepository>(),
         ),
         locator<VaultDescriptorPublicationRepository>(),
+        locator<VaultRecoveryNotice>(),
       ),
     );
     locator.registerFactory<BullVaultOnboardingCubit>(
@@ -276,8 +278,9 @@ abstract final class BullVaultLocator {
         locator<UpdateBullVaultRegistrationNameUsecase>(),
       ),
     );
+    locator.registerLazySingleton<VaultRecoveryNotice>(VaultRecoveryNotice.new);
     locator.registerFactory<BullVaultHomeAlertCubit>(
-      () => BullVaultHomeAlertCubit(locator()),
+      () => BullVaultHomeAlertCubit(locator(), locator<VaultRecoveryNotice>()),
     );
     locator.registerFactory<GetBullVaultFundedPredecessorUsecase>(
       () => GetBullVaultFundedPredecessorUsecase(locator(), locator()),

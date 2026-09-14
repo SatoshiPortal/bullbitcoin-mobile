@@ -24,9 +24,11 @@ BackupSettingsFailure mapWalletBackupFailure(
   WalletBackupEncryptionFailure() ||
   WalletBackupManifestFailure() ||
   WalletBackupDefinitionsFailure() ||
-  WalletBackupVaultsFailure() ||
+  WalletBackupVaultsFailure() => const BackupSettingsInvalidFileFailure(),
   WalletBackupInvalidAccountKeyFailure() =>
-    const BackupSettingsInvalidFileFailure(),
+    const BackupSettingsInvalidAccountKeyFailure(),
+  WalletBackupInvalidBackupWordsFailure() =>
+    const BackupSettingsInvalidBackupWordsFailure(),
   WalletBackupSigningFailure() ||
   WalletBackupInvalidRemoteFailure() ||
   WalletBackupRemoteRejectedFailure() =>
@@ -37,9 +39,6 @@ BackupSettingsFailure mapWalletBackupFailure(
   WalletBackupStorageFailure() => const BackupSettingsStorageFailure(),
   WalletBackupRecoveryBlockedFailure() =>
     const BackupSettingsRecoveryNeedsAttentionFailure(),
-  // C10 gives the words-entry screen its own message; until that screen exists
-  // no user path can reach this.
-  WalletBackupInvalidBackupWordsFailure() ||
   // C12 owns descriptor publication and gives its quota refusal a message.
   WalletBackupPublisherQuotaFailure() ||
   WalletBackupKeyDerivationFailure() ||

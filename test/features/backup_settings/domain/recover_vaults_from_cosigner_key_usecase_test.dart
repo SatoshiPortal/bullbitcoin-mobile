@@ -146,7 +146,7 @@ void main() {
         ),
       ),
     );
-    openArtifact = RecoverVaultFromBip138FileUsecase(vaults, _Parser());
+    openArtifact = RecoverVaultFromBip138FileUsecase(vaults, _Parser(), files);
     recover = RecoverVaultsFromCosignerKeyUsecase(metadata, openArtifact);
   });
 
@@ -246,12 +246,14 @@ void main() {
       (_) async => const Err(WalletBackupInvalidAccountKeyFailure()),
     );
 
+    // Text that is not an account key now has its own message, because C10's
+    // entry screen is where someone types one and has to be told what is wrong.
     expect(
       await recover.execute('not a key'),
       isA<Err<VaultRecoveryResult, BackupSettingsFailure>>().having(
         (value) => value.failure,
         'failure',
-        isA<BackupSettingsInvalidFileFailure>(),
+        isA<BackupSettingsInvalidAccountKeyFailure>(),
       ),
     );
   });

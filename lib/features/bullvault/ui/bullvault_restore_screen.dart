@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -25,7 +27,12 @@ import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_policy_panel.d
 import 'package:bb_mobile/locator.dart';
 
 class BullVaultRestoreScreen extends StatefulWidget {
-  const BullVaultRestoreScreen({super.key});
+  /// Called with a chosen file that is a BIP138 artifact rather than a recovery
+  /// package. Opening one needs a cosigner's public account key, which this
+  /// screen does not ask for; the recovery landing routes it onwards.
+  final void Function(Uint8List bytes)? onEncryptedDescriptorFile;
+
+  const BullVaultRestoreScreen({super.key, this.onEncryptedDescriptorFile});
 
   @override
   State<BullVaultRestoreScreen> createState() => _BullVaultRestoreScreenState();
@@ -34,6 +41,9 @@ class BullVaultRestoreScreen extends StatefulWidget {
 class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     with PrivacyScreen {
   static const _maxPackageBytes = 1024 * 1024;
+
+  /// Every BIP138 artifact starts with these six bytes.
+  static final _bip138Magic = ascii.encode('BIP138');
   late final Future<void> _privacyFuture = enableScreenPrivacy();
 
   var _label = '';
@@ -291,7 +301,9 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     try {
       final selection = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: const ['json'],
+        allowedExtensions: widget.onEncryptedDescriptorFile == null
+            ? const ['json']
+            : const ['json', 'bip138'],
       );
       if (!mounted || selection == null || selection.files.isEmpty) return;
       final path = selection.files.single.path;
@@ -306,8 +318,23 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
         }
         return;
       }
-      final content = await file.readAsString();
+      final bytes = await file.readAsBytes();
       if (!mounted) return;
+      final handOver = widget.onEncryptedDescriptorFile;
+      if (handOver != null && _isEncryptedDescriptor(bytes)) {
+        handOver(bytes);
+        return;
+      }
+      final String content;
+      try {
+        content = utf8.decode(bytes);
+      } on FormatException {
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.bullVaultFailureInvalidRecovery,
+        );
+        return;
+      }
       await context.read<BullVaultRestoreCubit>().restore(
         kind: BullVaultRestoreInputKind.recoveryPackage,
         source: content,
@@ -321,6 +348,14 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
         context.loc.bullVaultFailureInvalidRecovery,
       );
     }
+  }
+
+  static bool _isEncryptedDescriptor(Uint8List bytes) {
+    if (bytes.length <= _bip138Magic.length) return false;
+    for (var i = 0; i < _bip138Magic.length; i++) {
+      if (bytes[i] != _bip138Magic[i]) return false;
+    }
+    return true;
   }
 
   Future<void> _restoreDescriptor() =>

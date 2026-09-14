@@ -18,6 +18,7 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/get_wallet_re
 import 'package:bb_mobile/features/backup_settings/domain/usecases/import_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/publish_vault_descriptor_backups_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vault_from_bip138_file_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_backup_words_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_vaults_from_cosigner_key_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/retry_wallet_backup_recovery_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/reveal_backup_words_usecase.dart';
@@ -33,6 +34,7 @@ import 'package:bb_mobile/features/backup_settings/data/vault_backup_test_reposi
 import 'package:bb_mobile/features/backup_settings/domain/repositories/vault_backup_test_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/verify_vault_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/data/vault_recovery_kit_repository_impl.dart';
@@ -75,10 +77,22 @@ class BackupSettingsLocator {
       () => RecoverVaultFromBip138FileUsecase(
         locator<BullVaultFacade>(),
         locator<BitcoinDescriptorPort>(),
+        files,
       ),
     );
     locator.registerFactory<RecoverVaultsFromCosignerKeyUsecase>(
       () => RecoverVaultsFromCosignerKeyUsecase(walletBackup, locator()),
+    );
+    locator.registerFactory<RecoverVaultsFromBackupWordsUsecase>(
+      () => RecoverVaultsFromBackupWordsUsecase(
+        walletBackup,
+        locator<BullVaultFacade>(),
+        locator<NostrIdentityFacade>(),
+        locator(),
+      ),
+    );
+    locator.registerFactory<VaultRecoveryCubit>(
+      () => VaultRecoveryCubit(locator(), locator(), locator()),
     );
     locator.registerFactory<BackupWordsCubit>(
       () => BackupWordsCubit(

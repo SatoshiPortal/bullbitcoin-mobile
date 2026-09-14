@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_r
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/can_delete_bullvault_wallet_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/vault_recovery_notice.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:meta/meta.dart';
@@ -39,7 +40,14 @@ export 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart'
 
 class BullVaultFacade {
   static const createRouteName = 'bullVaultCreate';
+
+  /// The recovery landing. The route lives in `backup_settings`, which is the
+  /// one place that can compose the vault, backup and relay searches, but the
+  /// name stays here so every existing caller keeps working.
   static const restoreRouteName = 'bullVaultRestore';
+
+  /// The landing's "Import descriptor" child, built by [BullVaultRouter].
+  static const importDescriptorRouteName = 'bullVaultImportDescriptor';
   static const settingsRouteName = 'bullVaultSettings';
   static const menuRouteName = 'bullVaultMenu';
   static const policyRouteName = 'bullVaultPolicy';
@@ -58,6 +66,7 @@ class BullVaultFacade {
   final VerifyNostrDescriptorBackupUsecase _verifyOnNostr;
   final PrepareServerDescriptorBackupUsecase _prepareForServer;
   final VaultDescriptorPublicationRepository _publications;
+  final VaultRecoveryNotice _recoveryNotice;
 
   const BullVaultFacade(
     this._canDeleteWalletUsecase,
@@ -70,7 +79,14 @@ class BullVaultFacade {
     this._verifyOnNostr,
     this._prepareForServer,
     this._publications,
+    this._recoveryNotice,
   );
+
+  /// Announces on the home screen that a recovery put a vault on this device.
+  ///
+  /// Only a persisted wallet is worth announcing: a discovery that found
+  /// nothing, or found a vault already here, is not a recovery.
+  void recordVaultRecovered() => _recoveryNotice.record();
 
   /// Initial wake-up and committed changes whose revisions are already saved.
   Stream<void> watchBackupChanges() => _watchBackupChanges.execute();
