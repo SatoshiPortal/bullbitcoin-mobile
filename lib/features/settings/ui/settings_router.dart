@@ -42,7 +42,9 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/help_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/tools_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
@@ -67,10 +69,7 @@ class SettingsRouter {
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
-      child: const AllSettingsScreen(),
-    ),
+    builder: (context, state) => const AllSettingsScreen(),
     routes: [
       GoRoute(
         name: SettingsRoute.search.name,
@@ -159,6 +158,19 @@ class SettingsRouter {
         name: SettingsRoute.walletSettings.name,
         path: SettingsRoute.walletSettings.path,
         builder: (context, state) => const WalletSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.tools.name,
+        path: SettingsRoute.tools.path,
+        builder: (context, state) => const ToolsSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.helpAndInfo.name,
+        path: SettingsRoute.helpAndInfo.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+          child: const HelpSettingsScreen(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.signingKeyExport.name,

@@ -25,6 +25,8 @@ enum SettingsRoute {
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   walletSettings('bitcoin-settings'),
+  tools('tools'),
+  helpAndInfo('help-and-info'),
   signingKeyExport('signing-key-export'),
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),

@@ -39,6 +39,8 @@ enum SettingsItemId {
   transactionHistory,
   walletSettings,
   appSettings,
+  tools,
+  helpAndInfo,
   btcMap,
   termsOfService,
   servicesStatus,
@@ -64,20 +66,29 @@ enum SettingsItemId {
   extension,
 }
 
-enum SettingsItemSection { root, backup, wallet, app }
+enum SettingsItemSection { root, backup, wallet, app, tools, help }
 
 const backupSettingsDataItemOrder = [
   SettingsItemId.labels,
   SettingsItemId.transactionHistory,
 ];
 
+/// The Wallet and Bitcoin group, in the order it is shown.
+///
+/// [SettingsItemId.extension] is the slot feature-contributed wallet entries
+/// occupy — BULLVAULT today — so a feature that registers itself lands in the
+/// agreed position instead of at the end of the list.
 const walletSettingsItemOrder = [
-  SettingsItemId.payjoin,
-  SettingsItemId.autoswap,
+  SettingsItemId.backup,
+  SettingsItemId.dataBackup,
   SettingsItemId.importWallet,
+  SettingsItemId.passphraseWallets,
   SettingsItemId.electrum,
   SettingsItemId.mempool,
-  SettingsItemId.broadcastTransaction,
+  SettingsItemId.autoswap,
+  SettingsItemId.payjoin,
+  SettingsItemId.extension,
+  SettingsItemId.seedViewer,
 ];
 
 typedef OpenSettingsItem = void Function(BuildContext context);
@@ -133,6 +144,23 @@ extension SettingsItemsX on Iterable<SettingsItem> {
 
   Iterable<SettingsItem> inSection(SettingsItemSection section) =>
       where((item) => item.section == section);
+
+  /// The items of [section], in the order [order] gives them.
+  ///
+  /// An id with no item is skipped rather than throwing, so a guarded entry
+  /// such as Seed Viewer simply does not appear. An id may stand for more than
+  /// one item — [SettingsItemId.extension] does — and then all of them are
+  /// kept, in registration order.
+  Iterable<SettingsItem> ordered(
+    SettingsItemSection section,
+    List<SettingsItemId> order,
+  ) sync* {
+    final items = inSection(section).toList();
+    for (final id in order) {
+      yield* items.where((item) => item.id == id);
+    }
+    yield* items.where((item) => !order.contains(item.id));
+  }
 }
 
 /// The settings registry for the current context.
@@ -168,158 +196,32 @@ List<SettingsItem> buildSettingsItems({
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
-  final backupSection = localization.settingsBackupTitle;
-  final walletSection = localization.settingsWalletTitle;
-  final appSection = localization.settingsAppTitle;
+  final walletSection = localization.settingsWalletAndBitcoinTitle;
+  final appSection = localization.settingsAppAndDeviceTitle;
+  final toolsSection = localization.settingsToolsTitle;
+  final helpSection = localization.settingsHelpAndInfoTitle;
   final exchangeSection = localization.settingsExchangeTitle;
+  final walletRecoverySection = localization.walletRecoverySettingsTitle;
+  final dataBackupSection = localization.dataBackupSettingsTitle;
 
   List<String> path(SettingsItemSection section, String title) =>
       switch (section) {
         SettingsItemSection.root => [rootSection, title],
-        SettingsItemSection.backup => [rootSection, backupSection, title],
+        // Wallet Recovery's own entries; the exports under Data Backup carry
+        // their own breadcrumb instead.
+        SettingsItemSection.backup => [
+          rootSection,
+          walletSection,
+          walletRecoverySection,
+          title,
+        ],
         SettingsItemSection.wallet => [rootSection, walletSection, title],
         SettingsItemSection.app => [rootSection, appSection, title],
+        SettingsItemSection.tools => [rootSection, toolsSection, title],
+        SettingsItemSection.help => [rootSection, helpSection, title],
       };
 
   final items = [
-    SettingsItem(
-      id: SettingsItemId.appSettings,
-      section: SettingsItemSection.root,
-      title: appSection,
-      path: path(SettingsItemSection.root, appSection),
-      icon: Icons.app_settings_alt,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchAppSettingsKeywords,
-        english.settingsSearchAppSettingsKeywords,
-        [english.settingsAppTitle, english.settingsAppSettingsTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.backup,
-      section: SettingsItemSection.root,
-      title: localization.walletRecoverySettingsTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.walletRecoverySettingsTitle,
-      ),
-      icon: Icons.backup_outlined,
-      open: (context) =>
-          context.pushNamed(SettingsRoute.walletRecoverySettings.name),
-      keywords: _keywords(
-        localization.settingsSearchBackupKeywords,
-        english.settingsSearchBackupKeywords,
-        [english.settingsBackupTitle, english.walletRecoverySettingsTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.dataBackup,
-      section: SettingsItemSection.root,
-      title: localization.dataBackupSettingsTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.dataBackupSettingsTitle,
-      ),
-      icon: Icons.cloud_sync_outlined,
-      open: (context) =>
-          context.pushNamed(SettingsRoute.dataBackupSettings.name),
-      keywords: [english.dataBackupSettingsTitle, 'backup', 'cloud', 'labels'],
-    ),
-    SettingsItem(
-      id: SettingsItemId.startBackup,
-      section: SettingsItemSection.backup,
-      title: localization.backupSettingsStartBackup,
-      path: path(
-        SettingsItemSection.backup,
-        localization.backupSettingsStartBackup,
-      ),
-      icon: Icons.save_as,
-      open: (context) => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
-      ),
-      keywords: _keywords(
-        localization.settingsSearchStartBackupKeywords,
-        english.settingsSearchStartBackupKeywords,
-        [english.backupSettingsStartBackup],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.recoverbull,
-      section: SettingsItemSection.backup,
-      title: localization.backupSettingsRecoverBullSettings,
-      path: path(
-        SettingsItemSection.backup,
-        localization.backupSettingsRecoverBullSettings,
-      ),
-      icon: Icons.cloud_circle,
-      open: (context) => RecoverBullFacade.openSettings(context),
-      keywords: _keywords(
-        localization.settingsSearchRecoverbullKeywords,
-        english.settingsSearchRecoverbullKeywords,
-        [english.backupSettingsRecoverBullSettings],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.nostrKeys,
-      // General settings, not the backup section: Nostr identities are a
-      // wallet-wide concern, and the stack deliberately surfaces them there.
-      section: SettingsItemSection.root,
-      title: localization.settingsNostrKeysTitle,
-      path: path(SettingsItemSection.root, localization.settingsNostrKeysTitle),
-      icon: Icons.key,
-      open: (context) => context.pushNamed(KeychainManifestRoutes.listName),
-      keywords: [english.settingsNostrKeysTitle, 'nostr', 'nsec', 'npub'],
-    ),
-    SettingsItem(
-      id: SettingsItemId.passphraseWallets,
-      section: SettingsItemSection.root,
-      title: localization.passphraseWalletSettingsTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.passphraseWalletSettingsTitle,
-      ),
-      icon: Icons.key_outlined,
-      open: (context) => context.pushNamed(PassphraseWalletRoute.wallets.name),
-      keywords: [
-        english.passphraseWalletSettingsTitle,
-        'passphrase',
-        'private wallet',
-      ],
-    ),
-    SettingsItem(
-      id: SettingsItemId.labels,
-      section: SettingsItemSection.backup,
-      title: localization.backupSettingsLabelsButton,
-      path: path(
-        SettingsItemSection.backup,
-        localization.backupSettingsLabelsButton,
-      ),
-      icon: Icons.sell,
-      open: (context) => context.push(LabelsRouter.route.path),
-      keywords: _keywords(
-        localization.settingsSearchLabelsKeywords,
-        english.settingsSearchLabelsKeywords,
-        [english.backupSettingsLabelsButton],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.transactionHistory,
-      section: SettingsItemSection.backup,
-      title: localization.transactionHistoryTitle,
-      path: path(
-        SettingsItemSection.backup,
-        localization.transactionHistoryTitle,
-      ),
-      icon: Icons.file_download,
-      open: (context) =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
-      keywords: _keywords(
-        localization.settingsSearchTransactionHistoryKeywords,
-        english.settingsSearchTransactionHistoryKeywords,
-        [english.transactionHistoryTitle],
-      ),
-    ),
     SettingsItem(
       id: SettingsItemId.walletSettings,
       section: SettingsItemSection.root,
@@ -358,65 +260,59 @@ List<SettingsItem> buildSettingsItems({
       ),
     ),
     SettingsItem(
-      id: SettingsItemId.btcMap,
+      id: SettingsItemId.appSettings,
       section: SettingsItemSection.root,
-      title: localization.settingsBtcMapTitle,
-      path: path(SettingsItemSection.root, localization.settingsBtcMapTitle),
-      icon: Icons.map,
-      open: (context) => context.pushNamed(SettingsRoute.btcMap.name),
+      title: appSection,
+      path: path(SettingsItemSection.root, appSection),
+      icon: Icons.app_settings_alt,
+      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
       keywords: _keywords(
-        localization.settingsSearchBtcMapKeywords,
-        english.settingsSearchBtcMapKeywords,
-        [english.settingsBtcMapTitle],
+        localization.settingsSearchAppSettingsKeywords,
+        english.settingsSearchAppSettingsKeywords,
+        [english.settingsAppTitle, english.settingsAppSettingsTitle],
       ),
     ),
     SettingsItem(
-      id: SettingsItemId.termsOfService,
+      id: SettingsItemId.tools,
       section: SettingsItemSection.root,
-      title: localization.settingsTermsOfServiceTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.settingsTermsOfServiceTitle,
-      ),
-      icon: Icons.description,
-      open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.termsAndConditionsLink),
-        mode: LaunchMode.inAppBrowserView,
-      ),
+      title: toolsSection,
+      path: path(SettingsItemSection.root, toolsSection),
+      icon: Icons.handyman,
+      open: (context) => context.pushNamed(SettingsRoute.tools.name),
+      keywords: [english.settingsToolsTitle, 'tools', 'utilities'],
+    ),
+    SettingsItem(
+      id: SettingsItemId.helpAndInfo,
+      section: SettingsItemSection.root,
+      title: helpSection,
+      path: path(SettingsItemSection.root, helpSection),
+      icon: Icons.help_outline,
+      open: (context) => context.pushNamed(SettingsRoute.helpAndInfo.name),
+      keywords: [english.settingsHelpAndInfoTitle, 'help', 'support', 'about'],
+    ),
+    SettingsItem(
+      id: SettingsItemId.backup,
+      section: SettingsItemSection.wallet,
+      title: walletRecoverySection,
+      path: path(SettingsItemSection.wallet, walletRecoverySection),
+      icon: Icons.backup_outlined,
+      open: (context) =>
+          context.pushNamed(SettingsRoute.walletRecoverySettings.name),
       keywords: _keywords(
-        localization.settingsSearchTermsOfServiceKeywords,
-        english.settingsSearchTermsOfServiceKeywords,
-        [english.settingsTermsOfServiceTitle],
+        localization.settingsSearchBackupKeywords,
+        english.settingsSearchBackupKeywords,
+        [english.settingsBackupTitle, english.walletRecoverySettingsTitle],
       ),
     ),
     SettingsItem(
-      id: SettingsItemId.servicesStatus,
-      section: SettingsItemSection.root,
-      title: localization.settingsServiceStatusTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.settingsServiceStatusTitle,
-      ),
-      icon: Icons.monitor_heart,
-      open: (context) => context.pushNamed(StatusCheckRoute.serviceStatus.name),
-      keywords: _keywords(
-        localization.settingsSearchServicesStatusKeywords,
-        english.settingsSearchServicesStatusKeywords,
-        [english.settingsServiceStatusTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.logs,
-      section: SettingsItemSection.root,
-      title: localization.logSettingsLogsTitle,
-      path: path(SettingsItemSection.root, localization.logSettingsLogsTitle),
-      icon: Icons.article,
-      open: (context) => context.pushNamed('logs'),
-      keywords: _keywords(
-        localization.settingsSearchLogsKeywords,
-        english.settingsSearchLogsKeywords,
-        [english.logSettingsLogsTitle],
-      ),
+      id: SettingsItemId.dataBackup,
+      section: SettingsItemSection.wallet,
+      title: dataBackupSection,
+      path: path(SettingsItemSection.wallet, dataBackupSection),
+      icon: Icons.cloud_sync_outlined,
+      open: (context) =>
+          context.pushNamed(SettingsRoute.dataBackupSettings.name),
+      keywords: [english.dataBackupSettingsTitle, 'backup', 'cloud', 'labels'],
     ),
     SettingsItem(
       id: SettingsItemId.importWallet,
@@ -436,72 +332,20 @@ List<SettingsItem> buildSettingsItems({
       ),
     ),
     SettingsItem(
-      id: SettingsItemId.signingKeyExport,
+      id: SettingsItemId.passphraseWallets,
       section: SettingsItemSection.wallet,
-      title: localization.signingKeyExportTitle,
-      path: [
-        ...path(SettingsItemSection.wallet, localization.bullVaultWalletLabel),
-        localization.signingKeyExportTitle,
+      title: localization.passphraseWalletSettingsTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.passphraseWalletSettingsTitle,
+      ),
+      icon: Icons.key_outlined,
+      open: (context) => context.pushNamed(PassphraseWalletRoute.wallets.name),
+      keywords: [
+        english.passphraseWalletSettingsTitle,
+        'passphrase',
+        'private wallet',
       ],
-      icon: Icons.key,
-      open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
-      keywords: _keywords(
-        localization.settingsSearchSigningKeyExportKeywords,
-        english.settingsSearchSigningKeyExportKeywords,
-        [english.signingKeyExportTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.broadcastTransaction,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsBroadcastTransactionTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsBroadcastTransactionTitle,
-      ),
-      icon: Icons.satellite_alt,
-      open: (context) =>
-          context.pushNamed(BroadcastSignedTxRoute.broadcastHome.name),
-      keywords: _keywords(
-        localization.settingsSearchBroadcastTransactionKeywords,
-        english.settingsSearchBroadcastTransactionKeywords,
-        [english.bitcoinSettingsBroadcastTransactionTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.payjoin,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsPayjoinTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsPayjoinTitle,
-      ),
-      icon: Icons.compare_arrows,
-      open: (context) => context.pushNamed(SettingsRoute.payjoinSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchPayjoinKeywords,
-        english.settingsSearchPayjoinKeywords,
-        [english.bitcoinSettingsPayjoinTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.autoswap,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsAutoTransferTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsAutoTransferTitle,
-      ),
-      icon: Icons.swap_vertical_circle,
-      open: (context) => context.pushNamed(SettingsRoute.autoswapSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchAutoswapKeywords,
-        english.settingsSearchAutoswapKeywords,
-        [
-          english.bitcoinSettingsAutoTransferTitle,
-          english.autoswapSettingsTitle,
-        ],
-      ),
     ),
     SettingsItem(
       id: SettingsItemId.electrum,
@@ -536,6 +380,41 @@ List<SettingsItem> buildSettingsItems({
         [english.bitcoinSettingsMempoolServerTitle],
       ),
     ),
+    SettingsItem(
+      id: SettingsItemId.autoswap,
+      section: SettingsItemSection.wallet,
+      title: localization.bitcoinSettingsAutoTransferTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.bitcoinSettingsAutoTransferTitle,
+      ),
+      icon: Icons.swap_vertical_circle,
+      open: (context) => context.pushNamed(SettingsRoute.autoswapSettings.name),
+      keywords: _keywords(
+        localization.settingsSearchAutoswapKeywords,
+        english.settingsSearchAutoswapKeywords,
+        [
+          english.bitcoinSettingsAutoTransferTitle,
+          english.autoswapSettingsTitle,
+        ],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.payjoin,
+      section: SettingsItemSection.wallet,
+      title: localization.bitcoinSettingsPayjoinTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.bitcoinSettingsPayjoinTitle,
+      ),
+      icon: Icons.compare_arrows,
+      open: (context) => context.pushNamed(SettingsRoute.payjoinSettings.name),
+      keywords: _keywords(
+        localization.settingsSearchPayjoinKeywords,
+        english.settingsSearchPayjoinKeywords,
+        [english.bitcoinSettingsPayjoinTitle],
+      ),
+    ),
     if (isSuperuser)
       SettingsItem(
         id: SettingsItemId.seedViewer,
@@ -551,13 +430,147 @@ List<SettingsItem> buildSettingsItems({
         ),
         isSuperuser: true,
       ),
+    SettingsItem(
+      id: SettingsItemId.signingKeyExport,
+      section: SettingsItemSection.wallet,
+      title: localization.signingKeyExportTitle,
+      path: [
+        ...path(SettingsItemSection.wallet, localization.bullVaultWalletLabel),
+        localization.signingKeyExportTitle,
+      ],
+      icon: Icons.key,
+      open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
+      keywords: _keywords(
+        localization.settingsSearchSigningKeyExportKeywords,
+        english.settingsSearchSigningKeyExportKeywords,
+        [english.signingKeyExportTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.startBackup,
+      section: SettingsItemSection.backup,
+      title: localization.backupSettingsStartBackup,
+      path: path(
+        SettingsItemSection.backup,
+        localization.backupSettingsStartBackup,
+      ),
+      icon: Icons.save_as,
+      open: (context) => context.pushNamed(
+        BackupSettingsSubroute.backupOptions.name,
+        extra: BackupSettingsFlow.backup,
+      ),
+      keywords: _keywords(
+        localization.settingsSearchStartBackupKeywords,
+        english.settingsSearchStartBackupKeywords,
+        [english.backupSettingsStartBackup],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.recoverbull,
+      section: SettingsItemSection.backup,
+      title: localization.backupSettingsRecoverBullSettings,
+      path: path(
+        SettingsItemSection.backup,
+        localization.backupSettingsRecoverBullSettings,
+      ),
+      icon: Icons.cloud_circle,
+      open: (context) => RecoverBullFacade.openSettings(context),
+      keywords: _keywords(
+        localization.settingsSearchRecoverbullKeywords,
+        english.settingsSearchRecoverbullKeywords,
+        [english.backupSettingsRecoverBullSettings],
+      ),
+    ),
+    // The two data exports live on the Data Backup screen, not on Wallet
+    // Recovery: they hold no key material and restore no signing key.
+    SettingsItem(
+      id: SettingsItemId.labels,
+      section: SettingsItemSection.backup,
+      title: localization.backupSettingsLabelsButton,
+      path: [
+        rootSection,
+        walletSection,
+        dataBackupSection,
+        localization.backupSettingsLabelsButton,
+      ],
+      icon: Icons.sell,
+      open: (context) => context.push(LabelsRouter.route.path),
+      keywords: _keywords(
+        localization.settingsSearchLabelsKeywords,
+        english.settingsSearchLabelsKeywords,
+        [english.backupSettingsLabelsButton],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.transactionHistory,
+      section: SettingsItemSection.backup,
+      title: localization.transactionHistoryTitle,
+      path: [
+        rootSection,
+        walletSection,
+        dataBackupSection,
+        localization.transactionHistoryTitle,
+      ],
+      icon: Icons.file_download,
+      open: (context) =>
+          context.pushNamed(TransactionsRoute.exportTransactions.name),
+      keywords: _keywords(
+        localization.settingsSearchTransactionHistoryKeywords,
+        english.settingsSearchTransactionHistoryKeywords,
+        [english.transactionHistoryTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.broadcastTransaction,
+      section: SettingsItemSection.tools,
+      title: localization.bitcoinSettingsBroadcastTransactionTitle,
+      path: path(
+        SettingsItemSection.tools,
+        localization.bitcoinSettingsBroadcastTransactionTitle,
+      ),
+      icon: Icons.satellite_alt,
+      open: (context) =>
+          context.pushNamed(BroadcastSignedTxRoute.broadcastHome.name),
+      keywords: _keywords(
+        localization.settingsSearchBroadcastTransactionKeywords,
+        english.settingsSearchBroadcastTransactionKeywords,
+        [english.bitcoinSettingsBroadcastTransactionTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.nostrKeys,
+      section: SettingsItemSection.tools,
+      title: localization.settingsNostrKeysTitle,
+      path: path(
+        SettingsItemSection.tools,
+        localization.settingsNostrKeysTitle,
+      ),
+      icon: Icons.key,
+      open: (context) => context.pushNamed(KeychainManifestRoutes.listName),
+      keywords: [english.settingsNostrKeysTitle, 'nostr', 'nsec', 'npub'],
+    ),
+    SettingsItem(
+      id: SettingsItemId.btcMap,
+      section: SettingsItemSection.tools,
+      title: localization.settingsBtcMapTitle,
+      path: path(SettingsItemSection.tools, localization.settingsBtcMapTitle),
+      icon: Icons.map,
+      open: (context) => context.pushNamed(SettingsRoute.btcMap.name),
+      keywords: _keywords(
+        localization.settingsSearchBtcMapKeywords,
+        english.settingsSearchBtcMapKeywords,
+        [english.settingsBtcMapTitle],
+      ),
+    ),
+    // Upstream owns this entry and its two guards; the protected backup-word
+    // flow replaced the backup use of BIP85, not the derivation services.
     if (isSuperuser && isDevModeEnabled)
       SettingsItem(
         id: SettingsItemId.bip85,
-        section: SettingsItemSection.wallet,
+        section: SettingsItemSection.tools,
         title: localization.bitcoinSettingsBip85EntropiesTitle,
         path: path(
-          SettingsItemSection.wallet,
+          SettingsItemSection.tools,
           localization.bitcoinSettingsBip85EntropiesTitle,
         ),
         icon: Icons.science,
@@ -569,6 +582,54 @@ List<SettingsItem> buildSettingsItems({
         ),
         isSuperuser: true,
       ),
+    SettingsItem(
+      id: SettingsItemId.termsOfService,
+      section: SettingsItemSection.help,
+      title: localization.settingsTermsOfServiceTitle,
+      path: path(
+        SettingsItemSection.help,
+        localization.settingsTermsOfServiceTitle,
+      ),
+      icon: Icons.description,
+      open: (_) => launchUrl(
+        Uri.parse(SettingsConstants.termsAndConditionsLink),
+        mode: LaunchMode.inAppBrowserView,
+      ),
+      keywords: _keywords(
+        localization.settingsSearchTermsOfServiceKeywords,
+        english.settingsSearchTermsOfServiceKeywords,
+        [english.settingsTermsOfServiceTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.servicesStatus,
+      section: SettingsItemSection.help,
+      title: localization.settingsServiceStatusTitle,
+      path: path(
+        SettingsItemSection.help,
+        localization.settingsServiceStatusTitle,
+      ),
+      icon: Icons.monitor_heart,
+      open: (context) => context.pushNamed(StatusCheckRoute.serviceStatus.name),
+      keywords: _keywords(
+        localization.settingsSearchServicesStatusKeywords,
+        english.settingsSearchServicesStatusKeywords,
+        [english.settingsServiceStatusTitle],
+      ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.logs,
+      section: SettingsItemSection.help,
+      title: localization.logSettingsLogsTitle,
+      path: path(SettingsItemSection.help, localization.logSettingsLogsTitle),
+      icon: Icons.article,
+      open: (context) => context.pushNamed('logs'),
+      keywords: _keywords(
+        localization.settingsSearchLogsKeywords,
+        english.settingsSearchLogsKeywords,
+        [english.logSettingsLogsTitle],
+      ),
+    ),
     SettingsItem(
       id: SettingsItemId.language,
       section: SettingsItemSection.app,

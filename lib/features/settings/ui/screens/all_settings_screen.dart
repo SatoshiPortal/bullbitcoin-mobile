@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,19 +16,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AllSettingsScreen extends StatefulWidget {
+class AllSettingsScreen extends StatelessWidget {
   const AllSettingsScreen({super.key});
-
-  @override
-  State<AllSettingsScreen> createState() => _AllSettingsScreenState();
-}
-
-class _AllSettingsScreenState extends State<AllSettingsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ServiceStatusCubit>().checkStatus();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +25,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
 
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
-    );
-
-    final serviceStatusLoading = context.select(
-      (ServiceStatusCubit cubit) => cubit.state.isLoading,
-    );
-
-    final serviceStatus = context.select(
-      (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
     final items = settingsItemsOf(context);
@@ -64,16 +44,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
                 const Gap(8),
                 for (final item in items.inSection(SettingsItemSection.root))
-                  item.buildTile(
-                    context,
-                    iconColor: item.id == SettingsItemId.servicesStatus
-                        ? serviceStatusLoading
-                              ? context.appColors.textMuted
-                              : serviceStatus.allServicesOnline
-                              ? context.appColors.success
-                              : context.appColors.error
-                        : null,
-                  ),
+                  item.buildTile(context),
               ],
             ),
           ),

@@ -18037,5 +18037,38 @@
   "vaultDestinationsFailed": "Could not be saved",
   "@vaultDestinationsFailed": {
     "description": "A destination that refused or could not be reached"
+  },
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Title of the settings group holding wallet backup, wallet and Bitcoin network settings."
+  },
+  "settingsAppAndDeviceTitle": "App and device",
+  "@settingsAppAndDeviceTitle": {
+    "description": "Title of the settings group holding language, theme, currency, PIN and device privacy settings."
+  },
+  "settingsToolsTitle": "Tools",
+  "@settingsToolsTitle": {
+    "description": "Title of the settings group holding occasional tools such as broadcasting a transaction."
+  },
+  "settingsHelpAndInfoTitle": "Help and info",
+  "@settingsHelpAndInfoTitle": {
+    "description": "Title of the settings group holding support, terms, service status and logs."
+  },
+  "settingsBullVaultEntryTitle": "BullVault (miniscript)",
+  "@settingsBullVaultEntryTitle": {
+    "description": "Settings menu entry that opens the BullVault miniscript vault hub."
+  },
+  "bullVaultCreatePracticeEntry": "Create practice BullVault",
+  "@bullVaultCreatePracticeEntry": {
+    "description": "Secondary BullVault menu entry that starts creation with the practice timeline preselected."
+  },
+  "bullVaultIdentifier": "Vault ID: {id}",
+  "@bullVaultIdentifier": {
+    "description": "Labels the short prefix of a vault wallet identifier on a vault card. Not a master key fingerprint.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
   }
 }
