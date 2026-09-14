@@ -25,6 +25,9 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
     final openPaymentLinkFailure = context.select(
       (FundExchangeBloc bloc) => bloc.state.openPaymentLinkFailure,
     );
+    final isOpeningPaymentLink = context.select(
+      (FundExchangeBloc bloc) => bloc.state.isOpeningPaymentLink,
+    );
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.fundExchangeTitle)),
       body: SafeArea(
@@ -48,6 +51,9 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.fundExchangeCopOpenPaymentLink,
                     iconData: Icons.open_in_new,
+                    // Disabled while a launch is in flight, so a double tap
+                    // cannot open the payment page twice.
+                    disabled: isOpeningPaymentLink,
                     onPressed: () => context.read<FundExchangeBloc>().add(
                       FundExchangeEvent.paymentLinkOpenRequested(
                         paymentLink: details.paymentLink,

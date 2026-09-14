@@ -41,7 +41,21 @@ void main() {
   test(
     'a malformed link is a sanitized failure, and is never opened',
     () async {
-      for (final bad in ['', 'not a url', '   ', '::::']) {
+      for (final bad in [
+        '',
+        'not a url',
+        '   ',
+        '::::',
+        // No scheme at all.
+        'pay.example.com/abc',
+        // Schemes that are not web links must not reach the platform channel,
+        // however plausible they look.
+        'javascript:alert(1)',
+        'file:///etc/passwd',
+        'intent://scan/#Intent;scheme=zxing;end',
+        'bitcoin:bc1qexample',
+        'HTTPX://pay.example.com',
+      ]) {
         final link = _RecordingExternalLink();
         final usecase = OpenFundingPaymentLinkUsecase(externalLink: link);
 
@@ -62,6 +76,23 @@ void main() {
       }
     },
   );
+
+  test('plain http is still allowed', () async {
+    final link = _RecordingExternalLink();
+    final usecase = OpenFundingPaymentLinkUsecase(externalLink: link);
+
+    final result = await usecase.execute(
+      const OpenFundingPaymentLinkCommand(
+        paymentLink: 'http://pay.example.com/abc',
+      ),
+    );
+
+    expect(
+      result,
+      isA<Ok<OpenFundingPaymentLinkResult, FundExchangeFailure>>(),
+    );
+    expect(link.opened, hasLength(1));
+  });
 
   test('a port failure is forwarded unchanged', () async {
     final link = _RecordingExternalLink(

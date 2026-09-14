@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
@@ -134,7 +135,9 @@ class _FundExchangeWarningBottomSheetState
               const Gap(16.0),
               if (_submitConsentFailure != null) ...[
                 BBText(
-                  context.loc.fundExchangeScamConsentError,
+                  // Through the sealed extension, not a hardcoded key, so the
+                  // sheet cannot drift from the failure's own message.
+                  _submitConsentFailure!.toTranslated(context),
                   style: theme.textTheme.bodyMedium,
                   color: theme.colorScheme.error,
                   textAlign: TextAlign.center,
