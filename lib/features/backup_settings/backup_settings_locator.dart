@@ -34,6 +34,7 @@ import 'package:bb_mobile/features/backup_settings/data/vault_backup_test_reposi
 import 'package:bb_mobile/features/backup_settings/domain/repositories/vault_backup_test_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/verify_vault_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_destinations_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/data_backup_setup_banner_cubit.dart';
@@ -102,6 +103,13 @@ class BackupSettingsLocator {
     locator.registerFactory<ExportPrivateDescriptorFileUsecase>(
       () =>
           ExportPrivateDescriptorFileUsecase(locator<BullVaultFacade>(), files),
+    );
+    locator.registerFactoryParam<VaultDestinationsCubit, String, void>(
+      (walletId, _) => VaultDestinationsCubit(
+        locator(),
+        WatchWalletBackupUsecase(walletBackup),
+        walletId,
+      ),
     );
     locator.registerFactoryParam<VaultBackupCubit, String, void>(
       (walletId, _) => VaultBackupCubit(locator(), walletId),

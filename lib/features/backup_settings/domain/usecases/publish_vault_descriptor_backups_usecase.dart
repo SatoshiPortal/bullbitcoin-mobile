@@ -17,6 +17,37 @@ final class PublishVaultDescriptorBackupsUsecase {
 
   const PublishVaultDescriptorBackupsUsecase(this._vaults, this._server);
 
+  /// What this vault has agreed to publish where, and how far each got.
+  @useResult
+  Future<Result<List<VaultDescriptorPublication>, BackupSettingsFailure>> load(
+    String walletId,
+  ) async => switch (await _vaults.descriptorPublications(walletId)) {
+    Err() => const Err(BackupSettingsStorageFailure()),
+    Ok(:final value) => Ok(value),
+  };
+
+  /// Records the person's choice of one destination and returns the new rows.
+  ///
+  /// Turning a destination off never deletes what was already sent to it: the
+  /// artifact stays, so a later check can still say honestly what is out there.
+  @useResult
+  Future<Result<List<VaultDescriptorPublication>, BackupSettingsFailure>>
+  setDestination({
+    required String walletId,
+    required VaultBackupDestination destination,
+    required bool enabled,
+  }) async {
+    if (await _vaults.setDescriptorBackupDestination(
+          walletId: walletId,
+          destination: destination,
+          enabled: enabled,
+        )
+        case Err()) {
+      return const Err(BackupSettingsStorageFailure());
+    }
+    return load(walletId);
+  }
+
   /// Publishes to every destination this vault has selected.
   @useResult
   Future<Result<List<VaultDescriptorPublication>, BackupSettingsFailure>>

@@ -17965,5 +17965,77 @@
   "vaultRecoveredAlert": "BullVault recovered",
   "@vaultRecoveredAlert": {
     "description": "Home screen alert after a vault was recovered from a backup"
+  },
+  "vaultDestinationsTitle": "Additional backup protection",
+  "@vaultDestinationsTitle": {
+    "description": "Title of the descriptor backup destination screen"
+  },
+  "vaultDestinationsDescription": "Choose where Bull keeps an encrypted copy of this vault's descriptor. Each copy is sealed with your magic backup words and holds no private keys.",
+  "@vaultDestinationsDescription": {
+    "description": "Explains what the descriptor backup destinations do"
+  },
+  "vaultDestinationsServer": "BULL server",
+  "@vaultDestinationsServer": {
+    "description": "The Bull descriptor backup server destination"
+  },
+  "vaultDestinationsServerDescription": "Highly recommended. Only this vault's cosigners can open the copy.",
+  "@vaultDestinationsServerDescription": {
+    "description": "Describes the BULL server destination"
+  },
+  "vaultDestinationsRecommended": "Recommended",
+  "@vaultDestinationsRecommended": {
+    "description": "Tag on the recommended backup destination"
+  },
+  "vaultDestinationsNostr": "Nostr",
+  "@vaultDestinationsNostr": {
+    "description": "The Nostr relay destination"
+  },
+  "vaultDestinationsNostrDescription": "Free. Public relays, so availability is not guaranteed.",
+  "@vaultDestinationsNostrDescription": {
+    "description": "Describes the Nostr destination"
+  },
+  "vaultDestinationsBitcoinDescription": "Publishing a descriptor on chain is not available yet.",
+  "@vaultDestinationsBitcoinDescription": {
+    "description": "Describes the deferred Bitcoin destination"
+  },
+  "vaultDestinationsEntry": "Choose backup destinations",
+  "@vaultDestinationsEntry": {
+    "description": "Entry that opens the descriptor backup destination screen"
+  },
+  "vaultDestinationsNeverBlocks": "A backup that does not go through never blocks your vault or your funds. You can try again at any time.",
+  "@vaultDestinationsNeverBlocks": {
+    "description": "States that a failed optional backup blocks nothing"
+  },
+  "vaultDestinationsDataBackupNote": "Saving a descriptor on the BULL server does not turn on Data Backup. Data Backup has its own setting.",
+  "@vaultDestinationsDataBackupNote": {
+    "description": "Keeps the descriptor destination apart from full Data Backup"
+  },
+  "vaultDestinationsDataBackupOn": "Data Backup is on",
+  "@vaultDestinationsDataBackupOn": {
+    "description": "Data Backup is currently enabled"
+  },
+  "vaultDestinationsDataBackupOff": "Data Backup is off",
+  "@vaultDestinationsDataBackupOff": {
+    "description": "Data Backup is currently disabled"
+  },
+  "vaultDestinationsNotSelected": "Not selected",
+  "@vaultDestinationsNotSelected": {
+    "description": "A destination the person did not choose"
+  },
+  "vaultDestinationsPending": "Not sent yet",
+  "@vaultDestinationsPending": {
+    "description": "A chosen destination whose artifact has not been sent"
+  },
+  "vaultDestinationsSent": "Saved",
+  "@vaultDestinationsSent": {
+    "description": "A destination that acknowledged the artifact"
+  },
+  "vaultDestinationsVerified": "Saved and read back",
+  "@vaultDestinationsVerified": {
+    "description": "A destination whose artifact was read back and matched"
+  },
+  "vaultDestinationsFailed": "Could not be saved",
+  "@vaultDestinationsFailed": {
+    "description": "A destination that refused or could not be reached"
   }
 }

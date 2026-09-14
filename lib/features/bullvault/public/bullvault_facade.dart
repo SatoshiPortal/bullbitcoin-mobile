@@ -34,7 +34,7 @@ export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
 export 'package:bb_mobile/features/bullvault/public/bullvault_contributions.dart';
 export 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart'
-    show shareBullVaultRecoveryPackage;
+    show openBullVaultBackupDestinations, shareBullVaultRecoveryPackage;
 export 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart'
     show BullVaultRouter;
 
@@ -53,6 +53,10 @@ class BullVaultFacade {
   static const policyRouteName = 'bullVaultPolicy';
   static const keysRouteName = 'bullVaultKeys';
   static const backupRouteName = 'bullVaultBackupRecovery';
+
+  /// Additional backup protection. Registered by `backup_settings`, which owns
+  /// the destination journey and the server transport it needs.
+  static const backupDestinationsRouteName = 'bullVaultBackupDestinations';
   static const renewRouteName = 'bullVaultRenew';
   static const importCosignerRouteName = 'bullVaultImportCosigner';
 

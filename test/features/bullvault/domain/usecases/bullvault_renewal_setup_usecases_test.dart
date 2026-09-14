@@ -337,6 +337,49 @@ void main() {
     expect(updated.recoveryPackageConfirmed, isTrue);
   });
 
+  test('the descriptor gate refuses everything but a real read-back', () async {
+    final active = _replacement().copyWith(
+      status: BullVaultLifecycleStatus.active,
+    );
+    final repository = _RenewalRepository(records: {active.walletId: active});
+    final usecase = UpdateBullVaultSetupUsecase(
+      repository,
+      _MockGetWalletUsecase(),
+      testBullVaultDescriptorPort(),
+    );
+
+    // Viewing the descriptor, opening a share sheet and dismissing it, or
+    // ticking a box all arrive here as "no read-back at all".
+    for (final attempt in [null, '', 'not the descriptor']) {
+      expect(
+        await usecase.execute(
+          walletId: active.walletId,
+          recoveryPackageConfirmed: true,
+          descriptorReadBack: attempt,
+        ),
+        isA<Err<BullVaultRecord, BullVaultFailure>>(),
+        reason: 'read-back: ${attempt ?? 'none'}',
+      );
+      expect(
+        repository.records[active.walletId]!.recoveryPackageConfirmed,
+        isFalse,
+      );
+    }
+
+    final confirmed = await usecase.execute(
+      walletId: active.walletId,
+      recoveryPackageConfirmed: true,
+      descriptorReadBack: active.recoveryPackage.policy.descriptor,
+    );
+
+    expect(
+      (confirmed as Ok<BullVaultRecord, BullVaultFailure>)
+          .value
+          .recoveryPackageConfirmed,
+      isTrue,
+    );
+  });
+
   test('persists explicit setup deferrals for an active vault', () async {
     final active = _replacement().copyWith(
       status: BullVaultLifecycleStatus.active,

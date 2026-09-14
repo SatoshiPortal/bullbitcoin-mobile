@@ -47,55 +47,67 @@ final class BullVaultOnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BullVaultOnboardingCubit, BullVaultOnboardingState>(
-      builder: (context, state) => PopScope(
-        canPop:
-            state.step == BullVaultOnboardingStep.setupChoice ||
-            state.step == BullVaultOnboardingStep.recoveryPackage,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop && !state.isCreating && !state.isActivating) {
-            context.read<BullVaultOnboardingCubit>().back();
-          }
-        },
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(context.loc.bullVaultTitle),
-              leading: switch (state.step) {
-                BullVaultOnboardingStep.setupChoice ||
-                BullVaultOnboardingStep.recoveryPackage => const BackButton(),
-                _ => IconButton(
-                  tooltip: context.loc.backButton,
-                  onPressed: state.isCreating || state.isActivating
-                      ? null
-                      : context.read<BullVaultOnboardingCubit>().back,
-                  icon: const Icon(Icons.arrow_back),
-                ),
-              },
-            ),
-            body: SafeArea(
-              child: ListView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                children: [
-                  _Progress(state: state),
-                  if (!state.isInitialChoice) const Gap(24),
-                  _stepContent(context, state),
-                  if (state.failure case final failure?) ...[
-                    const Gap(16),
-                    BullInfoCard(
-                      description: failure.toTranslated(context),
-                      tagColor: context.appColors.error,
-                      bgColor: context.appColors.errorContainer,
-                    ),
-                  ],
-                ],
+    return BlocListener<BullVaultOnboardingCubit, BullVaultOnboardingState>(
+      // The descriptor gate has just passed, which is the one moment the
+      // person has the vault in front of them and can decide where else a
+      // copy should live. Nothing is published without their Continue.
+      listenWhen: (previous, current) =>
+          !previous.recoveryPackageConfirmed &&
+          current.recoveryPackageConfirmed,
+      listener: (context, state) => openBullVaultBackupDestinations(
+        context,
+        walletId: state.result?.wallet.id,
+      ),
+      child: BlocBuilder<BullVaultOnboardingCubit, BullVaultOnboardingState>(
+        builder: (context, state) => PopScope(
+          canPop:
+              state.step == BullVaultOnboardingStep.setupChoice ||
+              state.step == BullVaultOnboardingStep.recoveryPackage,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop && !state.isCreating && !state.isActivating) {
+              context.read<BullVaultOnboardingCubit>().back();
+            }
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(context.loc.bullVaultTitle),
+                leading: switch (state.step) {
+                  BullVaultOnboardingStep.setupChoice ||
+                  BullVaultOnboardingStep.recoveryPackage => const BackButton(),
+                  _ => IconButton(
+                    tooltip: context.loc.backButton,
+                    onPressed: state.isCreating || state.isActivating
+                        ? null
+                        : context.read<BullVaultOnboardingCubit>().back,
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                },
               ),
+              body: SafeArea(
+                child: ListView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  children: [
+                    _Progress(state: state),
+                    if (!state.isInitialChoice) const Gap(24),
+                    _stepContent(context, state),
+                    if (state.failure case final failure?) ...[
+                      const Gap(16),
+                      BullInfoCard(
+                        description: failure.toTranslated(context),
+                        tagColor: context.appColors.error,
+                        bgColor: context.appColors.errorContainer,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              bottomNavigationBar: _BottomActions(state: state),
             ),
-            bottomNavigationBar: _BottomActions(state: state),
           ),
         ),
       ),

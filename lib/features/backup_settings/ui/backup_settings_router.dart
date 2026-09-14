@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_words_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_destinations_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_options_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_words_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_backup_words_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_cosigner_key_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_destinations_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_mobile_key_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/wallet_metadata_screen.dart';
@@ -129,6 +131,16 @@ class BackupSettingsSettingsRouter {
       builder: (_, _) => BlocProvider(
         create: (_) => locator<BackupWordsCubit>(),
         child: const BackupWordsScreen(),
+      ),
+    ),
+    GoRoute(
+      name: BullVaultFacade.backupDestinationsRouteName,
+      path: 'bullvault/:walletId/destinations',
+      builder: (_, state) => BlocProvider(
+        create: (_) => locator<VaultDestinationsCubit>(
+          param1: state.pathParameters['walletId']!,
+        )..load(),
+        child: const VaultDestinationsScreen(),
       ),
     ),
     GoRoute(
