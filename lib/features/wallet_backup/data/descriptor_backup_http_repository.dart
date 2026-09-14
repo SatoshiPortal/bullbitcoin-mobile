@@ -18,6 +18,9 @@ import 'package:dio/dio.dart';
 /// Store is signed and immutable; lookup is unsigned, because knowing a token
 /// is the read capability. No descriptor error code collides with a wallet
 /// backup one.
+/// `DateTime` holds 8640000000000000 milliseconds either side of the epoch.
+const _maxSecondsSinceEpoch = 8640000000000;
+
 final class DescriptorBackupHttpRepository
     implements PrivateDescriptorRemoteRepository {
   final BackupServerHttpTransport _transport;
@@ -138,11 +141,10 @@ final class DescriptorBackupHttpRepository
         }) ||
         json['version'] != privateDescriptorProtocolVersion ||
         json['ciphertext_sha256'] != ciphertextSha256 ||
-        createdAt is! int ||
-        createdAt < 0) {
+        !_isSecondsSinceEpoch(createdAt)) {
       return const Err(WalletBackupInvalidRemoteFailure());
     }
-    return Ok(_time(createdAt));
+    return Ok(_time(createdAt! as int));
   }
 
   Result<PrivateDescriptorLookupPage, WalletBackupFailure> _decodeLookup(
@@ -170,6 +172,9 @@ final class DescriptorBackupHttpRepository
       final hash = record?['ciphertext_sha256'];
       final byteLength = record?['ciphertext_bytes'];
       final createdAt = record?['created_at'];
+      // Every field is checked for its type before it is used as one: a
+      // server that answers with a number where a hash belongs is a failure
+      // this recovery reports, not an error thrown past its boundary.
       if (record == null ||
           !backupServerHasOnly(record, const {
             'ciphertext',
@@ -178,10 +183,10 @@ final class DescriptorBackupHttpRepository
             'created_at',
           }) ||
           encoded is! String ||
-          !isWalletBackupHash(hash as String?) ||
+          hash is! String ||
+          !isWalletBackupHash(hash) ||
           byteLength is! int ||
-          createdAt is! int ||
-          createdAt < 0) {
+          !_isSecondsSinceEpoch(createdAt)) {
         return const Err(WalletBackupInvalidRemoteFailure());
       }
       final ciphertext = _decodeCiphertext(encoded);
@@ -193,8 +198,8 @@ final class DescriptorBackupHttpRepository
       records.add(
         PrivateDescriptorRecord(
           ciphertext: ciphertext,
-          ciphertextSha256: hash!,
-          createdAt: _time(createdAt),
+          ciphertextSha256: hash,
+          createdAt: _time(createdAt! as int),
         ),
       );
     }
@@ -222,6 +227,13 @@ final class DescriptorBackupHttpRepository
         ? bytes
         : null;
   }
+
+  /// Whether [value] is a Unix second count `DateTime` can actually hold.
+  ///
+  /// Checked before the conversion rather than after it, because the
+  /// conversion throws and this is a value a hostile server chooses.
+  bool _isSecondsSinceEpoch(Object? value) =>
+      value is int && value >= 0 && value <= _maxSecondsSinceEpoch;
 
   DateTime _time(int secondsSinceEpoch) => DateTime.fromMillisecondsSinceEpoch(
     secondsSinceEpoch * 1000,

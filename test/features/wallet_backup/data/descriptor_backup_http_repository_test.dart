@@ -322,6 +322,21 @@ void main() {
         'created_at': _timestamp,
         'publisher': _npub,
       },
+      // A field of the wrong type is a failure, never a crash: a hostile or
+      // broken server must not take the whole recovery down with it.
+      {
+        'ciphertext': _ciphertextBase64,
+        'ciphertext_sha256': 12345,
+        'ciphertext_bytes': 32,
+        'created_at': _timestamp,
+      },
+      // A timestamp no calendar can hold.
+      {
+        'ciphertext': _ciphertextBase64,
+        'ciphertext_sha256': _ciphertextSha256,
+        'ciphertext_bytes': 32,
+        'created_at': 9007199254740991,
+      },
     ]) {
       final harness = _Harness({
         'version': 1,
@@ -338,6 +353,27 @@ void main() {
         reason: record.toString(),
       );
     }
+  });
+
+  test('a receipt timestamp no calendar can hold is a failure', () async {
+    final harness = _Harness({
+      'version': 1,
+      'ciphertext_sha256': _ciphertextSha256,
+      'created_at': 9007199254740991,
+    });
+
+    expect(
+      await harness.repository.store(
+        authentication: authentication,
+        ciphertext: _ciphertext,
+        lookupTokens: _tokens,
+      ),
+      isA<Err<DateTime, WalletBackupFailure>>().having(
+        (value) => value.failure,
+        'failure',
+        isA<WalletBackupInvalidRemoteFailure>(),
+      ),
+    );
   });
 
   test('every documented error code has one meaning', () async {
