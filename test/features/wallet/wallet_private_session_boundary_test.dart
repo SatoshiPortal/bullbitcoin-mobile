@@ -91,6 +91,31 @@ final _passphraseMetadata = WalletMetadataModel(
   publicDescriptor: 'wpkh([73c5da0a/84h/1h/0h]tpub-test/<0;1>/*)',
 );
 
+/// A vault wallet a recovery writes: no seed of its own, so it is visible
+/// whether or not a private capability is loaded.
+final _recoveredVaultMetadata = WalletMetadataModel(
+  id: 'recovered-vault',
+  network: Network.bitcoinTestnet,
+  isEncryptedVaultTested: false,
+  isPhysicalBackupTested: false,
+  isDefault: false,
+  provenance: WalletProvenance.descriptor,
+  signers: [
+    walletSignerModel(
+      id: 'signer-0',
+      descriptorKeyId: 'key-0',
+      masterFingerprint: '73c5da0a',
+      xpubFingerprint: 'deadbeef',
+      xpub: 'tpub-vault',
+      derivationPath: "m/48'/1'/0'/2'",
+      descriptorPath: '/<0;1>/*',
+      signer: Signer.local,
+      signerDevice: null,
+    ),
+  ],
+  publicDescriptor: 'wpkh([73c5da0a/48h/1h/0h/2h]tpub-vault/<0;1>/*)',
+);
+
 MnemonicSeed _seed() =>
     Seed.mnemonic(
           mnemonicWords: _mnemonic,
@@ -326,6 +351,20 @@ void main() {
       // visible only while its session is loaded.
       await metadataStore.store(_passphraseMetadata);
       mountedId = _passphraseMetadata.id;
+    });
+
+    test('emits the new catalog when a wallet is added', () async {
+      final published = facade.watchVisibleWalletCatalog();
+      final next = published.first;
+
+      // What a recovery does: it writes the wallet definition while home is
+      // already on screen, with no navigation and no capability change.
+      await metadataStore.store(_recoveredVaultMetadata);
+
+      expect(
+        (await next).map((wallet) => wallet.id),
+        contains(_recoveredVaultMetadata.id),
+      );
     });
 
     test('drops the wallet on lock and emits the new catalog', () async {
