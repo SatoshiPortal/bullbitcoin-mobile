@@ -12620,5 +12620,9 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "exchangeErrorSigningOut": "Aap poori tarah sign out nahin ho sake. Kripya dobara koshish karein.",
+  "exchangeErrorSavingPreferences": "Aapki preferences save nahin ho sakin. Kripya dobara koshish karein.",
+  "exchangeErrorLoadingAnnouncements": "Announcements load nahin ho sake.",
+  "exchangeErrorRequestingAccountDeletion": "Aapka account delete karne ka request nahin bheja ja saka. Kripya dobara koshish karein."
 }

@@ -4960,5 +4960,9 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "exchangeErrorSigningOut": "La déconnexion n'a pas pu être menée à bien. Veuillez réessayer.",
+  "exchangeErrorSavingPreferences": "Vos préférences n'ont pas pu être enregistrées. Veuillez réessayer.",
+  "exchangeErrorLoadingAnnouncements": "Les annonces n'ont pas pu être chargées.",
+  "exchangeErrorRequestingAccountDeletion": "Votre demande de suppression de compte n'a pas pu être envoyée. Veuillez réessayer."
 }

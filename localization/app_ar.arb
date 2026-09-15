@@ -12235,5 +12235,9 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "exchangeErrorSigningOut": "تعذر تسجيل خروجك بالكامل. يرجى المحاولة مرة أخرى.",
+  "exchangeErrorSavingPreferences": "تعذر حفظ تفضيلاتك. يرجى المحاولة مرة أخرى.",
+  "exchangeErrorLoadingAnnouncements": "تعذر تحميل الإعلانات.",
+  "exchangeErrorRequestingAccountDeletion": "تعذر إرسال طلب حذف حسابك. يرجى المحاولة مرة أخرى."
 }

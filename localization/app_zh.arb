@@ -4914,5 +4914,9 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "exchangeErrorSigningOut": "未能完全退出登录。请重试。",
+  "exchangeErrorSavingPreferences": "无法保存您的偏好设置。请重试。",
+  "exchangeErrorLoadingAnnouncements": "无法加载公告。",
+  "exchangeErrorRequestingAccountDeletion": "无法发送您的账户删除请求。请重试。"
 }

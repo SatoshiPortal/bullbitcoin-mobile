@@ -3608,5 +3608,9 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "exchangeErrorSigningOut": "Haukuweza kutoka kwenye akaunti kikamilifu. Tafadhali jaribu tena.",
+  "exchangeErrorSavingPreferences": "Mapendeleo yako hayakuweza kuhifadhiwa. Tafadhali jaribu tena.",
+  "exchangeErrorLoadingAnnouncements": "Matangazo hayakuweza kupakiwa.",
+  "exchangeErrorRequestingAccountDeletion": "Ombi lako la kufuta akaunti halikuweza kutumwa. Tafadhali jaribu tena."
 }
