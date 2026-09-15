@@ -57,6 +57,7 @@ void main() {
       remote: remote,
       recordedChanges: WatchBullVaultBackupChangesUsecase(repository).execute(),
       vaultSection: BullVaultBackupImpl(
+        announceVaultRecovered: () {},
         listRecords: repository.getAll,
         encodePackage: repository.encodeRecoveryPackage,
         wallet: (_) async => null,

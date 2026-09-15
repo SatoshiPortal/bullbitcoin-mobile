@@ -150,6 +150,7 @@ final class _WalletBackupGraph {
 
     final walletsForVaults = locator<WalletRepository>();
     final vaults = BullVaultBackupImpl(
+      announceVaultRecovered: () => bullVault().recordVaultRecovered(),
       listRecords: () => bullVault().listRecords(),
       encodePackage: (package) => bullVault().encodeRecoveryPackage(package),
       wallet: walletsForVaults.getWallet,

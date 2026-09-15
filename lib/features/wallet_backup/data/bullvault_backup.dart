@@ -28,6 +28,9 @@ typedef SetVaultSignerRegistrationName =
       required String registrationName,
     });
 typedef CurrentBitcoinNetwork = Future<Network> Function();
+
+/// Announces on the home screen that a recovery put a vault on this device.
+typedef AnnounceVaultRecovered = void Function();
 typedef WalletExists = Future<bool> Function(String walletId);
 typedef RestoreBullVault =
     Future<Result<BullVaultRestoreResult, BullVaultFailure>> Function({
@@ -54,6 +57,7 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
   final RestoreBullVault _restore;
   final SetVaultSignerDevice _setSignerDevice;
   final SetVaultSignerRegistrationName _setSignerRegistrationName;
+  final AnnounceVaultRecovered _announceVaultRecovered;
   final DateTime Function() _nowUtc;
 
   const BullVaultBackupImpl({
@@ -65,6 +69,7 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
     required this._restore,
     required this._setSignerDevice,
     required this._setSignerRegistrationName,
+    required this._announceVaultRecovered,
     this._nowUtc = _systemNowUtc,
   });
 
@@ -172,6 +177,9 @@ final class BullVaultBackupImpl implements BullVaultBackupSection {
         );
       }
     }
+    // Whoever asked for this recovery, a vault that was not here before is
+    // news on the home screen; a vault that was already here is not.
+    if (created.isNotEmpty) _announceVaultRecovered();
     return Ok(
       WalletVaultsRecoveryResult(
         restoredCount: restored,

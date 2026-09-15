@@ -44,6 +44,9 @@ Future<void> _unusedDevice({
   required SignerDeviceEntity? signerDevice,
 }) async => fail('no annotation was expected');
 
+/// Recovery announcements this test does not assert on.
+void _ignoredAnnouncement() {}
+
 Future<void> _unusedRegistration({
   required String walletId,
   required String signerId,
@@ -81,6 +84,7 @@ void main() {
       status: BullVaultLifecycleStatus.migrating,
     );
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => Ok([active, retired]),
       encodePackage: codec.encode,
       wallet: (walletId) async =>
@@ -108,6 +112,7 @@ void main() {
   test('read carries each signer device and registration name', () async {
     final active = _record(walletId: 'v-1', lineageId: 'a', generation: 0);
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => Ok([active]),
       encodePackage: codec.encode,
       wallet: (_) async => _wallet(
@@ -155,6 +160,7 @@ void main() {
   test('recover puts each annotation back on its own signer', () async {
     final applied = <String, Object?>{};
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => const Ok([]),
       encodePackage: codec.encode,
       wallet: (_) async => null,
@@ -217,6 +223,7 @@ void main() {
 
   test('read reports a vault failure as a backup failure', () async {
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => const Err(BullVaultRenewalFailure()),
       encodePackage: codec.encode,
       wallet: (_) async => null,
@@ -243,6 +250,7 @@ void main() {
     () async {
       final restored = <String>[];
       final section = BullVaultBackupImpl(
+        announceVaultRecovered: _ignoredAnnouncement,
         listRecords: () async => const Ok([]),
         encodePackage: codec.encode,
         wallet: (_) async => null,
@@ -325,6 +333,7 @@ void main() {
   test('recover replays each generation under its backed-up status', () async {
     final replayed = <String, BullVaultLifecycleStatus>{};
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => const Ok([]),
       encodePackage: codec.encode,
       wallet: (_) async => null,
@@ -378,6 +387,7 @@ void main() {
   test('recover never guesses a status this build cannot read', () async {
     var attempts = 0;
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => const Ok([]),
       encodePackage: codec.encode,
       wallet: (_) async => null,
@@ -406,6 +416,7 @@ void main() {
   test('recover uses a fallback label when the backup has none', () async {
     String? seen;
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => const Ok([]),
       encodePackage: codec.encode,
       wallet: (_) async => null,
@@ -424,9 +435,74 @@ void main() {
     expect(seen, BullVaultBackupImpl.fallbackLabel);
   });
 
+  test('recover announces the vaults it put on this device', () async {
+    var announced = 0;
+    final section = BullVaultBackupImpl(
+      listRecords: () async => const Ok([]),
+      encodePackage: codec.encode,
+      wallet: (_) async => null,
+      currentNetwork: () async => Network.bitcoinMainnet,
+      walletExists: (walletId) async => walletId == 'already-here',
+      restore: ({required source, required label, required status}) async => Ok(
+        BullVaultRestoreResult(
+          wallet: _wallet(label),
+          record: _record(walletId: label, lineageId: label, generation: 0),
+          mobileAccess: BullVaultMobileAccess.unavailable,
+        ),
+      ),
+      setSignerDevice: _unusedDevice,
+      setSignerRegistrationName: _unusedRegistration,
+      announceVaultRecovered: () => announced++,
+    );
+
+    await section.recover([
+      fakeVaultEntry(walletRef: 'arrived', label: 'arrived', lineageId: 'a'),
+      fakeVaultEntry(walletRef: 'also', label: 'also', lineageId: 'b'),
+      fakeVaultEntry(
+        walletRef: 'already-here',
+        label: 'already-here',
+        lineageId: 'c',
+      ),
+    ]);
+
+    expect(
+      announced,
+      1,
+      reason: 'one announcement however many vaults arrived',
+    );
+  });
+
+  test('recover announces nothing when every vault was already here', () async {
+    var announced = 0;
+    final section = BullVaultBackupImpl(
+      listRecords: () async => const Ok([]),
+      encodePackage: codec.encode,
+      wallet: (_) async => null,
+      currentNetwork: () async => Network.bitcoinMainnet,
+      walletExists: (_) async => true,
+      restore: ({required source, required label, required status}) async => Ok(
+        BullVaultRestoreResult(
+          wallet: _wallet(label),
+          record: _record(walletId: label, lineageId: label, generation: 0),
+          mobileAccess: BullVaultMobileAccess.unavailable,
+        ),
+      ),
+      setSignerDevice: _unusedDevice,
+      setSignerRegistrationName: _unusedRegistration,
+      announceVaultRecovered: () => announced++,
+    );
+
+    await section.recover([
+      fakeVaultEntry(walletRef: 'here', label: 'here', lineageId: 'a'),
+    ]);
+
+    expect(announced, 0);
+  });
+
   test('recover stops at the deadline and counts the rest as failed', () async {
     var now = DateTime.utc(2027);
     final section = BullVaultBackupImpl(
+      announceVaultRecovered: _ignoredAnnouncement,
       listRecords: () async => const Ok([]),
       encodePackage: codec.encode,
       wallet: (_) async => null,
