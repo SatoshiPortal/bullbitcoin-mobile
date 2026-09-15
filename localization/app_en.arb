@@ -14693,5 +14693,21 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
+  },
+  "exchangeErrorSigningOut": "You could not be fully signed out. Please try again.",
+  "@exchangeErrorSigningOut": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorSavingPreferences": "Your preferences could not be saved. Please try again.",
+  "@exchangeErrorSavingPreferences": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorLoadingAnnouncements": "Announcements could not be loaded.",
+  "@exchangeErrorLoadingAnnouncements": {
+    "description": "exchange user-facing failure message (#1895)."
+  },
+  "exchangeErrorRequestingAccountDeletion": "Your account deletion request could not be sent. Please try again.",
+  "@exchangeErrorRequestingAccountDeletion": {
+    "description": "exchange user-facing failure message (#1895)."
   }
 }

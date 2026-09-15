@@ -12232,5 +12232,9 @@
   "sendErrorExchangeOrderMismatch": "این پرداخت دیگر با سفارش مطابقت ندارد. لطفاً پرداخت را از نو آغاز کنید.",
   "sellUnexpectedError": "سفارش فروش شما در حال حاضر تکمیل نشد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
   "sellErrorFeeBelowRelayFloor": "کارمزد شبکه بسیار کم است. کارمزد بالاتری انتخاب کنید.",
-  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
+  "sellErrorFeesUnavailable": "کارمزدهای شبکه بارگیری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+  "exchangeErrorSigningOut": "خروج کامل از حساب انجام نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeErrorSavingPreferences": "تنظیمات شما ذخیره نشد. لطفاً دوباره تلاش کنید.",
+  "exchangeErrorLoadingAnnouncements": "اطلاعیه‌ها بارگذاری نشد.",
+  "exchangeErrorRequestingAccountDeletion": "درخواست حذف حساب شما ارسال نشد. لطفاً دوباره تلاش کنید."
 }

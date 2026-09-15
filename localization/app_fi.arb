@@ -4902,5 +4902,9 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "exchangeErrorSigningOut": "Uloskirjautumista ei voitu viimeistellä. Yritä uudelleen.",
+  "exchangeErrorSavingPreferences": "Asetuksiasi ei voitu tallentaa. Yritä uudelleen.",
+  "exchangeErrorLoadingAnnouncements": "Tiedotteita ei voitu ladata.",
+  "exchangeErrorRequestingAccountDeletion": "Tilin poistopyyntöäsi ei voitu lähettää. Yritä uudelleen."
 }

@@ -36,23 +36,17 @@ class StartDcaUsecase {
       return const Err(DcaUnexpectedFailure('settings fetch failed'));
     }
 
+    // The repository is the boundary: it already caught, logged the raw
+    // reason, and handed back a sanitized failure — including the
+    // "no API key stored" case.
     final UserSummary userSummary;
-    try {
-      final summary = isMainnet
-          ? await _mainnetExchangeUserRepository.getUserSummary()
-          : await _testnetExchangeUserRepository.getUserSummary();
-      if (summary == null) {
-        // Null also covers "no API key stored" — the repository returns null
-        // instead of throwing in that case.
-        return const Err(DcaAccountUnavailableFailure('no user summary'));
-      }
-      userSummary = summary;
-    } catch (e, st) {
-      if (e is Error) rethrow;
-      log.warning('Failed to fetch user summary', error: e, trace: st);
-      return const Err(
-        DcaAccountUnavailableFailure('user summary fetch failed'),
-      );
+    switch (await (isMainnet
+        ? _mainnetExchangeUserRepository.getUserSummary()
+        : _testnetExchangeUserRepository.getUserSummary())) {
+      case Ok(:final value):
+        userSummary = value;
+      case Err(:final failure):
+        return Err(DcaAccountUnavailableFailure(failure.logMessage));
     }
 
     final balances = userSummary.balances.where((b) => b.amount > 0).toList();

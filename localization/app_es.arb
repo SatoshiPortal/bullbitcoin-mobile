@@ -4911,5 +4911,9 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "exchangeErrorSigningOut": "No se pudo cerrar su sesión por completo. Por favor, inténtelo de nuevo.",
+  "exchangeErrorSavingPreferences": "No se pudieron guardar sus preferencias. Por favor, inténtelo de nuevo.",
+  "exchangeErrorLoadingAnnouncements": "No se pudieron cargar los anuncios.",
+  "exchangeErrorRequestingAccountDeletion": "No se pudo enviar su solicitud de eliminación de cuenta. Por favor, inténtelo de nuevo."
 }

@@ -4960,5 +4960,9 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "exchangeErrorSigningOut": "Não foi possível terminar a sessão por completo. Por favor, tente novamente.",
+  "exchangeErrorSavingPreferences": "Não foi possível guardar as suas preferências. Por favor, tente novamente.",
+  "exchangeErrorLoadingAnnouncements": "Não foi possível carregar os anúncios.",
+  "exchangeErrorRequestingAccountDeletion": "Não foi possível enviar o seu pedido de eliminação de conta. Por favor, tente novamente."
 }

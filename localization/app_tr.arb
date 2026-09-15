@@ -12232,5 +12232,9 @@
   "sendErrorExchangeOrderMismatch": "Bu ödeme artık siparişle eşleşmiyor. Lütfen ödemeyi yeniden başlatın.",
   "sellUnexpectedError": "Satış emriniz şu anda tamamlanamadı. Lütfen tekrar deneyin veya destek ekibiyle iletişime geçin.",
   "sellErrorFeeBelowRelayFloor": "Ağ ücreti çok düşük. Daha yüksek bir ücret seçin.",
-  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
+  "sellErrorFeesUnavailable": "Ağ ücretleri yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "exchangeErrorSigningOut": "Oturumunuz tamamen kapatılamadı. Lütfen tekrar deneyin.",
+  "exchangeErrorSavingPreferences": "Tercihleriniz kaydedilemedi. Lütfen tekrar deneyin.",
+  "exchangeErrorLoadingAnnouncements": "Duyurular yüklenemedi.",
+  "exchangeErrorRequestingAccountDeletion": "Hesap silme talebiniz gönderilemedi. Lütfen tekrar deneyin."
 }
