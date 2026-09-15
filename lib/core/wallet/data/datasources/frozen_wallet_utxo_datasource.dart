@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/outpoint.dart';
 import 'package:drift/drift.dart';
@@ -5,37 +8,56 @@ import 'package:drift/drift.dart';
 /// Persistence for user-frozen wallet outputs, backed by the `frozen_utxos`
 /// drift table.
 ///
-/// Drift serializes writes and offers `batch()`, so no app-level lock is
-/// needed. The API speaks outpoints — the table stores `walletId/txId/vout`,
+/// Drift transactions serialize writes, so no app-level lock is needed.
+/// The API speaks outpoints — the table stores `walletId/txId/vout`,
 /// the same vocabulary `buildPsbt`/payjoin use. `walletId` IS the wallet
 /// origin; it attributes a freeze for BIP329 export, never for exclusion.
 class FrozenWalletUtxoDatasource {
   final SqliteDatabase _db;
+  final BackupRevisionRecorder _revisions;
+  final StreamController<void> _changes = StreamController<void>.broadcast(
+    sync: true,
+  );
 
   FrozenWalletUtxoDatasource({required SqliteDatabase db})
-    : _db = db; // ignore: prefer_initializing_formals
-  // Named `db` (not `_db`) so callers read `db:`; the field stays private.
+    : _db = db,
+      _revisions = DriftBackupRevisionRecorder(db);
+
+  Stream<void> get changes => _changes.stream;
 
   /// Upserts a freeze row per outpoint, attributed to [walletId] (the wallet
-  /// origin). All-or-nothing via a single batch.
+  /// origin). Rows and their backup revision commit together.
   Future<void> freezeOutpoints({
     required String walletId,
     required List<Outpoint> outpoints,
-  }) async {
+  }) => restoreFrozenWalletOutpoints([
+    for (final outpoint in outpoints)
+      (walletId: walletId, txId: outpoint.txId, vout: outpoint.vout),
+  ]);
+
+  Future<void> restoreFrozenWalletOutpoints(
+    List<({String walletId, String txId, int vout})> outpoints,
+  ) async {
     if (outpoints.isEmpty) return;
-    await _db.batch((batch) {
+    final changed = await _db.transaction(() async {
+      var inserted = false;
       for (final outpoint in outpoints) {
-        batch.insert(
-          _db.frozenUtxos,
-          FrozenUtxosCompanion.insert(
-            walletId: walletId,
-            txId: outpoint.txId,
-            vout: outpoint.vout,
-          ),
-          mode: InsertMode.insertOrReplace,
-        );
+        final row = await _db
+            .into(_db.frozenUtxos)
+            .insertReturningOrNull(
+              FrozenUtxosCompanion.insert(
+                walletId: outpoint.walletId,
+                txId: outpoint.txId,
+                vout: outpoint.vout,
+              ),
+              mode: InsertMode.insertOrIgnore,
+            );
+        inserted = row != null || inserted;
       }
+      if (inserted) await _revisions.recordCommittedMutation();
+      return inserted;
     });
+    if (changed) _changes.add(null);
   }
 
   /// Deletes the freeze rows for the given outpoints.
@@ -52,15 +74,21 @@ class FrozenWalletUtxoDatasource {
     required List<Outpoint> outpoints,
   }) async {
     if (outpoints.isEmpty) return;
-    await _db.batch((batch) {
+    final changed = await _db.transaction(() async {
+      var deleted = 0;
       for (final outpoint in outpoints) {
-        batch.deleteWhere(
-          _db.frozenUtxos,
-          (row) =>
-              row.txId.equals(outpoint.txId) & row.vout.equals(outpoint.vout),
-        );
+        deleted +=
+            await (_db.delete(_db.frozenUtxos)..where(
+                  (row) =>
+                      row.txId.equals(outpoint.txId) &
+                      row.vout.equals(outpoint.vout),
+                ))
+                .go();
       }
+      if (deleted > 0) await _revisions.recordCommittedMutation();
+      return deleted > 0;
     });
+    if (changed) _changes.add(null);
   }
 
   /// Returns the frozen outpoints attributed to a wallet.
@@ -80,6 +108,6 @@ class FrozenWalletUtxoDatasource {
     final rows = await _db.select(_db.frozenUtxos).get();
     return rows
         .map((row) => (walletId: row.walletId, txId: row.txId, vout: row.vout))
-        .toList();
+        .toList(growable: false);
   }
 }

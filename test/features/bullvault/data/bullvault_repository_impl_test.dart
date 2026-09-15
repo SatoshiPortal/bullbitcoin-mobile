@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_repository_impl.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
@@ -43,6 +44,18 @@ void main() {
     }
   });
   tearDown(() => storage.close());
+
+  test('saving a vault durably records its backup revision', () async {
+    final record = testBullVaultCreateResult(walletId: 'wallet-id').record;
+    expect(
+      await _repository(storage).save(record),
+      isA<Ok<void, BullVaultFailure>>(),
+    );
+    final state = await storage
+        .select(storage.walletBackupStates)
+        .getSingleOrNull();
+    expect(state?.localRevision, 1);
+  });
 
   test(
     'persists lineage and generation metadata with the wallet record',
@@ -939,6 +952,7 @@ BullVaultRepositoryImpl _repository(SqliteDatabase storage) {
     BullVaultMetadataDatasource(storage),
     BullVaultRecordMapper(codec),
     codec,
+    Bip138Codec(),
   );
 }
 

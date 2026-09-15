@@ -36,10 +36,50 @@ void main() {
         .setMockMethodCallHandler(_channel, null);
   });
 
+  test('refuses to report protection the OS did not confirm', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, (call) async {
+          throw PlatformException(code: 'unavailable');
+        });
+
+    await expectLater(
+      controller.acquire(),
+      throwsA(isA<ScreenCaptureProtectionException>()),
+    );
+    // The screen still holds its reference and releases normally.
+    await controller.release();
+  });
+
   test('protects while at least one screen is mounted', () async {
     await controller.acquire();
     expect(lastCall, 'screenshotOff');
   });
+
+  for (final response in [false, null]) {
+    test(
+      'refuses a $response platform response and balances failed mounts',
+      () async {
+        var accepted = false;
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(_channel, (call) async {
+              lastCall = call.method;
+              return accepted ? true : response;
+            });
+
+        await expectLater(
+          controller.acquire(),
+          throwsA(isA<ScreenCaptureProtectionException>()),
+        );
+        accepted = true;
+        await controller.acquire();
+        // Unmounting the failed screen must not unprotect the successful one.
+        await controller.release();
+        expect(lastCall, 'screenshotOff');
+        await controller.release();
+        expect(lastCall, 'screenshotOn');
+      },
+    );
+  }
 
   test('only clears protection once the last screen is gone', () async {
     await controller.acquire();

@@ -1,0 +1,209 @@
+import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
+
+enum Bip85ReservationPurpose {
+  walletSeed,
+  nonWalletNostrKey,
+
+  /// The twelve backup words: a standard BIP85 BIP39 child of the default seed
+  /// that is never a wallet. The encryption key and the two backup signing
+  /// identities are further BIP85 children of the words themselves.
+  backupWords,
+}
+
+final class Bip85Reservation {
+  final String id;
+  final String deterministicAlias;
+  final Bip85ReservationPurpose purpose;
+  final String path;
+  final int index;
+
+  const Bip85Reservation({
+    required this.id,
+    required this.deterministicAlias,
+    required this.purpose,
+    required this.path,
+    required this.index,
+  });
+
+  bool get isWalletSeed => purpose == Bip85ReservationPurpose.walletSeed;
+
+  int get walletIndex {
+    if (!isWalletSeed) throw StateError('Reservation is not a wallet seed');
+    return index;
+  }
+}
+
+abstract final class Bip85Reservations {
+  static const nostrApplicationNumber = 128002;
+  static const nostrUserKeyReservationId = 'nostr_user_key';
+  static const nostrUserIdentityStart = 1;
+  static const nostrUserIdentityEnd = 0x7fffffff;
+  static const nostrUserAccount = 1;
+  static const nostrAppReservedIdentityStart = 100;
+  static const nostrAppReservedIdentityEnd = 199;
+
+  static const btcpayWalletSeed = Bip85Reservation(
+    id: 'btcpay_wallet_seed',
+    deterministicAlias: 'BTCPay',
+    purpose: Bip85ReservationPurpose.walletSeed,
+    path: "39'/0'/12'/100'",
+    index: 100,
+  );
+  static const lightningAddressWalletSeed = Bip85Reservation(
+    id: 'lightning_address_wallet_seed',
+    deterministicAlias: 'Lightning Address',
+    purpose: Bip85ReservationPurpose.walletSeed,
+    path: "39'/0'/12'/101'",
+    index: 101,
+  );
+  static const paymentPageWalletSeed = Bip85Reservation(
+    id: 'payment_page_wallet_seed',
+    deterministicAlias: 'Payment Page',
+    purpose: Bip85ReservationPurpose.walletSeed,
+    path: "39'/0'/12'/102'",
+    index: 102,
+  );
+  static const pointOfSaleWalletSeed = Bip85Reservation(
+    id: 'pos_wallet_seed',
+    deterministicAlias: 'Point of Sale',
+    purpose: Bip85ReservationPurpose.walletSeed,
+    path: "39'/0'/12'/103'",
+    index: 103,
+  );
+  static const nostrBullnymServerAuthKey = Bip85Reservation(
+    id: 'nostr_bullnym_server_auth_key',
+    deterministicAlias: 'Nostr Bullnym Auth',
+    purpose: Bip85ReservationPurpose.nonWalletNostrKey,
+    path: "128002'/101'/1'",
+    index: 101,
+  );
+  static const nostrNip05PublicNymVerificationKey = Bip85Reservation(
+    id: 'nostr_nip05_public_nym_verification_key',
+    deterministicAlias: 'Nostr NIP-05 Public Nym Verification',
+    purpose: Bip85ReservationPurpose.nonWalletNostrKey,
+    path: "128002'/102'/1'",
+    index: 102,
+  );
+
+  /// Shares the BIP39 application with the wallet seeds and sits in the same
+  /// first-party block, so no wallet can ever be derived at this index.
+  static const backupWords = Bip85Reservation(
+    id: 'backup_words',
+    deterministicAlias: 'Backup Words',
+    purpose: Bip85ReservationPurpose.backupWords,
+    path: _backupWordsPath,
+    index: 104,
+  );
+  static const _backupWordsPath = "39'/0'/12'/104'";
+
+  /// BIP85 paths on the backup words' own root, not on the default seed: the
+  /// words' BIP39 seed with an empty passphrase is the BIP32 root they are
+  /// derived from. Together with [backupWords] they form two-step chains,
+  /// which the keychain manifest records as `bip85Chain` entries so the
+  /// instruction "BIP85, then BIP85 again on the child mnemonic" is explicit.
+  static const backupEncryptionKeyPath = "128169'/32'/0'";
+  static const backupArtifactIdentityPath = "128002'/100'/1'";
+  static const backupServerIdentityPath = "128002'/101'/1'";
+
+  /// The chains the manifest may record for the backup credential: seed →
+  /// words → identity. Only Nostr-style keys are recorded; the encryption key
+  /// has no public materialization.
+  static const backupArtifactIdentityChain = <String>[
+    _backupWordsPath,
+    backupArtifactIdentityPath,
+  ];
+  static const backupServerIdentityChain = <String>[
+    _backupWordsPath,
+    backupServerIdentityPath,
+  ];
+  static const backupIdentityChains = <List<String>>[
+    backupArtifactIdentityChain,
+    backupServerIdentityChain,
+  ];
+
+  static bool isBackupIdentityChain(List<String> steps) =>
+      backupIdentityChains.any(
+        (chain) =>
+            chain.length == steps.length &&
+            [
+              for (var i = 0; i < chain.length; i++) chain[i] == steps[i],
+            ].every((same) => same),
+      );
+
+  static const all = <Bip85Reservation>[
+    btcpayWalletSeed,
+    lightningAddressWalletSeed,
+    paymentPageWalletSeed,
+    pointOfSaleWalletSeed,
+    nostrBullnymServerAuthKey,
+    nostrNip05PublicNymVerificationKey,
+    backupWords,
+  ];
+
+  /// Every BIP39-application index the app claims, the backup words included:
+  /// a user wallet at the words' index would make the words a spending key.
+  static final reservedWalletSeedIndices = Set<int>.unmodifiable({
+    ...all.where((item) => item.isWalletSeed).map((item) => item.walletIndex),
+    backupWords.index,
+  });
+
+  /// Retired, never reassigned. `128002'/100'/1'` derived the wallet backup
+  /// Nostr identity, and `1642'/0'/1'` the raw metadata encryption key and
+  /// later a Bull-specific twelve-word encoding, before the credential became
+  /// the standard BIP85 mnemonic at [backupWords] (2026-09-15). Both stay
+  /// claimed so nothing derives from them again.
+  static const retiredWalletBackupNostrKeyPath = "128002'/100'/1'";
+  static const retiredWalletBackupEncryptionKeyPath = "1642'/0'/1'";
+
+  static final reservedPaths = Set<String>.unmodifiable({
+    ...all.map((item) => item.path),
+    retiredWalletBackupNostrKeyPath,
+    retiredWalletBackupEncryptionKeyPath,
+  });
+  static final reservedPathPrefixes = Set<String>.unmodifiable({
+    RecoverbullBip85Utils.vaultKeyPathPrefix,
+  });
+
+  static bool isNostrAppReservedIdentity(int identity) =>
+      identity >= nostrAppReservedIdentityStart &&
+      identity <= nostrAppReservedIdentityEnd;
+
+  static String nostrUserKeyPath(int identity) {
+    if (identity < nostrUserIdentityStart ||
+        identity > nostrUserIdentityEnd ||
+        isNostrAppReservedIdentity(identity)) {
+      throw ArgumentError.value(identity, 'identity');
+    }
+    return "$nostrApplicationNumber'/$identity'/$nostrUserAccount'";
+  }
+
+  static int? nostrUserKeyIdentity(String path) {
+    final candidate = path.trim();
+    final parts = candidate.split('/');
+    if (parts.length != 3 ||
+        parts.first != "$nostrApplicationNumber'" ||
+        parts.last != "$nostrUserAccount'") {
+      return null;
+    }
+    final middle = parts[1];
+    final identity = middle.endsWith("'")
+        ? int.tryParse(middle.substring(0, middle.length - 1))
+        : null;
+    if (identity == null ||
+        identity < nostrUserIdentityStart ||
+        identity > nostrUserIdentityEnd ||
+        isNostrAppReservedIdentity(identity)) {
+      return null;
+    }
+    return nostrUserKeyPath(identity) == candidate ? identity : null;
+  }
+
+  static bool isNostrUserKeyPath(String path) =>
+      nostrUserKeyIdentity(path) != null;
+
+  static Bip85Reservation? reservationById(String id) =>
+      all.where((item) => item.id == id).firstOrNull;
+
+  static Bip85Reservation? reservationByExactPath(String path) =>
+      all.where((item) => item.path == path.trim()).firstOrNull;
+}

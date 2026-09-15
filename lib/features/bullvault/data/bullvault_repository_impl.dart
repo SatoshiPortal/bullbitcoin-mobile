@@ -1,12 +1,19 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_record_mapper.dart';
+import 'package:bb_mobile/features/bullvault/data/bip138_codec.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_recovery_package_codec.dart';
+import 'package:bb_mobile/features/bullvault/data/descriptor_backup_parser.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_descriptor_backup.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_policy.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
+import 'package:bb_mobile/features/bullvault/domain/entities/descriptor_backup_key.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 
@@ -14,12 +21,45 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   final BullVaultMetadataDatasource _datasource;
   final BullVaultRecordMapper _recordMapper;
   final BullVaultRecoveryPackageCodec _recoveryPackageCodec;
+  final Bip138Codec _descriptorBackupCodec;
 
   BullVaultRepositoryImpl(
     this._datasource,
     this._recordMapper,
     this._recoveryPackageCodec,
+    this._descriptorBackupCodec,
   );
+
+  @override
+  Stream<void> watchBackupChanges() => _datasource.watchBackupChanges();
+
+  @override
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile() async {
+    const maximumBytes = 128 * 1024;
+    try {
+      final selected = await FilePicker.platform.pickFiles(
+        withReadStream: true,
+      );
+      if (selected == null) return const Ok(null);
+      if (selected.files.length != 1) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final file = selected.files.single;
+      if (file.size > maximumBytes || file.readStream == null) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final bytes = BytesBuilder(copy: false);
+      await for (final chunk in file.readStream!) {
+        if (bytes.length + chunk.length > maximumBytes) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        bytes.add(chunk);
+      }
+      return Ok(utf8.decode(bytes.takeBytes()));
+    } on Exception {
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+  }
 
   @override
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
@@ -30,6 +70,108 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     } on FormatException catch (error, stackTrace) {
       log.warning(
         'Invalid BullVault recovery package',
+        error: error.runtimeType,
+        trace: stackTrace,
+      );
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+  }
+
+  @override
+  Result<BullVaultDescriptorBackup, BullVaultFailure>
+  encodePrivateDescriptorBackup({
+    required String descriptor,
+    required Network network,
+  }) {
+    final List<DescriptorBackupKey> accounts;
+    final String canonical;
+    try {
+      final parsed = DescriptorBackupParser.parseDescriptor(descriptor);
+      canonical = parsed.descriptor;
+      accounts = DescriptorBackupParser.eligibleAccountKeys(parsed);
+    } on FormatException catch (error, stackTrace) {
+      log.warning(
+        'Invalid BullVault descriptor for a private backup',
+        error: error.runtimeType,
+        trace: stackTrace,
+      );
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+    if (accounts.isEmpty ||
+        accounts.any((account) => account.isTestnet != network.isTestnet)) {
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+    if (accounts.length > BullVaultDescriptorBackup.maxRecipients) {
+      return const Err(BullVaultDescriptorBackupUnsupportedFailure());
+    }
+    try {
+      return Ok(
+        BullVaultDescriptorBackup(
+          descriptor: canonical,
+          network: network,
+          bytes: _descriptorBackupCodec.encode(
+            canonical,
+            accounts.map((account) => account.xOnly).toList(),
+          ),
+          recipients: accounts.map((account) => account.xpub),
+          lookupTokens: accounts.map((account) => account.lookupToken).toList()
+            ..sort(),
+        ),
+      );
+    } on FormatException catch (error, stackTrace) {
+      log.warning(
+        'Could not encode a BullVault private descriptor backup',
+        error: error.runtimeType,
+        trace: stackTrace,
+      );
+      return const Err(BullVaultDescriptorBackupUnsupportedFailure());
+    }
+  }
+
+  @override
+  String? descriptorLookupToken(String accountKeyInput) {
+    try {
+      return DescriptorBackupParser.inputKey(accountKeyInput).lookupToken;
+    } on FormatException {
+      return null;
+    }
+  }
+
+  @override
+  Result<BullVaultDescriptorBackup, BullVaultFailure>
+  decodePrivateDescriptorBackup({
+    required Uint8List bytes,
+    required String accountKeyInput,
+  }) {
+    try {
+      final account = DescriptorBackupParser.inputKey(accountKeyInput);
+      final contents = _descriptorBackupCodec.decode(bytes, account.xOnly);
+      // Receive and change travel together, so one two-path item is the whole
+      // wallet. Anything else is a shape this importer cannot replay intact.
+      if (contents.length != 1) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final parsed = DescriptorBackupParser.parseDescriptor(contents.single);
+      final accounts = DescriptorBackupParser.eligibleAccountKeys(parsed);
+      // A shared x coordinate or a matching fingerprint is not membership: the
+      // supplied account must be one the descriptor itself names.
+      if (!accounts.any(account.sameAccount)) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      return Ok(
+        BullVaultDescriptorBackup(
+          descriptor: parsed.descriptor,
+          network: account.isTestnet
+              ? Network.bitcoinTestnet
+              : Network.bitcoinMainnet,
+          bytes: bytes,
+          recipients: [account.xpub],
+          lookupTokens: [account.lookupToken],
+        ),
+      );
+    } on FormatException catch (error, stackTrace) {
+      log.warning(
+        'Could not open a BullVault private descriptor backup',
         error: error.runtimeType,
         trace: stackTrace,
       );
@@ -118,6 +260,13 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     final records = await _datasource.loadLineage(model.lineageId);
     return Ok(records.map(_recordMapper.toEntity).toList());
   });
+
+  @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() =>
+      _transaction(() async {
+        final records = await _datasource.loadAll();
+        return Ok(records.map(_recordMapper.toEntity).toList());
+      });
 
   @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(

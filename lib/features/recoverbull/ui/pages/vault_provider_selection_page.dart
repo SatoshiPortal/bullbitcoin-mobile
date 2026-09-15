@@ -114,17 +114,20 @@ class VaultProviderSelectionPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          BlurredBottomSheet.show(
-                            context: context,
-                            child: const HowToDecideVaultLocation(),
-                          );
-                        },
-                        child: BBText(
-                          context.loc.backupWalletHowToDecide,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.primary,
+                      Semantics(
+                        button: true,
+                        child: GestureDetector(
+                          onTap: () {
+                            BlurredBottomSheet.show(
+                              context: context,
+                              child: const HowToDecideVaultLocation(),
+                            );
+                          },
+                          child: BBText(
+                            context.loc.backupWalletHowToDecide,
+                            style: context.font.headlineLarge?.copyWith(
+                              color: context.appColors.primary,
+                            ),
                           ),
                         ),
                       ),

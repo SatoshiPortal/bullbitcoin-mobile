@@ -27,12 +27,15 @@ import 'package:bb_mobile/features/exchange/exchange_locator.dart';
 import 'package:bb_mobile/features/exchange_settings/exchange_settings_locator.dart';
 import 'package:bb_mobile/features/exchange_support_chat/exchange_support_chat_locator.dart';
 import 'package:bb_mobile/features/mempool_settings/mempool_settings_locator.dart';
+import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_locator.dart';
+import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.dart';
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
+import 'package:bb_mobile/features/passphrase_wallet/passphrase_wallet_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_flow_locator.dart';
 import 'package:bb_mobile/features/psbt_signing/psbt_signing_locator.dart';
@@ -53,6 +56,7 @@ import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
+import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -69,6 +73,7 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    bool startWalletBackupTriggers = true,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -145,7 +150,6 @@ class AppLocator {
     SendLocator.setup(locator);
     CoinsLocator.setup(locator);
     ConsolidationLocator.setup(locator);
-    BackupSettingsLocator.setup(locator);
     TestWalletBackupLocator.setup(locator);
     RecoverBullLocator.setup(locator);
     ImportWatchOnlyLocator.setup(locator);
@@ -179,11 +183,19 @@ class AppLocator {
     ImportMnemonicLocator.setup(locator);
     DcaLocator.setup(locator);
     ReplaceByFeeLocator.setup(locator);
+    NostrIdentityLocator.setup(locator);
+    KeychainManifestLocator.setup(locator);
+    PassphraseWalletLocator.setup(locator);
+    WalletBackupLocator.setup(locator);
+    BackupSettingsLocator.setup(locator);
     Bip85EntropyLocator.setup(locator);
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
     BullVaultLocator.setup(locator);
+    if (startWalletBackupTriggers) {
+      WalletBackupLocator.start(locator);
+    }
   }
 }
 

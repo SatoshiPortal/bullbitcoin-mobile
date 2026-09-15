@@ -3,8 +3,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'decrypted_vault.freezed.dart';
 part 'decrypted_vault.g.dart';
 
-@freezed
+@Freezed(toStringOverride: false, equal: false)
 abstract class DecryptedVault with _$DecryptedVault {
+  const DecryptedVault._();
+
+  @override
+  String toString() => 'DecryptedVault(privateMaterial: <redacted>)';
+
   const factory DecryptedVault({
     @Default([]) List<String> mnemonic,
     // TODO(azad): masterFingerprint should be computed from mnemonic

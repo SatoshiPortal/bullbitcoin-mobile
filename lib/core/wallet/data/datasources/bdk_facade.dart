@@ -310,29 +310,52 @@ class BdkFacade {
     }
   }
 
+  static bdk.Descriptor _readPublicDescriptor({
+    required String descriptor,
+    required bdk.NetworkKind networkKind,
+  }) {
+    bdk.Descriptor? parsed;
+    var accepted = false;
+    try {
+      parsed = bdk.Descriptor(
+        descriptor: descriptor.trim(),
+        networkKind: networkKind,
+      );
+      if (parsed.toStringWithSecret() != parsed.toString()) {
+        throw const FormatException('Private descriptors cannot be imported');
+      }
+      parsed.sanityCheck();
+      accepted = true;
+      return parsed;
+    } on bdk.InvalidDescriptorChecksumDescriptorException {
+      // This fixed, fieldless rejection contains no caller input.
+      rethrow;
+    } on bdk.DescriptorException {
+      // Native parse errors can quote arbitrary input, including private keys
+      // in malformed fragments, before the public-key check can run.
+      throw const FormatException('Invalid public descriptor');
+    } finally {
+      if (!accepted) parsed?.dispose();
+    }
+  }
+
   static BdkTwoPathDescriptor parsePublicTwoPathDescriptor({
     required String descriptor,
     required bool isTestnet,
   }) {
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
     final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
-    final supplied = bdk.Descriptor(
-      descriptor: descriptor.trim(),
+    final supplied = _readPublicDescriptor(
+      descriptor: descriptor,
       networkKind: networkKind,
     );
-    try {
-      supplied.sanityCheck();
-    } finally {
-      supplied.dispose();
-    }
+    supplied.dispose();
     final normalized = _normalizeTwoPathDescriptor(descriptor);
-    final parsed = bdk.Descriptor(
+    final parsed = _readPublicDescriptor(
       descriptor: normalized.descriptor,
       networkKind: networkKind,
     );
     try {
-      parsed.sanityCheck();
-
       if (!parsed.isMultipath()) {
         throw const FormatException(
           'Descriptor must define receiving and change paths',
@@ -341,10 +364,6 @@ class BdkFacade {
       if (!parsed.hasWildcard()) {
         throw const FormatException('Descriptor must be ranged');
       }
-      if (parsed.toStringWithSecret() != parsed.toString()) {
-        throw const FormatException('Private descriptors cannot be imported');
-      }
-
       final singleDescriptors = parsed.toSingleDescriptors();
       try {
         if (singleDescriptors.length != 2) {
@@ -800,14 +819,12 @@ class BdkFacade {
     required String descriptor,
     required bdk.NetworkKind networkKind,
   }) {
-    final parsed = bdk.Descriptor(
-      descriptor: descriptor.trim(),
+    final parsed = _readPublicDescriptor(
+      descriptor: descriptor,
       networkKind: networkKind,
     );
     try {
-      parsed.sanityCheck();
-      if (parsed.isMultipath() ||
-          parsed.toStringWithSecret() != parsed.toString()) {
+      if (parsed.isMultipath()) {
         throw const FormatException('Expected one public descriptor path');
       }
       return parsed.toString();

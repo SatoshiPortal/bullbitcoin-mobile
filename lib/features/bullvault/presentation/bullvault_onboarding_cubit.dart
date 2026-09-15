@@ -68,7 +68,10 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
   }
 
-  Future<void> load({String? walletId}) async {
+  /// [practice] preselects the existing practice timeline for a new vault:
+  /// the same schedule the advanced switch sets, in hours rather than years.
+  /// A resumed vault keeps the schedule it was actually created with.
+  Future<void> load({String? walletId, bool practice = false}) async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _loadBullVaultOnboardingUsecase.execute(
       walletId: walletId,
@@ -78,7 +81,15 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
       case Ok(:final value):
         final snapshot = value.snapshot;
         if (snapshot == null) {
-          emit(state.copyWith(network: value.network, isLoading: false));
+          emit(
+            state.copyWith(
+              network: value.network,
+              isLoading: false,
+              schedule: practice
+                  ? state.schedule.copyWith(unit: BullVaultScheduleUnit.hours)
+                  : null,
+            ),
+          );
         } else {
           _restoreCompletionState(value.network, snapshot);
         }
@@ -549,18 +560,46 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
   void markRecoveryPackageExported() =>
       emit(state.copyWith(recoveryPackageExported: true));
 
-  Future<void> confirmRecoveryPackage() async {
+  Future<void> importRecoveryPackage() async {
     final walletId = state.result?.wallet.id;
-    if (walletId == null || !state.recoveryPackageExported) return;
+    if (walletId == null) return;
+    final updated = await _updateBullVaultSetupUsecase.importRecoveryFile(
+      walletId,
+    );
+    if (isClosed) return;
+    switch (updated) {
+      case Ok(value: null):
+        return;
+      case Ok():
+        emit(
+          state.copyWith(
+            recoveryPackageExported: true,
+            recoveryPackageConfirmed: true,
+            clearFailure: true,
+          ),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+    }
+  }
+
+  Future<void> confirmRecoveryPackage(String descriptor) async {
+    final walletId = state.result?.wallet.id;
+    if (walletId == null) return;
     final updated = await _updateBullVaultSetupUsecase.execute(
       walletId: walletId,
       recoveryPackageConfirmed: true,
+      descriptorReadBack: descriptor,
     );
     if (isClosed) return;
     switch (updated) {
       case Ok():
         emit(
-          state.copyWith(recoveryPackageConfirmed: true, clearFailure: true),
+          state.copyWith(
+            recoveryPackageExported: true,
+            recoveryPackageConfirmed: true,
+            clearFailure: true,
+          ),
         );
       case Err(:final failure):
         emit(state.copyWith(failure: failure));

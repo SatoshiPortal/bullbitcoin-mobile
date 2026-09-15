@@ -22,6 +22,10 @@ final class KeyServerInvalidCredentialsFailure extends RecoverBullCoreFailure {
   const KeyServerInvalidCredentialsFailure([super.logMessage]);
 }
 
+final class KeyServerRecordNotFoundFailure extends RecoverBullCoreFailure {
+  const KeyServerRecordNotFoundFailure();
+}
+
 /// Key server rate-limited the request (HTTP 429). [retryIn] is the remaining
 /// cooldown when the server provided it, else null.
 final class KeyServerRateLimitedFailure extends RecoverBullCoreFailure {
@@ -43,6 +47,11 @@ final class KeyServerUnavailableFailure extends RecoverBullCoreFailure {
 /// The selected/fetched file is not a valid encrypted vault.
 final class InvalidVaultFileFailure extends RecoverBullCoreFailure {
   const InvalidVaultFileFailure([super.logMessage]);
+}
+
+/// The picker was dismissed without selecting a file; not a user-facing error.
+final class VaultSelectionCancelledFailure extends RecoverBullCoreFailure {
+  const VaultSelectionCancelledFailure();
 }
 
 /// Catch-all (decrypt failure, Google Drive, file I/O, raw-string throws).

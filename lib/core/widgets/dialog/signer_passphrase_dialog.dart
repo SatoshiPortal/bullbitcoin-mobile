@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -45,12 +46,7 @@ final class _SignerPassphraseDialog extends StatefulWidget {
 final class _SignerPassphraseDialogState extends State<_SignerPassphraseDialog>
     with PrivacyScreen {
   var _passphrase = '';
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
 
   @override
   void dispose() {
@@ -61,24 +57,28 @@ final class _SignerPassphraseDialogState extends State<_SignerPassphraseDialog>
   @override
   Widget build(BuildContext context) => AlertDialog(
     title: Text(widget.title),
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(widget.description),
-        const Gap(16),
-        BullInputText(
-          value: _passphrase,
-          onChanged: (value) => setState(() => _passphrase = value),
-          hint: widget.hint,
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
-        ),
-      ],
+    content: PrivacyGate(
+      protection: _privacyFuture,
+      unprotected: Text(context.loc.screenPrivacyUnavailable),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(widget.description),
+          const Gap(16),
+          BullInputText(
+            value: _passphrase,
+            onChanged: (value) => setState(() => _passphrase = value),
+            hint: widget.hint,
+            obscure: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            smartQuotesType: SmartQuotesType.disabled,
+            smartDashesType: SmartDashesType.disabled,
+            maxLines: 1,
+          ),
+        ],
+      ),
     ),
     actions: [
       TextButton(

@@ -18,11 +18,15 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -32,6 +36,8 @@ class _MockWalletMetadataDatasource extends Mock
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+
+class _MockSeedDatasource extends Mock implements SeedDatasource {}
 
 class _MockElectrumServersPort extends Mock implements ElectrumServersPort {}
 
@@ -89,6 +95,10 @@ void main() {
       bdkWalletDatasource: bdkDatasource,
       lwkWalletDatasource: lwkDatasource,
       serversPort: _MockElectrumServersPort(),
+      signingMaterialResolver: WalletSigningMaterialResolver(
+        seedDatasource: _MockSeedDatasource(),
+        session: WalletUnlockSession(),
+      ),
     );
 
     when(
@@ -534,6 +544,8 @@ void main() {
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
       isDefault: true,
+      birthday: null,
+      provenance: WalletProvenance.defaultSeed,
     );
 
     final stored =
@@ -627,6 +639,8 @@ void main() {
       seed: Seed.bytes(bytes: seedBytes, masterFingerprint: _fingerprint),
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
+      birthday: null,
+      provenance: WalletProvenance.importedMnemonic,
     );
 
     final stored =

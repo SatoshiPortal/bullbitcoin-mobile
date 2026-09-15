@@ -1,25 +1,52 @@
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
 
 final class BullVaultMetadataDatasource {
   final SqliteDatabase _database;
+  final BackupRevisionRecorder _revisions;
 
-  const BullVaultMetadataDatasource(this._database);
+  BullVaultMetadataDatasource(this._database)
+    : _revisions = DriftBackupRevisionRecorder(_database);
+
+  /// Initial snapshot and subsequent committed changes to backed-up facts.
+  /// Drift defers outer notifications until commit, including nested writes.
+  Stream<void> watchBackupChanges() =>
+      (_database.select(_database.bullVaultRecords)
+            ..orderBy([(row) => OrderingTerm.asc(row.walletId)]))
+          .watch()
+          .map((rows) => rows.map(_backupFields).toList())
+          .distinct(
+            (previous, current) =>
+                previous.length == current.length &&
+                previous.indexed.every(
+                  (entry) => entry.$2 == current[entry.$1],
+                ),
+          )
+          .map((_) {});
+
+  Future<List<BullVaultRecordModel>> loadAll() =>
+      _database.select(_database.bullVaultRecords).get();
 
   Future<T> transaction<T>(Future<T> Function() action) =>
       _database.transaction(action);
 
-  Future<void> save(BullVaultRecordModel model) async {
+  Future<void> save(BullVaultRecordModel model) => transaction(() async {
+    final previous = await load(model.walletId);
     await _database
         .into(_database.bullVaultRecords)
         .insertOnConflictUpdate(model);
-  }
+    if (previous == null || _backupFields(previous) != _backupFields(model)) {
+      await _revisions.recordCommittedMutation();
+    }
+  });
 
-  Future<void> delete(String walletId) async {
-    await (_database.delete(
+  Future<void> delete(String walletId) => transaction(() async {
+    final deleted = await (_database.delete(
       _database.bullVaultRecords,
     )..where((row) => row.walletId.equals(walletId))).go();
-  }
+    if (deleted > 0) await _revisions.recordCommittedMutation();
+  });
 
   Future<BullVaultRecordModel?> load(String walletId) => (_database.select(
     _database.bullVaultRecords,
@@ -99,6 +126,18 @@ final class BullVaultMetadataDatasource {
     if (changed != 1) throw const BullVaultWalletNotFoundException();
   }
 }
+
+// Network and predecessor are encoded in the recovery package. Labels are
+// recorded by wallet preferences. Setup flags/reservations and local ownership
+// are not part of the backup; wallet visibility is derived from lifecycle.
+(String, String, int, String, String) _backupFields(BullVaultRecordModel row) =>
+    (
+      row.walletId,
+      row.lineageId,
+      row.vaultGeneration,
+      row.status,
+      row.recoveryPackage,
+    );
 
 final class BullVaultWalletNotFoundException implements Exception {
   const BullVaultWalletNotFoundException();

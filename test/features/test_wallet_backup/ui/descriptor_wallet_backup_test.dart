@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -28,6 +30,86 @@ class _MockCompleteBackup extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
 
 void main() {
+  setUp(() => Device.screen = const Size(800, 600));
+  for (final verifying in [false, true]) {
+    testWidgets(
+      '${verifying ? 'verification' : 'display'} does not retain another wallet mnemonic',
+      (tester) async {
+        const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          channel,
+          (_) async => true,
+        );
+        addTearDown(
+          () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            channel,
+            null,
+          ),
+        );
+        final previousScreen = Device.screen;
+        Device.screen = const Size(800, 600);
+        addTearDown(() => Device.screen = previousScreen);
+        final first = _localWallet('11111111');
+        final second = _localWallet('22222222');
+        final firstWords = Completer<(List<String>, String?)>();
+        final secondWords = Completer<(List<String>, String?)>();
+        final load = _MockLoadWallets();
+        final mnemonic = _MockGetMnemonic();
+        when(load.execute).thenAnswer((_) async => [first, second]);
+        when(
+          () => mnemonic.execute('11111111'),
+        ).thenAnswer((_) => firstWords.future);
+        when(
+          () => mnemonic.execute('22222222'),
+        ).thenAnswer((_) => secondWords.future);
+        final bloc = TestWalletBackupBloc(
+          loadWalletsForNetworkUsecase: load,
+          getMnemonicFromFingerprintUsecase: mnemonic,
+          verifyPhysicalBackupUsecase: _MockVerifyBackup(),
+          completePhysicalBackupVerificationUsecase: _MockCompleteBackup(),
+        );
+        addTearDown(bloc.close);
+        await tester.pumpWidget(
+          BlocProvider.value(
+            value: bloc,
+            child: MaterialApp(
+              theme: AppTheme.themeData(AppThemeType.light),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: verifying
+                  ? VerifyMnemonicScreen(onVerified: () {})
+                  : const ShowMnemonicScreen(),
+            ),
+          ),
+        );
+        bloc.add(const LoadWallets(fingerprint: '11111111'));
+        await tester.pump();
+        await tester.pump();
+        if (!verifying) {
+          firstWords.complete((const ['abandon', 'ability', 'able'], null));
+          await tester.pumpAndSettle();
+          expect(find.text('abandon'), findsOneWidget);
+        }
+
+        bloc.add(WalletSelected(wallet: second));
+        await tester.pump();
+        await tester.pump();
+        expect(find.text('abandon'), findsNothing);
+        secondWords.complete((const ['legal', 'winner', 'thank'], null));
+        await tester.pumpAndSettle();
+        expect(find.text('legal'), findsOneWidget);
+        if (verifying) {
+          firstWords.complete((const ['abandon', 'ability', 'able'], null));
+          await tester.pumpAndSettle();
+          expect(find.text('legal'), findsOneWidget);
+          expect(find.text('abandon'), findsNothing);
+        }
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
+
   testWidgets('displays and verifies the local seed of a descriptor wallet', (
     tester,
   ) async {
@@ -140,3 +222,20 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 }
+
+Wallet _localWallet(String fingerprint) => Wallet(
+  origin: fingerprint,
+  network: Network.bitcoinMainnet,
+  publicDescriptor: 'public-descriptor',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: fingerprint,
+      xpubFingerprint: '',
+      xpub: 'public-key',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ).copyWith(localSeedFingerprint: fingerprint),
+  ],
+  scriptType: null,
+  balanceSat: BigInt.zero,
+);

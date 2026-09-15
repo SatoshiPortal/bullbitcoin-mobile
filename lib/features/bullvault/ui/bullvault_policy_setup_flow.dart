@@ -5,7 +5,10 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_re
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_registration_name_dialog.dart';
 import 'package:bb_mobile/features/ledger/public/ledger_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, Gap;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 abstract final class BullVaultPolicySetupFlow {
@@ -21,6 +24,7 @@ abstract final class BullVaultPolicySetupFlow {
       return await _confirmManualSetup(
             context,
             signerName: signer.displayFingerprint,
+            descriptor: result.policy.descriptor,
           ) ??
           false;
     }
@@ -60,21 +64,65 @@ abstract final class BullVaultPolicySetupFlow {
       extra: WalletRegistrationRequest(wallet: wallet, signerId: signer.id),
     );
     if (!context.mounted) return false;
-    return await _confirmManualSetup(context, signerName: device.displayName) ??
+    return await _confirmManualSetup(
+          context,
+          signerName: device.displayName,
+          descriptor: result.policy.descriptor,
+        ) ??
         false;
   }
 
+  /// The signer has no integration of its own, so the policy is handed over
+  /// by hand: copy the descriptor or scan it, register it on the device, then
+  /// confirm.
   static Future<bool?> _confirmManualSetup(
     BuildContext context, {
     required String signerName,
+    required String descriptor,
   }) => showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
       title: Text(context.loc.bullVaultConfirmAirgappedSetupTitle),
-      content: Text(
-        context.loc.bullVaultConfirmAirgappedSetupDescription(
-          signerName.isEmpty ? context.loc.importWatchOnlyUnknown : signerName,
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            context.loc.bullVaultConfirmAirgappedSetupDescription(
+              signerName.isEmpty
+                  ? context.loc.importWatchOnlyUnknown
+                  : signerName,
+            ),
+          ),
+          const Gap(16),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.copy),
+            label: Text(context.loc.walletBackupVaultsCopyDescriptor),
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: descriptor));
+              if (dialogContext.mounted) {
+                BullSnackBar.show(
+                  dialogContext,
+                  message: context.loc.walletBackupVaultsDescriptorCopied,
+                );
+              }
+            },
+          ),
+          const Gap(8),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.qr_code),
+            label: Text(context.loc.bullVaultShowDescriptorQr),
+            onPressed: () => showDialog<void>(
+              context: dialogContext,
+              builder: (_) => Dialog(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: QrDisplayWidget(data: descriptor),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       actions: [
         TextButton(

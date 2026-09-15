@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
@@ -27,6 +28,11 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/seed_derived_wallet_recovery_fact.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_definition.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_definition_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_backup_metadata_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
@@ -35,6 +41,7 @@ import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:crypto/crypto.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 
 class WalletRepository
     implements
@@ -43,11 +50,13 @@ class WalletRepository
         WalletVisibilityPort,
         WalletSignerDevicePort,
         WalletSignerOwnershipPort,
-        Bip48AccountUsagePort {
+        Bip48AccountUsagePort,
+        WalletDefinitionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServersPort _serversPort;
+  final WalletSigningMaterialResolver _signingMaterial;
 
   final _electrumSyncResultController =
       StreamController<ElectrumSyncResult>.broadcast();
@@ -57,7 +66,9 @@ class WalletRepository
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required this._serversPort,
-  }) : _bdkWallet = bdkWalletDatasource,
+    required WalletSigningMaterialResolver signingMaterialResolver,
+  }) : _signingMaterial = signingMaterialResolver,
+       _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
@@ -76,6 +87,9 @@ class WalletRepository
 
   Stream<ElectrumSyncResult> get electrumSyncResultStream =>
       _electrumSyncResultController.stream;
+
+  @override
+  Stream<void> get catalogChanges => _walletMetadataDatasource.catalogChanges;
 
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
@@ -109,10 +123,15 @@ class WalletRepository
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
+
+    /// Earliest time before which this wallet provably cannot have funds.
+    /// Use null when the creation or import history cannot establish that bound.
+    required DateTime? birthday,
+    required WalletProvenance provenance,
+    bool? seedPassphraseUsed,
     String? label,
     bool isDefault = false,
     bool sync = false,
-    DateTime? birthday,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel =
@@ -132,6 +151,8 @@ class WalletRepository
       scriptType: scriptType,
       label: walletLabel,
       isDefault: isDefault,
+      provenance: provenance,
+      seedPassphraseUsed: seedPassphraseUsed,
       birthday: birthday,
     );
 
@@ -175,6 +196,8 @@ class WalletRepository
           isDefault: existing.isDefault || isDefault,
           label: isDefault ? metadata.label : existing.label,
           birthday: existing.birthday ?? metadata.birthday,
+          provenance: metadata.provenance,
+          seedPassphraseUsed: metadata.seedPassphraseUsed,
         );
       }
     }
@@ -235,6 +258,32 @@ class WalletRepository
     List<WalletSigner> signers = const [],
     bool isHidden = false,
     bool sync = false,
+  }) => _importDescriptor(
+    descriptor: descriptor,
+    network: network,
+    label: label,
+    signers: signers,
+    isHidden: isHidden,
+    sync: sync,
+  );
+
+  /// One import path for interactive imports and backup restores.
+  ///
+  /// An interactive import derives the wallet id from the descriptor's script
+  /// identity. A restore passes the [walletId] the backup recorded instead, so
+  /// wallets that predate the derived scheme (seed-origin ids, passphrase
+  /// wallets) keep the reference every dependent record points at. Duplicate
+  /// detection stays on script identity either way.
+  Future<Wallet> _importDescriptor({
+    required String descriptor,
+    required Network network,
+    required String? label,
+    List<WalletSigner> signers = const [],
+    bool isHidden = false,
+    bool sync = false,
+    String? walletId,
+    WalletProvenance provenance = WalletProvenance.descriptor,
+    DateTime? birthday,
   }) async {
     _requireBitcoinNetwork(network);
     final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
@@ -243,9 +292,7 @@ class WalletRepository
     );
     final parsedKeys = _descriptorKeys(parsed.keys);
     final metadata = WalletMetadataModel(
-      id: sha256
-          .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
-          .toString(),
+      id: walletId ?? _descriptorWalletId(network, parsed.scriptIdentity),
       network: network,
       signers: _applySignerAnnotations(
         parsedKeys,
@@ -257,6 +304,8 @@ class WalletRepository
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       label: label,
+      birthday: birthday,
+      provenance: provenance,
     );
 
     await _ensureUniqueBitcoinDescriptor(
@@ -317,6 +366,7 @@ class WalletRepository
     if (metadata == null) {
       return null;
     }
+    if (!_isVisible(metadata)) return null;
     // Get the balance
     final balance = await _getBalance(metadata, sync: sync);
 
@@ -346,6 +396,7 @@ class WalletRepository
                   wallet.isBitcoin) &&
               (onlyLiquid == null || onlyLiquid == false || wallet.isLiquid),
         )
+        .where(_isVisible)
         .toList();
 
     final balances = await Future.wait(
@@ -356,6 +407,302 @@ class WalletRepository
       for (final (index, metadata) in filteredWallets.indexed)
         _toWallet(metadata, balances[index]),
     ];
+  }
+
+  Future<List<String>> getDefaultBitcoinWalletFingerprints({
+    Environment? environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet),
+        )
+        .map(_localMasterFingerprint)
+        .whereType<String>()
+        .toList(growable: false);
+  }
+
+  Future<void> updateWalletLabel({
+    required String walletId,
+    required String label,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) throw StateError('Wallet metadata not found');
+    await _walletMetadataDatasource.store(metadata.copyWith(label: label));
+  }
+
+  Future<
+    List<({DateTime? latestEncryptedBackup, DateTime? latestPhysicalBackup})>
+  >
+  getDefaultBitcoinWalletBackupStatuses({
+    required Environment environment,
+  }) async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+    return metadatas
+        .where(
+          (wallet) =>
+              wallet.isDefault &&
+              wallet.isBitcoin &&
+              wallet.isMainnet == environment.isMainnet,
+        )
+        .map(
+          (wallet) => (
+            latestEncryptedBackup: wallet.latestEncryptedBackup == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(
+                    wallet.latestEncryptedBackup!,
+                  ),
+            latestPhysicalBackup: wallet.latestPhysicalBackup == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(
+                    wallet.latestPhysicalBackup!,
+                  ),
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  /// The master fingerprint of the wallet's locally held key, read from its
+  /// signer rows now that wallet metadata no longer carries one directly.
+  static String? _localMasterFingerprint(WalletMetadataModel wallet) {
+    for (final signer in wallet.signers) {
+      if (signer.signer != Signer.local) continue;
+      for (final key in signer.descriptorKeys) {
+        if (key.masterFingerprint.isNotEmpty) return key.masterFingerprint;
+      }
+    }
+    return null;
+  }
+
+  Future<bool> containsWallet(String walletId) async =>
+      await _walletMetadataDatasource.fetch(walletId) != null;
+
+  /// Stored identities, including wallets omitted from the visible wallet list.
+  Future<Set<String>> getStoredWalletIds() async => {
+    for (final metadata in await _walletMetadataDatasource.fetchAll())
+      metadata.id,
+  };
+
+  @override
+  Future<List<WalletDefinition>> getWalletDefinitions() async =>
+      (await _walletMetadataDatasource.fetchAll())
+          .where(
+            (metadata) =>
+                metadata.isBitcoin && metadata.provenance.backedUpAsDefinition,
+          )
+          .map(_definitionFromMetadata)
+          .toList(growable: false);
+
+  Future<List<SeedDerivedWalletRecoveryFact>>
+  getSeedDerivedWalletRecoveryFacts() async =>
+      (await _walletMetadataDatasource.fetchAll())
+          .where(
+            (metadata) =>
+                metadata.provenance == WalletProvenance.defaultSeed ||
+                metadata.provenance == WalletProvenance.importedMnemonic,
+          )
+          .map(
+            (metadata) => SeedDerivedWalletRecoveryFact(
+              walletId: metadata.id,
+              seedFingerprint: Fingerprint(metadata.masterFingerprint),
+              network: metadata.network,
+              scriptType:
+                  metadata.inferredScriptType ??
+                  (throw const FormatException(
+                    'Unsupported seed wallet script',
+                  )),
+              provenance: metadata.provenance,
+              derivationPath: _recoveryPath(metadata),
+              seedPassphraseUsed: metadata.seedPassphraseUsed,
+            ),
+          )
+          .toList(growable: false);
+
+  Future<Set<String>> getLocallyKeyedWalletIds() async => {
+    for (final metadata in await _walletMetadataDatasource.fetchAll())
+      if (metadata.provenance.recoverableFromSeed ||
+          metadata.provenance == WalletProvenance.importedMnemonic)
+        metadata.id,
+  };
+
+  @override
+  Future<WalletDefinitionRestoreResult> restoreWalletDefinition(
+    WalletDefinition definition,
+  ) async {
+    if (!definition.network.isBitcoin) {
+      throw const FormatException('Only Bitcoin descriptors are supported');
+    }
+    final expected = _canonicalDefinition(definition);
+    final existing = await _walletMetadataDatasource.fetch(
+      definition.walletRef,
+    );
+    if (existing != null) {
+      final local = _canonicalDefinition(_definitionFromMetadata(existing));
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status:
+            local.hasSameDescriptor(expected) &&
+                local.provenance == expected.provenance
+            ? WalletDefinitionRestoreStatus.alreadyPresent
+            : WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+    if (expected.provenance.recoverableFromSeed) {
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status: WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+
+    // A definition normally carries its full signer roster, whose key ids
+    // follow descriptor order and re-attach to the freshly parsed keys. A
+    // definition without one (a passphrase wallet mount) gets one signer per
+    // key derived from its provenance.
+    final ({
+      String descriptor,
+      ScriptType? scriptType,
+      List<WalletDescriptorKey> descriptorKeys,
+      bool inferredChangePath,
+    })
+    parsed;
+    try {
+      parsed = parseBitcoinDescriptor(
+        descriptor: expected.descriptor,
+        network: definition.network,
+      );
+    } on Exception {
+      throw const FormatException('Wallet descriptor is not importable');
+    }
+    final List<WalletSigner> annotations;
+    if (definition.signers.isNotEmpty) {
+      annotations = definition.signers;
+    } else {
+      final signer =
+          definition.provenance == WalletProvenance.defaultSeedPassphrase
+          ? SignerEntity.local
+          : SignerEntity.none;
+      final keysBySigner = <String, List<WalletDescriptorKey>>{};
+      for (final key in parsed.descriptorKeys) {
+        keysBySigner.putIfAbsent(key.signerId, () => []).add(key);
+      }
+      annotations = [
+        for (final entry in keysBySigner.entries)
+          WalletSigner(
+            id: entry.key,
+            signer: signer,
+            signerDevice: null,
+            descriptorKeys: entry.value,
+          ),
+      ];
+    }
+
+    // Labels are wallet preferences and are restored by the metadata section;
+    // the definition itself carries the recorded reference, birthday and
+    // provenance, and is written once.
+    final Wallet imported;
+    try {
+      imported = await _importDescriptor(
+        descriptor: parsed.descriptor,
+        network: definition.network,
+        label: null,
+        signers: annotations,
+        walletId: definition.walletRef,
+        provenance: definition.provenance,
+        birthday: definition.birthday,
+      );
+    } on WalletAlreadyExistsException {
+      // The same script identity already exists under another wallet ref.
+      return WalletDefinitionRestoreResult(
+        walletRef: definition.walletRef,
+        status: WalletDefinitionRestoreStatus.conflict,
+      );
+    }
+    final stored = await _walletMetadataDatasource.fetch(imported.id);
+    if (stored == null) {
+      throw const FormatException('Wallet definition import did not persist');
+    }
+    final restored = _canonicalDefinition(_definitionFromMetadata(stored));
+    if (!restored.hasSameDescriptor(expected)) {
+      await _walletMetadataDatasource.delete(stored.id);
+      throw const FormatException('Wallet definition round trip changed');
+    }
+    return WalletDefinitionRestoreResult(
+      walletRef: stored.id,
+      status: WalletDefinitionRestoreStatus.created,
+    );
+  }
+
+  /// Canonicalizes a definition's descriptor through the same parser the
+  /// import path uses, so a stored descriptor and a backed-up one are compared
+  /// in one notation instead of two.
+  WalletDefinition _canonicalDefinition(WalletDefinition definition) =>
+      WalletDefinition(
+        walletRef: definition.walletRef,
+        network: definition.network,
+        descriptor: parseBitcoinDescriptor(
+          descriptor: definition.descriptor,
+          network: definition.network,
+        ).descriptor,
+        signers: definition.signers,
+        birthday: definition.birthday,
+        provenance: definition.provenance,
+      );
+
+  Future<String?> resolveSeedDerivedRecoveryWalletId({
+    required String walletId,
+    required String seedFingerprint,
+    required Network network,
+    required ScriptType scriptType,
+    required WalletProvenance provenance,
+    required String derivationPath,
+    required bool? seedPassphraseUsed,
+  }) async {
+    bool matches(WalletMetadataModel metadata) =>
+        metadata.signers.length == 1 &&
+        metadata.signers.single.descriptorKeys.length == 1 &&
+        metadata.masterFingerprint.toLowerCase() ==
+            seedFingerprint.toLowerCase() &&
+        metadata.network == network &&
+        metadata.inferredScriptType == scriptType &&
+        metadata.provenance == provenance &&
+        metadata.seedPassphraseUsed == seedPassphraseUsed &&
+        metadata.isDefault == (provenance == WalletProvenance.defaultSeed) &&
+        _recoveryPath(metadata) == derivationPath;
+
+    final exact = await _walletMetadataDatasource.fetch(walletId);
+    if (exact != null) return matches(exact) ? exact.id : null;
+    if (!network.isBitcoin || provenance != WalletProvenance.defaultSeed) {
+      return null;
+    }
+
+    // Importing a descriptor before its seed keeps the descriptor-derived ID.
+    // A fresh seed restore uses an origin ID instead. Reconcile these two
+    // known identities, not arbitrary wallets sharing a 32-bit fingerprint.
+    String? resolved;
+    for (final candidate in await _walletMetadataDatasource.fetchAll()) {
+      if (!matches(candidate)) continue;
+      final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
+        descriptor: candidate.publicDescriptor,
+        isTestnet: network.isTestnet,
+      );
+      final descriptorId = _descriptorWalletId(network, parsed.scriptIdentity);
+      final originId = WalletMetadataService.encodeOrigin(
+        fingerprint: seedFingerprint,
+        network: network,
+        scriptType: scriptType,
+      );
+      if (walletId != descriptorId &&
+          !(walletId == originId && candidate.id == descriptorId)) {
+        continue;
+      }
+      if (resolved != null) return null;
+      resolved = candidate.id;
+    }
+    return resolved;
   }
 
   Future<void> updateEncryptedBackupTime({
@@ -553,6 +900,9 @@ class WalletRepository
     if (metadata == null) {
       throw WalletError.notFound(walletId);
     }
+    if (!_isVisible(metadata)) {
+      throw PassphraseWalletLockedException(walletId);
+    }
     final balance = await _getBalance(metadata);
     return WalletBalances(
       immatureSat: balance.immatureSat.toInt(),
@@ -683,6 +1033,7 @@ class WalletRepository
     signers: metadata.signers.map((signer) => signer.toEntity()).toList(),
     scriptType: metadata.inferredScriptType,
     publicDescriptor: metadata.publicDescriptor,
+    provenance: metadata.provenance,
     balanceSat: balance.totalSat,
     confirmedBalanceSat: balance.confirmedSat,
     isEncryptedVaultTested: metadata.isEncryptedVaultTested,
@@ -729,6 +1080,14 @@ class WalletRepository
       rethrow;
     }
   }
+
+  /// A passphrase wallet's public projection stays in storage while it is
+  /// locked, but is not part of the catalog anyone can spend from.
+  bool _isVisible(WalletMetadataModel metadata) =>
+      _signingMaterial.hasPrivateCapability(
+        provenance: metadata.provenance,
+        walletId: metadata.id,
+      );
 
   Future<bool> isTorRequired() async {
     final defaultWallets = await getWallets(
@@ -830,4 +1189,25 @@ class WalletRepository
         ),
     ];
   }
+}
+
+String _descriptorWalletId(Network network, String scriptIdentity) =>
+    sha256.convert(utf8.encode('${network.name}:$scriptIdentity')).toString();
+
+WalletDefinition _definitionFromMetadata(WalletMetadataModel metadata) =>
+    WalletDefinition(
+      walletRef: metadata.id,
+      network: metadata.network,
+      descriptor: metadata.publicDescriptor,
+      signers: [for (final signer in metadata.signers) signer.toEntity()],
+      birthday: metadata.birthday,
+      provenance: metadata.provenance,
+    );
+
+String _recoveryPath(WalletMetadataModel metadata) {
+  // A descriptor wallet keeps its hashed ID when upgraded with a seed.
+  // Its verified signer row, not that ID, owns the account derivation path.
+  final path = metadata.signers.single.descriptorKeys.single.derivationPath;
+  if (path == null) throw const FormatException('Missing seed wallet origin');
+  return path.replaceAll('h', "'").replaceAll('H', "'");
 }

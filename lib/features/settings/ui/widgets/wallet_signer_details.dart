@@ -1,13 +1,14 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/widgets/dropdown/signer_device_dropdown.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_detail_fields.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
 import 'package:flutter/material.dart';
 
 class WalletSignerDetails extends StatelessWidget {
@@ -15,32 +16,63 @@ class WalletSignerDetails extends StatelessWidget {
   final bool isUpdatingSignerDevice;
   final void Function(WalletSigner signer, SignerDeviceEntity? signerDevice)?
   onSignerDeviceChanged;
+  final Widget Function(BuildContext context, WalletSigner signer)?
+  signerSummaryBuilder;
+  final bool inspection;
 
   const WalletSignerDetails({
     super.key,
     required this.signers,
     this.isUpdatingSignerDevice = false,
     this.onSignerDeviceChanged,
-  });
+  }) : inspection = false,
+       signerSummaryBuilder = null;
+
+  /// Key inspection with public exports and optional device metadata editing.
+  /// The caller supplies any verified availability label;
+  /// saved signer metadata is not evidence that a private key is usable.
+  const WalletSignerDetails.inspection({
+    super.key,
+    required this.signers,
+    required this.signerSummaryBuilder,
+    this.isUpdatingSignerDevice = false,
+    this.onSignerDeviceChanged,
+  }) : inspection = true;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        BBText(
-          context.loc.walletDetailsSignersLabel,
-          style: context.font.titleLarge,
-        ),
-        const Gap(18),
-        for (final (index, signer) in signers.indexed) ...[
-          _SignerDetails(
-            index: index,
-            signer: signer,
-            isUpdatingSignerDevice: isUpdatingSignerDevice,
-            onSignerDeviceChanged: onSignerDeviceChanged,
+        if (!inspection) ...[
+          BBText(
+            context.loc.walletDetailsSignersLabel,
+            style: context.font.titleLarge,
           ),
-          if (index != signers.length - 1) const Gap(28),
+          const Gap(18),
+        ],
+        for (final (index, signer) in signers.indexed) ...[
+          if (inspection)
+            BullBorderedTile(
+              backgroundColor: context.appColors.surface,
+              padding: const EdgeInsets.all(16),
+              child: _SignerDetails(
+                index: index,
+                signer: signer,
+                isUpdatingSignerDevice: isUpdatingSignerDevice,
+                onSignerDeviceChanged: onSignerDeviceChanged,
+                inspection: true,
+                summary: signerSummaryBuilder?.call(context, signer),
+              ),
+            )
+          else
+            _SignerDetails(
+              index: index,
+              signer: signer,
+              isUpdatingSignerDevice: isUpdatingSignerDevice,
+              onSignerDeviceChanged: onSignerDeviceChanged,
+            ),
+          if (index != signers.length - 1) Gap(inspection ? 24 : 28),
         ],
       ],
     );
@@ -53,12 +85,16 @@ class _SignerDetails extends StatelessWidget {
   final bool isUpdatingSignerDevice;
   final void Function(WalletSigner signer, SignerDeviceEntity? signerDevice)?
   onSignerDeviceChanged;
+  final bool inspection;
+  final Widget? summary;
 
   const _SignerDetails({
     required this.index,
     required this.signer,
     required this.isUpdatingSignerDevice,
     required this.onSignerDeviceChanged,
+    this.inspection = false,
+    this.summary,
   });
 
   @override
@@ -71,13 +107,23 @@ class _SignerDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: .stretch,
       children: [
-        BBText(
-          label,
-          style: context.font.titleMedium?.copyWith(fontWeight: .w600),
-        ),
+        if (summary case final summary?)
+          summary
+        else
+          BBText(
+            label,
+            style: context.font.titleMedium?.copyWith(fontWeight: .w600),
+          ),
         const Gap(12),
-        if (signer.signer == SignerEntity.local ||
-            onSignerDeviceChanged == null)
+        if (inspection && signer.signer == SignerEntity.local) ...[
+          if (signer.signerDevice case final device?)
+            WalletDetailInfoField(
+              label: context.loc.walletDetailsSignerDeviceLabel,
+              value: device.displayName,
+            ),
+        ] else if (!inspection &&
+            (signer.signer == SignerEntity.local ||
+                onSignerDeviceChanged == null))
           WalletDetailInfoField(
             label: context.loc.walletDetailsSignerLabel,
             value: _signerDescription(context, signer),
@@ -89,9 +135,10 @@ class _SignerDetails extends StatelessWidget {
           ),
           const Gap(8),
           SignerDeviceDropdown(
+            key: ValueKey('signer-device-${signer.id}'),
             value: signer.signerDevice,
             unknownLabel: context.loc.importWatchOnlyUnknown,
-            onChanged: isUpdatingSignerDevice
+            onChanged: isUpdatingSignerDevice || onSignerDeviceChanged == null
                 ? null
                 : (device) => onSignerDeviceChanged!(signer, device),
           ),
@@ -114,14 +161,33 @@ class _SignerDetails extends StatelessWidget {
           if (key.xpub.isNotEmpty) ...[
             const Gap(18),
             WalletDetailCopyField(
+              key: ValueKey('account-key-${key.id}'),
               label: context.loc.importWatchOnlyExtendedPublicKey,
               value: key.xpub,
+              clipboardText: inspection ? _accountKeyExpression(key) : null,
+              showQr: inspection,
             ),
           ],
         ],
       ],
     );
   }
+}
+
+String _accountKeyExpression(WalletDescriptorKey key) {
+  // Only include recorded origin information. An xpub fingerprint is not the
+  // master fingerprint, and a missing path must never be guessed.
+  if (key.masterFingerprint.isEmpty) return key.xpub;
+  final path = key.derivationPath;
+  if (path == null || path.isEmpty) return key.xpub;
+  if (path == 'm') {
+    return '[${key.masterFingerprint.toLowerCase()}]${key.xpub}';
+  }
+  return Bip48Derivation.accountKeyExpression(
+    masterFingerprint: key.masterFingerprint,
+    derivationPath: path,
+    xpub: key.xpub,
+  );
 }
 
 List<WalletDescriptorKey> _distinctAccountKeys(

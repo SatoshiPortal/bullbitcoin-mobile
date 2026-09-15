@@ -81,6 +81,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  barcode:
+    dependency: transitive
+    description:
+      name: barcode
+      sha256: "7b6729c37e3b7f34233e2318d866e8c48ddb46c1f7ad01ff7bb2a8de1da2b9f4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.9"
   base85:
     dependency: transitive
     description:
@@ -123,13 +131,21 @@ packages:
     source: git
     version: "1.0.0-rc.3"
   bech32:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bech32
       sha256: "156cbace936f7720c79a79d16a03efad343b1ef17106716e04b8b8e39f99f7f7"
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+  bidi:
+    dependency: transitive
+    description:
+      name: bidi
+      sha256: "77f475165e94b261745cf1032c751e2032b8ed92ccb2bf5716036db79320637d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.13"
   bip21_uri:
     dependency: "direct main"
     description:
@@ -154,6 +170,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.4"
+  bip340:
+    dependency: "direct overridden"
+    description:
+      name: bip340
+      sha256: b7bcd70a860e605046006adaa72bc4f7453f4d31d7ba74a4ad9d5de387a0fc0b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   bip39_mnemonic:
     dependency: "direct main"
     description:
@@ -654,6 +678,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
+  elliptic:
+    dependency: transitive
+    description:
+      name: elliptic
+      sha256: "67931d408faa353bdebac9f7a1df0c3f6f828f4e8439cdf084573cd1601a2f4b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.12"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:
@@ -1453,6 +1485,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  nostr:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: c01551b18a7e5d234eb30c6e24e945021382ca4f
+      resolved-ref: c01551b18a7e5d234eb30c6e24e945021382ca4f
+      url: "https://github.com/ethicnology/dart-nostr"
+    source: git
+    version: "2.0.1"
   objective_c:
     dependency: transitive
     description:
@@ -1567,6 +1608,14 @@ packages:
       url: "https://github.com/SatoshiPortal/payjoin-rust"
     source: git
     version: "0.2.1+payjoin-1.0.0-rc.8"
+  pdf:
+    dependency: "direct main"
+    description:
+      name: pdf
+      sha256: "517df47af468734a23c8b513c0c6a8a62357403ab1b8ab7fad1606576a9dbdd0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.13.0"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1640,7 +1689,7 @@ packages:
     source: hosted
     version: "2.1.8"
   pointycastle:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: pointycastle
       sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
@@ -12,14 +13,20 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/data_backup_setup_banner.dart';
 
 typedef WalletHomeFeatureWarningsBuilder =
     Widget Function(BuildContext context, List<Wallet> wallets);
 
 class WalletHomeScreen extends StatefulWidget {
   final WalletHomeFeatureWarningsBuilder? featureWarningsBuilder;
+  final List<WalletPreferences> Function()? takeDefaultCreatedWalletPreferences;
 
-  const WalletHomeScreen({super.key, this.featureWarningsBuilder});
+  const WalletHomeScreen({
+    super.key,
+    this.featureWarningsBuilder,
+    this.takeDefaultCreatedWalletPreferences,
+  });
 
   @override
   State<WalletHomeScreen> createState() => _WalletHomeScreenState();
@@ -137,6 +144,12 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const PinnedHeaderSliver(child: WalletHomeTopSection()),
                 const SliverToBoxAdapter(child: AnnouncementCarousel()),
                 const SliverToBoxAdapter(child: HomeWarnings()),
+                SliverToBoxAdapter(
+                  child: DataBackupSetupBanner(
+                    takeDefaultCreatedWalletPreferences:
+                        widget.takeDefaultCreatedWalletPreferences,
+                  ),
+                ),
                 if (widget.featureWarningsBuilder case final builder?)
                   SliverToBoxAdapter(child: builder(context, wallets)),
                 const SliverToBoxAdapter(child: HomeConsolidationBanner()),

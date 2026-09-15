@@ -10,17 +10,20 @@ class WalletSettingsScreen extends StatelessWidget {
     final items = settingsItemsOf(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsWalletSettingsTitle)),
+      appBar: AppBar(title: Text(context.loc.settingsWalletAndBitcoinTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                for (final id in walletSettingsItemOrder)
-                  items.byId(id).buildTile(context),
-                for (final item in items.inSection(SettingsItemSection.wallet))
-                  if (!walletSettingsItemOrder.contains(item.id))
+                for (final item in items.ordered(
+                  SettingsItemSection.wallet,
+                  walletSettingsItemOrder,
+                ))
+                  // Exporting the BULL signing key is reached from the
+                  // BULLVAULT hub, not from this list.
+                  if (item.id != SettingsItemId.signingKeyExport)
                     item.buildTile(context),
               ],
             ),

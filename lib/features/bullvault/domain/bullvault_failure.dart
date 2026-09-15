@@ -43,3 +43,47 @@ final class BullVaultRenewalHasFundsFailure extends BullVaultFailure {
 final class BullVaultInvalidRecoveryFailure extends BullVaultFailure {
   const BullVaultInvalidRecoveryFailure([super.logMessage]);
 }
+
+/// The vault's descriptor names more account keys than BIP138 can address, so
+/// no private backup can cover every cosigner.
+///
+/// Encrypting for a convenient subset instead would let the app claim a backup
+/// route for a signer that has none.
+final class BullVaultDescriptorBackupUnsupportedFailure
+    extends BullVaultFailure {
+  const BullVaultDescriptorBackupUnsupportedFailure([super.logMessage]);
+}
+
+/// This device cannot derive the backup credential: no default seed, or a
+/// keystore that would not open.
+///
+/// Nothing is wrong with the vault or its backups; the words themselves still
+/// reach every destination from another device.
+final class BullVaultBackupCredentialFailure extends BullVaultFailure {
+  const BullVaultBackupCredentialFailure([super.logMessage]);
+}
+
+/// This vault's descriptor is already published under another wallet's backup
+/// credential, which this device does not hold.
+///
+/// Sealing a replacement under this device's credential would move the vault
+/// into a second recovery namespace, where a kit holding the original words
+/// can never find it.
+final class BullVaultForeignBackupCredentialFailure extends BullVaultFailure {
+  const BullVaultForeignBackupCredentialFailure([super.logMessage]);
+}
+
+/// The submitted backup words are not the frozen twelve-word form.
+///
+/// It carries nothing about what was typed: the words are the credential.
+final class BullVaultBackupWordsFailure extends BullVaultFailure {
+  const BullVaultBackupWordsFailure([super.logMessage]);
+}
+
+/// No configured relay accepted the descriptor event.
+///
+/// Distinct from a refusal by one relay, which the per-relay outcomes carry:
+/// this is the case where the vault gained no public backup route at all.
+final class BullVaultNostrUnreachableFailure extends BullVaultFailure {
+  const BullVaultNostrUnreachableFailure([super.logMessage]);
+}

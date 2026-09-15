@@ -21,6 +21,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -466,7 +468,10 @@ void main() {
       when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async => []);
       final repository = BitcoinWalletRepository(
         walletMetadataDatasource: metadataDatasource,
-        seedDatasource: seedDatasource,
+        signingMaterialResolver: WalletSigningMaterialResolver(
+          seedDatasource: seedDatasource,
+          session: WalletUnlockSession(),
+        ),
         bdkWalletDatasource: datasource,
         frozenWalletUtxoDatasource: frozenDatasource,
       );

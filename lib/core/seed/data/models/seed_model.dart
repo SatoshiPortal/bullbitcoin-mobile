@@ -8,9 +8,18 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'seed_model.freezed.dart';
 part 'seed_model.g.dart';
 
-@freezed
+/// Secret fields are serialized only for storage, not inspected by generated
+/// diagnostics, equality or hashing. See [Seed].
+@Freezed(toStringOverride: false, equal: false)
 sealed class SeedModel with _$SeedModel {
   const SeedModel._();
+
+  @override
+  String toString() => switch (this) {
+    BytesSeedModel() => 'SeedModel.bytes(bytes: <redacted>)',
+    MnemonicSeedModel() =>
+      'SeedModel.mnemonic(mnemonicWords: <redacted>, passphrase: <redacted>)',
+  };
 
   const factory SeedModel.bytes({required List<int> bytes}) = BytesSeedModel;
 

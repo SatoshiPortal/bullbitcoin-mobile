@@ -91,7 +91,7 @@ class SeedDatasource {
             milliseconds: initialDelay.inMilliseconds * (1 << attempt),
           );
           log.fine(
-            'Exception reading seed for fingerprint $fingerprint on attempt ${attempt + 1}: $e, retrying in ${delay.inMilliseconds}ms',
+            'Exception reading seed for fingerprint $fingerprint on attempt ${attempt + 1}: ${e.runtimeType}, retrying in ${delay.inMilliseconds}ms',
           );
           await Future.delayed(delay);
           continue;
@@ -99,7 +99,7 @@ class SeedDatasource {
 
         log.severe(
           message: 'Failed to read seed after $maxRetries attempts',
-          error: e,
+          error: e.runtimeType,
           trace: StackTrace.current,
         );
         throw SeedNotFoundException(

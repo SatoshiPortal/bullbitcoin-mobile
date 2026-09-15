@@ -10,10 +10,11 @@ enum RecoverBullFlow {
 
 enum KeyServerStatus { unknown, connecting, online, offline }
 
-@freezed
+@Freezed(toStringOverride: false, equal: false)
 sealed class RecoverBullState with _$RecoverBullState {
   const factory RecoverBullState({
     required RecoverBullFlow flow,
+    @Default(false) bool deriveKeyLocally,
     @Default(false) bool returnToCaller,
     @Default(null) String? seedFingerprint,
     @Default(null) VaultProvider? vaultProvider,
@@ -41,7 +42,13 @@ sealed class RecoverBullState with _$RecoverBullState {
     /// Tor is stuck; deriving those from a coarse status enum is impossible
     /// because it collapses all three into four values.
     @Default(tor.TorUninitialized()) tor.TorConnectionState torConnection,
+    @Default(false) bool dataBackupRecoveryIncomplete,
   }) = _RecoverBullState;
 
   const RecoverBullState._();
+
+  @override
+  String toString() =>
+      'RecoverBullState(flow: ${flow.name}, isLoading: $isLoading, '
+      'isFlowFinished: $isFlowFinished, privateMaterial: <redacted>)';
 }

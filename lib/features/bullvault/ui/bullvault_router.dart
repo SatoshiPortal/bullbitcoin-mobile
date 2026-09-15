@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:flutter/widgets.dart';
+
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
@@ -10,19 +14,83 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_settings_screen.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_cosigner_screen.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
 
 abstract final class BullVaultRouter {
   static const scannerRouteName = 'bullVaultScanner';
 
-  static final routes = [route, scannerRoute, restoreRoute, settingsRoute];
+  static final routes = [
+    route,
+    scannerRoute,
+    menuRoute,
+    settingsRoute,
+    policyRoute,
+    keysRoute,
+    renewalRoute,
+    importCosignerRoute,
+  ];
+
+  static final importCosignerRoute = GoRoute(
+    name: BullVaultFacade.importCosignerRouteName,
+    path: '/bullvault/:walletId/import-cosigner',
+    builder: (_, state) => BlocProvider(
+      create: (_) => locator<BullVaultCosignerCubit>(),
+      child: BullVaultCosignerScreen(
+        walletId: state.pathParameters['walletId']!,
+      ),
+    ),
+  );
+
+  static GoRoute _inspectionRoute(
+    String name,
+    String path,
+    BullVaultSettingsPage page,
+  ) => GoRoute(
+    name: name,
+    path: path,
+    builder: (_, state) => BlocProvider(
+      create: (_) =>
+          locator<BullVaultSettingsCubit>()
+            ..load(state.pathParameters['walletId']),
+      child: BullVaultSettingsScreen(
+        walletId: state.pathParameters['walletId'],
+        page: page,
+      ),
+    ),
+  );
+  static final menuRoute = _inspectionRoute(
+    BullVaultFacade.menuRouteName,
+    '/bullvault',
+    BullVaultSettingsPage.menu,
+  );
+  static final settingsRoute = _inspectionRoute(
+    BullVaultFacade.settingsRouteName,
+    '/bullvault/:walletId/settings',
+    BullVaultSettingsPage.selected,
+  );
+  static final policyRoute = _inspectionRoute(
+    BullVaultFacade.policyRouteName,
+    '/bullvault/:walletId/policy',
+    BullVaultSettingsPage.policy,
+  );
+  static final keysRoute = _inspectionRoute(
+    BullVaultFacade.keysRouteName,
+    '/bullvault/:walletId/keys',
+    BullVaultSettingsPage.keys,
+  );
 
   static final route = GoRoute(
     name: BullVaultFacade.createRouteName,
     path: '/bullvault/create',
     builder: (context, state) => BlocProvider(
-      create: (_) =>
-          locator<BullVaultOnboardingCubit>()
-            ..load(walletId: state.uri.queryParameters['walletId']),
+      create: (_) => locator<BullVaultOnboardingCubit>()
+        ..load(
+          walletId: state.uri.queryParameters['walletId'],
+          practice: state.uri.queryParameters['practice'] == 'true',
+        ),
       child: const BullVaultOnboardingScreen(),
     ),
   );
@@ -38,18 +106,33 @@ abstract final class BullVaultRouter {
     ),
   );
 
-  static final restoreRoute = GoRoute(
-    name: BullVaultFacade.restoreRouteName,
-    path: '/bullvault/restore',
+  /// The "Import descriptor" entry of the recovery landing.
+  ///
+  /// It is mounted by `backup_settings`, which owns the landing, rather than
+  /// listed in [routes]: the screen, its cubit and its scanner stay here, and
+  /// the feature gains no dependency on the one that composes it.
+  ///
+  /// [onEncryptedDescriptorFile] receives a chosen file that turns out to be a
+  /// BIP138 artifact rather than a recovery package. Opening one needs a
+  /// cosigner's public key, which is another entry's job.
+  static GoRoute importDescriptorRoute({
+    required void Function(BuildContext context, Uint8List bytes)
+    onEncryptedDescriptorFile,
+  }) => GoRoute(
+    name: BullVaultFacade.importDescriptorRouteName,
+    path: 'import-descriptor',
     builder: (context, state) => BlocProvider(
       create: (_) => locator<BullVaultRestoreCubit>(),
-      child: const BullVaultRestoreScreen(),
+      child: BullVaultRestoreScreen(
+        onEncryptedDescriptorFile: (bytes) =>
+            onEncryptedDescriptorFile(context, bytes),
+      ),
     ),
   );
 
-  static final settingsRoute = GoRoute(
-    name: BullVaultFacade.settingsRouteName,
-    path: '/bullvault/:walletId/settings',
+  static final renewalRoute = GoRoute(
+    name: BullVaultFacade.renewRouteName,
+    path: '/bullvault/:walletId/renew',
     builder: (context, state) {
       final walletId = state.pathParameters['walletId']!;
       return BlocProvider(

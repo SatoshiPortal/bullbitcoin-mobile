@@ -17,6 +17,7 @@ class CopyInput extends StatelessWidget {
     this.canShowValueModal = false,
     this.modalTitle,
     this.modalContent,
+    this.sensitive = false,
   });
 
   final String text;
@@ -28,6 +29,7 @@ class CopyInput extends StatelessWidget {
   final String? modalTitle;
   // In case it should be different from the shown text
   final String? modalContent;
+  final bool sensitive;
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +58,16 @@ class CopyInput extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: isValueLoading
                     ? const LoadingLineContent()
-                    : Text(
-                        text,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.secondary,
+                    : ExcludeSemantics(
+                        excluding: sensitive,
+                        child: Text(
+                          text,
+                          style: context.font.bodyLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
+                          maxLines: maxLines,
+                          overflow: overflow,
                         ),
-                        maxLines: maxLines,
-                        overflow: overflow,
                       ),
               ),
             ),
@@ -114,9 +119,12 @@ class CopyInput extends StatelessWidget {
             : null,
 
         content: SingleChildScrollView(
-          child: SelectableText(
-            modalContent ?? text,
-            style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
+          child: ExcludeSemantics(
+            excluding: sensitive,
+            child: SelectableText(
+              modalContent ?? text,
+              style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
+            ),
           ),
         ),
         actions: [

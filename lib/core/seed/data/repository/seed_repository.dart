@@ -48,7 +48,7 @@ class SeedRepository implements SeedVerificationPort {
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to create seed from mnemonic',
-        error: e,
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -63,7 +63,7 @@ class SeedRepository implements SeedVerificationPort {
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to create seed from bytes',
-        error: e,
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -79,7 +79,7 @@ class SeedRepository implements SeedVerificationPort {
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to get seed with fingerprint',
-        error: e,
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -105,7 +105,7 @@ class SeedRepository implements SeedVerificationPort {
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to check if seed exists with fingerprint',
-        error: e,
+        error: e.runtimeType,
         trace: stackTrace,
       );
       rethrow;
@@ -134,8 +134,12 @@ class SeedRepository implements SeedVerificationPort {
       await _source.delete(fingerprint);
       return const Ok(null);
     } catch (e, st) {
-      log.severe(message: 'Failed to delete seed', error: e, trace: st);
-      return Err(SeedDeleteFailure(e.toString()));
+      log.severe(
+        message: 'Failed to delete seed',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return const Err(SeedDeleteFailure());
     }
   }
 
@@ -164,10 +168,10 @@ class SeedRepository implements SeedVerificationPort {
     } catch (e, st) {
       log.severe(
         message: 'Failed to get all mnemonic seeds',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
-      return Err(SeedFetchFailure(e.toString()));
+      return const Err(SeedFetchFailure());
     }
   }
 }

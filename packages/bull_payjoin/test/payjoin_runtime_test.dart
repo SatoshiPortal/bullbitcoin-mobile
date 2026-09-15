@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -124,6 +125,25 @@ void main() {
       log: log ?? _LogPort(),
     );
   }
+
+  test(
+    'an idle policy subscription can be cancelled before shutdown',
+    () async {
+      final lifecycle =
+          (await open() as Ok<PayjoinLifecycle, PayjoinFailure>).value;
+      addTearDown(lifecycle.dispose);
+      final firstPolicy = Completer<void>();
+      final subscription = lifecycle.payjoin.policy.watch().listen((result) {
+        expect(result, isA<Ok<PayjoinPolicy, PayjoinFailure>>());
+        if (!firstPolicy.isCompleted) firstPolicy.complete();
+      });
+      await firstPolicy.future.timeout(const Duration(seconds: 5));
+      // Let the stream wait for another policy change before cancelling it.
+      await Future<void>.delayed(Duration.zero);
+      await subscription.cancel().timeout(const Duration(seconds: 5));
+      expect(await lifecycle.payjoin.policy.load(), isA<Ok>());
+    },
+  );
 
   test('opens roles over the seeded policy and disposes cleanly', () async {
     final result = await open();

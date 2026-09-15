@@ -25,6 +25,8 @@ BullVaultRecoveryPackageCodec testBullVaultRecoveryPackageCodec() {
   );
 }
 
+BitcoinDescriptorPort testBullVaultDescriptorPort() => _TestDescriptorPort();
+
 BullVaultRecoveryPackage testBullVaultRecoveryPackage({
   String? previousVaultId,
   String? lineageId,
@@ -60,17 +62,22 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
     lineageId: lineageId,
     vaultGeneration: generation,
     network: network,
-    descriptor: BullVaultPolicy.descriptorTemplate(
-      vaultGeneration: generation,
-      network: network,
-      protection: protection,
-      everydayKey: everyday,
-      coldKey: cold,
-      secondColdKey: secondCold,
-      inheritanceKey: inheritance,
-      schedule: schedule,
-      referenceTime: createdAt,
-    ),
+    // Production creation canonicalizes before deriving the policy/lineage ID.
+    // Hashing the unchecked template creates a package real restore refuses.
+    descriptor: BdkFacade.parsePublicTwoPathDescriptor(
+      descriptor: BullVaultPolicy.descriptorTemplate(
+        vaultGeneration: generation,
+        network: network,
+        protection: protection,
+        everydayKey: everyday,
+        coldKey: cold,
+        secondColdKey: secondCold,
+        inheritanceKey: inheritance,
+        schedule: schedule,
+        referenceTime: createdAt,
+      ),
+      isTestnet: network.isTestnet,
+    ).descriptor,
     protection: protection,
     everydayKey: everyday,
     coldKey: cold,

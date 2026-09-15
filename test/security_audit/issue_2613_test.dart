@@ -13,7 +13,11 @@ void main() {
         'lib/core/bip85/domain/fetch_all_bip85_derivations_with_entropy_usecase.dart',
       ).readAsStringSync();
 
-      expect(source, contains('final defaultSeed = await'));
+      expect(
+        source,
+        contains('final seedResult = await _getDefaultSeedUsecase.execute('),
+      );
+      expect(source, contains('final Seed defaultSeed'));
       expect(source, contains('Bip85HardenedPath(e.path)'));
       expect(source, contains('xprvFingerprint'));
       expect(source, contains('fingerprint'));

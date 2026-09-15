@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/save_metadata_backup_choice_usecase.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -34,6 +35,9 @@ class WizardApp extends StatelessWidget {
     final repository = WizardRepositoryImpl(datasource);
     return WizardBloc(
       savePending: SavePendingWizardChoicesUsecase(repository: repository),
+      saveMetadataBackupChoice: SaveMetadataBackupChoiceUsecase(
+        repository: repository,
+      ),
       markComplete: MarkWizardCompleteUsecase(repository: repository),
     );
   }

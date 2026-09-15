@@ -1,0 +1,28 @@
+import 'package:bb_mobile/features/passphrase_wallet/domain/entities/passphrase_wallet.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_failure.dart';
+import 'package:bb_mobile/features/passphrase_wallet/domain/passphrase_wallet_scanner_port.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+
+/// Reads one locked wallet's balance from its public descriptor.
+///
+/// Scanning is driven from the Passphrase page and nowhere else: the page Cubit
+/// runs these one card at a time on entry, and there is no background scan.
+final class ScanPassphraseWalletBalanceUsecase {
+  final PassphraseWalletScannerPort _scanner;
+
+  const ScanPassphraseWalletBalanceUsecase(this._scanner);
+
+  Future<Result<PassphraseWalletBalance, PassphraseWalletFailure>> execute(
+    PassphraseWalletRecord wallet,
+  ) async {
+    try {
+      final satoshis = await _scanner.scan(
+        combinedPublicDescriptor: wallet.descriptor,
+        network: wallet.network,
+      );
+      return Ok(PassphraseWalletBalance(satoshis: satoshis));
+    } on Exception {
+      return const Err(PassphraseWalletSyncFailure());
+    }
+  }
+}

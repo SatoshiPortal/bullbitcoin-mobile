@@ -12,7 +12,8 @@ abstract class LabelsRepositoryPort {
 
   Future<void> trash(int id);
 
-  Future<List<LabelEntity>> fetchAll();
+  /// Strict reads fail on a corrupt row instead of omitting it from a backup.
+  Future<List<LabelEntity>> fetchAll({bool strict = false});
 
   Future<void> storeAll(List<NewLabel> labels);
 }

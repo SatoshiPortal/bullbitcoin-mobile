@@ -42,6 +42,17 @@ void main() {
       repository.fetchVaultKey('00', 'password', '00', endpoint);
 
   group('RecoverBullRepository.fetchVaultKey maps KeyServerException', () {
+    test(
+      '404 is a missing record, not a wrong PIN or offline server',
+      () async {
+        stubFetchThrows(recoverbull.KeyServerException(code: 404));
+        final result = await fetch();
+        expect(
+          (result as Err<String, RecoverBullCoreFailure>).failure,
+          isA<KeyServerRecordNotFoundFailure>(),
+        );
+      },
+    );
     test('401 -> KeyServerInvalidCredentialsFailure (no raw leak)', () async {
       stubFetchThrows(
         recoverbull.KeyServerException(code: 401, message: 'unauthorized xyz'),

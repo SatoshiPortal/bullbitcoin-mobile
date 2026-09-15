@@ -57,18 +57,25 @@ class RestoreBullVaultUsecase {
     this._ensureCanonicalSeedUsecase,
   );
 
+  /// [status] is the lifecycle status to give a record this restoration
+  /// creates. It is active for an interactive restoration, which is the one
+  /// generation the person is recovering. Replaying a backed-up history passes
+  /// each generation's own recorded status instead, so a retired or abandoned
+  /// generation is not reconstructed as the vault in force.
   @useResult
   Future<Result<BullVaultRestoreResult, BullVaultFailure>> execute({
     required BullVaultRestoreInputKind kind,
     required String source,
     required String label,
     String? mobilePassphrase,
+    BullVaultLifecycleStatus status = BullVaultLifecycleStatus.active,
   }) => _serialized(
     () => _execute(
       kind: kind,
       source: source,
       label: label,
       mobilePassphrase: mobilePassphrase,
+      status: status,
     ),
   );
 
@@ -77,6 +84,7 @@ class RestoreBullVaultUsecase {
     required String source,
     required String label,
     required String? mobilePassphrase,
+    required BullVaultLifecycleStatus status,
   }) async {
     if (source.trim().isEmpty || label.trim().isEmpty) {
       return const Err(BullVaultInvalidRecoveryFailure());
@@ -142,9 +150,15 @@ class RestoreBullVaultUsecase {
         }
         decodedPackage = BullVaultRecoveryPackage(policy: policy);
       }
-      final seed = await _getDefaultSeedUsecase.execute(
+      // A descriptor is public, so a device with no key of its own can still
+      // watch the vault. Without a default seed there is simply nothing to
+      // verify against, and mobile access stays unavailable.
+      final Seed? defaultSeed = switch (await _getDefaultSeedUsecase.execute(
         environment: settings.environment,
-      );
+      )) {
+        Ok(:final value) => value,
+        Err() => null,
+      };
       Seed? verifiedSeed;
       var policy = decodedPackage.policy.withEverydayOwnership(
         SignerEntity.none,
@@ -172,7 +186,7 @@ class RestoreBullVaultUsecase {
         }
       }
 
-      verifySeed(seed);
+      if (defaultSeed != null) verifySeed(defaultSeed);
       if (verifiedSeed == null) {
         switch (await _getAllSeedsUsecase.execute()) {
           case Err():
@@ -255,14 +269,18 @@ class RestoreBullVaultUsecase {
         }
         if (policy.everydayKey.signer == SignerEntity.local) {
           shouldMarkEverydaySignerLocal = !_descriptorService
-              .matchesEverydaySignerOwnership(importedWallet, policy);
+              .matchesEverydaySignerOwnership(
+                importedWallet,
+                policy,
+                seedFingerprint: mobileSeedFingerprint!,
+              );
         }
       }
       var wallet = importedWallet;
       final existingRecord = await _repository.getByWalletId(wallet.id);
       switch (existingRecord) {
         case Ok(value: final existing?):
-          if (existing.status != BullVaultLifecycleStatus.active ||
+          if (existing.status != status ||
               existing.recoveryPackage.policy.descriptor != policy.descriptor) {
             await rollbackImportedWallet();
             return const Err(BullVaultInvalidRecoveryFailure());
@@ -337,11 +355,22 @@ class RestoreBullVaultUsecase {
             if (!_descriptorService.matchesEverydaySignerOwnership(
               wallet,
               policy,
+              seedFingerprint: mobileSeedFingerprint,
             )) {
               return const Err(BullVaultInvalidRecoveryFailure());
             }
           }
-          if (mobileAccount != null && restoredRecord.mobileAccount == null) {
+          if (mobileAccount != null &&
+              (restoredRecord.mobileAccount != mobileAccount ||
+                  restoredRecord.mobileSeedFingerprint?.toLowerCase() !=
+                      mobileSeedFingerprint?.toLowerCase() ||
+                  restoredRecord
+                          .recoveryPackage
+                          .policy
+                          .everydayKey
+                          .accountKey
+                          .requiresPassphrase !=
+                      policy.everydayKey.accountKey.requiresPassphrase)) {
             final restoredPolicy = restoredRecord.recoveryPackage.policy
                 .withEverydayOwnership(
                   SignerEntity.local,
@@ -410,19 +439,25 @@ class RestoreBullVaultUsecase {
         case Ok(value: null):
           break;
       }
-      final activeRecords = await _otherActiveRecords(
-        lineageId: policy.lineageId,
-        walletId: wallet.id,
-      );
-      switch (activeRecords) {
-        case Err(:final failure):
-          await rollbackImportedWallet();
-          return Err(failure);
-        case Ok(:final value):
-          if (value.isNotEmpty) {
+      // A lineage holds one vault in force, so these two guards bind exactly
+      // the record that would take that place. A retired, abandoned or not yet
+      // activated generation cannot displace it and is replayed beside it.
+      final isVaultInForce = status == BullVaultLifecycleStatus.active;
+      if (isVaultInForce) {
+        final activeRecords = await _otherActiveRecords(
+          lineageId: policy.lineageId,
+          walletId: wallet.id,
+        );
+        switch (activeRecords) {
+          case Err(:final failure):
             await rollbackImportedWallet();
-            return const Err(BullVaultInvalidRecoveryFailure());
-          }
+            return Err(failure);
+          case Ok(:final value):
+            if (value.isNotEmpty) {
+              await rollbackImportedWallet();
+              return const Err(BullVaultInvalidRecoveryFailure());
+            }
+        }
       }
       final predecessorResult = await _validatedLocalPredecessor(
         package: package,
@@ -433,7 +468,8 @@ class RestoreBullVaultUsecase {
           await rollbackImportedWallet();
           return Err(failure);
         case Ok(value: final predecessor?)
-            when predecessor.status == BullVaultLifecycleStatus.active:
+            when isVaultInForce &&
+                predecessor.status == BullVaultLifecycleStatus.active:
           await rollbackImportedWallet();
           return const Err(BullVaultInvalidRecoveryFailure());
         case Ok():
@@ -448,6 +484,7 @@ class RestoreBullVaultUsecase {
         if (!_descriptorService.matchesEverydaySignerOwnership(
           wallet,
           policy,
+          seedFingerprint: mobileSeedFingerprint,
         )) {
           await rollbackImportedWallet();
           return const Err(BullVaultInvalidRecoveryFailure());
@@ -466,7 +503,7 @@ class RestoreBullVaultUsecase {
         birthHeight: policy.birthHeight,
         recoveryPackage: restoredPackage,
         previousVaultId: package.previousVaultId,
-        status: BullVaultLifecycleStatus.active,
+        status: status,
         hardwareSetupComplete: false,
         recoveryPackageConfirmed:
             kind == BullVaultRestoreInputKind.recoveryPackage,
@@ -524,7 +561,6 @@ class RestoreBullVaultUsecase {
       throw const WalletSignerOwnershipUpdateException();
     }
     final signer = matchingSigners.single;
-    if (signer.signer == SignerEntity.local) return wallet;
     final passphraseProtectedKeyIds =
         policy.everydayKey.accountKey.requiresPassphrase
         ? {
@@ -595,8 +631,13 @@ class RestoreBullVaultUsecase {
                     .hasSameSignerConfigurationAs(policy) ||
                 switch (predecessor.status) {
                   BullVaultLifecycleStatus.active => false,
+                  // A predecessor replayed from a backup is retired without
+                  // naming its successor: the backup carries the link the
+                  // other way round, on the successor being restored here.
+                  // One that already names a different successor is refused.
                   BullVaultLifecycleStatus.migrating =>
-                    predecessor.successorWalletId != successorWalletId,
+                    predecessor.successorWalletId != null &&
+                        predecessor.successorWalletId != successorWalletId,
                   _ => true,
                 }
             ? const Err(BullVaultInvalidRecoveryFailure())

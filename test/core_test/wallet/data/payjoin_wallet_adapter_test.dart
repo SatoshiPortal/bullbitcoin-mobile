@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_unlock_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide ScriptType;
@@ -60,14 +62,25 @@ void main() {
       when(() => seed.get('73c5da0a')).thenAnswer(
         (_) async => const SeedModel.mnemonic(mnemonicWords: ['test']),
       );
+      // Private wallet models keep identity equality (they carry a mnemonic),
+      // so match any model here and check the derived fields afterwards.
+      registerFallbackValue(privateWallet as PrivateBdkWalletModel);
       when(
         () => wallet.signPsbt(
           'psbt',
-          wallet: privateWallet as PrivateBdkWalletModel,
+          wallet: any(named: 'wallet'),
           allowFinalizedForeignInputs: true,
+          checkSigningSession: any(named: 'checkSigningSession'),
         ),
       ).thenAnswer((_) async => (psbt: 'signed', isFinalized: true));
-      final adapter = PayjoinWalletAdapter(seed, wallet, metadata);
+      final adapter = PayjoinWalletAdapter(
+        wallet,
+        metadata,
+        WalletSigningMaterialResolver(
+          seedDatasource: seed,
+          session: WalletUnlockSession(),
+        ),
+      );
 
       final result = await adapter.signPsbt(
         walletId: 'wallet',
@@ -76,6 +89,23 @@ void main() {
       );
 
       expect(result, 'signed');
+      final signedWith =
+          verify(
+                () => wallet.signPsbt(
+                  'psbt',
+                  wallet: captureAny(named: 'wallet'),
+                  allowFinalizedForeignInputs: true,
+                  checkSigningSession: any(named: 'checkSigningSession'),
+                ),
+              ).captured.single
+              as PrivateBdkWalletModel;
+      final expected = privateWallet;
+      expect(signedWith.id, expected.id);
+      expect(signedWith.scriptType, expected.scriptType);
+      expect(signedWith.mnemonic, expected.mnemonic);
+      expect(signedWith.passphrase, expected.passphrase);
+      expect(signedWith.account, expected.account);
+      expect(signedWith.isTestnet, expected.isTestnet);
     },
   );
 }

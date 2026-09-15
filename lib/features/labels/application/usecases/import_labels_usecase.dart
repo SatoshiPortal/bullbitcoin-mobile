@@ -4,22 +4,27 @@ import 'package:bb_mobile/features/labels/application/labels_converter_port.dart
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/application/wallet_freeze_port.dart';
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
+import 'package:bb_mobile/features/labels/label_change_notifier.dart';
 
 class ImportLabelsUsecase {
   final LabelsRepositoryPort _labelRepository;
   final LabelsConverterPort _labelConverter;
   final WalletFreezePort _walletFreeze;
+  final LabelChangeNotifier _changeNotifier;
 
   ImportLabelsUsecase({
     required this._labelRepository,
     required this._labelConverter,
     required this._walletFreeze,
+    required this._changeNotifier,
   });
 
   Future<int> call(FormattedLabels labels, {bool importFreezes = false}) async {
     try {
       final decoded = _labelConverter.convertFrom(labels);
       await _labelRepository.storeAll(decoded.labels);
+      // Labels are committed even if the subsequent freeze operation fails.
+      if (decoded.labels.isNotEmpty) _changeNotifier.notify();
       // Freeze state imported as a separate channel (never a label row). An
       // `spendable: false` adopted here becomes a durable freeze the user owns;
       // matched by outpoint, so it applies to whichever wallet holds the coin.

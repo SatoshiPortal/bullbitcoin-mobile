@@ -6,7 +6,13 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 /// the wizard merely *displayed* (e.g. brightness-detected theme,
 /// keyboard-detected language) stay out of the touched set and never
 /// clobber existing user values when `kCurrentWizardVersion` bumps.
-enum WizardField { language, themeMode, defaultCurrency, reportingConsent }
+enum WizardField {
+  metadataBackupEnabled,
+  language,
+  themeMode,
+  defaultCurrency,
+  reportingConsent,
+}
 
 /// Tagged variant for the `reportingConsent` parameter of
 /// [WizardChoices.copyWith].
@@ -37,6 +43,7 @@ class WizardChoices {
     this.language = Language.unitedStatesEnglish,
     this.themeMode = AppThemeMode.system,
     this.defaultCurrency = 'USD',
+    this.metadataBackupEnabled,
     this.reportingConsent,
     this.touched = const <WizardField>{},
   });
@@ -44,8 +51,9 @@ class WizardChoices {
   final Language language;
   final AppThemeMode themeMode;
   final String defaultCurrency;
+  final bool? metadataBackupEnabled;
   // `null` means the user has not yet answered the error-reporting question.
-  // Page 3 of the wizard requires an explicit Yes/No before the wizard can
+  // The mission page requires an explicit Yes/No before the wizard can
   // be completed via Next/Skip/Get started.
   final bool? reportingConsent;
 
@@ -64,12 +72,16 @@ class WizardChoices {
     Language? language,
     AppThemeMode? themeMode,
     String? defaultCurrency,
+    ConsentArg metadataBackupEnabled = _consentUnset,
     ConsentArg reportingConsent = _consentUnset,
   }) {
     final t = Set<WizardField>.from(touched);
     if (language != null) t.add(WizardField.language);
     if (themeMode != null) t.add(WizardField.themeMode);
     if (defaultCurrency != null) t.add(WizardField.defaultCurrency);
+    if (metadataBackupEnabled is ConsentValue) {
+      t.add(WizardField.metadataBackupEnabled);
+    }
     if (reportingConsent is ConsentValue) {
       t.add(WizardField.reportingConsent);
     }
@@ -77,6 +89,10 @@ class WizardChoices {
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
+      metadataBackupEnabled: switch (metadataBackupEnabled) {
+        ConsentValue(:final value) => value,
+        _ConsentUnset() => this.metadataBackupEnabled,
+      },
       reportingConsent: switch (reportingConsent) {
         ConsentValue(:final value) => value,
         _ConsentUnset() => this.reportingConsent,
@@ -94,6 +110,7 @@ class WizardChoices {
       language: language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,
+      metadataBackupEnabled: metadataBackupEnabled,
       reportingConsent: reportingConsent,
       touched: touched,
     );

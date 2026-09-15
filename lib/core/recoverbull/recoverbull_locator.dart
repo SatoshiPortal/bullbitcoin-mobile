@@ -5,12 +5,10 @@ import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/recoverbull_repository_impl.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/ensure_recoverbull_tor_session_usecase.dart';
-import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
@@ -143,6 +141,7 @@ class RecoverbullLocator {
       () => RestoreVaultUsecase(
         walletRepository: locator<WalletRepository>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
@@ -195,16 +194,6 @@ class RecoverbullLocator {
     );
     locator.registerFactory<StoreRecoverbullUrlUsecase>(
       () => StoreRecoverbullUrlUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
-      ),
-    );
-    locator.registerFactory<AllowPermissionUsecase>(
-      () => AllowPermissionUsecase(
-        recoverBullRepository: locator<RecoverBullRepository>(),
-      ),
-    );
-    locator.registerFactory<FetchPermissionUsecase>(
-      () => FetchPermissionUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );

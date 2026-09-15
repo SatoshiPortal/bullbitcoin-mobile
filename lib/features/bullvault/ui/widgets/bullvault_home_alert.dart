@@ -34,20 +34,34 @@ final class _BullVaultHomeAlertState extends State<BullVaultHomeAlert> {
 
   @override
   Widget build(BuildContext context) {
-    final walletId = context.watch<BullVaultHomeAlertCubit>().state;
-    if (walletId == null) return const SizedBox.shrink();
+    final state = context.watch<BullVaultHomeAlertCubit>().state;
+    final walletId = state.fundedPredecessorWalletId;
+    if (walletId == null && !state.recovered) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(left: 13, right: 13, top: 13),
-      child: BullInfoCard(
-        title: context.loc.bullVaultPreviousFundsAction,
-        description: context.loc.bullVaultPreviousVaultMigrating,
-        tagColor: context.appColors.error,
-        bgColor: context.appColors.errorContainer,
-        onTap: () => context.pushNamed(
-          BullVaultFacade.settingsRouteName,
-          pathParameters: {'walletId': walletId},
-          extra: context.loc.bullVaultSettingsTitle,
-        ),
+      child: Column(
+        children: [
+          if (state.recovered)
+            BullInfoCard(
+              title: context.loc.vaultRecoveredAlert,
+              description: context.loc.vaultRecoveryNoSpendDisclosure,
+              tagColor: context.appColors.success,
+              bgColor: context.appColors.surface,
+              onTap: () => context.pushNamed(BullVaultFacade.menuRouteName),
+            ),
+          if (walletId != null)
+            BullInfoCard(
+              title: context.loc.bullVaultPreviousFundsAction,
+              description: context.loc.bullVaultPreviousVaultMigrating,
+              tagColor: context.appColors.error,
+              bgColor: context.appColors.errorContainer,
+              onTap: () => context.pushNamed(
+                BullVaultFacade.settingsRouteName,
+                pathParameters: {'walletId': walletId},
+                extra: context.loc.bullVaultSettingsTitle,
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
@@ -16,15 +17,18 @@ class RecoverOnboardingWalletUsecase {
   });
 
   @useResult
-  Future<Result<void, OnboardingFailure>> execute({
+  Future<Result<List<WalletPreferences>, OnboardingFailure>> execute({
     required List<String> mnemonicWords,
   }) async {
+    final DefaultWalletsResult restored;
     try {
-      await _createDefaultWalletsUsecase.execute(mnemonicWords: mnemonicWords);
+      restored = await _createDefaultWalletsUsecase.execute(
+        mnemonicWords: mnemonicWords,
+      );
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: wallet recovery failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(OnboardingWalletSetupFailure());
@@ -35,12 +39,12 @@ class RecoverOnboardingWalletUsecase {
     } catch (e, st) {
       log.severe(
         message: 'Onboarding: backup verification failed',
-        error: e,
+        error: e.runtimeType,
         trace: st,
       );
       return const Err(OnboardingBackupVerificationFailure());
     }
 
-    return const Ok(null);
+    return Ok(restored.createdWalletPreferences);
   }
 }

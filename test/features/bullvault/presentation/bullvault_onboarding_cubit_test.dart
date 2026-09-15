@@ -98,6 +98,58 @@ void main() {
     await cubit.close();
   });
 
+  test('a practice vault starts on the existing practice schedule', () async {
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    when(load.execute).thenAnswer(
+      (_) async =>
+          const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
+    );
+
+    final regular = _cubit(load: load);
+    await regular.load();
+    expect(regular.state.schedule.isPractice, isFalse);
+    expect(regular.state.schedule.unit, BullVaultScheduleUnit.years);
+    await regular.close();
+
+    final practice = _cubit(load: load);
+    await practice.load(practice: true);
+
+    // The same schedule the advanced switch produces: real conditions, hours.
+    expect(practice.state.schedule.isPractice, isTrue);
+    expect(practice.state.schedule.unit, BullVaultScheduleUnit.hours);
+    expect(practice.state.schedule.coldDelay, regular.state.schedule.coldDelay);
+    expect(
+      practice.state.schedule.recoveryDelay,
+      regular.state.schedule.recoveryDelay,
+    );
+    await practice.close();
+  });
+
+  test('a resumed vault keeps the schedule it was created with', () async {
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    final encode = _MockEncodeRecoveryPackageUsecase();
+    final result = _completionResult();
+    when(() => load.execute(walletId: result.wallet.id)).thenAnswer(
+      (_) async => Ok(
+        BullVaultOnboardingLoad(
+          network: Network.bitcoinMainnet,
+          snapshot: BullVaultOnboardingSnapshot(
+            result: result,
+            mobileBackupStatus: const Ok((physical: false, recoverBull: false)),
+          ),
+        ),
+      ),
+    );
+    when(() => encode.execute(result.recoveryPackage)).thenReturn('{}');
+    final cubit = _cubit(load: load, encode: encode);
+
+    await cubit.load(walletId: result.wallet.id, practice: true);
+
+    expect(cubit.state.schedule, result.policy.renewalSchedule);
+    expect(cubit.state.schedule.isPractice, isFalse);
+    await cubit.close();
+  });
+
   test('keeps advanced choices when the regular flow starts', () async {
     final load = _MockLoadBullVaultOnboardingUsecase();
     when(load.execute).thenAnswer(
@@ -428,6 +480,7 @@ void main() {
         () => update.execute(
           walletId: result.wallet.id,
           recoveryPackageConfirmed: true,
+          descriptorReadBack: result.record.recoveryPackage.policy.descriptor,
         ),
       ).thenAnswer((_) async => Ok(result.record));
       when(() => encode.execute(result.recoveryPackage)).thenReturn('{}');
@@ -437,7 +490,9 @@ void main() {
       expect(cubit.state.step, BullVaultOnboardingStep.recoveryPackage);
 
       cubit.markRecoveryPackageExported();
-      await cubit.confirmRecoveryPackage();
+      await cubit.confirmRecoveryPackage(
+        result.record.recoveryPackage.policy.descriptor,
+      );
       await cubit.next();
       expect(cubit.state.step, BullVaultOnboardingStep.hardwareSetup);
 

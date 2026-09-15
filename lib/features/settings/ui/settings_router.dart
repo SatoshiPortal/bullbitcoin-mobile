@@ -6,14 +6,14 @@ import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubi
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_routes.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
@@ -42,14 +42,17 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/help_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/tools_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_routes.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/passphrase_wallet/public/passphrase_wallet_routes.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -66,10 +69,7 @@ class SettingsRouter {
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
-      child: const AllSettingsScreen(),
-    ),
+    builder: (context, state) => const AllSettingsScreen(),
     routes: [
       GoRoute(
         name: SettingsRoute.search.name,
@@ -160,6 +160,19 @@ class SettingsRouter {
         builder: (context, state) => const WalletSettingsScreen(),
       ),
       GoRoute(
+        name: SettingsRoute.tools.name,
+        path: SettingsRoute.tools.path,
+        builder: (context, state) => const ToolsSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.helpAndInfo.name,
+        path: SettingsRoute.helpAndInfo.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+          child: const HelpSettingsScreen(),
+        ),
+      ),
+      GoRoute(
         name: SettingsRoute.signingKeyExport.name,
         path: SettingsRoute.signingKeyExport.path,
         builder: (context, state) => BlocProvider(
@@ -193,20 +206,36 @@ class SettingsRouter {
         path: SettingsRoute.theme.path,
         builder: (context, state) => const ThemeSettingsScreen(),
       ),
+      KeychainManifestRoutes.route,
+      PassphraseWalletRoutes.route,
 
       GoRoute(
         path: SettingsRoute.pinCode.path,
         name: SettingsRoute.pinCode.name,
         builder: (context, state) => const PinCodeSettingFlow(),
       ),
+      // Wallet Recovery took over the old backup-settings screen; links to
+      // the old path still land there.
       GoRoute(
-        path: SettingsRoute.backupSettings.path,
-        name: SettingsRoute.backupSettings.name,
-        builder: (context, state) => const BackupSettingsScreen(),
+        path: SettingsRoute.legacyBackupSettings.path,
+        redirect: (_, _) =>
+            '${SettingsRoute.settings.path}/'
+            '${SettingsRoute.walletRecoverySettings.path}',
+      ),
+      GoRoute(
+        path: SettingsRoute.walletRecoverySettings.path,
+        name: SettingsRoute.walletRecoverySettings.name,
+        builder: (context, state) => const WalletRecoverySettingsScreen(),
         routes: [
-          BackupSettingsSettingsRouter.route,
+          ...BackupSettingsSettingsRouter.walletRecoveryRoutes,
           TestWalletBackupRouter.route,
         ],
+      ),
+      GoRoute(
+        path: SettingsRoute.dataBackupSettings.path,
+        name: SettingsRoute.dataBackupSettings.name,
+        builder: (context, state) => const DataBackupSettingsScreen(),
+        routes: BackupSettingsSettingsRouter.dataBackupRoutes,
       ),
       // A wallet is always reached from its own screen (wallet home → gear),
       // never from a list, so these carry the shared prefix themselves.

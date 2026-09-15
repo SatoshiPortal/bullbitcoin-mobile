@@ -40,13 +40,24 @@ class UpdateLatestEncryptedVaultTestUsecase {
         environment: settings.environment,
       );
 
-      for (final wallet in availableWallets) {
-        if (wallet.singleLocalSeedFingerprint == decodedFingerprint) {
-          await _walletRepository.updateEncryptedBackupTime(
-            time: DateTime.now(),
-            walletId: wallet.id,
-          );
-        }
+      final matchingWallets = availableWallets
+          .where(
+            (wallet) => wallet.singleLocalSeedFingerprint == decodedFingerprint,
+          )
+          .toList();
+      if (matchingWallets.isEmpty) {
+        return const Err(
+          InvalidVaultFileFailure(
+            'The vault does not belong to the current wallet.',
+          ),
+        );
+      }
+
+      for (final wallet in matchingWallets) {
+        await _walletRepository.updateEncryptedBackupTime(
+          time: DateTime.now(),
+          walletId: wallet.id,
+        );
       }
       return const Ok(null);
     } catch (e, st) {

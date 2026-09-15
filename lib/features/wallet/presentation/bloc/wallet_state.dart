@@ -16,7 +16,6 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isDeletingWallet,
     WalletError? walletDeletionError,
     @Default(false) bool isCheckingServiceStatus,
-    @Default(false) bool backupWarningDismissed,
     @Default(false) bool isOnLegacyStorage,
     @Default(false) bool legacyStorageWarningDismissed,
   }) = _WalletState;
@@ -43,16 +42,10 @@ sealed class WalletState with _$WalletState {
   );
 
   bool hasNoBackup() {
-    final defaultWallets = wallets.where((wallet) => wallet.isDefault);
-    return defaultWallets.isNotEmpty &&
-        defaultWallets.any(
-          (wallet) =>
-              !wallet.isEncryptedVaultTested && !wallet.isPhysicalBackupTested,
-        );
-  }
-
-  bool showBackupWarning() {
-    return hasNoBackup() && totalBalance() > 0 && !backupWarningDismissed;
+    final wallet = defaultBitcoinWallet();
+    return wallet != null &&
+        wallet.latestEncryptedBackup == null &&
+        wallet.latestPhysicalBackup == null;
   }
 
   bool showLegacyStorageWarning() {

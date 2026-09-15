@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_inheritance_mnemonic_flow.dart';
@@ -46,55 +47,67 @@ final class BullVaultOnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BullVaultOnboardingCubit, BullVaultOnboardingState>(
-      builder: (context, state) => PopScope(
-        canPop:
-            state.step == BullVaultOnboardingStep.setupChoice ||
-            state.step == BullVaultOnboardingStep.recoveryPackage,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop && !state.isCreating && !state.isActivating) {
-            context.read<BullVaultOnboardingCubit>().back();
-          }
-        },
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(context.loc.bullVaultTitle),
-              leading: switch (state.step) {
-                BullVaultOnboardingStep.setupChoice ||
-                BullVaultOnboardingStep.recoveryPackage => const BackButton(),
-                _ => IconButton(
-                  tooltip: context.loc.backButton,
-                  onPressed: state.isCreating || state.isActivating
-                      ? null
-                      : context.read<BullVaultOnboardingCubit>().back,
-                  icon: const Icon(Icons.arrow_back),
-                ),
-              },
-            ),
-            body: SafeArea(
-              child: ListView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                children: [
-                  _Progress(state: state),
-                  if (!state.isInitialChoice) const Gap(24),
-                  _stepContent(context, state),
-                  if (state.failure case final failure?) ...[
-                    const Gap(16),
-                    BullInfoCard(
-                      description: failure.toTranslated(context),
-                      tagColor: context.appColors.error,
-                      bgColor: context.appColors.errorContainer,
-                    ),
-                  ],
-                ],
+    return BlocListener<BullVaultOnboardingCubit, BullVaultOnboardingState>(
+      // The descriptor gate has just passed, which is the one moment the
+      // person has the vault in front of them and can decide where else a
+      // copy should live. Nothing is published without their Continue.
+      listenWhen: (previous, current) =>
+          !previous.recoveryPackageConfirmed &&
+          current.recoveryPackageConfirmed,
+      listener: (context, state) => openBullVaultBackupDestinations(
+        context,
+        walletId: state.result?.wallet.id,
+      ),
+      child: BlocBuilder<BullVaultOnboardingCubit, BullVaultOnboardingState>(
+        builder: (context, state) => PopScope(
+          canPop:
+              state.step == BullVaultOnboardingStep.setupChoice ||
+              state.step == BullVaultOnboardingStep.recoveryPackage,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop && !state.isCreating && !state.isActivating) {
+              context.read<BullVaultOnboardingCubit>().back();
+            }
+          },
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(context.loc.bullVaultTitle),
+                leading: switch (state.step) {
+                  BullVaultOnboardingStep.setupChoice ||
+                  BullVaultOnboardingStep.recoveryPackage => const BackButton(),
+                  _ => IconButton(
+                    tooltip: context.loc.backButton,
+                    onPressed: state.isCreating || state.isActivating
+                        ? null
+                        : context.read<BullVaultOnboardingCubit>().back,
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                },
               ),
+              body: SafeArea(
+                child: ListView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  children: [
+                    _Progress(state: state),
+                    if (!state.isInitialChoice) const Gap(24),
+                    _stepContent(context, state),
+                    if (state.failure case final failure?) ...[
+                      const Gap(16),
+                      BullInfoCard(
+                        description: failure.toTranslated(context),
+                        tagColor: context.appColors.error,
+                        bgColor: context.appColors.errorContainer,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              bottomNavigationBar: _BottomActions(state: state),
             ),
-            bottomNavigationBar: _BottomActions(state: state),
           ),
         ),
       ),
@@ -116,9 +129,11 @@ final class BullVaultOnboardingScreen extends StatelessWidget {
     BullVaultOnboardingStep.mobilePassphrase => _MobilePassphrase(state: state),
     BullVaultOnboardingStep.review => _Review(state: state),
     BullVaultOnboardingStep.recoveryPackage => BullVaultRecoveryPackageStep(
+      descriptor: state.result!.record.recoveryPackage.policy.descriptor,
       exported: state.recoveryPackageExported,
       confirmed: state.recoveryPackageConfirmed,
       onSave: () => _shareRecoveryPackage(context, state),
+      onImport: context.read<BullVaultOnboardingCubit>().importRecoveryPackage,
       onConfirm: context
           .read<BullVaultOnboardingCubit>()
           .confirmRecoveryPackage,
@@ -812,14 +827,9 @@ final class _MobilePassphrase extends StatefulWidget {
 
 final class _MobilePassphraseState extends State<_MobilePassphrase>
     with PrivacyScreen {
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
   var _passphrase = '';
   var _confirmation = '';
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
 
   @override
   void dispose() {
@@ -838,7 +848,13 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => PrivacyGate(
+    protection: _privacyFuture,
+    unprotected: const PrivacyUnavailableNotice(standalone: false),
+    builder: _buildForm,
+  );
+
+  Widget _buildForm(BuildContext context) {
     final cubit = context.read<BullVaultOnboardingCubit>();
     final mismatch = _confirmation.isNotEmpty && _passphrase != _confirmation;
     return Column(
@@ -861,15 +877,17 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
           style: context.font.titleSmall,
         ),
         const Gap(8),
-        BullInputText(
-          value: _passphrase,
-          onChanged: (value) => _update(passphrase: value),
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
+        ExcludeSemantics(
+          child: BullInputText(
+            value: _passphrase,
+            onChanged: (value) => _update(passphrase: value),
+            obscure: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            smartQuotesType: SmartQuotesType.disabled,
+            smartDashesType: SmartDashesType.disabled,
+            maxLines: 1,
+          ),
         ),
         const Gap(16),
         Text(
@@ -877,15 +895,17 @@ final class _MobilePassphraseState extends State<_MobilePassphrase>
           style: context.font.titleSmall,
         ),
         const Gap(8),
-        BullInputText(
-          value: _confirmation,
-          onChanged: (value) => _update(confirmation: value),
-          obscure: true,
-          enableSuggestions: false,
-          autocorrect: false,
-          smartQuotesType: SmartQuotesType.disabled,
-          smartDashesType: SmartDashesType.disabled,
-          maxLines: 1,
+        ExcludeSemantics(
+          child: BullInputText(
+            value: _confirmation,
+            onChanged: (value) => _update(confirmation: value),
+            obscure: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            smartQuotesType: SmartQuotesType.disabled,
+            smartDashesType: SmartDashesType.disabled,
+            maxLines: 1,
+          ),
         ),
         if (mismatch) ...[
           const Gap(8),

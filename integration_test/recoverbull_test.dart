@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
@@ -106,19 +107,31 @@ Future<void> main({bool isInitialized = false}) async {
         final decryptedVault =
             (decryptedResult as Ok<DecryptedVault, RecoverBullCoreFailure>)
                 .value;
+        final existingWalletIds = await walletRepository.getStoredWalletIds();
         final restored = await restoreVaultUsecase.execute(
           decryptedVault: decryptedVault,
         );
-        expect(restored, isA<Ok<Null, RecoverBullCoreFailure>>());
+        expect(
+          restored,
+          isA<Ok<List<WalletPreferences>, RecoverBullCoreFailure>>(),
+        );
 
         final wallets = await walletRepository.getWallets(
           onlyDefaults: true,
-          onlyBitcoin: true,
           environment: Environment.mainnet,
         );
 
-        expect(wallets.length, 1);
-        final wallet = wallets.first;
+        expect(
+          (restored as Ok<List<WalletPreferences>, RecoverBullCoreFailure>)
+              .value
+              .map((item) => item.walletRef),
+          unorderedEquals(
+            wallets
+                .map((wallet) => wallet.id)
+                .where((id) => !existingWalletIds.contains(id)),
+          ),
+        );
+        final wallet = wallets.singleWhere((wallet) => wallet.isBitcoin);
         expect(wallet.masterFingerprint, isNotEmpty);
         final seed = await seedRepository.get(wallet.masterFingerprint);
         final seedModel = SeedModel.fromEntity(seed);

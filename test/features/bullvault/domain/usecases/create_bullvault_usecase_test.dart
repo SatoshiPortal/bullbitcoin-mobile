@@ -237,6 +237,10 @@ final class _TestBullVaultRepository extends Fake
   ) async => Ok(savedRecord?.walletId == walletId ? savedRecord : null);
 
   @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() async =>
+      const Ok([]);
+
+  @override
   Future<Result<BullVaultRecord?, BullVaultFailure>> getIncompleteInitial(
     Network network,
   ) async => Ok(savedRecord);
@@ -618,10 +622,14 @@ void main() {
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Seed.mnemonic(
-          mnemonicWords: mnemonic.words,
-          bytes: seedBytes,
-          masterFingerprint: bip32.Bip32Keys.fromSeed(seedBytes).fingerprintHex,
+        (_) async => Ok(
+          Seed.mnemonic(
+            mnemonicWords: mnemonic.words,
+            bytes: seedBytes,
+            masterFingerprint: bip32.Bip32Keys.fromSeed(
+              seedBytes,
+            ).fingerprintHex,
+          ),
         ),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);
@@ -698,9 +706,11 @@ void main() {
     when(
       () => getDefaultSeed.execute(environment: Environment.mainnet),
     ).thenAnswer(
-      (_) async => Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
+      (_) async => Ok(
+        Seed.bytes(
+          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+          masterFingerprint: 'deadbeef',
+        ),
       ),
     );
     final result =
@@ -750,9 +760,11 @@ void main() {
       when(
         () => getDefaultSeed.execute(environment: Environment.testnet),
       ).thenAnswer(
-        (_) async => Seed.bytes(
-          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-          masterFingerprint: 'deadbeef',
+        (_) async => Ok(
+          Seed.bytes(
+            bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+            masterFingerprint: 'deadbeef',
+          ),
         ),
       );
       final cold = deriveSignerKeys(testMnemonics[1]);
@@ -953,9 +965,11 @@ CreateBullVaultUsecase _usecase(
     when(
       () => seedUsecase.execute(environment: any(named: 'environment')),
     ).thenAnswer(
-      (_) async => Seed.bytes(
-        bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
-        masterFingerprint: 'deadbeef',
+      (_) async => Ok(
+        Seed.bytes(
+          bytes: Uint8List.fromList(List<int>.generate(64, (index) => index)),
+          masterFingerprint: 'deadbeef',
+        ),
       ),
     );
   }

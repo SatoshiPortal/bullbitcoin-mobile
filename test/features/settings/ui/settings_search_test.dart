@@ -1,10 +1,11 @@
+import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:bb_mobile/generated/l10n/localization_as.dart';
 import 'package:bb_mobile/generated/l10n/localization_de.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bb_mobile/generated/l10n/localization_fr.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -53,6 +54,20 @@ void main() {
       expect(results.single.id, SettingsItemId.mempool);
     });
 
+    test('Nostr keys sit under Tools, and their breadcrumb says so', () {
+      final english = AppLocalizationsEn();
+      final item = _englishItems().singleWhere(
+        (item) => item.id == SettingsItemId.nostrKeys,
+      );
+
+      expect(item.section, SettingsItemSection.tools);
+      expect(item.path, [
+        english.settingsScreenTitle,
+        english.settingsToolsTitle,
+        english.settingsNostrKeysTitle,
+      ]);
+    });
+
     test('does not index user-facing descriptions', () {
       expect(searchSettings(_englishItems(), 'different networks'), isEmpty);
     });
@@ -78,59 +93,198 @@ void main() {
       }
     });
 
-    test('places wallet import under the Wallet section', () {
+    test('places wallet import under Wallet and Bitcoin', () {
       final items = _englishItems();
 
-      expect(items.byId(SettingsItemId.backup).title, 'Backup');
+      expect(items.byId(SettingsItemId.backup).title, 'Wallet Recovery');
       expect(
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import wallet',
+        'Settings → Wallet and Bitcoin → Import wallet',
       );
-      expect(backupSettingsDataItemOrder, [
-        SettingsItemId.labels,
-        SettingsItemId.transactionHistory,
-      ]);
-      expect(walletSettingsItemOrder, [
-        SettingsItemId.payjoin,
-        SettingsItemId.autoswap,
-        SettingsItemId.importWallet,
-        SettingsItemId.electrum,
-        SettingsItemId.mempool,
-        SettingsItemId.broadcastTransaction,
-      ]);
     });
 
-    test('orders and labels root settings for progressive disclosure', () {
-      final items = _englishItems();
+    test('Wallet and Bitcoin holds the requested entries in order', () {
+      final items = _englishItems(
+        isSuperuser: true,
+      ).ordered(SettingsItemSection.wallet, walletSettingsItemOrder);
+
+      expect(
+        items
+            .where((item) => item.id != SettingsItemId.signingKeyExport)
+            .map((item) => item.id),
+        [
+          SettingsItemId.backup,
+          SettingsItemId.dataBackup,
+          SettingsItemId.importWallet,
+          SettingsItemId.passphraseWallets,
+          SettingsItemId.electrum,
+          SettingsItemId.mempool,
+          SettingsItemId.autoswap,
+          SettingsItemId.payjoin,
+          SettingsItemId.seedViewer,
+        ],
+      );
+    });
+
+    test('a contributed wallet entry takes the BULLVAULT slot', () {
+      final items = buildSettingsItems(
+        localization: AppLocalizationsEn(),
+        isSuperuser: true,
+        contributions: [
+          SettingsEntryContribution(
+            id: 'bullvault',
+            section: SettingsEntrySection.wallet,
+            title: (localization) => localization.settingsBullVaultEntryTitle,
+            icon: Icons.security,
+            open: (_) {},
+          ),
+        ],
+      );
+
+      final ordered = items
+          .ordered(SettingsItemSection.wallet, walletSettingsItemOrder)
+          .where((item) => item.id != SettingsItemId.signingKeyExport)
+          .toList();
+
+      expect(
+        ordered.map((item) => item.title).toList()[8],
+        ('BullVault (miniscript)'),
+      );
+      expect(ordered[9].id, SettingsItemId.seedViewer);
+    });
+
+    test('Seed Viewer keeps its superuser guard after the move', () {
+      expect(
+        _englishItems().map((item) => item.id),
+        isNot(contains(SettingsItemId.seedViewer)),
+      );
+      expect(
+        _englishItems(
+          isSuperuser: true,
+        ).byId(SettingsItemId.seedViewer).isSuperuser,
+        isTrue,
+      );
+    });
+
+    test('BIP85 stays upstream-guarded, under Tools', () {
+      expect(
+        _englishItems(isSuperuser: true).map((item) => item.id),
+        isNot(contains(SettingsItemId.bip85)),
+      );
+      final bip85 = _englishItems(
+        isSuperuser: true,
+        isDevModeEnabled: true,
+      ).byId(SettingsItemId.bip85);
+      expect(bip85.section, SettingsItemSection.tools);
+      expect(bip85.isSuperuser, isTrue);
+      expect(
+        bip85.location(TextDirection.ltr),
+        'Settings → Tools → BIP85 Deterministic Entropies',
+      );
+    });
+
+    test('the data exports are found under Data Backup', () {
+      for (final id in [
+        SettingsItemId.labels,
+        SettingsItemId.transactionHistory,
+      ]) {
+        final item = _englishItems().byId(id);
+        expect(item.path.sublist(0, 3), [
+          'Settings',
+          'Wallet and Bitcoin',
+          'Data Backup',
+        ]);
+      }
+    });
+
+    test('wallet recovery entries are found under Wallet Recovery', () {
+      for (final id in [
+        SettingsItemId.startBackup,
+        SettingsItemId.recoverbull,
+      ]) {
+        final item = _englishItems().byId(id);
+        expect(item.section, SettingsItemSection.backup);
+        expect(item.path.sublist(0, 3), [
+          'Settings',
+          'Wallet and Bitcoin',
+          'Wallet Recovery',
+        ]);
+      }
+    });
+
+    test('the root holds exactly the five requested groups, in order', () {
+      final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
       final rootItems = items.inSection(SettingsItemSection.root);
 
       expect(rootItems.map((item) => item.id), [
-        SettingsItemId.appSettings,
-        SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
-        SettingsItemId.btcMap,
-        SettingsItemId.termsOfService,
-        SettingsItemId.servicesStatus,
-        SettingsItemId.logs,
+        SettingsItemId.appSettings,
+        SettingsItemId.tools,
+        SettingsItemId.helpAndInfo,
       ]);
       expect(rootItems.map((item) => item.title), [
-        'App',
-        'Backup',
-        'Wallet',
+        'Wallet and Bitcoin',
         'Exchange',
-        'Map',
-        'Terms of Service',
-        'Service Status',
-        'Logs',
+        'App and device',
+        'Tools',
+        'Help and info',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
+    });
+
+    test('Tools lists the reviewed entries', () {
+      expect(
+        _englishItems(
+          isSuperuser: true,
+          isDevModeEnabled: true,
+        ).inSection(SettingsItemSection.tools).map((item) => item.id),
+        [
+          SettingsItemId.broadcastTransaction,
+          SettingsItemId.nostrKeys,
+          SettingsItemId.btcMap,
+          SettingsItemId.bip85,
+        ],
+      );
+    });
+
+    test('Help and info lists the reviewed entries', () {
+      expect(
+        _englishItems()
+            .inSection(SettingsItemSection.help)
+            .map((item) => item.id),
+        [
+          SettingsItemId.supportChat,
+          SettingsItemId.github,
+          SettingsItemId.termsOfService,
+          SettingsItemId.servicesStatus,
+          SettingsItemId.logs,
+        ],
+      );
+    });
+
+    test('the renamed groups keep their previous names as aliases', () {
+      final items = _englishItems();
+      final aliases = {
+        'Wallet': SettingsItemId.walletSettings,
+        'Wallet Settings': SettingsItemId.walletSettings,
+        'App': SettingsItemId.appSettings,
+        'App Settings': SettingsItemId.appSettings,
+      };
+
+      for (final MapEntry(key: query, value: id) in aliases.entries) {
+        expect(
+          searchSettings(items, query).map((item) => item.id),
+          contains(id),
+          reason: 'Expected "$query" to still find ${id.name}',
+        );
+      }
     });
 
     test('groups developer controls at the bottom of App Settings', () {
@@ -158,6 +312,8 @@ void main() {
       final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
       final expectedIds = {
         'trading': SettingsItemId.exchange,
+        'passphrase': SettingsItemId.passphraseWallets,
+        'private wallet': SettingsItemId.passphraseWallets,
         'seed backup': SettingsItemId.backup,
         'create backup': SettingsItemId.startBackup,
         'cloud backup': SettingsItemId.recoverbull,
@@ -206,20 +362,31 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Backup → Transaction History',
+        'Settings → Wallet and Bitcoin → Data Backup → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Backup ← Transaction History',
+        'Settings ← Wallet and Bitcoin ← Data Backup ← Transaction History',
       );
     });
 
     test('omits inaccessible superuser settings', () {
       final items = _englishItems();
 
-      expect(searchSettings(items, 'dev mode'), isEmpty);
-      expect(searchSettings(items, 'seed viewer'), isEmpty);
-      expect(searchSettings(items, 'testnet user credentials'), isEmpty);
+      // "App and device" contains "dev", so a loose token match can still
+      // surface an unrelated row; what must never appear is the guarded item.
+      for (final MapEntry(key: query, value: id) in {
+        'dev mode': SettingsItemId.devMode,
+        'seed viewer': SettingsItemId.seedViewer,
+        'testnet user credentials': SettingsItemId.testnetCredentials,
+        'bip85': SettingsItemId.bip85,
+      }.entries) {
+        expect(
+          searchSettings(items, query).map((item) => item.id),
+          isNot(contains(id)),
+          reason: 'Expected "$query" not to reveal ${id.name}',
+        );
+      }
     });
 
     test('testnet credentials is not marked as a superuser item', () {

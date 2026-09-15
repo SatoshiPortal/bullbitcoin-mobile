@@ -27,6 +27,14 @@ graph TB
     BTC_PRICE[Bitcoin Price]
     NETWORK[Network]
     BIP85[BIP85]
+    NOSTR_IDENTITY[Nostr Identity<br/>---<br/>The backup credential: twelve words,<br/>their encryption key and the separate<br/>artifact and server identities]
+    WALLET_BACKUP[Wallet Backup<br/>---<br/>Typed backup snapshot & codec,<br/>remote protocol, durable state,<br/>serialized job runner]
+    KEYCHAIN_MANIFEST[Keychain Manifest<br/>---<br/>Wallet inventory, Nostr keys,<br/>passphrase wallet records]
+    PASSPHRASE_WALLETS[Passphrase Wallets<br/>---<br/>Passphrase entry, derivation,<br/>scan port; keeps no secret at rest]
+    BACKUP_SETTINGS[Backup Settings<br/>---<br/>Backup UI & reminders,<br/>file import/export,<br/>failure taxonomy mapping]
+    RECOVERBULL[RecoverBull]
+    WIZARD[Onboarding Wizard]
+    ONBOARDING[Wallet Onboarding]
     FEES[Fees]
     WALLETS[Wallets]
     EXCHANGE[Exchange]
@@ -85,6 +93,28 @@ graph TB
     AUTOSWAP --> TRANSFER
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
+    %% Wallet Backup is the only feature that reads the keychain manifest for a
+    %% backup; Backup Settings goes through its facade rather than around it.
+    WALLET_BACKUP --> NOSTR_IDENTITY
+    WALLET_BACKUP --> KEYCHAIN_MANIFEST
+    WALLET_BACKUP --> LABELS
+    WALLET_BACKUP -->|Recovery packages, committed backup changes,<br/>private descriptor sealing and lookup aliases| BULLVAULT
+    BACKUP_SETTINGS --> WALLET_BACKUP
+    BACKUP_SETTINGS -->|Revealing the twelve magic backup words| NOSTR_IDENTITY
+    BACKUP_SETTINGS -->|Step-up authentication before the words reveal| APP_UNLOCK
+    BACKUP_SETTINGS --> LABELS
+    BACKUP_SETTINGS --> TX_HISTORY
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
+    BACKUP_SETTINGS -->|Data Backup route, wallet settings entries| SETTINGS
+    BACKUP_SETTINGS -->|Whether the metadata backup choice was made| WIZARD
+    PASSPHRASE_WALLETS --> KEYCHAIN_MANIFEST
+    PASSPHRASE_WALLETS --> SETTINGS
+    PASSPHRASE_WALLETS --> WALLETS
+    %% Metadata follow-up after seed recovery is composed by the app router;
+    %% RecoverBull receives a completion callback, not a WalletBackup dependency.
+    WIZARD --> WALLET_BACKUP
+    ONBOARDING --> WIZARD
     BACKUPS --> BIP85
     BACKUPS --> RECOVERBULL
     BACKUPS --> TOR
@@ -135,10 +165,17 @@ graph TB
     SETTINGS --> BULL_PAYJOIN
     SETTINGS --> RECOVERBULL
     BULLVAULT -->|Mnemonic display, verification and backup status| BACKUPS
+    BULLVAULT -->|Backup credential for sealing and authoring<br/>descriptor events on public relays| NOSTR_IDENTITY
     BULLVAULT --> RECOVERBULL
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
+    BULLVAULT -->|Selected vault signing action| PSBT_SIGNING
+    BULLVAULT -->|Step-up authentication before cosigner import| APP_UNLOCK
+    BACKUP_SETTINGS -->|Descriptor recovery and verification,<br/>private descriptor import, printable kits| BULLVAULT
+    SETTINGS --> KEYCHAIN_MANIFEST
+    SETTINGS --> PASSPHRASE_WALLETS
+    SETTINGS --> BACKUP_SETTINGS
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
@@ -271,3 +308,5 @@ To verify no cyclic dependencies exist, you can:
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
+
+`NOSTR_IDENTITY` owns the one backup credential. The twelve backup words come from the reserved BIP85 path on the default seed; they derive the metadata encryption key, the identity that authors public backup artifacts and the separate identity the backup server account is named by. It has three consumers. `WALLET_BACKUP` encrypts with that key and signs server requests as that account, and it can do both from words a recovering user supplies instead of from the default seed. `BULLVAULT` seals each vault descriptor with the same key and publishes it, authored by the artifact identity, on a compiled-in list of public relays; discovery runs from supplied words alone, so an heir needs no seed and no local database. `BACKUP_SETTINGS` reveals the words themselves, behind the PIN and the capture block, and derives a credential from seed words someone types in while recovering.

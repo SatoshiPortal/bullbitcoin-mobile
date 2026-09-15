@@ -2,10 +2,12 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,15 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _saveUrl() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final entered = _urlController.text;
+    final isNewCustomServer =
+        entered != SettingsConstants.recoverbullUrl && entered != _originalUrl;
+    if (isNewCustomServer && !await _confirmCustomServer()) {
+      if (mounted) _cancelEdit();
+      return;
+    }
+    if (!mounted) return;
+
     setState(() => _isSaving = true);
     try {
       final url = Uri.parse(_urlController.text);
@@ -70,6 +81,18 @@ class _SettingsPageState extends State<SettingsPage> {
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  Future<bool> _confirmCustomServer() async {
+    var confirmed = false;
+    await WarningBottomSheet.show(
+      context,
+      title: context.loc.securityWarningTitle,
+      message: context.loc.recoverbullServerCustomWarning,
+      confirmLabel: context.loc.recoverbullContinue,
+      onConfirm: () => confirmed = true,
+    );
+    return confirmed;
   }
 
   void _cancelEdit() => setState(() => _isEditing = false);

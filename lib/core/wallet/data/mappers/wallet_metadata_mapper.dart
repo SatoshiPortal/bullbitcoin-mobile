@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:drift/drift.dart' show Value;
 
@@ -32,6 +33,10 @@ extension WalletMetadataMapper on WalletMetadataModel {
     label: Value(label),
     syncedAt: Value(syncedAt),
     birthday: Value(birthday),
+    hideOnHome: Value(hideOnHome),
+    autoSweepEnabled: Value(autoSweepEnabled),
+    provenance: Value(provenance.name),
+    seedPassphraseUsed: Value(seedPassphraseUsed),
   );
 
   List<WalletSignersCompanion> signersToSqlite() => [
@@ -111,6 +116,13 @@ extension WalletMetadataMapper on WalletMetadataModel {
       label: row.label,
       syncedAt: row.syncedAt,
       birthday: row.birthday,
+      hideOnHome: row.hideOnHome,
+      autoSweepEnabled: row.autoSweepEnabled,
+      provenance: WalletProvenance.values.firstWhere(
+        (candidate) => candidate.name == row.provenance,
+        orElse: () => throw FormatException('Unknown wallet provenance'),
+      ),
+      seedPassphraseUsed: row.seedPassphraseUsed,
     );
   }
 }

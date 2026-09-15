@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -31,25 +30,31 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/core/wallet/data/wallet_signing_material_resolver.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final FrozenWalletUtxoDatasource _frozenUtxos;
   final ElectrumServersPort? electrumServers;
 
+  /// The one source of private signing material, for every key of every
+  /// wallet: the volatile session for a passphrase wallet, the persistent seed
+  /// store for everything else. Nothing here reads seeds directly.
+  final WalletSigningMaterialResolver _signingMaterial;
+
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
-    required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
+    required WalletSigningMaterialResolver signingMaterialResolver,
     this.electrumServers,
-  }) : _seed = seedDatasource,
-       _bdkWallet = bdkWalletDatasource,
-       _frozenUtxos = frozenWalletUtxoDatasource;
+  }) : _bdkWallet = bdkWalletDatasource,
+       _frozenUtxos = frozenWalletUtxoDatasource,
+       _signingMaterial = signingMaterialResolver;
 
   Future<({WalletMetadataModel metadata, PublicBdkWalletModel wallet})>
   _publicWalletContext(String walletId) async {
@@ -193,15 +198,20 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     String? signerId,
     String? passphrase,
     String? replacingTxid,
+    void Function()? signingSession,
   }) async {
     final context = await _publicWalletContext(walletId);
     final metadata = context.metadata;
     final publicWallet = context.wallet;
+    // A locked passphrase wallet fails here, before the PSBT is touched.
+    signingSession?.call();
+    final checkSigningSession = _signingMaterial.captureSigningGuard(metadata);
     await _validateWalletPsbtInputs(
       psbt: psbt,
       wallet: publicWallet,
       replacingTxid: replacingTxid,
     );
+    checkSigningSession();
 
     var descriptor = _withoutDescriptorChecksum(metadata.publicDescriptor);
     var injectedKey = false;
@@ -231,6 +241,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     final selectedLocalDescriptorKeyIds = review.inputs
         .expand((input) => input.localDescriptorKeyIds)
         .toSet();
+    checkSigningSession();
     var skippedPassphraseKey = false;
     for (final signer in localSigners) {
       for (final key in signer.descriptorKeys) {
@@ -239,6 +250,8 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
         if (derivationPath == null) {
           throw StateError('Local descriptor key has no derivation path');
         }
+        // A vault's mobile key may carry its own BIP39 passphrase; the stored
+        // seed is still read through the resolver, never from disk directly.
         final SeedModel seed;
         if (key.requiresPassphrase) {
           if (passphrase == null) {
@@ -249,7 +262,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
           if (seedFingerprint == null) {
             throw const BitcoinSignerPassphraseMismatchException();
           }
-          final storedSeed = await _seed.get(seedFingerprint);
+          final storedSeed = await _signingMaterial.seedForKey(
+            metadata,
+            masterFingerprint: seedFingerprint,
+          );
+          checkSigningSession();
           if (storedSeed is! MnemonicSeedModel) {
             throw const BitcoinSignerPassphraseMismatchException();
           }
@@ -258,7 +275,11 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
             passphrase: passphrase,
           );
         } else {
-          seed = await _seed.get(key.masterFingerprint);
+          seed = await _signingMaterial.seedForKey(
+            metadata,
+            masterFingerprint: key.masterFingerprint,
+          );
+          checkSigningSession();
         }
         final rootKey = _descriptorSecretKey(seed, network: metadata.network);
         try {
@@ -320,6 +341,7 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     }
     if (!injectedKey) throw const BitcoinPsbtMissingLocalOriginException();
 
+    checkSigningSession();
     return _bdkWallet.signPsbtWithDescriptor(
       psbt,
       descriptor: descriptor,
@@ -649,17 +671,16 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       throw StateError('Standard local single-signature wallet required');
     }
 
-    final seed = await _seed.get(descriptorKey.masterFingerprint);
-    if (seed is! MnemonicSeedModel) {
-      throw StateError('Standard local single-signature wallet required');
-    }
-    final mnemonic = seed.mnemonicWords.join(' ');
+    // Material comes from the resolver, never the seed store directly: a
+    // passphrase wallet's mnemonic lives only in the volatile session.
+    final material = await _signingMaterial.resolve(metadata);
+    final mnemonic = material.mnemonic;
 
     final wallet =
         WalletModel.privateBdk(
               id: metadata.id,
               mnemonic: mnemonic,
-              passphrase: seed.passphrase,
+              passphrase: material.passphrase,
               scriptType: scriptType,
               account: account,
               isTestnet: metadata.isTestnet,
@@ -689,16 +710,21 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
-    final wallet = await getPrivateWallet(walletId: walletId);
+    final context = await _publicWalletContext(walletId);
+    final checkSigningSession = _signingMaterial.captureSigningGuard(
+      context.metadata,
+    );
     final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
-      wallet: wallet,
+      wallet: context.wallet,
       txid: txid,
       feeRate: newFeeRate,
     );
+    checkSigningSession();
     final signed = await _signPsbt(
       psbt,
       walletId: walletId,
       replacingTxid: txid,
+      signingSession: checkSigningSession,
     );
     if (!signed.isFinalized) {
       throw StateError('Replacement transaction is not fully signed');
@@ -768,10 +794,15 @@ class BitcoinWalletRepository implements BitcoinSendPort, BitcoinSigningPort {
       return const Err(
         BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
       );
+    } on PassphraseWalletLockedException {
+      return const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.walletLocked),
+      );
     } on Exception catch (error, stackTrace) {
       log.severe(
         message: 'Bitcoin signing operation failed',
-        error: error,
+        // Native/parser exceptions may include the descriptor or key input.
+        error: error.runtimeType,
         trace: stackTrace,
       );
       return const Err(

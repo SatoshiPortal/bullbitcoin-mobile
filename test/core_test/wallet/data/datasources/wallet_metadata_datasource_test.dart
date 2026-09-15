@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/backup_revision_recorder.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -55,6 +56,101 @@ void main() {
   });
 
   tearDown(() => database.close());
+
+  Future<int> revision() async =>
+      (await database.select(database.walletBackupStates).getSingle())
+          .localRevision;
+
+  test(
+    'records durable changes without a backup listener, but not re-stores or sync',
+    () async {
+      final metadata = _multisigMetadata();
+      await datasource.store(metadata);
+      final created = await revision();
+      expect(created, greaterThan(0));
+      await datasource.store((await datasource.fetch(metadata.id))!);
+      await datasource.storeAll([(await datasource.fetch(metadata.id))!]);
+      await datasource.updateSyncedAt(
+        walletId: metadata.id,
+        syncedAt: DateTime.utc(2026),
+      );
+      expect(await revision(), created);
+      await datasource.store(metadata.copyWith(label: 'Renamed'));
+      expect(await revision(), created + 1);
+      await datasource.updateSignerDevice(
+        walletId: metadata.id,
+        signerId: _hardware.id,
+        signer: Signer.remote,
+        signerDevice: SignerDevice.ledgerFlex,
+      );
+      expect(await revision(), created + 2);
+      await datasource.delete(metadata.id);
+      expect(await revision(), created + 3);
+      await datasource.delete(metadata.id);
+      expect(await revision(), created + 3);
+    },
+  );
+
+  for (final operation in [
+    'store',
+    'storeAll',
+    'delete',
+    'signer',
+    'registration',
+    'preferences',
+  ]) {
+    test(
+      '$operation rolls back data and emits nothing if the revision cannot commit',
+      () async {
+        final metadata = _multisigMetadata();
+        await datasource.store(metadata);
+        final before = await revision();
+        final failing = WalletMetadataDatasource(
+          sqlite: database,
+          revisions: _FailAfterRecording(DriftBackupRevisionRecorder(database)),
+        );
+        final events = <void>[];
+        final preferences = failing.preferenceChanges.listen(events.add);
+        final catalog = failing.catalogChanges.listen(events.add);
+        addTearDown(preferences.cancel);
+        addTearDown(catalog.cancel);
+        final Future<Object?> mutation = switch (operation) {
+          'store' => failing.store(metadata.copyWith(label: 'Changed')),
+          'storeAll' => failing.storeAll([
+            metadata.copyWith(label: 'Changed'),
+            metadata.copyWith(id: 'second-wallet'),
+          ]),
+          'delete' => failing.delete(metadata.id),
+          'signer' => failing.updateSignerDevice(
+            walletId: metadata.id,
+            signerId: _hardware.id,
+            signer: Signer.remote,
+            signerDevice: SignerDevice.ledgerFlex,
+          ),
+          'registration' => failing.updateSignerRegistrationName(
+            walletId: metadata.id,
+            signerId: _hardware.id,
+            registrationName: 'New hardware policy',
+          ),
+          _ => failing.storeRecoveredPreferencesConditionally([
+            WalletMetadataPreferenceRecoveryUpdate(
+              walletRef: metadata.id,
+              expectedLabel: metadata.label,
+              expectedHideOnHome: metadata.hideOnHome,
+              expectedAutoSweepEnabled: metadata.autoSweepEnabled,
+              recoveredLabel: 'Recovered',
+              recoveredHideOnHome: null,
+              recoveredAutoSweepEnabled: null,
+            ),
+          ]),
+        };
+        await expectLater(mutation, throwsException);
+        expect(await datasource.fetchAll(), [metadata]);
+        expect(await revision(), before);
+        expect(events, isEmpty);
+      },
+    );
+  }
 
   test('stores and fetches ordered signers and descriptor keys', () async {
     final metadata = _multisigMetadata();
@@ -198,3 +294,14 @@ WalletMetadataModel _multisigMetadata() => WalletMetadataModel(
   isDefault: false,
   label: 'Vault',
 );
+
+class _FailAfterRecording implements BackupRevisionRecorder {
+  final BackupRevisionRecorder delegate;
+  _FailAfterRecording(this.delegate);
+
+  @override
+  Future<void> recordCommittedMutation() async {
+    await delegate.recordCommittedMutation();
+    throw Exception('simulated commit failure');
+  }
+}

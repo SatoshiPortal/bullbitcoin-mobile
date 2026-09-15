@@ -94,6 +94,10 @@ final class _RenewRepository extends Fake implements BullVaultRepository {
   ) async => Ok(records[walletId]);
 
   @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() async =>
+      Ok(records.values.toList());
+
+  @override
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getLineage(
     String lineageId,
   ) async => Ok(

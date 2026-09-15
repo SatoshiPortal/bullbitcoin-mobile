@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
@@ -18,11 +19,15 @@ import '../../bdk_wallet_test_fixture.dart';
 
 final class _TestPathProvider extends PathProviderPlatform {
   final String path;
+  final void Function()? onRead;
 
-  _TestPathProvider(this.path);
+  _TestPathProvider(this.path, {this.onRead});
 
   @override
-  Future<String?> getApplicationDocumentsPath() async => path;
+  Future<String?> getApplicationDocumentsPath() async {
+    onRead?.call();
+    return path;
+  }
 }
 
 void main() {
@@ -82,6 +87,50 @@ void main() {
 
     expect(signed.isFinalized, isTrue);
   });
+
+  test(
+    'rechecks signing authorization after native wallet preparation',
+    () async {
+      final descriptors = singleSignatureDescriptors(testMnemonics.first);
+      final psbt = buildUnsignedPsbt(
+        descriptor: twoPathDescriptor(
+          descriptors.external,
+          descriptors.internal,
+        ),
+      );
+      final wallet =
+          WalletModel.privateBdk(
+                id: 'locked-during-preparation',
+                scriptType: ScriptType.bip84,
+                mnemonic: testMnemonics.first,
+                account: 0,
+                isTestnet: true,
+              )
+              as PrivateBdkWalletModel;
+      var locked = false;
+      var checks = 0;
+      PathProviderPlatform.instance = _TestPathProvider(
+        tempDirectory.path,
+        onRead: () => locked = true,
+      );
+      await expectLater(
+        datasource.signPsbt(
+          psbt,
+          wallet: wallet,
+          checkSigningSession: () {
+            checks++;
+            if (locked) throw const PassphraseWalletLockedException('fixture');
+          },
+        ),
+        throwsA(isA<PassphraseWalletLockedException>()),
+      );
+      expect(locked, isTrue);
+      expect(checks, 2);
+      // This is a signable PSBT; rejection was not a malformed-input shortcut.
+      final signed = await datasource.signPsbt(psbt, wallet: wallet);
+      expect(signed.isFinalized, isTrue);
+    },
+  );
 
   for (final scenario in [
     (

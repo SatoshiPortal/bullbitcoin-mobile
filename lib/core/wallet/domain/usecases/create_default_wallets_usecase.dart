@@ -5,6 +5,24 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
+
+typedef DefaultWalletsResult = ({
+  List<Wallet> wallets,
+  Set<String> createdWalletIds,
+});
+
+extension DefaultWalletsRecoveryPreferences on DefaultWalletsResult {
+  /// Initial persisted values, not a later read that could include user edits.
+  /// Newly created defaults have no visibility or auto-sweep preference yet.
+  List<WalletPreferences> get createdWalletPreferences => List.unmodifiable([
+    if (createdWalletIds.isNotEmpty)
+      for (final wallet in wallets)
+        if (createdWalletIds.contains(wallet.id))
+          WalletPreferences(walletRef: wallet.id, label: wallet.label),
+  ]);
+}
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
@@ -19,7 +37,7 @@ class CreateDefaultWalletsUsecase {
     required WalletRepository walletRepository,
   }) : _wallet = walletRepository;
 
-  Future<List<Wallet>> execute({
+  Future<DefaultWalletsResult> execute({
     List<String>? mnemonicWords,
     String? passphrase,
   }) async {
@@ -41,7 +59,13 @@ class CreateDefaultWalletsUsecase {
       );
       final hasBitcoin = existing.any((w) => w.network.isBitcoin);
       final hasLiquid = existing.any((w) => w.network.isLiquid);
-      if (hasBitcoin && hasLiquid) return existing;
+      if (hasBitcoin && hasLiquid) {
+        return (wallets: existing, createdWalletIds: const <String>{});
+      }
+
+      // A descriptor wallet can be adopted as a default wallet. It remains
+      // pre-existing for metadata conflict handling, even if it was hidden.
+      final existingIds = await _wallet.getStoredWalletIds();
 
       final isGenerated = mnemonicWords == null;
       final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
@@ -61,6 +85,7 @@ class CreateDefaultWalletsUsecase {
               seed: seed,
               network: liquidNetwork,
               scriptType: scriptType,
+              provenance: WalletProvenance.defaultSeed,
               isDefault: true,
               birthday: birthday,
             ),
@@ -72,6 +97,7 @@ class CreateDefaultWalletsUsecase {
               seed: seed,
               network: bitcoinNetwork,
               scriptType: scriptType,
+              provenance: WalletProvenance.defaultSeed,
               isDefault: true,
               birthday: birthday,
             ),
@@ -79,12 +105,13 @@ class CreateDefaultWalletsUsecase {
         }
       } catch (_) {
         for (final wallet in created) {
+          if (existingIds.contains(wallet.id)) continue;
           try {
             await _wallet.deleteWallet(walletId: wallet.id);
           } catch (e, stackTrace) {
             log.severe(
               message: 'CreateDefaultWalletsUsecase: rollback failed',
-              error: e,
+              error: e.runtimeType,
               trace: stackTrace,
             );
           }
@@ -92,9 +119,16 @@ class CreateDefaultWalletsUsecase {
         rethrow;
       }
 
-      return [...existing, ...created];
-    } catch (e) {
-      throw CreateDefaultWalletsException(e.toString());
+      return (
+        wallets: List<Wallet>.unmodifiable([...existing, ...created]),
+        createdWalletIds: Set.unmodifiable(
+          created
+              .map((wallet) => wallet.id)
+              .where((id) => !existingIds.contains(id)),
+        ),
+      );
+    } catch (_) {
+      throw CreateDefaultWalletsException('Default wallet creation failed');
     }
   }
 }

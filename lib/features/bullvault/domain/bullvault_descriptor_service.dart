@@ -254,7 +254,11 @@ final class BullVaultDescriptorService {
     BullVaultPolicy policy,
   ) => _matchesExistingWallet(wallet, policy, requireOwnership: false);
 
-  bool matchesEverydaySignerOwnership(Wallet wallet, BullVaultPolicy policy) {
+  bool matchesEverydaySignerOwnership(
+    Wallet wallet,
+    BullVaultPolicy policy, {
+    required String seedFingerprint,
+  }) {
     final expectedXpub = _canonicalXpub(policy.everydayKey.accountKey.xpub);
     final matching = wallet.signers.where(
       (signer) => signer.descriptorKeys.any(
@@ -262,7 +266,15 @@ final class BullVaultDescriptorService {
       ),
     );
     return matching.length == 1 &&
-        matching.single.signer == policy.everydayKey.signer;
+        matching.single.signer == policy.everydayKey.signer &&
+        matching.single.localSeedFingerprint?.toLowerCase() ==
+            seedFingerprint.toLowerCase() &&
+        matching.single.descriptorKeys.every(
+          (key) =>
+              key.requiresPassphrase ==
+              (_canonicalXpub(key.xpub) == expectedXpub &&
+                  policy.everydayKey.accountKey.requiresPassphrase),
+        );
   }
 
   bool _matchesExistingWallet(

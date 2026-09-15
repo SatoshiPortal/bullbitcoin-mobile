@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
@@ -26,6 +27,7 @@ class MockWalletRepository extends Mock implements WalletRepository {}
 class MockWallet extends Mock implements Wallet {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(WalletProvenance.defaultSeed));
   setUpAll(() {
     registerFallbackValue(
       MnemonicSeed(
@@ -120,9 +122,11 @@ void main() {
           seed: any(named: 'seed'),
           network: any(named: 'network'),
           scriptType: any(named: 'scriptType'),
+          provenance: WalletProvenance.importedMnemonic,
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
+          birthday: null,
         ),
       ).thenAnswer((_) async => fakeWallet);
 
@@ -181,6 +185,8 @@ void main() {
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
+          provenance: any(named: 'provenance'),
+          birthday: any(named: 'birthday'),
         ),
       ).thenThrow(const WalletAlreadyExistsException('descriptor-wallet'));
       when(
@@ -222,6 +228,8 @@ void main() {
           isDefault: any(named: 'isDefault'),
           sync: any(named: 'sync'),
           label: any(named: 'label'),
+          provenance: any(named: 'provenance'),
+          birthday: any(named: 'birthday'),
         ),
       ).thenThrow(const WalletAlreadyExistsException('descriptor-wallet'));
       when(

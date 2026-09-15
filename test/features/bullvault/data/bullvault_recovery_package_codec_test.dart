@@ -26,6 +26,32 @@ void main() {
   final descriptorService = BullVaultDescriptorService(descriptorPort);
   final codec = BullVaultRecoveryPackageCodec(descriptorService);
 
+  for (final network in [Network.bitcoinMainnet, Network.bitcoinTestnet]) {
+    for (final inheritance in [false, true]) {
+      test(
+        'shared fixture survives real policy verification: $network, inheritance: $inheritance',
+        () {
+          final package = testBullVaultRecoveryPackage(
+            network: network,
+            includesInheritance: inheritance,
+          );
+          expect(
+            descriptorService.matchesPolicyDescriptor(package.policy),
+            isTrue,
+          );
+          final restored = codec.decode(codec.encode(package));
+          expect(restored.policy.id, package.policy.id);
+          expect(restored.policy.lineageId, package.policy.lineageId);
+          expect(restored.policy.descriptor, package.policy.descriptor);
+          expect(
+            descriptorService.matchesPolicyDescriptor(restored.policy),
+            isTrue,
+          );
+        },
+      );
+    }
+  }
+
   test('serializes the compact public recovery format', () {
     final policy = _policy(
       descriptorPort,

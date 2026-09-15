@@ -7,6 +7,8 @@ import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart'
 export '../domain/settings_failure.dart';
 export '../presentation/settings_failure_l10n.dart';
 export '../ui/settings_router.dart' show SettingsRoute;
+export '../ui/widgets/wallet_policy_view.dart' show WalletPolicyView;
+export '../ui/widgets/wallet_keys_view.dart' show WalletKeysView;
 export 'payjoin_disclaimer_dialog.dart';
 export 'settings_entry_registry.dart'
     show SettingsEntryContribution, SettingsEntrySection;

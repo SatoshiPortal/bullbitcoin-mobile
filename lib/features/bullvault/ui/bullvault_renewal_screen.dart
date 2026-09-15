@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -9,7 +11,6 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_state.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_policy_setup_flow.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_completion_steps.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_schedule_fields.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -30,11 +31,23 @@ final class BullVaultRenewalScreen extends StatelessWidget {
     BuildContext context,
   ) => BlocConsumer<BullVaultRenewalCubit, BullVaultRenewalState>(
     listenWhen: (previous, current) =>
-        previous.failure != current.failure && current.failure != null,
-    listener: (context, state) => BullSnackBar.show(
-      context,
-      message: state.failure!.toTranslated(context),
-    ),
+        (previous.failure != current.failure && current.failure != null) ||
+        (!previous.recoveryPackageConfirmed &&
+            current.recoveryPackageConfirmed),
+    listener: (context, state) {
+      if (state.failure case final failure?) {
+        BullSnackBar.show(context, message: failure.toTranslated(context));
+        return;
+      }
+      // A renewed vault has a new descriptor, so it needs its own destination
+      // choices and its own artifacts; the predecessor's stay untouched.
+      unawaited(
+        openBullVaultBackupDestinations(
+          context,
+          walletId: state.renewal?.replacement.wallet.id,
+        ),
+      );
+    },
     builder: (context, state) {
       final isBusy =
           state.isRenewing || state.isActivating || state.isCancelling;
@@ -613,9 +626,11 @@ final class _RenewalSetup extends StatelessWidget {
     return switch (state.step) {
       BullVaultRenewalStep.review => const SizedBox.shrink(),
       BullVaultRenewalStep.recoveryPackage => BullVaultRecoveryPackageStep(
+        descriptor: result.record.recoveryPackage.policy.descriptor,
         exported: state.recoveryPackageExported,
         confirmed: state.recoveryPackageConfirmed,
         onSave: () => _shareRecoveryPackage(context, state),
+        onImport: context.read<BullVaultRenewalCubit>().importRecoveryPackage,
         onConfirm: context.read<BullVaultRenewalCubit>().confirmRecoveryPackage,
       ),
       BullVaultRenewalStep.hardwareSetup => BullVaultHardwareSetupStep(

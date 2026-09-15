@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
+
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -50,20 +52,10 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _privacyFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done ||
-            snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: snapshot.hasError
-                  ? Text(context.loc.oopsSomethingWentWrong)
-                  : const CircularProgressIndicator(),
-            ),
-          );
-        }
+    return PrivacyGate(
+      protection: _privacyFuture,
+      unprotected: const PrivacyUnavailableNotice(),
+      builder: (context) {
         if (widget._mnemonic != null) {
           return _buildScreen(
             AppBar(title: Text(widget._title!)),
@@ -75,15 +67,10 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
         }
         return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
           builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
-
             return _buildScreen(
               PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
+                child: AppBarWidget(title: context.loc.backupWalletTitle),
               ),
               const _MnemonicDisplay(),
             );
@@ -144,35 +131,31 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay> {
   Future<(List<String>, String?)>? _secretFuture;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.mnemonic != null) {
-      _secretFuture ??= Future.value((widget.mnemonic!, null));
-      return;
-    }
-    final fingerprint = context
-        .read<TestWalletBackupBloc>()
-        .state
-        .selectedWallet
-        ?.singleLocalSeedFingerprint;
-    if (fingerprint != _fingerprint) {
-      _fingerprint = fingerprint;
-      _secretFuture = fingerprint == null
-          ? null
-          : context.read<TestWalletBackupBloc>().loadSelectedWalletMnemonic();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final selectedWallet = widget.mnemonic == null
         ? context.watch<TestWalletBackupBloc>().state.selectedWallet
         : null;
+    if (widget.mnemonic != null) {
+      _secretFuture ??= Future.value((widget.mnemonic!, null));
+    } else {
+      final fingerprint = selectedWallet?.singleLocalSeedFingerprint;
+      if (fingerprint != _fingerprint) {
+        _fingerprint = fingerprint;
+        _secretFuture = fingerprint == null
+            ? null
+            : context.read<TestWalletBackupBloc>().loadSelectedWalletMnemonic();
+      }
+    }
     final lastPhysicalBackup = selectedWallet?.latestPhysicalBackup;
 
     return FutureBuilder<(List<String>, String?)>(
       future: _secretFuture,
       builder: (context, snapshot) {
+        // FutureBuilder retains the previous data while a new future loads.
+        // Never show that wallet's words under the newly selected wallet.
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final mnemonic = snapshot.data?.$1 ?? const <String>[];
         final passphrase = snapshot.data?.$2 ?? '';
 

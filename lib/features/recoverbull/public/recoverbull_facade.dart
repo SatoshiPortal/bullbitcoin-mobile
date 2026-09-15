@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/domain/usecases/check_recoverbull_backup_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
-import 'package:bb_mobile/features/recoverbull/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,8 +34,12 @@ class RecoverBullFacade {
   );
 
   static Future<void> openViewVaultKey(BuildContext context) async {
-    final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
-    if (confirmed != true || !context.mounted) return;
-    openRecoverBullFlow(context, flow: RecoverBullFlow.viewVaultKey);
+    await context.pushNamed(
+      RecoverBullRoute.recoverbullFlows.name,
+      extra: RecoverBullFlowsExtra(
+        flow: RecoverBullFlow.viewVaultKey,
+        vault: null,
+      ),
+    );
   }
 }

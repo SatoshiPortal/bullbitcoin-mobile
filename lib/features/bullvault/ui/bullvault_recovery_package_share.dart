@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 Future<bool> shareBullVaultRecoveryPackage(
@@ -46,4 +48,20 @@ Future<bool> shareBullVaultRecoveryPackage(
     }
     return false;
   }
+}
+
+/// Opens Additional backup protection right after the descriptor gate.
+///
+/// The screen itself lives in `backup_settings`, the one feature that can reach
+/// both the descriptor server and the relays; this feature only knows its route
+/// name, exactly as it does for Backup & recovery.
+Future<void> openBullVaultBackupDestinations(
+  BuildContext context, {
+  required String? walletId,
+}) async {
+  if (walletId == null) return;
+  await context.pushNamed(
+    BullVaultFacade.backupDestinationsRouteName,
+    pathParameters: {'walletId': walletId},
+  );
 }

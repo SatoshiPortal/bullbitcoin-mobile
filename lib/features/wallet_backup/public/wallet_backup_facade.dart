@@ -1,0 +1,247 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
+import 'dart:typed_data';
+
+export 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart'
+    show WalletPreferences;
+
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart'
+    show
+        WalletBackupContents,
+        WalletBackupVaultSummary,
+        WalletBackupWalletSummary;
+export 'package:bb_mobile/features/wallet_backup/metadata/domain/entities/wallet_metadata_snapshot.dart'
+    show WalletAutoswapSettings, WalletPayjoinSettings, WalletPortableSettings;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart'
+    show WalletBackupExport, WalletBackupFileProtection;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart'
+    show
+        WalletBackupDifference,
+        WalletBackupImportComparison,
+        WalletBackupImportSituation,
+        WalletBackupImportSource,
+        WalletBackupSnapshotSummary;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart'
+    show PrivateDescriptorLookup, PrivateDescriptorRecord;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart'
+    show WalletBackupRecoveryResult, WalletBackupRecoveryStatus;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart'
+    show WalletBackupRecoveryState, WalletBackupState;
+export 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart'
+    show WalletBackupWordsExtraction;
+export 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+export 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
+
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart'
+    show BullVaultDescriptorBackup;
+import 'package:bb_mobile/features/wallet_backup/domain/entities/private_descriptor_record.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_contents.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_words_extraction.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_export_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/extract_vaults_with_backup_words_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_remote_wallet_backup_contents_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/get_wallet_backup_contents_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_private_descriptor_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/lookup_private_descriptors_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_enabled_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/set_wallet_backup_server_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/watch_wallet_backup_state_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_job_runner.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_server_config.dart';
+import 'package:meta/meta.dart';
+
+/// The one entry point into Bull backup.
+///
+/// Every intent that touches the server is handed to the job runner, so the
+/// facade never has to know what else is in flight.
+class WalletBackupFacade {
+  final GetWalletBackupContentsUsecase _getContents;
+  final WatchWalletBackupStateUsecase _watchState;
+  final SetWalletBackupEnabledUsecase _setEnabled;
+  final SetWalletBackupServerUsecase _setServer;
+  final DeleteWalletBackupUsecase _delete;
+  final WalletBackupJobRunner _runner;
+  final WalletBackupStateRepository _state;
+  final RecoverWalletBackupUsecase _recover;
+  final BuildWalletBackupExportUsecase _buildExport;
+  final CompareWalletBackupFileUsecase _compareFile;
+  final RecoverWalletBackupFileUsecase _recoverFile;
+  final GetRemoteWalletBackupContentsUsecase _getRemoteContents;
+  final ExtractVaultsWithBackupWordsUsecase _extractWithWords;
+  final PublishPrivateDescriptorUsecase _publishPrivateDescriptor;
+  final LookupPrivateDescriptorsUsecase _lookupPrivateDescriptors;
+  final WalletBackupOriginProvider _origin;
+
+  const WalletBackupFacade(
+    this._getContents,
+    this._watchState,
+    this._setEnabled,
+    this._setServer,
+    this._delete,
+    this._runner,
+    this._state,
+    this._recover,
+    this._buildExport,
+    this._compareFile,
+    this._recoverFile,
+    this._getRemoteContents,
+    this._extractWithWords,
+    this._publishPrivateDescriptor,
+    this._lookupPrivateDescriptors,
+    this._origin,
+  );
+
+  /// The origin the server sources answer from right now, normalized.
+  ///
+  /// It is the same one every request goes to, so a receipt can be bound to
+  /// the server that really produced it. An origin this build cannot parse is
+  /// reported as the empty string rather than guessed at.
+  @useResult
+  Future<String> serverOrigin() async {
+    try {
+      return (await _origin()).toString();
+    } on Exception {
+      return '';
+    }
+  }
+
+  @useResult
+  Future<Result<WalletBackupContents, WalletBackupFailure>> getContents() =>
+      _getContents.execute();
+
+  /// What the server holds for this seed, read without applying anything.
+  /// Null when the server has no backup for this seed.
+  @useResult
+  Future<Result<WalletBackupContents?, WalletBackupFailure>>
+  fetchRemoteContents() => _runner.run(_getRemoteContents.execute);
+
+  /// The vaults a backup holds, read with its twelve words alone.
+  ///
+  /// Null when the server holds no backup for those words. Nothing local is
+  /// read or written: this is the path for someone recovering onto a fresh
+  /// install, or reading a backup that is not this wallet's own.
+  @useResult
+  Future<Result<WalletBackupWordsExtraction?, WalletBackupFailure>>
+  fetchVaultsWithBackupWords(String words) => _extractWithWords.execute(words);
+
+  /// Publishes a vault's descriptor, sealed so only its own cosigners can read
+  /// it, and returns the time the server filed it under.
+  ///
+  /// Deliberately outside the job runner: a descriptor record is immutable and
+  /// shares no head, checkpoint or fence with the metadata backup, so nothing
+  /// it does has to be serialised against a publication.
+  ///
+  /// [prepared] is an artifact the caller has already written down. Passing it
+  /// is what makes a retry reach the same immutable record instead of sealing a
+  /// second one; without it the descriptor is sealed here and sent once.
+  @useResult
+  Future<Result<DateTime, WalletBackupFailure>> publishPrivateDescriptor(
+    String walletId, {
+    BullVaultDescriptorBackup? prepared,
+  }) => _publishPrivateDescriptor.execute(walletId, prepared: prepared);
+
+  /// Every descriptor record published under one cosigner's account key, by any
+  /// publisher. The records are untrusted candidates the caller must open and
+  /// verify, and the result says whether the search finished.
+  @useResult
+  Future<Result<PrivateDescriptorLookup, WalletBackupFailure>>
+  lookupPrivateDescriptors(String accountKeyInput) =>
+      _lookupPrivateDescriptors.execute(accountKeyInput);
+
+  @useResult
+  Stream<Result<WalletBackupState, WalletBackupFailure>> watchState() =>
+      _watchState.execute();
+
+  /// Enabling recovers the account's backup and publishes once, all inside one
+  /// runner job: the recovery and the first publication must not be separated
+  /// by anything else touching the server.
+  @useResult
+  Future<Result<void, WalletBackupFailure>> setEnabled(
+    bool enabled, {
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+  }) => _runner.run(
+    () => _setEnabled.execute(
+      enabled,
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
+    ),
+  );
+
+  @useResult
+  Future<Result<void, WalletBackupFailure>> setServer(String value) =>
+      _runner.run(() => _setServer.execute(value));
+
+  /// Publishes a snapshot that includes every change committed before this
+  /// call.
+  ///
+  /// Owners outside this database report their changes asynchronously, so an
+  /// explicit "Backup now" records a revision of its own first rather than
+  /// racing a stream event that has not arrived yet.
+  @useResult
+  Future<Result<void, WalletBackupFailure>> backupNow() async {
+    if (await _state.recordLocalMutation() case Err(:final failure)) {
+      return Err(failure);
+    }
+    return _runner.requestPublish();
+  }
+
+  @useResult
+  Future<Result<void, WalletBackupFailure>> deleteRemoteBackup({
+    required bool confirmed,
+  }) {
+    if (!confirmed) return _delete.execute(confirmed: false);
+    return _runner.run(() => _delete.execute(confirmed: true));
+  }
+
+  Future<WalletBackupRecoveryResult> recover({
+    List<WalletPreferences> defaultCreatedWalletPreferences = const [],
+  }) => _runRecovery(
+    () => _recover.execute(
+      defaultCreatedWalletPreferences: defaultCreatedWalletPreferences,
+    ),
+  );
+
+  @useResult
+  Future<Result<WalletBackupExport, WalletBackupFailure>> buildExport({
+    required WalletBackupFileProtection protection,
+    required bool confirmedUnencrypted,
+  }) => _buildExport.execute(
+    protection: protection,
+    confirmedUnencrypted: confirmedUnencrypted,
+  );
+
+  @useResult
+  Future<Result<WalletBackupImportComparison, WalletBackupFailure>> compareFile(
+    Uint8List bytes,
+  ) => _compareFile.execute(bytes);
+
+  Future<WalletBackupRecoveryResult> recoverComparedFile({
+    required Uint8List fileBytes,
+    required WalletBackupImportComparison comparison,
+    required WalletBackupImportSource source,
+  }) => _runRecovery(
+    () => _recoverFile.execute(
+      fileBytes: fileBytes,
+      comparison: comparison,
+      source: source,
+    ),
+  );
+
+  /// Recovery reports its own outcome, so a runner-level refusal — a closed
+  /// rate-limit gate above all — has to be folded into the same shape.
+  Future<WalletBackupRecoveryResult> _runRecovery(
+    Future<WalletBackupRecoveryResult> Function() job,
+  ) async => switch (await _runner.run(() async => Ok(await job()))) {
+    Ok(:final value) => value,
+    Err(:final failure) => WalletBackupRecoveryResult.fromFailure(failure),
+  };
+}

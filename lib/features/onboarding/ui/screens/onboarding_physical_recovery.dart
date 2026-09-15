@@ -11,6 +11,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
 
 class OnboardingPhysicalRecovery extends StatefulWidget {
   const OnboardingPhysicalRecovery({super.key});
@@ -32,9 +33,10 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _privacyFuture,
-      builder: (context, snapshot) {
+    return PrivacyGate(
+      protection: _privacyFuture,
+      unprotected: const PrivacyUnavailableNotice(),
+      builder: (context) {
         return BlocListener<OnboardingBloc, OnboardingState>(
           listenWhen: (previous, current) =>
               previous.step != current.step ||
@@ -42,7 +44,12 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
           listener: (context, state) {
             if (state.step == OnboardingStep.recover &&
                 state.onboardingStepStatus == OnboardingStepStatus.success) {
-              context.goNamed(WalletRoute.walletHome.name);
+              context.goNamed(
+                WalletRoute.walletHome.name,
+                extra: WalletHomeRecoveryContext(
+                  state.defaultCreatedWalletPreferences,
+                ),
+              );
             }
           },
           child: BlocBuilder<OnboardingBloc, OnboardingState>(

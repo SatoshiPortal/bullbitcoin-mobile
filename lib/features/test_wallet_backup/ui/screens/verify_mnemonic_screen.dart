@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/widgets/privacy_unavailable_notice.dart';
+
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -41,47 +43,49 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   List<String> _shuffled = [];
   List<int> _selectedIndices = [];
   String? _fingerprint;
+  var _loadGeneration = 0;
   bool _isLoading = true;
+  bool _loadFailed = false;
 
   late final Future<void> _privacyFuture = enableScreenPrivacy();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
     if (widget._providedMnemonic != null) {
-      if (_isLoading) {
-        _mnemonic = widget._providedMnemonic!;
-        _shuffled = [..._mnemonic]..shuffle();
-        _isLoading = false;
-      }
-      return;
+      _mnemonic = widget._providedMnemonic!;
+      _shuffled = [..._mnemonic]..shuffle();
+      _isLoading = false;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_loadSecret());
+      });
     }
-    _loadSecretFor(
-      context
-          .read<TestWalletBackupBloc>()
-          .state
-          .selectedWallet
-          ?.singleLocalSeedFingerprint,
-    );
-  }
-
-  void _loadSecretFor(String? fingerprint) {
-    if (fingerprint == null ||
-        fingerprint.isEmpty ||
-        fingerprint == _fingerprint) {
-      return;
-    }
-    _fingerprint = fingerprint;
-    unawaited(_loadSecret());
   }
 
   Future<void> _loadSecret() async {
-    setState(() => _isLoading = true);
+    final fingerprint = context
+        .read<TestWalletBackupBloc>()
+        .state
+        .selectedWallet
+        ?.singleLocalSeedFingerprint;
+    if (fingerprint == _fingerprint) return;
+
+    final generation = ++_loadGeneration;
+    _fingerprint = fingerprint;
+    setState(() {
+      _mnemonic = [];
+      _shuffled = [];
+      _selectedIndices = [];
+      _isLoading = fingerprint != null;
+      _loadFailed = fingerprint == null;
+    });
+    if (fingerprint == null) return;
     try {
       final (mnemonic, _) = await context
           .read<TestWalletBackupBloc>()
           .loadSelectedWalletMnemonic();
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _mnemonic = mnemonic;
         _shuffled = [...mnemonic]..shuffle();
@@ -89,8 +93,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         _isLoading = false;
       });
     } catch (_) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _isLoading = false;
+        _loadFailed = true;
+      });
     }
   }
 
@@ -140,30 +147,24 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _privacyFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done ||
-            snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: snapshot.hasError
-                  ? Text(context.loc.oopsSomethingWentWrong)
-                  : const CircularProgressIndicator(),
-            ),
-          );
-        }
+    return PrivacyGate(
+      protection: _privacyFuture,
+      unprotected: const PrivacyUnavailableNotice(),
+      builder: (context) {
         if (widget._providedMnemonic != null) {
           return _buildScreen(AppBar(title: Text(widget._title!)));
         }
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
-              previous.selectedWallet?.id != current.selectedWallet?.id ||
+              previous.selectedWallet?.singleLocalSeedFingerprint !=
+                  current.selectedWallet?.singleLocalSeedFingerprint ||
               previous.verificationStatus != current.verificationStatus ||
               (previous.statusError.isEmpty && current.statusError.isNotEmpty),
           listener: (context, state) {
-            _loadSecretFor(state.selectedWallet?.singleLocalSeedFingerprint);
+            if (state.selectedWallet?.singleLocalSeedFingerprint !=
+                _fingerprint) {
+              unawaited(_loadSecret());
+            }
             if (state.statusError.isNotEmpty) {
               SnackBarUtils.showSnackBar(context, state.statusError);
               context.read<TestWalletBackupBloc>().add(const ClearError());
@@ -194,15 +195,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             }
           },
           builder: (context, state) {
-            final walletName = state.selectedWallet?.isDefault ?? false
-                ? context.loc.testBackupDefaultWallets
-                : state.selectedWallet?.displayLabel(context) ?? '';
-            final title = context.loc.testBackupWalletTitle(walletName);
-
             return _buildScreen(
               PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
+                child: AppBarWidget(title: context.loc.testBackupTitle),
               ),
             );
           },
@@ -264,6 +260,14 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
               const Gap(16),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
+              else if (_loadFailed)
+                BBText(
+                  context.loc.oopsSomethingWentWrong,
+                  textAlign: .center,
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                )
               else
                 ExcludeSemantics(
                   child: _ShuffledMnemonicGrid(
