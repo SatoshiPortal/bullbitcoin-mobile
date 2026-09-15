@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/nostr/nostr_event.dart';
 import 'package:bb_mobile/core/nostr/nostr_relay_datasource.dart';
 import 'package:bb_mobile/core/nostr/nostr_session.dart';
 import 'package:bb_mobile/core/utils/recoverbull_encryption.dart';
@@ -14,6 +13,7 @@ import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.d
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nostr/nostr.dart' as nostr;
 
 import '../support/bullvault_descriptor_fixture.dart';
 import '../support/fake_nostr_relay.dart';
@@ -58,7 +58,7 @@ void main() {
     repository = repositoryOver(relays);
   });
 
-  Future<NostrEvent> sealed({String? source, Network? network}) =>
+  Future<nostr.Event> sealed({String? source, Network? network}) =>
       repository.seal(
         credential: credential,
         descriptor: source ?? descriptor,
@@ -74,9 +74,10 @@ void main() {
       expect(event.tags, [
         ['t', DescriptorArtifact.profile],
       ]);
-      expect(event.author, credential.nostrPublicKeyHex);
+      expect(event.pubkey, credential.nostrPublicKeyHex);
+      expect(event.isValid(), isTrue);
       // Everything a relay can read, apart from the ciphertext itself.
-      final envelope = jsonEncode(event.toJson()..remove('content'));
+      final envelope = jsonEncode(event.toMap()..remove('content'));
       for (final secret in [
         descriptor,
         canonical,
@@ -197,8 +198,8 @@ void main() {
             descriptor: descriptor,
             network: Network.bitcoinTestnet,
           );
-      relays[0].events.add(later.toJson());
-      relays[1].events.add(first.toJson());
+      relays[0].events.add(later.toMap());
+      relays[1].events.add(first.toMap());
 
       final search = await repository.discover(
         credential: credential,
@@ -242,7 +243,7 @@ void main() {
   test('a forged, tampered or foreign event is never believed', () async {
     final event = await sealed();
     final foreignKey = ECPrivate.fromHex('1' * 63 + '3');
-    final json = event.toJson();
+    final json = event.toMap();
 
     relays[0].events.addAll([
       // Signature over somebody else's key.
@@ -365,7 +366,7 @@ void main() {
         descriptor: descriptor,
         network: Network.bitcoinMainnet,
       );
-      relays[0].events.add(event.toJson());
+      relays[0].events.add(event.toMap());
 
       final search = await repository.discover(
         credential: credential,
@@ -378,48 +379,27 @@ void main() {
 }
 
 /// The same content under a different author, signed by that author.
-Map<String, dynamic> _reauthored(NostrEvent event, ECPrivate key) {
-  final author = hex.encode(key.getPublic().toXOnly());
-  final id = NostrEvent.hash(
-    author: author,
-    createdAt: event.createdAt,
-    kind: event.kind,
-    tags: event.tags,
-    content: event.content,
-  );
-  return {
-    'id': id,
-    'pubkey': author,
-    'created_at': event.createdAt,
-    'kind': event.kind,
-    'tags': event.tags,
-    'content': event.content,
-    'sig': key.signBip340(hex.decode(id), tweak: false),
-  };
-}
+Map<String, dynamic> _reauthored(nostr.Event event, ECPrivate key) =>
+    nostr.Event.from(
+      kind: event.kind,
+      content: event.content,
+      secretKey: key.toHex(),
+      createdAt: event.createdAt,
+      tags: event.tags,
+    ).toMap();
 
 /// The same author and content under a changed profile, correctly signed.
 Map<String, dynamic> _resigned(
-  NostrEvent event,
+  nostr.Event event,
   BackupCredential credential, {
   List<List<String>>? tags,
   int? kind,
   int? createdAt,
-}) {
-  final id = NostrEvent.hash(
-    author: event.author,
-    createdAt: createdAt ?? event.createdAt,
-    kind: kind ?? event.kind,
-    tags: tags ?? event.tags,
-    content: event.content,
-  );
-  return {
-    'id': id,
-    'pubkey': event.author,
-    'created_at': createdAt ?? event.createdAt,
-    'kind': kind ?? event.kind,
-    'tags': tags ?? event.tags,
-    'content': event.content,
-    'sig': credential.signNostrHash(id),
-  };
-}
+}) => credential
+    .signNostrEvent(
+      kind: kind ?? event.kind,
+      content: event.content,
+      createdAt: createdAt ?? event.createdAt,
+      tags: tags ?? event.tags,
+    )
+    .toMap();

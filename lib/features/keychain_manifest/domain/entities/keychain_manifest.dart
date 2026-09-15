@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/utils/nostr_bech32.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_provenance.dart';
-import 'package:convert/convert.dart';
+import 'package:nostr/nostr.dart' as nostr;
 import 'package:primitives/primitives.dart' show Fingerprint;
 
 enum KeychainManifestNostrKeyKind { reserved, userGenerated }
@@ -370,7 +369,10 @@ final class KeychainManifestNostrKey extends KeychainManifestMaterialization {
   @override
   String get identity => 'nostr:$entryId';
 
-  late final String npub = NostrBech32.npub(hex.decode(publicKeyHex));
+  late final String npub = nostr.Bech32Entity.encode(
+    prefix: nostr.Nip19Prefix.npub,
+    data: publicKeyHex,
+  );
 }
 
 String _required(String value) {

@@ -4,13 +4,11 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/nostr_bech32.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
-import 'package:bitcoin_base/bitcoin_base.dart';
-import 'package:convert/convert.dart';
+import 'package:nostr/nostr.dart' as nostr;
 import 'package:primitives/primitives.dart';
 
 final class KeychainManifestNostrKeyDeriver {
@@ -43,17 +41,17 @@ final class KeychainManifestNostrKeyDeriver {
     Seed seed,
     String path, {
     KeychainManifestDerivationKind kind = KeychainManifestDerivationKind.bip85,
-  }) => hex.encode(_derivePrivateKey(seed, path, kind).getPublic().toXOnly());
+  }) => _deriveKeys(seed, path, kind).public;
 
   DerivedKeychainManifestNostrSecret revealSecret(
     Seed seed,
     String path, {
     KeychainManifestDerivationKind kind = KeychainManifestDerivationKind.bip85,
   }) {
-    final key = _derivePrivateKey(seed, path, kind);
+    final keys = _deriveKeys(seed, path, kind);
     return DerivedKeychainManifestNostrSecret(
-      publicKeyHex: hex.encode(key.getPublic().toXOnly()),
-      nsec: NostrBech32.nsec(hex.decode(key.toHex())),
+      publicKeyHex: keys.public,
+      nsec: keys.nsec,
     );
   }
 
@@ -64,8 +62,9 @@ final class KeychainManifestNostrKeyDeriver {
   /// application-39 path whose English mnemonic, with an empty passphrase, is
   /// the BIP32 root the next step derives from. The final step's first 32
   /// bytes of entropy are the secp256k1 secret, the rule every Nostr key in
-  /// the app follows.
-  ECPrivate _derivePrivateKey(
+  /// the app follows. The secret becomes a `nostr` package [nostr.Keys], which
+  /// checks the scalar range and produces the public key, npub and nsec.
+  nostr.Keys _deriveKeys(
     Seed seed,
     String path,
     KeychainManifestDerivationKind kind,
@@ -98,7 +97,7 @@ final class KeychainManifestNostrKeyDeriver {
       xprvBase58: root,
       path: bip85.Bip85HardenedPath(steps.last),
     );
-    return ECPrivate.fromHex(entropy.substring(0, 64));
+    return nostr.Keys(entropy.substring(0, 64));
   }
 }
 

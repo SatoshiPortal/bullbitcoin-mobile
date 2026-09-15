@@ -7,6 +7,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
+import 'package:nostr/nostr.dart' as nostr;
 
 /// Which of the credential's two signing identities an operation uses.
 ///
@@ -148,6 +149,23 @@ final class BackupCredential {
   );
 
   String signNostrHash(String hashHex) => _sign(_nostr, hashHex);
+
+  /// Builds and signs one Nostr event under the artifact identity, through the
+  /// `nostr` package's own event construction and BIP340 signer. The secret
+  /// scalar is handed to the library call and nowhere else.
+  nostr.Event signNostrEvent({
+    required int kind,
+    required String content,
+    required int createdAt,
+    List<List<String>> tags = const [],
+  }) => nostr.Event.from(
+    kind: kind,
+    content: content,
+    secretKey: _nostr.toHex(),
+    createdAt: createdAt,
+    tags: tags,
+    verify: true,
+  );
 
   String signServerHash(String hashHex) => _sign(_server, hashHex);
 

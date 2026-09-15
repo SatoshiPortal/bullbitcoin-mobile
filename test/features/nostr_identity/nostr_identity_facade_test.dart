@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dar
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/nostr_bech32.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential_resolver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/get_backup_identity_public_key_usecase.dart';
@@ -22,6 +21,7 @@ import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nostr/nostr.dart' as nostr;
 
 class _MockSettings extends Mock implements GetSettingsUsecase {}
 
@@ -79,7 +79,7 @@ void main() {
     expect(author, _nostrPublicKey);
     expect(account, isNot(author));
     expect(
-      NostrBech32.npub(hex.decode(author)),
+      nostr.Bech32Entity.encode(prefix: nostr.Nip19Prefix.npub, data: author),
       'npub1u07vnptqn8wr0mhzranywy5se0jgmlh3gw3j6nup4phr79u897kqf7t75t',
     );
   });

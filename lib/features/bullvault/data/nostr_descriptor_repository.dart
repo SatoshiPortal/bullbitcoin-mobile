@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/nostr/nostr_event.dart';
 import 'package:bb_mobile/core/nostr/nostr_relay_datasource.dart';
 import 'package:bb_mobile/core/nostr/nostr_session.dart';
 import 'package:bb_mobile/core/utils/recoverbull_encryption.dart';
@@ -12,6 +11,7 @@ import 'package:bb_mobile/features/bullvault/data/nostr_descriptor_relays.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/nostr_descriptor_backup.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:convert/convert.dart';
+import 'package:nostr/nostr.dart' as nostr;
 
 /// Password-encrypted vault descriptors on public relays.
 ///
@@ -31,8 +31,8 @@ final class NostrDescriptorRepository {
   /// a public correlator.
   static const purposeTag = DescriptorArtifact.profile;
 
-  /// [NostrEvent.parse] refuses more than this, so an event this app cannot
-  /// read back is never published.
+  /// [accepts] refuses more than this, so an event this app cannot read back
+  /// is never published.
   static const maxContentBytes = 45000;
 
   final RecoverBullEncryption _encryption;
@@ -55,7 +55,7 @@ final class NostrDescriptorRepository {
   /// Sealing draws a fresh nonce, so this is called once per descriptor
   /// generation and the bytes are kept: a retry that re-sealed would publish a
   /// second event for a descriptor that already has one.
-  Future<NostrEvent> seal({
+  Future<nostr.Event> seal({
     required BackupCredential credential,
     required String descriptor,
     required Network network,
@@ -72,35 +72,33 @@ final class NostrDescriptorRepository {
     if (content.length > maxContentBytes) {
       throw const FormatException('Descriptor event too large');
     }
-    final author = credential.nostrPublicKeyHex;
-    final createdAt = _now().toUtc().millisecondsSinceEpoch ~/ 1000;
-    const tags = [
-      [_tagName, purposeTag],
-    ];
-    final id = NostrEvent.hash(
-      author: author,
-      createdAt: createdAt,
+    return credential.signNostrEvent(
       kind: eventKind,
-      tags: tags,
       content: content,
-    );
-    return NostrEvent(
-      id: id,
-      author: author,
-      createdAt: createdAt,
-      kind: eventKind,
-      tags: tags,
-      content: content,
-      signature: credential.signNostrHash(id),
+      createdAt: _now().toUtc().millisecondsSinceEpoch ~/ 1000,
+      tags: const [
+        [_tagName, purposeTag],
+      ],
     );
   }
+
+  /// Whether [event] is one this app would read back: its content within the
+  /// bound and its tags within what a relay frame may carry.
+  static bool accepts(nostr.Event event) =>
+      event.content.length <= maxContentBytes &&
+      utf8.encode(event.content).length <= maxContentBytes &&
+      event.tags.length <= 128 &&
+      event.tags.every(
+        (tag) =>
+            tag.length <= 128 && tag.every((value) => value.length <= 16384),
+      );
 
   /// Sends the identical [event] to every configured relay, independently.
   ///
   /// One relay's refusal or silence never stops the others, and each verdict is
   /// reported as its own so a caller can say which route actually exists.
   Future<NostrDescriptorPublication> publish(
-    NostrEvent event,
+    nostr.Event event,
     NostrSession session,
   ) async {
     final outcomes = <Uri, NostrRelayOutcome>{};
@@ -128,16 +126,18 @@ final class NostrDescriptorRepository {
     required BackupCredential credential,
     required NostrSession session,
   }) async {
-    final filter = {
-      'authors': [credential.nostrPublicKeyHex],
-      'kinds': [eventKind],
-      '#$_tagName': [purposeTag],
-    };
+    final filter = nostr.Filter(
+      authors: [credential.nostrPublicKeyHex],
+      kinds: const [eventKind],
+      tagFilters: const {
+        _tagName: [purposeTag],
+      },
+    );
     final seenEvents = <String>{};
     final found = <String, NostrDescriptorRecord>{};
     var incomplete = false;
     for (final relay in _relays) {
-      final List<Map<String, dynamic>> events;
+      final List<nostr.Event> events;
       try {
         final response = await _relay.fetch(filter, relay, session);
         events = response.events;
@@ -151,8 +151,8 @@ final class NostrDescriptorRepository {
         incomplete = true;
         continue;
       }
-      for (final json in events) {
-        final record = await _open(credential, json, seenEvents);
+      for (final event in events) {
+        final record = await _open(credential, event, seenEvents);
         if (record == null) continue;
         final key = '${record.network.name}|${record.descriptor}';
         // The same descriptor republished later is the same backup; the first
@@ -171,17 +171,20 @@ final class NostrDescriptorRepository {
 
   Future<NostrDescriptorRecord?> _open(
     BackupCredential credential,
-    Map<String, dynamic> json,
+    nostr.Event event,
     Set<String> seenEvents,
   ) async {
     try {
-      // Cheap profile checks before any signature work or decryption.
-      if (json['pubkey'] != credential.nostrPublicKeyHex ||
-          json['kind'] != eventKind ||
-          !_hasPurposeTag(json['tags'])) {
+      // Cheap profile checks before any signature work or decryption. The
+      // transport only shape-checked the event; its id and signature are
+      // verified here, once it is known to be one of ours.
+      if (event.pubkey != credential.nostrPublicKeyHex ||
+          event.kind != eventKind ||
+          !_hasPurposeTag(event.tags) ||
+          !accepts(event) ||
+          !event.isValid()) {
         return null;
       }
-      final event = NostrEvent.parse(json, maxContentBytes: maxContentBytes);
       if (!seenEvents.add(event.id)) return null;
       final artifact = DescriptorArtifact.decode(
         await _encryption.decrypt(
@@ -218,13 +221,11 @@ final class NostrDescriptorRepository {
 
   static const _tagName = 't';
 
-  static bool _hasPurposeTag(Object? tags) =>
-      tags is List &&
+  static bool _hasPurposeTag(List<List<String>> tags) =>
       tags.length == 1 &&
-      tags.single is List &&
-      (tags.single as List).length == 2 &&
-      (tags.single as List)[0] == _tagName &&
-      (tags.single as List)[1] == purposeTag;
+      tags.single.length == 2 &&
+      tags.single[0] == _tagName &&
+      tags.single[1] == purposeTag;
 
   static String _networkName(Network network) =>
       network.isMainnet ? 'bitcoin' : 'testnet';

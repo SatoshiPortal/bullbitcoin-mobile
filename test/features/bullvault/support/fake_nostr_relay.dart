@@ -65,7 +65,14 @@ final class FakeNostrRelay {
             message[1] as Map<String, dynamic>,
           );
           if (!rejects && !forgets) events.add(event);
-          incoming.add(jsonEncode(['OK', event['id'], !rejects]));
+          incoming.add(
+            jsonEncode([
+              'OK',
+              event['id'],
+              !rejects,
+              rejects ? 'blocked:' : '',
+            ]),
+          );
         case 'REQ':
           subscriptions++;
           final subscription = message[1] as String;

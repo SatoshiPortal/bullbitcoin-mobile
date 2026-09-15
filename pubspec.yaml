@@ -142,6 +142,12 @@ dependencies:
       url: https://github.com/bukata-sa/bc-ur-dart.git
       ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
   bitcoin_base: ^7.0.0
+  # ethicnology's Nostr library: events, signing, NIP-19, relay messages.
+  # Pinned to the develop head that carries the 2.0.1 security-audit fixes.
+  nostr:
+    git:
+      url: https://github.com/ethicnology/dart-nostr
+      ref: c01551b18a7e5d234eb30c6e24e945021382ca4f
   socks5_proxy: ^2.1.1
   meta: ^1.17.0
   workmanager: ^0.9.0
@@ -230,3 +236,11 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "assets/logos/icon-black-red.png"
   adaptive_icon_foreground: "assets/logos/icon-black-red.png"
+
+dependency_overrides:
+  # dart-nostr asks for bip340 ^0.3.1, whose only change over 0.3.0 is the
+  # pointycastle constraint (^4.0.0; the Dart sources are identical). This app
+  # cannot move to pointycastle 4 while bip85_entropy 1.0.2 and bip32_keys
+  # 3.1.1 require ^3.9.1, so bip340 stays at 0.3.0 until dart-nostr relaxes
+  # its constraint or those two packages move.
+  bip340: 0.3.0

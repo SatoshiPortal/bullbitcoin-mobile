@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/core/nostr/nostr_event.dart';
 import 'package:bb_mobile/core/nostr/nostr_session.dart';
+import 'package:nostr/nostr.dart' as nostr;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// A relay answered a publication and refused it.
@@ -17,7 +17,12 @@ final class NostrRelayRejectedException implements Exception {
   String toString() => 'NostrRelayRejectedException';
 }
 
-/// Finite Nostr exchanges with bounded frames, events and connection lifetime.
+/// Finite Nostr exchanges over one WebSocket each, with bounded frames, events
+/// and connection lifetime.
+///
+/// Every wire message is the `nostr` package's: `Event`, `Request`, `Filter`,
+/// `Close` and `CommandResult`. Only the socket, the bounds and cancellation
+/// are this app's, because the library is transport-agnostic.
 final class NostrRelayDatasource {
   static const maxFrameBytes = 65536;
   static const maxEvents = 32;
@@ -39,36 +44,39 @@ final class NostrRelayDatasource {
     }
   }
 
+  /// Sends [event] and waits for the relay's `OK` about that exact event id.
   Future<void> publish(
-    NostrEvent event,
+    nostr.Event event,
     Uri relay,
     NostrSession session,
   ) async {
     await _exchange(relay, session, (channel) async {
-      channel.sink.add(jsonEncode(['EVENT', event.toJson()]));
+      channel.sink.add(event.serialize());
       var frames = 0;
       final response = await channel.stream.firstWhere((raw) {
         if (++frames > 128) {
           throw const FormatException('Relay response limit');
         }
-        final message = _parse(raw);
-        return message != null &&
-            message.length >= 3 &&
-            message[0] == 'OK' &&
-            message[1] == event.id;
+        return _commandResult(raw)?.eventId == event.id;
       });
-      if (_parse(response)![2] != true) {
+      if (!_commandResult(response)!.status) {
         throw const NostrRelayRejectedException();
       }
     });
   }
 
-  Future<({List<Map<String, dynamic>> events, bool incomplete})> fetch(
-    Map<String, dynamic> filter,
+  /// One bounded `REQ` for [filter], closed after `EOSE`, [maxEvents] events,
+  /// cancellation or the timeout.
+  ///
+  /// Returned events are shape-checked, not verified: the caller checks each
+  /// one against its own author, kind and tag profile before believing it, so
+  /// a forged event costs one signature check there and nothing here.
+  Future<({List<nostr.Event> events, bool incomplete})> fetch(
+    nostr.Filter filter,
     Uri relay,
     NostrSession session,
   ) async {
-    final events = <Map<String, dynamic>>[];
+    final events = <nostr.Event>[];
     var incomplete = true;
     var rejectedFrame = false;
     // Unique per connection/session; unrelated subscription frames are ignored.
@@ -76,46 +84,39 @@ final class NostrRelayDatasource {
     try {
       await _exchange(relay, session, (channel) async {
         channel.sink.add(
-          jsonEncode([
-            'REQ',
-            subscription,
-            {...filter, 'limit': maxEvents},
-          ]),
+          nostr.Request(
+            subscriptionId: subscription,
+            filters: [_bounded(filter)],
+          ).serialize(),
         );
         var frames = 0;
         try {
           await for (final raw in channel.stream) {
             if (++frames > 128) break;
-            final message = _parse(raw);
-            if (message == null) {
+            final frame = _frame(raw);
+            if (frame == null) {
               rejectedFrame = true;
               continue;
             }
-            if (message.length < 2 || message[1] != subscription) {
-              continue;
-            }
-            if (message[0] == 'EOSE') {
-              incomplete =
-                  events.length >= maxEvents ||
-                  (message.length > 2 &&
-                      message[2] is List &&
-                      (message[2] as List).any(
-                        (hint) => hint == 'more' || hint == 'auth',
-                      ));
+            if (frame.length < 2 || frame[1] != subscription) continue;
+            if (frame[0] == 'EOSE') {
+              incomplete = events.length >= maxEvents || _saysMore(frame);
               break;
             }
-            if (message[0] == 'CLOSED') break;
-            if (message[0] == 'EVENT' &&
-                message.length == 3 &&
-                message[2] is Map<String, dynamic>) {
-              events.add(message[2] as Map<String, dynamic>);
-              if (events.length >= maxEvents) break;
-            } else if (message[0] == 'EVENT') {
+            if (frame[0] == 'CLOSED') break;
+            if (frame[0] != 'EVENT') continue;
+            try {
+              events.add(
+                nostr.Event.deserialize(raw! as String, verify: false),
+              );
+            } on nostr.NostrException {
               rejectedFrame = true;
+              continue;
             }
+            if (events.length >= maxEvents) break;
           }
         } finally {
-          channel.sink.add(jsonEncode(['CLOSE', subscription]));
+          channel.sink.add(nostr.Close(subscription).serialize());
         }
       });
     } on TimeoutException {
@@ -128,10 +129,32 @@ final class NostrRelayDatasource {
       incomplete = true;
     }
     return (
-      events: List<Map<String, dynamic>>.unmodifiable(events),
+      events: List<nostr.Event>.unmodifiable(events),
       incomplete: incomplete || rejectedFrame || session.isCancelled,
     );
   }
+
+  /// The same filter with this transport's event cap, whatever was asked.
+  static nostr.Filter _bounded(nostr.Filter filter) => nostr.Filter(
+    ids: filter.ids,
+    authors: filter.authors,
+    kinds: filter.kinds,
+    eTags: filter.eTags,
+    aTags: filter.aTags,
+    pTags: filter.pTags,
+    tagFilters: filter.tagFilters,
+    since: filter.since,
+    until: filter.until,
+    search: filter.search,
+    limit: maxEvents,
+  );
+
+  /// Some relays append hints after the subscription id on `EOSE`; `more` and
+  /// `auth` both mean the page shown is not everything.
+  static bool _saysMore(List<dynamic> frame) =>
+      frame.length > 2 &&
+      frame[2] is List &&
+      (frame[2] as List).any((hint) => hint == 'more' || hint == 'auth');
 
   Future<void> _exchange(
     Uri relay,
@@ -167,7 +190,18 @@ final class NostrRelayDatasource {
     }
   }
 
-  List<dynamic>? _parse(Object? raw) {
+  nostr.CommandResult? _commandResult(Object? raw) {
+    final frame = _frame(raw);
+    if (frame == null || frame.isEmpty || frame[0] != 'OK') return null;
+    try {
+      return nostr.CommandResult.deserialize(raw! as String);
+    } on nostr.NostrException {
+      return null;
+    }
+  }
+
+  /// The frame as a JSON list, or null for anything oversized or malformed.
+  List<dynamic>? _frame(Object? raw) {
     if (raw is! String ||
         raw.length > maxFrameBytes ||
         utf8.encode(raw).length > maxFrameBytes) {

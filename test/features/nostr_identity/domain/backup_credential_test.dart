@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
-import 'package:bb_mobile/core/utils/nostr_bech32.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_deriver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential.dart';
@@ -16,6 +15,7 @@ import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:nostr/nostr.dart' as nostr;
 
 import '../fixtures/backup_credential_vectors.dart';
 
@@ -168,7 +168,10 @@ void main() {
         backupCredentialVectorNostrPublicKey,
       );
       expect(
-        NostrBech32.npub(hex.decode(credential.nostrPublicKeyHex)),
+        nostr.Bech32Entity.encode(
+          prefix: nostr.Nip19Prefix.npub,
+          data: credential.nostrPublicKeyHex,
+        ),
         backupCredentialVectorNostrNpub,
       );
       expect(
@@ -184,6 +187,39 @@ void main() {
         backupCredentialVectorServerSignature,
       );
     }
+  });
+
+  test('an event signed through the nostr package carries the artifact '
+      'identity', () {
+    final credential = BackupCredential.fromWords(backupCredentialVectorWords);
+    final event = credential.signNostrEvent(
+      kind: 1089,
+      content: 'sealed',
+      createdAt: 1_700_000_000,
+      tags: const [
+        ['t', 'bull'],
+      ],
+    );
+
+    expect(event.pubkey, backupCredentialVectorNostrPublicKey);
+    expect(event.isValid(), isTrue);
+    expect(
+      nostr.Schnorr.verify(
+        publicKey: backupCredentialVectorNostrPublicKey,
+        message: event.id,
+        signature: event.sig,
+      ),
+      isTrue,
+    );
+    // Same bytes, other identity: the server key never authors an event.
+    expect(
+      nostr.Schnorr.verify(
+        publicKey: backupCredentialVectorServerPublicKey,
+        message: event.id,
+        signature: event.sig,
+      ),
+      isFalse,
+    );
   });
 
   test('the public event author is not the server account name', () {

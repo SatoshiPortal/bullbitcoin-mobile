@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/nostr/nostr_event.dart';
 import 'package:bb_mobile/core/nostr/nostr_session.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/data/nostr_descriptor_repository.dart';
@@ -14,6 +13,7 @@ import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repos
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:nostr/nostr.dart' as nostr;
 
 /// Publishes one vault's descriptor, sealed to its backup words, on the
 /// configured relays.
@@ -67,7 +67,7 @@ final class PublishDescriptorToNostrUsecase {
     }
     final policy = record.recoveryPackage.policy;
     final stored = _storedEvent(rows);
-    if (stored != null && stored.author != credential.nostrPublicKeyHex) {
+    if (stored != null && stored.pubkey != credential.nostrPublicKeyHex) {
       return const Err(BullVaultForeignBackupCredentialFailure());
     }
     final NostrDescriptorPublication publication;
@@ -82,7 +82,7 @@ final class PublishDescriptorToNostrUsecase {
         final prepared = await _publications.prepare(
           walletId: walletId,
           destination: VaultBackupDestination.nostr,
-          artifact: Uint8List.fromList(utf8.encode(jsonEncode(event.toJson()))),
+          artifact: Uint8List.fromList(utf8.encode(event.toJson())),
         );
         // Nothing is sent until the bytes survive a restart.
         if (prepared case Err(:final failure)) return Err(failure);
@@ -121,17 +121,15 @@ final class PublishDescriptorToNostrUsecase {
   /// recovered onto another phone carries no right to republish under that
   /// phone's identity, and re-sealing one rather than keeping it is what moves
   /// the vault into a second recovery namespace.
-  NostrEvent? _storedEvent(List<VaultDescriptorPublication> rows) {
+  nostr.Event? _storedEvent(List<VaultDescriptorPublication> rows) {
     final artifact = rows
         .where((row) => row.destination == VaultBackupDestination.nostr)
         .map((row) => row.artifact)
         .firstOrNull;
     if (artifact == null) return null;
     try {
-      return NostrEvent.parse(
-        jsonDecode(utf8.decode(artifact)) as Map<String, dynamic>,
-        maxContentBytes: NostrDescriptorRepository.maxContentBytes,
-      );
+      final event = nostr.Event.fromJson(utf8.decode(artifact));
+      return NostrDescriptorRepository.accepts(event) ? event : null;
     } on Exception {
       return null;
     }
