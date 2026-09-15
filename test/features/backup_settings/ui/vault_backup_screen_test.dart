@@ -18,6 +18,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -153,6 +154,98 @@ void main() {
       cubit.state.hasOutstandingPublication,
       isTrue,
       reason: 'a check says nothing about what was published where',
+    );
+  });
+
+  /// The row the destinations screen writes while this screen waits below it.
+  VaultDescriptorPublication savedRow(VaultPublicationState state) =>
+      VaultDescriptorPublication(
+        walletId: record.walletId,
+        destination: VaultBackupDestination.server,
+        enabled: true,
+        artifact: Uint8List.fromList(const [1, 2, 3]),
+        artifactSha256: 'a' * 64,
+        state: state,
+        attempts: 1,
+        updatedAt: DateTime.utc(2027),
+      );
+
+  test('checking a backup re-reads rows a publication wrote', () async {
+    expect(cubit.state.publications, isEmpty);
+    when(() => vaults.descriptorPublications(record.walletId)).thenAnswer(
+      (_) async => Ok<List<VaultDescriptorPublication>, BullVaultFailure>([
+        savedRow(VaultPublicationState.verified),
+      ]),
+    );
+
+    await cubit.checkAgain();
+
+    expect(
+      cubit.state.publications.single.state,
+      VaultPublicationState.verified,
+      reason: 'the rows on screen were written while this screen was open',
+    );
+  });
+
+  testWidgets('returning from the destinations screen re-reads the rows', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1000, 3000);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => BlocProvider.value(
+            value: cubit,
+            child: const VaultBackupScreen(),
+          ),
+          routes: [
+            GoRoute(
+              name: BullVaultFacade.backupDestinationsRouteName,
+              path: 'destinations/:walletId',
+              builder: (_, _) => const Scaffold(body: Text('destinations')),
+            ),
+          ],
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
+    );
+    await tester.pumpAndSettle();
+    final context = tester.element(find.byType(VaultBackupScreen));
+    expect(
+      find.text(context.loc.vaultDestinationsNotSelected),
+      findsNWidgets(2),
+    );
+
+    await tester.tap(find.text(context.loc.vaultDestinationsEntry));
+    await tester.pumpAndSettle();
+    expect(find.text('destinations'), findsOneWidget);
+
+    // What publishing did while this screen waited underneath.
+    when(() => vaults.descriptorPublications(record.walletId)).thenAnswer(
+      (_) async => Ok<List<VaultDescriptorPublication>, BullVaultFailure>([
+        savedRow(VaultPublicationState.verified),
+      ]),
+    );
+    router.pop();
+    await tester.pumpAndSettle();
+
+    expect(find.text(context.loc.vaultDestinationsVerified), findsOneWidget);
+    expect(
+      find.text(context.loc.vaultDestinationsNotSelected),
+      findsOneWidget,
+      reason: 'only the destination that was never chosen stays unselected',
     );
   });
 

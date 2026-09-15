@@ -97,10 +97,15 @@ class VaultBackupScreen extends StatelessWidget {
               SettingsEntryItem(
                 icon: Icons.cloud_upload_outlined,
                 title: context.loc.vaultDestinationsEntry,
-                onTap: () => context.pushNamed(
-                  BullVaultFacade.backupDestinationsRouteName,
-                  pathParameters: {'walletId': inspection.record.walletId},
-                ),
+                // The destinations screen writes the rows this screen shows
+                // below, so what it did has to be read back on the way out.
+                onTap: () async {
+                  await context.pushNamed(
+                    BullVaultFacade.backupDestinationsRouteName,
+                    pathParameters: {'walletId': inspection.record.walletId},
+                  );
+                  if (!cubit.isClosed) await cubit.load();
+                },
               ),
               // The vault names the wallet it was created on, so a vault
               // recovered from another phone is told whose words open it

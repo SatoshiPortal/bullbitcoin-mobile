@@ -44,21 +44,30 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
 
   Future<void> load() async {
     final result = await _verify.load(walletId);
-    final publications = await _publish.load(walletId);
+    final publications = await _storedPublications(const []);
     if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => VaultBackupState(
         inspection: value,
-        publications: switch (publications) {
-          Ok(value: final rows) => rows,
-          // A publication row that cannot be read says nothing about the
-          // recovery data this screen exists to hand out.
-          Err() => const [],
-        },
+        publications: publications,
       ),
       Err(:final failure) => VaultBackupState(failure: failure),
     });
   }
+
+  /// The publication rows as they are stored.
+  ///
+  /// The destinations screen writes them while this screen is still mounted
+  /// underneath it, so the rows held in state go stale the moment a
+  /// publication runs; [fallback] keeps what was shown when they cannot be
+  /// read, because a row that cannot be read says nothing about the recovery
+  /// data this screen exists to hand out.
+  Future<List<VaultDescriptorPublication>> _storedPublications(
+    List<VaultDescriptorPublication> fallback,
+  ) async => switch (await _publish.load(walletId)) {
+    Ok(:final value) => value,
+    Err() => fallback,
+  };
 
   /// Resends exactly the bytes a destination never acknowledged.
   Future<void> retryPublications() async {
@@ -100,7 +109,8 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
     if (state.busy) return;
     final inspection = state.inspection;
     // Checking a backup says nothing about what was published where, so the
-    // rows and their Retry button stay put while it runs.
+    // rows and their Retry button stay put while it runs, and are read back
+    // from storage afterwards.
     final publications = state.publications;
     emit(
       VaultBackupState(
@@ -124,12 +134,13 @@ final class VaultBackupCubit extends Cubit<VaultBackupState> {
     final latest =
         (result as Ok<VaultBackupCheckResults, BackupSettingsFailure>).value;
     final updated = await _verify.load(walletId);
+    final rows = await _storedPublications(publications);
     if (isClosed) return;
     emit(switch (updated) {
       Ok(:final value) => VaultBackupState(
         inspection: value,
         latest: latest,
-        publications: publications,
+        publications: rows,
         verified: latest.containsValue(VaultBackupCheckStatus.success),
       ),
       Err(:final failure) => VaultBackupState(
