@@ -49,12 +49,19 @@ class VaultDestinationsScreen extends StatelessWidget {
                 ),
               ),
               const Gap(16),
-              SettingsEntryItem(
-                icon: Icons.password_outlined,
-                title: context.loc.backupWordsEntry,
-                onTap: () =>
-                    context.pushNamed(BackupSettingsSubroute.backupWords.name),
-              ),
+              // The vault names the wallet it was created on, and everything
+              // this screen publishes is sealed to that wallet's words. A
+              // vault this phone kept no Mobile seed for names none, and this
+              // phone's own words open nothing of its.
+              if (state.originFingerprint case final origin?)
+                SettingsEntryItem(
+                  icon: Icons.password_outlined,
+                  title: context.loc.backupWordsEntry,
+                  onTap: () => context.pushNamed(
+                    BackupSettingsSubroute.backupWords.name,
+                    extra: origin,
+                  ),
+                ),
               SettingsEntryItem(
                 icon: Icons.cloud_outlined,
                 title: context.loc.dataBackupSettingsTitle,

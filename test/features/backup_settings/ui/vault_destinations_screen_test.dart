@@ -16,6 +16,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../bullvault/bullvault_test_fixture.dart';
+
 class _Vaults extends Mock implements BullVaultFacade {}
 
 class _Metadata extends Mock implements WalletBackupFacade {}
@@ -50,6 +52,9 @@ void main() {
     vaults = _Vaults();
     metadata = _Metadata();
     rows = [];
+    when(() => vaults.listRecords()).thenAnswer(
+      (_) async => Ok([testBullVaultCreateResult(walletId: walletId).record]),
+    );
     when(
       () => vaults.descriptorPublications(walletId),
     ).thenAnswer((_) async => Ok(rows));
@@ -209,5 +214,33 @@ void main() {
     expect(find.text(loc.vaultDestinationsNotSelected), findsOneWidget);
     expect(find.text(loc.retry), findsOneWidget);
     expect(find.text(loc.backupSettingsComingSoon), findsOneWidget);
+  });
+
+  testWidgets('a vault this phone kept no seed for offers no words', (
+    tester,
+  ) async {
+    final foreign = testBullVaultCreateResult(
+      walletId: walletId,
+      usesBullMobile: false,
+    ).record;
+    expect(foreign.mobileSeedFingerprint, isNull);
+    when(() => vaults.listRecords()).thenAnswer((_) async => Ok([foreign]));
+
+    await open(tester);
+
+    expect(find.text(loc.backupWordsEntry), findsNothing);
+    expect(
+      find.text(loc.dataBackupSettingsTitle),
+      findsOneWidget,
+      reason: 'the destinations this vault does have are still offered',
+    );
+  });
+
+  testWidgets('a vault created here offers the words that seal it', (
+    tester,
+  ) async {
+    await open(tester);
+
+    expect(find.text(loc.backupWordsEntry), findsOneWidget);
   });
 }

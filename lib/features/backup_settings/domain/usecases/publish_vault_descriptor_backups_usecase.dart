@@ -26,6 +26,23 @@ final class PublishVaultDescriptorBackupsUsecase {
     Ok(:final value) => Ok(value),
   };
 
+  /// The wallet whose magic backup words seal what this vault publishes, or
+  /// null when this device kept no Mobile seed for it.
+  ///
+  /// A vault recovered from another phone names none: every destination here
+  /// is sealed to words held elsewhere, so this phone's words are the wrong
+  /// answer rather than a fallback.
+  @useResult
+  Future<String?> originFingerprint(String walletId) async =>
+      switch (await _vaults.listRecords()) {
+        Ok(:final value) =>
+          value
+              .where((record) => record.walletId == walletId)
+              .firstOrNull
+              ?.mobileSeedFingerprint,
+        Err() => null,
+      };
+
   /// Records the person's choice of one destination and returns the new rows.
   ///
   /// Turning a destination off never deletes what was already sent to it: the

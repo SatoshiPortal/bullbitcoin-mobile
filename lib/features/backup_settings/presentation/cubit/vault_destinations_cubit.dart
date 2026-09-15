@@ -21,12 +21,17 @@ final class VaultDestinationsState {
   /// Data Backup's own state, because a descriptor destination is not it.
   final WalletBackupState? dataBackup;
 
+  /// The wallet whose words seal what this vault publishes, or null when this
+  /// phone kept no Mobile seed for it.
+  final String? originFingerprint;
+
   const VaultDestinationsState({
     this.rows = const [],
     this.published = false,
     this.busy = false,
     this.failure,
     this.dataBackup,
+    this.originFingerprint,
   });
 
   VaultDestinationsState copyWith({
@@ -36,12 +41,14 @@ final class VaultDestinationsState {
     BackupSettingsFailure? failure,
     bool clearFailure = false,
     WalletBackupState? dataBackup,
+    String? originFingerprint,
   }) => VaultDestinationsState(
     rows: rows ?? this.rows,
     published: published ?? this.published,
     busy: busy ?? this.busy,
     failure: clearFailure ? null : failure ?? this.failure,
     dataBackup: dataBackup ?? this.dataBackup,
+    originFingerprint: originFingerprint ?? this.originFingerprint,
   );
 
   bool enabled(VaultBackupDestination destination) =>
@@ -79,6 +86,9 @@ final class VaultDestinationsCubit extends Cubit<VaultDestinationsState> {
         emit(state.copyWith(dataBackup: value));
       }
     });
+    final origin = await _publish.originFingerprint(walletId);
+    if (isClosed) return;
+    emit(state.copyWith(originFingerprint: origin));
     await _apply(() => _publish.load(walletId));
   }
 
