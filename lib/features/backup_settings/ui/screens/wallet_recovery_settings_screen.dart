@@ -125,7 +125,8 @@ class _WalletRecoveryView extends StatelessWidget {
                             // descriptor; the descriptor lives one screen over.
                             SettingsEntryItem(
                               icon: Icons.security,
-                              title: context.loc.walletRecoveryVaultsPointer,
+                              title: context.loc.walletRecoveryVaultsEntry,
+                              subtitle: context.loc.walletRecoveryVaultsPointer,
                               onTap: () => context.pushNamed(
                                 SettingsRoute.dataBackupSettings.name,
                               ),

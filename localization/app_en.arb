@@ -17856,5 +17856,9 @@
   "vaultRecoverySigningKeyOnThisDevice": "A signing key for this vault is on this device.",
   "@vaultRecoverySigningKeyOnThisDevice": {
     "description": "Shown on a recovered vault card when this phone holds one of the keys the vault names."
+  },
+  "walletRecoveryVaultsEntry": "BullVault descriptors",
+  "@walletRecoveryVaultsEntry": {
+    "description": "Wallet Recovery row that points at Data Backup, where vault descriptors are kept."
   }
 }

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/backup_test_status_row.dart';
+import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_reminder.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
@@ -74,6 +75,29 @@ void main() {
           .map((row) => row.testedAt),
       [physical, encrypted],
     );
+  });
+
+  testWidgets('the vaults pointer is a subtitle, not a one-line title', (
+    tester,
+  ) async {
+    when(loadStatus).thenAnswer((_) async => [_status()]);
+    await _pump(tester);
+    await tester.pumpAndSettle();
+
+    final loc = AppLocalizations.of(
+      tester.element(find.byType(WalletRecoverySettingsScreen)),
+    );
+    final row = tester.widget<SettingsEntryItem>(
+      find.widgetWithText(SettingsEntryItem, loc.walletRecoveryVaultsEntry),
+    );
+
+    expect(
+      row.subtitle,
+      loc.walletRecoveryVaultsPointer,
+      reason: 'the sentence is the subtitle the tile gives two lines',
+    );
+    expect(tester.widget<Text>(find.text(row.title)).maxLines, 1);
+    expect(tester.widget<Text>(find.text(row.subtitle!)).maxLines, 2);
   });
 
   testWidgets('does not flash the urgent hero while recovery status loads', (
