@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
@@ -8,10 +7,6 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
-import 'package:crypto/crypto.dart';
-import 'package:pointycastle/digests/sha256.dart';
-import 'package:pointycastle/key_derivators/api.dart';
-import 'package:pointycastle/key_derivators/hkdf.dart';
 
 /// Which of the credential's two signing identities an operation uses.
 ///
@@ -32,15 +27,24 @@ final class InvalidBackupWordsException implements Exception {
 
 /// The one Bull backup credential.
 ///
-/// Twelve words derived from the originating default seed at the reserved BIP85
-/// path open the metadata backup, authenticate its server account and author the
-/// public vault events. Both constructors run the same derivation, so words
-/// entered by an heir reproduce the originating wallet's credential byte for
-/// byte.
+/// Twelve words, a standard BIP85 BIP39 child of the originating default seed
+/// at the reserved index, open the metadata backup, authenticate its server
+/// account and author the public vault events. Everything below the words is a
+/// further BIP85 derivation on the words' own BIP39 root, so a holder of the
+/// words reproduces every key with any BIP85 tool and nothing Bull-specific:
 ///
-/// Deriving from the words rather than from the raw BIP85 entropy is what makes
-/// the server read seed-independent: a holder of the words needs no seed, no
-/// fingerprint and no local database.
+/// ```
+/// default seed
+///  └─ BIP85 39'/0'/12'/<reserved index>'   → the twelve words
+///      ├─ BIP85 128169'/32'/0'              → 32-byte encryption key
+///      ├─ BIP85 128002'/100'/1'             → artifact identity (public relays)
+///      └─ BIP85 128002'/101'/1'             → server identity (backup server)
+/// ```
+///
+/// BIP85 is one-way, so the words disclose nothing about the seed they came
+/// from and no wallet is ever derived from them. Both constructors run the same
+/// derivation, so words entered by an heir reproduce the originating wallet's
+/// credential byte for byte, needing no seed, no fingerprint and no database.
 ///
 /// Nothing here is persisted, and the object keeps identity equality: two
 /// credentials are never compared by value, which would turn `==` into an oracle
@@ -52,16 +56,17 @@ final class BackupCredential {
   /// bounds the work done before anything is parsed.
   static const maxInputLength = 256;
 
-  static const _salt = 'bullbitcoin-backup-password';
-  static const _mnemonicInfo = 'mnemonic-v1';
-  static const _encryptionInfo = 'encryption-v1';
-  static const _nostrInfo = 'nostr-auth-v1';
-  static const _serverInfo = 'server-auth-v1';
+  /// BIP85 HEX application on the words' root: 32 bytes at index 0.
+  static const encryptionKeyPath = "128169'/32'/0'";
+
+  /// BIP85 Nostr application on the words' root, inside the block the app owns
+  /// on every root (see [Bip85Reservations.nostrAppReservedIdentityStart]).
+  /// The parent seed's `128002'/100'/1'` is retired; this one lives on a
+  /// different root and is a different key.
+  static const nostrIdentityPath = "128002'/100'/1'";
+  static const serverIdentityPath = "128002'/101'/1'";
+
   static final _hashPattern = RegExp(r'^[0-9a-fA-F]{64}$');
-  static final _order = BigInt.parse(
-    'fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141',
-    radix: 16,
-  );
 
   final Uint8List _encryptionKey;
   final ECPrivate _nostr;
@@ -81,18 +86,29 @@ final class BackupCredential {
     }
     final parsed = words.trim().toLowerCase().split(RegExp(r'\s+'));
     if (parsed.length != wordCount) throw const InvalidBackupWordsException();
-    final List<int> entropy;
+    final bip39.Mnemonic mnemonic;
     try {
-      entropy = bip39.Mnemonic.fromWords(words: parsed).entropy;
+      mnemonic = bip39.Mnemonic.fromWords(words: parsed);
     } on Exception {
       // The mnemonic package quotes the submitted words: discard it entirely.
       throw const InvalidBackupWordsException();
     }
-    final encryptionKey = _hkdf(entropy, _encryptionInfo, 32);
+    // The words' own BIP39 root, empty passphrase: what any BIP85 tool loads.
+    final root = Bip32Derivation.getCanonicalRootXprvFromSeed(
+      Uint8List.fromList(mnemonic.seed),
+    );
     return BackupCredential._(
-      encryptionKey,
-      _signer(encryptionKey, _nostrInfo),
-      _signer(encryptionKey, _serverInfo),
+      Uint8List.fromList(
+        hex.decode(
+          bip85.Bip85Entropy.deriveHex(
+            xprvBase58: root,
+            numBytes: 32,
+            index: 0,
+          ),
+        ),
+      ),
+      _signer(root, nostrIdentityPath),
+      _signer(root, serverIdentityPath),
     );
   }
 
@@ -102,22 +118,15 @@ final class BackupCredential {
 
   /// The twelve words [seed] owns, derived at the point of use.
   ///
-  /// Only the reveal use case calls this: the words are never cached, and the
-  /// credential itself does not hand them out.
-  static String deriveWords(Seed seed) => bip39.Mnemonic(
-    _hkdf(
-      hex.decode(
-        bip85.Bip85Entropy.deriveFromHardenedPath(
-          xprvBase58: Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes),
-          path: bip85.Bip85HardenedPath(
-            Bip85Reservations.walletBackupEncryptionKey.path,
-          ),
-        ),
-      ),
-      _mnemonicInfo,
-      16,
-    ),
-    bip39.Language.english,
+  /// A standard BIP85 BIP39 child: English, twelve words, at the reserved
+  /// index, so a Coldcard holding the seed prints the same words. Only the
+  /// reveal use case calls this: the words are never cached, and the credential
+  /// itself does not hand them out.
+  static String deriveWords(Seed seed) => bip85.Bip85Entropy.deriveMnemonic(
+    xprvBase58: Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes),
+    language: bip39.Language.english,
+    length: bip39.MnemonicLength.words12,
+    index: Bip85Reservations.backupWords.index,
   ).sentence;
 
   /// The 32-byte metadata and artifact encryption key.
@@ -130,7 +139,7 @@ final class BackupCredential {
 
   /// The x-only public key the backup server account is named by.
   ///
-  /// It is a second scalar from the same credential rather than a second user
+  /// It is a second BIP85 child of the same words rather than a second user
   /// secret, so a public event and a private server account cannot be joined by
   /// their public keys alone.
   late final String serverPublicKeyHex = hex.encode(
@@ -151,32 +160,12 @@ final class BackupCredential {
     return key.signBip340(hex.decode(hashHex), tweak: false);
   }
 
-  static ECPrivate _signer(Uint8List root, String info) {
-    for (var counter = 0; counter < 256; counter++) {
-      final digest = Hmac(
-        sha256,
-        root,
-      ).convert([...utf8.encode(info), 0, counter]);
-      final scalar = BigInt.parse(digest.toString(), radix: 16);
-      if (scalar > BigInt.zero && scalar < _order) {
-        return ECPrivate.fromHex(digest.toString());
-      }
-    }
-    throw StateError('Backup identity derivation exhausted its counter');
-  }
-
-  static Uint8List _hkdf(List<int> input, String info, int length) {
-    final output = Uint8List(length);
-    HKDFKeyDerivator(SHA256Digest())
-      ..init(
-        HkdfParameters(
-          Uint8List.fromList(input),
-          length,
-          Uint8List.fromList(utf8.encode(_salt)),
-          Uint8List.fromList(utf8.encode(info)),
-        ),
-      )
-      ..deriveKey(null, 0, output, 0);
-    return output;
-  }
+  /// The app's Nostr key convention: the first 32 bytes of the BIP85 entropy
+  /// at [path], the same rule every other BIP85 Nostr key in the app follows.
+  static ECPrivate _signer(String root, String path) => ECPrivate.fromHex(
+    bip85.Bip85Entropy.deriveFromHardenedPath(
+      xprvBase58: root,
+      path: bip85.Bip85HardenedPath(path),
+    ).substring(0, 64),
+  );
 }

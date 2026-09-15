@@ -224,11 +224,11 @@ final metadataSnapshot = WalletMetadataSnapshot(
 );
 // The key the twelve words derive, reproduced independently in Python.
 const _expectedEncryptionKey =
-    'f282cd95c7252487a8dfcee00c5992ca3be78b1dc08adc24fb1dd75c3d10bdf6';
+    'b10cbf61c9b780a724b9601a06a5d3dc6634c6a470450b632e08412cad2c76d6';
 const _expectedServerPublicKey =
-    'b83e4c3ce576c3d5c98d35549fc4e63912ddade166bfed36fc9d913e0ecb1732';
+    'ab49e91bcf743b030aa83eb6a135a2aacaeb9d5ff69a8892e86dee634601d65a';
 const _expectedArtifactPublicKey =
-    '5aaf0e2e3052791f7ad96eaf656e7f7cd94ee3039522407d48e5decf0beec6a9';
+    'e3fcc9856099dc37eee21f66471290cbe48dfef143a32d4f81a86e3f17872fac';
 
 void main() {
   late Seed seed;
@@ -344,12 +344,13 @@ void main() {
     expect(snapshot.metadata, same(metadataSnapshot));
     expect(snapshot.externalWalletDefinitions, isEmpty);
     expect(snapshot.recoveryManifest.parentFingerprint.hex, _fingerprint);
-    // The backup identity comes from the twelve words, not from a BIP85 path,
-    // so registering recovery material records no reserved key at all.
+    // The backup identity is a child of the twelve words, not a key on the
+    // parent seed, so registering recovery material records no reserved key.
     expect(snapshot.recoveryManifest.entries, isEmpty);
     for (final reserved in [
       Bip85Reservations.retiredWalletBackupNostrKeyPath,
-      "1642'/0'/1'",
+      Bip85Reservations.retiredWalletBackupEncryptionKeyPath,
+      Bip85Reservations.backupWords.path,
       "128002'/101'/1'",
       "128002'/102'/1'",
     ]) {

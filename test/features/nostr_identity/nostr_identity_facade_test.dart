@@ -32,9 +32,9 @@ const _mnemonic =
 const _hash =
     '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 const _backupWords =
-    'smoke merit develop rug defy when swallow pink raven negative twin glass';
+    'industry unknown simple danger local example wreck cream cat correct soldier buzz';
 const _nostrPublicKey =
-    '5aaf0e2e3052791f7ad96eaf656e7f7cd94ee3039522407d48e5decf0beec6a9';
+    'e3fcc9856099dc37eee21f66471290cbe48dfef143a32d4f81a86e3f17872fac';
 
 void main() {
   late Seed seed;
@@ -80,7 +80,7 @@ void main() {
     expect(account, isNot(author));
     expect(
       NostrBech32.npub(hex.decode(author)),
-      'npub1t2hsut3s2fu377ked6hk2mnl0nv5accrj53yql2guh0v7zlwc65skj4kf5',
+      'npub1u07vnptqn8wr0mhzranywy5se0jgmlh3gw3j6nup4phr79u897kqf7t75t',
     );
   });
 
@@ -139,24 +139,22 @@ void main() {
     );
   });
 
-  test('the retired backup path stays claimed and unused', () {
+  test('the retired backup paths stay claimed and unused', () {
+    for (final retired in [
+      Bip85Reservations.retiredWalletBackupNostrKeyPath,
+      Bip85Reservations.retiredWalletBackupEncryptionKeyPath,
+    ]) {
+      expect(Bip85Reservations.reservedPaths, contains(retired));
+      expect(Bip85Reservations.reservationByExactPath(retired), isNull);
+    }
+    // The artifact identity path is spelled like the retired parent-seed path,
+    // but it is derived on the words' root: same string, different key.
     expect(
-      Bip85Reservations.reservedPaths,
-      contains(Bip85Reservations.retiredWalletBackupNostrKeyPath),
-    );
-    expect(
-      Bip85Reservations.reservationByExactPath(
+      _nostrKeyAtPath(
+        Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes),
         Bip85Reservations.retiredWalletBackupNostrKeyPath,
       ),
-      isNull,
-    );
-    expect(
-      _reservedNostrKey(
-        Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes),
-        Bip85Reservations.walletBackupEncryptionKey,
-      ),
       isNot(_nostrPublicKey),
-      reason: 'the credential is the words, never the raw path key',
     );
   });
 
@@ -289,14 +287,16 @@ String _ok(Result<String, NostrIdentityFailure> result) {
 }
 
 String _reservedNostrKey(String rootXprv, Bip85Reservation reservation) =>
-    hex.encode(
-      ECPrivate.fromHex(
-        bip85.Bip85Entropy.deriveFromHardenedPath(
-          xprvBase58: rootXprv,
-          path: bip85.Bip85HardenedPath(reservation.path),
-        ).substring(0, 64),
-      ).getPublic().toXOnly(),
-    );
+    _nostrKeyAtPath(rootXprv, reservation.path);
+
+String _nostrKeyAtPath(String rootXprv, String path) => hex.encode(
+  ECPrivate.fromHex(
+    bip85.Bip85Entropy.deriveFromHardenedPath(
+      xprvBase58: rootXprv,
+      path: bip85.Bip85HardenedPath(path),
+    ).substring(0, 64),
+  ).getPublic().toXOnly(),
+);
 
 NostrIdentityFacade _facade(
   GetSettingsUsecase settings,

@@ -17,25 +17,46 @@ void main() {
       'pos_wallet_seed',
       'nostr_bullnym_server_auth_key',
       'nostr_nip05_public_nym_verification_key',
-      'wallet_backup_encryption_key',
+      'backup_words',
     ]);
-    expect(Bip85Reservations.reservedWalletSeedIndices, {100, 101, 102, 103});
+    expect(Bip85Reservations.reservedWalletSeedIndices, {
+      100,
+      101,
+      102,
+      103,
+      // The backup words: never a wallet, so no wallet may take the index.
+      104,
+    });
     expect(Bip85Reservations.reservedPaths, {
       ...Bip85Reservations.all.map((item) => item.path),
-      // Retired with the old backup identity; claimed so it is never reused.
+      // Retired with the old backup credential; claimed so never reused.
       "128002'/100'/1'",
+      "1642'/0'/1'",
     });
     expect(
       Bip85Reservations.retiredWalletBackupNostrKeyPath,
       "128002'/100'/1'",
     );
     expect(
-      Bip85Reservations.all.map((item) => item.path),
-      isNot(contains(Bip85Reservations.retiredWalletBackupNostrKeyPath)),
+      Bip85Reservations.retiredWalletBackupEncryptionKeyPath,
+      "1642'/0'/1'",
     );
+    for (final retired in [
+      Bip85Reservations.retiredWalletBackupNostrKeyPath,
+      Bip85Reservations.retiredWalletBackupEncryptionKeyPath,
+    ]) {
+      expect(
+        Bip85Reservations.all.map((item) => item.path),
+        isNot(contains(retired)),
+      );
+      expect(Bip85Reservations.reservationByExactPath(retired), isNull);
+    }
+    expect(Bip85Reservations.backupWords.path, "39'/0'/12'/104'");
+    expect(Bip85Reservations.backupWords.index, 104);
+    expect(Bip85Reservations.backupWords.isWalletSeed, isFalse);
     expect(Bip85Reservations.reservedPathPrefixes, {"1608'/0'/"});
     expect(
-      () => Bip85Reservations.reservedWalletSeedIndices.add(104),
+      () => Bip85Reservations.reservedWalletSeedIndices.add(105),
       throwsA(isA<UnsupportedError>()),
     );
     expect(
@@ -52,8 +73,8 @@ void main() {
     expect(Bip85Reservations.nostrUserKeyIdentity("128002'/05'/1'"), isNull);
     expect(() => Bip85Reservations.nostrUserKeyPath(100), throwsArgumentError);
     expect(
-      Bip85Reservations.reservationByExactPath("1642'/0'/1'")?.id,
-      'wallet_backup_encryption_key',
+      Bip85Reservations.reservationByExactPath("39'/0'/12'/104'")?.id,
+      'backup_words',
     );
   });
 

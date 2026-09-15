@@ -4,10 +4,10 @@ enum Bip85ReservationPurpose {
   walletSeed,
   nonWalletNostrKey,
 
-  /// The reserved path the whole backup credential comes from: the twelve
-  /// backup words, the encryption key they derive and the two signing
-  /// identities that follow it.
-  backupEncryptionKey,
+  /// The twelve backup words: a standard BIP85 BIP39 child of the default seed
+  /// that is never a wallet. The encryption key and the two backup signing
+  /// identities are further BIP85 children of the words themselves.
+  backupWords,
 }
 
 final class Bip85Reservation {
@@ -84,12 +84,15 @@ abstract final class Bip85Reservations {
     path: "128002'/102'/1'",
     index: 102,
   );
-  static const walletBackupEncryptionKey = Bip85Reservation(
-    id: 'wallet_backup_encryption_key',
-    deterministicAlias: 'Wallet Backup Encryption',
-    purpose: Bip85ReservationPurpose.backupEncryptionKey,
-    path: "1642'/0'/1'",
-    index: 1,
+
+  /// Shares the BIP39 application with the wallet seeds and sits in the same
+  /// first-party block, so no wallet can ever be derived at this index.
+  static const backupWords = Bip85Reservation(
+    id: 'backup_words',
+    deterministicAlias: 'Backup Words',
+    purpose: Bip85ReservationPurpose.backupWords,
+    path: "39'/0'/12'/104'",
+    index: 104,
   );
 
   static const all = <Bip85Reservation>[
@@ -99,22 +102,28 @@ abstract final class Bip85Reservations {
     pointOfSaleWalletSeed,
     nostrBullnymServerAuthKey,
     nostrNip05PublicNymVerificationKey,
-    walletBackupEncryptionKey,
+    backupWords,
   ];
 
-  static final reservedWalletSeedIndices = Set<int>.unmodifiable(
-    all.where((item) => item.isWalletSeed).map((item) => item.walletIndex),
-  );
+  /// Every BIP39-application index the app claims, the backup words included:
+  /// a user wallet at the words' index would make the words a spending key.
+  static final reservedWalletSeedIndices = Set<int>.unmodifiable({
+    ...all.where((item) => item.isWalletSeed).map((item) => item.walletIndex),
+    backupWords.index,
+  });
 
-  /// Retired, never reassigned: `128002'/100'/1'` derived the wallet backup
-  /// Nostr identity before the backup credential became the twelve words at
-  /// `walletBackupEncryptionKey`. It stays claimed so nothing derives from it
-  /// again.
+  /// Retired, never reassigned. `128002'/100'/1'` derived the wallet backup
+  /// Nostr identity, and `1642'/0'/1'` the raw metadata encryption key and
+  /// later a Bull-specific twelve-word encoding, before the credential became
+  /// the standard BIP85 mnemonic at [backupWords] (2026-09-15). Both stay
+  /// claimed so nothing derives from them again.
   static const retiredWalletBackupNostrKeyPath = "128002'/100'/1'";
+  static const retiredWalletBackupEncryptionKeyPath = "1642'/0'/1'";
 
   static final reservedPaths = Set<String>.unmodifiable({
     ...all.map((item) => item.path),
     retiredWalletBackupNostrKeyPath,
+    retiredWalletBackupEncryptionKeyPath,
   });
   static final reservedPathPrefixes = Set<String>.unmodifiable({
     RecoverbullBip85Utils.vaultKeyPathPrefix,

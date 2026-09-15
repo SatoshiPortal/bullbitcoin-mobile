@@ -79,7 +79,7 @@ final class ParseKeychainManifestFileUsecase {
             item is KeychainManifestNostrKey &&
             item.keyKind == KeychainManifestNostrKeyKind.reserved,
       ),
-      Bip85ReservationPurpose.backupEncryptionKey => false,
+      Bip85ReservationPurpose.backupWords => false,
     };
   }
 }

@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/utils/nostr_bech32.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -19,27 +23,88 @@ Seed _seed() => Seed.bytes(
 
 void main() {
   test('the reserved path still produces the frozen BIP85 entropy', () {
+    expect(Bip85Reservations.backupWords.path, "39'/0'/12'/104'");
+    final root = Bip32Derivation.getCanonicalRootXprvFromSeed(
+      backupCredentialVectorSeed,
+    );
+
     expect(
-      bip85.Bip85Entropy.deriveFromHardenedPath(
-        xprvBase58: Bip32Derivation.getCanonicalRootXprvFromSeed(
-          backupCredentialVectorSeed,
+      hex.encode(
+        bip85.Bip85Entropy.derive(
+          xprvBase58: root,
+          application: bip85.MnemonicApplication(),
+          path: "0'/12'/104'",
         ),
-        path: bip85.Bip85HardenedPath("1642'/0'/1'"),
       ),
       backupCredentialVectorBip85Entropy,
     );
+    // A generic BIP85 path tool given the reserved path prints the words.
+    expect(
+      bip85.Bip85Entropy.deriveFromHardenedPath(
+        xprvBase58: root,
+        path: bip85.Bip85HardenedPath(Bip85Reservations.backupWords.path),
+      ),
+      backupCredentialVectorWords,
+    );
   });
 
-  test('a seed yields the frozen twelve words and their entropy', () {
+  test('a seed yields the frozen twelve words: a standard BIP85 child', () {
     final words = BackupCredential.deriveWords(_seed());
 
     expect(words, backupCredentialVectorWords);
+    final mnemonic = bip39.Mnemonic.fromSentence(words, bip39.Language.english);
+    expect(hex.encode(mnemonic.entropy), backupCredentialVectorWordEntropy);
     expect(
-      hex.encode(
-        bip39.Mnemonic.fromSentence(words, bip39.Language.english).entropy,
-      ),
-      backupCredentialVectorWordEntropy,
+      backupCredentialVectorBip85Entropy,
+      startsWith(backupCredentialVectorWordEntropy),
+      reason: 'BIP85 39\' takes the first 16 bytes verbatim, no Bull step',
     );
+    expect(hex.encode(mnemonic.seed), backupCredentialVectorWordsSeed);
+  });
+
+  test('every key is a BIP85 child of the words, nothing Bull-specific', () {
+    final root = Bip32Derivation.getCanonicalRootXprvFromSeed(
+      Uint8List.fromList(hex.decode(backupCredentialVectorWordsSeed)),
+    );
+    String child(String path) => bip85.Bip85Entropy.deriveFromHardenedPath(
+      xprvBase58: root,
+      path: bip85.Bip85HardenedPath(path),
+    );
+
+    expect(BackupCredential.encryptionKeyPath, "128169'/32'/0'");
+    expect(BackupCredential.nostrIdentityPath, "128002'/100'/1'");
+    expect(BackupCredential.serverIdentityPath, "128002'/101'/1'");
+    expect(
+      child(BackupCredential.encryptionKeyPath).substring(0, 64),
+      backupCredentialVectorEncryptionKey,
+    );
+    for (final identity in [
+      (
+        BackupCredential.nostrIdentityPath,
+        backupCredentialVectorNostrPublicKey,
+      ),
+      (
+        BackupCredential.serverIdentityPath,
+        backupCredentialVectorServerPublicKey,
+      ),
+    ]) {
+      expect(
+        hex.encode(
+          ECPrivate.fromHex(
+            child(identity.$1).substring(0, 64),
+          ).getPublic().toXOnly(),
+        ),
+        identity.$2,
+      );
+    }
+  });
+
+  test('the words index can never become a wallet', () {
+    expect(
+      Bip85Reservations.reservedWalletSeedIndices,
+      contains(Bip85Reservations.backupWords.index),
+    );
+    expect(Bip85Reservations.backupWords.isWalletSeed, isFalse);
   });
 
   test('seed and words derive byte-identical credentials', () {
@@ -51,6 +116,10 @@ void main() {
       expect(
         credential.nostrPublicKeyHex,
         backupCredentialVectorNostrPublicKey,
+      );
+      expect(
+        NostrBech32.npub(hex.decode(credential.nostrPublicKeyHex)),
+        backupCredentialVectorNostrNpub,
       );
       expect(
         credential.serverPublicKeyHex,
@@ -138,10 +207,10 @@ void main() {
       '',
       '   ',
       words.take(11).join(' '),
-      '$backupCredentialVectorWords crop',
+      '$backupCredentialVectorWords math',
       'abandon ' * 12,
       'invalid ' * 12,
-      backupCredentialVectorWords.replaceFirst('abandon', 'abandonn'),
+      backupCredentialVectorWords.replaceFirst('disease', 'diseasee'),
       'x' * (BackupCredential.maxInputLength + 1),
     ];
 
@@ -153,7 +222,7 @@ void main() {
         thrown = error;
       }
       expect(thrown, isA<InvalidBackupWordsException>(), reason: input);
-      expect(thrown.toString(), isNot(contains('abandon')));
+      expect(thrown.toString(), isNot(contains('disease')));
     }
   });
 
@@ -161,7 +230,7 @@ void main() {
     final credential = BackupCredential.fromWords(backupCredentialVectorWords);
     final same = BackupCredential.fromWords(backupCredentialVectorWords);
 
-    expect(credential.toString(), isNot(contains('abandon')));
+    expect(credential.toString(), isNot(contains('disease')));
     expect(
       credential.toString(),
       isNot(contains(backupCredentialVectorEncryptionKey)),
