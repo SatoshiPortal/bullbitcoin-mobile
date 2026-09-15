@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/nostr_bech32.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_failure.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
@@ -35,21 +39,64 @@ final class KeychainManifestNostrKeyDeriver {
     }
   }
 
-  String derivePublicKey(Seed seed, String path) =>
-      hex.encode(_derivePrivateKey(seed, path).getPublic().toXOnly());
+  String derivePublicKey(
+    Seed seed,
+    String path, {
+    KeychainManifestDerivationKind kind = KeychainManifestDerivationKind.bip85,
+  }) => hex.encode(_derivePrivateKey(seed, path, kind).getPublic().toXOnly());
 
-  DerivedKeychainManifestNostrSecret revealSecret(Seed seed, String path) {
-    final key = _derivePrivateKey(seed, path);
+  DerivedKeychainManifestNostrSecret revealSecret(
+    Seed seed,
+    String path, {
+    KeychainManifestDerivationKind kind = KeychainManifestDerivationKind.bip85,
+  }) {
+    final key = _derivePrivateKey(seed, path, kind);
     return DerivedKeychainManifestNostrSecret(
       publicKeyHex: hex.encode(key.getPublic().toXOnly()),
       nsec: NostrBech32.nsec(hex.decode(key.toHex())),
     );
   }
 
-  ECPrivate _derivePrivateKey(Seed seed, String path) {
+  /// Executes the manifest's derivation instruction literally.
+  ///
+  /// A `bip85` path is one BIP85 derivation on the parent seed. A `bip85Chain`
+  /// is the same operation repeated: every step but the last is a BIP85
+  /// application-39 path whose English mnemonic, with an empty passphrase, is
+  /// the BIP32 root the next step derives from. The final step's first 32
+  /// bytes of entropy are the secp256k1 secret, the rule every Nostr key in
+  /// the app follows.
+  ECPrivate _derivePrivateKey(
+    Seed seed,
+    String path,
+    KeychainManifestDerivationKind kind,
+  ) {
+    final steps = switch (kind) {
+      KeychainManifestDerivationKind.bip85 => [path],
+      KeychainManifestDerivationKind.bip85Chain =>
+        KeychainManifestEntry.chainSteps(
+          KeychainManifestEntry.canonicalPath(kind, path),
+        ),
+      KeychainManifestDerivationKind.bip32 => throw ArgumentError.value(
+        kind,
+        'kind',
+        'Nostr keys are BIP85 derivations',
+      ),
+    };
+    var root = Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes);
+    for (final step in steps.take(steps.length - 1)) {
+      final words = bip85.Bip85Entropy.deriveFromHardenedPath(
+        xprvBase58: root,
+        path: bip85.Bip85HardenedPath(step),
+      );
+      root = Bip32Derivation.getCanonicalRootXprvFromSeed(
+        Uint8List.fromList(
+          bip39.Mnemonic.fromSentence(words, bip39.Language.english).seed,
+        ),
+      );
+    }
     final entropy = bip85.Bip85Entropy.deriveFromHardenedPath(
-      xprvBase58: Bip32Derivation.getCanonicalRootXprvFromSeed(seed.bytes),
-      path: bip85.Bip85HardenedPath(path),
+      xprvBase58: root,
+      path: bip85.Bip85HardenedPath(steps.last),
     );
     return ECPrivate.fromHex(entropy.substring(0, 64));
   }

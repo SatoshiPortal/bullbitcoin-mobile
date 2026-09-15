@@ -427,6 +427,8 @@ final class WalletBackupBehaviorHarness {
         RegisterWalletBackupRecoveryMaterialUsecase(
           resolveKey,
           refreshManifest,
+          nostrIdentity,
+          keychainManifest,
         );
     final fetchImport = FetchWalletBackupSnapshotUsecase(
       resolveKey: resolveKey,

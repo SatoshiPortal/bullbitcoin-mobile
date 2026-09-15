@@ -14,7 +14,7 @@ final class RevealKeychainManifestNostrKeyUsecase {
   ) async {
     final key = entry.materializations.singleOrNull;
     if (key is! KeychainManifestNostrKey ||
-        entry.derivationKind != KeychainManifestDerivationKind.bip85) {
+        entry.derivationKind == KeychainManifestDerivationKind.bip32) {
       return const Err(KeychainManifestConflictFailure());
     }
     final source = await _deriver.source();
@@ -27,7 +27,8 @@ final class RevealKeychainManifestNostrKeyUsecase {
     }
     final derived = _deriver.revealSecret(
       value.seed,
-      entry.bip85DerivationPath,
+      entry.derivationPath,
+      kind: entry.derivationKind,
     );
     if (derived.publicKeyHex != key.publicKeyHex) {
       return const Err(KeychainManifestDerivationFailure());

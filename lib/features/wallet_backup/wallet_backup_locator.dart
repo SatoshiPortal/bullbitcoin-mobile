@@ -274,6 +274,8 @@ final class _WalletBackupGraph {
         RegisterWalletBackupRecoveryMaterialUsecase(
           resolveKey,
           refreshManifest,
+          nostrIdentity,
+          keychainManifest,
         );
     final fetchImport = FetchWalletBackupSnapshotUsecase(
       resolveKey: resolveKey,

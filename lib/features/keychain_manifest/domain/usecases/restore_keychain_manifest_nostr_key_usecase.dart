@@ -11,9 +11,15 @@ final class RestoreKeychainManifestNostrKeyUsecase {
 
   const RestoreKeychainManifestNostrKeyUsecase(this._deriver, this._record);
 
+  /// Records a key only after re-deriving it from the active seed by the
+  /// entry's own instruction, so a manifest can never carry a key its
+  /// derivation does not produce. Recovery and local registration share this
+  /// check; only the recorded [origin] differs.
   Future<Result<bool, KeychainManifestFailure>> execute({
     required String reservationId,
     required Fingerprint parentFingerprint,
+    KeychainManifestDerivationKind derivationKind =
+        KeychainManifestDerivationKind.bip85,
     required String derivationPath,
     required String publicKeyHex,
     required KeychainManifestNostrKeyKind keyKind,
@@ -21,21 +27,35 @@ final class RestoreKeychainManifestNostrKeyUsecase {
     String? description,
     required DateTime createdAt,
     required DateTime updatedAt,
+    KeychainManifestWriteOrigin origin = KeychainManifestWriteOrigin.recovery,
   }) async {
+    if (derivationKind == KeychainManifestDerivationKind.bip32) {
+      return const Err(KeychainManifestUnknownReservationFailure());
+    }
     final source = await _deriver.source();
     switch (source) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
+        final String derived;
+        try {
+          derived = _deriver.derivePublicKey(
+            value.seed,
+            derivationPath,
+            kind: derivationKind,
+          );
+        } on ArgumentError {
+          return const Err(KeychainManifestUnknownReservationFailure());
+        }
         if (value.fingerprint != parentFingerprint ||
-            _deriver.derivePublicKey(value.seed, derivationPath) !=
-                publicKeyHex) {
+            derived != publicKeyHex.toLowerCase()) {
           return const Err(KeychainManifestConflictFailure());
         }
     }
     return _record.execute(
       reservationId: reservationId,
       parentFingerprint: parentFingerprint,
+      derivationKind: derivationKind,
       derivationPath: derivationPath,
       publicKeyHex: publicKeyHex,
       keyKind: keyKind,
@@ -43,7 +63,7 @@ final class RestoreKeychainManifestNostrKeyUsecase {
       description: description,
       now: createdAt,
       updatedAt: updatedAt,
-      origin: KeychainManifestWriteOrigin.recovery,
+      origin: origin,
     );
   }
 }

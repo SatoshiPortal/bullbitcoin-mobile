@@ -12,6 +12,8 @@ final class RecordKeychainManifestNostrKeyUsecase {
   Future<Result<bool, KeychainManifestFailure>> execute({
     required String reservationId,
     required Fingerprint parentFingerprint,
+    KeychainManifestDerivationKind derivationKind =
+        KeychainManifestDerivationKind.bip85,
     required String derivationPath,
     required String publicKeyHex,
     required KeychainManifestNostrKeyKind keyKind,
@@ -21,22 +23,47 @@ final class RecordKeychainManifestNostrKeyUsecase {
     DateTime? now,
     DateTime? updatedAt,
   }) async {
+    final String path;
+    try {
+      path = KeychainManifestEntry.canonicalPath(
+        derivationKind,
+        derivationPath,
+      );
+    } on ArgumentError {
+      return const Err(KeychainManifestUnknownReservationFailure());
+    }
+    final single = derivationKind == KeychainManifestDerivationKind.bip85;
     final reservation = Bip85Reservations.reservationById(reservationId);
     final userKey =
+        single &&
         reservationId == Bip85Reservations.nostrUserKeyReservationId &&
         keyKind == KeychainManifestNostrKeyKind.userGenerated &&
-        Bip85Reservations.isNostrUserKeyPath(derivationPath);
+        Bip85Reservations.isNostrUserKeyPath(path);
     final reservedKey =
+        single &&
         keyKind == KeychainManifestNostrKeyKind.reserved &&
         reservation?.purpose == Bip85ReservationPurpose.nonWalletNostrKey &&
-        reservation?.path == derivationPath;
-    if (!userKey && !reservedKey) {
+        reservation?.path == path;
+    // The backup credential's identities: two BIP85 steps in sequence, the
+    // first being the backup words reservation itself.
+    final backupChain =
+        derivationKind == KeychainManifestDerivationKind.bip85Chain &&
+        keyKind == KeychainManifestNostrKeyKind.reserved &&
+        reservationId == Bip85Reservations.backupWords.id &&
+        Bip85Reservations.isBackupIdentityChain(
+          KeychainManifestEntry.chainSteps(path),
+        );
+    if (!userKey && !reservedKey && !backupChain) {
       return const Err(KeychainManifestUnknownReservationFailure());
     }
     final effectiveNow = now ?? DateTime.now().toUtc();
     final timestamp = effectiveNow.millisecondsSinceEpoch ~/ 1000;
     final revision = (updatedAt ?? effectiveNow).millisecondsSinceEpoch ~/ 1000;
-    final entryId = '${parentFingerprint.hex}:$derivationPath';
+    final entryId = KeychainManifestEntry.entryIdFor(
+      parentFingerprint: parentFingerprint,
+      derivationKind: derivationKind,
+      derivationPath: path,
+    );
     final key = KeychainManifestNostrKey(
       entryId: entryId,
       publicKeyHex: publicKeyHex,
@@ -47,7 +74,8 @@ final class RecordKeychainManifestNostrKeyUsecase {
     );
     final entry = KeychainManifestEntry(
       parentFingerprint: parentFingerprint,
-      derivationPath: derivationPath,
+      derivationKind: derivationKind,
+      derivationPath: path,
       description: description,
       createdAt: timestamp,
       updatedAt: revision,

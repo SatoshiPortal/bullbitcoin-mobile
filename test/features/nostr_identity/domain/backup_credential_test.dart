@@ -3,7 +3,11 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/nostr_bech32.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_deriver.dart';
 import 'package:bb_mobile/features/nostr_identity/domain/backup_credential.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -11,8 +15,13 @@ import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../fixtures/backup_credential_vectors.dart';
+
+class _MockSettings extends Mock implements GetSettingsUsecase {}
+
+class _MockDefaultSeed extends Mock implements GetDefaultSeedUsecase {}
 
 Seed _seed() => Seed.bytes(
   bytes: backupCredentialVectorSeed,
@@ -97,6 +106,47 @@ void main() {
         identity.$2,
       );
     }
+  });
+
+  test('the manifest chain instruction reproduces both identities', () {
+    // The keychain manifest records each identity as two BIP85 steps in
+    // sequence and re-derives it by interpreting those steps literally. The
+    // credential and that interpreter must agree, or the recorded instruction
+    // would not be the one the app uses.
+    final deriver = KeychainManifestNostrKeyDeriver(
+      _MockSettings(),
+      _MockDefaultSeed(),
+    );
+    final credential = BackupCredential.fromSeed(_seed());
+
+    expect(
+      deriver.derivePublicKey(
+        _seed(),
+        KeychainManifestEntry.chainPath(
+          Bip85Reservations.backupArtifactIdentityChain,
+        ),
+        kind: KeychainManifestDerivationKind.bip85Chain,
+      ),
+      credential.nostrPublicKeyHex,
+    );
+    expect(
+      deriver.derivePublicKey(
+        _seed(),
+        KeychainManifestEntry.chainPath(
+          Bip85Reservations.backupServerIdentityChain,
+        ),
+        kind: KeychainManifestDerivationKind.bip85Chain,
+      ),
+      credential.serverPublicKeyHex,
+    );
+    expect(Bip85Reservations.backupArtifactIdentityChain, [
+      Bip85Reservations.backupWords.path,
+      BackupCredential.nostrIdentityPath,
+    ]);
+    expect(Bip85Reservations.backupServerIdentityChain, [
+      Bip85Reservations.backupWords.path,
+      BackupCredential.serverIdentityPath,
+    ]);
   });
 
   test('the words index can never become a wallet', () {

@@ -57,14 +57,15 @@ final class BackupCredential {
   static const maxInputLength = 256;
 
   /// BIP85 HEX application on the words' root: 32 bytes at index 0.
-  static const encryptionKeyPath = "128169'/32'/0'";
+  static const encryptionKeyPath = Bip85Reservations.backupEncryptionKeyPath;
 
   /// BIP85 Nostr application on the words' root, inside the block the app owns
   /// on every root (see [Bip85Reservations.nostrAppReservedIdentityStart]).
   /// The parent seed's `128002'/100'/1'` is retired; this one lives on a
-  /// different root and is a different key.
-  static const nostrIdentityPath = "128002'/100'/1'";
-  static const serverIdentityPath = "128002'/101'/1'";
+  /// different root and is a different key. The keychain manifest records
+  /// both identities as two-step `bip85Chain` entries under these same paths.
+  static const nostrIdentityPath = Bip85Reservations.backupArtifactIdentityPath;
+  static const serverIdentityPath = Bip85Reservations.backupServerIdentityPath;
 
   static final _hashPattern = RegExp(r'^[0-9a-fA-F]{64}$');
 

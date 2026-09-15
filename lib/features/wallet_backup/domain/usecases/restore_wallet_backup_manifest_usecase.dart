@@ -98,7 +98,7 @@ class RestoreWalletBackupManifestUsecase {
           failed++;
           continue;
         }
-        final reservationId = _reservationId(entry.derivationPath);
+        final reservationId = _reservationId(entry);
         if (reservationId == null) {
           failed++;
           continue;
@@ -106,6 +106,7 @@ class RestoreWalletBackupManifestUsecase {
         final result = await _manifest.restoreNostrKey(
           reservationId: reservationId,
           parentFingerprint: manifest.parentFingerprint,
+          derivationKind: entry.derivationKind,
           derivationPath: entry.derivationPath,
           publicKeyHex: key.publicKeyHex,
           keyKind: key.keyKind,
@@ -162,7 +163,13 @@ class RestoreWalletBackupManifestUsecase {
     );
   }
 
-  String? _reservationId(String path) {
+  String? _reservationId(KeychainManifestEntry entry) {
+    if (entry.derivationKind == KeychainManifestDerivationKind.bip85Chain) {
+      return Bip85Reservations.isBackupIdentityChain(entry.bip85ChainSteps)
+          ? Bip85Reservations.backupWords.id
+          : null;
+    }
+    final path = entry.derivationPath;
     final reserved = Bip85Reservations.reservationByExactPath(path);
     if (reserved != null) return reserved.id;
     return Bip85Reservations.isNostrUserKeyPath(path)

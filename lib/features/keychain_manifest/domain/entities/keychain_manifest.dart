@@ -6,7 +6,15 @@ import 'package:primitives/primitives.dart' show Fingerprint;
 
 enum KeychainManifestNostrKeyKind { reserved, userGenerated }
 
-enum KeychainManifestDerivationKind { bip85, bip32 }
+/// How an entry's key material is reached from the parent seed.
+///
+/// [bip85] and [bip32] are one derivation on the parent seed. [bip85Chain] is
+/// two or more BIP85 derivations applied in sequence: every step but the last
+/// is a BIP85 application-39 path whose English mnemonic, with an empty
+/// passphrase, is the BIP32 root of the next step, and the last step yields
+/// the materialization exactly as a single [bip85] entry would. The backup
+/// credential is the one chain the app claims: seed → backup words → identity.
+enum KeychainManifestDerivationKind { bip85, bip32, bip85Chain }
 
 const _maximumUnixSeconds = 8640000000000;
 
@@ -63,6 +71,11 @@ final class KeychainManifest {
 final class KeychainManifestEntry {
   static const maxDescriptionLength = 200;
 
+  /// Joins the steps of a [KeychainManifestDerivationKind.bip85Chain] path in
+  /// its one canonical string form, `39'/0'/12'/104' > 128002'/100'/1'`.
+  static const chainSeparator = ' > ';
+  static const maxChainSteps = 4;
+
   final Fingerprint parentFingerprint;
   final KeychainManifestDerivationKind derivationKind;
   final String derivationPath;
@@ -93,7 +106,12 @@ final class KeychainManifestEntry {
         this.materializations.any((item) => item.entryId != entryId) ||
         (derivationKind == KeychainManifestDerivationKind.bip32 &&
             (this.materializations.length != 1 ||
-                this.materializations.single is! KeychainManifestWallet))) {
+                this.materializations.single is! KeychainManifestWallet)) ||
+        // A chain ends in a key, never a wallet: the intermediate mnemonic is
+        // a root for further derivation, not a wallet seed.
+        (derivationKind == KeychainManifestDerivationKind.bip85Chain &&
+            (this.materializations.length != 1 ||
+                this.materializations.single is! KeychainManifestNostrKey))) {
       throw ArgumentError('Invalid manifest entry');
     }
   }
@@ -127,7 +145,7 @@ final class KeychainManifestEntry {
     Network? network,
   }) {
     final path = canonicalPath(derivationKind, derivationPath);
-    if (derivationKind == KeychainManifestDerivationKind.bip85) {
+    if (derivationKind != KeychainManifestDerivationKind.bip32) {
       return '${parentFingerprint.hex}:$path';
     }
     if (seedFingerprint == null || network == null) {
@@ -148,6 +166,23 @@ final class KeychainManifestEntry {
     }
     return derivationPath;
   }
+
+  /// The ordered BIP85 steps of a chain entry, first applied to the parent
+  /// seed and each following one to the previous step's mnemonic root.
+  List<String> get bip85ChainSteps {
+    if (derivationKind != KeychainManifestDerivationKind.bip85Chain) {
+      throw StateError('Manifest entry is not a BIP85 chain');
+    }
+    return chainSteps(derivationPath);
+  }
+
+  static List<String> chainSteps(String canonicalChainPath) =>
+      List.unmodifiable(canonicalChainPath.split(chainSeparator));
+
+  static String chainPath(Iterable<String> steps) => canonicalPath(
+    KeychainManifestDerivationKind.bip85Chain,
+    steps.join(chainSeparator),
+  );
 
   KeychainManifestEntry withMaterializations(
     Iterable<KeychainManifestMaterialization> items, {
@@ -357,6 +392,26 @@ String? _optional(String? value) {
 }
 
 String _canonicalPath(KeychainManifestDerivationKind kind, String value) {
+  if (kind == KeychainManifestDerivationKind.bip85Chain) {
+    final steps = value
+        .split('>')
+        .map(
+          (step) => _canonicalPath(KeychainManifestDerivationKind.bip85, step),
+        )
+        .toList(growable: false);
+    if (steps.length < 2 ||
+        steps.length > KeychainManifestEntry.maxChainSteps) {
+      throw ArgumentError('Invalid BIP85 chain');
+    }
+    // Every step but the last must produce an English BIP39 mnemonic, which is
+    // what the next step derives from: BIP85 application 39, language 0.
+    if (steps
+        .take(steps.length - 1)
+        .any((step) => !step.startsWith("39'/0'/"))) {
+      throw ArgumentError('Invalid BIP85 chain');
+    }
+    return steps.join(KeychainManifestEntry.chainSeparator);
+  }
   final trimmed = value.trim();
   final hasRoot = trimmed.startsWith('m/');
   if (kind == KeychainManifestDerivationKind.bip32 && !hasRoot) {

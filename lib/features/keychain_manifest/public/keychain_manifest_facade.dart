@@ -132,10 +132,39 @@ final class KeychainManifestFacade {
     walletId: walletId,
   );
 
+  /// Records a reserved key the app derives itself, after re-deriving it from
+  /// the active seed by [derivationKind] and [derivationPath]. Idempotent: an
+  /// identical record is a no-op, a different key at the same path a conflict.
+  @useResult
+  Future<Result<bool, KeychainManifestFailure>> recordDerivedNostrKey({
+    required String reservationId,
+    required Fingerprint parentFingerprint,
+    required KeychainManifestDerivationKind derivationKind,
+    required String derivationPath,
+    required String publicKeyHex,
+    required String purpose,
+    String? description,
+    required DateTime now,
+  }) => _restoreNostrKey.execute(
+    reservationId: reservationId,
+    parentFingerprint: parentFingerprint,
+    derivationKind: derivationKind,
+    derivationPath: derivationPath,
+    publicKeyHex: publicKeyHex,
+    keyKind: KeychainManifestNostrKeyKind.reserved,
+    purpose: purpose,
+    description: description,
+    createdAt: now,
+    updatedAt: now,
+    origin: KeychainManifestWriteOrigin.local,
+  );
+
   @useResult
   Future<Result<bool, KeychainManifestFailure>> restoreNostrKey({
     required String reservationId,
     required Fingerprint parentFingerprint,
+    KeychainManifestDerivationKind derivationKind =
+        KeychainManifestDerivationKind.bip85,
     required String derivationPath,
     required String publicKeyHex,
     required KeychainManifestNostrKeyKind keyKind,
@@ -146,6 +175,7 @@ final class KeychainManifestFacade {
   }) => _restoreNostrKey.execute(
     reservationId: reservationId,
     parentFingerprint: parentFingerprint,
+    derivationKind: derivationKind,
     derivationPath: derivationPath,
     publicKeyHex: publicKeyHex,
     keyKind: keyKind,

@@ -91,9 +91,44 @@ abstract final class Bip85Reservations {
     id: 'backup_words',
     deterministicAlias: 'Backup Words',
     purpose: Bip85ReservationPurpose.backupWords,
-    path: "39'/0'/12'/104'",
+    path: _backupWordsPath,
     index: 104,
   );
+  static const _backupWordsPath = "39'/0'/12'/104'";
+
+  /// BIP85 paths on the backup words' own root, not on the default seed: the
+  /// words' BIP39 seed with an empty passphrase is the BIP32 root they are
+  /// derived from. Together with [backupWords] they form two-step chains,
+  /// which the keychain manifest records as `bip85Chain` entries so the
+  /// instruction "BIP85, then BIP85 again on the child mnemonic" is explicit.
+  static const backupEncryptionKeyPath = "128169'/32'/0'";
+  static const backupArtifactIdentityPath = "128002'/100'/1'";
+  static const backupServerIdentityPath = "128002'/101'/1'";
+
+  /// The chains the manifest may record for the backup credential: seed →
+  /// words → identity. Only Nostr-style keys are recorded; the encryption key
+  /// has no public materialization.
+  static const backupArtifactIdentityChain = <String>[
+    _backupWordsPath,
+    backupArtifactIdentityPath,
+  ];
+  static const backupServerIdentityChain = <String>[
+    _backupWordsPath,
+    backupServerIdentityPath,
+  ];
+  static const backupIdentityChains = <List<String>>[
+    backupArtifactIdentityChain,
+    backupServerIdentityChain,
+  ];
+
+  static bool isBackupIdentityChain(List<String> steps) =>
+      backupIdentityChains.any(
+        (chain) =>
+            chain.length == steps.length &&
+            [
+              for (var i = 0; i < chain.length; i++) chain[i] == steps[i],
+            ].every((same) => same),
+      );
 
   static const all = <Bip85Reservation>[
     btcpayWalletSeed,

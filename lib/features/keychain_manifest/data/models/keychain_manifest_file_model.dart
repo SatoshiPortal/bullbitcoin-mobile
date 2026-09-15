@@ -141,7 +141,12 @@ final class _KeychainManifestFileModel {
 
 final class _EntryModel {
   final String derivationKind;
-  final String derivationPath;
+
+  /// One path for `bip85` and `bip32`; absent for `bip85Chain`, whose steps
+  /// are listed in order in [derivationSteps] so a reader cannot mistake the
+  /// chain for a single path.
+  final String? derivationPath;
+  final List<String>? derivationSteps;
   final String? description;
   final int createdAt;
   final int updatedAt;
@@ -149,7 +154,8 @@ final class _EntryModel {
 
   const _EntryModel({
     required this.derivationKind,
-    required this.derivationPath,
+    this.derivationPath,
+    this.derivationSteps,
     this.description,
     required this.createdAt,
     required this.updatedAt,
@@ -158,7 +164,14 @@ final class _EntryModel {
 
   factory _EntryModel.fromEntity(KeychainManifestEntry entry) => _EntryModel(
     derivationKind: entry.derivationKind.name,
-    derivationPath: entry.derivationPath,
+    derivationPath:
+        entry.derivationKind == KeychainManifestDerivationKind.bip85Chain
+        ? null
+        : entry.derivationPath,
+    derivationSteps:
+        entry.derivationKind == KeychainManifestDerivationKind.bip85Chain
+        ? entry.bip85ChainSteps
+        : null,
     description: entry.description,
     createdAt: entry.createdAt,
     updatedAt: entry.updatedAt,
@@ -171,6 +184,7 @@ final class _EntryModel {
     if (!_onlyKeys(json, const {
       'derivationKind',
       'derivationPath',
+      'derivationSteps',
       'description',
       'createdAt',
       'updatedAt',
@@ -179,11 +193,16 @@ final class _EntryModel {
       return null;
     }
     final kind = _string(json, 'derivationKind');
+    final chain = kind == KeychainManifestDerivationKind.bip85Chain.name;
     final path = _string(json, 'derivationPath');
+    final steps = _stringList(json, 'derivationSteps');
     final createdAt = _int(json, 'createdAt');
     final updatedAt = _int(json, 'updatedAt');
     final rawItems = _list(json, 'materializations');
-    if (path == null ||
+    // A chain carries steps and no path; anything else carries a path and no
+    // steps. A document mixing the two is malformed, not ambiguous.
+    if ((chain && (steps == null || json.containsKey('derivationPath'))) ||
+        (!chain && (path == null || json.containsKey('derivationSteps'))) ||
         kind == null ||
         createdAt == null ||
         updatedAt == null ||
@@ -202,6 +221,7 @@ final class _EntryModel {
     return _EntryModel(
       derivationKind: kind,
       derivationPath: path,
+      derivationSteps: steps,
       description: _optionalString(json, 'description'),
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -211,7 +231,8 @@ final class _EntryModel {
 
   Map<String, Object?> toJson() => {
     'derivationKind': derivationKind,
-    'derivationPath': derivationPath,
+    if (derivationPath != null) 'derivationPath': derivationPath,
+    if (derivationSteps != null) 'derivationSteps': derivationSteps,
     if (description != null) 'description': description,
     'createdAt': createdAt,
     'updatedAt': updatedAt,
@@ -222,8 +243,27 @@ final class _EntryModel {
     final kind = KeychainManifestDerivationKind.values
         .where((value) => value.name == derivationKind)
         .firstOrNull;
-    if (kind == null ||
-        !_validPath(kind, derivationPath) ||
+    if (kind == null) return null;
+    final String derivationPath;
+    if (kind == KeychainManifestDerivationKind.bip85Chain) {
+      final steps = derivationSteps;
+      if (steps == null ||
+          steps.length < 2 ||
+          steps.length > KeychainManifestEntry.maxChainSteps ||
+          steps.any(
+            (step) => !_validPath(KeychainManifestDerivationKind.bip85, step),
+          )) {
+        return null;
+      }
+      try {
+        derivationPath = KeychainManifestEntry.chainPath(steps);
+      } on ArgumentError {
+        return null;
+      }
+    } else {
+      derivationPath = this.derivationPath ?? '';
+    }
+    if (!_validPath(kind, derivationPath) ||
         derivationPath.length > maxStringFieldLength ||
         (description?.length ?? 0) >
             KeychainManifestEntry.maxDescriptionLength ||
@@ -264,7 +304,9 @@ final class _EntryModel {
     }
     if (items.any((item) => item.entryId != entryId) ||
         (kind == KeychainManifestDerivationKind.bip32 &&
-            (items.length != 1 || items.single is! KeychainManifestWallet))) {
+            (items.length != 1 || items.single is! KeychainManifestWallet)) ||
+        (kind == KeychainManifestDerivationKind.bip85Chain &&
+            (items.length != 1 || items.single is! KeychainManifestNostrKey))) {
       return null;
     }
     return KeychainManifestEntry(
@@ -524,12 +566,27 @@ bool? _optionalBool(Map<String, Object?> json, String key) =>
 List<Object?>? _list(Map<String, Object?> json, String key) =>
     json[key] is List<Object?> ? json[key]! as List<Object?> : null;
 
+List<String>? _stringList(Map<String, Object?> json, String key) {
+  final raw = _list(json, key);
+  if (raw == null ||
+      raw.any(
+        (item) => item is! String || item.length > maxStringFieldLength,
+      )) {
+    return null;
+  }
+  return raw.cast<String>();
+}
+
 bool _validText(String? value) =>
     value != null &&
     value.trim().isNotEmpty &&
     value.length <= maxStringFieldLength;
 
 bool _validPath(KeychainManifestDerivationKind kind, String path) {
+  if (kind == KeychainManifestDerivationKind.bip85Chain) {
+    // Already built by KeychainManifestEntry.chainPath from validated steps.
+    return path.isNotEmpty;
+  }
   final hasRoot = path.startsWith('m/');
   if (kind == KeychainManifestDerivationKind.bip32 && !hasRoot) return false;
   if (kind == KeychainManifestDerivationKind.bip85 && hasRoot) return false;

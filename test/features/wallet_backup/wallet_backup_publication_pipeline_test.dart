@@ -324,6 +324,9 @@ void main() {
       await RegisterWalletBackupRecoveryMaterialUsecase(
         ResolveWalletBackupKeyUsecase(settings, defaultSeed),
         RefreshWalletRecoveryManifestUsecase(() async => const [], manifest),
+        _nostrIdentity(settings, defaultSeed),
+        manifest,
+        nowUtc: () => DateTime.utc(2026, 9, 15),
       ).execute(),
       isA<Ok<void, WalletBackupFailure>>(),
     );
@@ -344,9 +347,37 @@ void main() {
     expect(snapshot.metadata, same(metadataSnapshot));
     expect(snapshot.externalWalletDefinitions, isEmpty);
     expect(snapshot.recoveryManifest.parentFingerprint.hex, _fingerprint);
-    // The backup identity is a child of the twelve words, not a key on the
-    // parent seed, so registering recovery material records no reserved key.
-    expect(snapshot.recoveryManifest.entries, isEmpty);
+    // Registering recovery material records the two backup identities as
+    // explicit two-step BIP85 chains: the words step, then one identity step
+    // on the words' own root. Neither is a key on the parent seed.
+    final chains = snapshot.recoveryManifest.entries
+        .where(
+          (entry) =>
+              entry.derivationKind == KeychainManifestDerivationKind.bip85Chain,
+        )
+        .toList();
+    expect(snapshot.recoveryManifest.entries, hasLength(2));
+    expect(chains, hasLength(2));
+    expect(
+      {
+        for (final entry in chains)
+          entry.bip85ChainSteps.join(
+            ' > ',
+          ): (entry.materializations.single as KeychainManifestNostrKey)
+              .publicKeyHex,
+      },
+      {
+        "39'/0'/12'/104' > 128002'/100'/1'": _expectedArtifactPublicKey,
+        "39'/0'/12'/104' > 128002'/101'/1'": _expectedServerPublicKey,
+      },
+    );
+    for (final entry in chains) {
+      expect(entry.isSystemNostrKey, isTrue);
+      expect(
+        entry.description,
+        RegisterWalletBackupRecoveryMaterialUsecase.identityDescription,
+      );
+    }
     for (final reserved in [
       Bip85Reservations.retiredWalletBackupNostrKeyPath,
       Bip85Reservations.retiredWalletBackupEncryptionKeyPath,

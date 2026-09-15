@@ -56,6 +56,16 @@ final class ParseKeychainManifestFileUsecase {
                 item.childSeedFingerprint == entry.parentFingerprint),
       );
     }
+    if (entry.derivationKind == KeychainManifestDerivationKind.bip85Chain) {
+      // The only chains the app claims are the backup credential's two
+      // identities: the backup words step, then one identity step on them.
+      return Bip85Reservations.isBackupIdentityChain(entry.bip85ChainSteps) &&
+          entry.materializations.every(
+            (item) =>
+                item is KeychainManifestNostrKey &&
+                item.keyKind == KeychainManifestNostrKeyKind.reserved,
+          );
+    }
     final reservation = Bip85Reservations.reservationByExactPath(
       entry.derivationPath,
     );
