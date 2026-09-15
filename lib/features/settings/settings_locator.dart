@@ -25,10 +25,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_min_amou
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/update_wallet_signer_device_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_registration_cubit.dart';
@@ -198,13 +195,6 @@ class SettingsLocator {
     );
     locator.registerFactory<WalletRegistrationCubit>(
       () => WalletRegistrationCubit(locator()),
-    );
-    locator.registerFactory<SwapRestoreCubit>(
-      () => SwapRestoreCubit(restoreSwapsUsecase: locator()),
-    );
-    locator.registerFactoryParam<SwapRescueCubit, RestoredSwap, void>(
-      (restored, _) =>
-          SwapRescueCubit(rescueSwapUsecase: locator(), restored: restored),
     );
   }
 }

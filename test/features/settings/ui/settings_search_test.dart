@@ -126,7 +126,6 @@ void main() {
           SettingsItemId.autoswap,
           SettingsItemId.payjoin,
           SettingsItemId.seedViewer,
-          SettingsItemId.swapRestore,
         ],
       );
     });
@@ -151,9 +150,11 @@ void main() {
           .where((item) => item.id != SettingsItemId.signingKeyExport)
           .toList();
 
-      expect(ordered[8].title, 'BullVault (miniscript)');
+      expect(
+        ordered.map((item) => item.title).toList()[8],
+        ('BullVault (miniscript)'),
+      );
       expect(ordered[9].id, SettingsItemId.seedViewer);
-      expect(ordered[10].id, SettingsItemId.swapRestore);
     });
 
     test('Seed Viewer keeps its superuser guard after the move', () {
