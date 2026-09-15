@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -91,6 +92,14 @@ class _ExchangeAppSettingsScreenState extends State<ExchangeAppSettingsScreen> {
                     style: context.font.bodySmall?.copyWith(
                       color: context.appColors.error,
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (state.savePreferencesFailure != null) ...[
+                  ExchangeFailureBanner(
+                    failure: state.savePreferencesFailure!,
+                    onRetry: () =>
+                        context.read<ExchangeCubit>().savePreferences(),
                   ),
                   const SizedBox(height: 16),
                 ],

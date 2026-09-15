@@ -9,6 +9,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -152,14 +154,16 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
               if (!mounted) return;
               await context.read<ExchangeCubit>().storeApiKey(apiKeyData);
 
-              // Check if the API key was successfully stored
+              // Check if the API key was successfully stored. The cubit holds
+              // a sanitized failure; the raw reason was logged at the boundary.
               if (!mounted) return;
-              final saveApiKeyException = context
+              final saveApiKeyFailure = context
                   .read<ExchangeCubit>()
                   .state
-                  .saveApiKeyException;
-              if (saveApiKeyException != null) {
-                throw saveApiKeyException;
+                  .saveApiKeyFailure;
+              if (saveApiKeyFailure != null) {
+                await _handleLoginError(saveApiKeyFailure);
+                return;
               }
             } catch (e) {
               log.severe(
@@ -302,7 +306,9 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     await _cookieManager.clearCookies();
   }
 
-  Future<void> _handleLoginError() async {
+  /// [failure] is the sanitized reason when one is known; the generic copy is
+  /// used otherwise. The raw reason was logged at the repository boundary.
+  Future<void> _handleLoginError([ExchangeFailure? failure]) async {
     // Clear cache and cookies and reload the controller to
     //  allow the user to try logging in again
     await _clearCacheAndCookies();
@@ -313,7 +319,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.loc.exchangeAuthLoginFailedTitle),
-        content: Text(context.loc.exchangeAuthLoginFailedMessage),
+        content: Text(
+          failure?.toTranslated(context) ??
+              context.loc.exchangeAuthLoginFailedMessage,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),

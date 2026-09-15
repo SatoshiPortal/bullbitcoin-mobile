@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -34,6 +35,12 @@ class ExchangeHomeScreen extends StatelessWidget {
     );
     final isFullyVerified = context.select(
       (ExchangeCubit cubit) => cubit.state.isFullyVerifiedKycLevel,
+    );
+    final getUserSummaryFailure = context.select(
+      (ExchangeCubit cubit) => cubit.state.getUserSummaryFailure,
+    );
+    final stopDcaFailure = context.select(
+      (ExchangeCubit cubit) => cubit.state.stopDcaFailure,
     );
     final dca = context.select((ExchangeCubit cubit) => cubit.state.dca);
     final hasDcaActive = dca?.isActive ?? false;
@@ -65,6 +72,24 @@ class ExchangeHomeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const Gap(12),
+                      // A refresh that fails leaves stale data on screen; say
+                      // so instead of letting it look current.
+                      if (getUserSummaryFailure != null) ...[
+                        ExchangeFailureBanner(
+                          failure: getUserSummaryFailure,
+                          onRetry: () =>
+                              context.read<ExchangeCubit>().fetchUserSummary(),
+                        ),
+                        const Gap(12),
+                      ],
+                      if (stopDcaFailure != null) ...[
+                        ExchangeFailureBanner(
+                          failure: stopDcaFailure,
+                          onRetry: () =>
+                              context.read<ExchangeCubit>().stopDca(),
+                        ),
+                        const Gap(12),
+                      ],
                       if (!isFullyVerified) const ExchangeHomeKycCard(),
                       const Gap(12),
                       DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
