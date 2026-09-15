@@ -1,14 +1,20 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_preferences.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_funded_predecessor_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/vault_recovery_notice.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_home_alert_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/bullvault_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_vault_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../bullvault/bullvault_test_fixture.dart';
 import '../support/fake_bullvault_backup.dart';
@@ -46,6 +52,9 @@ Future<void> _unusedDevice({
 
 /// Recovery announcements this test does not assert on.
 void _ignoredAnnouncement() {}
+
+class _MockGetFundedPredecessor extends Mock
+    implements GetBullVaultFundedPredecessorUsecase {}
 
 Future<void> _unusedRegistration({
   required String walletId,
@@ -542,4 +551,62 @@ void main() {
     expect(result.restoredCount, 1);
     expect(result.failedCount, 1);
   });
+
+  test(
+    'a restored vault reaches home though the catalog reloads first',
+    () async {
+      final notice = VaultRecoveryNotice();
+      final lookup = _MockGetFundedPredecessor();
+      when(() => lookup.execute(any())).thenAnswer((_) async => const Ok(null));
+      final alert = BullVaultHomeAlertCubit(lookup, notice);
+      addTearDown(alert.close);
+      // Home reloads the alert whenever the wallet catalog republishes, and a
+      // restore republishes it by writing the wallet definition.
+      final catalog = StreamController<List<Wallet>>();
+      addTearDown(catalog.close);
+      final reloads = catalog.stream.listen(alert.load);
+      addTearDown(reloads.cancel);
+
+      final section = BullVaultBackupImpl(
+        listRecords: () async => const Ok([]),
+        encodePackage: codec.encode,
+        wallet: (_) async => null,
+        currentNetwork: () async => Network.bitcoinMainnet,
+        walletExists: (_) async => false,
+        restore: ({required source, required label, required status}) async {
+          catalog.add([_wallet(label)]);
+          return Ok(
+            BullVaultRestoreResult(
+              wallet: _wallet(label),
+              record: _record(walletId: label, lineageId: label, generation: 0),
+              mobileAccess: BullVaultMobileAccess.unavailable,
+            ),
+          );
+        },
+        setSignerDevice: _unusedDevice,
+        setSignerRegistrationName: _unusedRegistration,
+        announceVaultRecovered: notice.record,
+      );
+
+      await section.recover([
+        fakeVaultEntry(walletRef: 'arrived', label: 'arrived', lineageId: 'a'),
+      ]);
+      await pumpEventQueue();
+
+      expect(
+        alert.state.recovered,
+        isTrue,
+        reason: 'the alert the recovery announced has to reach the open screen',
+      );
+
+      final later = BullVaultHomeAlertCubit(lookup, notice);
+      addTearDown(later.close);
+      await later.load([]);
+      expect(
+        later.state.recovered,
+        isFalse,
+        reason: 'the latch announces one recovery once',
+      );
+    },
+  );
 }
