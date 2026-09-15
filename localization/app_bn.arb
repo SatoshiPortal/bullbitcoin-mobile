@@ -12172,6 +12172,10 @@
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
   "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "exchangeErrorSigningOut": "আপনাকে সম্পূর্ণরূপে সাইন আউট করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeErrorSavingPreferences": "আপনার পছন্দসমূহ সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "exchangeErrorLoadingAnnouncements": "ঘোষণাগুলি লোড করা যায়নি।",
+  "exchangeErrorRequestingAccountDeletion": "আপনার অ্যাকাউন্ট মুছে ফেলার অনুরোধ পাঠানো যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSettingsErrorLoadingStatistics": "আপনার ট্রেডিং পরিসংখ্যান লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSettingsErrorLoadingAccount": "আপনার অ্যাকাউন্টের বিবরণ লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "ইতিমধ্যে একটি নথি জমা দেওয়া হয়েছে।",
@@ -12299,5 +12303,6 @@
   "receiveErrorNoteNotSaved": "আপনার নোট সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।",
   "receiveErrorAddressUnavailable": "গ্রহণের ঠিকানা প্রস্তুত করা যায়নি। আবার চেষ্টা করুন।",
   "receiveErrorBroadcastOriginal": "আমরা লেনদেনটি সম্প্রচার করতে পারিনি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
-  "fundExchangeErrorNetwork": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "fundExchangeErrorNetwork": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "exchangeErrorNetwork": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
 }

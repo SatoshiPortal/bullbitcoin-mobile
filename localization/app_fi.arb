@@ -4772,6 +4772,10 @@
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
   "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "exchangeErrorSigningOut": "Uloskirjautumista ei voitu viimeistellä. Yritä uudelleen.",
+  "exchangeErrorSavingPreferences": "Asetuksiasi ei voitu tallentaa. Yritä uudelleen.",
+  "exchangeErrorLoadingAnnouncements": "Tiedotteita ei voitu ladata.",
+  "exchangeErrorRequestingAccountDeletion": "Tilin poistopyyntöäsi ei voitu lähettää. Yritä uudelleen.",
   "exchangeSettingsErrorLoadingStatistics": "Kaupankäyntitilastojasi ei voitu ladata. Yritä uudelleen.",
   "exchangeSettingsErrorLoadingAccount": "Tilitietojasi ei voitu ladata. Yritä uudelleen.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Asiakirja on jo lähetetty.",
@@ -4899,5 +4903,6 @@
   "receiveErrorNoteNotSaved": "Muistiinpanoasi ei voitu tallentaa. Yritä uudelleen.",
   "receiveErrorAddressUnavailable": "Vastaanotto-osoitetta ei voitu valmistella. Yritä uudelleen.",
   "receiveErrorBroadcastOriginal": "Tapahtumaa ei voitu lähettää. Tarkista internet-yhteytesi ja yritä uudelleen.",
-  "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen."
+  "fundExchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen.",
+  "exchangeErrorNetwork": "Tarkista internet-yhteytesi ja yritä uudelleen."
 }

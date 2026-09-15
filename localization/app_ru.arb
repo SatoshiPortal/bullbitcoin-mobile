@@ -4790,6 +4790,10 @@
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
   "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "exchangeErrorSigningOut": "Не удалось полностью выйти из аккаунта. Пожалуйста, попробуйте снова.",
+  "exchangeErrorSavingPreferences": "Не удалось сохранить ваши настройки. Пожалуйста, попробуйте снова.",
+  "exchangeErrorLoadingAnnouncements": "Не удалось загрузить объявления.",
+  "exchangeErrorRequestingAccountDeletion": "Не удалось отправить запрос на удаление аккаунта. Пожалуйста, попробуйте снова.",
   "exchangeSettingsErrorLoadingStatistics": "Не удалось загрузить вашу торговую статистику. Пожалуйста, попробуйте снова.",
   "exchangeSettingsErrorLoadingAccount": "Не удалось загрузить данные вашего аккаунта. Пожалуйста, попробуйте снова.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Документ уже отправлен.",
@@ -4917,5 +4921,6 @@
   "receiveErrorNoteNotSaved": "Не удалось сохранить заметку. Попробуйте ещё раз.",
   "receiveErrorAddressUnavailable": "Не удалось подготовить адрес для получения. Попробуйте ещё раз.",
   "receiveErrorBroadcastOriginal": "Не удалось отправить транзакцию. Проверьте подключение к интернету и попробуйте ещё раз.",
-  "fundExchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз."
+  "fundExchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
+  "exchangeErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз."
 }

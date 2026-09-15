@@ -4781,6 +4781,10 @@
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
   "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "exchangeErrorSigningOut": "No se pudo cerrar su sesión por completo. Por favor, inténtelo de nuevo.",
+  "exchangeErrorSavingPreferences": "No se pudieron guardar sus preferencias. Por favor, inténtelo de nuevo.",
+  "exchangeErrorLoadingAnnouncements": "No se pudieron cargar los anuncios.",
+  "exchangeErrorRequestingAccountDeletion": "No se pudo enviar su solicitud de eliminación de cuenta. Por favor, inténtelo de nuevo.",
   "exchangeSettingsErrorLoadingStatistics": "No se pudieron cargar sus estadísticas de operaciones. Por favor, inténtelo de nuevo.",
   "exchangeSettingsErrorLoadingAccount": "No se pudieron cargar los datos de su cuenta. Por favor, inténtelo de nuevo.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Ya se ha enviado un documento.",
@@ -4908,5 +4912,6 @@
   "receiveErrorNoteNotSaved": "No se pudo guardar tu nota. Inténtalo de nuevo.",
   "receiveErrorAddressUnavailable": "No se pudo preparar una dirección de recepción. Inténtalo de nuevo.",
   "receiveErrorBroadcastOriginal": "No pudimos transmitir la transacción. Revisa tu conexión a Internet e inténtalo de nuevo.",
-  "fundExchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo."
+  "fundExchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
+  "exchangeErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo."
 }

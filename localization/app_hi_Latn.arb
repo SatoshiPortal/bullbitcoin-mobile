@@ -12350,6 +12350,10 @@
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
   "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "exchangeErrorSigningOut": "Aap poori tarah sign out nahin ho sake. Kripya dobara koshish karein.",
+  "exchangeErrorSavingPreferences": "Aapki preferences save nahin ho sakin. Kripya dobara koshish karein.",
+  "exchangeErrorLoadingAnnouncements": "Announcements load nahin ho sake.",
+  "exchangeErrorRequestingAccountDeletion": "Aapka account delete karne ka request nahin bheja ja saka. Kripya dobara koshish karein.",
   "exchangeSettingsErrorLoadingStatistics": "Aapke trading statistics load nahin ho sake. Kripya dobara koshish karein.",
   "exchangeSettingsErrorLoadingAccount": "Aapke account ki details load nahin ho sakin. Kripya dobara koshish karein.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Ek document pehle hi submit kiya ja chuka hai.",
@@ -12477,5 +12481,6 @@
   "receiveErrorNoteNotSaved": "Aapka note save nahin ho saka. Kripya phir se prayas karein.",
   "receiveErrorAddressUnavailable": "Prapti pata taiyar nahin kiya ja saka. Kripya phir se prayas karein.",
   "receiveErrorBroadcastOriginal": "Hum lenden prasarit nahin kar sake. Apna internet connection janchein aur phir se prayas karein.",
-  "fundExchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein."
+  "fundExchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein.",
+  "exchangeErrorNetwork": "Apna internet connection janchein aur phir se prayas karein."
 }

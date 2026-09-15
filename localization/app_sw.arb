@@ -3555,6 +3555,10 @@
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
   "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "exchangeErrorSigningOut": "Haukuweza kutoka kwenye akaunti kikamilifu. Tafadhali jaribu tena.",
+  "exchangeErrorSavingPreferences": "Mapendeleo yako hayakuweza kuhifadhiwa. Tafadhali jaribu tena.",
+  "exchangeErrorLoadingAnnouncements": "Matangazo hayakuweza kupakiwa.",
+  "exchangeErrorRequestingAccountDeletion": "Ombi lako la kufuta akaunti halikuweza kutumwa. Tafadhali jaribu tena.",
   "exchangeSettingsErrorLoadingStatistics": "Takwimu zako za biashara hazikuweza kupakiwa. Tafadhali jaribu tena.",
   "exchangeSettingsErrorLoadingAccount": "Maelezo ya akaunti yako hayakuweza kupakiwa. Tafadhali jaribu tena.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Hati tayari imewasilishwa.",
@@ -3682,5 +3686,6 @@
   "receiveErrorNoteNotSaved": "Kumbukumbu yako haikuweza kuhifadhiwa. Tafadhali jaribu tena.",
   "receiveErrorAddressUnavailable": "Haikuwezekana kutayarisha anwani ya kupokea. Tafadhali jaribu tena.",
   "receiveErrorBroadcastOriginal": "Hatukuweza kutangaza muamala. Angalia muunganisho wako wa intaneti na ujaribu tena.",
-  "fundExchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena."
+  "fundExchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
+  "exchangeErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena."
 }

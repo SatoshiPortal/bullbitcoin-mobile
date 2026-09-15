@@ -4784,6 +4784,10 @@
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
   "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "exchangeErrorSigningOut": "Non è stato possibile completare la disconnessione. Si prega di riprovare.",
+  "exchangeErrorSavingPreferences": "Non è stato possibile salvare le tue preferenze. Si prega di riprovare.",
+  "exchangeErrorLoadingAnnouncements": "Non è stato possibile caricare gli annunci.",
+  "exchangeErrorRequestingAccountDeletion": "Non è stato possibile inviare la tua richiesta di eliminazione dell'account. Si prega di riprovare.",
   "exchangeSettingsErrorLoadingStatistics": "Non è stato possibile caricare le tue statistiche di trading. Si prega di riprovare.",
   "exchangeSettingsErrorLoadingAccount": "Non è stato possibile caricare i dettagli del tuo account. Si prega di riprovare.",
   "exchangeSettingsErrorDocumentAlreadySubmitted": "Un documento è già stato inviato.",
@@ -4911,5 +4915,6 @@
   "receiveErrorNoteNotSaved": "Non è stato possibile salvare la tua nota. Riprova.",
   "receiveErrorAddressUnavailable": "Non è stato possibile preparare un indirizzo di ricezione. Riprova.",
   "receiveErrorBroadcastOriginal": "Non è stato possibile trasmettere la transazione. Controlla la connessione a Internet e riprova.",
-  "fundExchangeErrorNetwork": "Controlla la connessione a Internet e riprova."
+  "fundExchangeErrorNetwork": "Controlla la connessione a Internet e riprova.",
+  "exchangeErrorNetwork": "Controlla la connessione a Internet e riprova."
 }
