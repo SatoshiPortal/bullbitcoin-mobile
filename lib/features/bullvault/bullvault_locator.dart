@@ -264,6 +264,7 @@ abstract final class BullVaultLocator {
         ),
         locator<VaultDescriptorPublicationRepository>(),
         locator<VaultRecoveryNotice>(),
+        locator<InspectBullVaultUsecase>(),
       ),
     );
     locator.registerFactory<BullVaultOnboardingCubit>(

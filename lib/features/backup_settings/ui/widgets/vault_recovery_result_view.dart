@@ -77,7 +77,9 @@ class _Outcome extends StatelessWidget {
           if (walletId != null) ...[
             const Gap(8),
             Text(
-              context.loc.vaultRecoveryAttachSigningKey,
+              outcome.signingKeyOnThisDevice
+                  ? context.loc.vaultRecoverySigningKeyOnThisDevice
+                  : context.loc.vaultRecoveryAttachSigningKey,
               style: context.font.bodySmall?.copyWith(
                 color: context.appColors.onSurfaceVariant,
               ),

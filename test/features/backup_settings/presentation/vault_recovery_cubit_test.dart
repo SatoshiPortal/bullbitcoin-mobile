@@ -128,6 +128,7 @@ void main() {
     present = [];
     imports = 0;
     when(() => vaults.listRecords()).thenAnswer((_) async => Ok(present));
+    when(() => vaults.holdsSigningKey(any())).thenAnswer((_) async => false);
     when(
       () => identity.walletBackupPublicKey(),
     ).thenAnswer((_) async => Ok('a' * 64));
@@ -222,10 +223,11 @@ void main() {
     await cubit.discover();
 
     expect(imports, 1);
-    expect(cubit.state.outcomes.map((outcome) => outcome.status), [
-      VaultRecoveryStatus.imported,
-      VaultRecoveryStatus.alreadyPresent,
-    ]);
+    expect(
+      cubit.state.outcomes.map((outcome) => outcome.status),
+      [VaultRecoveryStatus.imported],
+      reason: 'one vault found by two sources is one card, not two',
+    );
     expect(
       cubit.state.sources[VaultRecoverySource.dataBackup],
       VaultRecoverySourceStatus.found,
@@ -234,6 +236,36 @@ void main() {
       cubit.state.sources[VaultRecoverySource.nostr],
       VaultRecoverySourceStatus.found,
     );
+  });
+
+  test('a key this device holds is reported on the card', () async {
+    when(() => metadata.fetchRemoteContents()).thenAnswer(
+      (_) async => Ok(
+        WalletBackupContents(
+          vaults: [summaryOf(record)],
+          labelCount: 0,
+          frozenCoinCount: 0,
+          walletPreferenceCount: 0,
+        ),
+      ),
+    );
+    when(
+      () => vaults.discoverDescriptorsOnNostr(
+        words: any(named: 'words'),
+        session: any(named: 'session'),
+      ),
+    ).thenAnswer(
+      (_) async =>
+          const Ok((descriptors: <NostrDescriptorRecord>[], incomplete: false)),
+    );
+    when(
+      () => vaults.holdsSigningKey(record.walletId),
+    ).thenAnswer((_) async => true);
+    importsInto(record);
+
+    await cubit.discover();
+
+    expect(cubit.state.outcomes.single.signingKeyOnThisDevice, isTrue);
   });
 
   test('an unfinished relay search is not an empty one', () async {

@@ -113,6 +113,7 @@ void main() {
     metadata = _Metadata();
     files = _Files();
     when(() => vaults.listRecords()).thenAnswer((_) async => const Ok([]));
+    when(() => vaults.holdsSigningKey(any())).thenAnswer((_) async => false);
     when(
       () => vaults.decodePrivateDescriptorBackup(
         bytes: any(named: 'bytes'),

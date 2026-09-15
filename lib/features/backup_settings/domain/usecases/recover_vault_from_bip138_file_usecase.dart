@@ -82,10 +82,7 @@ final class RecoverVaultFromBip138FileUsecase {
     // merging. Whether this created the vault or only enriched it is decided
     // afterwards, from what was here before.
     if (existing != null && recoveryPackage == null) {
-      return VaultRecoveryOutcome(
-        VaultRecoveryStatus.alreadyPresent,
-        walletId: existing,
-      );
+      return await _recovered(VaultRecoveryStatus.alreadyPresent, existing);
     }
     // One importer for every route into the app: the vault feature applies the
     // same network, structure, lineage and duplicate rules it always does.
@@ -100,19 +97,31 @@ final class RecoverVaultFromBip138FileUsecase {
           );
     return switch (restored) {
       // Refusing the extra facts does not take the vault away.
-      Err() when existing != null => VaultRecoveryOutcome(
+      Err() when existing != null => await _recovered(
         VaultRecoveryStatus.alreadyPresent,
-        walletId: existing,
+        existing,
       ),
       Err() => const VaultRecoveryOutcome(VaultRecoveryStatus.unsupported),
-      Ok(:final value) => VaultRecoveryOutcome(
+      Ok(:final value) => await _recovered(
         existing == null
             ? VaultRecoveryStatus.imported
             : VaultRecoveryStatus.alreadyPresent,
-        walletId: value.wallet.id,
+        value.wallet.id,
       ),
     };
   }
+
+  /// A vault this device now holds, with the key availability its own Keys
+  /// page would report: an import outcome cannot say whether a key the vault
+  /// names was already on the phone that is recovering it.
+  Future<VaultRecoveryOutcome> _recovered(
+    VaultRecoveryStatus status,
+    String walletId,
+  ) async => VaultRecoveryOutcome(
+    status,
+    walletId: walletId,
+    signingKeyOnThisDevice: await _vaults.holdsSigningKey(walletId),
+  );
 
   /// The wallet already holding this exact descriptor, or null.
   ///

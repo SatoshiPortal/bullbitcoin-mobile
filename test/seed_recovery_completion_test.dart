@@ -154,6 +154,7 @@ void main() {
       identity = _MockIdentity();
       present = [];
       when(() => vaults.listRecords()).thenAnswer((_) async => Ok(present));
+      when(() => vaults.holdsSigningKey(any())).thenAnswer((_) async => false);
       when(
         () => identity.walletBackupPublicKey(),
       ).thenAnswer((_) async => Ok('a' * 64));

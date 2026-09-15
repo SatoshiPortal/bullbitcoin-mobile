@@ -237,10 +237,30 @@ final class VaultRecoveryCubit extends Cubit<VaultRecoveryState> {
         emit(
           state.copyWith(
             sources: {...state.sources, source: _statusOf(value)},
-            outcomes: [...state.outcomes, ...value.outcomes],
+            outcomes: _merged(value.outcomes),
           ),
         );
     }
+  }
+
+  /// One card per vault, however many sources hold it.
+  ///
+  /// A vault's wallet id is a digest of its network and its descriptor, so two
+  /// sources answering with the same vault answer with the same id; the rows
+  /// above the cards already name every source that was asked. Candidates that
+  /// never opened have no vault to be the same as, so each is kept.
+  List<VaultRecoveryOutcome> _merged(Iterable<VaultRecoveryOutcome> arrivals) {
+    final merged = [...state.outcomes];
+    final seen = merged
+        .map((outcome) => outcome.walletId)
+        .whereType<String>()
+        .toSet();
+    for (final outcome in arrivals) {
+      final walletId = outcome.walletId;
+      if (walletId != null && !seen.add(walletId)) continue;
+      merged.add(outcome);
+    }
+    return merged;
   }
 
   /// A search that did not finish is reported as unfinished even when it

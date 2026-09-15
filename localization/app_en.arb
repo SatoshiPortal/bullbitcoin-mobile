@@ -17852,5 +17852,9 @@
   "backupWordsForeignWallet": "These magic backup words belong to this phone's wallet. This vault was backed up from a different wallet, so only that wallet's magic backup words open its backups.",
   "@backupWordsForeignWallet": {
     "description": "Shown when a vault was backed up from another wallet than the one on this phone, so the words this device can derive are the wrong ones."
+  },
+  "vaultRecoverySigningKeyOnThisDevice": "A signing key for this vault is on this device.",
+  "@vaultRecoverySigningKeyOnThisDevice": {
+    "description": "Shown on a recovered vault card when this phone holds one of the keys the vault names."
   }
 }

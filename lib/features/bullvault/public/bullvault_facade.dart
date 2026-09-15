@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/bullvault/domain/entities/vault_descriptor_pu
 import 'package:bb_mobile/features/bullvault/domain/usecases/prepare_server_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/discover_descriptors_on_nostr_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/encode_private_descriptor_backup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/inspect_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/publish_descriptor_to_nostr_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/verify_nostr_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
@@ -71,6 +72,7 @@ class BullVaultFacade {
   final PrepareServerDescriptorBackupUsecase _prepareForServer;
   final VaultDescriptorPublicationRepository _publications;
   final VaultRecoveryNotice _recoveryNotice;
+  final InspectBullVaultUsecase _inspect;
 
   const BullVaultFacade(
     this._canDeleteWalletUsecase,
@@ -84,6 +86,7 @@ class BullVaultFacade {
     this._prepareForServer,
     this._publications,
     this._recoveryNotice,
+    this._inspect,
   );
 
   /// Announces on the home screen that a recovery put a vault on this device.
@@ -91,6 +94,22 @@ class BullVaultFacade {
   /// Only a persisted wallet is worth announcing: a discovery that found
   /// nothing, or found a vault already here, is not a recovery.
   void recordVaultRecovered() => _recoveryNotice.record();
+
+  /// Whether a key this vault names can sign on this device, read exactly as
+  /// the vault's Keys page reads it.
+  ///
+  /// A vault restored from a descriptor is watch only until a key it names is
+  /// found locally, and the recovering phone is often the one that holds the
+  /// everyday key, so the import outcome alone cannot answer this.
+  Future<bool> holdsSigningKey(String walletId) async =>
+      switch (await _inspect.execute(walletId)) {
+        Ok(:final value) => value.keyAccess.values.any(
+          (access) =>
+              access == BullVaultKeyAccess.available ||
+              access == BullVaultKeyAccess.passphraseRequired,
+        ),
+        Err() => false,
+      };
 
   /// Initial wake-up and committed changes whose revisions are already saved.
   Stream<void> watchBackupChanges() => _watchBackupChanges.execute();

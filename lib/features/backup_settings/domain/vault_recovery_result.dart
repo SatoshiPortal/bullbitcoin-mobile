@@ -24,7 +24,15 @@ final class VaultRecoveryOutcome {
   /// The wallet the vault now lives in, for the two outcomes that have one.
   final String? walletId;
 
-  const VaultRecoveryOutcome(this.status, {this.walletId});
+  /// Whether a key this vault names can sign on this device, read from the
+  /// same inspection the vault's Keys page reads.
+  final bool signingKeyOnThisDevice;
+
+  const VaultRecoveryOutcome(
+    this.status, {
+    this.walletId,
+    this.signingKeyOnThisDevice = false,
+  });
 }
 
 /// What a whole recovery attempt found, one outcome per candidate.

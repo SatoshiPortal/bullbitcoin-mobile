@@ -66,6 +66,7 @@ void main() {
     metadata = _Metadata();
     identity = _Identity();
     when(() => vaults.listRecords()).thenAnswer((_) async => const Ok([]));
+    when(() => vaults.holdsSigningKey(any())).thenAnswer((_) async => false);
     when(
       () => identity.walletBackupPublicKey(),
     ).thenAnswer((_) async => Ok('a' * 64));
@@ -172,6 +173,84 @@ void main() {
 
     expect(find.text(loc.backupSettingsComingSoon), findsOneWidget);
     expect(find.text(loc.vaultRecoveryNone), findsNWidgets(2));
+  });
+
+  testWidgets('one vault found twice is one card, named by its keys', (
+    tester,
+  ) async {
+    final restored = Ok<BullVaultRestoreResult, BullVaultFailure>(
+      BullVaultRestoreResult(
+        wallet: Wallet(
+          origin: record.walletId,
+          network: policy.network,
+          signers: const [],
+          scriptType: null,
+          publicDescriptor: policy.descriptor,
+          balanceSat: BigInt.zero,
+          isHidden: true,
+        ),
+        record: record,
+        mobileAccess: BullVaultMobileAccess.unavailable,
+      ),
+    );
+    when(
+      () => vaults.restoreFromRecoveryPackage(
+        source: any(named: 'source'),
+        label: any(named: 'label'),
+      ),
+    ).thenAnswer((_) async => restored);
+    when(() => metadata.fetchRemoteContents()).thenAnswer(
+      (_) async => Ok(
+        WalletBackupContents(
+          vaults: [
+            WalletBackupVaultSummary(
+              walletRef: record.walletId,
+              status: 'active',
+              network: policy.network,
+              lineageId: policy.lineageId,
+              vaultGeneration: 0,
+              descriptor: policy.descriptor,
+              birthHeight: null,
+              recoveryPackage: '{}',
+            ),
+          ],
+          labelCount: 0,
+          frozenCoinCount: 0,
+          walletPreferenceCount: 0,
+        ),
+      ),
+    );
+    when(
+      () => vaults.discoverDescriptorsOnNostr(
+        words: any(named: 'words'),
+        session: any(named: 'session'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok((
+        descriptors: [
+          NostrDescriptorRecord(
+            descriptor: policy.descriptor,
+            network: policy.network,
+            createdAt: DateTime.utc(2027),
+          ),
+        ],
+        incomplete: false,
+      )),
+    );
+    when(
+      () => vaults.holdsSigningKey(record.walletId),
+    ).thenAnswer((_) async => true);
+
+    await open(tester, const VaultRecoveryScreen());
+    await cubit.discover();
+    await tester.pumpAndSettle();
+
+    // One card, not one per source: "Vault recovered" also labels the two
+    // source rows above the cards, so the card is counted by its own action.
+    expect(find.text(loc.vaultRecoveryOpenVault), findsOneWidget);
+    expect(find.text(loc.vaultRecoveryAlreadyPresent), findsNothing);
+    expect(find.text(loc.vaultRecoverySigningKeyOnThisDevice), findsOneWidget);
+    expect(find.text(loc.vaultRecoveryAttachSigningKey), findsNothing);
   });
 
   testWidgets('a cosigner key recovers a vault and shows what it did', (
