@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -19,7 +19,8 @@ class SetDcaUsecase {
   final WalletRepository _wallet;
   final SettingsRepository _settingsRepository;
   final WalletAddressRepository _walletAddressRepository;
-  final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
+  final ExchangeUserRepository _mainnetExchangeUserRepository;
+  final ExchangeUserRepository _testnetExchangeUserRepository;
 
   SetDcaUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
@@ -27,7 +28,8 @@ class SetDcaUsecase {
     required this._wallet,
     required this._settingsRepository,
     required this._walletAddressRepository,
-    required this._saveUserPreferencesUsecase,
+    required this._mainnetExchangeUserRepository,
+    required this._testnetExchangeUserRepository,
   }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
        _testnetDcaRepository = testnetExchangeOrderRepository;
 
@@ -104,18 +106,21 @@ class SetDcaUsecase {
       return const Err(DcaOrderCreationFailure('createDca rejected'));
     }
 
-    try {
-      await _saveUserPreferencesUsecase.execute(dcaEnabled: true);
-    } catch (e, st) {
-      if (e is Error) rethrow;
+    final userRepository = environment.isTestnet
+        ? _testnetExchangeUserRepository
+        : _mainnetExchangeUserRepository;
+
+    if (await userRepository.saveUserPreference(dcaEnabled: true) case Err(
+      :final failure,
+    )) {
       // The recurring buy already exists on the exchange at this point, so
       // this must NOT be reported as a failure: the user would be told
       // nothing happened and could create a second one. The preference is a
-      // display flag on the exchange side; log it and continue.
+      // display flag on the exchange side; the repository already logged the
+      // reason, so note the outcome and continue.
       log.warning(
-        'DCA created but enabling the preference failed',
-        error: e,
-        trace: st,
+        'DCA created but enabling the preference failed: '
+        '${failure.logMessage ?? failure.runtimeType}',
       );
     }
 

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -24,8 +25,11 @@ class MockSettingsRepository extends Mock implements SettingsRepository {}
 class MockWalletAddressRepository extends Mock
     implements WalletAddressRepository {}
 
-class MockSaveUserPreferencesUsecase extends Mock
-    implements SaveUserPreferencesUsecase {}
+class MockExchangeUserRepository extends Mock
+    implements ExchangeUserRepository {}
+
+// The preference write now goes straight to the repository, which is the
+// sanitizing boundary.
 
 class FakeWallet extends Fake implements Wallet {
   @override
@@ -50,9 +54,11 @@ void main() {
   late MockExchangeOrderRepository mainnetOrders;
   late MockExchangeOrderRepository testnetOrders;
   late MockWalletRepository wallet;
+  late MockExchangeUserRepository mainnetUsers;
+  late MockExchangeUserRepository testnetUsers;
   late MockSettingsRepository settings;
   late MockWalletAddressRepository walletAddress;
-  late MockSaveUserPreferencesUsecase savePreferences;
+
   late SetDcaUsecase usecase;
 
   const mainnetSettings = SettingsEntity(
@@ -74,16 +80,19 @@ void main() {
     mainnetOrders = MockExchangeOrderRepository();
     testnetOrders = MockExchangeOrderRepository();
     wallet = MockWalletRepository();
+    mainnetUsers = MockExchangeUserRepository();
+    testnetUsers = MockExchangeUserRepository();
     settings = MockSettingsRepository();
     walletAddress = MockWalletAddressRepository();
-    savePreferences = MockSaveUserPreferencesUsecase();
+
     usecase = SetDcaUsecase(
       mainnetExchangeOrderRepository: mainnetOrders,
       testnetExchangeOrderRepository: testnetOrders,
       wallet: wallet,
       settingsRepository: settings,
       walletAddressRepository: walletAddress,
-      saveUserPreferencesUsecase: savePreferences,
+      mainnetExchangeUserRepository: mainnetUsers,
+      testnetExchangeUserRepository: testnetUsers,
     );
     when(() => settings.fetch()).thenAnswer((_) async => mainnetSettings);
   });
@@ -209,9 +218,10 @@ void main() {
           address: any(named: 'address'),
         ),
       ).thenAnswer((_) async => dca);
-      when(
-        () => savePreferences.execute(dcaEnabled: true),
-      ).thenThrow(Exception('prefs write failed'));
+      when(() => mainnetUsers.saveUserPreference(dcaEnabled: true)).thenAnswer(
+        (_) async =>
+            const Err(ExchangeUserPreferencesSaveFailure('prefs write failed')),
+      );
 
       final result = await usecase.execute(
         amount: 10,
@@ -253,8 +263,8 @@ void main() {
         ),
       ).thenAnswer((_) async => dca);
       when(
-        () => savePreferences.execute(dcaEnabled: true),
-      ).thenAnswer((_) async {});
+        () => mainnetUsers.saveUserPreference(dcaEnabled: true),
+      ).thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute(
         amount: 10,
