@@ -1,15 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:secrets/src/public/sealed_word.dart';
 import 'package:secrets/src/public/secret.dart';
 
 /// One tile in a [MnemonicChallenge]: a word to tap, and where it stands.
 ///
-/// A value the host styles. It carries one word, never the list — and the
-/// order the user is building is not in it either, so a host cannot
-/// reassemble the mnemonic from the tiles it was handed.
+/// A value the host styles. [word] is a widget whose text has no accessor,
+/// so the tiles a host is handed do not add up to the mnemonic — not as a
+/// list, and not as a `Map<int, Widget>` either.
 final class MnemonicTile {
-  final String word;
+  /// The word, as a widget to place. Never the string.
+  final Widget word;
 
   /// Whether the user has already placed this tile.
   final bool isPlaced;
@@ -39,8 +41,11 @@ final class MnemonicTile {
 /// The verdict is [Secret.verifyWords], so the comparison that decides a
 /// user's backup is the same one everywhere and is timed the same way.
 ///
-/// The seal covers API leakage only. Screenshot blocking stays the host
-/// screen's job; the semantics tree is excluded here.
+/// The seal covers API leakage only: no member hands out a word, and the tile
+/// text has no accessor. A host that walks its own element tree can still
+/// read the inner `Text` — that is a deliberate act, and reads as one in
+/// review. Screenshot blocking stays the host screen's job; the semantics
+/// tree is excluded here.
 final class MnemonicChallenge extends StatefulWidget {
   final Secret secret;
 
@@ -61,6 +66,9 @@ final class MnemonicChallenge extends StatefulWidget {
   /// word N" prompt — it says nothing about which words.
   final void Function(int placed, int total)? onProgress;
 
+  /// Text style for the word inside each tile.
+  final TextStyle? style;
+
   final Widget placeholder;
   final Widget Function(BuildContext, SecretFailure) onFailure;
 
@@ -73,6 +81,7 @@ final class MnemonicChallenge extends StatefulWidget {
     required this.onMistake,
     required this.onFailure,
     this.onProgress,
+    this.style,
     this.placeholder = const SizedBox.shrink(),
   });
 
@@ -112,10 +121,17 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
     }
   }
 
+  /// Reads for the secret this widget holds *now*. The read outlives an
+  /// `await`, and the widget may have been handed a different secret by then
+  /// — so the result is kept only if it is still that secret's, and the
+  /// widget is still mounted. Otherwise it is dropped: a stale read must not
+  /// become the answer key for the secret on screen.
   Future<Result<RevealedMnemonic, SecretFailure>> _reveal() async {
+    final id = widget.secret.id;
     final result = await widget.secret.revealWords(
       reason: RevealReason.physicalBackupCheck,
     );
+    if (!mounted || widget.secret.id != id) return result;
     if (result case Ok(:final value)) {
       _answer = value.words;
       _shuffled = [...value.words]..shuffle();
@@ -129,10 +145,16 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
   }
 
   Future<void> _tap(int index) async {
+    if (_answer.isEmpty || index >= _shuffled.length) return;
     final placed = [for (final i in _placed) _shuffled[i], _shuffled[index]];
 
     // The running check: a wrong word is caught on the tap, not at the end.
-    final correctSoFar = !placed.indexed.any((e) => _answer[e.$1] != e.$2);
+    // No early exit, like `verifyWords`: one rule for comparing words, even
+    // where the only observer of the timing is the user.
+    var correctSoFar = true;
+    for (var i = 0; i < placed.length; i++) {
+      if (_answer[i] != placed[i]) correctSoFar = false;
+    }
     if (!correctSoFar) {
       setState(_reshuffle);
       widget.onProgress?.call(0, _answer.length);
@@ -146,17 +168,17 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
 
     // Complete: the verdict comes from the package's own comparison rather
     // than from the loop above, so what confirms a user's backup is the one
-    // check the audit surface names.
-    switch (await widget.secret.verifyWords(placed)) {
+    // check the audit surface names. The secret is captured first: the
+    // verdict is for *that* secret, and is reported only if the widget still
+    // shows it once the read returns.
+    final secret = widget.secret;
+    final verdict = await secret.verifyWords(placed);
+    if (!mounted || widget.secret.id != secret.id) return;
+    switch (verdict) {
       case Ok(value: true):
         widget.onSolved();
       case Ok(value: false):
-        if (!mounted) return;
-        setState(_reshuffle);
-        widget.onProgress?.call(0, _answer.length);
-        widget.onMistake();
       case Err():
-        if (!mounted) return;
         setState(_reshuffle);
         widget.onProgress?.call(0, _answer.length);
         widget.onMistake();
@@ -182,7 +204,7 @@ final class _MnemonicChallengeState extends State<MnemonicChallenge> {
                 widget.tileBuilder(
                   context,
                   MnemonicTile(
-                    word: _shuffled[i],
+                    word: SealedWord(_shuffled[i], style: widget.style),
                     isPlaced: _placed.contains(i),
                     position: _placed.contains(i)
                         ? _placed.indexOf(i) + 1

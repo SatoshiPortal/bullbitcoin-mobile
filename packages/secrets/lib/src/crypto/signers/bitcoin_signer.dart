@@ -136,6 +136,9 @@ final class BitcoinSigner {
 
     final external = keychain(bdk.KeychainKind.external_);
     final internal = keychain(bdk.KeychainKind.internal);
+    // Nothing to keep: this wallet exists for the length of one signing
+    // session and leaves no file behind.
+    final persister = bdk.Persister.newInMemory();
     try {
       return bdk.Wallet(
         descriptor: external,
@@ -146,12 +149,13 @@ final class BitcoinSigner {
           BitcoinNetwork.signet => bdk.Network.signet,
           BitcoinNetwork.regtest => bdk.Network.regtest,
         },
-        // Nothing to keep: this wallet exists for the length of one
-        // signing session and leaves no file behind.
-        persister: bdk.Persister.newInMemory(),
+        persister: persister,
         lookahead: _lookahead,
       );
     } finally {
+      // The persister holds no key, but the class doc promises every handle
+      // is freed, and a promise with one exception is not one.
+      persister.dispose();
       external.dispose();
       internal.dispose();
       secretKey.dispose();

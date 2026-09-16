@@ -188,6 +188,11 @@ class _Challenge extends StatelessWidget {
         }
         return MnemonicChallenge(
           secret: value,
+          style: context.font.bodyLarge?.copyWith(
+            fontWeight: .w700,
+            fontSize: 14,
+            color: context.appColors.secondary,
+          ),
           placeholder: const Center(child: CircularProgressIndicator()),
           onFailure: (context, failure) => BBText(
             context.loc.oopsSomethingWentWrong,
@@ -289,16 +294,8 @@ class _Tile extends StatelessWidget {
               ),
             ),
             const Gap(12),
-            BBText(
-              tile.word,
-              textAlign: .start,
-              maxLines: 2,
-              style: context.font.bodyLarge?.copyWith(
-                fontWeight: .w700,
-                fontSize: 14,
-                color: context.appColors.secondary,
-              ),
-            ),
+            // The word as the package hands it: a widget, no accessor.
+            tile.word,
           ],
         ),
       ),

@@ -323,7 +323,10 @@ class _RecoveryPhraseWord extends StatelessWidget {
   const _RecoveryPhraseWord({required this.number, required this.word});
 
   final int number;
-  final String word;
+
+  /// The word as the package hands it: a widget to place, with no accessor
+  /// for the text. Styled through `MnemonicView.style`.
+  final Widget word;
 
   @override
   Widget build(BuildContext context) {
@@ -373,19 +376,7 @@ class _RecoveryPhraseWord extends StatelessWidget {
               ),
             ),
             const Gap(12),
-            Expanded(
-              flex: 6,
-              child: BBText(
-                word,
-                textAlign: .start,
-                maxLines: 2,
-                style: context.font.bodyLarge?.copyWith(
-                  fontWeight: .w700,
-                  fontSize: 14,
-                  color: context.appColors.secondary,
-                ),
-              ),
-            ),
+            Expanded(flex: 6, child: word),
           ],
         ),
       ),

@@ -316,6 +316,45 @@ void main() {
 
       expect(storage.entries['seed_$plainFingerprint'], entry(words));
     });
+
+    test('an absent and an empty passphrase are one secret', () async {
+      // Same identity, and compared as JSON they differed: `null` against
+      // `""`. That refused a legitimate re-import as "another secret" (Codex,
+      // 2026-09-16). Compared as models they are the same, and the disk
+      // keeps saying `null`.
+      final storage = FakeSecureStoragePlatform();
+      final repo = repoWith(storage);
+
+      ok(await repo.store(words: words));
+      ok(await repo.store(words: words, passphrase: ''));
+
+      expect(storage.entries['seed_$plainFingerprint'], entry(words));
+      expect(storage.entries['seed_$plainFingerprint'], isNot(contains('""')));
+    });
+
+    test(
+      'a historical envelope with another key order is the same secret',
+      () async {
+        // Nothing this package wrote, but nothing it may refuse either: the
+        // format is frozen by content, not by key order.
+        final reordered = jsonEncode({
+          'runtimeType': 'mnemonic',
+          'passphrase': null,
+          'mnemonicWords': words,
+        });
+        final storage = FakeSecureStoragePlatform(
+          entries: {'seed_$plainFingerprint': reordered},
+        );
+
+        ok(await repoWith(storage).store(words: words));
+
+        expect(
+          storage.entries['seed_$plainFingerprint'],
+          reordered,
+          reason: 'the same secret is left byte for byte, not rewritten',
+        );
+      },
+    );
   });
 
   group('identity is validated, not merely typed', () {

@@ -113,7 +113,11 @@ class SecretRepository {
     Deriver.identity.check(words);
     final model = MnemonicSecretModel(
       mnemonicWords: words,
-      passphrase: passphrase,
+      // Absent and empty are one passphrase to BIP39 and to this package; the
+      // disk has always said `null` for it, so a fresh write says the same.
+      passphrase: (passphrase == null || passphrase.isEmpty)
+          ? null
+          : passphrase,
     );
     final id = await Isolate.run(() => _identify(model));
     await _source.storeSecret(id: id, secret: model);
@@ -143,27 +147,27 @@ class SecretRepository {
   ///
   /// The remedy for [SecretIdentityMismatchFailure]: the words are intact, only the key they are under is wrong, so nothing needs to leave the package to fix it. Idempotent — an entry already under its own identity is simply described.
   ///
-  /// The move is a write then a delete, in that order, so a crash in between leaves both copies rather than none. If the true identity is already taken by a *different* secret, the write refuses and the original is untouched.
+  /// One locked datasource operation — [FlutterSecureStorageDatasource.moveSecret] — so the identity is derived from the very model that is written, and the move is a write then a delete: a crash in between leaves both copies rather than none. If the true identity is already taken by a *different* secret, the write refuses and the original is untouched.
   Future<Result<SecretInfo, SecretFailure>> repairIdentity(
     Fingerprint id,
   ) async {
-    final derived = await _read(
-      id,
-      (model) => Isolate.run(() => _identify(model)),
+    final moved = await boundary(
+      () => _source.moveSecret(
+        id,
+        identify: (model) => Isolate.run(() => _identify(model)),
+      ),
+      orElse: SecretStoreFailure.new,
     );
-    return switch (derived) {
+    return switch (moved) {
       Err(:final failure) => Err(failure),
-      Ok(value: final actual) when actual == id => describe(id),
-      Ok(value: final actual) => await boundary(() async {
-        final model = await _source.fetchSecret(id);
-        if (model == null) {
-          throw const FormatException('the entry vanished mid-repair');
-        }
-        await _source.storeSecret(id: actual, secret: model);
-        await _source.trashSecret(id);
-        log.info('SECRET_REPAIR: $id re-filed under $actual');
-        return _describe(actual, model);
-      }, orElse: SecretStoreFailure.new),
+      Ok(value: null) => const Err(
+        SecretNotFoundFailure('no secret under that id'),
+      ),
+      Ok(value: (:final Fingerprint id, :final SecretModel model)) =>
+        await boundary(() {
+          log.info('SECRET_REPAIR: secret now filed under $id');
+          return _describe(id, model);
+        }, orElse: SecretFetchFailure.new),
     };
   }
 

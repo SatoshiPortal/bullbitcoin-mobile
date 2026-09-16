@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
+import 'package:secrets/src/public/sealed_word.dart';
 import 'package:secrets/src/public/secret.dart';
 
 /// Shows a secret's words to the user without handing them to the caller.
@@ -26,8 +27,8 @@ final class MnemonicView extends StatefulWidget {
   /// Rendered when the read fails; receives the failure so the host can translate it.
   final Widget Function(BuildContext, SecretFailure) onFailure;
 
-  /// Renders one word. Called during this widget's build, once per word, with the word's 1-based number — never the list, so the host styles a cell without holding the mnemonic. Default: the word in [style].
-  final Widget Function(BuildContext context, int number, String word)?
+  /// Decorates one word. Called during this widget's build, once per word, with the word's 1-based number and the word **as a widget** — a `SealedWord` whose text has no accessor. The host places it in a cell; it cannot read it, and a `Map<int, Widget>` reconstructs nothing. The text takes [style]. Default: the word alone.
+  final Widget Function(BuildContext context, int number, Widget word)?
   wordBuilder;
 
   /// Arranges the rendered words. Receives **widgets**, not words, so a grid or a two-column layout costs the host nothing in exposure. Default with [wordBuilder]: a `Wrap`; without either: the words joined into one line, as before.
@@ -81,8 +82,12 @@ final class _MnemonicViewState extends State<MnemonicView> {
     }
     final cells = [
       for (var i = 0; i < words.length; i++)
-        builder?.call(context, i + 1, words[i]) ??
-            Text(words[i], style: widget.style),
+        builder?.call(
+              context,
+              i + 1,
+              SealedWord(words[i], style: widget.style),
+            ) ??
+            SealedWord(words[i], style: widget.style),
     ];
     return layout?.call(context, cells) ?? Wrap(children: cells);
   }

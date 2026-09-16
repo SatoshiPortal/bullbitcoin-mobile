@@ -164,9 +164,13 @@ the only callers are this package's own sealed widgets, `MnemonicView`
 and `MnemonicChallenge`, and a feature that reaches for it gets an
 `invalid_use_of_internal_member` error. Showing a user their words is a
 display concern, and a display that hands them back has nothing left to
-seal — so the host styles one word or one tile at a time and receives
-widgets for the layout. To *compare* words, `verifyWords` answers without
-exposing anything.
+seal — so the host receives each word **as a widget** whose text has no
+accessor (`wordBuilder(context, number, Widget word)`, `MnemonicTile.word`),
+and arranges widgets. A `Map<int, Widget>` in the callback rebuilds
+nothing. What remains possible is walking one's own element tree for the
+inner `Text`: a deliberate act that reads as one in review, which is the
+line every sealed UI draws. To *compare* words, `verifyWords` answers
+without exposing anything.
 
 Do not grep for the three — `test/invariants_test.dart` pins the set, so
 adding a fourth turns the suite red and names it.

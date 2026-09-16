@@ -220,6 +220,55 @@ void main() {
     }
   });
 
+  test('the stored mnemonic has no exit: revealWords is @internal', () {
+    // The README promises it; removing the annotation would otherwise pass
+    // green. `@internal` is what turns a feature reaching for the words
+    // into an analyzer error, so it is the seal, not the documentation of one.
+    final body = code(read('lib/src/public/secret.dart'));
+    expect(
+      RegExp(
+        r'@internal\s+Future<Result<RevealedMnemonic, SecretFailure>>\s+revealWords\(',
+      ).hasMatch(body),
+      isTrue,
+      reason: 'revealWords must be annotated @internal',
+    );
+    expect(
+      code(read('lib/src/public/extensions.dart')),
+      isNot(contains('revealWords')),
+      reason: 'the sugar must not re-export the exit',
+    );
+  });
+
+  test('the sealed widgets hand out widgets, never a word', () {
+    // A1 (Codex, 2026-09-16): a builder that receives `String word` lets a
+    // `Map<int, String>` in the callback rebuild the mnemonic — no import of
+    // internals needed. So the host gets a `SealedWord`, whose text has no
+    // accessor, and this holds the signatures to it.
+    final view = code(read('lib/src/public/mnemonic_view.dart'));
+    final challenge = code(read('lib/src/public/mnemonic_challenge.dart'));
+    final sealed = code(read('lib/src/public/sealed_word.dart'));
+
+    expect(
+      RegExp(
+        r'Function\(BuildContext context, int number, Widget word\)',
+      ).hasMatch(view),
+      isTrue,
+      reason: 'wordBuilder must receive the word as a widget',
+    );
+    expect(view, isNot(contains('String word')));
+    expect(
+      RegExp(r'final Widget word;').hasMatch(challenge),
+      isTrue,
+      reason: 'MnemonicTile.word must be a widget',
+    );
+    expect(challenge, isNot(contains('final String word')));
+    // And the widget itself exposes nothing: private fields, no getter.
+    expect(sealed, contains('final String _word;'));
+    expect(RegExp(r'String get \w+').hasMatch(sealed), isFalse);
+    // Not part of the surface — it is the seal, not an API.
+    expect(read('lib/secrets.dart'), isNot(contains('sealed_word')));
+  });
+
   test('every operation on Secret is inventoried', () {
     // `Secret` is the audit surface: nothing appears on it unlisted. The verdict matters more than the return type — `bip85Hex` hands back entropy in a `String`, which a type-name filter misses.
     const inventory = {

@@ -224,6 +224,7 @@ Future<void> main({bool isInitialized = false}) async {
         Ok() => fail('a non-PSBT was accepted'),
       };
       expect(failure, isA<SecretDerivationFailure>());
+      expect(failure.logMessage, isNotNull);
       expect(failure.logMessage, isNot(contains('not a psbt')));
     });
 
@@ -240,10 +241,9 @@ Future<void> main({bool isInitialized = false}) async {
         Ok() => fail('a non-PSET was accepted'),
       };
       expect(failure, isA<SecretDerivationFailure>());
-      expect(failure.logMessage, isNot(contains('not a pset')));
-      for (final word in {...words}) {
-        expect(failure.logMessage ?? '', isNot(contains(word)));
-      }
+      // `logMessage` is the exception's type name and nothing else — asserted
+      // positively, so a null here cannot pass as "contains no word".
+      expect(failure.logMessage, 'LiquidSigningFailed');
     });
 
     test('signing leaves no scratch directory behind', () async {

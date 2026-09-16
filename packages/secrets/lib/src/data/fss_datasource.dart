@@ -111,13 +111,45 @@ class FlutterSecureStorageDatasource {
     final json = jsonEncode(secret.toJson());
     return _lock.synchronized(() async {
       final existing = await _readRaw(key);
-      if (existing != null && existing.isNotEmpty && existing != json) {
-        throw SecretIdentityConflict(
-          'a different secret is already stored under $id',
-        );
+      if (existing != null && existing.isNotEmpty) {
+        if (!_holdsSameSecret(existing, secret)) {
+          throw SecretIdentityConflict(
+            'a different secret is already stored under $id',
+          );
+        }
+        // The same secret, perhaps in an older encoding. Left byte for byte:
+        // the format is frozen, and there is nothing to gain by rewriting.
+        return;
       }
       await _writeRaw(key, json);
     });
+  }
+
+  /// Whether [existing] holds the same secret as [candidate] — parsed, not compared as text.
+  ///
+  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
+  static bool _holdsSameSecret(String existing, SecretModel candidate) {
+    final SecretModel stored;
+    try {
+      stored = SecretModel.fromJson(decodeJson(existing));
+    } on Exception {
+      return false;
+    }
+    return switch ((stored, candidate)) {
+      (MnemonicSecretModel a, MnemonicSecretModel b) =>
+        _sameList(a.mnemonicWords, b.mnemonicWords) &&
+            (a.passphrase ?? '') == (b.passphrase ?? ''),
+      (BytesSecretModel a, BytesSecretModel b) => _sameList(a.bytes, b.bytes),
+      _ => false,
+    };
+  }
+
+  static bool _sameList<T>(List<T> a, List<T> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
   }
 
   /// Reads one secret. Returns `null` only for a clean miss on the read that was allowed to settle; a last read that threw, or came back empty, propagates.
@@ -141,7 +173,43 @@ class FlutterSecureStorageDatasource {
   Future<bool> secretExists(Fingerprint id) async =>
       await _readRaw(keyForSecret(id)) != null;
 
-  Future<void> trashSecret(Fingerprint id) => _deleteRaw(keyForSecret(id));
+  /// Under the lock, so a delete cannot interleave with a move or a store of the same key. Never called from inside another locked operation — those use [_deleteRaw].
+  Future<void> trashSecret(Fingerprint id) =>
+      _lock.synchronized(() => _deleteRaw(keyForSecret(id)));
+
+  /// Re-files the entry under [from] to the key [identify] derives from it — one read, one decision, one write, one delete, all under the lock.
+  ///
+  /// The identity is computed on the very model that is written, so a concurrent change to the entry cannot make this file one model under another's identity. The write refuses if [to] already holds a different secret, and the original is only deleted after the copy exists. Returns the model and where it now lives; `null` when nothing was stored under [from].
+  Future<({Fingerprint id, SecretModel model})?> moveSecret(
+    Fingerprint from, {
+    required Future<Fingerprint> Function(SecretModel model) identify,
+  }) {
+    final fromKey = keyForSecret(from);
+    return _lock.synchronized(() async {
+      // `_readRaw`, not the retry loop: a false "absent" here costs a retry of
+      // the repair, never a wallet, and the lock must not be held for the
+      // ~4.5 s the loop can take.
+      final raw = await _readRaw(fromKey);
+      if (raw == null || raw.isEmpty) return null;
+      final model = SecretModel.fromJson(decodeJson(raw));
+      final to = await identify(model);
+      if (to == from) return (id: from, model: model);
+
+      final toKey = keyForSecret(to);
+      final existing = await _readRaw(toKey);
+      if (existing != null && existing.isNotEmpty) {
+        if (!_holdsSameSecret(existing, model)) {
+          throw SecretIdentityConflict(
+            'a different secret is already stored under $to',
+          );
+        }
+      } else {
+        await _writeRaw(toKey, jsonEncode(model.toJson()));
+      }
+      await _deleteRaw(fromKey);
+      return (id: to, model: model);
+    });
+  }
 
   /// Every parsable secret in the namespace, with its identity.
   ///
@@ -325,7 +393,7 @@ class FlutterSecureStorageDatasource {
 
   // -------------------------------------------------------------------- lock
 
-  /// Guards composed operations only — [storeSecret], [fetchOrCreateModuleKey], [deleteModuleKey].
+  /// Guards composed operations — [storeSecret], [moveSecret], [trashSecret], [fetchOrCreateModuleKey], [deleteModuleKey].
   /// Process-wide, because the keystore is. See the class doc for why it
   /// is not per instance, why single calls are not guarded, and why it
   /// must never be taken twice on one path.
