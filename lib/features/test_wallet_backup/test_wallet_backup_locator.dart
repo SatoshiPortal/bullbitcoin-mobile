@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_physical_backup_usecase.dart';
 import 'package:get_it/get_it.dart';
 
 class TestWalletBackupLocator {
@@ -15,15 +14,8 @@ class TestWalletBackupLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerLazySingleton<GetMnemonicFromFingerprintUsecase>(
-      () => GetMnemonicFromFingerprintUsecase(
-        seedRepository: locator<SeedRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<VerifyPhysicalBackupUsecase>(
-      () => VerifyPhysicalBackupUsecase(
-        seedRepository: locator<SeedRepository>(),
-      ),
+    locator.registerLazySingleton<GetSecretFromFingerprintUsecase>(
+      () => GetSecretFromFingerprintUsecase(secrets: locator<Secrets>()),
     );
     locator.registerFactory<CheckBackupUsecase>(
       () => CheckBackupUsecase(

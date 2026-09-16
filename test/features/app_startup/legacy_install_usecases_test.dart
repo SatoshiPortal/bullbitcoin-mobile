@@ -23,9 +23,6 @@ class _InMemorySecureStorage implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> deleteValue(String key) async => _entries.remove(key);
-
-  @override
-  Future<void> deleteAll() async => _entries.clear();
 }
 
 void main() {

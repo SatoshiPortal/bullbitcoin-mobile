@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -57,7 +56,6 @@ class WalletLocator {
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
-        seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),

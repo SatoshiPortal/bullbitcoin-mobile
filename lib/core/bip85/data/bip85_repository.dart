@@ -13,15 +13,15 @@ class Bip85Repository {
   Bip85Repository({required this._datasource});
 
   @useResult
-  Future<Result<({String derivation, String hex}), Bip85Failure>> deriveHex({
-    required String xprvBase58,
+  Future<Result<String, Bip85Failure>> recordHex({
+    required String xprvFingerprint,
     required int length,
     required int index,
     String? alias,
   }) async {
     try {
-      final result = await _datasource.deriveHex(
-        xprvBase58: xprvBase58,
+      final result = await _datasource.recordHex(
+        xprvFingerprint: xprvFingerprint,
         length: length,
         index: index,
         alias: alias,
@@ -29,7 +29,7 @@ class Bip85Repository {
       return Ok(result);
     } catch (e, st) {
       log.severe(
-        message: 'Bip85Repository.deriveHex failed',
+        message: 'Bip85Repository.recordHex failed',
         error: e,
         trace: st,
       );
@@ -38,16 +38,15 @@ class Bip85Repository {
   }
 
   @useResult
-  Future<Result<({String derivation, bip39.Mnemonic mnemonic}), Bip85Failure>>
-  deriveMnemonic({
-    required String xprvBase58,
+  Future<Result<String, Bip85Failure>> recordMnemonic({
+    required String xprvFingerprint,
     required bip39.MnemonicLength length,
     required int index,
     String? alias,
   }) async {
     try {
-      final result = await _datasource.deriveMnemonic(
-        xprvBase58: xprvBase58,
+      final result = await _datasource.recordMnemonic(
+        xprvFingerprint: xprvFingerprint,
         length: length,
         index: index,
         alias: alias,
@@ -55,7 +54,7 @@ class Bip85Repository {
       return Ok(result);
     } catch (e, st) {
       log.severe(
-        message: 'Bip85Repository.deriveMnemonic failed',
+        message: 'Bip85Repository.recordMnemonic failed',
         error: e,
         trace: st,
       );

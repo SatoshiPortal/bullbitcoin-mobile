@@ -1,21 +1,21 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
-  final SeedDatasource _seed;
+  final Secrets _secrets;
   final BdkWalletDatasource _wallet;
   final WalletMetadataDatasource _metadata;
 
-  const PayjoinWalletAdapter(this._seed, this._wallet, this._metadata);
+  const PayjoinWalletAdapter(this._secrets, this._wallet, this._metadata);
 
   @override
   Future<String> signPsbt({
@@ -23,8 +23,14 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required BitcoinNetwork network,
     required String psbt,
   }) async {
-    final wallet = await _loadPrivateWallet(walletId, network);
-    return _wallet.signPsbt(psbt, wallet: wallet);
+    final (secret, metadata) = await _loadSecret(walletId, network);
+    return _unwrap(
+      await secret.sign.psbt(
+        psbt,
+        network: network,
+        scriptType: metadata.scriptType.shared,
+      ),
+    );
   }
 
   @override
@@ -32,7 +38,9 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String walletId,
     required BitcoinNetwork network,
   }) async {
-    final wallet = await _loadPrivateWallet(walletId, network);
+    // Ownership is answered from the public descriptors; no key is needed, and none is loaded. Same watch-only view as the outpoint checker below.
+    final metadata = await _loadMetadata(walletId, network);
+    final wallet = WalletModel.fromMetadata(metadata);
     return _wallet.createIsMineChecker(wallet: wallet);
   }
 
@@ -53,8 +61,14 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String walletId,
     required BitcoinNetwork network,
   }) async {
-    final wallet = await _loadPrivateWallet(walletId, network);
-    return _wallet.createPsbtSigner(wallet: wallet);
+    // The callback captures a signing wallet built inside the package; it is not the seed, but it is a live signing capability. Bounding its lifetime with an explicit close is pending (lot 3); today it lives as long as the receiver holds it, as the previous private wallet did.
+    final (secret, metadata) = await _loadSecret(walletId, network);
+    return _unwrap(
+      await secret.sign.psbtSigner(
+        network: network,
+        scriptType: metadata.scriptType.shared,
+      ),
+    );
   }
 
   @override
@@ -89,22 +103,23 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     return metadata;
   }
 
-  Future<PrivateBdkWalletModel> _loadPrivateWallet(
+  Future<(Secret, WalletMetadataModel)> _loadSecret(
     String walletId,
     BitcoinNetwork network,
   ) async {
     final metadata = await _loadMetadata(walletId, network);
-    final seed = await _seed.get(metadata.masterFingerprint);
-    if (seed is! MnemonicSeedModel) {
+    final secret = _unwrap(
+      await _secrets.fetch(Fingerprint(metadata.masterFingerprint)),
+    );
+    if (!secret.info.isMnemonic) {
       throw StateError('Payjoin requires a local mnemonic wallet');
     }
-    return WalletModel.privateBdk(
-          id: walletId,
-          scriptType: metadata.scriptType,
-          mnemonic: seed.mnemonicWords.join(' '),
-          passphrase: seed.passphrase,
-          isTestnet: metadata.isTestnet,
-        )
-        as PrivateBdkWalletModel;
+    return (secret, metadata);
   }
+
+  /// This adapter already reports every problem by throwing — the port has no failure type — so a package failure becomes a `StateError` naming its kind, never its message.
+  static T _unwrap<T>(Result<T, SecretFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw StateError('secrets: ${failure.runtimeType}'),
+  };
 }

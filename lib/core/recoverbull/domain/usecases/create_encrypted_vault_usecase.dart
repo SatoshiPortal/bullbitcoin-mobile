@@ -1,33 +1,34 @@
-import 'dart:convert';
+import 'package:secrets/secrets.dart' as secrets;
+import 'package:primitives/primitives.dart' show Fingerprint;
 
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/utils/recoverbull_bip85.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CreateEncryptedVaultUsecase {
-  final RecoverBullRepository _recoverBullRepository;
-  final SeedRepository _seedRepository;
+  final secrets.Secrets _secrets;
   final WalletRepository _walletRepository;
 
   CreateEncryptedVaultUsecase({
-    required this._recoverBullRepository,
-    required this._seedRepository,
+    required this._secrets,
     required this._walletRepository,
   });
 
   // Orchestrates wallet + seed (still-throwing core repos) and the recoverbull
   // repo. The local try/catch is the boundary for the wallet/seed calls; the
   // recoverbull repo already returns a Result that we forward.
+  /// [passphraseExcluded] is the package's `WordsOnly` verdict: the wallet
+  /// has a passphrase and the vault format has no field for it, so this
+  /// file alone restores a different wallet. The user must keep the
+  /// passphrase with the backup — `Secrets.restoreVault` takes it back.
   Future<
-    Result<({EncryptedVault vault, String vaultKey}), RecoverBullCoreFailure>
+    Result<
+      ({EncryptedVault vault, String vaultKey, bool passphraseExcluded}),
+      RecoverBullCoreFailure
+    >
   >
   execute() async {
     try {
@@ -48,49 +49,44 @@ class CreateEncryptedVaultUsecase {
         time: DateTime.now(),
         walletId: defaultWallet.id,
       );
-      final defaultSeed = await _seedRepository.get(
-        defaultWallet.masterFingerprint,
-      );
-      final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
-      final mnemonic = switch (defaultSeedModel) {
-        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
-        _ => null,
+      final secret = switch (await _secrets.fetch(
+        Fingerprint(defaultWallet.masterFingerprint),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };
-      if (mnemonic == null) {
+      if (!secret.info.isMnemonic) {
         return const Err(
           RecoverBullUnexpectedCoreFailure(
             'Default seed is not a mnemonic seed',
           ),
         );
       }
-      final defaultXprv = Bip32Derivation.getXprvFromSeed(
-        defaultSeed.bytes,
-        defaultWallet.network,
-      );
-
-      final toBackup = DecryptedVault(
-        mnemonic: mnemonic,
+      // The plaintext keeps exactly the keys and encodings `DecryptedVault.toJson` has always written — built from the same type, minus the words, which the package writes itself. Every existing vault and the key server read this shape.
+      final metadata = DecryptedVault(
+        mnemonic: const [],
         masterFingerprint: defaultWallet.masterFingerprint,
         isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
         isPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
         latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
         latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
-      );
-      final plaintext = json.encode(toBackup.toJson());
-      // Derive the backup key using BIP85
-      final derivationPath = RecoverbullBip85Utils.generateBackupKeyPath();
-      final backupKey = RecoverbullBip85Utils.deriveBackupKey(
-        defaultXprv,
-        derivationPath,
-      );
-
-      return _recoverBullRepository
-          .createVault(
-            vaultKey: backupKey,
-            plaintext: plaintext,
-            derivationPath: derivationPath,
-          )
-          .map((vault) => (vault: vault, vaultKey: backupKey));
+      ).toJson()..remove('mnemonic');
+      final scope = switch (await secret.backup.vault(metadata: metadata)) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw StateError(failure.runtimeType.toString()),
+      };
+      final passphraseExcluded = scope is secrets.WordsOnly;
+      if (passphraseExcluded) {
+        log.warning(
+          'VAULT_WORDS_ONLY: vault for ${defaultWallet.masterFingerprint} '
+          'carries the words alone; the passphrase is not in the file',
+        );
+      }
+      return Ok((
+        vault: EncryptedVault(file: scope.value.file),
+        vaultKey: scope.value.key,
+        passphraseExcluded: passphraseExcluded,
+      ));
     } catch (e, st) {
       log.severe(message: 'createEncryptedVault failed', error: e, trace: st);
       return Err(RecoverBullUnexpectedCoreFailure(e.toString()));

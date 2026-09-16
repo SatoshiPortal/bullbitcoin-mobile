@@ -1,21 +1,19 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 
 class CreateDefaultWalletsUsecase {
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
   final SettingsRepository _settingsRepository;
-  final MnemonicGenerator _mnemonicGenerator;
   final WalletRepository _wallet;
 
   CreateDefaultWalletsUsecase({
-    required this._seedRepository,
+    required this._secrets,
     required this._settingsRepository,
-    required this._mnemonicGenerator,
     required WalletRepository walletRepository,
   }) : _wallet = walletRepository;
 
@@ -44,19 +42,26 @@ class CreateDefaultWalletsUsecase {
       if (hasBitcoin && hasLiquid) return existing;
 
       final isGenerated = mnemonicWords == null;
-      final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
       final DateTime? birthday = isGenerated ? DateTime.now().toUtc() : null;
-      final seed = await _seedRepository.createFromMnemonic(
-        mnemonicWords: mnemonic,
-        passphrase: passphrase,
-      );
+      // Generation and import both happen inside the package; the words never come back here.
+      final secret = switch (isGenerated
+          ? await _secrets.generate()
+          : await _secrets.import(
+              words: mnemonicWords,
+              passphrase: passphrase,
+            )) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw StateError(
+          'could not create the default secret: ${failure.runtimeType}',
+        ),
+      };
 
       final created = <Wallet>[];
       try {
         if (!hasBitcoin) {
           created.add(
             await _wallet.createWallet(
-              seed: seed,
+              secret: secret,
               network: bitcoinNetwork,
               scriptType: scriptType,
               isDefault: true,
@@ -67,7 +72,7 @@ class CreateDefaultWalletsUsecase {
         if (!hasLiquid) {
           created.add(
             await _wallet.createWallet(
-              seed: seed,
+              secret: secret,
               network: liquidNetwork,
               scriptType: scriptType,
               isDefault: true,

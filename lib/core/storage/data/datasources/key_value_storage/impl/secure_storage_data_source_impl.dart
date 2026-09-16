@@ -3,13 +3,11 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keycha
 import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:secrets/secrets.dart' show Secrets;
 
 /// File-private operation labels for keychain refusal log lines.
-/// Closed set so the impl can't drift into free-form strings; the
-/// twin file `secure_storage_legacy_datasource_impl.dart` has its
-/// own copy (intentionally — the two impls wrap distinct plugin
-/// `PlatformException` types and share no code).
-enum _Operation { read, write, delete, contains, readAll, deleteAll }
+/// Closed set so the impl can't drift into free-form strings.
+enum _Operation { read, write, delete, contains, readAll }
 
 /// iOS keychain `OSStatus` for `errSecInteractionNotAllowed`. Returned
 /// by `SecItemCopyMatching` / `SecItemAdd` when the item's accessibility
@@ -19,9 +17,30 @@ enum _Operation { read, write, delete, contains, readAll, deleteAll }
 const int _errSecInteractionNotAllowed = -25308;
 
 class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
+  /// Prefixes owned by the `secrets` package: the seed namespace and the
+  /// database keys it holds for other modules. The app shares an OS
+  /// keystore with it but must not reach into either — seeds go through
+  /// `Secrets`, database keys through `Secrets.databaseKey`. Taken from
+  /// the package so the two lists cannot drift apart. Enforced here
+  /// rather than left to convention, so a mistake fails loudly instead of
+  /// quietly handling key material.
+  static const _reserved = Secrets.reservedKeyPrefixes;
+
   final FlutterSecureStorage _storage;
 
   SecureStorageDatasourceImpl(this._storage);
+
+  static bool _isReserved(String key) => _reserved.any(key.startsWith);
+
+  void _refuseSecrets(String key, _Operation operation) {
+    if (!_isReserved(key)) return;
+    throw ArgumentError.value(
+      key,
+      'key',
+      'belongs to the secrets package; use Secrets, not the shared '
+          'store (${operation.name})',
+    );
+  }
 
   /// Wraps a keychain call, mapping iOS `-25308` to
   /// [KeychainLockedException] so callers can distinguish a
@@ -59,6 +78,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> saveValue({required String key, required String value}) {
+    _refuseSecrets(key, _Operation.write);
     return _wrap(
       operation: _Operation.write,
       key: key,
@@ -67,12 +87,22 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   }
 
   @override
-  Future<Map<String, String>> getAll() {
-    return _wrap(operation: _Operation.readAll, body: () => _storage.readAll());
+  Future<Map<String, String>> getAll() async {
+    final all = await _wrap(
+      operation: _Operation.readAll,
+      body: () => _storage.readAll(),
+    );
+    // Key material never reaches app code through this store, not even
+    // to be ignored by the caller.
+    return {
+      for (final e in all.entries)
+        if (!_isReserved(e.key)) e.key: e.value,
+    };
   }
 
   @override
   Future<String?> getValue(String key) {
+    _refuseSecrets(key, _Operation.read);
     return _wrap(
       operation: _Operation.read,
       key: key,
@@ -82,6 +112,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
 
   @override
   Future<bool> hasValue(String key) {
+    _refuseSecrets(key, _Operation.contains);
     return _wrap(
       operation: _Operation.contains,
       key: key,
@@ -91,18 +122,11 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> deleteValue(String key) {
+    _refuseSecrets(key, _Operation.delete);
     return _wrap(
       operation: _Operation.delete,
       key: key,
       body: () => _storage.delete(key: key),
-    );
-  }
-
-  @override
-  Future<void> deleteAll() {
-    return _wrap(
-      operation: _Operation.deleteAll,
-      body: () => _storage.deleteAll(),
     );
   }
 }

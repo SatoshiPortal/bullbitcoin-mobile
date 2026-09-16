@@ -3,8 +3,8 @@ part of 'all_seed_view_cubit.dart';
 @freezed
 abstract class AllSeedViewState with _$AllSeedViewState {
   const factory AllSeedViewState({
-    @Default(<MnemonicSeed>[]) List<MnemonicSeed> existingWallets,
-    @Default(<MnemonicSeed>[]) List<MnemonicSeed> oldWallets,
+    @Default(<Secret>[]) List<Secret> existingWallets,
+    @Default(<Secret>[]) List<Secret> oldWallets,
     @Default(true) bool loading,
     @Default(false) bool seedsVisible,
     // Step-up authentication gate: raw seed phrases never leave secure
@@ -15,5 +15,5 @@ abstract class AllSeedViewState with _$AllSeedViewState {
   }) = _AllSeedViewState;
   const AllSeedViewState._();
 
-  List<MnemonicSeed> get allSeeds => [...existingWallets, ...oldWallets];
+  List<Secret> get allSeeds => [...existingWallets, ...oldWallets];
 }

@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -13,13 +13,13 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
   final Bip85Repository _bip85Repository;
   final WalletRepository _walletRepository;
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
   final SettingsRepository _settingsRepository;
 
   DeriveNextBip85MnemonicFromDefaultWalletUsecase({
     required this._bip85Repository,
     required this._walletRepository,
-    required this._seedRepository,
+    required this._secrets,
     required this._settingsRepository,
   });
 
@@ -41,14 +41,12 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
       if (wallets.isEmpty) return const Err(Bip85NoDefaultWalletFailure());
       final defaultWallet = wallets.first;
 
-      final defaultSeed = await _seedRepository.get(
-        defaultWallet.masterFingerprint,
-      );
-
-      final xprv = Bip32Derivation.getXprvFromSeed(
-        defaultSeed.bytes,
-        defaultWallet.network,
-      );
+      final secret = switch (await _secrets.fetch(
+        Fingerprint(defaultWallet.masterFingerprint),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw StateError(failure.runtimeType.toString()),
+      };
 
       const application = Bip85Application.bip39;
       final indexResult = await _bip85Repository.fetchNextIndexForApplication(
@@ -58,11 +56,25 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
         case Err(:final failure):
           return Err(failure);
         case Ok(:final value):
-          return _bip85Repository.deriveMnemonic(
-            xprvBase58: xprv,
+          final words = switch (await secret.derive.bip85.mnemonic(
+            length: length,
+            index: value,
+          )) {
+            Ok(:final value) => value,
+            Err(:final failure) => throw StateError(
+              failure.runtimeType.toString(),
+            ),
+          };
+          return (await _bip85Repository.recordMnemonic(
+            xprvFingerprint: secret.id.hex,
             length: length,
             index: value,
             alias: alias,
+          )).map(
+            (derivation) => (
+              derivation: derivation,
+              mnemonic: bip39.Mnemonic.fromWords(words: words),
+            ),
           );
       }
     } catch (e, st) {

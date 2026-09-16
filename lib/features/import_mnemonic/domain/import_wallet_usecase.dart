@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -10,13 +11,13 @@ import 'package:meta/meta.dart';
 
 class ImportWalletUsecase {
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
   final SettingsRepository _settingsRepository;
   final WalletRepository _wallet;
 
   ImportWalletUsecase({
     required this._checkDuplicateMnemonicUsecase,
-    required this._seedRepository,
+    required this._secrets,
     required this._settingsRepository,
     required WalletRepository walletRepository,
   }) : _wallet = walletRepository;
@@ -42,7 +43,7 @@ class ImportWalletUsecase {
     // below must never touch a seed that already existed: it is shared by
     // whatever wallet was imported from the same mnemonic before, and
     // deleting it would strand that wallet's funds.
-    String? seedCreatedByThisImport;
+    Fingerprint? seedCreatedByThisImport;
 
     try {
       final settings = await _settingsRepository.fetch();
@@ -51,20 +52,21 @@ class ImportWalletUsecase {
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;
 
-      final fingerprint = _seedRepository.fingerprintFor(
-        mnemonicWords: mnemonicWords,
-        passphrase: passphrase,
+      // Package failures come back as values; this usecase already reports every exception as an unexpected failure below, so unwrap by throwing.
+      T unwrap<T>(Result<T, SecretFailure> r) => switch (r) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw StateError(failure.runtimeType.toString()),
+      };
+      final fingerprint = unwrap(
+        await _secrets.idOf(words: mnemonicWords, passphrase: passphrase),
       );
-      final seedAlreadyStored = await _seedRepository.exists(fingerprint);
-
-      final seed = await _seedRepository.createFromMnemonic(
-        mnemonicWords: mnemonicWords,
-        passphrase: passphrase,
+      final seedAlreadyStored = unwrap(await _secrets.exists(fingerprint));
+      final secret = unwrap(
+        await _secrets.import(words: mnemonicWords, passphrase: passphrase),
       );
       if (!seedAlreadyStored) seedCreatedByThisImport = fingerprint;
-
       final wallet = await _wallet.createWallet(
-        seed: seed,
+        secret: secret,
         network: bitcoinNetwork,
         scriptType: scriptType,
         isDefault: false,
@@ -81,7 +83,7 @@ class ImportWalletUsecase {
       // created is orphaned; a pre-existing one belongs to another wallet.
       // A cleanup failure is logged but must not mask the import error.
       if (seedCreatedByThisImport != null) {
-        final deletion = await _seedRepository.delete(seedCreatedByThisImport);
+        final deletion = await _secrets.trash(seedCreatedByThisImport);
         if (deletion case Err(:final failure)) {
           log.warning(
             'Failed to clean up orphaned seed after import failure',

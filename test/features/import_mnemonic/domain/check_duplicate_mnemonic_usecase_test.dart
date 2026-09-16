@@ -1,16 +1,12 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
-class MockSeedRepository extends Mock implements SeedRepository {}
-
+/// `Secrets` is `final`, so there is no double of it — by design. These run the real package against an in-memory keystore installed at the plugin's own seam, which means the identity this usecase compares is derived by the same code that will derive it in production.
 void main() {
-  late MockSeedRepository seedRepository;
-  late CheckDuplicateMnemonicUsecase usecase;
-
   const words = [
     'abandon',
     'abandon',
@@ -26,67 +22,54 @@ void main() {
     'about',
   ];
 
+  late FakeSecureStoragePlatform storage;
+  late Secrets secrets;
+  late CheckDuplicateMnemonicUsecase usecase;
+
   setUp(() {
-    seedRepository = MockSeedRepository();
-    usecase = CheckDuplicateMnemonicUsecase(seedRepository: seedRepository);
+    storage = FakeSecureStoragePlatform()..install();
+    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    usecase = CheckDuplicateMnemonicUsecase(secrets: secrets);
   });
 
   group('CheckDuplicateMnemonicUsecase', () {
-    test('returns Ok when mnemonic does not exist', () async {
-      when(
-        () => seedRepository.fingerprintFor(
-          mnemonicWords: any(named: 'mnemonicWords'),
-          passphrase: any(named: 'passphrase'),
-        ),
-      ).thenReturn('fp1');
-      when(() => seedRepository.exists('fp1')).thenAnswer((_) async => false);
+    test('returns Ok when the mnemonic is not stored', () async {
+      expect(
+        await usecase.execute(mnemonicWords: words),
+        isA<Ok<void, ImportMnemonicFailure>>(),
+      );
+    });
+
+    test('returns Err(duplicate) once the same mnemonic is stored', () async {
+      await secrets.import(words: words);
 
       final result = await usecase.execute(mnemonicWords: words);
+
+      expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+    });
+
+    test('a passphrase makes a different secret, not a duplicate', () async {
+      await secrets.import(words: words);
+
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        passphrase: 'TREZOR',
+      );
 
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
     });
 
-    test(
-      'returns Err(ImportMnemonicDuplicateFailure) when mnemonic already exists — no raw leak',
-      () async {
-        when(
-          () => seedRepository.fingerprintFor(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        ).thenReturn('fp1');
-        when(() => seedRepository.exists('fp1')).thenAnswer((_) async => true);
+    test('a keystore error is unexpected, and carries no stored text', () async {
+      const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
+      await secrets.import(words: words);
+      storage.scripted.add(Exception(sentinel));
 
-        final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(mnemonicWords: words);
 
-        expect(result, isA<Err<void, ImportMnemonicFailure>>());
-        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
-      },
-    );
-
-    test(
-      'returns Err(ImportMnemonicUnexpectedFailure) on exception — raw message in logMessage only',
-      () async {
-        when(
-          () => seedRepository.fingerprintFor(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        ).thenReturn('fp1');
-        when(
-          () => seedRepository.exists('fp1'),
-        ).thenThrow(Exception('db error'));
-
-        final result = await usecase.execute(mnemonicWords: words);
-
-        expect(result, isA<Err<void, ImportMnemonicFailure>>());
-        final failure = (result as Err).failure;
-        expect(failure, isA<ImportMnemonicUnexpectedFailure>());
-        expect(
-          (failure as ImportMnemonicUnexpectedFailure).logMessage,
-          contains('db error'),
-        );
-      },
-    );
+      final failure = (result as Err).failure;
+      expect(failure, isA<ImportMnemonicUnexpectedFailure>());
+      // The package reports a foreign exception by type; the message it wrote never reaches this layer, so neither does anything the keystore held.
+      expect(failure.logMessage, isNot(contains(sentinel)));
+    });
   });
 }
