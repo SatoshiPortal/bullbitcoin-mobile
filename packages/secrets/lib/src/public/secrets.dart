@@ -88,10 +88,8 @@ final class Secrets {
   /// Cheap: a [Secret] is a description plus a shared reference, so an item you just listed can act without a second round-trip.
   ///
   /// Reads the keystore with one `readAll`, which on Android is all-or-nothing: an entry the plugin cannot decrypt — in *any* namespace — fails the whole read. A failed listing therefore says nothing about any particular seed and must not be read as one being gone. [fetch] reads one key and is unaffected.
-  Future<Result<List<Secret>, SecretFailure>> list() async =>
-      (await _repository.describeAll()).map(
-        (infos) => infos.map(_handle).toList(),
-      );
+  Future<Result<SecretListing<Secret>, SecretFailure>> list() async =>
+      (await _repository.describeAll()).map((l) => l.map(_handle));
 
   /// Unconditional delete.
   ///
@@ -185,6 +183,17 @@ final class Secrets {
     required String package,
     required String name,
   }) => _databaseKeys.forModule(package: package, name: name);
+
+  /// The key for a database that already exists — opened, never created.
+  ///
+  /// Use it once the module knows its database is on disk: a miss is then a
+  /// [SecretNotFoundFailure] and the owner decides, rather than a fresh key
+  /// that opens nothing. [databaseKey] stays for the launch that may be
+  /// creating the database.
+  Future<Result<DatabaseKey, SecretFailure>> existingDatabaseKey({
+    required String package,
+    required String name,
+  }) => _databaseKeys.existing(package: package, name: name);
 
   /// Discards one package's database key. **Destructive and deliberate**: the database that key encrypted can never be opened again, so the caller drops that database in the same step. A corrupt key is never reset by recovery code; this exists for the module owner to call after deciding to lose the database.
   Future<Result<void, SecretFailure>> resetDatabaseKey({

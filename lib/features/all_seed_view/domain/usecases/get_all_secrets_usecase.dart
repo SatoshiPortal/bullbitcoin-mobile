@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
-/// Every stored secret, as handles. Cheap: nothing is derived, nothing is revealed.
+/// Every stored secret, as handles, plus how many entries could not be read. Cheap: nothing is derived, nothing is revealed.
 class GetAllSecretsUsecase {
   final Secrets _secrets;
 
@@ -11,5 +11,6 @@ class GetAllSecretsUsecase {
   const GetAllSecretsUsecase._(this._secrets);
 
   @useResult
-  Future<Result<List<Secret>, SecretFailure>> execute() => _secrets.list();
+  Future<Result<SecretListing<Secret>, SecretFailure>> execute() =>
+      _secrets.list();
 }

@@ -41,6 +41,28 @@ class DatabaseKeyRepository {
     return DatabaseKey.fromHex(model.bytesHex);
   }, orElse: SecretStoreFailure.new);
 
+  /// The key for a database that already exists — opened, never created.
+  ///
+  /// [forModule] is for a database this launch may be creating; this is for one the caller knows is on disk. A miss is then a [SecretNotFoundFailure] after the full retry budget, and the owner decides — the one thing "open or create" could never let it do (K1, Codex 2026-09-17).
+  Future<Result<DatabaseKey, SecretFailure>> existing({
+    required String package,
+    required String name,
+  }) async {
+    final read = await boundary(
+      () => _source.fetchModuleKey(kind: _kind, package: package, name: name),
+      orElse: SecretFetchFailure.new,
+    );
+    return switch (read) {
+      Err(:final failure) => Err(failure),
+      Ok(value: null) => const Err(
+        SecretNotFoundFailure('no database key under that name'),
+      ),
+      Ok(value: final KeyModel model) => Ok(
+        DatabaseKey.fromHex(model.bytesHex),
+      ),
+    };
+  }
+
   /// Discards one module's key. Destructive: the database it encrypted can never be opened again, so the caller must drop that database in the same step. Never called by recovery code; a corrupt key is refused, not replaced (see [FlutterSecureStorageDatasource.fetchOrCreateModuleKey]).
   Future<Result<void, SecretFailure>> reset({
     required String package,

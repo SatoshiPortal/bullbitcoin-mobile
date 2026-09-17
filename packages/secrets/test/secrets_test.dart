@@ -271,9 +271,12 @@ void main() {
       expect(failure, isNot(isA<InvalidMnemonicFailure>()));
     });
 
-    test('an operation on such a secret reports a read failure', () async {
-      // Without a passphrase, describing derives nothing, so the handle
-      // comes back; the first derivation is where the words are used.
+    test('fetching such a secret is itself the read failure', () async {
+      // D3 (Codex, 2026-09-16): the checksum is checked when describing,
+      // whatever the passphrase field says — so the handle never comes back
+      // for words that are not a mnemonic, and the failure is a read
+      // failure, never "invalid mnemonic" (that one is for user input) and
+      // never an absence.
       final corruptPlain = jsonEncode({
         'mnemonicWords': List.filled(12, 'abandon'),
         'passphrase': null,
@@ -282,17 +285,12 @@ void main() {
       final secrets = secretsWith(
         FakeSecureStoragePlatform(entries: {'seed_73c5da0a': corruptPlain}),
       );
-      final secret =
-          (await secrets.fetch(id) as Ok<Secret, SecretFailure>).value;
 
-      final result = await secret.derive.xpub(
-        network: BitcoinNetwork.mainnet,
-        scriptType: ScriptType.bip84,
-      );
+      final failure = err(await secrets.fetch(id));
 
-      final failure = (result as Err<String, SecretFailure>).failure;
       expect(failure, isA<SecretFetchFailure>());
       expect(failure, isNot(isA<InvalidMnemonicFailure>()));
+      expect(failure, isNot(isA<SecretNotFoundFailure>()));
     });
 
     test('list skips it and keeps the others', () async {
@@ -305,8 +303,9 @@ void main() {
         ),
       ).list();
 
-      final listed = (result as Ok<List<Secret>, SecretFailure>).value;
-      expect(listed.map((s) => s.id), [id]);
+      final listing = ok(result);
+      expect(listing.secrets.map((s) => s.id), [id]);
+      expect(listing.unreadable, 1, reason: 'skipped, and counted');
     });
   });
 
@@ -494,8 +493,7 @@ void main() {
         ),
       );
 
-      final result =
-          (await secrets.list() as Ok<List<Secret>, SecretFailure>).value;
+      final result = ok(await secrets.list()).secrets;
 
       expect(result, hasLength(2));
       expect(result.map((s) => s.info.kind), containsAll(SecretKind.values));

@@ -52,11 +52,13 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
     emit(state.copyWith(loading: true, failure: null));
 
     final List<Secret> seeds;
+    final int unreadable;
     switch ((await _getAllSecretsUsecase.execute()).mapErr(
       (f) => AllSeedViewFetchFailure(f.logMessage),
     )) {
       case Ok(:final value):
-        seeds = value;
+        seeds = value.secrets;
+        unreadable = value.unreadable;
       case Err(:final failure):
         emit(state.copyWith(loading: false, failure: failure));
         return;
@@ -102,6 +104,7 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
         loading: false,
         existingWallets: processed.existingWallets,
         oldWallets: processed.oldWallets,
+        unreadableEntries: unreadable,
         swapMasterKey: swapMasterKey,
         failure: null,
       ),

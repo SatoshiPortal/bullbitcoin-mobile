@@ -158,7 +158,7 @@ void main() {
       );
       expect(bare, isA<WordsOnly<RestoredVault>>());
       expect(
-        bare.value.secret.id.hex,
+        scoped(bare).secret.id.hex,
         plainFingerprint,
         reason: 'the file alone gives the passphrase-less sibling',
       );
@@ -172,7 +172,7 @@ void main() {
         ),
       );
       expect(whole, isA<WholeSecret<RestoredVault>>());
-      expect(whole.value.secret.id.hex, passphraseFingerprint);
+      expect(scoped(whole).secret.id.hex, passphraseFingerprint);
     });
   });
 

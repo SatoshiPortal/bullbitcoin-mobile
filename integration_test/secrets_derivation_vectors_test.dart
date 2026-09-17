@@ -14,9 +14,10 @@ import 'package:secrets/secrets.dart';
 ///
 /// The second checks that a refused signature is classified where it
 /// happened and carries no library message — also FFI-only, since both
-/// refusals come out of bdk and lwk. A *successful* signature needs funded
-/// inputs and is proven where those exist: `coins_test.dart` and
-/// `payjoin_test.dart`, both gated on `TEST_ALICE_MNEMONIC`.
+/// refusals come out of bdk and lwk. A *successful* signature is proven
+/// elsewhere: a synthetic PSBT with a witness UTXO verifies an ECDSA
+/// signature without funds — the auditor's probes do exactly that — and the
+/// funded paths run in `coins_test.dart` and `payjoin_test.dart`.
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
@@ -61,10 +62,31 @@ Future<void> main({bool isInitialized = false}) async {
     Err(:final failure) => fail('failed: ${failure.runtimeType}'),
   };
 
+  T scoped<T>(PassphraseScope<T> scope) => switch (scope) {
+    WholeSecret(:final value) => value,
+    WordsOnly(:final value) => value,
+  };
+
   group('derivation is pinned, so a key cannot be reborn by accident', () {
-    test('the identity is the published master fingerprint', () async {
+    // The identities and keys below are the same constants
+    // `packages/secrets/test/identity_vectors_test.dart` pins in pure Dart;
+    // here they are asserted against bdk and lwk. `3f635a63` was computed
+    // independently by a second auditor before being pinned.
+    const zooId = '3f635a63';
+    const zooZpub =
+        'zpub6rD5AGSXPTDMSnpmczjENMT3NvVF7q5MySww6uxitUsBYgkZLeBywrcwUWhW5YkeY2aS7xc45APPgfA6s6wWfG2gnfABq6TDz9zqeMu2JCY';
+    const zooVpub =
+        'vpub5YePEeNjBvnC6tZF84CnP5tFTVEGSA9tdCunoueAReLc7AfmynBGnQdcwUmfoyyFyucAXxTMc4S895n71NVC3VsaTWQbahtw6MH4iUD56xJ';
+    // The descriptor carries the account key in standard encoding — tpub on
+    // test networks — whatever prefix the xpub is *displayed* with.
+    const zooTpub =
+        'tpubDCgYNDYFCZpc5H8LExm81BQd8YcpJndx14YXjFV5XZrFxexwZKMVAycjDvmdLJELb6NgeVAM4UyGbqVqqdATXQh5FnYkS4C9DkzmFc9A86Z';
+    const zooBip85At0 =
+        'c8e13c54dfebea496b2f3bcde9d92fc548119ec977037ba200294b7be6ac83d3';
+
+    test('the identity is the master fingerprint of these words', () async {
       final secret = await importWords();
-      expect(secret.id.hex, '73c5da0a');
+      expect(secret.id.hex, zooId);
     });
 
     test('bip84 xpub, mainnet and testnet', () async {
@@ -77,7 +99,7 @@ Future<void> main({bool isInitialized = false}) async {
             scriptType: ScriptType.bip84,
           ),
         ),
-        startsWith('zpub'),
+        zooZpub,
       );
       expect(
         unwrap(
@@ -86,7 +108,7 @@ Future<void> main({bool isInitialized = false}) async {
             scriptType: ScriptType.bip84,
           ),
         ),
-        startsWith('vpub'),
+        zooVpub,
       );
     });
 
@@ -100,15 +122,23 @@ Future<void> main({bool isInitialized = false}) async {
         ),
       );
 
+      // Pinned up to the checksum, which only bdk can compute: origin, path
+      // and the account key are the whole of what a descriptor says.
+      expect(
+        descriptors.external,
+        startsWith("wpkh([$zooId/84'/1'/0']$zooTpub/0/*)"),
+      );
+      expect(
+        descriptors.internal,
+        startsWith("wpkh([$zooId/84'/1'/0']$zooTpub/1/*)"),
+      );
       for (final d in [descriptors.external, descriptors.internal]) {
-        expect(d, contains('wpkh('));
         expect(d, isNot(contains('tprv')));
         expect(d, isNot(contains('xprv')));
         for (final word in {...words}) {
           expect(d, isNot(contains(word)));
         }
       }
-      expect(descriptors.internal, isNot(descriptors.external));
     });
 
     test('the Liquid descriptor ignores the passphrase, and says so', () async {
@@ -138,23 +168,23 @@ Future<void> main({bool isInitialized = false}) async {
         reason: 'the caller must be told the passphrase took no part',
       );
       expect(
-        b.value,
-        a.value,
+        scoped(b),
+        scoped(a),
         reason: 'same descriptor: same addresses, same funds',
       );
-      expect(a.value, contains('ct('));
+      expect(scoped(a), contains('ct('));
     });
 
-    test('a BIP85 child is stable', () async {
+    test('a BIP85 child is the pinned value', () async {
       final secret = await importWords();
 
       expect(
         unwrap(await secret.derive.bip85.hex(numBytes: 32, index: 0)),
-        unwrap(await secret.derive.bip85.hex(numBytes: 32, index: 0)),
+        zooBip85At0,
       );
       expect(
-        unwrap(await secret.derive.bip85.hex(numBytes: 32, index: 0)),
-        isNot(unwrap(await secret.derive.bip85.hex(numBytes: 32, index: 1))),
+        unwrap(await secret.derive.bip85.hex(numBytes: 32, index: 1)),
+        isNot(zooBip85At0),
       );
     });
 
@@ -185,22 +215,22 @@ Future<void> main({bool isInitialized = false}) async {
         // The file alone gives the sibling; with the passphrase, the wallet.
         final bare = unwrap(
           await secrets.restoreVault(
-            file: sealed.value.file,
-            key: sealed.value.key,
+            file: scoped(sealed).file,
+            key: scoped(sealed).key,
           ),
         );
         expect(bare, isA<WordsOnly<RestoredVault>>());
-        expect(bare.value.secret.id.hex, '73c5da0a');
+        expect(scoped(bare).secret.id.hex, zooId);
 
         final whole = unwrap(
           await secrets.restoreVault(
-            file: sealed.value.file,
-            key: sealed.value.key,
+            file: scoped(sealed).file,
+            key: scoped(sealed).key,
             passphrase: 'TREZOR',
           ),
         );
         expect(whole, isA<WholeSecret<RestoredVault>>());
-        expect(whole.value.secret.id.hex, withPassphrase.id.hex);
+        expect(scoped(whole).secret.id.hex, withPassphrase.id.hex);
       },
     );
   });

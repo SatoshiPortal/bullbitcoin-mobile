@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/data/database_key_repository.dart';
-import 'package:secrets/src/data/secret_repository.dart';
+import 'package:secrets/src/data/data.dart';
+import 'package:secrets/src/data/models/secret_model.dart';
 import 'package:secrets/src/domain/database_key.dart';
 import 'package:secrets/src/domain/failures.dart';
 import 'package:secrets/src/domain/secret_material.dart';
@@ -107,7 +107,7 @@ void main() {
         },
       );
 
-      final all = ok(await repoWith(storage).describeAll());
+      final all = ok(await repoWith(storage).describeAll()).secrets;
 
       expect(all.map((i) => i.id.hex), <String>{
         plainFingerprint,
@@ -115,32 +115,49 @@ void main() {
       });
     });
 
-    test('lists entries whose seed could never be derived', () async {
-      // The property that matters: listing a user's secrets must not put
-      // every seed they own into memory at once. An entry that cannot be
-      // derived at all still lists, which no materialising code could do.
-      final storage = FakeSecureStoragePlatform(
-        entries: {'seed_deadbeef': entry(underivable)},
-      );
-      final repo = repoWith(storage);
+    test(
+      'words that fail bip39 are skipped, with or without a passphrase',
+      () async {
+        // D3 (Codex, 2026-09-16): before this, the same bytes listed when the
+        // passphrase field was null and vanished when it was set, because only
+        // the passphrase branch derived anything. Now the checksum is checked
+        // for every entry — cheaply, no seed — and both are skipped alike.
+        final storage = FakeSecureStoragePlatform(
+          entries: {
+            'seed_deadbeef': entry(underivable),
+            'seed_cafebabe': entry(underivable, passphrase: 'x'),
+            'seed_$plainFingerprint': entry(words),
+          },
+        );
 
-      final all = ok(await repo.describeAll());
-      expect(all.single.wordCount, 12);
-      expect(all.single.id, Fingerprint('deadbeef'));
+        final all = ok(await repoWith(storage).describeAll()).secrets;
 
-      // ...while asking for the material itself does derive, and fails — as a read failure, never an absence.
-      expect(
-        err(await repo.use(all.single, (m) => m)),
-        isA<SecretFetchFailure>(),
-      );
-    });
+        expect(all.map((i) => i.id.hex), [plainFingerprint]);
+      },
+    );
+
+    test(
+      'asking for a skipped entry is a read failure, never an absence',
+      () async {
+        final repo = repoWith(
+          FakeSecureStoragePlatform(
+            entries: {'seed_deadbeef': entry(underivable)},
+          ),
+        );
+
+        expect(
+          err(await repo.describe(Fingerprint('deadbeef'))),
+          isA<SecretFetchFailure>(),
+        );
+      },
+    );
 
     test('without a passphrase the plain identity is the identity', () async {
       final storage = FakeSecureStoragePlatform(
         entries: {'seed_$plainFingerprint': entry(words)},
       );
 
-      final info = (ok(await repoWith(storage).describeAll())).single;
+      final info = (ok(await repoWith(storage).describeAll()).secrets).single;
 
       // Free: no second PBKDF2 pass is owed when nothing splits them.
       expect(info.mnemonicFingerprint, info.id);
@@ -156,7 +173,7 @@ void main() {
           },
         );
 
-        final info = (ok(await repoWith(storage).describeAll())).single;
+        final info = (ok(await repoWith(storage).describeAll()).secrets).single;
 
         expect(info.id, Fingerprint(trezorFingerprint));
         expect(info.hasPassphrase, isTrue);
@@ -176,7 +193,7 @@ void main() {
         },
       );
 
-      final all = ok(await repoWith(storage).describeAll());
+      final all = ok(await repoWith(storage).describeAll()).secrets;
 
       expect(all.single.id, Fingerprint(plainFingerprint));
     });
@@ -186,7 +203,7 @@ void main() {
         entries: {'seed_$plainFingerprint': entry(words), 'pin_code': 'nope'},
       );
 
-      expect(ok(await repoWith(storage).describeAll()), hasLength(1));
+      expect(ok(await repoWith(storage).describeAll()).secrets, hasLength(1));
     });
   });
 
@@ -332,6 +349,70 @@ void main() {
       expect(storage.entries['seed_$plainFingerprint'], isNot(contains('""')));
     });
 
+    test('two spellings of one passphrase are one secret', () async {
+      // U1 (Codex, 2026-09-17): `é` and `e` + combining acute are one
+      // passphrase to BIP39 (NFKD), so one identity. Compared as strings
+      // they differed and a legitimate re-import was refused. Settled by
+      // identity on that path; a different passphrase still refuses.
+      final storage = FakeSecureStoragePlatform();
+      final repo = repoWith(storage);
+
+      final first = ok(await repo.store(words: words, passphrase: 'caf\u00e9'));
+      final second = ok(
+        await repo.store(words: words, passphrase: 'cafe\u0301'),
+      );
+
+      expect(second.id, first.id);
+      expect(storage.entries, hasLength(1));
+      expect(
+        storage.entries.values.single,
+        contains('caf\u00e9'),
+        reason: 'the first spelling stays byte for byte',
+      );
+    });
+
+    test('the seed decides, never the fingerprint', () async {
+      // Codex, U1 (2026-09-17): settling "same secret" on a 32-bit
+      // fingerprint would accept two passphrases that collide on it. So the
+      // datasource is handed a seed function and compares all 64 bytes;
+      // this holds it to that by injecting seeds directly — no collision
+      // needs mining to prove the rule.
+      final storage = FakeSecureStoragePlatform(
+        entries: {'seed_$plainFingerprint': entry(words, passphrase: 'a')},
+      )..install();
+      final source = FlutterSecureStorageDatasource();
+      final candidate = MnemonicSecretModel(
+        mnemonicWords: words,
+        passphrase: 'b',
+      );
+
+      // Same words, passphrases differ as strings, seeds differ: refused.
+      await expectLater(
+        source.storeSecret(
+          id: Fingerprint(plainFingerprint),
+          secret: candidate,
+          seedOf: (m) async => Uint8List.fromList(
+            List.filled(
+              64,
+              (m as MnemonicSecretModel).passphrase == 'a' ? 1 : 2,
+            ),
+          ),
+        ),
+        throwsA(isA<SecretIdentityConflict>()),
+      );
+      // Same words, passphrases differ as strings, seeds equal: one secret.
+      await source.storeSecret(
+        id: Fingerprint(plainFingerprint),
+        secret: candidate,
+        seedOf: (_) async => Uint8List.fromList(List.filled(64, 7)),
+      );
+      expect(
+        storage.entries['seed_$plainFingerprint'],
+        entry(words, passphrase: 'a'),
+        reason: 'accepted as the same secret, and left as it was',
+      );
+    });
+
     test(
       'a historical envelope with another key order is the same secret',
       () async {
@@ -377,7 +458,7 @@ void main() {
         },
       );
 
-      final all = ok(await repoWith(storage).describeAll());
+      final all = ok(await repoWith(storage).describeAll()).secrets;
 
       expect(all.single.id.hex, plainFingerprint);
     });
@@ -546,6 +627,68 @@ void main() {
           isA<DatabaseKeyCorruptFailure>(),
         );
       },
+    );
+
+    test('a single false miss does not regenerate an existing key', () async {
+      // K1 (Codex, 2026-09-17): the plugin has returned `null` for entries
+      // that exist. Believed once, that regenerates the key and the database
+      // it opened is gone. So a miss is re-read before the only irreversible
+      // act here.
+      final storage = FakeSecureStoragePlatform();
+      final keys = keysWith(storage);
+      final first = ok(await keys.forModule(package: 'swaps', name: 'main'));
+
+      storage.scripted.add(null); // one spurious "absent"
+      final again = ok(await keys.forModule(package: 'swaps', name: 'main'));
+
+      expect(
+        again.hex,
+        first.hex,
+        reason: 'the old key must still open its database',
+      );
+    });
+
+    test(
+      'existing() opens and never creates',
+      () async {
+        final storage = FakeSecureStoragePlatform();
+        final keys = keysWith(storage);
+
+        expect(
+          err(await keys.existing(package: 'swaps', name: 'main')),
+          isA<SecretNotFoundFailure>(),
+        );
+        expect(storage.entries, isEmpty, reason: 'nothing was generated');
+
+        final created = ok(
+          await keys.forModule(package: 'swaps', name: 'main'),
+        );
+        expect(
+          ok(await keys.existing(package: 'swaps', name: 'main')).hex,
+          created.hex,
+        );
+      },
+      timeout: const Timeout(Duration(seconds: 30)),
+    );
+
+    test(
+      'existing() calls every unusable value corrupt, whatever its shape',
+      () async {
+        // The contract Codex asked to see written (2026-09-17): empty, not
+        // JSON, or JSON that is not a key all mean "your key is damaged", never
+        // "a read failed" — the remedies differ, and only the first is
+        // irreversible.
+        const key = 'com.bullbitcoin.secrets/dek/swaps/main';
+        for (final broken in ['', 'not json at all', '{"v":1,"kind":"dek"}']) {
+          final storage = FakeSecureStoragePlatform(entries: {key: broken});
+          final failure = err(
+            await keysWith(storage).existing(package: 'swaps', name: 'main'),
+          );
+          expect(failure, isA<DatabaseKeyCorruptFailure>(), reason: broken);
+          expect(storage.entries[key], broken, reason: 'left as it was');
+        }
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
     );
 
     test('reset removes the key, and the next ask starts over', () async {

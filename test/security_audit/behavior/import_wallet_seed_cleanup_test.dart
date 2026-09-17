@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -83,6 +84,8 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+    // No wallet references any seed unless a test says so.
+    when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
   });
 
   void failCreateWalletWith(Object error) {
@@ -130,6 +133,47 @@ void main() {
         reason: 'this import did not create it, so it is not its to delete',
       );
     });
+
+    test(
+      'keeps a secret a wallet came to reference during this import',
+      () async {
+        // The race Codex reproduced (2026-09-16): another import of the same
+        // words finished first and built its wallet on this seed. This
+        // import created the entry, but it is not an orphan any more.
+        when(
+          () => settingsRepository.fetch(),
+        ).thenAnswer((_) async => settings);
+        when(() => walletRepository.getWallets()).thenAnswer(
+          (_) async => [
+            Wallet(
+              origin: 'other-import',
+              label: 'Other',
+              network: Network.bitcoinMainnet,
+              isDefault: false,
+              masterFingerprint: '73c5da0a',
+              xpubFingerprint: '73c5da0a',
+              scriptType: ScriptType.bip84,
+              xpub: 'xpub',
+              externalPublicDescriptor: 'desc',
+              internalPublicDescriptor: 'desc',
+              signer: SignerEntity.local,
+              signerDevice: null,
+              balanceSat: BigInt.zero,
+            ),
+          ],
+        );
+        failCreateWalletWith(Exception('electrum unreachable'));
+
+        final result = await usecase.execute(mnemonicWords: words);
+
+        expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
+        expect(
+          storedSecrets(),
+          hasLength(1),
+          reason: 'the other wallet would be stranded without it',
+        );
+      },
+    );
 
     test('still removes a secret this import actually orphaned', () async {
       when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);

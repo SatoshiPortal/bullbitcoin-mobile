@@ -8,8 +8,16 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:synchronized/synchronized.dart';
 
 class ImportWalletUsecase {
+  /// Imports are serialised process-wide. Two concurrent imports of the same
+  /// words each saw "not stored yet", each imported, and the one whose wallet
+  /// failed then trashed the seed the other's wallet had just been built on
+  /// (Codex, import-race, 2026-09-16). A user cannot start two imports at
+  /// once on purpose, so the lock costs nothing and removes the race.
+  static final _imports = Lock();
+
   final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
   final Secrets _secrets;
   final SettingsRepository _settingsRepository;
@@ -28,6 +36,20 @@ class ImportWalletUsecase {
     ScriptType scriptType = ScriptType.bip84,
     String passphrase = '',
     String? label,
+  }) => _imports.synchronized(
+    () => _execute(
+      mnemonicWords: mnemonicWords,
+      scriptType: scriptType,
+      passphrase: passphrase,
+      label: label,
+    ),
+  );
+
+  Future<Result<Wallet, ImportMnemonicFailure>> _execute({
+    required List<String> mnemonicWords,
+    required ScriptType scriptType,
+    required String passphrase,
+    required String? label,
   }) async {
     switch (await _checkDuplicateMnemonicUsecase.execute(
       mnemonicWords: mnemonicWords,
@@ -82,7 +104,11 @@ class ImportWalletUsecase {
       // not rejected as a duplicate (issue #2634). Only a seed this call
       // created is orphaned; a pre-existing one belongs to another wallet.
       // A cleanup failure is logged but must not mask the import error.
-      if (seedCreatedByThisImport != null) {
+      // And even then, never a seed some wallet has come to reference: a
+      // lookup that fails keeps the seed, because an orphan in the keystore
+      // is recoverable and a stranded wallet is not.
+      if (seedCreatedByThisImport != null &&
+          !await _referencedByAWallet(seedCreatedByThisImport)) {
         final deletion = await _secrets.trash(seedCreatedByThisImport);
         if (deletion case Err(:final failure)) {
           log.warning(
@@ -93,6 +119,16 @@ class ImportWalletUsecase {
       }
       log.severe(message: 'Import wallet failed', error: e, trace: st);
       return Err(ImportMnemonicUnexpectedFailure(e.toString()));
+    }
+  }
+
+  Future<bool> _referencedByAWallet(Fingerprint fingerprint) async {
+    try {
+      final wallets = await _wallet.getWallets();
+      return wallets.any((w) => w.masterFingerprint == fingerprint.hex);
+    } catch (e) {
+      log.warning('Could not check wallet references before cleanup: $e');
+      return true;
     }
   }
 }

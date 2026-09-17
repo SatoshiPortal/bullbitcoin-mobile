@@ -48,7 +48,9 @@ void main() {
       // "something went wrong" over a user who needs to be told to restore.
       final secrets = secretsWith(FakeSecureStoragePlatform());
 
-      expect(ok(await secrets.list()), isEmpty);
+      final listing = ok(await secrets.list());
+      expect(listing.secrets, isEmpty);
+      expect(listing.unreadable, 0);
     });
 
     test('a wallet metadata still points at a fingerprint: not found', () async {
@@ -86,8 +88,14 @@ void main() {
 
       final listed = ok(await secrets.list());
 
-      expect(listed, hasLength(1));
-      expect(listed.single.id.hex, 'deadbeef');
+      expect(listed.secrets, hasLength(1));
+      expect(listed.secrets.single.id.hex, 'deadbeef');
+      expect(
+        listed.unreadable,
+        1,
+        reason:
+            'skipped, and said so — a shorter list is not a smaller keystore',
+      );
     });
 
     test('asking for one is a read failure, never an absence', () async {

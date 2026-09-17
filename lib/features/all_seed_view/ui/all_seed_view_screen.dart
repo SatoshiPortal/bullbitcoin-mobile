@@ -28,11 +28,10 @@ class AllSeedViewScreen extends StatefulWidget {
 
 class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     with PrivacyScreen {
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
+  /// Awaited before anything draws, like the show/verify screens: an
+  /// un-awaited call leaves no guaranteed order between the first frame
+  /// and the OS flag (Codex, 2026-09-17).
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
 
   @override
   void dispose() {
@@ -42,6 +41,20 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Nothing draws until the OS flag call has returned (Codex, 2026-09-17:
+    // a builder that ignores `connectionState` runs during `waiting`). The
+    // service absorbs plugin errors itself, so completion is the most this
+    // layer can wait for; that the flag took effect is a device test.
+    return FutureBuilder<void>(
+      future: _privacyFuture,
+      builder: (context, snapshot) =>
+          snapshot.connectionState == ConnectionState.done
+          ? _body(context)
+          : const SizedBox.shrink(),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     return BlocListener<AllSeedViewCubit, AllSeedViewState>(
       listenWhen: (p, c) => p.failure != c.failure,
       listener: (context, state) {
@@ -109,10 +122,23 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 }
                 if (state.allSeeds.isEmpty) {
                   return Center(
-                    child: BBText(
-                      context.loc.allSeedViewNoSeedsFound,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.onSurface,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: BBText(
+                        // Every entry unreadable is the fss9 cohort's screen:
+                        // "no seeds" would be false and would read as loss.
+                        state.unreadableEntries > 0
+                            ? context.loc.allSeedViewUnreadableEntries(
+                                state.unreadableEntries,
+                              )
+                            : context.loc.allSeedViewNoSeedsFound,
+                        style: context.font.bodyLarge,
+                        color: state.unreadableEntries > 0
+                            ? context.appColors.error
+                            : context.appColors.onSurface,
+                        textAlign: .center,
+                        maxLines: 3,
+                      ),
                     ),
                   );
                 }
@@ -147,6 +173,19 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    if (state.unreadableEntries > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: BBText(
+                          context.loc.allSeedViewUnreadableEntries(
+                            state.unreadableEntries,
+                          ),
+                          style: context.font.bodyMedium,
+                          color: context.appColors.error,
+                          textAlign: .center,
+                          maxLines: 3,
+                        ),
+                      ),
                     if (state.existingWallets.isNotEmpty) ...[
                       BBText(
                         context.loc.allSeedViewExistingWallets(

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The package's custody invariants, as assertions rather than prose.
@@ -42,6 +44,7 @@ void main() {
       'lib/src/domain/failures.dart', // declarations
       'lib/src/data/boundary.dart', // exception → failure, the one try/catch
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
+      'lib/src/data/database_key_repository.dart', // not-found on an open-only read
     };
 
     final offenders = <String>[];
@@ -185,6 +188,7 @@ void main() {
       // what operations hand back
       'Descriptors', 'PsbtSigner',
       'SwapKey', 'EncryptedVault', 'DatabaseKey', 'SecretInfo', 'SecretKind',
+      'SecretListing',
       // the failure family
       'SecretFailure', 'SecretNotFoundFailure', 'SecretFetchFailure',
       'SecretStoreFailure', 'SecretDeleteFailure', 'SecretStoreLockedFailure',
@@ -293,23 +297,75 @@ void main() {
       'backupVault': 'ciphertext',
     };
 
-    final declared =
-        RegExp(
-              r'\n  Future<Result<.+?, SecretFailure>>\s+(\w+)\(',
-              dotAll: true,
-            )
-            .allMatches(
-              code(File('lib/src/public/secret.dart').readAsStringSync()),
-            )
-            .map((m) => m.group(1)!)
-            .toSet();
+    // Every public member of `Secret`, whatever it returns. M2 (Codex,
+    // 2026-09-16): matching `Future<Result<…>>` alone let a
+    // `Future<String> exportMnemonic()` through all seven invariants. So
+    // this reads each declaration at class-body indentation and keeps the
+    // ones that are not the constructor, the handle's two values, or
+    // `toString`; anything else must be inventoried with a verdict.
+    // Read as Dart, not as text. Two regexes in a row let a
+    // `Future<String>` and then a `dynamic exportMnemonic()` through
+    // (Codex, M2/M3, 2026-09-16/17); the AST has no such blind spot. Every
+    // member of `Secret` that is not the constructor, the handle's two values
+    // or `toString` is an operation: inventoried, with a verdict, returning
+    // `Future<Result<…, SecretFailure>>`.
+    final unit = parseString(
+      content: File('lib/src/public/secret.dart').readAsStringSync(),
+      path: 'lib/src/public/secret.dart',
+    ).unit;
+    final secretClass = unit.declarations
+        .whereType<ClassDeclaration>()
+        .singleWhere((c) => c.namePart.typeName.lexeme == 'Secret');
+    final members = switch (secretClass.body) {
+      BlockClassBody(:final members) => members,
+      EmptyClassBody() => const <ClassMember>[],
+    };
+
+    final operations = <String, String>{};
+    final others = <String>[];
+    for (final member in members) {
+      switch (member) {
+        case ConstructorDeclaration():
+          continue;
+        case FieldDeclaration(:final fields):
+          for (final v in fields.variables) {
+            final field = v.name.lexeme;
+            if (field.startsWith('_') || field == 'info') continue;
+            others.add('field $field');
+          }
+        case MethodDeclaration(:final name, :final returnType, :final isGetter):
+          if (name.lexeme.startsWith('_')) continue;
+          if (isGetter) {
+            if (name.lexeme != 'id') others.add('getter ${name.lexeme}');
+            continue;
+          }
+          if (name.lexeme == 'toString') continue;
+          operations[name.lexeme] = returnType?.toSource() ?? 'dynamic';
+        default:
+          others.add(member.toSource().split('\n').first);
+      }
+    }
 
     expect(
-      declared,
+      others,
+      isEmpty,
+      reason: 'Secret exposes only `info`, `id`, `toString` and its operations',
+    );
+    expect(
+      operations.keys.toSet(),
       inventory.keys.toSet(),
       reason:
-          'a new operation belongs in the inventory above, with its verdict',
+          'every public member of Secret is an operation and belongs in the inventory above, with its verdict — whatever it returns',
     );
+    for (final MapEntry(key: name, value: type) in operations.entries) {
+      expect(
+        type,
+        startsWith('Future<Result<'),
+        reason:
+            'Secret.$name returns $type — every operation returns Future<Result<…, SecretFailure>>, the one type a caller handles',
+      );
+    }
+
     expect(
       inventory.entries.where((e) => e.value == 'material').map((e) => e.key),
       unorderedEquals(['bip85Hex', 'bip85Mnemonic', 'swapKey', 'revealWords']),

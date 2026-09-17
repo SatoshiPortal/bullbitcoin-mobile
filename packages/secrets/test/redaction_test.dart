@@ -116,7 +116,7 @@ void main() {
     storage.install();
     final repo = SecretRepository();
 
-    expect(ok(await repo.describeAll()), isEmpty);
+    expect(ok(await repo.describeAll()).secrets, isEmpty);
   });
 
   redactionOfStoredContent();

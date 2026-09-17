@@ -75,9 +75,9 @@ void main() {
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
     getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
-    when(
-      () => getAllSecretsUsecase.execute(),
-    ).thenAnswer((_) async => Ok([aSecret]));
+    when(() => getAllSecretsUsecase.execute()).thenAnswer(
+      (_) async => Ok(SecretListing(secrets: [aSecret], unreadable: 0)),
+    );
     when(() => getWalletsUsecase.execute()).thenAnswer((_) async => []);
     when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
 
@@ -96,6 +96,24 @@ void main() {
   tearDown(() => cubit.close());
 
   group('AllSeedViewCubit — re-authentication gate (audit)', () {
+    test(
+      'an all-unreadable keystore reaches state as a count, not as empty',
+      () async {
+        // The fss9 cohort in the seed viewer: zero readable secrets, N entries
+        // the package could not parse. The screen shows the count in the
+        // empty branch; this holds the state it reads.
+        when(() => getAllSecretsUsecase.execute()).thenAnswer(
+          (_) async =>
+              const Ok(SecretListing(secrets: <Secret>[], unreadable: 2)),
+        );
+        await cubit.unlock(issueGrant());
+
+        expect(cubit.state.allSeeds, isEmpty);
+        expect(cubit.state.unreadableEntries, 2);
+        expect(cubit.state.failure, isNull);
+      },
+    );
+
     test(
       'audit reproducer: secrets are never listed before re-authentication',
       () async {

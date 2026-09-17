@@ -75,7 +75,11 @@ class CreateEncryptedVaultUsecase {
         Ok(:final value) => value,
         Err(:final failure) => throw StateError(failure.runtimeType.toString()),
       };
-      final passphraseExcluded = scope is secrets.WordsOnly;
+      // The type has no shortcut: the caller meets both cases or does not compile.
+      final (sealed, passphraseExcluded) = switch (scope) {
+        secrets.WholeSecret(:final value) => (value, false),
+        secrets.WordsOnly(:final value) => (value, true),
+      };
       if (passphraseExcluded) {
         log.warning(
           'VAULT_WORDS_ONLY: vault for ${defaultWallet.masterFingerprint} '
@@ -83,8 +87,8 @@ class CreateEncryptedVaultUsecase {
         );
       }
       return Ok((
-        vault: EncryptedVault(file: scope.value.file),
-        vaultKey: scope.value.key,
+        vault: EncryptedVault(file: sealed.file),
+        vaultKey: sealed.key,
         passphraseExcluded: passphraseExcluded,
       ));
     } catch (e, st) {

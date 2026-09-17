@@ -77,6 +77,8 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+    // No wallet references any seed unless a test says so.
+    when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
     when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
   });
 

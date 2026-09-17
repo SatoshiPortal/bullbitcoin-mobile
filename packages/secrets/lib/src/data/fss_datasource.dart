@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/services.dart' show PlatformException;
@@ -17,6 +18,9 @@ import 'package:secrets/src/domain/domain.dart';
 /// The key matters: it *is* the master fingerprint, so carrying it out
 /// of the store saves the repository from re-deriving one.
 typedef StoredSecret = ({Fingerprint id, SecretModel model});
+
+/// What a full read of the namespace yielded: the entries that parsed, and how many did not. The count is what lets a caller say "and N could not be read" rather than showing a shorter list as the whole truth.
+typedef StoredListing = ({List<StoredSecret> parsed, int unparsable});
 
 /// Everything this package puts in `flutter_secure_storage`, and the rules for getting it back.
 ///
@@ -106,13 +110,14 @@ class FlutterSecureStorageDatasource {
   Future<void> storeSecret({
     required Fingerprint id,
     required SecretModel secret,
+    required Future<Uint8List> Function(SecretModel model) seedOf,
   }) {
     final key = keyForSecret(id);
     final json = jsonEncode(secret.toJson());
     return _lock.synchronized(() async {
       final existing = await _readRaw(key);
       if (existing != null && existing.isNotEmpty) {
-        if (!_holdsSameSecret(existing, secret)) {
+        if (!await _holdsSameSecret(existing, secret, seedOf)) {
           throw SecretIdentityConflict(
             'a different secret is already stored under $id',
           );
@@ -127,21 +132,28 @@ class FlutterSecureStorageDatasource {
 
   /// Whether [existing] holds the same secret as [candidate] — parsed, not compared as text.
   ///
-  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
-  static bool _holdsSameSecret(String existing, SecretModel candidate) {
+  /// An absent passphrase and an empty one are one secret, and a historical envelope may order its keys differently; comparing JSON would refuse both as "another secret". Same words with passphrases that differ *as strings* may still be one secret — `é` and `e` + combining accent are one passphrase to BIP39's NFKD (U1, Codex 2026-09-17) — so that case is settled by deriving **both full seeds** and comparing all 64 bytes: two PBKDF2s, on the rare path only. Never by fingerprint — 32 bits is exactly the collision this check exists to refuse. Different words are never the same secret. A value that does not parse is *not* the same secret, so it is kept: the fss9 cohort's bytes stay where they are.
+  static Future<bool> _holdsSameSecret(
+    String existing,
+    SecretModel candidate,
+    Future<Uint8List> Function(SecretModel model) seedOf,
+  ) async {
     final SecretModel stored;
     try {
       stored = SecretModel.fromJson(decodeJson(existing));
     } on Exception {
       return false;
     }
-    return switch ((stored, candidate)) {
-      (MnemonicSecretModel a, MnemonicSecretModel b) =>
-        _sameList(a.mnemonicWords, b.mnemonicWords) &&
-            (a.passphrase ?? '') == (b.passphrase ?? ''),
-      (BytesSecretModel a, BytesSecretModel b) => _sameList(a.bytes, b.bytes),
-      _ => false,
-    };
+    switch ((stored, candidate)) {
+      case (MnemonicSecretModel a, MnemonicSecretModel b):
+        if (!_sameList(a.mnemonicWords, b.mnemonicWords)) return false;
+        if ((a.passphrase ?? '') == (b.passphrase ?? '')) return true;
+        return _sameList(await seedOf(a), await seedOf(b));
+      case (BytesSecretModel a, BytesSecretModel b):
+        return _sameList(a.bytes, b.bytes);
+      default:
+        return false;
+    }
   }
 
   static bool _sameList<T>(List<T> a, List<T> b) {
@@ -183,6 +195,7 @@ class FlutterSecureStorageDatasource {
   Future<({Fingerprint id, SecretModel model})?> moveSecret(
     Fingerprint from, {
     required Future<Fingerprint> Function(SecretModel model) identify,
+    required Future<Uint8List> Function(SecretModel model) seedOf,
   }) {
     final fromKey = keyForSecret(from);
     return _lock.synchronized(() async {
@@ -198,7 +211,7 @@ class FlutterSecureStorageDatasource {
       final toKey = keyForSecret(to);
       final existing = await _readRaw(toKey);
       if (existing != null && existing.isNotEmpty) {
-        if (!_holdsSameSecret(existing, model)) {
+        if (!await _holdsSameSecret(existing, model, seedOf)) {
           throw SecretIdentityConflict(
             'a different secret is already stored under $to',
           );
@@ -219,7 +232,7 @@ class FlutterSecureStorageDatasource {
   /// One `readAll`, which on Android is all-or-nothing: an entry the
   /// plugin cannot decrypt — in any namespace, not only ours — fails the
   /// whole read. Parsing happens off the queue and off this isolate.
-  Future<List<StoredSecret>> fetchAllSecrets() async {
+  Future<StoredListing> fetchAllSecrets() async {
     final entries = await _readAllRaw(secretNamespace);
     return _parseOffIsolate(entries);
   }
@@ -230,9 +243,8 @@ class FlutterSecureStorageDatasource {
   /// when its body never touches it — and `this` holds the queue's
   /// `Future`, which no isolate will accept. Built here, there is
   /// nothing to capture but [entries].
-  static Future<List<StoredSecret>> _parseOffIsolate(
-    Map<String, String> entries,
-  ) => Isolate.run(() => _parseAll(entries));
+  static Future<StoredListing> _parseOffIsolate(Map<String, String> entries) =>
+      Isolate.run(() => _parseAll(entries));
 
   // -------------------------------------------------------------- module keys
 
@@ -253,7 +265,16 @@ class FlutterSecureStorageDatasource {
     // Taken once, around the whole read-modify-write. See the class doc:
     // nothing inside may take it again.
     return _lock.synchronized(() async {
-      final existing = await _readRaw(key);
+      // A single `null` is not believed before the one irreversible act here
+      // — generating over a key that exists. The plugin has returned null for
+      // present entries (K1, Codex 2026-09-17; the seed path retries for the
+      // same reason). One re-read after a pause turns a spurious miss into a
+      // hit; a genuine first ask pays 300 ms once per module key.
+      var existing = await _readRaw(key);
+      if (existing == null) {
+        await Future<void>.delayed(_initialDelay);
+        existing = await _readRaw(key);
+      }
 
       if (existing != null) {
         if (existing.isEmpty) {
@@ -284,6 +305,34 @@ class FlutterSecureStorageDatasource {
       await _writeRaw(key, jsonEncode(model.toJson()));
       return model;
     });
+  }
+
+  /// The module key under [kind]/[package]/[name], **never creating one**.
+  ///
+  /// For the owner of a database that already exists: a miss here is exceptional, so it is concluded only after the full retry budget, and it is reported — never papered over with a fresh key that would open nothing. Same refusal as [fetchOrCreateModuleKey] for a value that is present but unusable.
+  Future<KeyModel?> fetchModuleKey({
+    required KeyKind kind,
+    required String package,
+    required String name,
+  }) async {
+    final key = keyForModule(kind: kind, package: package, name: name);
+    // One contract for "present but unusable", whatever the shape — empty,
+    // not JSON, or JSON that is not a key: [ModuleKeyCorruptException], as
+    // in [fetchOrCreateModuleKey]. `_readGuarded` reports the first two as
+    // `FormatException` after its retries; they are re-labelled here so the
+    // caller never sees a read failure where the remedy is a corrupt-key one.
+    final Map<String, dynamic>? json;
+    try {
+      json = await _readGuarded(key, label: 'module key $key');
+    } on FormatException catch (e) {
+      throw ModuleKeyCorruptException('module key at $key: ${e.message}');
+    }
+    if (json == null) return null;
+    try {
+      return KeyModel.fromJson(json, expectedName: key, expectedKind: kind);
+    } on FormatException catch (e) {
+      throw ModuleKeyCorruptException('module key at $key: ${e.message}');
+    }
   }
 
   /// Removes a module key. Under the lock, so it cannot interleave with a read-or-create of the same key.
@@ -443,13 +492,21 @@ class FlutterSecureStorageDatasource {
 /// created inside an instance method captures `this` even when its body
 /// does not use it — and `this` holds the queue's `Future`, which is
 /// unsendable, so `Isolate.run` fails on every listing.
-List<StoredSecret> _parseAll(Map<String, String> entries) {
+StoredListing _parseAll(Map<String, String> entries) {
   const namespace = FlutterSecureStorageDatasource.secretNamespace;
   final secrets = <StoredSecret>[];
+  var unparsable = 0;
   for (final entry in entries.entries) {
-    if (!entry.key.startsWith(namespace) || entry.value.isEmpty) continue;
+    if (!entry.key.startsWith(namespace)) continue;
+    // Under this package's prefix but not something it wrote — an empty
+    // value, a key that is not a fingerprint, a value that is not our JSON.
+    // Skipped, so it cannot hide the others; counted, so it is not hidden
+    // itself.
     final id = FlutterSecureStorageDatasource.idFromKey(entry.key);
-    if (id == null) continue;
+    if (entry.value.isEmpty || id == null) {
+      unparsable++;
+      continue;
+    }
     try {
       secrets.add((
         id: id,
@@ -459,10 +516,10 @@ List<StoredSecret> _parseAll(Map<String, String> entries) {
       ));
     } on Exception {
       // A value that does not parse is skipped, not a listing failure. An `Error` propagates.
-      continue;
+      unparsable++;
     }
   }
-  return secrets;
+  return (parsed: secrets, unparsable: unparsable);
 }
 
 /// The platform keystore is sealed and the value cannot be read *right now*.

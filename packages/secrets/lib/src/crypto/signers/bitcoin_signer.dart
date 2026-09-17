@@ -1,6 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart';
+import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
 import 'package:secrets/src/domain/domain.dart';
 
@@ -71,8 +72,15 @@ final class BitcoinSigner {
     return (String psbt) => _sign(wallet, psbt);
   }
 
+  /// bdk's exceptions do not leave: the closure returned by [psbtSigner]
+  /// runs outside any boundary, and bdk's parse error quotes its input.
   static String _sign(bdk.Wallet wallet, String psbt) {
-    final parsed = bdk.Psbt(psbtBase64: psbt);
+    final bdk.Psbt parsed;
+    try {
+      parsed = bdk.Psbt(psbtBase64: psbt);
+    } on Exception {
+      throw const PsbtSigningFailed();
+    }
     try {
       final isFinalized = wallet.sign(psbt: parsed, signOptions: _signOptions);
       // Not an error on its own: a payjoin proposal still carries the
@@ -80,6 +88,8 @@ final class BitcoinSigner {
       // check is false there by protocol design.
       log.fine('Signed PSBT finalized: $isFinalized');
       return parsed.serialize();
+    } on Exception {
+      throw const PsbtSigningFailed();
     } finally {
       parsed.dispose();
     }

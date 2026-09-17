@@ -28,12 +28,12 @@ class SecretRepository {
   Future<Result<SecretInfo, SecretFailure>> describe(Fingerprint id) =>
       _read(id, (model) => _describe(id, model));
 
-  /// Describes every stored secret without materialising any of them. An entry whose words no longer pass bip39 is skipped, like one that does not parse: one corrupt value must not hide the others.
-  Future<Result<List<SecretInfo>, SecretFailure>> describeAll() =>
+  /// Describes every stored secret without materialising any of them. An entry whose words no longer pass bip39 is skipped, like one that does not parse: one corrupt value must not hide the others — and the count of what was skipped travels with the list, so a shorter list is never mistaken for a smaller keystore.
+  Future<Result<InfoListing, SecretFailure>> describeAll() =>
       boundary(() async {
-        final stored = await _source.fetchAllSecrets();
+        final listing = await _source.fetchAllSecrets();
         final described = await Future.wait(
-          stored.map((e) async {
+          listing.parsed.map((e) async {
             try {
               return await _describe(e.id, e.model);
             } on FormatException {
@@ -42,7 +42,11 @@ class SecretRepository {
             }
           }),
         );
-        return described.nonNulls.toList();
+        final infos = described.nonNulls.toList();
+        return SecretListing(
+          secrets: infos,
+          unreadable: listing.unparsable + (described.length - infos.length),
+        );
       }, orElse: SecretFetchFailure.new);
 
   /// Runs [body] on the secret's material, which exists only for the call.
@@ -120,7 +124,11 @@ class SecretRepository {
           : passphrase,
     );
     final id = await Isolate.run(() => _identify(model));
-    await _source.storeSecret(id: id, secret: model);
+    await _source.storeSecret(
+      id: id,
+      secret: model,
+      seedOf: (m) => Isolate.run(() => _seedOf(m)),
+    );
     return _describe(id, model);
   }, orElse: SecretStoreFailure.new);
 
@@ -155,6 +163,7 @@ class SecretRepository {
       () => _source.moveSecret(
         id,
         identify: (model) => Isolate.run(() => _identify(model)),
+        seedOf: (model) => Isolate.run(() => _seedOf(model)),
       ),
       orElse: SecretStoreFailure.new,
     );
@@ -198,11 +207,18 @@ class SecretRepository {
   }
 
   /// Projects a stored model onto its description. Derives only when a passphrase splits the two identities; that pass goes off-isolate.
+  ///
+  /// Words that no longer pass bip39 are refused here for every entry, not only when a passphrase forces a derivation — otherwise the same bytes would list under one passphrase field and vanish under another (Codex, D3, 2026-09-16). Cheap: `check` derives no seed.
   Future<SecretInfo> _describe(Fingerprint id, SecretModel model) async {
     switch (model) {
       case BytesSecretModel(:final bytes):
         return SecretInfo.bytes(id: id, lengthInBits: bytes.length * 8);
       case MnemonicSecretModel(:final mnemonicWords, :final passphrase):
+        try {
+          Deriver.identity.check(mnemonicWords);
+        } on MnemonicException {
+          throw const FormatException('stored words are not a BIP39 mnemonic');
+        }
         final hasPassphrase = passphrase != null && passphrase.isNotEmpty;
         return SecretInfo.mnemonic(
           id: id,
@@ -264,6 +280,13 @@ class SecretRepository {
       Deriver.identity.fingerprint(
         Deriver.identity.seed(mnemonicWords, passphrase: passphrase ?? ''),
       ),
+  };
+
+  /// The full seed a model derives to. For the one comparison a fingerprint is not enough for — see `FlutterSecureStorageDatasource._holdsSameSecret`.
+  static Uint8List _seedOf(SecretModel model) => switch (model) {
+    BytesSecretModel(:final bytes) => Uint8List.fromList(bytes),
+    MnemonicSecretModel(:final mnemonicWords, :final passphrase) =>
+      Deriver.identity.seed(mnemonicWords, passphrase: passphrase ?? ''),
   };
 
   static Fingerprint _plainFingerprint(List<String> words) =>

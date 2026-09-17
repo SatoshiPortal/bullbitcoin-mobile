@@ -50,11 +50,38 @@ void main() {
 
       final result = await usecase.execute();
 
-      expect((result as Ok).value, hasLength(1));
+      final listing =
+          (result as Ok<SecretListing<Secret>, SecretFailure>).value;
+      expect(listing.secrets, hasLength(1));
+      expect(listing.unreadable, 0);
     });
 
     test('returns an empty list when nothing is stored', () async {
-      expect(((await usecase.execute()) as Ok).value, isEmpty);
+      final listing =
+          ((await usecase.execute())
+                  as Ok<SecretListing<Secret>, SecretFailure>)
+              .value;
+      expect(listing.secrets, isEmpty);
+      expect(listing.unreadable, 0);
+    });
+
+    test('counts what it could not read instead of hiding it', () async {
+      // R6's last item: a shorter list must never look like a smaller
+      // keystore. One good entry, one value under the prefix that is not ours.
+      FakeSecureStoragePlatform(
+        entries: {'seed_deadbeef': 'not json at all'},
+      ).install();
+      secrets = Secrets(scratchDirectory: () async => '/tmp');
+      usecase = GetAllSecretsUsecase(secrets: secrets);
+      await secrets.import(words: words);
+
+      final listing =
+          ((await usecase.execute())
+                  as Ok<SecretListing<Secret>, SecretFailure>)
+              .value;
+
+      expect(listing.secrets, hasLength(1));
+      expect(listing.unreadable, 1);
     });
 
     test('a keystore failure stays a failure, with no stored text', () async {

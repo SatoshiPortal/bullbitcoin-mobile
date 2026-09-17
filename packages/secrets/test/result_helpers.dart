@@ -16,4 +16,13 @@ SecretFailure err<T>(Result<T, SecretFailure> result) => switch (result) {
 
 /// The value a scoped result carries, whichever variant it is. Use it where the test is about the value; assert on the variant where the test is about the passphrase.
 T anyScope<T>(Result<PassphraseScope<T>, SecretFailure> result) =>
-    ok(result).value;
+    switch (ok(result)) {
+      WholeSecret(:final value) => value,
+      WordsOnly(:final value) => value,
+    };
+
+/// The value inside one scoped result, whichever variant. For tests that already asserted the variant.
+T scoped<T>(PassphraseScope<T> scope) => switch (scope) {
+  WholeSecret(:final value) => value,
+  WordsOnly(:final value) => value,
+};

@@ -61,6 +61,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
     return FutureBuilder(
       future: _privacyFuture,
       builder: (context, snapshot) {
+        // Nothing draws before the OS flag call has returned: a builder that
+        // ignores `connectionState` runs during `waiting` (Codex, 2026-09-17).
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox.shrink();
+        }
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
               previous.verificationStatus != current.verificationStatus ||

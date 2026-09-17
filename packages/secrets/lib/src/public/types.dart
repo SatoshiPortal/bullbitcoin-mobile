@@ -23,6 +23,7 @@ export 'package:secrets/src/domain/domain.dart'
         SecretIdentityMismatchFailure,
         SecretInfo,
         SecretKind,
+        SecretListing,
         SecretNotFoundFailure,
         SecretStoreFailure,
         SecretStoreLockedFailure,
