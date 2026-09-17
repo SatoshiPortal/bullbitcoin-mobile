@@ -1374,10 +1374,6 @@
   "@importQrDeviceKruxStep4": {
     "description": "Krux instruction step 4"
   },
-  "appStartupErrorMessageWithBackup": "Başlayamadı. Delete ve düzeltmeye yeniden yükleme.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
   "payPasteInvoice": "Paste In bill",
   "@payPasteInvoice": {
     "description": "Button text to paste invoice from clipboard"
@@ -4808,10 +4804,6 @@
   "fundExchangeDoneButton": "Done",
   "@fundExchangeDoneButton": {
     "description": "Button label to finish and exit the funding flow"
-  },
-  "appStartupErrorMessageNoBackup": "Başlayamadı. Delete ve düzeltmeye yeniden yükleme. Tohumunuz desteklenmezse, bunu Ayarlar->Bitcoin Ayarlar->View Yeniden yüklemeden sonra Tohumlar.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "sellGoHome": "Eve git",
   "@sellGoHome": {
