@@ -22,7 +22,7 @@ class PayjoinDisclaimerRepositoryImpl implements PayjoinDisclaimerRepository {
       return Ok(prefs.getBool(_shownKey) ?? false);
     } catch (e) {
       log.warning('Failed to read the Payjoin disclaimer flag: $e');
-      return Err(SettingsStorageFailure(e.toString()));
+      return Err(SettingsStorageFailure(''));
     }
   }
 
@@ -39,7 +39,7 @@ class PayjoinDisclaimerRepositoryImpl implements PayjoinDisclaimerRepository {
       return const Ok(null);
     } catch (e) {
       log.warning('Failed to persist the Payjoin disclaimer flag: $e');
-      return Err(SettingsStorageFailure(e.toString()));
+      return Err(SettingsStorageFailure(''));
     }
   }
 }

@@ -1,14 +1,22 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:meta/meta.dart';
 import 'package:bull_tor/tor.dart';
 
+/// Reads still throw (`fetch` has ~79 call sites app-wide); the write side is
+/// the sanitized boundary: implementations catch, log the raw reason and
+/// return a [SettingsStoreFailure].
 abstract interface class SettingsRepository {
   Stream<String> get currencyChangeStream;
 
-  Future<void> close();
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> close();
 
-  Future<void> store({
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> store({
     required int id,
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
@@ -30,33 +38,62 @@ abstract interface class SettingsRepository {
 
   Future<SettingsEntity> fetch();
 
-  Future<void> setEnvironment(Environment env);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setEnvironment(Environment env);
 
-  Future<void> setBitcoinUnit(BitcoinUnit bitcoinUnit);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setBitcoinUnit(
+    BitcoinUnit bitcoinUnit,
+  );
 
-  Future<void> setLanguage(Language language);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setLanguage(Language language);
 
-  Future<void> setCurrency(String currencyCode);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setCurrency(String currencyCode);
 
-  Future<void> setHideAmounts(bool hide);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setHideAmounts(bool hide);
 
-  Future<void> setIsSuperuser(bool superuser);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setIsSuperuser(bool superuser);
 
-  Future<void> setIsDevMode(bool isEnabled);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setIsDevMode(bool isEnabled);
 
-  Future<void> setTorProxy({required bool enabled, required int port});
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setTorProxy({
+    required bool enabled,
+    required int port,
+  });
 
-  Future<void> setTorTransportMode(TorTransportMode mode);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setTorTransportMode(
+    TorTransportMode mode,
+  );
 
-  Future<void> setLastSuccessfulTorTransport(TorTransport transport);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setLastSuccessfulTorTransport(
+    TorTransport transport,
+  );
 
-  Future<void> setThemeMode(AppThemeMode themeMode);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setThemeMode(
+    AppThemeMode themeMode,
+  );
 
-  Future<void> setErrorReportingEnabled(bool enabled);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setErrorReportingEnabled(
+    bool enabled,
+  );
 
-  Future<void> setScreenCaptureProtectionEnabled(bool enabled);
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setScreenCaptureProtectionEnabled(
+    bool enabled,
+  );
 
-  Future<void> setExchangeTestnetBasicAuth({
+  @useResult
+  Future<Result<void, SettingsStoreFailure>> setExchangeTestnetBasicAuth({
     String? username,
     String? password,
   });

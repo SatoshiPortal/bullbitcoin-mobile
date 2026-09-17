@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_useca
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:screen_privacy/screen_privacy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -93,19 +94,25 @@ class _TestSettingsCubit extends SettingsCubit {
 }
 
 void main() {
+  setUpAll(() => registerFallbackValue(BitcoinUnit.btc));
+
   late StreamController<PayjoinPolicy> changes;
   late _MockSetPayjoinEnabledUsecase setPayjoinEnabled;
+  late _MockSetBitcoinUnitUsecase setBitcoinUnit;
+  late _MockSetScreenCaptureProtectionUsecase setScreenCapture;
   late _TestSettingsCubit cubit;
 
   setUp(() {
     changes = StreamController<PayjoinPolicy>.broadcast();
     setPayjoinEnabled = _MockSetPayjoinEnabledUsecase();
+    setBitcoinUnit = _MockSetBitcoinUnitUsecase();
+    setScreenCapture = _MockSetScreenCaptureProtectionUsecase();
     final watchChanges = _MockWatchPayjoinPolicyUsecase();
     when(() => watchChanges.execute()).thenAnswer((_) => changes.stream);
     cubit = _TestSettingsCubit(
       getSettingsUsecase: _MockGetSettingsUsecase(),
       setEnvironmentUsecase: _MockSetEnvironmentUsecase(),
-      setBitcoinUnitUsecase: _MockSetBitcoinUnitUsecase(),
+      setBitcoinUnitUsecase: setBitcoinUnit,
       setLanguageUsecase: _MockSetLanguageUsecase(),
       setCurrencyUsecase: _MockSetCurrencyUsecase(),
       setHideAmountsUsecase: _MockSetHideAmountsUsecase(),
@@ -113,8 +120,7 @@ void main() {
       setIsDevModeUsecase: _MockSetIsDevModeUsecase(),
       setThemeModeUsecase: _MockSetThemeModeUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
-      setScreenCaptureProtectionUsecase:
-          _MockSetScreenCaptureProtectionUsecase(),
+      setScreenCaptureProtectionUsecase: setScreenCapture,
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),
       setPayjoinEnabledUsecase: setPayjoinEnabled,
@@ -155,5 +161,87 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(cubit.state.isPayjoinEnabled, isFalse);
+  });
+
+  group('a write that does not stick', () {
+    // The toggles used to emit optimistically: the switch moved on screen
+    // while storage kept the old value, which silently reverted on the next
+    // launch.
+    test('leaves the displayed value alone and reports the failure', () async {
+      when(() => setBitcoinUnit.execute(any())).thenAnswer(
+        (_) async => const Err(SettingsStorageFailure('drift write failed')),
+      );
+
+      await cubit.toggleSatsUnit(false);
+
+      expect(
+        cubit.state.storedSettings?.bitcoinUnit,
+        BitcoinUnit.sats,
+        reason: 'the toggle must not claim a value storage never took',
+      );
+      expect(cubit.state.failure, isA<SettingsStorageFailure>());
+    });
+
+    test('a successful write does move the displayed value', () async {
+      when(
+        () => setBitcoinUnit.execute(any()),
+      ).thenAnswer((_) async => const Ok(null));
+
+      await cubit.toggleSatsUnit(false);
+
+      expect(cubit.state.storedSettings?.bitcoinUnit, BitcoinUnit.btc);
+      expect(cubit.state.failure, isNull);
+    });
+
+    // `init` mirrors the persisted value into this flag, so it must never get
+    // ahead of storage. Opting out is the dangerous direction — it would lower
+    // FLAG_SECURE while storage still says protection is on.
+    test(
+      'screen-capture protection is not lowered on a failed write',
+      () async {
+        ScreenCaptureProtection.instance.enabledByUser = true;
+        when(() => setScreenCapture.execute(any())).thenAnswer(
+          (_) async => const Err(SettingsStorageFailure('drift write failed')),
+        );
+
+        await cubit.toggleScreenCaptureProtection(false);
+
+        expect(ScreenCaptureProtection.instance.enabledByUser, isTrue);
+        expect(
+          cubit.state.storedSettings?.screenCaptureProtectionEnabled,
+          isTrue,
+          reason:
+              'the switch must snap back to the value storage actually holds',
+        );
+        expect(cubit.state.failure, isA<SettingsStorageFailure>());
+      },
+    );
+
+    // The opposite direction: enabling that did not persist must not look
+    // protected, or the user believes they are covered and is not after a
+    // restart.
+    test('screen-capture protection is not raised on a failed write', () async {
+      ScreenCaptureProtection.instance.enabledByUser = false;
+      when(() => setScreenCapture.execute(any())).thenAnswer(
+        (_) async => const Err(SettingsStorageFailure('drift write failed')),
+      );
+
+      await cubit.toggleScreenCaptureProtection(true);
+
+      expect(ScreenCaptureProtection.instance.enabledByUser, isFalse);
+      expect(cubit.state.failure, isA<SettingsStorageFailure>());
+    });
+
+    test('clearFailure lets the next failure fire again', () async {
+      when(() => setBitcoinUnit.execute(any())).thenAnswer(
+        (_) async => const Err(SettingsStorageFailure('drift write failed')),
+      );
+      await cubit.toggleSatsUnit(false);
+      expect(cubit.state.failure, isNotNull);
+
+      cubit.clearFailure();
+
+      expect(cubit.state.failure, isNull);
+    });
   });
 }
