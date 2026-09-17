@@ -4909,5 +4909,6 @@
   "settingsSearchWalletSettingsKeywords": "portefeuille|bitcoin|paramètres réseau|paramètres on-chain|paramètres Bitcoin|paramètres du portefeuille",
   "limitOrdersInsufficientBalance": "Solde insuffisant",
   "limitOrdersInsufficientBalanceMessage": "Vous n'avez pas assez de solde pour créer cette commande.",
-  "limitOrdersFundAccount": "Financer votre compte"
+  "limitOrdersFundAccount": "Financer votre compte",
+  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase."
 }

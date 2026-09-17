@@ -37,3 +37,17 @@ class PsbtSigningFailed implements Exception {
 class LiquidSigningFailed implements Exception {
   const LiquidSigningFailed();
 }
+
+/// The operation derives from the words alone, so a passphrase cannot be honoured. Refused rather than computed for the passphrase-less sibling. Translated to `PassphraseUnsupportedFailure` by the error boundary.
+class PassphraseUnsupported implements Exception {
+  final String message;
+  const PassphraseUnsupported(this.message);
+
+  @override
+  String toString() => 'PassphraseUnsupported: $message';
+}
+
+/// bwk refused to open the Silent Payments account. Carries nothing: bwk's message can quote its input. Reported by type as `SecretDerivationFailure`.
+class SilentPaymentsOpenFailed implements Exception {
+  const SilentPaymentsOpenFailed();
+}

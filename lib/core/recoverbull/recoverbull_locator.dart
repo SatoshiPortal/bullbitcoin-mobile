@@ -27,7 +27,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_vault_key_into_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypted_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -86,9 +86,8 @@ class RecoverbullLocator {
     );
     locator.registerFactory<CreateEncryptedVaultUsecase>(
       () => CreateEncryptedVaultUsecase(
-        seedRepository: locator<SeedRepository>(),
+        secrets: locator<Secrets>(),
         walletRepository: locator<WalletRepository>(),
-        recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
     locator.registerFactory<ConnectToGoogleDriveUsecase>(

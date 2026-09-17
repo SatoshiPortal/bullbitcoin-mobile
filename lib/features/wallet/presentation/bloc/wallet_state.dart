@@ -22,8 +22,6 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isSpFeatureEnabled,
     @Default(false) bool isSpWalletLoading,
     @Default(false) bool backupWarningDismissed,
-    @Default(false) bool isOnLegacyStorage,
-    @Default(false) bool legacyStorageWarningDismissed,
   }) = _WalletState;
   const WalletState._();
 
@@ -68,9 +66,5 @@ sealed class WalletState with _$WalletState {
 
   bool showBackupWarning() {
     return hasNoBackup() && totalBalance() > 0 && !backupWarningDismissed;
-  }
-
-  bool showLegacyStorageWarning() {
-    return isOnLegacyStorage && !legacyStorageWarningDismissed;
   }
 }

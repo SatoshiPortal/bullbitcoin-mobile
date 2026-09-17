@@ -81,6 +81,7 @@ without the FFI.
 | `backup.vault` | words sealed, passphrase not; result is `WordsOnly` | the vault plaintext carries `mnemonic` only — the format every existing vault and the key server speak |
 | `Secrets.restoreVault` | pass `passphrase:` to restore the wallet the user had | the file cannot carry it, so the user supplies it; without it the result is `WordsOnly` and the secret stored is the passphrase-less sibling |
 | `derive.swapKey` | **passphrase included** | `walletPassphrase` is sent (2026-09-15). Keys stored before that were derived from the words alone and are **not** re-derived — `swaps` asks only when it holds none |
+| `silentPaymentsAccount` | **refused** with `PassphraseUnsupportedFailure` | bwk-dart opens an account from the words only (`SpAccount.createFromMnemonic`), and bwk derives with `mnemonic.to_seed("")`; refusing beats opening the passphrase-less sibling's wallet |
 
 **Verified, so nobody has to re-verify** (2026-09-14):
 
@@ -158,6 +159,8 @@ mnemonic:
 | `secret.derive.bip85.hex(…)` | BIP85 child entropy the caller asked this feature to create |
 | `secret.derive.bip85.mnemonic(…)` | the same child as words |
 | `secret.derive.swapKey(network:)` | the swap-scoped credential boltz takes on every call |
+
+⚠️ **One library receives the stored words: bwk.** `secret.silentPaymentsAccount(…)` opens the Silent Payments account inside the package, so the words never reach the app — but bwk-dart builds an account from a mnemonic only, and the account it returns holds the keys until it is disposed. It is a capability, like `psbtSigner`, not an exit to the host. A key-based bwk constructor (bwk-bitcoin/bwk#114) would let the package pass derived keys instead.
 
 **The stored mnemonic has no exit.** `Secret.revealMnemonic` is `@internal`:
 the only callers are this package's own sealed widgets, `MnemonicView`

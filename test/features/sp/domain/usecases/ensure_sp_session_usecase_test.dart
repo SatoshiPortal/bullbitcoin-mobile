@@ -1,7 +1,4 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:primitives/primitives.dart';
@@ -9,36 +6,35 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart' show Secret;
 
 import '../../sp_fakes.dart';
 
 class _MockSpBackendConfigRepository extends Mock
     implements SpBackendConfigRepository {}
 
-BytesSeed _bytesSeed() => BytesSeed(
-  bytes: Uint8List.fromList(List.filled(64, 1)),
-  masterFingerprint: 'f23f9fd2',
-);
-
 void main() {
   late MockSpAccountRepository repository;
   late _MockSpBackendConfigRepository configRepository;
-  late MockGetDefaultSeedUsecase getDefaultSeedUsecase;
+  late MockGetSpSecretUsecase getSpSecretUsecase;
+  late Secret secret;
   late EnsureSpSessionUsecase usecase;
 
-  setUpAll(() {
+  setUpAll(() async {
     registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(await spSecret());
   });
 
-  setUp(() {
+  setUp(() async {
+    secret = await spSecret();
     repository = MockSpAccountRepository();
     configRepository = _MockSpBackendConfigRepository();
-    getDefaultSeedUsecase = MockGetDefaultSeedUsecase();
+    getSpSecretUsecase = MockGetSpSecretUsecase();
     usecase = EnsureSpSessionUsecase(
       repository: repository,
       files: repository,
       configRepository: configRepository,
-      getDefaultSeedUsecase: getDefaultSeedUsecase,
+      getSpSecretUsecase: getSpSecretUsecase,
     );
 
     when(() => repository.hasSession).thenReturn(false);
@@ -55,14 +51,14 @@ void main() {
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
     when(
-      () => getDefaultSeedUsecase.execute(),
-    ).thenAnswer((_) async => Ok(spMnemonicSeed()));
+      () => getSpSecretUsecase.execute(any()),
+    ).thenAnswer((_) async => Ok(secret));
     when(
-      () => repository.createFromMnemonic(
+      () => repository.createFromSecret(
         network: any(named: 'network'),
         blindbitUrl: any(named: 'blindbitUrl'),
         electrumUrl: any(named: 'electrumUrl'),
-        mnemonic: any(named: 'mnemonic'),
+        secret: any(named: 'secret'),
       ),
     ).thenAnswer((_) async => const Ok(null));
   });
@@ -76,11 +72,11 @@ void main() {
       expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
       verify(() => repository.snapshot()).called(1);
       verifyNever(
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
       );
     });
@@ -104,12 +100,12 @@ void main() {
       final result = await usecase.execute();
 
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
-      verifyNever(() => getDefaultSeedUsecase.execute());
+      verifyNever(() => getSpSecretUsecase.execute(any()));
     });
 
-    test('a seed read throw returns Err with no exception detail', () async {
+    test('a secret read throw returns Err with no exception detail', () async {
       when(
-        () => getDefaultSeedUsecase.execute(),
+        () => getSpSecretUsecase.execute(any()),
       ).thenThrow(Exception('keystore locked'));
 
       final result = await usecase.execute();
@@ -120,37 +116,42 @@ void main() {
         failure.logMessage,
         'SP session establish failed',
         reason:
-            'the block derives the mnemonic, so nothing caught may be '
+            'the block reads the secret, so nothing caught may be '
             'written to the exportable log',
       );
     });
 
-    test('throws when the default seed is not mnemonic-backed', () async {
+    test('forwards a passphrase refusal and never creates', () async {
       when(
-        () => getDefaultSeedUsecase.execute(),
-      ).thenAnswer((_) async => Ok(_bytesSeed()));
+        () => getSpSecretUsecase.execute(any()),
+      ).thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
 
-      await expectLater(usecase.execute(), throwsA(isA<StateError>()));
+      final result = await usecase.execute();
+
+      expect((result as Err).failure, isA<SpPassphraseUnsupported>());
+      verifyNever(
+        () => repository.createFromSecret(
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          secret: any(named: 'secret'),
+        ),
+      );
     });
 
-    test(
-      'reconstructs via createFromMnemonic from the stored config',
-      () async {
-        final result = await usecase.execute();
+    test('reconstructs via createFromSecret from the stored config', () async {
+      final result = await usecase.execute();
 
-        expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
-        verify(
-          () => repository.createFromMnemonic(
-            network: BitcoinNetwork.regtest,
-            blindbitUrl: 'http://blindbit.example',
-            electrumUrl: 'tcp://electrum.example:50001',
-            mnemonic:
-                'abandon abandon abandon abandon abandon abandon abandon '
-                'abandon abandon abandon abandon abandon',
-          ),
-        ).called(1);
-      },
-    );
+      expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
+      verify(
+        () => repository.createFromSecret(
+          network: BitcoinNetwork.regtest,
+          blindbitUrl: 'http://blindbit.example',
+          electrumUrl: 'tcp://electrum.example:50001',
+          secret: secret,
+        ),
+      ).called(1);
+    });
 
     test('returns null while a teardown is in progress (no create)', () async {
       when(() => repository.teardownInProgress).thenReturn(true);
@@ -160,11 +161,11 @@ void main() {
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
       verifyNever(() => configRepository.fetch());
       verifyNever(
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
       );
     });
@@ -180,11 +181,11 @@ void main() {
 
         expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
         verify(
-          () => repository.createFromMnemonic(
+          () => repository.createFromSecret(
             network: any(named: 'network'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
-            mnemonic: any(named: 'mnemonic'),
+            secret: any(named: 'secret'),
           ),
         ).called(1);
       },
@@ -198,20 +199,20 @@ void main() {
       // session.
       var tearingDown = false;
       when(() => repository.teardownInProgress).thenAnswer((_) => tearingDown);
-      when(() => getDefaultSeedUsecase.execute()).thenAnswer((_) async {
+      when(() => getSpSecretUsecase.execute(any())).thenAnswer((_) async {
         tearingDown = true;
-        return Ok(spMnemonicSeed());
+        return Ok(secret);
       });
 
       final result = await usecase.execute();
 
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
       verifyNever(
-        () => repository.createFromMnemonic(
+        () => repository.createFromSecret(
           network: any(named: 'network'),
           blindbitUrl: any(named: 'blindbitUrl'),
           electrumUrl: any(named: 'electrumUrl'),
-          mnemonic: any(named: 'mnemonic'),
+          secret: any(named: 'secret'),
         ),
       );
     });
@@ -233,7 +234,7 @@ void main() {
     });
 
     test(
-      'serializes concurrent establishment into one createFromMnemonic',
+      'serializes concurrent establishment into one createFromSecret',
       () async {
         final results = await Future.wait([
           usecase.execute(),
@@ -243,11 +244,11 @@ void main() {
         expect((results[0] as Ok<SpWallet?, SpFailure>).value, isNotNull);
         expect((results[1] as Ok<SpWallet?, SpFailure>).value, isNotNull);
         verify(
-          () => repository.createFromMnemonic(
+          () => repository.createFromSecret(
             network: any(named: 'network'),
             blindbitUrl: any(named: 'blindbitUrl'),
             electrumUrl: any(named: 'electrumUrl'),
-            mnemonic: any(named: 'mnemonic'),
+            secret: any(named: 'secret'),
           ),
         ).called(1);
       },

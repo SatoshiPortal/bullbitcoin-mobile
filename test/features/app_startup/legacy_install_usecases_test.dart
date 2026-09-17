@@ -29,9 +29,6 @@ class _FailingSecureStorage implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> deleteValue(String key) async => throw _error;
-
-  @override
-  Future<void> deleteAll() async => throw _error;
 }
 
 class _InMemorySecureStorage implements KeyValueStorageDatasource<String> {
@@ -54,9 +51,6 @@ class _InMemorySecureStorage implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> deleteValue(String key) async => _entries.remove(key);
-
-  @override
-  Future<void> deleteAll() async => _entries.clear();
 }
 
 /// The two use-cases return Result now. These unwrap the success value so the

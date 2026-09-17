@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -6,16 +5,18 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:secrets/secrets.dart';
 
 class DeleteWalletUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
 
   DeleteWalletUsecase({
     required this._walletRepository,
     required this._swapRepository,
-    required this._seedRepository,
+    required this._secrets,
   });
 
   @useResult
@@ -84,7 +85,9 @@ class DeleteWalletUsecase {
 
     if (remaining.any((w) => w.masterFingerprint == fingerprint)) return;
 
-    final deleted = await _seedRepository.delete(fingerprint);
+    // Unconditional on the package side; the "still used by a wallet" guard
+    // is this usecase's, and was applied above.
+    final deleted = await _secrets.trash(Fingerprint(fingerprint));
     if (deleted case Err(:final failure)) {
       log.warning(
         'DeleteWalletUsecase: failed to clean up seed for $walletId: '

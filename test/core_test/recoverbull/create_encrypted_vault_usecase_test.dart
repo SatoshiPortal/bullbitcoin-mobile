@@ -1,18 +1,13 @@
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-class _MockRecoverBullRepository extends Mock
-    implements RecoverBullRepository {}
-
-class _MockSeedRepository extends Mock implements SeedRepository {}
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
@@ -21,18 +16,14 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 /// bitcoin and a default liquid wallet, so that message would tell a user with
 /// a perfectly good wallet that there is nothing to back up (#1895).
 void main() {
-  late _MockRecoverBullRepository recoverBullRepository;
-  late _MockSeedRepository seedRepository;
   late _MockWalletRepository walletRepository;
   late CreateEncryptedVaultUsecase usecase;
 
   setUp(() {
-    recoverBullRepository = _MockRecoverBullRepository();
-    seedRepository = _MockSeedRepository();
+    FakeSecureStoragePlatform().install();
     walletRepository = _MockWalletRepository();
     usecase = CreateEncryptedVaultUsecase(
-      recoverBullRepository: recoverBullRepository,
-      seedRepository: seedRepository,
+      secrets: Secrets(scratchDirectory: () async => '/tmp'),
       walletRepository: walletRepository,
     );
   });
@@ -68,9 +59,13 @@ void main() {
       expect(failure.logMessage, isNot(contains('No default Bitcoin wallet')));
       // The wallet layer's raw reason stays in the log.
       expect(failure.logMessage, isNot(contains('disk image is malformed')));
-      // Nothing was backed up, so the vault was never touched.
-      verifyZeroInteractions(recoverBullRepository);
-      verifyZeroInteractions(seedRepository);
+      // Nothing was backed up, so no backup time was recorded.
+      verifyNever(
+        () => walletRepository.updateEncryptedBackupTime(
+          time: any(named: 'time'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
     },
   );
 
@@ -84,7 +79,6 @@ void main() {
       final failure = (result as Err).failure as RecoverBullCoreFailure;
       expect(failure, isA<RecoverBullUnexpectedCoreFailure>());
       expect(failure.logMessage, contains('No default Bitcoin wallet'));
-      verifyZeroInteractions(recoverBullRepository);
     },
   );
 }

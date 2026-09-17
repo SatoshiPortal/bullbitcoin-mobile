@@ -342,6 +342,8 @@ void main() {
       'revealMnemonic': 'material',
       // a signing capability, not data
       'psbtSigner': 'capability',
+      // a bwk account that scans and signs; bwk holds the words while it lives
+      'silentPaymentsAccount': 'capability',
       // ciphertext plus the key that opens it
       'backupVault': 'ciphertext',
     };

@@ -18,6 +18,13 @@ final class AppStartupWalletCheckFailure extends AppStartupFailure {
   const AppStartupWalletCheckFailure([super.logMessage]);
 }
 
+/// A default wallet's metadata exists but the keystore, read in full, has no
+/// seed under its fingerprint. Never a locked keystore: that one is
+/// [AppStartupKeychainLockedFailure], transient, and waited out.
+final class AppStartupMissingDefaultSecretFailure extends AppStartupFailure {
+  const AppStartupMissingDefaultSecretFailure([super.logMessage]);
+}
+
 /// Whether this is a pre-v5 install could not be determined.
 final class AppStartupLegacyCheckFailure extends AppStartupFailure {
   const AppStartupLegacyCheckFailure([super.logMessage]);
