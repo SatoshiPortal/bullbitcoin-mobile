@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swaps_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
@@ -84,6 +85,7 @@ enum SettingsRoute {
   payjoinSettings('payjoin-settings'),
   payjoinAdvancedSettings('payjoin-advanced-settings'),
   autoswapSettings('autoswap-settings'),
+  swapsSettings('swaps-settings'),
   appSettings('app-settings'),
   theme('theme'),
   swapRestore('swap-restore'),
@@ -224,6 +226,11 @@ class SettingsRouter {
         name: SettingsRoute.autoswapSettings.name,
         path: SettingsRoute.autoswapSettings.path,
         builder: (context, state) => const AutoSwapSettingsScreen(),
+      ),
+      GoRoute(
+        name: SettingsRoute.swapsSettings.name,
+        path: SettingsRoute.swapsSettings.path,
+        builder: (context, state) => const SwapsSettingsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,

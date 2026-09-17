@@ -12,7 +12,9 @@ class RestoredSwap {
 
   /// True when on-chain funds are locked and not yet claimed/refunded — i.e. the
   /// swap can still be rescued (claimed or refunded). Drives whether the row is
-  /// actionable; resolved/never-funded swaps are not.
+  /// actionable; resolved/never-funded swaps are not. Boltz's verdict, with a
+  /// safety floor: a chain swap in a `*.refunded` status stays rescuable
+  /// because that status only proves Boltz refunded its own lockup.
   final bool recoverable;
 
   /// On-chain amount locked in the swap, in sats.

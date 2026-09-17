@@ -59,6 +59,9 @@ class RestoreSwapsUsecase {
         return switch (swap) {
           LnReceiveSwap() => swap.receiveTxid != null || swap.wasDirectPayment,
           ChainSwap() => swap.receiveTxid != null || swap.refundTxid != null,
+          // A submarine swap has no user-side on-chain receive: completion
+          // proof is the invoice payment (preimage), not a receiveTxid, so
+          // a completed row needs no on-chain evidence here.
           LnSendSwap() => true,
         };
       case SwapStatus.refunded:

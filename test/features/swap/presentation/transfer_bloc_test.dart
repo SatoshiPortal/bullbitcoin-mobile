@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart'
     hide Environment;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart' as se;
+import 'package:bb_mobile/core/swaps/swap_mode_setting_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -128,6 +129,12 @@ class _MockPreviewPresets extends Mock
 class _MockCheckConsolidation extends Mock
     implements CheckLiquidConsolidationUsecase {}
 
+class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+
+class _MockSwapModeSetting extends Mock implements SwapModeSettingRepository {}
+
+class _MockSwapWatcher extends Mock implements SwapWatcher {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(const RelativeFee(250));
@@ -186,6 +193,11 @@ void main() {
       ),
     ).thenAnswer((_) async => []);
 
+    final swapModeSetting = _MockSwapModeSetting();
+    when(
+      () => swapModeSetting.isTrustedEnabled(),
+    ).thenAnswer((_) async => true);
+
     bloc = TransferBloc(
       getSettingsUsecase: getSettings,
       getWalletsUsecase: getWallets,
@@ -217,6 +229,9 @@ void main() {
       previewBitcoinFeeUsecase: _MockPreviewFee(),
       previewBitcoinFeePresetsUsecase: _MockPreviewPresets(),
       checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
+      boltzSwapRepository: _MockBoltzSwapRepository(),
+      swapModeSettingRepository: swapModeSetting,
+      swapWatcher: _MockSwapWatcher(),
     );
   });
 

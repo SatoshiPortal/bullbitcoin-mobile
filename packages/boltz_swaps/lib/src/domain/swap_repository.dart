@@ -60,6 +60,14 @@ abstract class SwapRepository {
   /// claim cheaply. Failure is non-fatal (script path remains).
   Future<void> coopSign(Swap swap);
 
+  /// Records a chain swap's user-lockup txid from chain when it is missing —
+  /// e.g. the app died between broadcasting the lockup and persisting its
+  /// txid, leaving funds on-chain but the row with `sendTxid == null` (which
+  /// the refund path needs). Boltz-free: derives the lockup from our own swap
+  /// secrets. Returns the swap unchanged unless it is a [ChainSwap] with a
+  /// null `sendTxid` whose lockup is actually on chain.
+  Future<Swap> reconcileLockupTxid(Swap swap);
+
   /// Subscribes [swapIds] to live backend events.
   void listen(List<String> swapIds);
 

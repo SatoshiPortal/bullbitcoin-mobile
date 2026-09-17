@@ -45,6 +45,12 @@ void main() {
     when(() => repo.claim(any())).thenAnswer((_) async => 'claim-txid');
     when(() => repo.refund(any())).thenAnswer((_) async => 'refund-txid');
     when(() => repo.coopSign(any())).thenAnswer((_) async {});
+    // Backfill is a no-op passthrough here; the swap already carries its
+    // sendTxid in these fixtures. Its own behaviour is covered in the
+    // repository test.
+    when(
+      () => repo.reconcileLockupTxid(any()),
+    ).thenAnswer((inv) async => inv.positionalArguments[0] as Swap);
     watcher = SwapWatcher(repo: repo);
   });
 

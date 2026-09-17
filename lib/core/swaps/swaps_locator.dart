@@ -5,9 +5,11 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/boltz_swaps_db_migration.dart';
+import 'package:bb_mobile/core/swaps/swap_mode_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swap_server_setting_repository.dart';
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' as wallet;
@@ -26,6 +28,9 @@ class SwapsLocator {
 
     locator.registerLazySingleton<SwapServerSettingRepository>(
       SwapServerSettingRepository.new,
+    );
+    locator.registerLazySingleton<SwapModeSettingRepository>(
+      SwapModeSettingRepository.new,
     );
     locator.registerLazySingleton<BoltzSwapsDatabase>(
       () => BoltzSwapsDatabase(openBoltzSwapsDbConnection()),
@@ -66,6 +71,9 @@ class SwapsLocator {
         SwapServerSettingRepository.isPlaintext(boltzUrl)) {
       boltzUrl = boltzUrl.substring('http://'.length);
     }
+    log.info(
+      '[Swaps] boltz datasource url="$boltzUrl" isTestnet=${environment.isTestnet}',
+    );
     locator.registerLazySingleton<BoltzDatasource>(
       () => BoltzDatasource(url: boltzUrl, boltzStore: locator<SwapStorage>()),
     );

@@ -29,6 +29,9 @@ sealed class TransferState with _$TransferState {
     int? maxAmountSat,
     @Default(false) bool isCreatingSwap,
     @Default(false) bool continueClicked,
+    // When false (default), swaps route through the trustless Boltz chain-swap
+    // engine; when true, through the trusted Bull exchange order path.
+    @Default(false) bool trustedSwapsEnabled,
     SwapCreationException? swapCreationException,
     // Set when the Liquid swap-funding build fails because the wallet has too
     // many UTXOs to spend in a single transaction and needs consolidating.

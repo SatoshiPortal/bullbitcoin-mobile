@@ -14618,5 +14618,17 @@
   "swapServerInvalid": "Enter a valid server address (e.g. api.boltz.exchange/v2)",
   "@swapServerInvalid": {
     "description": "Validation error when the swap server URL is not a valid host"
+  },
+  "swapsSettingsTitle": "Swaps",
+  "@swapsSettingsTitle": {
+    "description": "Title of the Swaps settings screen (all swap-related settings)"
+  },
+  "swapsTrustedModeTitle": "Trusted swaps",
+  "@swapsTrustedModeTitle": {
+    "description": "Toggle title: route swaps through the Bull exchange instead of the trustless protocol"
+  },
+  "swapsTrustedModeSubtitle": "Route swaps through the Bull exchange. When off, swaps are trustless.",
+  "@swapsTrustedModeSubtitle": {
+    "description": "Subtitle explaining the trusted swaps toggle"
   }
 }

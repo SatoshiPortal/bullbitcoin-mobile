@@ -439,6 +439,34 @@ class BoltzSwapRepository implements SwapRepository {
   Stream<Swap> watchSwap({required String swapId}) =>
       _boltz.storage.watchSwap(swapId).map((model) => model.toEntity());
 
+  @override
+  Future<Swap> reconcileLockupTxid(Swap swap) async {
+    // Only a chain swap missing its lockup txid needs this. Submarine
+    // lockups are recorded at broadcast the same way; a reverse swap has no
+    // user lockup.
+    if (swap is! ChainSwap || swap.sendTxid != null) return swap;
+    try {
+      // Derived from our own swap secrets (Boltz-free); returns null when no
+      // lockup is on chain yet (e.g. a swap created but never funded), which
+      // self-gates this to genuinely-broadcast-but-unrecorded swaps.
+      final swapObject = await _boltz.storage.fetchChainSwap(swap.id);
+      final lockupTxid = await _boltz.chainSwapUserLockupTxid(swapObject);
+      if (lockupTxid == null) return swap;
+      swapsLog.info(
+        'SWAPS: ${swap.id} lockup txid recovered from chain '
+        '(crash-window backfill)',
+      );
+      // Reuses updatePaidSendSwap: it records sendTxid and only promotes
+      // pending->paid, so an already-expired/failed row keeps its status
+      // while gaining the sendTxid the refund path requires.
+      await updatePaidSendSwap(swapId: swap.id, txid: lockupTxid);
+      return getSwap(swapId: swap.id);
+    } catch (e) {
+      swapsLog.warning('SWAPS: ${swap.id} lockup-txid backfill skipped: $e');
+      return swap;
+    }
+  }
+
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
@@ -598,23 +626,28 @@ class BoltzSwapRepository implements SwapRepository {
     final stored = await _boltz.storage.getSwapKeyIndex(
       swapMasterKey.fingerprint,
     );
+    // Local collision floor, re-checked on EVERY reservation: a rescue
+    // imports swaps at their original indices without advancing this
+    // counter, so the counter alone can lag behind a stored swap and hand
+    // out an in-use index (the keyIndex-reuse bug). Scanning stored swaps
+    // is local and cheap; chain swaps occupy two indices (refund, claim).
+    var localHighest = -1;
+    for (final swap in await getAllSwaps()) {
+      final top = swap is ChainSwap ? swap.keyIndex + 1 : swap.keyIndex;
+      if (top > localHighest) localHighest = top;
+    }
     final int current;
     if (stored == null) {
-      // Seed past boltz's highest known index (-1 when none) so a new swap
-      // can't re-derive an in-use key on a recovered seed. Boltz's restore
-      // endpoint is gap-limited and can under-report, so also seed past the
-      // highest index of every locally stored swap (chain swaps use 2).
+      // Also seed past boltz's highest known index (-1 when none) so a new
+      // swap can't re-derive an in-use key on a recovered seed. Boltz's
+      // restore endpoint is gap-limited and can under-report, hence the
+      // local floor above still applies.
       final highest = await _boltz.restoreSwapIndex(
         swapMasterKey: swapMasterKey,
       );
-      var localHighest = -1;
-      for (final swap in await getAllSwaps()) {
-        final top = swap is ChainSwap ? swap.keyIndex + 1 : swap.keyIndex;
-        if (top > localHighest) localHighest = top;
-      }
       current = (highest > localHighest ? highest : localHighest) + 1;
     } else {
-      current = stored;
+      current = stored > localHighest + 1 ? stored : localHighest + 1;
     }
     await _boltz.storage.setSwapKeyIndex(
       swapMasterKey.fingerprint,
@@ -843,21 +876,27 @@ class BoltzSwapRepository implements SwapRepository {
   }
 
   /// boltz-dart derives `recoverable` from the raw Boltz status via
-  /// `is_resolved()`, which counts `transaction.refunded` as "nothing left
-  /// on-chain". That is wrong for CHAIN swaps: there it means Boltz refunded
-  /// its OWN lockup — a signal for us to refund OURS, which may still sit
-  /// unspent on the sending chain. Override so such swaps stay rescuable;
-  /// if the user lockup turns out spent, the refund attempt learns that
-  /// on-chain instead of the swap being hidden from rescue.
+  /// `is_resolved()` plus Boltz's own lockup records — Boltz's word, not the
+  /// chain's. Boltz's verdict is the default, with one safety-floor
+  /// override: a chain swap in a `*.refunded` status only proves Boltz
+  /// refunded its OWN lockup — ours may still sit unspent on the sending
+  /// chain — so it stays rescuable; if the user lockup turns out spent, the
+  /// refund attempt learns that on-chain instead of the swap being hidden
+  /// from rescue.
+  ///
+  /// TODO: replace the status floor with an on-chain check of the user
+  /// lockup's outspends once boltz-dart exposes an electrum-backed report
+  /// (the current one rides third-party mempool REST — a privacy violation
+  /// on custom-electrum setups, and it hangs on dead testnet explorers).
   bool _restoredRecoverable(boltz.RestoredSwapSummary s) {
     final overridden =
         !s.recoverable &&
         s.kind == boltz.SwapType.chain &&
-        s.status == 'transaction.refunded';
+        (s.status == 'transaction.refunded' || s.status == 'swap.refunded');
     swapsLog.fine(
       'SWAP_RESTORE: summary ${s.id} kind=${s.kind.name} '
-      'boltzStatus=${s.status} recoverable=${s.recoverable} '
-      '${overridden ? 'OVERRIDDEN->true (chain swap: boltz refunded its own lockup; ours may be unspent) ' : ''}'
+      'boltzStatus=${s.status} recoverable=${overridden || s.recoverable} '
+      '(${overridden ? 'chain refunded floor' : 'boltz'}) '
       'amount=${s.amount} from=${s.from} to=${s.to} createdAt=${s.createdAt}',
     );
     return overridden || s.recoverable;

@@ -32,9 +32,11 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final fingerprint = context.select<TestWalletBackupBloc, String?>(
-      (bloc) => bloc.state.selectedWallet?.masterFingerprint,
-    );
+    final fingerprint = context
+        .read<TestWalletBackupBloc>()
+        .state
+        .selectedWallet
+        ?.masterFingerprint;
     if (fingerprint != _fingerprint) {
       _fingerprint = fingerprint;
       unawaited(_loadSecret());

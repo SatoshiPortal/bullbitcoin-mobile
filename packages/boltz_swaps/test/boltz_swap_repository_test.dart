@@ -1,5 +1,7 @@
+import 'package:bull_sdk/boltz.dart' as frb;
 import 'package:mocktail/mocktail.dart';
 import 'package:boltz_swaps/src/data/boltz_api.dart';
+import 'package:boltz_swaps/src/data/models/swap_master_key_model.dart';
 import 'package:boltz_swaps/src/data/boltz_swap_repository.dart';
 import 'package:boltz_swaps/src/domain/entities/swap.dart';
 import 'package:boltz_swaps/src/data/models/swap_model.dart';
@@ -467,6 +469,251 @@ void main() {
                 as SwapModel;
         expect(stored.status, SwapStatus.refunded.name);
         expect((stored as ChainSwapModel).refundTxid, 'true-refund');
+      },
+    );
+  });
+
+  group('restore recoverability', () {
+    const masterKey = SwapMasterKeyModel(
+      xprv: 'xprv',
+      xpub: 'xpub',
+      network: 'bitcoin',
+      mnemonic: 'ab cd',
+      fingerprint: 'f00dbabe',
+    );
+
+    frb.RestoredSwapSummary summary({
+      frb.SwapType kind = frb.SwapType.chain,
+      String status = 'transaction.refunded',
+      bool recoverable = false,
+      String from = 'BTC',
+      String to = 'L-BTC',
+    }) => frb.RestoredSwapSummary(
+      id: 'rSwap1234567',
+      kind: kind,
+      status: status,
+      createdAt: BigInt.from(1750000000),
+      from: from,
+      to: to,
+      amount: BigInt.from(50000),
+      recoverable: recoverable,
+    );
+
+    void stubSummaries(frb.RestoredSwapSummary s) {
+      when(
+        () => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')),
+      ).thenAnswer((_) async => masterKey);
+      when(
+        () => boltz.restoreSwapSummaries(
+          swapMasterKey: any(named: 'swapMasterKey'),
+        ),
+      ).thenAnswer((_) async => [s]);
+    }
+
+    setUpAll(() => registerFallbackValue(masterKey));
+
+    test('trusts a positive boltz verdict', () async {
+      stubSummaries(summary(recoverable: true));
+
+      final restored = await repo().restoreSwaps(isTestnet: false);
+
+      expect(restored.single.recoverable, isTrue);
+    });
+
+    test('a chain swap boltz marked transaction.refunded stays rescuable '
+        '(boltz refunded ITS side; ours may be unspent)', () async {
+      stubSummaries(summary(status: 'transaction.refunded'));
+
+      final restored = await repo().restoreSwaps(isTestnet: false);
+
+      expect(restored.single.recoverable, isTrue);
+    });
+
+    test(
+      'a chain swap in swap.refunded is also floored to rescuable',
+      () async {
+        stubSummaries(summary(status: 'swap.refunded'));
+
+        final restored = await repo().restoreSwaps(isTestnet: false);
+
+        expect(restored.single.recoverable, isTrue);
+      },
+    );
+
+    test('a claimed chain swap keeps boltz\'s negative verdict', () async {
+      stubSummaries(summary(status: 'transaction.claimed'));
+
+      final restored = await repo().restoreSwaps(isTestnet: false);
+
+      expect(restored.single.recoverable, isFalse);
+    });
+
+    test('a refunded submarine keeps boltz\'s negative verdict '
+        '(refunded means OUR lockup came back)', () async {
+      stubSummaries(
+        summary(
+          kind: frb.SwapType.submarine,
+          status: 'transaction.refunded',
+          to: 'BTC',
+        ),
+      );
+
+      final restored = await repo().restoreSwaps(isTestnet: false);
+
+      expect(restored.single.recoverable, isFalse);
+    });
+
+    test('a reverse swap is never floored', () async {
+      stubSummaries(
+        summary(kind: frb.SwapType.reverse, status: 'invoice.settled'),
+      );
+
+      final restored = await repo().restoreSwaps(isTestnet: false);
+
+      expect(restored.single.recoverable, isFalse);
+    });
+
+    test('a non-resolved status keeps boltz\'s negative verdict', () async {
+      stubSummaries(summary(status: 'swap.created'));
+
+      final restored = await repo().restoreSwaps(isTestnet: false);
+
+      expect(restored.single.recoverable, isFalse);
+    });
+  });
+
+  group('swap key index reservation', () {
+    const masterKey = SwapMasterKeyModel(
+      xprv: 'xprv',
+      xpub: 'xpub',
+      network: 'bitcoin',
+      mnemonic: 'ab cd',
+      fingerprint: 'f00dbabe',
+    );
+
+    SwapModel storedChain({required int keyIndex}) => SwapModel.chain(
+      id: 'stored-$keyIndex',
+      type: SwapType.bitcoinToLiquid.name,
+      status: 'refundable',
+      keyIndex: keyIndex,
+      creationTime: DateTime(2026, 7).millisecondsSinceEpoch,
+      sendWalletId: 'w-btc',
+      paymentAddress: 'bc1lockup',
+      paymentAmount: 100000,
+    );
+
+    void stubCreation({required int? storedCounter, required int localTop}) {
+      when(
+        () => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')),
+      ).thenAnswer((_) async => masterKey);
+      when(
+        () => storage.getSwapKeyIndex(any()),
+      ).thenAnswer((_) async => storedCounter);
+      when(
+        () => storage.setSwapKeyIndex(any(), any()),
+      ).thenAnswer((_) async {});
+      when(
+        () => storage.fetchAll(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((_) async => [storedChain(keyIndex: localTop)]);
+      when(
+        () =>
+            boltz.restoreSwapIndex(swapMasterKey: any(named: 'swapMasterKey')),
+      ).thenAnswer((_) async => -1);
+      when(
+        () => boltz.createBtcToLbtcChainSwap(
+          sendWalletId: any(named: 'sendWalletId'),
+          index: any(named: 'index'),
+          amountSat: any(named: 'amountSat'),
+          isTestnet: any(named: 'isTestnet'),
+          btcElectrumUrl: any(named: 'btcElectrumUrl'),
+          lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
+          receiveWalletId: any(named: 'receiveWalletId'),
+          externalRecipientAddress: any(named: 'externalRecipientAddress'),
+        ),
+      ).thenAnswer((_) async => chainModel());
+    }
+
+    Future<int> createAndCaptureIndex() async {
+      await repo().createBitcoinToLiquidSwap(
+        sendWalletId: 'w-btc',
+        amountSat: 30000,
+        btcElectrumUrl: 'btc:50001',
+        lbtcElectrumUrl: 'lbtc:50001',
+      );
+      return verify(
+            () => boltz.createBtcToLbtcChainSwap(
+              sendWalletId: any(named: 'sendWalletId'),
+              index: captureAny(named: 'index'),
+              amountSat: any(named: 'amountSat'),
+              isTestnet: any(named: 'isTestnet'),
+              btcElectrumUrl: any(named: 'btcElectrumUrl'),
+              lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
+              receiveWalletId: any(named: 'receiveWalletId'),
+              externalRecipientAddress: any(named: 'externalRecipientAddress'),
+            ),
+          ).captured.single
+          as int;
+    }
+
+    test('a counter lagging behind a rescued swap is bumped past it '
+        '(keyIndex-reuse regression)', () async {
+      // A rescue imported a chain swap at index 7 (occupying 7 and 8)
+      // without advancing the counter, which still says 5.
+      stubCreation(storedCounter: 5, localTop: 7);
+
+      final index = await createAndCaptureIndex();
+
+      expect(index, 9);
+      verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
+    });
+
+    test('a counter ahead of local swaps is used as-is', () async {
+      stubCreation(storedCounter: 10, localTop: 7);
+
+      final index = await createAndCaptureIndex();
+
+      expect(index, 10);
+      verify(() => storage.setSwapKeyIndex('f00dbabe', 12)).called(1);
+    });
+
+    test('an unset counter seeds past both boltz and local swaps', () async {
+      stubCreation(storedCounter: null, localTop: 7);
+
+      final index = await createAndCaptureIndex();
+
+      expect(index, 9);
+      verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
+    });
+  });
+
+  group('reconcileLockupTxid (crash-window backfill)', () {
+    test(
+      'returns a chain swap that already has a sendTxid untouched',
+      () async {
+        final swap = chainSwap(sendTxid: 'already-there');
+
+        final result = await repo().reconcileLockupTxid(swap);
+
+        expect(identical(result, swap), isTrue);
+        verifyNever(() => storage.fetchChainSwap(any()));
+      },
+    );
+
+    test(
+      'fails safe (returns the swap) when the secure blob is gone',
+      () async {
+        final swap = chainSwap(sendTxid: null);
+        when(() => storage.fetchChainSwap(any())).thenThrow(
+          SwapsException('no secure-storage blob for swap ${swap.id}'),
+        );
+
+        final result = await repo().reconcileLockupTxid(swap);
+
+        expect(result.txId, isNull);
+        verifyNever(() => storage.store(any()));
       },
     );
   });
