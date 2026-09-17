@@ -39,4 +39,29 @@ void main() {
     expect(mapped, isA<Err<int, _OtherFailure>>());
     expect((mapped as Err).failure.logMessage, 'original');
   });
+
+  group('Failure.toString', () {
+    test('names the failure when there is no message', () {
+      expect(const _Bare().toString(), '_Bare');
+    });
+
+    test('never carries the message', () {
+      // Interpolating a failure — into a log line, an exception, a UI
+      // string — is what callers reach for, and `logMessage` may hold a
+      // foreign message or a storage key. It travels only where someone
+      // read it on purpose.
+      const failure = _Detailed('keystore locked');
+      expect(failure.toString(), '_Detailed');
+      expect('$failure', isNot(contains('keystore locked')));
+      expect(failure.logMessage, 'keystore locked');
+    });
+  });
+}
+
+final class _Bare extends Failure {
+  const _Bare();
+}
+
+final class _Detailed extends Failure {
+  const _Detailed(String super.logMessage);
 }
