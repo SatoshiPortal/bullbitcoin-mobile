@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/s
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as fss10;
 import 'package:flutter_secure_storage_legacy/flutter_secure_storage.dart'
     as fss9;
@@ -18,6 +19,54 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class StorageLocator {
+  static const _prewarmKey = '__bull_secure_storage_prewarm__';
+  static const _fss10Storage = fss10.FlutterSecureStorage(
+    aOptions: fss10.AndroidOptions(
+      resetOnError: false,
+      migrateOnAlgorithmChange: false,
+    ),
+    iOptions: fss10.IOSOptions(
+      accessibility: fss10.KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
+
+  /// Starts Android's FSS10 cipher initialization on a fresh-looking install.
+  ///
+  /// The native plugin may inspect legacy ESP while initializing, so the
+  /// optimization is skipped if any supported prior-install marker exists.
+  /// The manifest disables Android backup; classification still fails closed.
+  /// The authoritative startup probe handles FSS9 fallback and reports errors.
+  static Future<void> prewarmSecureStorage() async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+
+    try {
+      const seedStoreTypeDatasource = SeedStoreTypeDatasource();
+      if (await seedStoreTypeDatasource.read() != null) return;
+
+      final priorInstall = await _inspectPriorInstallData();
+      if (priorInstall.hasDatabase || priorInstall.hasLegacyHiveBoxes) return;
+
+      await _fss10Storage.containsKey(key: _prewarmKey);
+    } catch (_) {
+      // Fail closed. The startup probe repeats initialization and remains the
+      // only path allowed to select FSS10 or route an install through FSS9.
+    }
+  }
+
+  static Future<({bool hasDatabase, bool hasLegacyHiveBoxes})>
+  _inspectPriorInstallData() async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final database = File(
+      p.join(documentsDirectory.path, 'bullbitcoin_sqlite.sqlite'),
+    );
+    final hasDatabase = await database.exists();
+    final hasLegacyHiveBoxes = await documentsDirectory.list().any(
+      (entity) => entity.path.endsWith('.hive'),
+    );
+
+    return (hasDatabase: hasDatabase, hasLegacyHiveBoxes: hasLegacyHiveBoxes);
+  }
+
   static Future<void> registerDatasources(GetIt locator) async {
     const seedStoreTypeDatasource = SeedStoreTypeDatasource();
     locator.registerLazySingleton<SeedStoreTypeDatasource>(
@@ -56,22 +105,12 @@ class StorageLocator {
           // FSS9 which can still read ESP data via encryptedSharedPreferences:true.
           log.fine('StorageLocator: no existing flag — attempting fss10 init');
           try {
-            final storage = fss10.FlutterSecureStorage(
-              aOptions: const fss10.AndroidOptions(
-                // Never auto-delete data on errors. v10 default is true.
-                resetOnError: false,
-                // Never run any migration. With the fork's StorageCipherFactory
-                // patch, this also makes fresh installs initialize the cipher
-                // cleanly (saved=current when no markers exist). 6.5.2 ESP
-                // users hit the line-195 error branch and get caught into the
-                // FSS9 fallback below.
-                migrateOnAlgorithmChange: false,
-              ),
-              iOptions: const fss10.IOSOptions(
-                accessibility:
-                    fss10.KeychainAccessibility.first_unlock_this_device,
-              ),
-            );
+            // Never auto-delete data on errors or run an implicit migration.
+            // With the fork's StorageCipherFactory patch, this also makes fresh
+            // installs initialize the cipher cleanly (saved=current when no
+            // markers exist). 6.5.2 ESP users hit the explicit error branch
+            // and get caught into the FSS9 fallback below.
+            const storage = _fss10Storage;
             // Trigger native init by reading. The constructor alone never
             // throws — failures only surface on data access.
             final data = await storage.readAll();
@@ -82,24 +121,19 @@ class StorageLocator {
             // Belt-and-suspenders: if FSS10 returns empty but data from a prior
             // install exists, treat it as a silent failure and route to FSS9.
             if (data.isEmpty) {
-              final docsDir = await getApplicationDocumentsDirectory();
-              final dbFile = File(
-                p.join(docsDir.path, 'bullbitcoin_sqlite.sqlite'),
-              );
+              final priorInstall = await _inspectPriorInstallData();
               // A pre-v5 ("BULL" 0.x) install has no SQLite database — it kept
               // everything in Hive. Probing only for the database made such a
               // device look like a fresh install: it committed to fss10 and its
               // fss9/ESP secrets (seed material included) stayed invisible on
               // every later launch, flag included. Measured on a real
               // 0.4.3 → 6.13 upgrade.
-              final hasLegacyHiveBoxes = await docsDir.list().any(
-                (entity) => entity.path.endsWith('.hive'),
-              );
-              if (await dbFile.exists() || hasLegacyHiveBoxes) {
+              if (priorInstall.hasDatabase || priorInstall.hasLegacyHiveBoxes) {
                 log.warning(
                   'StorageLocator: fss10 readAll returned empty but prior '
                   'install data exists (database: '
-                  '${await dbFile.exists()}, hive boxes: $hasLegacyHiveBoxes) '
+                  '${priorInstall.hasDatabase}, hive boxes: '
+                  '${priorInstall.hasLegacyHiveBoxes}) '
                   '— silent failure detected, falling back to fss9',
                 );
                 throw Exception(
@@ -198,16 +232,7 @@ class StorageLocator {
           log.fine(
             'StorageLocator: existing flag is fss10 — using current storage',
           );
-          final storage = fss10.FlutterSecureStorage(
-            aOptions: const fss10.AndroidOptions(
-              resetOnError: false,
-              migrateOnAlgorithmChange: false,
-            ),
-            iOptions: const fss10.IOSOptions(
-              accessibility:
-                  fss10.KeychainAccessibility.first_unlock_this_device,
-            ),
-          );
+          const storage = _fss10Storage;
           secureStorageDatasource = SecureStorageDatasourceImpl(storage);
           log.fine('StorageLocator: fss10 storage initialized from flag');
       }
@@ -219,15 +244,7 @@ class StorageLocator {
       // warning in `wallet_bloc.dart` / `home_errors.dart` doesn't
       // surface for current iOS installs.
       log.fine('StorageLocator: non-Android — fss10 direct, no probe');
-      final storage = fss10.FlutterSecureStorage(
-        aOptions: const fss10.AndroidOptions(
-          resetOnError: false,
-          migrateOnAlgorithmChange: false,
-        ),
-        iOptions: const fss10.IOSOptions(
-          accessibility: fss10.KeychainAccessibility.first_unlock_this_device,
-        ),
-      );
+      const storage = _fss10Storage;
       secureStorageDatasource = SecureStorageDatasourceImpl(storage);
 
       if (existingLibrary != SeedStorageLibrary.fss10) {
