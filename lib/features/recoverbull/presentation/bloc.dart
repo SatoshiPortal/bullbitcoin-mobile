@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_tor_route.dart';
 import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart'
     as core;
 import 'package:bb_mobile/core/recoverbull/domain/usecases/check_server_connection_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_encrypted_vault_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
@@ -39,6 +40,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
   final SaveVaultToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final CreateEncryptedVaultUsecase _createEncryptedVaultUsecase;
+  final CompleteEncryptedVaultBackupUsecase
+  _completeEncryptedVaultBackupUsecase;
   final StoreVaultKeyIntoServerUsecase _storeVaultKeyIntoServerUsecase;
 
   /// Single-shot: the pre-flight check before storing a vault key, where the
@@ -69,6 +72,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required this._pickVaultUsecase,
     required this._saveFileToSystemUsecase,
     required this._createEncryptedVaultUsecase,
+    required this._completeEncryptedVaultBackupUsecase,
     required this._storeVaultKeyIntoServerUsecase,
     required this._checkKeyServerConnectionUsecase,
     required this._connectToKeyServerUsecase,
@@ -386,10 +390,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       final EncryptedVault vault;
       final String vaultKey;
+      final String walletId;
       switch (await _createEncryptedVaultUsecase.execute()) {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
+          walletId = value.walletId;
         case Err():
           emit(state.copyWith(failure: const VaultCreationFailure()));
           return;
@@ -429,6 +435,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           }
         case VaultProvider.iCloud:
           log.warning('iCloud, not supported yet');
+          emit(state.copyWith(failure: const VaultCreationFailure()));
+          return;
       }
 
       final keyStored = await _storeVaultKeyIntoServerUsecase.execute(
@@ -443,8 +451,16 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         return;
       }
 
+      final completed = await _completeEncryptedVaultBackupUsecase.execute(
+        walletId: walletId,
+      );
+      if (completed case Err()) {
+        emit(state.copyWith(failure: const VaultCreationFailure()));
+        return;
+      }
+
       emit(state.copyWith(vault: vault, vaultProvider: event.provider));
-      log.fine('Vault created and key stored in server');
+      log.fine('Encrypted vault backup completed');
     } finally {
       emit(state.copyWith(isLoading: false));
     }

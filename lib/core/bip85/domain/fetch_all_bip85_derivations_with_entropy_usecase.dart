@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -14,10 +15,12 @@ import 'package:bip32_keys/bip32_keys.dart' as bip32;
 class FetchAllBip85DerivationsWithEntropyUsecase {
   final Bip85Repository _bip85Repository;
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final SettingsRepository _settingsRepository;
 
   FetchAllBip85DerivationsWithEntropyUsecase({
     required this._bip85Repository,
     required this._getDefaultSeedUsecase,
+    required this._settingsRepository,
   });
 
   @useResult
@@ -29,10 +32,15 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
   >
   execute() async {
     try {
-      final defaultSeed = await _getDefaultSeedUsecase.execute();
+      final settings = await _settingsRepository.fetch();
+      final defaultSeed = await _getDefaultSeedUsecase.execute(
+        environment: settings.environment,
+      );
       final xprvBase58 = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
-        Network.bitcoinMainnet,
+        settings.environment.isTestnet
+            ? Network.bitcoinTestnet
+            : Network.bitcoinMainnet,
       );
 
       switch (await _bip85Repository.fetchAll()) {
