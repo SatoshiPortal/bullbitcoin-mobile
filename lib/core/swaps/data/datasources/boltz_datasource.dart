@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:boltz_stream/boltz_stream.dart';
@@ -189,14 +190,17 @@ class BoltzDatasource {
     return exists;
   }
 
-  Future<void> deriveSwapMasterKey({
-    required String mnemonic,
+  /// Stores a swap master key the `secrets` package has already derived. Nothing here touches the wallet's words; the package did, once.
+  Future<void> storeSwapMasterKey({
+    required SwapKey key,
     required String walletFingerprint,
-    required bool isTestnet,
   }) async {
-    final model = await SwapMasterKeyModel.create(
-      mnemonic: mnemonic,
-      isTestnet: isTestnet,
+    final model = SwapMasterKeyModel(
+      xprv: key.xprv,
+      xpub: key.xpub,
+      network: key.isTestnet ? 'testnet' : 'mainnet',
+      mnemonic: key.mnemonic,
+      fingerprint: key.fingerprint.hex,
     );
     await _boltzStore.storeSwapMasterKey(
       model,

@@ -390,6 +390,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         case Ok(:final value):
           vault = value.vault;
           vaultKey = value.vaultKey;
+          // Held in state so the backup screens can tell the user their
+          // passphrase is not in the file. The vault format is unchanged
+          // on purpose — every existing backup and the key server speak it.
+          emit(
+            state.copyWith(vaultExcludesPassphrase: value.passphraseExcluded),
+          );
         case Err():
           emit(state.copyWith(failure: const VaultCreationFailure()));
           return;

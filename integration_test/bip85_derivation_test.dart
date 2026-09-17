@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
@@ -24,7 +24,7 @@ Future<void> main({bool isInitialized = false}) async {
   if (!isInitialized) await Bull.init();
 
   final sqlite = locator<SqliteDatabase>();
-  final seedRepository = locator<SeedRepository>();
+  final secrets = locator<Secrets>();
   final walletRepository = locator<WalletRepository>();
   final bip85Datasource = locator<Bip85Datasource>();
   final bip85Repository = locator<Bip85Repository>();
@@ -50,7 +50,7 @@ Future<void> main({bool isInitialized = false}) async {
   final usecase = DeriveNextBip85MnemonicFromDefaultWalletUsecase(
     bip85Repository: bip85Repository,
     walletRepository: walletRepository,
-    seedRepository: seedRepository,
+    secrets: secrets,
     settingsRepository: locator<SettingsRepository>(),
   );
 

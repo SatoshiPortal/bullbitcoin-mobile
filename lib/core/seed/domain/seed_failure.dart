@@ -7,7 +7,3 @@ sealed class SeedFailure extends Failure {
 final class SeedFetchFailure extends SeedFailure {
   const SeedFetchFailure([super.logMessage]);
 }
-
-final class SeedDeleteFailure extends SeedFailure {
-  const SeedDeleteFailure([super.logMessage]);
-}

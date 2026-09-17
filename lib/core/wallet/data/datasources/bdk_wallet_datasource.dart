@@ -207,6 +207,38 @@ class BdkWalletDatasource {
     };
   }
 
+  /// Returns [psbt] with this wallet's BIP32 derivations added to every input
+  /// and output it owns, from its local index. Signs nothing: the wallet is
+  /// built from the public descriptors.
+  ///
+  /// A signer only signs inputs it can derive, and learns the path either from
+  /// the PSBT or from its own view of the chain. The package's signing wallet
+  /// has no view of the chain, so a PSBT must carry the paths — and the input a
+  /// payjoin receiver contributes arrives with a witness UTXO and nothing
+  /// else. bdk's `sign` fills the paths in for every input whose outpoint the
+  /// wallet knows before it looks for keys; with no keys, that is all it does.
+  Future<String> addOwnDerivations({
+    required String psbt,
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final parsed = bdk.Psbt(psbtBase64: psbt);
+    bdkWallet.sign(psbt: parsed, signOptions: _annotateOptions);
+    return parsed.serialize();
+  }
+
+  /// Trusts the witness UTXO a payjoin input carries, and finalizes nothing:
+  /// annotation must leave the PSBT for the signer exactly as it found it,
+  /// paths aside.
+  static final _annotateOptions = bdk.SignOptions(
+    trustWitnessUtxo: true,
+    assumeHeight: null,
+    allowAllSighashes: false,
+    tryFinalize: false,
+    signWithTapInternalKey: false,
+    allowGrinding: true,
+  );
+
   Future<bool> isAddressMine(
     String address, {
     required WalletModel wallet,

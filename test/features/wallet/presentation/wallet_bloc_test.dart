@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecas
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_legacy_seed_storage_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
@@ -38,9 +37,6 @@ class _MockGetUnconfirmedIncomingBalanceUsecase extends Mock
     implements GetUnconfirmedIncomingBalanceUsecase {}
 
 class _MockDeleteWalletUsecase extends Mock implements DeleteWalletUsecase {}
-
-class _MockCheckLegacySeedStorageUsecase extends Mock
-    implements CheckLegacySeedStorageUsecase {}
 
 class _MockCheckBackupNeededUsecase extends Mock
     implements CheckBackupNeededUsecase {}
@@ -71,7 +67,6 @@ WalletBloc createBloc(GetExternalTorProxyStatusUsecase externalStatus) {
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
-    checkLegacySeedStorageUsecase: _stubbedLegacySeedCheck(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
     checkSpWalletSetupForWalletUsecase:
@@ -274,7 +269,6 @@ WalletBloc _blocWithFailingLoad(WalletFailure failure) {
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
-    checkLegacySeedStorageUsecase: _stubbedLegacySeedCheck(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -303,14 +297,6 @@ SyncWalletsUsecase _stubbedSync() {
     () => sync.execute(trigger: any(named: 'trigger')),
   ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
   return sync;
-}
-
-CheckLegacySeedStorageUsecase _stubbedLegacySeedCheck() {
-  final check = _MockCheckLegacySeedStorageUsecase();
-  when(
-    check.execute,
-  ).thenAnswer((_) async => const Ok<bool, WalletFailure>(false));
-  return check;
 }
 
 /// Silent Payments stubbed off: with the feature gate closed, the SP refresh
@@ -393,7 +379,6 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     getUnconfirmedIncomingBalanceUsecase:
         _MockGetUnconfirmedIncomingBalanceUsecase(),
     deleteWalletUsecase: _MockDeleteWalletUsecase(),
-    checkLegacySeedStorageUsecase: _stubbedLegacySeedCheck(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),

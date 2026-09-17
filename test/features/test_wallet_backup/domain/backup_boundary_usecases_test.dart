@@ -1,7 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -12,27 +8,25 @@ import 'package:bb_mobile/features/onboarding/complete_physical_backup_verificat
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
-class _MockSeedRepository extends Mock implements SeedRepository {}
-
 class _MockCompletePhysicalBackupVerificationUsecase extends Mock
     implements CompletePhysicalBackupVerificationUsecase {}
 
 const _fingerprint = 'abcd1234';
-const _mnemonicWords = ['legal', 'winner', 'thank', 'year'];
 
-/// Deliberately leaky: a driver reason quoting a filesystem path, plus one
-/// quoting seed material. Neither may travel further than logMessage.
+/// Deliberately leaky: a driver reason quoting a filesystem path. It may not
+/// travel further than logMessage.
 const _rawReason = 'DriftRemoteException: locked at /data/user/0/app.sqlite';
-const _secretReason = 'keychain failed for legal winner thank year';
 
 const _settings = SettingsEntity(
   environment: Environment.mainnet,
@@ -178,69 +172,56 @@ void main() {
     );
   });
 
-  group('GetMnemonicFromFingerprintUsecase', () {
-    late _MockSeedRepository seeds;
-    late GetMnemonicFromFingerprintUsecase usecase;
+  group('GetSecretFromFingerprintUsecase', () {
+    // The published BIP39 test vector; its fingerprint is 73c5da0a.
+    const words = [
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'about',
+    ];
+    late Secrets secrets;
+    late GetSecretFromFingerprintUsecase usecase;
 
     setUp(() {
-      seeds = _MockSeedRepository();
-      usecase = GetMnemonicFromFingerprintUsecase(seedRepository: seeds);
+      FakeSecureStoragePlatform().install();
+      secrets = Secrets(scratchDirectory: () async => '/tmp');
+      usecase = GetSecretFromFingerprintUsecase(secrets: secrets);
     });
 
-    test('returns the mnemonic and passphrase on success', () async {
-      when(() => seeds.get(_fingerprint)).thenAnswer(
-        (_) async => MnemonicSeed(
-          mnemonicWords: _mnemonicWords,
-          passphrase: 'pass',
-          bytes: Uint8List.fromList([1, 2, 3]),
-          masterFingerprint: _fingerprint,
-        ),
-      );
+    test('returns the handle of a stored secret', () async {
+      await secrets.import(words: words);
 
-      final result = await usecase.execute(_fingerprint);
-
-      final (
-        words,
-        passphrase,
-      ) = (result as Ok<(List<String>, String?), TestWalletBackupFailure>)
-          .value;
-      expect(words, _mnemonicWords);
-      expect(passphrase, 'pass');
-    });
-
-    test('maps a non-mnemonic seed to its own variant', () async {
-      when(() => seeds.get(_fingerprint)).thenAnswer(
-        (_) async => BytesSeed(
-          bytes: Uint8List.fromList([1, 2, 3]),
-          masterFingerprint: _fingerprint,
-        ),
-      );
-
-      final result = await usecase.execute(_fingerprint);
+      final result = await usecase.execute('73c5da0a');
 
       switch (result) {
-        case Ok():
-          fail('a non-mnemonic seed has no phrase to return');
-        case Err(:final failure):
-          expect(failure, isA<TestWalletBackupSeedNotMnemonicFailure>());
+        case Ok(:final value):
+          expect(value.id.hex, '73c5da0a');
+        case Err():
+          fail('a stored secret must be found');
       }
     });
 
-    test('drops a secret-shaped reason entirely rather than carrying it '
+    test('maps an absent secret to the seed variant, carrying no reason '
         'into a state-resident failure', () async {
-      when(() => seeds.get(_fingerprint)).thenThrow(Exception(_secretReason));
-
       final result = await usecase.execute(_fingerprint);
 
       switch (result) {
         case Ok():
-          fail('a thrown seed read must not be reported as a mnemonic');
+          fail('there is no secret under this fingerprint');
         case Err(:final failure):
           expect(failure, isA<TestWalletBackupSeedUnavailableFailure>());
-          // Logged at the boundary and dropped here: the seed path is the one
-          // place where even logMessage is too far to carry a raw reason.
+          // Logged at the boundary by type and dropped here: the seed path is
+          // the one place where even logMessage is too far to carry a reason.
           expect(failure.logMessage, isNull);
-          expect(failure.toString(), isNot(contains('legal winner')));
       }
     });
   });

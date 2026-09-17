@@ -445,9 +445,6 @@ class InMemoryKeyValueStorage implements KeyValueStorageDatasource<String> {
 
   @override
   Future<void> deleteValue(String key) async => _store.remove(key);
-
-  @override
-  Future<void> deleteAll() async => _store.clear();
 }
 
 /// Stands in for a locked keystore: every storage call throws.
@@ -470,9 +467,6 @@ class ThrowingKeyValueStorage implements KeyValueStorageDatasource<String> {
   @override
   Future<void> deleteValue(String key) async =>
       throw Exception('keystore locked');
-
-  @override
-  Future<void> deleteAll() async => throw Exception('keystore locked');
 }
 
 /// In-memory fake of [SpAutoScanRepository]; the choice is not persisted in

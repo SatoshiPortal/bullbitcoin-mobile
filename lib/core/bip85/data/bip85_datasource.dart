@@ -1,10 +1,8 @@
 import 'package:bb_mobile/core/bip85/data/bip85_derivation_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
-import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
-import 'package:convert/convert.dart';
 import 'package:drift/drift.dart';
 
 class Bip85Datasource {
@@ -12,8 +10,9 @@ class Bip85Datasource {
 
   Bip85Datasource({required this._sqlite});
 
-  Future<({String derivation, String hex})> deriveHex({
-    required String xprvBase58,
+  /// Records a HEX derivation the `secrets` package has already performed, under the path it has always been filed by. Nothing here derives: the xprv no longer leaves the package.
+  Future<String> recordHex({
+    required String xprvFingerprint,
     required int length,
     required int index,
     String? alias,
@@ -21,35 +20,24 @@ class Bip85Datasource {
     try {
       const application = Bip85ApplicationColumn.hex;
       final derivationPath = "${application.number}'/$length'/$index'";
-
-      // Ensure the xprv is valid.
-      final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
-
-      final bip85Hex = bip85.Bip85Entropy.deriveHex(
-        xprvBase58: xprvBase58,
-        numBytes: length,
-        index: index,
-      );
-
-      // store the derivation into sqlite
       await _store(
         Bip85DerivationModel(
           path: derivationPath,
-          xprvFingerprint: hex.encode(xprv.fingerprint),
+          xprvFingerprint: xprvFingerprint,
           alias: alias,
           status: Bip85StatusColumn.active,
           application: application,
         ),
       );
 
-      return (derivation: derivationPath, hex: bip85Hex);
+      return derivationPath;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<({String derivation, bip39.Mnemonic mnemonic})> deriveMnemonic({
-    required String xprvBase58,
+  Future<String> recordMnemonic({
+    required String xprvFingerprint,
     required bip39.MnemonicLength length,
     required int index,
     String? alias,
@@ -59,29 +47,17 @@ class Bip85Datasource {
       const application = Bip85ApplicationColumn.bip39;
       final derivationPath =
           "${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
-
-      // Ensure the xprv is valid.
-      final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
-
-      final bip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
-        xprvBase58: xprvBase58,
-        language: language,
-        length: length,
-        index: index,
-      );
-
-      // store the derivation into sqlite
       await _store(
         Bip85DerivationModel(
           path: derivationPath,
-          xprvFingerprint: hex.encode(xprv.fingerprint),
+          xprvFingerprint: xprvFingerprint,
           alias: alias,
           status: Bip85StatusColumn.active,
           application: application,
         ),
       );
 
-      return (derivation: derivationPath, mnemonic: bip85Mnemonic);
+      return derivationPath;
     } catch (e) {
       rethrow;
     }
