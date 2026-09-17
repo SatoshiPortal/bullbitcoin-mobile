@@ -4119,10 +4119,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "قيد التحقق",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4151,10 +4147,6 @@
   "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
-  },
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
   },
   "walletDetailsSignerDeviceNotSupported": "غير مدعوم",
   "@walletDetailsSignerDeviceNotSupported": {
@@ -12203,5 +12195,8 @@
   "sendErrorExchangeOrderMismatch": "لم يعد هذا الدفع مطابقًا للطلب. يرجى بدء الدفع من جديد.",
   "sellUnexpectedError": "تعذّر إتمام أمر البيع في الوقت الحالي. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
   "sellErrorFeeBelowRelayFloor": "رسوم الشبكة منخفضة جدًا. اختر رسومًا أعلى.",
-  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى."
+  "sellErrorFeesUnavailable": "لم يتم تحميل رسوم الشبكة. تحقق من اتصالك وحاول مرة أخرى.",
+  "settingsErrorSavingSetting": "تعذر حفظ هذا الإعداد. يرجى المحاولة مرة أخرى.",
+  "settingsErrorConsentNotGiven": "يتطلب هذا الإعداد تأكيدك قبل تغييره.",
+  "settingsErrorLoadingLogs": "تعذر تجهيز سجلات التشخيص. يرجى المحاولة مرة أخرى."
 }

@@ -4386,10 +4386,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "KYC ID सत्यापन लंबित",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -4418,10 +4414,6 @@
   "fundExchangeMethodRegularSepaSubtitle": "केवल €30,000 से अधिक बड़े लेनदेन के लिए उपयोग करें",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
-  },
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
   },
   "walletDetailsSignerDeviceNotSupported": "समर्थित नहीं",
   "@walletDetailsSignerDeviceNotSupported": {
@@ -12390,5 +12382,8 @@
   "sendErrorExchangeOrderMismatch": "यह भुगतान अब ऑर्डर से मेल नहीं खाता। कृपया भुगतान फिर से शुरू करें।",
   "sellUnexpectedError": "आपका बिक्री ऑर्डर अभी पूरा नहीं किया जा सका। कृपया फिर कोशिश करें या सहायता से संपर्क करें।",
   "sellErrorFeeBelowRelayFloor": "नेटवर्क शुल्क बहुत कम है। अधिक शुल्क चुनें।",
-  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।"
+  "sellErrorFeesUnavailable": "नेटवर्क शुल्क लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "settingsErrorSavingSetting": "वह सेटिंग सहेजी नहीं जा सकी। कृपया पुनः प्रयास करें।",
+  "settingsErrorConsentNotGiven": "इस सेटिंग को बदलने से पहले आपकी पुष्टि आवश्यक है।",
+  "settingsErrorLoadingLogs": "डायग्नोस्टिक लॉग तैयार नहीं किए जा सके। कृपया पुनः प्रयास करें।"
 }
