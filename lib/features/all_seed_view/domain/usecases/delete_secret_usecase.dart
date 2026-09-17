@@ -23,8 +23,15 @@ class DeleteSecretUsecase {
   Future<Result<void, AllSeedViewFailure>> execute(Fingerprint id) async {
     try {
       switch (await _walletRepository.getWallets()) {
+        // Only a wallet that signs locally holds this seed; a watch-only wallet
+        // with the same origin fingerprint does not, whatever its spelling.
+        // Same rule as DeleteWalletUsecase and ImportWalletUsecase.
         case Ok(value: final wallets)
-            when wallets.any((w) => w.masterFingerprint == id.hex):
+            when wallets.any(
+              (w) =>
+                  w.signsLocally &&
+                  Fingerprint.tryParse(w.masterFingerprint) == id,
+            ):
           log.warning('Refused to delete secret $id: a wallet still uses it');
           return const Err(
             AllSeedViewDeleteFailure('a wallet still uses this secret'),
