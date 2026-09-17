@@ -6,4 +6,8 @@ abstract class Failure {
   final String? logMessage;
 
   const Failure([this.logMessage]);
+
+  /// The type only. [logMessage] may carry what a boundary chose to record — a foreign message, a storage key — and interpolating a failure into a log, an exception or a UI string must not carry it along by accident. Read [logMessage] where it is wanted.
+  @override
+  String toString() => '$runtimeType';
 }
