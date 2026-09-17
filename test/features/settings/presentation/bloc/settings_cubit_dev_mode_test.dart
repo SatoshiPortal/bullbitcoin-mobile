@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
@@ -92,7 +93,9 @@ void main() {
     revokeSpWalletUsecase = _MockRevokeSpWalletUsecase();
     checkSpWalletSetupUsecase = _MockCheckSpWalletSetupUsecase();
 
-    when(() => setIsDevModeUsecase.execute(any())).thenAnswer((_) async {});
+    when(
+      () => setIsDevModeUsecase.execute(any()),
+    ).thenAnswer((_) async => const Ok(null));
     when(
       () => revokeSpWalletUsecase.execute(),
     ).thenAnswer((_) async => const Ok(null));
@@ -188,6 +191,29 @@ void main() {
         expect(cubit.state.revokeSpFailed, isTrue);
       },
     );
+
+    test('a failed dev-mode write after a successful revoke still re-reads the '
+        'SP setup flag', () async {
+      when(() => setIsDevModeUsecase.execute(any())).thenAnswer(
+        (_) async => const Err(SettingsStorageFailure('write failed')),
+      );
+      cubit.emit(
+        cubit.state.copyWith(
+          storedSettings: _settings(isDevModeEnabled: true),
+          isSpWalletSetup: true,
+        ),
+      );
+
+      await cubit.toggleDevMode(false);
+
+      // The revoke already dropped the wallet, so the flag must not keep
+      // claiming it is set up just because the dev-mode write failed.
+      verify(() => revokeSpWalletUsecase.execute()).called(1);
+      verify(() => checkSpWalletSetupUsecase.execute()).called(1);
+      expect(cubit.state.isSpWalletSetup, isFalse);
+      expect(cubit.state.failure, isA<SettingsStorageFailure>());
+      expect(cubit.state.storedSettings?.isDevModeEnabled, true);
+    });
 
     test(
       'successful toggle-off clears any previously-set revokeSpFailed',
