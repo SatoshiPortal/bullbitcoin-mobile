@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,8 @@ class _SwapRestoreBody extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: BullText(
-              state.error ?? context.loc.swapRestoreFailed,
+              state.error?.toTranslated(context) ??
+                  context.loc.swapRestoreFailed,
               style: context.font.bodyMedium,
               color: context.bull.textMuted,
               textAlign: .center,

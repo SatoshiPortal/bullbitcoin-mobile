@@ -1,17 +1,16 @@
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockBoltzStorageDatasource extends Mock
-    implements BoltzStorageDatasource {}
+class _MockSwapStorage extends Mock implements SwapStorage {}
 
 void main() {
   test('does not open a websocket when constructed', () {
     var webSocketCreations = 0;
 
     BoltzDatasource(
-      boltzStore: _MockBoltzStorageDatasource(),
+      url: 'api.boltz.exchange/v2',
+      boltzStore: _MockSwapStorage(),
       webSocketFactory:
           (
             String _, {

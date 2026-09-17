@@ -63,10 +63,10 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.swap_vertical_circle,
-                  title: context.loc.autoswapSettingsTitle,
+                  icon: Icons.swap_horizontal_circle,
+                  title: context.loc.swapsSettingsTitle,
                   onTap: () {
-                    context.pushNamed(SettingsRoute.autoswapSettings.name);
+                    context.pushNamed(SettingsRoute.swapsSettings.name);
                   },
                 ),
                 SettingsEntryItem(

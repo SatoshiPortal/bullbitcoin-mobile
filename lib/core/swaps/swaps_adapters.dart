@@ -1,0 +1,148 @@
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:drift/drift.dart';
+import 'package:drift_flutter/drift_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:boltz_swaps/boltz_swaps.dart' as swaps;
+
+/// Opens the engine's own database file. Same platform choices as the app
+/// database (documents dir, WAL, busy timeout, cross-isolate sharing) — the
+/// package itself stays pure Dart and just takes the executor.
+QueryExecutor openBoltzSwapsDbConnection() {
+  return driftDatabase(
+    name: swaps.BoltzSwapsDatabase.name,
+    native: DriftNativeOptions(
+      databaseDirectory: getApplicationDocumentsDirectory,
+      shareAcrossIsolates: true,
+      setup: (database) {
+        // busy_timeout first so the WAL switch retries instead of failing
+        // with SQLITE_BUSY when another isolate holds the file (same
+        // rationale as the app database's setup).
+        database.execute('PRAGMA busy_timeout = 2000;');
+        database.execute('PRAGMA journal_mode = WAL;');
+        database.execute('PRAGMA synchronous = FULL;');
+      },
+    ),
+  );
+}
+
+/// App logger behind the package's silent-by-default log seam.
+class AppSwapsLog implements swaps.SwapsLog {
+  const AppSwapsLog();
+
+  @override
+  void fine(String message) => log.fine(message);
+  @override
+  void info(String message) => log.info(message);
+  @override
+  void warning(String message) => log.warning(message);
+  @override
+  void severe(String message, {Object? error, StackTrace? trace}) => log.severe(
+    message: message,
+    error: error ?? message,
+    trace: trace ?? StackTrace.current,
+  );
+  @override
+  Future<void> flush() => log.flush();
+}
+
+/// Platform secure storage behind the engine's secret-store contract.
+class SecureSecretStore implements swaps.SecretStore {
+  final KeyValueStorageDatasource<String> _secure;
+
+  SecureSecretStore(this._secure);
+
+  @override
+  Future<void> write(String key, String value) =>
+      _secure.saveValue(key: key, value: value);
+
+  @override
+  Future<String?> read(String key) async => _secure.getValue(key);
+
+  @override
+  Future<void> delete(String key) => _secure.deleteValue(key);
+}
+
+/// The app's electrum selection/fallback seam, unchanged: custom-if-set else
+/// defaults, never mixing tiers.
+class AppElectrumRunner implements swaps.ElectrumRunner {
+  final ElectrumServersPort _port;
+
+  AppElectrumRunner(this._port);
+
+  @override
+  Future<T> run<T>({
+    required bool isLiquid,
+    required bool isTestnet,
+    required Future<T> Function(swaps.ElectrumConnection connection) operation,
+    bool Function(Object error)? isTransient,
+  }) => _port.runWithFallback(
+    network: ElectrumServerNetwork.fromEnvironment(
+      isTestnet: isTestnet,
+      isLiquid: isLiquid,
+    ),
+    isTransient: isTransient,
+    operation: (connection) => operation(
+      swaps.ElectrumConnection(
+        url: connection.url,
+        validateDomain: connection.validateDomain,
+        timeout: connection.timeout,
+      ),
+    ),
+  );
+}
+
+/// Bundles the app-side callbacks the engine's constructor takes.
+class SwapsAppGlue {
+  final WalletRepository _walletRepository;
+  final SeedRepository _seedRepository;
+  final SettingsRepository _settingsRepository;
+
+  SwapsAppGlue({
+    required this._walletRepository,
+    required this._seedRepository,
+    required this._settingsRepository,
+  });
+
+  Future<List<swaps.SwapWalletInfo>> wallets({required bool isTestnet}) async {
+    final settings = await _settingsRepository.fetch();
+    final all = await _walletRepository.getWallets(
+      environment: settings.environment,
+    );
+    return [
+      for (final w in all)
+        swaps.SwapWalletInfo(
+          id: w.id,
+          isLiquid: w.isLiquid,
+          isDefault: w.isDefault,
+          fingerprint: w.masterFingerprint,
+        ),
+    ];
+  }
+
+  Future<swaps.SwapSeedSource?> masterSeedSource({
+    required bool isTestnet,
+  }) async {
+    final settings = await _settingsRepository.fetch();
+    final defaults = await _walletRepository.getWallets(
+      onlyDefaults: true,
+      onlyBitcoin: true,
+      environment: settings.environment,
+    );
+    if (defaults.isEmpty) return null;
+    final fingerprint = defaults.first.masterFingerprint;
+    if (fingerprint.isEmpty) return null;
+    final seed = await _seedRepository.get(fingerprint);
+    if (seed is! MnemonicSeed) return null;
+    return swaps.SwapSeedSource(
+      mnemonic: seed.mnemonicWords.join(' '),
+      fingerprint: fingerprint,
+    );
+  }
+}

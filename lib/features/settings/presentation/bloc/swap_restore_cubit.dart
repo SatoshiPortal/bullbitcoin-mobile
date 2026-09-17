@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restore_swaps_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum SwapRestoreStatus { initial, loading, success, error }
@@ -7,7 +6,7 @@ enum SwapRestoreStatus { initial, loading, success, error }
 class SwapRestoreState {
   final SwapRestoreStatus status;
   final List<RestorableSwap> swaps;
-  final String? error;
+  final SwapsFailure? error;
 
   const SwapRestoreState({
     this.status = SwapRestoreStatus.initial,
@@ -33,7 +32,7 @@ class SwapRestoreState {
   SwapRestoreState copyWith({
     SwapRestoreStatus? status,
     List<RestorableSwap>? swaps,
-    String? error,
+    SwapsFailure? error,
   }) {
     return SwapRestoreState(
       status: status ?? this.status,
@@ -51,15 +50,13 @@ class SwapRestoreCubit extends Cubit<SwapRestoreState> {
 
   Future<void> restore() async {
     emit(state.copyWith(status: SwapRestoreStatus.loading));
-    try {
-      final swaps = await _restoreSwapsUsecase.execute();
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRestoreStatus.success, swaps: swaps));
-    } catch (e) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(status: SwapRestoreStatus.error, error: e.toString()),
-      );
-    }
+    final result = await _restoreSwapsUsecase.execute();
+    if (isClosed) return;
+    result.fold(
+      (swaps) =>
+          emit(state.copyWith(status: SwapRestoreStatus.success, swaps: swaps)),
+      (failure) =>
+          emit(state.copyWith(status: SwapRestoreStatus.error, error: failure)),
+    );
   }
 }

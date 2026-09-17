@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 
 class GetUnconfirmedIncomingBalanceUsecase {
   final BoltzSwapRepository _boltzSwapRepository;

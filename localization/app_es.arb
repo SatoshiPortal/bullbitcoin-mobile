@@ -4979,5 +4979,14 @@
   "coreSwapsStatusUnknown": "Desconocido",
   "sendSwapExpiredTitle": "Orden expirada",
   "sendSwapExpiredMessage": "Esta orden expiró antes de que se enviaran fondos. No se envió nada desde tu billetera.",
-  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente."
+  "mempoolErrorNetworkMismatch": "Este servidor está en una red Bitcoin diferente.",
+  "swapServerTitle": "Servidor de swap",
+  "swapServerSubtitle": "El servidor Boltz utilizado para swaps sin confianza. Déjelo vacío para el predeterminado. Surte efecto tras reiniciar la aplicación.",
+  "swapServerReset": "Restablecer el valor predeterminado",
+  "swapsFailureMasterKeyUnavailable": "Esta billetera no puede restaurar swaps: no hay semilla bitcoin disponible para derivar la clave de swap.",
+  "swapsFailureNotRestorable": "No se pudo reconstruir este swap desde el servidor. Contacte a soporte con su ID de swap.",
+  "swapsFailureRefundNotFinal": "El reembolso aún no es gastable (timelock). Inténtelo de nuevo más tarde.",
+  "swapsFailureNetwork": "No se pudo conectar con ningún servidor. Verifique su conexión e inténtelo de nuevo.",
+  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo.",
+  "swapServerInvalid": "Introduce una dirección de servidor válida (p. ej. api.boltz.exchange/v2)"
 }

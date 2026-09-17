@@ -11,11 +11,23 @@ class FeesRepositoryImpl implements FeesRepository {
 
   @override
   Future<FeeOptions> getNetworkFees({required Network network}) async {
-    if (network.isBitcoin) {
+    if (network.isBitcoin && !network.isTestnet) {
       final fees = await _feesDatasource.fetchBitcoinNetworkFees(
         isTestnet: network.isTestnet,
       );
       return MempoolFeesMapper.toFeeOptions(fees);
+    }
+
+    if (network.isBitcoin) {
+      // Testnet bitcoin mempool fee endpoints are unreliable (mempool.space
+      // testnet3 is deprecated), so testnet returns fixed low-rate presets
+      // instead of depending on them. Mainnet still uses live mempool fees.
+      return FeeOptions(
+        fastest: NetworkFee.relativeFromSatPerVbyte(2),
+        economic: NetworkFee.relativeFromSatPerVbyte(1.5),
+        slow: NetworkFee.relativeFromSatPerVbyte(1),
+        minRelay: const RelativeFee(NetworkFeeRelayPolicy.minRelaySatPerKwu),
+      );
     }
 
     // Liquid blocks are typically empty, so the network's minrelayfee

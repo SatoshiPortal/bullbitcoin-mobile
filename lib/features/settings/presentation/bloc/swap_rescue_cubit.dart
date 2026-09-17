@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/rescue_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 
 enum SwapRescueStatus { loading, ready, rescuing, success, error }
 
@@ -9,7 +10,7 @@ class SwapRescueState {
   final SwapRescueStatus status;
   final List<Wallet> wallets;
   final String? selectedWalletId;
-  final String? error;
+  final SwapsFailure? error;
 
   const SwapRescueState({
     this.status = SwapRescueStatus.loading,
@@ -27,7 +28,7 @@ class SwapRescueState {
     SwapRescueStatus? status,
     List<Wallet>? wallets,
     String? selectedWalletId,
-    String? error,
+    SwapsFailure? error,
   }) {
     return SwapRescueState(
       status: status ?? this.status,
@@ -40,17 +41,26 @@ class SwapRescueState {
 
 class SwapRescueCubit extends Cubit<SwapRescueState> {
   final RescueSwapUsecase _rescueSwapUsecase;
+  final GetWalletsUsecase _getWalletsUsecase;
   final RestoredSwap _restored;
 
-  SwapRescueCubit({required this._rescueSwapUsecase, required this._restored})
-    : super(const SwapRescueState()) {
+  SwapRescueCubit({
+    required this._rescueSwapUsecase,
+    required this._getWalletsUsecase,
+    required this._restored,
+  }) : super(const SwapRescueState()) {
     _loadWallets();
   }
 
   Future<void> _loadWallets() async {
     emit(state.copyWith(status: SwapRescueStatus.loading));
     try {
-      final wallets = await _rescueSwapUsecase.candidateWallets(_restored);
+      // Funds land on the chain this swap acts on (claim destination or
+      // refund return); only wallets on that chain are candidates.
+      final wallets = await _getWalletsUsecase.execute(
+        onlyBitcoin: !_restored.actsOnLiquid,
+        onlyLiquid: _restored.actsOnLiquid,
+      );
       if (isClosed) return;
       emit(
         state.copyWith(
@@ -61,7 +71,12 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
       );
     } catch (e) {
       if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
+      emit(
+        state.copyWith(
+          status: SwapRescueStatus.error,
+          error: classifySwapsFailure(e),
+        ),
+      );
     }
   }
 
@@ -73,16 +88,21 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
     final walletId = state.selectedWalletId;
     if (walletId == null) return;
     emit(state.copyWith(status: SwapRescueStatus.rescuing));
-    try {
-      await _rescueSwapUsecase.execute(
-        restored: _restored,
-        selectedWalletId: walletId,
-      );
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.success));
-    } catch (e) {
-      if (isClosed) return;
-      emit(state.copyWith(status: SwapRescueStatus.error, error: e.toString()));
-    }
+    final result = await _rescueSwapUsecase.execute(
+      restored: _restored,
+      selectedWalletId: walletId,
+    );
+    if (isClosed) return;
+    result.fold(
+      (swap) {
+        log.fine(
+          'SWAPS: rescue of ${swap.id} finished with status '
+          '${swap.status.name}',
+        );
+        emit(state.copyWith(status: SwapRescueStatus.success));
+      },
+      (failure) =>
+          emit(state.copyWith(status: SwapRescueStatus.error, error: failure)),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -31,6 +32,10 @@ class _MockIsTorRequiredUsecase extends Mock implements IsTorRequiredUsecase {}
 
 class _MockInitTorUsecase extends Mock implements InitTorUsecase {}
 
+class _MockLogSwapCensusUsecase extends Mock implements LogSwapCensusUsecase {}
+
+class _MockSwapWatcher extends Mock implements SwapWatcher {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
@@ -46,6 +51,8 @@ void main() {
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockCheckLegacyInstallUsecase checkLegacyInstall;
   late _MockIsTorRequiredUsecase isTorRequired;
+  late _MockLogSwapCensusUsecase logSwapCensus;
+  late _MockSwapWatcher swapWatcher;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -55,6 +62,8 @@ void main() {
     checkBackupUsecase: _MockCheckBackupUsecase(),
     isTorRequiredUsecase: isTorRequired,
     initTorUsecase: _MockInitTorUsecase(),
+    logSwapCensusUsecase: logSwapCensus,
+    swapWatcher: swapWatcher,
   );
 
   setUp(() {
@@ -63,9 +72,13 @@ void main() {
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     checkLegacyInstall = _MockCheckLegacyInstallUsecase();
     isTorRequired = _MockIsTorRequiredUsecase();
+    logSwapCensus = _MockLogSwapCensusUsecase();
+    swapWatcher = _MockSwapWatcher();
 
     when(() => resetAppData.execute()).thenAnswer((_) async {});
     when(() => isTorRequired.execute()).thenAnswer((_) async => false);
+    when(() => logSwapCensus.execute()).thenAnswer((_) async {});
+    when(() => swapWatcher.start()).thenAnswer((_) async {});
   });
 
   test(

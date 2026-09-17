@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
+import 'package:boltz_swaps/boltz_swaps.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -32,6 +33,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     required this._checkBackupUsecase,
     required this._isTorRequiredUsecase,
     required this._initTorUsecase,
+    required this._logSwapCensusUsecase,
+    required this._swapWatcher,
   }) : super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);
@@ -45,6 +48,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
+  final LogSwapCensusUsecase _logSwapCensusUsecase;
+  final SwapWatcher _swapWatcher;
 
   /// True while we're sitting on the splash because a startup step
   /// threw `KeychainLockedException` (iOS pre-first-unlock pre-warm).
@@ -109,6 +114,18 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
             throw failure;
         }
         // Other startup logic can be added here, e.g. payjoin sessions resume
+
+        // Diagnostic census of every stored swap (fine level so it reaches
+        // the exported log file), then retract mis-settled chain swap
+        // completions (a bogus receiveTxid recorded by the old vout-0
+        // outspend recovery) so the restore screen can offer the rescue.
+        log.fine('[Startup] running swap census');
+        await _logSwapCensusUsecase.execute();
+        // The watcher is the only driver in the system: it verifies
+        // recorded completions, then claims/refunds/coop-signs every
+        // ongoing swap, with live events, reconcile and a heartbeat.
+        // Never throws; must not delay startup.
+        unawaited(_swapWatcher.start());
       } else {
         // This is a fresh install, so reset the app data that might still be
         //  there from a previous install.

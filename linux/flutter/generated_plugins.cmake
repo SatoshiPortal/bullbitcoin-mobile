@@ -14,6 +14,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   flutter_zxing
   jni
+  onion
   rust_lib_bull_sdk
   tor
 )

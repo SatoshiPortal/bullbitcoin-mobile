@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/auto_swap_settings_repository_impl.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/features/autoswap/data/auto_swap_settings_repository_impl.dart';
+import 'package:bb_mobile/features/autoswap/domain/auto_swap.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
