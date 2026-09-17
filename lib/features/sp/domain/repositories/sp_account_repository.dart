@@ -1,3 +1,4 @@
+import 'package:secrets/secrets.dart' show Secret;
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
@@ -25,13 +26,12 @@ abstract interface class SpAccountRepository {
   /// path (recreate, revoke, ensure) tears the session down before establishing
   /// a new one, so that guard only fires on a real programmer error.
   ///
-  /// This is the only call that carries the mnemonic across the FFI boundary,
-  /// so its failures carry fixed text: no error string derived from the
-  /// arguments is ever interpolated into the returned failure.
+  /// The account is opened inside `package:secrets` from [secret], so no
+  /// mnemonic crosses this boundary; its failures still carry fixed text.
   @useResult
-  Future<Result<void, SpFailure>> createFromMnemonic({
+  Future<Result<void, SpFailure>> createFromSecret({
     required BitcoinNetwork network,
-    required String mnemonic,
+    required Secret secret,
     required String blindbitUrl,
     required String electrumUrl,
     int fetchConcurrencyFactor = SpConfig.defaultFetchConcurrencyFactor,
@@ -122,7 +122,7 @@ abstract interface class SpAccountRepository {
 
   /// Emit a setup-changed event on [updates]. Called by the revoke use case
   /// after it tears the wallet down, so observers (the wallet home) re-evaluate
-  /// setup state. `createFromMnemonic` emits the same event internally on setup.
+  /// setup state. `createFromSecret` emits the same event internally on setup.
   void notifySetupChanged();
 
   /// Emit a balance-changed event with the current unified balance. Used by SP

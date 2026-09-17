@@ -4979,5 +4979,6 @@
   "recoverbullServerBadResponse": "Le serveur de sauvegarde a répondu, mais l'échange a échoué.",
   "recoverbullNewRoute": "Autre route",
   "recoverbullTorInitializing": "Initialisation",
-  "recoverbullTorReady": "Prêt"
+  "recoverbullTorReady": "Prêt",
+  "spFailurePassphraseUnsupported": "Les Silent Payments ne sont pas disponibles pour un portefeuille protégé par une passphrase."
 }

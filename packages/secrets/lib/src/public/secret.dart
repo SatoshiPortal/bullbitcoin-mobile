@@ -172,6 +172,39 @@ final class Secret {
         Signer.bitcoin.psbtSigner(m, scriptType: scriptType, network: network),
   );
 
+  // ------------------------------------------------------- silent payments
+
+  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and disposes it when the session ends.
+  ///
+  /// ⚠️ **The words reach bwk.** bwk-dart opens an account from a mnemonic only, so this is the one operation that hands the stored words to a library outside the package; they never reach the app, and the account holds the keys until it is disposed.
+  ///
+  /// ⚠️ **A passphrase cannot be honoured** — bwk derives from the words alone — so a secret that has one is refused with `PassphraseUnsupportedFailure` rather than opening the passphrase-less sibling's wallet.
+  Future<Result<SpAccount, SecretFailure>> silentPaymentsAccount({
+    required String name,
+    required SpNetwork network,
+    required String blindbitUrl,
+    required String electrumUrl,
+    required String dataDir,
+    required BigInt dustLimit,
+    required int fetchConcurrencyFactor,
+    required int matchConcurrencyFactor,
+    SpHeaderCheckpoint? headerCheckpoint,
+  }) => _repository.useMnemonic(
+    info,
+    (m) => SilentPayments.open(
+      m,
+      name: name,
+      network: network,
+      blindbitUrl: blindbitUrl,
+      electrumUrl: electrumUrl,
+      dataDir: dataDir,
+      dustLimit: dustLimit,
+      fetchConcurrencyFactor: fetchConcurrencyFactor,
+      matchConcurrencyFactor: matchConcurrencyFactor,
+      headerCheckpoint: headerCheckpoint,
+    ),
+  );
+
   // ---------------------------------------------------------------- backup
 
   /// Seals this secret into a RecoverBull vault. Not a reveal: what comes back is ciphertext plus the key that opens it — hold both and you hold the mnemonic, so store them apart.

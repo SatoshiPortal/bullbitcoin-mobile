@@ -43,6 +43,11 @@ final class MnemonicRequiredFailure extends SecretFailure {
   const MnemonicRequiredFailure([super.logMessage]);
 }
 
+/// The operation derives from the words alone and the secret has a passphrase: computing it would give the passphrase-less sibling's result, so it is refused.
+final class PassphraseUnsupportedFailure extends SecretFailure {
+  const PassphraseUnsupportedFailure([super.logMessage]);
+}
+
 /// The requested network exists in `primitives` but the underlying
 /// library cannot express it. Currently only Liquid regtest: lwk's
 /// `LiquidNetwork` has mainnet and testnet only, and substituting

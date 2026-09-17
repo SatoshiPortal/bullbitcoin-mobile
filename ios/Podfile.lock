@@ -2,8 +2,6 @@ PODS:
   - bull_tor (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_secure_storage_legacy (6.0.0):
-    - Flutter
   - IPtProxy (5.6.0)
   - onion (0.1.0):
     - Flutter
@@ -19,7 +17,6 @@ PODS:
 DEPENDENCIES:
   - bull_tor (from `.symlinks/plugins/bull_tor/ios`)
   - Flutter (from `Flutter`)
-  - flutter_secure_storage_legacy (from `.symlinks/plugins/flutter_secure_storage_legacy/ios`)
   - onion (from `.symlinks/plugins/onion/ios`)
   - rust_lib_bull_sdk (from `.symlinks/plugins/rust_lib_bull_sdk/ios`)
   - universal_ble (from `.symlinks/plugins/universal_ble/darwin`)
@@ -34,8 +31,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/bull_tor/ios"
   Flutter:
     :path: Flutter
-  flutter_secure_storage_legacy:
-    :path: ".symlinks/plugins/flutter_secure_storage_legacy/ios"
   onion:
     :path: ".symlinks/plugins/onion/ios"
   rust_lib_bull_sdk:
@@ -48,7 +43,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   bull_tor: 42b093bd4750917fa887f50c7cbbc4d3a9ca557a
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_secure_storage_legacy: a315f1c83d88e9490f44a269454281a2c9b2c160
   IPtProxy: e74c1d7266f5d81da3e22d9a2bf27556f5bba004
   onion: 7d4fdc107d371094150e6c7698ee538ea39f340d
   rust_lib_bull_sdk: 6bdd9a2254b376e910a31340e03bf2db56c637db

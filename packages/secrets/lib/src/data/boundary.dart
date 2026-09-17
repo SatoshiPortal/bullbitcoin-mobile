@@ -2,7 +2,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart'
-    show InvalidVault, UnsupportedLiquidNetwork;
+    show InvalidVault, PassphraseUnsupported, UnsupportedLiquidNetwork;
 import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 
@@ -35,6 +35,8 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return Err(SecretStoreFailure(e.message));
   } on UnsupportedLiquidNetwork catch (e) {
     return Err(UnsupportedNetworkFailure(e.message));
+  } on PassphraseUnsupported catch (e) {
+    return Err(PassphraseUnsupportedFailure(e.message));
   } on InvalidVault catch (e) {
     return Err(InvalidVaultFailure(e.message));
   } on MnemonicException catch (e) {

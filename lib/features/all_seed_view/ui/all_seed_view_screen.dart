@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_master_key_info.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -30,11 +30,10 @@ class AllSeedViewScreen extends StatefulWidget {
 
 class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     with PrivacyScreen {
-  @override
-  void initState() {
-    super.initState();
-    unawaited(enableScreenPrivacy());
-  }
+  /// Awaited before anything draws, like the show/verify screens: an
+  /// un-awaited call leaves no guaranteed order between the first frame
+  /// and the OS flag (Codex, 2026-09-17).
+  late final Future<void> _privacyFuture = enableScreenPrivacy();
 
   @override
   void dispose() {
@@ -44,6 +43,20 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Nothing draws until the OS flag call has returned (Codex, 2026-09-17:
+    // a builder that ignores `connectionState` runs during `waiting`). The
+    // service absorbs plugin errors itself, so completion is the most this
+    // layer can wait for; that the flag took effect is a device test.
+    return FutureBuilder<void>(
+      future: _privacyFuture,
+      builder: (context, snapshot) =>
+          snapshot.connectionState == ConnectionState.done
+          ? _body(context)
+          : const SizedBox.shrink(),
+    );
+  }
+
+  Widget _body(BuildContext context) {
     return BlocListener<AllSeedViewCubit, AllSeedViewState>(
       listenWhen: (p, c) => p.failure != c.failure,
       listener: (context, state) {
@@ -111,10 +124,23 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 }
                 if (state.allSeeds.isEmpty) {
                   return Center(
-                    child: BullText(
-                      context.loc.allSeedViewNoSeedsFound,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.onSurface,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: BullText(
+                        // Every entry unreadable is the fss9 cohort's screen:
+                        // "no seeds" would be false and would read as loss.
+                        state.unreadableEntries > 0
+                            ? context.loc.allSeedViewUnreadableEntries(
+                                state.unreadableEntries,
+                              )
+                            : context.loc.allSeedViewNoSeedsFound,
+                        style: context.font.bodyLarge,
+                        color: state.unreadableEntries > 0
+                            ? context.appColors.error
+                            : context.appColors.onSurface,
+                        textAlign: .center,
+                        maxLines: 3,
+                      ),
                     ),
                   );
                 }
@@ -149,6 +175,19 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 return ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    if (state.unreadableEntries > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: BullText(
+                          context.loc.allSeedViewUnreadableEntries(
+                            state.unreadableEntries,
+                          ),
+                          style: context.font.bodyMedium,
+                          color: context.appColors.error,
+                          textAlign: .center,
+                          maxLines: 3,
+                        ),
+                      ),
                     if (state.existingWallets.isNotEmpty) ...[
                       BullText(
                         context.loc.allSeedViewExistingWallets(
@@ -252,10 +291,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     );
   }
 
-  Future<void> _showDeleteWarningDialog(
-    BuildContext context,
-    MnemonicSeed seed,
-  ) {
+  Future<void> _showDeleteWarningDialog(BuildContext context, Secret seed) {
     return BullDialog.show<void>(
       context: context,
       isDismissible: false,
@@ -289,9 +325,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
           TextButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();
-              context.read<AllSeedViewCubit>().deleteSeed(
-                seed.masterFingerprint,
-              );
+              context.read<AllSeedViewCubit>().deleteSeed(seed.id.hex);
             },
             child: Text(
               context.loc.delete,
@@ -371,14 +405,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
             Row(
               crossAxisAlignment: .start,
               children: [
-                Expanded(
-                  child: BullText(
-                    swapKey.mnemonic,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
-                    maxLines: 5,
-                  ),
-                ),
+                const Expanded(child: _SwapMnemonicView()),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: Icon(
@@ -415,7 +442,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
 
   Widget _buildSeedCard(
     BuildContext context,
-    MnemonicSeed seed, {
+    Secret seed, {
     required bool isOldWallet,
   }) {
     return Padding(
@@ -434,11 +461,24 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
               crossAxisAlignment: .start,
               children: [
                 Expanded(
-                  child: BullText(
-                    seed.mnemonicWords.join(' '),
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
-                    maxLines: 5,
+                  // Sealed: the words are read and rendered inside the package's widget and never reach this screen or the cubit's state.
+                  child: seed.widgets.mnemonicView(
+                    // Keyed by identity so a reordered list never hands one secret's state to another's card.
+                    key: ValueKey(seed.id.hex),
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.onSurface,
+                    ),
+                    passphraseLabel: context.loc.allSeedViewPassphraseLabel,
+                    passphraseLabelStyle: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.onSurface,
+                    ),
+                    onFailure: (context, failure) => BullText(
+                      AllSeedViewFetchFailure(
+                        failure.logMessage,
+                      ).toTranslated(context),
+                      style: context.font.bodyMedium,
+                      color: context.appColors.error,
+                    ),
                   ),
                 ),
                 if (isOldWallet) ...[
@@ -456,27 +496,53 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
               ],
             ),
           ),
-          if (seed.passphrase != null && seed.passphrase!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  BullText(
-                    context.loc.allSeedViewPassphraseLabel,
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onSurface,
-                    ),
-                  ),
-                  BullText(
-                    seed.passphrase!,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
-                  ),
-                ],
-              ),
-            ),
         ],
+      ),
+    );
+  }
+}
+
+/// The swap mnemonic, read where it is drawn and held nowhere.
+///
+/// The sealed-display shape `secrets` uses for wallet seeds, applied to a
+/// credential that belongs to `swaps`: the words are not in cubit state, and
+/// they are kept out of the semantics tree an accessibility service walks.
+class _SwapMnemonicView extends StatefulWidget {
+  const _SwapMnemonicView();
+
+  @override
+  State<_SwapMnemonicView> createState() => _SwapMnemonicViewState();
+}
+
+class _SwapMnemonicViewState extends State<_SwapMnemonicView> {
+  late final Future<String?> _mnemonic = context
+      .read<AllSeedViewCubit>()
+      .loadSwapMnemonic();
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: FutureBuilder<String?>(
+        future: _mnemonic,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const SizedBox(height: 20);
+          }
+          final words = snapshot.data;
+          if (words == null || words.isEmpty) {
+            return BullText(
+              context.loc.oopsSomethingWentWrong,
+              style: context.font.bodyMedium,
+              color: context.appColors.error,
+            );
+          }
+          return BullText(
+            words,
+            style: context.font.bodyMedium,
+            color: context.appColors.onSurface,
+            maxLines: 5,
+          );
+        },
       ),
     );
   }

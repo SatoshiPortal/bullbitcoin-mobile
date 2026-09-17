@@ -201,9 +201,13 @@ void main() {
         when(() => vault.toFile()).thenReturn('{}');
         when(() => vault.filename).thenReturn('vault.json');
 
-        when(
-          () => createVault.execute(),
-        ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'deadbeef')));
+        when(() => createVault.execute()).thenAnswer(
+          (_) async => Ok((
+            vault: vault,
+            vaultKey: 'deadbeef',
+            passphraseExcluded: false,
+          )),
+        );
         when(
           () => checkConnection.execute(),
         ).thenAnswer((_) async => const Ok(true));
@@ -278,9 +282,10 @@ void main() {
     'maps external failure while storing without announcing creation',
     () async {
       final vault = _MockEncryptedVault();
-      when(
-        () => createVault.execute(),
-      ).thenAnswer((_) async => Ok((vault: vault, vaultKey: 'key')));
+      when(() => createVault.execute()).thenAnswer(
+        (_) async =>
+            Ok((vault: vault, vaultKey: 'key', passphraseExcluded: false)),
+      );
       when(
         () => connectDrive.execute(),
       ).thenAnswer((_) async => const Ok(null));

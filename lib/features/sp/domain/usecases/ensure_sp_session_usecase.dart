@@ -1,15 +1,14 @@
-import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_account_files_port.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_backend_config_repository.dart';
-import 'package:bb_mobile/features/sp/domain/sp_key_material.dart';
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_config.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:secrets/secrets.dart' show Secret;
 
-/// Establishes the live SP session, reconstructing it via `createFromMnemonic`
+/// Establishes the live SP session, reconstructing it via `createFromSecret`
 /// from the persisted backend config (the FFI create path never writes a
 /// reloadable config file, so `SpAccount.load` cannot be used).
 ///
@@ -19,18 +18,18 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 ///
 /// Registered as a singleton so the in-flight guard serializes establishment:
 /// concurrent callers (the SP shell `load()` and the wallet-side refresh on cold
-/// start) share one `createFromMnemonic` instead of racing two live sessions.
+/// start) share one `createFromSecret` instead of racing two live sessions.
 class EnsureSpSessionUsecase {
   final SpAccountRepository _repository;
   final SpAccountFilesPort _files;
   final SpBackendConfigRepository _configRepository;
-  final GetDefaultSeedUsecase _getDefaultSeedUsecase;
+  final GetSpSecretUsecase _getSpSecretUsecase;
 
   EnsureSpSessionUsecase({
     required this._repository,
     required this._files,
     required this._configRepository,
-    required this._getDefaultSeedUsecase,
+    required this._getSpSecretUsecase,
   });
 
   Future<Result<SpWallet?, SpFailure>>? _inFlight;
@@ -107,19 +106,17 @@ class EnsureSpSessionUsecase {
         return const Ok(null);
     }
 
-    final String mnemonic;
+    final Secret secret;
     try {
-      final Seed seed;
-      switch (await _getDefaultSeedUsecase.execute()) {
+      switch (await _getSpSecretUsecase.execute(config.network)) {
         case Ok(:final value):
-          seed = value;
-        case Err():
-          return const Err(SpUnexpected('SP session establish failed'));
+          secret = value;
+        case Err(:final failure):
+          return Err(failure);
       }
-      mnemonic = spMnemonicFromSeed(seed);
     } on Exception catch (_) {
-      // Fixed text: this block reads the seed and derives the mnemonic, so the
-      // caught exception never reaches a log.
+      // Fixed text: this block reads the secret, so the caught exception never
+      // reaches a log.
       return const Err(SpUnexpected('SP session establish failed'));
     }
 
@@ -129,9 +126,9 @@ class EnsureSpSessionUsecase {
       return const Ok(null);
     }
 
-    final created = await _repository.createFromMnemonic(
+    final created = await _repository.createFromSecret(
       network: config.network,
-      mnemonic: mnemonic,
+      secret: secret,
       blindbitUrl: config.blindbitUrl,
       electrumUrl: config.electrumUrl,
       fetchConcurrencyFactor: config.fetchConcurrencyFactor,
