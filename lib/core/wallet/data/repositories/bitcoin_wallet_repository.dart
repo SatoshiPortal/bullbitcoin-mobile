@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
@@ -155,13 +155,16 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     return metadata;
   }
 
-  Future<Secret> _secretFor(WalletMetadataModel metadata) async =>
-      switch (await _secrets.fetch(Fingerprint(metadata.masterFingerprint))) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw Exception(
-          'No secret for wallet: $failure',
-        ),
-      };
+  Future<Secret> _secretFor(WalletMetadataModel metadata) async {
+    final fingerprint = metadata.seedFingerprint;
+    if (fingerprint == null) {
+      throw Exception('No secret for wallet: not a seed-derived wallet');
+    }
+    return switch (await _secrets.fetch(fingerprint)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw Exception('No secret for wallet: $failure'),
+    };
+  }
 
   Future<bool> isScriptOfWallet({
     required String walletId,

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
-import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 
@@ -115,9 +115,11 @@ class LiquidWalletRepository {
     // The mnemonic stays inside `secrets`: it builds the lwk wallet in a
     // scratch directory it removes afterwards, signs, and returns only
     // the signed PSET.
-    final secret = switch (await _secrets.fetch(
-      Fingerprint(metadata.masterFingerprint),
-    )) {
+    final fingerprint = metadata.seedFingerprint;
+    if (fingerprint == null) {
+      throw Exception('No secret for wallet: not a seed-derived wallet');
+    }
+    final secret = switch (await _secrets.fetch(fingerprint)) {
       Ok(:final value) => value,
       Err(:final failure) => throw Exception('No secret for wallet: $failure'),
     };
