@@ -8,6 +8,7 @@ environment:
   sdk: "3.12.2"
   flutter: "3.44.9"
 workspace:
+  - packages/secrets
   - packages/bull_payjoin
   - packages/bull_ui
   # Dev-only catalogue. Listed here only so the shared workspace
@@ -23,6 +24,7 @@ workspace:
 dependencies:
   flutter:
     sdk: flutter
+  secrets:
   bull_payjoin:
   bull_ui:
   primitives:
