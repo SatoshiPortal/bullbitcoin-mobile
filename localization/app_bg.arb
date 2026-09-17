@@ -920,7 +920,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "Опитвате се да платите над максималната сума, която може да се изплати с този портфейл.",
+  "payAboveMaxAmountError": "Максималната сума, която можете да платите с този портфейл, е {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -6533,7 +6533,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "Опитвате се да платите под минималната сума, която може да се изплати с този портфейл.",
+  "payBelowMinAmountError": "Минималната сума, която можете да платите с този портфейл, е {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

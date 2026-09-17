@@ -870,7 +870,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "أنت تحاول أن تدفع أعلى من المبلغ الأقصى الذي يمكن دفعه بهذه المحفظة.",
+  "payAboveMaxAmountError": "الحد الأقصى الذي يمكنك دفعه بهذه المحفظة هو {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -7863,7 +7863,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "أنت تحاول أن تدفع أقل من المبلغ الأدنى الذي يمكن دفعه بهذه المحفظة.",
+  "payBelowMinAmountError": "الحد الأدنى الذي يمكنك دفعه بهذه المحفظة هو {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

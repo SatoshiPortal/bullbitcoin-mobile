@@ -794,7 +794,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "Προσπαθείτε να πληρώσετε πάνω από το μέγιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
+  "payAboveMaxAmountError": "Το μέγιστο ποσό που μπορείτε να πληρώσετε με αυτό το πορτοφόλι είναι {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -7108,7 +7108,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "Προσπαθείτε να πληρώσετε κάτω από το ελάχιστο ποσό που μπορεί να πληρωθεί με αυτό το πορτοφόλι.",
+  "payBelowMinAmountError": "Το ελάχιστο ποσό που μπορείτε να πληρώσετε με αυτό το πορτοφόλι είναι {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

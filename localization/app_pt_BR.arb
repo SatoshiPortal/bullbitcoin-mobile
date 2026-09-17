@@ -978,7 +978,7 @@
   "@payFeeTooHigh": {
     "description": "Warning when calculated fee is higher than expected"
   },
-  "payAboveMaxAmountError": "Você está tentando pagar acima do montante máximo que pode ser pago com esta carteira.",
+  "payAboveMaxAmountError": "O valor máximo que você pode pagar com esta carteira é {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -7716,7 +7716,7 @@
   "@withdrawConfirmClabe": {
     "description": "Field label for CLABE (Mexico)"
   },
-  "payBelowMinAmountError": "Você está tentando pagar abaixo do valor mínimo que pode ser pago com esta carteira.",
+  "payBelowMinAmountError": "O valor mínimo que você pode pagar com esta carteira é {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

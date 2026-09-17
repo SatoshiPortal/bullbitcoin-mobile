@@ -1167,7 +1167,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "S touto peněženkou se snažíte zaplatit nad maximální částku, která může být zaplacena.",
+  "payAboveMaxAmountError": "Maximální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -8324,7 +8324,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "S touto peněženkou se snažíte zaplatit minimální částku, která může být zaplacena.",
+  "payBelowMinAmountError": "Minimální částka, kterou můžete touto peněženkou zaplatit, je {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

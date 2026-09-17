@@ -109,5 +109,51 @@ void main() {
         );
       }
     });
+
+    // The bound is the actionable part: "you are out of range" without the
+    // range leaves the user guessing what to type instead.
+    testWidgets('the amount bounds carry their limit into the message', (
+      tester,
+    ) async {
+      expect(
+        await _translate(
+          tester,
+          const PayBelowMinAmountFailure(
+            minAmount: 10,
+            currency: 'CAD',
+            logMessage: _rawReason,
+          ),
+        ),
+        contains('10'),
+      );
+      expect(
+        await _translate(
+          tester,
+          const PayAboveMaxAmountFailure(
+            maxAmount: 5000,
+            currency: 'CAD',
+            logMessage: _rawReason,
+          ),
+        ),
+        contains('5,000'),
+      );
+    });
+
+    testWidgets('the bound is formatted, and still leaks nothing', (
+      tester,
+    ) async {
+      final message = await _translate(
+        tester,
+        const PayBelowMinAmountFailure(
+          minAmount: 10,
+          currency: 'CAD',
+          logMessage: _rawReason,
+        ),
+      );
+
+      expect(message, contains('CAD'));
+      expect(message, isNot(contains('bc1qsecret')));
+      expect(message, isNot(contains('xprv9s21ZrQH143K3')));
+    });
   });
 }

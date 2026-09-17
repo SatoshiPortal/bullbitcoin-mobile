@@ -908,7 +908,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "Bu cüzdanla ödenebilecek maksimum miktarın üzerinde ödemeye çalışıyorsunuz.",
+  "payAboveMaxAmountError": "Bu cüzdanla ödeyebileceğiniz en yüksek tutar {amount}.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -8355,7 +8355,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "Bu cüzdanla ödenebilecek minimum miktarın altında ödemeye çalışıyorsunuz.",
+  "payBelowMinAmountError": "Bu cüzdanla ödeyebileceğiniz en düşük tutar {amount}.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

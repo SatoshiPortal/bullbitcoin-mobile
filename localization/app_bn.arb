@@ -903,7 +903,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "আপনি এই ওয়ালেট দিয়ে পাঠাতে পারা সর্বোচ্চ পরিমাণের বেশি পাঠানোর চেষ্টা করছেন।",
+  "payAboveMaxAmountError": "এই ওয়ালেট দিয়ে আপনি সর্বোচ্চ {amount} পরিশোধ করতে পারেন।",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -8199,7 +8199,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "আপনি এই ওয়ালেট দিয়ে ন্যূনতম পরিমাণের নিচে পাঠানোর চেষ্টা করছেন।",
+  "payBelowMinAmountError": "এই ওয়ালেট দিয়ে আপনি সর্বনিম্ন {amount} পরিশোধ করতে পারেন।",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

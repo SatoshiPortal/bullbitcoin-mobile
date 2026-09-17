@@ -10912,11 +10912,11 @@
   "@payFromAnotherWallet": {
     "description": "Subtitle for external wallet option"
   },
-  "payAboveMaxAmountError": "Aap is wallet se maximum pay-able amount se zyada pay karne ki koshish kar rahe hain.",
+  "payAboveMaxAmountError": "Is wallet se aap zyada se zyada {amount} pay kar sakte hain.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
-  "payBelowMinAmountError": "Aap is wallet se minimum pay-able amount se kam pay karne ki koshish kar rahe hain.",
+  "payBelowMinAmountError": "Is wallet se aap kam se kam {amount} pay kar sakte hain.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

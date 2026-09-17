@@ -912,7 +912,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "आप इस वॉलेट से अधिकतम भुगतान योग्य राशि से अधिक भुगतान करने का प्रयास कर रहे हैं।",
+  "payAboveMaxAmountError": "इस वॉलेट से आप अधिकतम {amount} का भुगतान कर सकते हैं।",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -8430,7 +8430,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "आप इस वॉलेट से न्यूनतम भुगतान योग्य राशि से कम भुगतान करने का प्रयास कर रहे हैं।",
+  "payBelowMinAmountError": "इस वॉलेट से आप न्यूनतम {amount} का भुगतान कर सकते हैं।",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },

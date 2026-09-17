@@ -153,12 +153,13 @@ void main() {
   late _MockSignPayPayinUsecase signPayin;
   late _MockBroadcastPayPayinUsecase broadcastPayin;
   late _MockGetPayOrderUsecase getOrder;
+  late _MockRefreshPayOrderUsecase refreshOrder;
   late _MockWallet wallet;
 
   _SeedablePayBloc buildBloc() => _SeedablePayBloc(
     loadPayUserSummaryUsecase: _MockLoadPayUserSummaryUsecase(),
     placePayOrderUsecase: _MockPlacePayOrderUsecase(),
-    refreshPayOrderUsecase: _MockRefreshPayOrderUsecase(),
+    refreshPayOrderUsecase: refreshOrder,
     estimatePayPayinFeesUsecase: _MockEstimatePayPayinFeesUsecase(),
     preparePayBitcoinPayinUsecase: _MockPreparePayBitcoinPayinUsecase(),
     preparePayLiquidPayinUsecase: prepareLiquidPayin,
@@ -185,6 +186,19 @@ void main() {
     signPayin = _MockSignPayPayinUsecase();
     broadcastPayin = _MockBroadcastPayPayinUsecase();
     getOrder = _MockGetPayOrderUsecase();
+    refreshOrder = _MockRefreshPayOrderUsecase();
+    // The bloc polls on a timer; leaving this unstubbed makes any test that
+    // outlives one tick fail on an unrelated null.
+    when(
+      () => refreshOrder.execute(
+        orderId: any(named: 'orderId'),
+        expectedDepositAddress: any(named: 'expectedDepositAddress'),
+      ),
+    ).thenAnswer(
+      (_) async => Ok<FiatPaymentOrder, PayFailure>(
+        _order(payinStatus: OrderPayinStatus.awaitingPayment),
+      ),
+    );
     wallet = _MockWallet();
 
     when(() => wallet.id).thenReturn('wallet-1');
@@ -241,5 +255,51 @@ void main() {
     final state = await successState as PaySuccessState;
     expect(state.payOrder.payinStatus, OrderPayinStatus.awaitingConfirmation);
     expect(state.payOrder, same(postBroadcastOrder));
+  });
+
+  // Every collaborator returns a Result today, so this can only happen if one
+  // starts throwing. Without the catch-all the spinner would just stop and
+  // Confirm would look like a no-op — which on a payment screen invites a
+  // second tap.
+  test('a throwing collaborator surfaces a sanitized failure', () async {
+    const secret = 'PrepareLiquidSendException: xprv9s21ZrQH143K3';
+    when(
+      () => prepareLiquidPayin.execute(
+        walletId: any(named: 'walletId'),
+        address: any(named: 'address'),
+        amountSat: any(named: 'amountSat'),
+        feeRate: any(named: 'feeRate'),
+      ),
+    ).thenThrow(Exception(secret));
+
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
+    bloc.seed(
+      PayPaymentState(
+        selectedRecipient: _recipient,
+        userSummary: _userSummary,
+        amount: const FiatAmount(125.0),
+        selectedWallet: wallet,
+        payOrder: _order(payinStatus: OrderPayinStatus.awaitingPayment),
+      ),
+    );
+
+    final errored = bloc.stream.firstWhere(
+      (state) => state is PayPaymentState && state.error != null,
+    );
+    bloc.add(const PayEvent.sendPaymentConfirmed());
+
+    final state = await errored as PayPaymentState;
+    expect(state.error, isA<PayUnexpectedFailure>());
+    expect(
+      state.error!.logMessage,
+      isNot(contains('xprv9s21ZrQH143K3')),
+      reason: 'the raw reason belongs in the log, not on the failure',
+    );
+    expect(
+      state.isConfirmingPayment,
+      isFalse,
+      reason: 'the spinner must not be left spinning',
+    );
   });
 }

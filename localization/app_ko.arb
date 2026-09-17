@@ -912,7 +912,7 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "payAboveMaxAmountError": "이 지갑으로 지불 할 수있는 최대 금액 위에 지불하려고합니다.",
+  "payAboveMaxAmountError": "이 지갑으로 결제할 수 있는 최대 금액은 {amount}입니다.",
   "@payAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
@@ -8430,7 +8430,7 @@
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
-  "payBelowMinAmountError": "이 지갑으로 지불 할 수있는 최소 금액을 지불하려고합니다.",
+  "payBelowMinAmountError": "이 지갑으로 결제할 수 있는 최소 금액은 {amount}입니다.",
   "@payBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
