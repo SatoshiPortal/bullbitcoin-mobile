@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -19,6 +20,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(Language.unitedStatesEnglish);
     registerFallbackValue(AppThemeMode.system);
+    registerFallbackValue(const WizardChoices());
   });
 
   setUp(() {
@@ -29,6 +31,7 @@ void main() {
       settingsRepository: settings,
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
+    when(() => wizard.savePending(any())).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
     when(
       () => settings.setLanguage(any()),
@@ -123,4 +126,64 @@ void main() {
     verify(() => wizard.clearPending()).called(1);
     verify(() => wizard.markComplete()).called(1);
   });
+
+  // A transient storage error must not cost the user what they picked during
+  // onboarding: the pending choices stay so the next launch retries them.
+  test('keeps a failed choice pending for the next launch', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        language: Language.unitedStatesEnglish,
+        themeMode: AppThemeMode.dark,
+        defaultCurrency: 'CAD',
+        reportingConsent: false,
+        touched: {WizardField.defaultCurrency},
+      ),
+    );
+    when(
+      () => settings.setCurrency(any()),
+    ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+
+    await usecase.execute();
+
+    final staged =
+        verify(() => wizard.savePending(captureAny())).captured.single
+            as WizardChoices;
+    expect(staged.touched, {WizardField.defaultCurrency});
+    expect(staged.defaultCurrency, 'CAD');
+    verifyNever(() => wizard.clearPending());
+    // Still complete: re-running onboarding would be worse than a quiet retry.
+    verify(() => wizard.markComplete()).called(1);
+  });
+
+  test(
+    'only the failed choice stays pending, not the ones that landed',
+    () async {
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          language: Language.unitedStatesEnglish,
+          themeMode: AppThemeMode.dark,
+          defaultCurrency: 'CAD',
+          reportingConsent: false,
+          touched: {
+            WizardField.language,
+            WizardField.themeMode,
+            WizardField.defaultCurrency,
+          },
+        ),
+      );
+      when(
+        () => settings.setCurrency(any()),
+      ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+
+      await usecase.execute();
+
+      // Re-staging language and theme would re-apply them next launch, and so
+      // reset either one if the user has changed it in Settings since.
+      final staged =
+          verify(() => wizard.savePending(captureAny())).captured.single
+              as WizardChoices;
+      expect(staged.touched, {WizardField.defaultCurrency});
+      verify(() => wizard.markComplete()).called(1);
+    },
+  );
 }
