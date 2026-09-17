@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -144,20 +143,10 @@ class _PayjoinAdvancedSettingsScreenState
     });
   }
 
-  /// Awaits the save and logs a failure instead of `.ignore()`-ing it: the
-  /// UI validates bounds before ever calling this, so a throw here is a
-  /// programmer bug that must not be silently swallowed.
-  Future<void> _persist(Future<void> Function() save) async {
-    try {
-      await save();
-    } catch (e) {
-      log.severe(
-        message: 'Failed to persist a payjoin setting',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
+  /// Nothing to catch here: bounds are validated before calling, and a failed
+  /// write comes back through `SettingsState.failure`, which the app-wide
+  /// listener reports.
+  Future<void> _persist(Future<void> Function() save) => save();
 
   @override
   Widget build(BuildContext context) {
