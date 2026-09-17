@@ -40,8 +40,9 @@ void main() {
   Iterable<String> storedSecrets() =>
       storage.entries.keys.where((k) => k.startsWith('seed_'));
 
-  _MockWallet walletUsing(Fingerprint fingerprint) {
+  _MockWallet walletUsing(Fingerprint fingerprint, {bool local = true}) {
     final wallet = _MockWallet();
+    when(() => wallet.signsLocally).thenReturn(local);
     when(() => wallet.masterFingerprint).thenReturn(fingerprint.hex);
     return wallet;
   }
@@ -66,6 +67,22 @@ void main() {
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
       expect(storedSecrets(), isEmpty);
     });
+
+    test(
+      'deletes when only a watch-only wallet carries that fingerprint',
+      () async {
+        // A watch-only wallet imported from a descriptor shows the seed's
+        // origin fingerprint but never held the seed. Counting it as a user
+        // would leave the entry undeletable from the one screen that exists
+        // to clean up orphans — the same rule DeleteWalletUsecase applies.
+        when(
+          () => walletRepository.getWallets(),
+        ).thenAnswer((_) async => [walletUsing(id, local: false)]);
+
+        expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
+        expect(storedSecrets(), isEmpty);
+      },
+    );
 
     test(
       'refuses, and keeps the secret, when a wallet still uses it',
