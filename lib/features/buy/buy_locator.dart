@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/label_completed_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/load_buy_context_usecase.dart';
@@ -32,6 +33,40 @@ class BuyLocator {
         settingsRepository: locator<SettingsRepository>(),
         payjoinReceiver: locator<PayjoinReceiver>(),
         payjoinPolicy: locator<PayjoinPolicyAccess>(),
+      ),
+    );
+    locator.registerFactory<ConfirmBuyOrderUsecase>(
+      () => ConfirmBuyOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+        labelsFacade: locator<LabelsFacade>(),
+      ),
+    );
+    locator.registerFactory<RefreshBuyOrderUsecase>(
+      () => RefreshBuyOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<AccelerateBuyOrderUsecase>(
+      () => AccelerateBuyOrderUsecase(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<CancelAbandonedBuyPayjoinUsecase>(
