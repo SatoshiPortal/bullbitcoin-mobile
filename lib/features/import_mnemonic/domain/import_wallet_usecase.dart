@@ -126,7 +126,14 @@ class ImportWalletUsecase {
     try {
       switch (await _wallet.getWallets()) {
         case Ok(value: final wallets):
-          return wallets.any((w) => w.masterFingerprint == fingerprint.hex);
+          // Only a wallet that signs locally holds this seed; a watch-only
+          // wallet with the same origin fingerprint does not, whatever its
+          // spelling. Same rule as DeleteWalletUsecase and DeleteSecretUsecase.
+          return wallets.any(
+            (w) =>
+                w.signsLocally &&
+                Fingerprint.tryParse(w.masterFingerprint) == fingerprint,
+          );
         case Err(:final failure):
           // Unknown means referenced: never delete a seed on a failed read.
           log.warning(

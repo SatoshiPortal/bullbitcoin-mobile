@@ -59,10 +59,21 @@ class DeleteWalletUsecase {
     // Clean up the seed in secure storage once no remaining wallet
     // still references it. Bitcoin and Liquid default wallets share a
     // master fingerprint, so the seed is only deleted when the last
-    // wallet derived from it is gone. Watch-only wallets have an empty
-    // master fingerprint and never own a seed entry. Issue #2324.
-    if (wallet.masterFingerprint.isNotEmpty) {
-      await _deleteOrphanSeed(wallet.masterFingerprint, walletId);
+    // wallet derived from it is gone. Issue #2324.
+    //
+    // Only a wallet that signs locally holds a seed. A watch-only wallet
+    // imported from a descriptor carries the key origin's fingerprint —
+    // often uppercase (Sparrow, Coldcard) — but never the seed behind it,
+    // so it neither owns an entry to clean up nor keeps one alive.
+    // Counting it as a user, as a parsed-fingerprint compare did, left the
+    // seed orphaned when the hot wallet went, and CheckDuplicateMnemonic
+    // then refused to reimport it (the #2634 class). Comparing raw strings
+    // trashed it when the spellings differed and kept it when they matched
+    // — right or wrong by accident. Parsed, so spelling cannot matter, and
+    // gated on signsLocally, so only real holders count.
+    final fingerprint = Fingerprint.tryParse(wallet.masterFingerprint);
+    if (wallet.signsLocally && fingerprint != null) {
+      await _deleteOrphanSeed(fingerprint, walletId);
     }
 
     return const Ok(null);
@@ -70,7 +81,10 @@ class DeleteWalletUsecase {
 
   /// Best-effort cleanup: a failure here leaves an orphan seed entry but must
   /// not fail the wallet deletion the user asked for.
-  Future<void> _deleteOrphanSeed(String fingerprint, String walletId) async {
+  Future<void> _deleteOrphanSeed(
+    Fingerprint fingerprint,
+    String walletId,
+  ) async {
     final List<Wallet> remaining;
     switch (await _walletRepository.getWallets()) {
       case Ok(:final value):
@@ -83,10 +97,15 @@ class DeleteWalletUsecase {
         return;
     }
 
-    if (remaining.any((w) => w.masterFingerprint == fingerprint)) return;
+    final stillUsed = remaining.any(
+      (w) =>
+          w.signsLocally &&
+          Fingerprint.tryParse(w.masterFingerprint) == fingerprint,
+    );
+    if (stillUsed) return;
 
     // Unconditional on the package side; the "still used by a wallet" guard is this usecase's, and was applied above.
-    final deleted = await _secrets.trash(Fingerprint(fingerprint));
+    final deleted = await _secrets.trash(fingerprint);
     if (deleted case Err(:final failure)) {
       log.warning(
         'DeleteWalletUsecase: failed to clean up seed for $walletId: '

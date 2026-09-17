@@ -24,7 +24,14 @@ class DeleteSecretUsecase {
     // If the wallets cannot be listed, nothing is deleted: a guard that cannot be evaluated has failed, and deleting key material on a failed read is unrecoverable.
     switch (await _walletRepository.getWallets()) {
       case Ok(value: final wallets):
-        if (wallets.any((w) => w.masterFingerprint == id.hex)) {
+        // Only a wallet that signs locally holds this seed; a watch-only wallet
+        // with the same origin fingerprint does not, whatever its spelling.
+        // Same rule as DeleteWalletUsecase and ImportWalletUsecase.
+        final stillUsed = wallets.any(
+          (w) =>
+              w.signsLocally && Fingerprint.tryParse(w.masterFingerprint) == id,
+        );
+        if (stillUsed) {
           log.warning('Refused to delete secret $id: a wallet still uses it');
           return const Err(
             AllSeedViewDeleteFailure('a wallet still uses this secret'),
