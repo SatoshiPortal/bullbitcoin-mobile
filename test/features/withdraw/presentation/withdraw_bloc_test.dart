@@ -290,6 +290,47 @@ void main() {
       bloc.add(const WithdrawEvent.confirmed());
       await expectLater(bloc.stream, emitsThrough(isA<WithdrawSuccessState>()));
     });
+
+    // The use-cases end in a bare `catch`, so nothing escapes today. This pins
+    // the bloc's own invariant: narrowing one of those catches later must not
+    // leave the progress bar running and Confirm disabled with no message.
+    test('a throwing confirm still clears the flag and reports', () async {
+      when(
+        () => confirmOrder.execute(
+          orderId: any(named: 'orderId'),
+          interacSecurityDetails: any(named: 'interacSecurityDetails'),
+          saveSecurityDetailsAsDefault: any(
+            named: 'saveSecurityDetailsAsDefault',
+          ),
+        ),
+      ).thenThrow(Exception('apikey=secret123'));
+      final bloc = build()..seed(confirmation());
+
+      bloc.add(const WithdrawEvent.confirmed());
+      await expectLater(
+        bloc.stream,
+        emitsThrough(
+          isA<WithdrawConfirmationState>()
+              .having(
+                (s) => s.failure,
+                'failure',
+                isA<WithdrawUnexpectedFailure>(),
+              )
+              .having(
+                (s) => s.isConfirmingWithdrawal,
+                'isConfirmingWithdrawal',
+                isFalse,
+              ),
+        ),
+      );
+
+      final failure = (bloc.state as WithdrawConfirmationState).failure!;
+      expect(
+        failure.logMessage,
+        isNot(contains('secret123')),
+        reason: 'only the type belongs on a failure raised from a throw',
+      );
+    });
   });
 
   group('Interac security details', () {
@@ -436,6 +477,53 @@ void main() {
               ),
         ),
       );
+    });
+
+    test('a throwing create still clears the flag and reports', () async {
+      when(
+        () => createOrder.execute(
+          fiatAmount: any(named: 'fiatAmount'),
+          recipientId: any(named: 'recipientId'),
+          recipientEmail: any(named: 'recipientEmail'),
+          securityQuestion: any(named: 'securityQuestion'),
+          securityAnswer: any(named: 'securityAnswer'),
+        ),
+      ).thenThrow(Exception('answer=Montreal'));
+      bloc.seed(
+        const WithdrawPaymentDetailsInputState(
+          userSummary: _userSummary,
+          amount: FiatAmount(125),
+          currency: FiatCurrency.cad,
+          recipient: _interacRecipient,
+        ),
+      );
+
+      bloc.add(
+        const WithdrawInteracSecurityDetailsSubmitted(
+          securityQuestion: 'Favourite city?',
+          securityAnswer: 'Montreal',
+          saveAsDefault: true,
+        ),
+      );
+      await expectLater(
+        bloc.stream,
+        emitsThrough(
+          isA<WithdrawPaymentDetailsInputState>()
+              .having(
+                (s) => s.failure,
+                'failure',
+                isA<WithdrawUnexpectedFailure>(),
+              )
+              .having(
+                (s) => s.isCreatingWithdrawOrder,
+                'isCreatingWithdrawOrder',
+                isFalse,
+              ),
+        ),
+      );
+
+      final failure = (bloc.state as WithdrawPaymentDetailsInputState).failure!;
+      expect(failure.logMessage, isNot(contains('Montreal')));
     });
 
     test('drops a repeated submission while creating an order', () async {

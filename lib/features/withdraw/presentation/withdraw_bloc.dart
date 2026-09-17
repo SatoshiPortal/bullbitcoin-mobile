@@ -106,29 +106,51 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
     emit(recipientInputState.copyWith(isCreatingWithdrawOrder: true));
 
-    switch (await _createWithdrawOrderUsecase.execute(
-      fiatAmount: recipientInputState.amount.amount,
-      recipientId: recipient.id,
-    )) {
-      case Ok(:final value):
-        emit(
-          recipientInputState.toConfirmationState(
-            recipient: recipient,
-            order: value.order,
-          ),
-        );
-      case Err(:final failure):
-        emit(
-          event.isNew
-              ? recipientInputState.copyWith(
-                  isCreatingWithdrawOrder: false,
-                  newRecipientFailure: failure,
-                )
-              : recipientInputState.copyWith(
-                  isCreatingWithdrawOrder: false,
-                  selectedRecipientFailure: failure,
-                ),
-        );
+    try {
+      switch (await _createWithdrawOrderUsecase.execute(
+        fiatAmount: recipientInputState.amount.amount,
+        recipientId: recipient.id,
+      )) {
+        case Ok(:final value):
+          emit(
+            recipientInputState.toConfirmationState(
+              recipient: recipient,
+              order: value.order,
+            ),
+          );
+        case Err(:final failure):
+          emit(
+            event.isNew
+                ? recipientInputState.copyWith(
+                    isCreatingWithdrawOrder: false,
+                    newRecipientFailure: failure,
+                  )
+                : recipientInputState.copyWith(
+                    isCreatingWithdrawOrder: false,
+                    selectedRecipientFailure: failure,
+                  ),
+          );
+      }
+    } catch (e, st) {
+      log.severe(
+        message: 'Unexpected error while creating the withdrawal order',
+        error: e,
+        trace: st,
+      );
+      final failure = WithdrawUnexpectedFailure(
+        'create threw: ${e.runtimeType}',
+      );
+      emit(
+        event.isNew
+            ? recipientInputState.copyWith(
+                isCreatingWithdrawOrder: false,
+                newRecipientFailure: failure,
+              )
+            : recipientInputState.copyWith(
+                isCreatingWithdrawOrder: false,
+                selectedRecipientFailure: failure,
+              ),
+      );
     }
   }
 
@@ -159,42 +181,57 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     );
 
     final recipient = securityDetailsState.recipient;
-    switch (await _createWithdrawOrderUsecase.execute(
-      fiatAmount: securityDetailsState.amount.amount,
-      recipientId: recipient.id,
-      recipientEmail: recipient.email,
-      securityQuestion: event.securityQuestion,
-      securityAnswer: event.securityAnswer,
-    )) {
-      case Ok(
-        value: CreateWithdrawOrderResult(
-          :final order,
-          interacSecurityDetails: final InteracSecurityDetails details,
-        ),
-      ):
-        emit(
-          securityDetailsState.toConfirmationState(
-            order: order,
-            interacSecurityDetails: details,
-            saveSecurityDetailsAsDefault: event.saveAsDefault,
+    try {
+      switch (await _createWithdrawOrderUsecase.execute(
+        fiatAmount: securityDetailsState.amount.amount,
+        recipientId: recipient.id,
+        recipientEmail: recipient.email,
+        securityQuestion: event.securityQuestion,
+        securityAnswer: event.securityAnswer,
+      )) {
+        case Ok(
+          value: CreateWithdrawOrderResult(
+            :final order,
+            interacSecurityDetails: final InteracSecurityDetails details,
           ),
-        );
-      case Ok():
-        // The use-case returns details whenever the recipient has an email, so
-        // this is a broken contract rather than a user-facing condition.
-        log.severe(
-          error: 'Missing Interac security details',
-          trace: StackTrace.current,
-        );
-        emit(
-          securityDetailsState.copyWith(
-            failure: const WithdrawUnexpectedFailure(
-              'Missing Interac security details',
+        ):
+          emit(
+            securityDetailsState.toConfirmationState(
+              order: order,
+              interacSecurityDetails: details,
+              saveSecurityDetailsAsDefault: event.saveAsDefault,
             ),
-          ),
-        );
-      case Err(:final failure):
-        emit(securityDetailsState.copyWith(failure: failure));
+          );
+        case Ok():
+          // The use-case returns details whenever the recipient has an
+          // email, so this is a broken contract, not a user-facing condition.
+          log.severe(
+            error: 'Missing Interac security details',
+            trace: StackTrace.current,
+          );
+          emit(
+            securityDetailsState.copyWith(
+              failure: const WithdrawUnexpectedFailure(
+                'Missing Interac security details',
+              ),
+            ),
+          );
+        case Err(:final failure):
+          emit(securityDetailsState.copyWith(failure: failure));
+      }
+    } catch (e, st) {
+      // Only the type is logged: the submission carries the Interac security
+      // answer, which must never reach diagnostics.
+      log.severe(
+        message: 'Unexpected error while creating the withdrawal order',
+        error: 'create threw: ${e.runtimeType}',
+        trace: st,
+      );
+      emit(
+        securityDetailsState.copyWith(
+          failure: WithdrawUnexpectedFailure('create threw: ${e.runtimeType}'),
+        ),
+      );
     }
   }
 
@@ -215,21 +252,35 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       confirmationState.copyWith(isConfirmingWithdrawal: true, failure: null),
     );
 
-    switch (await _confirmWithdrawOrderUsecase.execute(
-      orderId: confirmationState.order.orderId,
-      interacSecurityDetails: confirmationState.interacSecurityDetails,
-      saveSecurityDetailsAsDefault:
-          confirmationState.saveSecurityDetailsAsDefault,
-    )) {
-      case Ok(:final value):
-        emit(confirmationState.toSuccessState(order: value));
-      case Err(:final failure):
-        emit(
-          confirmationState.copyWith(
-            isConfirmingWithdrawal: false,
-            failure: failure,
-          ),
-        );
+    try {
+      switch (await _confirmWithdrawOrderUsecase.execute(
+        orderId: confirmationState.order.orderId,
+        interacSecurityDetails: confirmationState.interacSecurityDetails,
+        saveSecurityDetailsAsDefault:
+            confirmationState.saveSecurityDetailsAsDefault,
+      )) {
+        case Ok(:final value):
+          emit(confirmationState.toSuccessState(order: value));
+        case Err(:final failure):
+          emit(
+            confirmationState.copyWith(
+              isConfirmingWithdrawal: false,
+              failure: failure,
+            ),
+          );
+      }
+    } catch (e, st) {
+      log.severe(
+        message: 'Unexpected error while confirming the withdrawal',
+        error: e,
+        trace: st,
+      );
+      emit(
+        confirmationState.copyWith(
+          isConfirmingWithdrawal: false,
+          failure: WithdrawUnexpectedFailure('confirm threw: ${e.runtimeType}'),
+        ),
+      );
     }
   }
 }
