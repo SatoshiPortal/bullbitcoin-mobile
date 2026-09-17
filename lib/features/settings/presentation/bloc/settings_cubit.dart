@@ -81,6 +81,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     return super.close();
   }
 
+  void clearFailure() {
+    emit(state.copyWith(failure: null));
+  }
+
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
       _getSettingsUsecase.execute(),
@@ -104,7 +108,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Testnet mode toggled: $active was ${settings?.environment.name}',
     );
     final environment = active ? Environment.testnet : Environment.mainnet;
-    await _setEnvironmentUsecase.execute(environment);
+    final result = await _setEnvironmentUsecase.execute(environment);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(environment: environment),
@@ -118,7 +127,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Bitcoin unit toggled: $active was ${settings?.bitcoinUnit.name}',
     );
     final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
-    await _setBitcoinUnitUsecase.execute(unit);
+    final result = await _setBitcoinUnitUsecase.execute(unit);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(state.copyWith(storedSettings: settings?.copyWith(bitcoinUnit: unit)));
   }
 
@@ -127,7 +141,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.config(
       'Language changed to: ${language.label} was ${settings?.language?.label}',
     );
-    await _setLanguageUsecase.execute(language);
+    final result = await _setLanguageUsecase.execute(language);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(storedSettings: settings?.copyWith(language: language)),
     );
@@ -138,7 +157,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.config(
       'Currency changed to: $currencyCode was ${settings?.currencyCode}',
     );
-    await _setCurrencyUsecase.execute(currencyCode);
+    final result = await _setCurrencyUsecase.execute(currencyCode);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(currencyCode: currencyCode),
@@ -149,14 +173,24 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleHideAmounts(bool hide) async {
     final settings = state.storedSettings;
     log.config('Hide amounts toggled: $hide was ${settings?.hideAmounts}');
-    await _setHideAmountsUsecase.execute(hide);
+    final result = await _setHideAmountsUsecase.execute(hide);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(state.copyWith(storedSettings: settings?.copyWith(hideAmounts: hide)));
   }
 
   Future<void> toggleSuperuserMode(bool active) async {
     final settings = state.storedSettings;
     log.config('Superuser mode toggled: $active was ${settings?.isSuperuser}');
-    await _setIsSuperuserUsecase.execute(active);
+    final result = await _setIsSuperuserUsecase.execute(active);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
     );
@@ -167,7 +201,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.info(
       'Theme mode changed to: ${themeMode.name} + currentThemeMode: ${settings?.themeMode.name}',
     );
-    await _setThemeModeUsecase.execute(themeMode);
+    final result = await _setThemeModeUsecase.execute(themeMode);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(storedSettings: settings?.copyWith(themeMode: themeMode)),
     );
@@ -176,7 +215,12 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleDevMode(bool isEnabled) async {
     final settings = state.storedSettings;
 
-    await _setIsDevModeUsecase.execute(isEnabled);
+    final result = await _setIsDevModeUsecase.execute(isEnabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
@@ -193,10 +237,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     final trimmedPassword = password?.trim();
     final user = (trimmedUsername?.isEmpty ?? true) ? null : trimmedUsername;
     final pass = (trimmedPassword?.isEmpty ?? true) ? null : trimmedPassword;
-    await _setExchangeTestnetBasicAuthUsecase.execute(
+    final result = await _setExchangeTestnetBasicAuthUsecase.execute(
       username: user,
       password: pass,
     );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(
@@ -212,7 +261,12 @@ class SettingsCubit extends Cubit<SettingsState> {
     log.config(
       'Error reporting toggled: $enabled was ${settings?.isErrorReportingEnabled}',
     );
-    await _setErrorReportingUsecase.execute(enabled);
+    final result = await _setErrorReportingUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isErrorReportingEnabled: enabled),
@@ -226,7 +280,15 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Screen capture protection toggled: $enabled was '
       '${settings?.screenCaptureProtectionEnabled}',
     );
-    await _setScreenCaptureProtectionUsecase.execute(enabled);
+    final result = await _setScreenCaptureProtectionUsecase.execute(enabled);
+    if (result case Err(:final failure)) {
+      // `init` mirrors the persisted value into this flag, so it must never
+      // get ahead of storage: a write that failed leaves the old value in
+      // place, and the switch snaps back to match.
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     // Apply immediately: this flips FLAG_SECURE on any protected screen that
     // is currently mounted, and clears it if the user just opted out.
     ScreenCaptureProtection.instance.enabledByUser = enabled;
@@ -265,7 +327,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Payjoin min amount set to: $amountSat was '
       '${state.payjoinMinAmountSat}',
     );
-    await _setPayjoinMinAmountUsecase.execute(amountSat);
+    final result = await _setPayjoinMinAmountUsecase.execute(amountSat);
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         payjoinPolicy: state.payjoinPolicy?.copyWith(
@@ -281,7 +348,14 @@ class SettingsCubit extends Cubit<SettingsState> {
       'Payjoin expiry set to: $expireAfterSec was '
       '${state.payjoinExpireAfterSec}',
     );
-    await _setPayjoinExpireAfterSecUsecase.execute(expireAfterSec);
+    final result = await _setPayjoinExpireAfterSecUsecase.execute(
+      expireAfterSec,
+    );
+    if (result case Err(:final failure)) {
+      emit(state.copyWith(failure: failure));
+      return;
+    }
+
     emit(
       state.copyWith(
         payjoinPolicy: state.payjoinPolicy?.copyWith(

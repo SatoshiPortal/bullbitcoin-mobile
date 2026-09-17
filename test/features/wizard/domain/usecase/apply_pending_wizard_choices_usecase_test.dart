@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -29,12 +30,18 @@ void main() {
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
-    when(() => settings.setLanguage(any())).thenAnswer((_) async {});
-    when(() => settings.setThemeMode(any())).thenAnswer((_) async {});
-    when(() => settings.setCurrency(any())).thenAnswer((_) async {});
+    when(
+      () => settings.setLanguage(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => settings.setThemeMode(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => settings.setCurrency(any()),
+    ).thenAnswer((_) async => const Ok(null));
     when(
       () => settings.setErrorReportingEnabled(any()),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
   });
 
   test('short-circuits when nothing is staged', () async {

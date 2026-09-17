@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_tor/tor.dart';
 
 /// Verifies an external SOCKS proxy before making it the configured route.
@@ -20,14 +21,14 @@ class UpdateTorProxyUsecase {
     bool Function()? isCurrent,
   }) async {
     if (!useTorProxy) {
-      try {
-        await _persist(() async {
-          await _settingsRepository.setTorProxy(
-            enabled: false,
-            port: torProxyPort,
-          );
-        }, isCurrent);
-      } catch (_) {
+      final stored = await _persist(() async {
+        final result = await _settingsRepository.setTorProxy(
+          enabled: false,
+          port: torProxyPort,
+        );
+        return result is Ok;
+      }, isCurrent);
+      if (!stored) {
         return const TorUnavailable(
           source: TorSource.external,
           failure: TorStorageFailure(),
@@ -52,31 +53,39 @@ class UpdateTorProxyUsecase {
     final connection = await _verifyExternalTorUsecase.execute(endpoint);
     if (connection is! TorReady) return connection;
 
-    try {
-      await _persist(() async {
-        await _settingsRepository.setTorProxy(
-          enabled: true,
-          port: torProxyPort,
-        );
-      }, isCurrent);
-    } catch (_) {
+    final stored = await _persist(() async {
+      final result = await _settingsRepository.setTorProxy(
+        enabled: true,
+        port: torProxyPort,
+      );
+      return result is Ok;
+    }, isCurrent);
+    if (!stored) {
       return const TorUnavailable(
         source: TorSource.external,
         failure: TorStorageFailure(),
       );
     }
+
     return connection;
   }
 
-  Future<void> _persist(
-    Future<void> Function() operation,
+  /// Runs [operation] on the serialized queue. Returns `false` only when a
+  /// write actually failed, so callers decide rather than catching.
+  ///
+  /// A stale request is skipped and reported as `true`: nothing was written,
+  /// but nothing went wrong either, and treating it as a failure would tell
+  /// the user their Tor setting could not be saved when it was simply
+  /// superseded.
+  Future<bool> _persist(
+    Future<bool> Function() operation,
     bool Function()? isCurrent,
   ) {
     final queued = _persistenceQueue.then((_) async {
-      if (isCurrent != null && !isCurrent()) return;
-      await operation();
+      if (isCurrent != null && !isCurrent()) return true;
+      return operation();
     });
-    _persistenceQueue = queued.catchError((_) {});
+    _persistenceQueue = queued.catchError((_) => false);
     return queued;
   }
 }
