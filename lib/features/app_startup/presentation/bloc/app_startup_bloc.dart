@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/app_startup/domain/missing_default_secret_exception.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_legacy_install_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
@@ -136,6 +137,23 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       // re-dispatches `AppStartupStarted` on `resumed`, which only
       // fires after the user has unlocked the device since boot.
       _waitForKeychainUnlock();
+    } on MissingDefaultSecretException catch (e, st) {
+      // The seed is gone and the wallet metadata is not — the fss9 cohort,
+      // or a wiped keystore. Distinct from the catch-all below so the log
+      // says which, and so `hasBackup` is what the screen turns on: the
+      // remedy here is "import your backup", not "contact support".
+      log.severe(
+        message: 'App startup: default wallet has no secret',
+        error: 'MissingDefaultSecretException',
+        trace: st,
+      );
+      bool hasBackup;
+      try {
+        hasBackup = await _checkBackupUsecase.execute();
+      } catch (_) {
+        hasBackup = false;
+      }
+      emit(AppStartupState.failure(e, hasBackup: hasBackup));
     } catch (e, st) {
       log.severe(message: 'App startup failed', error: e, trace: st);
 

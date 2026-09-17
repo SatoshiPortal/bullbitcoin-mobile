@@ -4,8 +4,9 @@ import 'package:bb_mobile/core/recoverbull/domain/recoverbull_failure.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_vault_key_from_server_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_vault_usecase.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+// `EncryptedVault` exists on both sides — the app's own entity and the package's sealed result. This file means the app's.
+import 'package:primitives/primitives.dart' show Fingerprint;
+import 'package:secrets/secrets.dart' hide EncryptedVault;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -30,7 +31,7 @@ Future<void> main({bool isInitialized = false}) async {
       locator<FetchVaultKeyFromServerUsecase>();
 
   final walletRepository = locator<WalletRepository>();
-  final seedRepository = locator<SeedRepository>();
+  final secrets = locator<Secrets>();
 
   const oldPathZooMnemonicWithSevenZerosPassword =
       """{"created_at":784044000000,"id":"09a6ed8f4de8fd73b73e2392ea78410b7b306d7090cd6f91ed91e7d1c1159799","ciphertext":"U2FiHun3tiRRzVIyJKWwPFmvnfzPJ/K/OzbASAoOIamOP4NRs8ADU7CR87NsxS5mp2dzbl3wgiquhCdQVABJXhHRpTQS7PlCwbbIg2Vj9o3PBoERCfeeD2KRv8uD+6HjNkm33zdHDK/dt1uAYUCcJtqP9ARhn+bUPlKBIW0XP/fIiH94LuU4+AXjN2WD8SBWX1VtS+CrORofA+eMLphLRh2ibzEGotvfrlp52/VjSd5sY3LGkr12lapLSfx4zILhgc2AqgUeFn4Nv8v8F6d3kZ372ikuie963MrncvTS4LxIVO723zX+Lp86bUcDXRtb6B4ZTVHhmRABGqYnviamf84dpcCbC2JhvPHBnOVGTMgf5KbIiBsCNFTKlRmaEnj2HSJLFeC6yBNop02jQ/XkgjFC+35Z7cvO2sKhB5Es0uo=","salt":"658d4287b027f95ae7e5b9f52a5439a4","path":"m/1608'/0'/586053381"}""";
@@ -120,11 +121,17 @@ Future<void> main({bool isInitialized = false}) async {
         expect(wallets.length, 1);
         final wallet = wallets.first;
         expect(wallet.masterFingerprint, isNotEmpty);
-        final seed = await seedRepository.get(wallet.masterFingerprint);
-        final seedModel = SeedModel.fromEntity(seed);
-        expect(seedModel, isA<MnemonicSeedModel>());
-        final mnemonicSeedModel = seedModel as MnemonicSeedModel;
-        expect(mnemonicSeedModel.mnemonicWords, equals(expectedMnemonicWords));
+        final secret = switch (await secrets.fetch(
+          Fingerprint(wallet.masterFingerprint),
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('fetch failed: ${failure.runtimeType}'),
+        };
+        // `verifyWords` compares inside the package and returns only the verdict: the restored words are never read back out to be asserted on.
+        expect(switch (await secret.verifyWords(expectedMnemonicWords)) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('verify failed: ${failure.runtimeType}'),
+        }, isTrue);
       },
     );
 

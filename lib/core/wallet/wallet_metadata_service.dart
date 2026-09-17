@@ -1,11 +1,14 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/network_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bull_logger/bull_logger.dart';
+import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -100,64 +103,80 @@ class WalletMetadataService {
     );
   }
 
-  static Future<WalletMetadataModel> deriveFromSeed({
-    required Seed seed,
+  /// Builds a wallet's metadata from a stored secret.
+  ///
+  /// Every derivation happens inside the `secrets` package: what comes
+  /// back is an xpub and public descriptors. The seed, the master xprv
+  /// and the BIP39 words never reach this method.
+  static Future<WalletMetadataModel> deriveFromSecret({
+    required Secret secret,
     required Network network,
     required ScriptType scriptType,
     String? label,
     required bool isDefault,
     DateTime? birthday,
   }) async {
-    final xpub = await Bip32Derivation.getAccountXpub(
-      seedBytes: seed.bytes,
-      network: network,
-      scriptType: scriptType,
+    // Each chain with its own SLIP-44 coin type — 0/1 for Bitcoin, 1776/1 for Liquid — as every wallet already on a device was derived. Folding Liquid onto Bitcoin mainnet changed `xpub` and `xpubFingerprint` for every Liquid wallet.
+    final xpub = _unwrap(
+      network.isBitcoin
+          ? await secret.derive.xpub(
+              network: network.bitcoin,
+              scriptType: scriptType.shared,
+            )
+          : await secret.derive.liquidXpub(
+              network: network.liquid,
+              scriptType: scriptType.shared,
+            ),
     );
 
-    String descriptor;
-    String changeDescriptor;
+    final String descriptor;
+    final String changeDescriptor;
     if (network.isBitcoin) {
-      final xprv = Bip32Derivation.getXprvFromSeed(seed.bytes, network);
-      descriptor =
-          await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
-            xprv,
-            scriptType: scriptType,
-            isTestnet: network.isTestnet,
-          );
-      changeDescriptor =
-          await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
-            xprv,
-            scriptType: scriptType,
-            isTestnet: network.isTestnet,
-            isInternalKeychain: true,
-          );
+      final descriptors = _unwrap(
+        await secret.derive.descriptors.bitcoin(
+          network: network.bitcoin,
+          scriptType: scriptType.shared,
+        ),
+      );
+      descriptor = descriptors.external;
+      changeDescriptor = descriptors.internal;
     } else {
-      if (seed is! MnemonicSeed) {
-        throw MnemonicSeedNeededException(
-          'Mnemonic seed is required for Liquid network',
-        );
-      }
-
-      descriptor =
-          await DescriptorDerivation.derivePublicLiquidDescriptorFromMnemonic(
-            seed.mnemonicWords.join(' '),
-            scriptType: scriptType,
-            isTestnet: network.isTestnet,
+      // The confidential descriptor covers both keychains, and a
+      // seed-only secret is refused before anything is loaded.
+      final scope = _unwrap(
+        await secret.derive.descriptors.liquid(network: network.liquid),
+      );
+      switch (scope) {
+        case WholeSecret(:final value):
+          descriptor = value;
+        case WordsOnly(:final value):
+          // lwk takes no passphrase, so this wallet is the passphrase-less
+          // sibling's: same addresses, same funds. Recorded because the
+          // metadata says the wallet derives from a passphrase secret and
+          // the Liquid half of it does not.
+          log.warning(
+            'LIQUID_WORDS_ONLY: Liquid wallet for ${secret.info.id.hex} '
+            'derives from the words alone; its passphrase takes no part',
           );
+          descriptor = value;
+      }
       changeDescriptor = descriptor;
     }
 
+    final fingerprint = secret.info.id.hex;
     return WalletMetadataModel(
       id: encodeOrigin(
-        fingerprint: seed.masterFingerprint,
+        fingerprint: fingerprint,
         network: network,
         scriptType: scriptType,
       ),
-      masterFingerprint: seed.masterFingerprint,
-      xpubFingerprint: xpub.fingerprintHex,
+      masterFingerprint: fingerprint,
+      // Public math on a public key: deriving an xpub's own fingerprint
+      // needs nothing from the secret.
+      xpubFingerprint: Bip32Derivation.getBip32Xpub(xpub).fingerprintHex,
       signer: Signer.local,
       signerDevice: null,
-      xpub: xpub.convert(scriptType.getXpubType(network)),
+      xpub: xpub,
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
       isDefault: isDefault,
@@ -167,6 +186,15 @@ class WalletMetadataService {
       birthday: birthday,
     );
   }
+
+  /// Turns a secrets failure into the exception this service has always
+  /// thrown, so callers keep their existing error handling.
+  static T _unwrap<T>(Result<T, SecretFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw MnemonicSeedNeededException(
+      failure.toString(),
+    ),
+  };
 
   static Future<WalletMetadataModel> deriveFromXpub({
     required String xpub,

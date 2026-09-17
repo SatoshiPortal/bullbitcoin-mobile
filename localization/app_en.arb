@@ -8070,6 +8070,15 @@
   "@recoverbullEncryptedVaultCreated": {
     "description": "Success message title after vault creation"
   },
+  "recoverbullVaultPassphraseNotIncluded": "Your wallet has a passphrase, and this vault does not contain it. Keep the passphrase with your backup: the vault alone restores a different wallet.",
+  "@recoverbullVaultPassphraseNotIncluded": {
+    "description": "Warning shown after creating a vault for a wallet that has a BIP39 passphrase, since the vault format carries the words only"
+  },
+  "allSeedViewUnreadableEntries": "{count, plural, =1{1 stored entry could not be read and is not shown.} other{{count} stored entries could not be read and are not shown.}}",
+  "@allSeedViewUnreadableEntries": {
+    "description": "Shown in the seed viewer when the keystore holds entries under the secrets prefix that could not be parsed",
+    "placeholders": {"count": {"type": "int"}}
+  },
   "recoverbullEnterInput": "Enter your {inputType}",
   "@recoverbullEnterInput": {
     "description": "Input field label prompting for PIN or password",

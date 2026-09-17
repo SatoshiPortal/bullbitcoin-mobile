@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -49,7 +49,7 @@ class AppStartupLocator {
       () => CheckForExistingDefaultWalletsUsecase(
         walletRepository: locator<WalletRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        seedRepository: locator<SeedRepository>(),
+        secrets: locator<Secrets>(),
       ),
     );
     locator.registerFactory<InitializeRequiredTorUsecase>(

@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:secrets/secrets.dart';
+import 'package:primitives/primitives.dart' show Fingerprint;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -8,12 +9,12 @@ import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 class DeleteWalletUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final SeedRepository _seedRepository;
+  final Secrets _secrets;
 
   DeleteWalletUsecase({
     required this._walletRepository,
     required this._swapRepository,
-    required this._seedRepository,
+    required this._secrets,
   });
 
   Future<void> execute({required String walletId}) async {
@@ -49,8 +50,9 @@ class DeleteWalletUsecase {
         if (!stillUsed) {
           // Best-effort cleanup: a failure here leaves an orphan seed entry
           // but must not fail the wallet deletion the user asked for.
-          final deleted = await _seedRepository.delete(
-            wallet.masterFingerprint,
+          // Unconditional on the package side; the "still used by a wallet" guard is this usecase's, and was applied above.
+          final deleted = await _secrets.trash(
+            Fingerprint(wallet.masterFingerprint),
           );
           if (deleted case Err(:final failure)) {
             log.warning(

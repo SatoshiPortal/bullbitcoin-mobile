@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
 import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
@@ -484,14 +485,11 @@ class BoltzSwapRepository
   /// Derives + persists the swap master key from the default wallet's seed.
   /// Called once, only when [swapMasterKeyReady] reported a miss, so swap
   /// creation and restore can READ the key from storage and never derive lazily.
-  Future<void> deriveSwapMasterKey({
-    required String mnemonic,
+  Future<void> storeSwapMasterKey({
+    required SwapKey key,
     required String walletFingerprint,
-  }) => _boltz.deriveSwapMasterKey(
-    mnemonic: mnemonic,
-    walletFingerprint: walletFingerprint,
-    isTestnet: _isTestnet,
-  );
+  }) =>
+      _boltz.storeSwapMasterKey(key: key, walletFingerprint: walletFingerprint);
 
   /// Reads the swap master key (the "swap mnemonic") for [walletFingerprint]
   /// for display/management in the seed viewer. Null when none is stored.
@@ -504,11 +502,23 @@ class BoltzSwapRepository
     );
     if (model == null) return null;
     return SwapMasterKeyInfo(
-      mnemonic: model.mnemonic,
       fingerprint: model.fingerprint,
       walletFingerprint: walletFingerprint,
       network: model.network,
     );
+  }
+
+  /// The swap mnemonic itself, for the one screen that displays it.
+  ///
+  /// Separate from [getSwapMasterKeyInfo] so the words are fetched at the
+  /// moment they are drawn and nothing above holds them — the sealed-display
+  /// shape. `null` when no key is stored for that wallet.
+  Future<String?> getSwapMnemonic({required String walletFingerprint}) async {
+    final model = await _boltz.getSwapMasterKeyForWallet(
+      walletFingerprint: walletFingerprint,
+      isTestnet: _isTestnet,
+    );
+    return model?.mnemonic;
   }
 
   /// Deletes the swap master key (and its index counter) for

@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/seed_failure.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -7,110 +5,122 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
 
 class _MockWalletRepository extends Mock implements WalletRepository {}
 
 class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
 
-class _MockSeedRepository extends Mock implements SeedRepository {}
-
 class _MockWallet extends Mock implements Wallet {}
 
+/// Orphan-seed cleanup (issue #2324), against the real `Secrets`.
+///
+/// `Secrets.trash` is unconditional — the package does not know what a wallet is — so the guard asserted here is entirely this usecase's. The old test proved it with `verifyNever(delete)` on a mock; it is now proved by the entry still being in the keystore, which is the thing that actually matters.
 void main() {
+  const words = [
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'abandon',
+    'about',
+  ];
+  const walletId = 'wallet-1';
+
+  late FakeSecureStoragePlatform storage;
+  late Secrets secrets;
   late _MockWalletRepository walletRepository;
   late _MockBoltzSwapRepository swapRepository;
-  late _MockSeedRepository seedRepository;
   late DeleteWalletUsecase usecase;
+  late String fingerprint;
 
-  const walletId = 'wallet-1';
-  const fingerprint = 'abc123';
+  String key() => 'seed_$fingerprint';
 
-  _MockWallet buildWallet({
-    String masterFingerprint = fingerprint,
-    bool isDefault = false,
-  }) {
+  _MockWallet buildWallet({String? masterFingerprint}) {
     final wallet = _MockWallet();
-    when(() => wallet.isDefault).thenReturn(isDefault);
-    when(() => wallet.masterFingerprint).thenReturn(masterFingerprint);
+    when(() => wallet.isDefault).thenReturn(false);
+    when(
+      () => wallet.masterFingerprint,
+    ).thenReturn(masterFingerprint ?? fingerprint);
     return wallet;
   }
 
-  setUp(() {
+  setUp(() async {
+    storage = FakeSecureStoragePlatform()..install();
+    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final stored =
+        (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
+    fingerprint = stored.value.id.hex;
+
     walletRepository = _MockWalletRepository();
     swapRepository = _MockBoltzSwapRepository();
-    seedRepository = _MockSeedRepository();
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
       swapRepository: swapRepository,
-      seedRepository: seedRepository,
+      secrets: secrets,
     );
-
     when(
       () => swapRepository.getOngoingSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => []);
     when(
       () => walletRepository.deleteWallet(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async {});
-    when(
-      () => seedRepository.delete(any()),
-    ).thenAnswer((_) async => const Ok(null));
   });
 
   group('DeleteWalletUsecase — orphan seed cleanup (issue #2324)', () {
-    test('deletes the seed once no remaining wallet references it', () async {
-      final wallet = buildWallet();
+    test('deletes the secret once no remaining wallet references it', () async {
       when(
         () => walletRepository.getWallet(walletId),
-      ).thenAnswer((_) async => wallet);
+      ).thenAnswer((_) async => buildWallet());
       when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
 
       await usecase.execute(walletId: walletId);
 
-      verify(() => seedRepository.delete(fingerprint)).called(1);
+      expect(storage.entries, isNot(contains(key())));
     });
 
     test(
-      'keeps the seed while another wallet shares the fingerprint',
+      'keeps the secret while another wallet shares the fingerprint',
       () async {
-        final wallet = buildWallet();
-        final sibling = buildWallet();
         when(
           () => walletRepository.getWallet(walletId),
-        ).thenAnswer((_) async => wallet);
+        ).thenAnswer((_) async => buildWallet());
         when(
           () => walletRepository.getWallets(),
-        ).thenAnswer((_) async => [sibling]);
+        ).thenAnswer((_) async => [buildWallet()]);
 
         await usecase.execute(walletId: walletId);
 
-        verifyNever(() => seedRepository.delete(any()));
+        expect(storage.entries, contains(key()));
       },
     );
 
-    test('never touches a seed for a watch-only wallet', () async {
-      final wallet = buildWallet(masterFingerprint: '');
+    test('never touches a secret for a watch-only wallet', () async {
       when(
         () => walletRepository.getWallet(walletId),
-      ).thenAnswer((_) async => wallet);
+      ).thenAnswer((_) async => buildWallet(masterFingerprint: ''));
 
       await usecase.execute(walletId: walletId);
 
-      verifyNever(() => seedRepository.delete(any()));
+      expect(storage.entries, contains(key()));
       verifyNever(() => walletRepository.getWallets());
     });
 
     test(
-      'completes the wallet deletion even when seed cleanup fails — '
-      'cleanup is best effort and must not surface as a wallet error',
+      'completes the wallet deletion even when secret cleanup fails — cleanup is best effort and must not surface as a wallet error',
       () async {
-        final wallet = buildWallet();
         when(
           () => walletRepository.getWallet(walletId),
-        ).thenAnswer((_) async => wallet);
+        ).thenAnswer((_) async => buildWallet());
         when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
-        when(
-          () => seedRepository.delete(fingerprint),
-        ).thenAnswer((_) async => const Err(SeedDeleteFailure('boom')));
+        storage.scripted.add(Exception('keystore refused the delete'));
 
         await expectLater(usecase.execute(walletId: walletId), completes);
 
