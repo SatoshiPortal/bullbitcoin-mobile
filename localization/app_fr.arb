@@ -117,11 +117,9 @@
   "settingsAppSettingsTitle": "Paramètres de l'application",
   "settingsTermsOfServiceTitle": "Conditions d'utilisation",
   "settingsAppVersionLabel": "Version de l'application : ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsGetHelpLabel": "Obtenir de l'aide",
   "settingsServiceStatusTitle": "État des services",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Langue",
   "settingsThemeTitle": "Thème",
   "settingsDevModeWarningTitle": "Mode développeur",
@@ -4952,5 +4950,8 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "settingsErrorSavingSetting": "Ce paramètre n'a pas pu être enregistré. Veuillez réessayer.",
+  "settingsErrorConsentNotGiven": "Ce paramètre nécessite votre confirmation avant d'être modifié.",
+  "settingsErrorLoadingLogs": "Les journaux de diagnostic n'ont pas pu être préparés. Veuillez réessayer."
 }

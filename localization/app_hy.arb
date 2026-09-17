@@ -683,10 +683,8 @@
   "settingsAppSettingsTitle": "Հավելվածի կարգավորումներ",
   "settingsTermsOfServiceTitle": "Ծառայության պայմաններ",
   "settingsAppVersionLabel": "Հավելվածի տարբերակ․ ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Ծառայությունների կարգավիճակ",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Լեզու",
   "settingsThemeTitle": "Ոճ",
   "settingsDevModeWarningTitle": "Ծրագրավորողի ռեժիմ",
@@ -3588,5 +3586,8 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "settingsErrorSavingSetting": "Չհաջողվեց պահպանել այդ կարգավորումը։ Խնդրում ենք փորձել կրկին։",
+  "settingsErrorConsentNotGiven": "Այս կարգավորումը փոխելուց առաջ անհրաժեշտ է ձեր հաստատումը։",
+  "settingsErrorLoadingLogs": "Չհաջողվեց պատրաստել ախտորոշիչ գրառումները։ Խնդրում ենք փորձել կրկին։"
 }

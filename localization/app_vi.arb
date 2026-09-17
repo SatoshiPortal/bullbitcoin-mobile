@@ -683,10 +683,8 @@
   "settingsAppSettingsTitle": "Cài đặt ứng dụng",
   "settingsTermsOfServiceTitle": "Điều khoản dịch vụ",
   "settingsAppVersionLabel": "Phiên bản ứng dụng: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Trạng thái dịch vụ",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Ngôn ngữ",
   "settingsThemeTitle": "Giao diện",
   "settingsDevModeWarningTitle": "Chế độ nhà phát triển",
@@ -3588,5 +3586,8 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "settingsErrorSavingSetting": "Không thể lưu cài đặt đó. Vui lòng thử lại.",
+  "settingsErrorConsentNotGiven": "Cài đặt này cần bạn xác nhận trước khi thay đổi.",
+  "settingsErrorLoadingLogs": "Không thể chuẩn bị nhật ký chẩn đoán. Vui lòng thử lại."
 }
