@@ -261,5 +261,40 @@ void main() {
       bloc.add(const WithdrawEvent.confirmed());
       await expectLater(bloc.stream, emitsThrough(isA<WithdrawSuccessState>()));
     });
+
+    // The use-cases end in a bare `catch`, so nothing escapes today. This pins
+    // the bloc's own invariant: narrowing one of those catches later must not
+    // leave the progress bar running and Confirm disabled with no message.
+    test('a throwing confirm still clears the flag and reports', () async {
+      when(
+        () => confirmOrder.execute(orderId: any(named: 'orderId')),
+      ).thenThrow(Exception('apikey=secret123'));
+      final bloc = build()..seed(confirmation());
+
+      bloc.add(const WithdrawEvent.confirmed());
+      await expectLater(
+        bloc.stream,
+        emitsThrough(
+          isA<WithdrawConfirmationState>()
+              .having(
+                (s) => s.failure,
+                'failure',
+                isA<WithdrawUnexpectedFailure>(),
+              )
+              .having(
+                (s) => s.isConfirmingWithdrawal,
+                'isConfirmingWithdrawal',
+                isFalse,
+              ),
+        ),
+      );
+
+      final failure = (bloc.state as WithdrawConfirmationState).failure!;
+      expect(
+        failure.logMessage,
+        isNot(contains('secret123')),
+        reason: 'only the type belongs on a failure raised from a throw',
+      );
+    });
   });
 }

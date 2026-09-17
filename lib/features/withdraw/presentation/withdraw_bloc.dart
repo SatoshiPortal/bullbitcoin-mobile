@@ -91,30 +91,52 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
     final recipient = event.recipient;
 
-    switch (await _createWithdrawOrderUsecase.execute(
-      fiatAmount: recipientInputState.amount.amount,
-      recipientId: recipient.id,
-      recipientType: recipient.type,
-    )) {
-      case Ok(:final value):
-        emit(
-          recipientInputState.toConfirmationState(
-            recipient: recipient,
-            order: value,
-          ),
-        );
-      case Err(:final failure):
-        emit(
-          event.isNew
-              ? recipientInputState.copyWith(
-                  isCreatingWithdrawOrder: false,
-                  newRecipientFailure: failure,
-                )
-              : recipientInputState.copyWith(
-                  isCreatingWithdrawOrder: false,
-                  selectedRecipientFailure: failure,
-                ),
-        );
+    try {
+      switch (await _createWithdrawOrderUsecase.execute(
+        fiatAmount: recipientInputState.amount.amount,
+        recipientId: recipient.id,
+        recipientType: recipient.type,
+      )) {
+        case Ok(:final value):
+          emit(
+            recipientInputState.toConfirmationState(
+              recipient: recipient,
+              order: value,
+            ),
+          );
+        case Err(:final failure):
+          emit(
+            event.isNew
+                ? recipientInputState.copyWith(
+                    isCreatingWithdrawOrder: false,
+                    newRecipientFailure: failure,
+                  )
+                : recipientInputState.copyWith(
+                    isCreatingWithdrawOrder: false,
+                    selectedRecipientFailure: failure,
+                  ),
+          );
+      }
+    } catch (e, st) {
+      log.severe(
+        message: 'Unexpected error while creating the withdrawal order',
+        error: e,
+        trace: st,
+      );
+      final failure = WithdrawUnexpectedFailure(
+        'create threw: ${e.runtimeType}',
+      );
+      emit(
+        event.isNew
+            ? recipientInputState.copyWith(
+                isCreatingWithdrawOrder: false,
+                newRecipientFailure: failure,
+              )
+            : recipientInputState.copyWith(
+                isCreatingWithdrawOrder: false,
+                selectedRecipientFailure: failure,
+              ),
+      );
     }
   }
 
@@ -135,18 +157,32 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       confirmationState.copyWith(isConfirmingWithdrawal: true, failure: null),
     );
 
-    switch (await _confirmWithdrawOrderUsecase.execute(
-      orderId: confirmationState.order.orderId,
-    )) {
-      case Ok(:final value):
-        emit(confirmationState.toSuccessState(order: value));
-      case Err(:final failure):
-        emit(
-          confirmationState.copyWith(
-            isConfirmingWithdrawal: false,
-            failure: failure,
-          ),
-        );
+    try {
+      switch (await _confirmWithdrawOrderUsecase.execute(
+        orderId: confirmationState.order.orderId,
+      )) {
+        case Ok(:final value):
+          emit(confirmationState.toSuccessState(order: value));
+        case Err(:final failure):
+          emit(
+            confirmationState.copyWith(
+              isConfirmingWithdrawal: false,
+              failure: failure,
+            ),
+          );
+      }
+    } catch (e, st) {
+      log.severe(
+        message: 'Unexpected error while confirming the withdrawal',
+        error: e,
+        trace: st,
+      );
+      emit(
+        confirmationState.copyWith(
+          isConfirmingWithdrawal: false,
+          failure: WithdrawUnexpectedFailure('confirm threw: ${e.runtimeType}'),
+        ),
+      );
     }
   }
 }
