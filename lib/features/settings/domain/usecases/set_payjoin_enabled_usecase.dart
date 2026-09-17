@@ -39,7 +39,7 @@ class SetPayjoinEnabledUsecase {
               error: e,
               trace: stackTrace,
             );
-            return Err(SettingsConsentFailure(e.toString()));
+            return Err(SettingsConsentFailure(''));
           }
           if (!consentGranted) return const Ok(false);
 

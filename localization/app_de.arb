@@ -1376,7 +1376,6 @@
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Überweisung in US-Dollar (USD)",
   "transactionDetailLabelPayinStatus": "Zahlungsstatus",
   "importQrDeviceSpecterStep9": "Scannen Sie den QR-Code auf Ihrem Specter",
-  "settingsRecoverbullTitle": "RecoverBull",
   "buyInputKycPending": "KYC Identitätsprüfung",
   "importWatchOnlySelectDerivation": "Ableitung auswählen",
   "walletAddressTypeLegacy": "Legacy",
@@ -1390,7 +1389,6 @@
     }
   },
   "fundExchangeMethodRegularSepaSubtitle": "Nur für größere Transaktionen über 30.000 €",
-  "settingsTelegramLabel": "Telegram",
   "walletDetailsSignerDeviceNotSupported": "Nicht unterstützt",
   "exchangeLandingDisclaimerLegal": "Der Zugang zu den Wechseldiensten ist auf Länder beschränkt, in denen Bull Bitcoin legal operieren kann und möglicherweise eine KYC-Überprüfung erfordert",
   "backupWalletEncryptedVaultTitle": "Verschlüsselter Tresor",
@@ -4944,5 +4942,8 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet."
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "settingsErrorSavingSetting": "Diese Einstellung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+  "settingsErrorConsentNotGiven": "Diese Einstellung erfordert Ihre Bestätigung, bevor sie geändert werden kann.",
+  "settingsErrorLoadingLogs": "Die Diagnoseprotokolle konnten nicht erstellt werden. Bitte versuchen Sie es erneut."
 }

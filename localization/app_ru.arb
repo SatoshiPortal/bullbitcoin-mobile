@@ -1407,7 +1407,6 @@
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Перевод средств в долларах США (USD)",
   "transactionDetailLabelPayinStatus": "Статус оплаты",
   "importQrDeviceSpecterStep9": "Сканировать QR-код, отображаемый на вашем Specter",
-  "settingsRecoverbullTitle": "Recoverbull",
   "buyInputKycPending": "Проверка идентификации KYC",
   "importWatchOnlySelectDerivation": "Выбрать",
   "walletAddressTypeLegacy": "Наследие",
@@ -1421,7 +1420,6 @@
     }
   },
   "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €30,000",
-  "settingsTelegramLabel": "Telegram",
   "walletDetailsSignerDeviceNotSupported": "Не поддерживается",
   "exchangeLandingDisclaimerLegal": "Доступ к услугам обмена будет ограничен странами, где Bull Bitcoin может легально работать и может потребовать KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрованное хранилище",
@@ -4912,5 +4910,8 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "settingsErrorSavingSetting": "Не удалось сохранить эту настройку. Пожалуйста, попробуйте снова.",
+  "settingsErrorConsentNotGiven": "Для изменения этой настройки требуется ваше подтверждение.",
+  "settingsErrorLoadingLogs": "Не удалось подготовить диагностические журналы. Пожалуйста, попробуйте снова."
 }

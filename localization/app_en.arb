@@ -449,10 +449,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "settingsGithubLabel": "Github",
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
@@ -464,10 +460,6 @@
   "settingsServiceStatusTitle": "Service Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "settingsLanguageTitle": "Language",
   "@settingsLanguageTitle": {
@@ -14671,7 +14663,7 @@
   "sellErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@sellErrorFeesUnavailable": {
     "description": "Shown when the network fee rates cannot be fetched, so no sell payin can be built. Wording matches the send equivalent."
-  },
+    },
   "payUnexpectedError": "Your payment could not be completed right now. Please try again or contact support.",
   "@payUnexpectedError": {
     "description": "Generic catch-all shown when a pay order fails for a reason the user cannot act on. Must never quote the raw exception: this key exists to replace the leaked reason (#1895)."
@@ -14683,5 +14675,17 @@
   "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@payErrorFeesUnavailable": {
     "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "settingsErrorSavingSetting": "That setting could not be saved. Please try again.",
+  "@settingsErrorSavingSetting": {
+    "description": "settings user-facing failure message (#1895)."
+  },
+  "settingsErrorConsentNotGiven": "This setting needs your confirmation before it can be changed.",
+  "@settingsErrorConsentNotGiven": {
+    "description": "settings user-facing failure message (#1895)."
+  },
+  "settingsErrorLoadingLogs": "The diagnostic logs could not be prepared. Please try again.",
+  "@settingsErrorLoadingLogs": {
+    "description": "settings user-facing failure message (#1895)."
   }
 }

@@ -7,6 +7,8 @@ import 'package:bb_mobile/features/tor_settings/domain/update_tor_proxy_usecase.
 import 'package:bb_mobile/features/tor_settings/domain/update_tor_transport_mode_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/check_external_tor_connection_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
+import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_tor/tor.dart';
@@ -204,7 +206,7 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
       final externalPort = _FakeExternalTorPort()..available = false;
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
@@ -239,7 +241,7 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
       final usecase = UpdateTorProxyUsecase(
         settingsRepository,
         VerifyExternalTorUsecase(_FakeExternalTorPort()),
@@ -254,6 +256,34 @@ void main() {
       verify(
         () => settingsRepository.setTorProxy(enabled: true, port: 9050),
       ).called(1);
+    },
+  );
+
+  // A superseded request writes nothing, but nothing went wrong either.
+  // Reporting it as a storage failure would tell the user their Tor setting
+  // could not be saved when it was simply replaced by a newer one.
+  test(
+    'a stale disable request is skipped, not reported as a failure',
+    () async {
+      final settingsRepository = _MockSettingsRepository();
+      final usecase = UpdateTorProxyUsecase(
+        settingsRepository,
+        VerifyExternalTorUsecase(_FakeExternalTorPort()),
+      );
+
+      final connection = await usecase.execute(
+        useTorProxy: false,
+        torProxyPort: 9050,
+        isCurrent: () => false,
+      );
+
+      expect(connection, isA<TorStopped>());
+      verifyNever(
+        () => settingsRepository.setTorProxy(
+          enabled: any(named: 'enabled'),
+          port: any(named: 'port'),
+        ),
+      );
     },
   );
 
@@ -346,7 +376,7 @@ void main() {
         enabled: any(named: 'enabled'),
         port: any(named: 'port'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     final externalPort = _BlockingExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
@@ -401,7 +431,7 @@ void main() {
         enabled: any(named: 'enabled'),
         port: any(named: 'port'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
     final cubit = TorSettingsCubit(
@@ -450,7 +480,7 @@ void main() {
         enabled: any(named: 'enabled'),
         port: any(named: 'port'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     final externalPort = _FakeExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
@@ -497,7 +527,11 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenThrow(Exception('settings secret'));
+      ).thenAnswer(
+        // The repository is the boundary now: it catches, logs the raw reason
+        // and hands back a sanitized failure.
+        (_) async => const Err(SettingsStoreWriteFailure('settings secret')),
+      );
       final externalPort = _FakeExternalTorPort();
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
@@ -541,7 +575,11 @@ void main() {
     final settingsRepository = _MockSettingsRepository();
     when(
       () => settingsRepository.setTorProxy(enabled: false, port: 9050),
-    ).thenThrow(Exception('settings secret'));
+    ).thenAnswer(
+      // The repository is the boundary now: it catches, logs the raw reason
+      // and hands back a sanitized failure.
+      (_) async => const Err(SettingsStoreWriteFailure('settings secret')),
+    );
     final externalPort = _FakeExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());
@@ -634,7 +672,7 @@ void main() {
           enabled: any(named: 'enabled'),
           port: any(named: 'port'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
       final externalPort = _BlockingExternalTorPort();
       final watchTor = _MockWatchTorConnectionUsecase();
       when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());

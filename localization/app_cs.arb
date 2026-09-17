@@ -239,19 +239,11 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsTelegramLabel": "Čeština",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "settingsGithubLabel": "Čeština",
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
   "settingsGetHelpLabel": "Získat pomoc",
-  "settingsRecoverbullTitle": "Čeština",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "settingsLanguageTitle": "Čeština",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -12200,5 +12192,8 @@
   "sendErrorExchangeOrderMismatch": "Tato platba již neodpovídá objednávce. Začněte platbu prosím znovu.",
   "sellUnexpectedError": "Váš prodejní příkaz se nyní nepodařilo dokončit. Zkuste to prosím znovu nebo kontaktujte podporu.",
   "sellErrorFeeBelowRelayFloor": "Síťový poplatek je příliš nízký. Zvolte vyšší poplatek.",
-  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
+  "sellErrorFeesUnavailable": "Síťové poplatky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+  "settingsErrorSavingSetting": "Toto nastavení se nepodařilo uložit. Zkuste to prosím znovu.",
+  "settingsErrorConsentNotGiven": "Toto nastavení vyžaduje před změnou vaše potvrzení.",
+  "settingsErrorLoadingLogs": "Diagnostické protokoly se nepodařilo připravit. Zkuste to prosím znovu."
 }

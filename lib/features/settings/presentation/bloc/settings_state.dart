@@ -6,6 +6,7 @@ sealed class SettingsState with _$SettingsState {
     SettingsEntity? storedSettings,
     PayjoinPolicy? payjoinPolicy,
     String? appVersion,
+    SettingsFailure? failure,
   }) = _SettingsState;
   const SettingsState._();
 

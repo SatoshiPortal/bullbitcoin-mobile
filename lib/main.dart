@@ -19,6 +19,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
@@ -390,6 +391,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
       child: ExchangeListener(
         child: MultiBlocListener(
           listeners: [
+            SettingsFailureListener(),
             BlocListener<AppStartupBloc, AppStartupState>(
               listenWhen: (previous, current) =>
                   previous != current &&

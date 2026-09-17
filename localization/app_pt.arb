@@ -1407,7 +1407,6 @@
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Transferir fundos em dólares americanos (USD)",
   "transactionDetailLabelPayinStatus": "Estado de Payin",
   "importQrDeviceSpecterStep9": "Digitalize o código QR exibido no seu Specter",
-  "settingsRecoverbullTitle": "Recuperação",
   "buyInputKycPending": "Pendente de Verificação de ID KYC",
   "importWatchOnlySelectDerivation": "Selecione a derivação",
   "walletAddressTypeLegacy": "Legado",
@@ -1421,7 +1420,6 @@
     }
   },
   "fundExchangeMethodRegularSepaSubtitle": "Somente uso para transações maiores acima de €30.000",
-  "settingsTelegramLabel": "Telegrama",
   "walletDetailsSignerDeviceNotSupported": "Não suportado",
   "exchangeLandingDisclaimerLegal": "O acesso aos serviços de câmbio será restrito a países onde o Bull Bitcoin pode funcionar legalmente e pode exigir KYC.",
   "backupWalletEncryptedVaultTitle": "Vault criptografado",
@@ -4952,5 +4950,8 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento já não corresponde à ordem. Inicie o pagamento novamente.",
   "sellUnexpectedError": "A sua ordem de venda não pôde ser concluída neste momento. Tente novamente ou contacte o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede demasiado baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique a sua ligação e tente novamente.",
+  "settingsErrorSavingSetting": "Não foi possível guardar essa definição. Por favor, tente novamente.",
+  "settingsErrorConsentNotGiven": "Esta definição precisa da sua confirmação antes de poder ser alterada.",
+  "settingsErrorLoadingLogs": "Não foi possível preparar os registos de diagnóstico. Por favor, tente novamente."
 }
