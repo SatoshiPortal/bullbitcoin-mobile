@@ -1,3 +1,5 @@
+import 'package:secrets/src/domain/domain.dart';
+
 /// The on-disk shape of a secret. **Frozen contract.**
 ///
 /// These bytes are already on users' devices under `seed_<fingerprint>`,
@@ -126,6 +128,17 @@ final class MnemonicSecretModel extends SecretModel {
     if (!SecretModel._wordCounts.contains(mnemonicWords.length)) {
       throw FormatException(
         '${mnemonicWords.length} words is not a BIP39 word count',
+      );
+    }
+    // Element boundaries too: a stored list whose elements are not single
+    // words is not a mnemonic representation, whatever its join derives to.
+    // Refused here so a read treats it as a corrupt entry — skipped by a
+    // listing, refused by a fetch, never written over — the same way every
+    // other unparsable value is handled. No interpolation: the element is a
+    // candidate mnemonic word.
+    if (!mnemonicWords.every(isMnemonicWordShape)) {
+      throw const FormatException(
+        'a mnemonic word is empty or carries whitespace',
       );
     }
     return MnemonicSecretModel._(

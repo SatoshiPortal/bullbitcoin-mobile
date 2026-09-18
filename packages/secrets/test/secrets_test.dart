@@ -345,6 +345,112 @@ void main() {
         isA<InvalidMnemonicFailure>(),
       );
     });
+
+    group('elements that are not single words', () {
+      // bip39 joins the list and splits it straight back, so a list of
+      // twelve elements whose join is a valid fifteen-word mnemonic passes
+      // its count, wordlist and checksum. The join here is the published
+      // zero-entropy fifteen-word vector, byte for byte.
+      const fifteen = [
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'abandon',
+        'address',
+      ];
+      final regrouped = <String>[
+        '${fifteen[0]} ${fifteen[1]} ${fifteen[2]} ${fifteen[3]}',
+        ...fifteen.sublist(4),
+      ];
+
+      test(
+        'import refuses them as an invalid mnemonic, not a store failure',
+        () async {
+          // The first version of this rule threw a FormatException, which the
+          // boundary classifies as a store failure with a severe log — for
+          // user input. A trailing-space element had been an
+          // InvalidMnemonicFailure before that rule existed, so this pins the
+          // classification the package promises for words that are not a
+          // mnemonic.
+          final storage = FakeSecureStoragePlatform();
+
+          final failure = err(
+            await secretsWith(storage).import(words: regrouped),
+          );
+
+          expect(failure, isA<InvalidMnemonicFailure>());
+          expect(failure, isNot(isA<SecretStoreFailure>()));
+          expect(storage.entries, isEmpty);
+        },
+      );
+
+      test('a trailing space is still an invalid mnemonic', () async {
+        final failure = err(
+          await secretsWith(
+            FakeSecureStoragePlatform(),
+          ).import(words: ['${words.first} ', ...words.sublist(1)]),
+        );
+
+        expect(failure, isA<InvalidMnemonicFailure>());
+      });
+
+      test('idOf refuses the same list import refuses', () async {
+        // idOf derives through seed(), not check(); the rule has to live in
+        // both or the two disagree about one input.
+        final failure = err(
+          await secretsWith(FakeSecureStoragePlatform()).idOf(words: regrouped),
+        );
+
+        expect(failure, isA<InvalidMnemonicFailure>());
+      });
+
+      test('an entry stored that way is corrupt, and is kept', () async {
+        // Planted under the fingerprint the canonical words derive to, so a
+        // later canonical import collides with it. No shipped writer could
+        // have produced this entry; a direct caller of the package API
+        // through the old gap could. It must read as a corrupt entry — the
+        // path every unparsable value takes — and it must never be written
+        // over, because "does not parse" is not "is the same secret".
+        final clean = secretsWith(FakeSecureStoragePlatform());
+        final id = ok(await clean.idOf(words: fifteen));
+        final planted = jsonEncode({
+          'mnemonicWords': regrouped,
+          'passphrase': null,
+          'runtimeType': 'mnemonic',
+        });
+        final storage = FakeSecureStoragePlatform(
+          entries: {'seed_${id.hex}': planted},
+        );
+        final secrets = secretsWith(storage);
+
+        final listing = ok(await secrets.list());
+        expect(listing.secrets, isEmpty);
+        expect(listing.unreadable, 1);
+
+        final fetched = err(await secrets.fetch(id));
+        expect(fetched, isA<SecretFetchFailure>());
+        expect(fetched, isNot(isA<SecretNotFoundFailure>()));
+        expect(fetched, isNot(isA<InvalidMnemonicFailure>()));
+
+        final reimport = err(await secrets.import(words: fifteen));
+        expect(reimport, isA<SecretStoreFailure>());
+        expect(
+          storage.entries['seed_${id.hex}'],
+          planted,
+          reason: 'an unparsable entry is kept, never replaced',
+        );
+      });
+    });
   });
 
   group('verifyWords answers without exposing anything', () {
