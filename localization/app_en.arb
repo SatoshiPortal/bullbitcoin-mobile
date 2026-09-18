@@ -14399,6 +14399,18 @@
   "@payErrorFeesUnavailable": {
     "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
   },
+  "transactionPayjoinBroadcastFailed": "The original transaction could not be broadcast. Please try again.",
+  "@transactionPayjoinBroadcastFailed": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionPayjoinOriginalUnavailable": "The original transaction is no longer available to broadcast.",
+  "@transactionPayjoinOriginalUnavailable": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
+  "transactionLabelLimitReached": "You can only have up to 10 labels.",
+  "@transactionLabelLimitReached": {
+    "description": "transactions user-facing failure message (#1895)."
+  },
   "settingsErrorSavingSetting": "That setting could not be saved. Please try again.",
   "@settingsErrorSavingSetting": {
     "description": "settings user-facing failure message (#1895)."

@@ -29,6 +29,13 @@ import 'package:bb_mobile/features/transactions/application/usecases/label_excha
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/delete_transaction_note_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_note_suggestions_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_swap_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_wallet_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/save_transaction_note_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
@@ -62,6 +69,31 @@ class TransactionsLocator {
       () => TransactionsFacade(
         labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
       ),
+    );
+
+    // Boundaries for the shared core use-cases and the labels facade, which
+    // still throw or carry a foreign failure type: each returns a
+    // `Result<_, TransactionFailure>` so nothing above knows either.
+    locator.registerFactory<GetTransactionWalletUsecase>(
+      () => GetTransactionWalletUsecase(locator<GetWalletUsecase>()),
+    );
+    locator.registerFactory<GetTransactionSwapUsecase>(
+      () => GetTransactionSwapUsecase(locator<GetSwapUsecase>()),
+    );
+    locator.registerFactory<WatchTransactionSwapUsecase>(
+      () => WatchTransactionSwapUsecase(locator<WatchSwapUsecase>()),
+    );
+    locator.registerFactory<GetTransactionOrderUsecase>(
+      () => GetTransactionOrderUsecase(locator<GetOrderUsecase>()),
+    );
+    locator.registerFactory<SaveTransactionNoteUsecase>(
+      () => SaveTransactionNoteUsecase(locator<LabelsFacade>()),
+    );
+    locator.registerFactory<DeleteTransactionNoteUsecase>(
+      () => DeleteTransactionNoteUsecase(locator<LabelsFacade>()),
+    );
+    locator.registerFactory<GetTransactionNoteSuggestionsUsecase>(
+      () => GetTransactionNoteSuggestionsUsecase(locator<LabelsFacade>()),
     );
 
     locator.registerFactory<GetTransactionOrderSwapsUsecase>(
@@ -161,22 +193,25 @@ class TransactionsLocator {
     );
     locator.registerFactory<TransactionDetailsCubit>(
       () => TransactionDetailsCubit(
-        getWalletUsecase: locator<GetWalletUsecase>(),
+        getTransactionWalletUsecase: locator<GetTransactionWalletUsecase>(),
         getTransactionsByTxIdUsecase: locator<GetTransactionsByTxIdUsecase>(),
         getWalletTransactionUsecase: locator<GetWalletTransactionUsecase>(),
         getTransactionOrderSwapUsecase:
             locator<GetTransactionOrderSwapUsecase>(),
         watchWalletTransactionByTxIdUsecase:
             locator<WatchWalletTransactionByTxIdUsecase>(),
-        getSwapUsecase: locator<GetSwapUsecase>(),
+        getTransactionSwapUsecase: locator<GetTransactionSwapUsecase>(),
         getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
         getPayjoinByTxIdUsecase: locator<GetPayjoinByTxIdUsecase>(),
-        getOrderUsecase: locator<GetOrderUsecase>(),
-        watchSwapUsecase: locator<WatchSwapUsecase>(),
+        getTransactionOrderUsecase: locator<GetTransactionOrderUsecase>(),
+        watchTransactionSwapUsecase: locator<WatchTransactionSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         watchTransactionOrderSwapUsecase:
             locator<WatchTransactionOrderSwapUsecase>(),
-        labelsFacade: locator<LabelsFacade>(),
+        saveTransactionNoteUsecase: locator<SaveTransactionNoteUsecase>(),
+        deleteTransactionNoteUsecase: locator<DeleteTransactionNoteUsecase>(),
+        getTransactionNoteSuggestionsUsecase:
+            locator<GetTransactionNoteSuggestionsUsecase>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
       ),

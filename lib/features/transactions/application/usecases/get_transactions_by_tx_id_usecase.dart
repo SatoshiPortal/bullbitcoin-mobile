@@ -1,11 +1,13 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/order_swap_transaction_match.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -38,7 +40,10 @@ class GetTransactionsByTxIdUsecase {
     required this._getTransactionOrderSwapsUsecase,
   });
 
-  Future<List<Transaction>> execute(String txId) async {
+  @useResult
+  Future<Result<List<Transaction>, TransactionFailure>> execute(
+    String txId,
+  ) async {
     try {
       final settings = await _settingsRepository.fetch();
       final orderRepository = settings.environment.isTestnet
@@ -63,55 +68,65 @@ class GetTransactionsByTxIdUsecase {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
       };
-      OrderSwapRecord? orderSwap;
-      try {
-        orderSwap = orderSwaps.firstWhere(
-          (candidate) => orderSwapReferencesTransaction(candidate, txId),
+      // Degrade to "no order swap" rather than fail the lookup, but say so,
+      // so a broken swap store stays diagnosable.
+      if (orderSwaps case Err(:final failure)) {
+        log.warning(
+          'Order swaps unavailable; continuing without them: '
+          '${failure.runtimeType}',
         );
-      } catch (_) {
-        orderSwap = null;
       }
+      final resolvedOrderSwaps = switch (orderSwaps) {
+        Ok(:final value) => value,
+        Err() => const <OrderSwapRecord>[],
+      };
+      final orderSwap = resolvedOrderSwaps
+          .where((candidate) => orderSwapReferencesTransaction(candidate, txId))
+          .firstOrNull;
 
       if (walletTransactions.isNotEmpty) {
-        return walletTransactions.map((walletTransaction) {
-          // Both a send and a receive transaction can exist for the same txId,
-          // so we take the one with the matching walletId.
-          PayjoinSession? payjoin;
-          try {
-            payjoin = payjoins.firstWhere(
-              (pj) => pj.walletId == walletTransaction.walletId,
-            );
-          } catch (_) {
-            // If no payjoin is found for this wallet transaction, we set it to null.
-            payjoin = null;
-          }
+        return Ok(
+          walletTransactions.map((walletTransaction) {
+            // Both a send and a receive transaction can exist for the same txId,
+            // so we take the one with the matching walletId.
+            // A payjoin for this wallet's side of the transaction, if any.
+            final payjoin = payjoins
+                .where((pj) => pj.walletId == walletTransaction.walletId)
+                .firstOrNull;
 
-          return Transaction(
-            walletTransaction: walletTransaction,
-            swap: swap,
-            orderSwap: orderSwap,
-            payjoin: payjoin,
-            order: order,
-          );
-        }).toList();
+            return Transaction(
+              walletTransaction: walletTransaction,
+              swap: swap,
+              orderSwap: orderSwap,
+              payjoin: payjoin,
+              order: order,
+            );
+          }).toList(),
+        );
       } else if (swap != null) {
-        return [Transaction(swap: swap)];
+        return Ok([Transaction(swap: swap)]);
       } else if (orderSwap != null) {
-        return [Transaction(orderSwap: orderSwap)];
+        return Ok([Transaction(orderSwap: orderSwap)]);
       } else if (payjoins.isNotEmpty) {
-        return payjoins
-            .map((pj) => Transaction(payjoin: pj, order: order))
-            .toList();
+        return Ok(
+          payjoins.map((pj) => Transaction(payjoin: pj, order: order)).toList(),
+        );
       } else if (order != null) {
-        return [Transaction(order: order)];
+        return Ok([Transaction(order: order)]);
       } else {
-        throw TransactionNotFoundError();
+        // No txid in the message: the on-device log is shareable.
+        log.warning('No transaction found for the requested txId');
+        return const Err(TransactionNotFoundFailure());
       }
-    } on TransactionNotFoundError {
-      log.warning('No Transaction with txId $txId found.');
-      rethrow;
-    } catch (e) {
-      rethrow;
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to load the transaction by txId',
+        error: e.runtimeType,
+        trace: st,
+      );
+      return Err(
+        TransactionUnexpectedFailure('byTxId failed: ${e.runtimeType}'),
+      );
     }
   }
 }
