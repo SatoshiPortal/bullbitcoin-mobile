@@ -101,6 +101,42 @@ void main() {
     ).thenThrow(error);
   }
 
+  group('ImportWalletUsecase serialises concurrent imports', () {
+    test('a second execute never runs while the first is in flight', () async {
+      // The usecase guards its body with a process-wide Lock. Nothing
+      // asserted it, so the lock could be deleted and the whole suite
+      // stayed green — the cleanup tests above reproduce the race's
+      // OUTCOME by stubbing the wallet list, not the race itself.
+      //
+      // Probed from inside the locked body: settings.fetch() is the first
+      // await _execute performs, so counting overlapping calls to it
+      // counts overlapping bodies.
+      var inFlight = 0;
+      var peak = 0;
+      when(() => settingsRepository.fetch()).thenAnswer((_) async {
+        inFlight++;
+        peak = peak > inFlight ? peak : inFlight;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        inFlight--;
+        return settings;
+      });
+      failCreateWalletWith(
+        const WalletAlreadyExistsException('existing-wallet-id'),
+      );
+
+      await Future.wait([
+        usecase.execute(mnemonicWords: words),
+        usecase.execute(mnemonicWords: words),
+      ]);
+
+      expect(
+        peak,
+        1,
+        reason: 'two import bodies overlapped: the lock is not holding',
+      );
+    });
+  });
+
   group('ImportWalletUsecase orphaned-secret cleanup', () {
     test(
       'keeps a stored secret when the failure precedes the import',
