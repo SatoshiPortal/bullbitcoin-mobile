@@ -21,6 +21,21 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
   /// wire shape the plugin delivers it.
   bool locked;
 
+  /// When set, every write, delete and deleteAll raises it too.
+  ///
+  /// Separate from [locked] because the two are not the same fault: a
+  /// keychain can be readable and refuse a write, and the package's
+  /// write paths have their own translation and their own callers. A
+  /// fake that can only fail reads leaves every write and delete error
+  /// path untested, which is how a test asserting "cleanup failure does
+  /// not fail the wallet deletion" came to pass while exercising
+  /// nothing.
+  bool writesFail;
+
+  /// Outcomes [write] and [delete] raise, in order, before falling back
+  /// to succeeding. One entry is consumed per mutating call.
+  final List<Object?> scriptedWrites;
+
   /// Outcomes [read] serves, in order, before falling back to
   /// [entries]: a `String?` is returned as-is, an [Exception] is thrown.
   /// Models the plugin's observed misbehaviour — null or "" for an entry
@@ -32,8 +47,11 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
   FakeSecureStoragePlatform({
     Map<String, String>? entries,
     this.locked = false,
+    this.writesFail = false,
     List<Object?>? scripted,
+    List<Object?>? scriptedWrites,
   }) : entries = entries ?? {},
+       scriptedWrites = List.of(scriptedWrites ?? const []),
        // A growable copy: callers pass `List.filled(…)`, which is fixed-length, and `removeAt` on it throws `UnsupportedError`. That `Error` used to be swallowed into a failure by the boundary, and three tests passed without ever throwing what they had scripted.
        scripted = List.of(scripted ?? const []);
 
@@ -76,12 +94,23 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
     return Map<String, String>.from(entries);
   }
 
+  /// Raises the next scripted mutation outcome, or the blanket failure.
+  void _guardMutation() {
+    if (scriptedWrites.isNotEmpty) {
+      final next = scriptedWrites.removeAt(0);
+      if (next is Exception) throw next;
+      return;
+    }
+    if (writesFail) throw lockedError;
+  }
+
   @override
   Future<void> write({
     required String key,
     required String value,
     required Map<String, String> options,
   }) async {
+    _guardMutation();
     entries[key] = value;
   }
 
@@ -90,12 +119,15 @@ class FakeSecureStoragePlatform extends FlutterSecureStoragePlatform {
     required String key,
     required Map<String, String> options,
   }) async {
+    _guardMutation();
     entries.remove(key);
   }
 
   @override
-  Future<void> deleteAll({required Map<String, String> options}) async =>
-      entries.clear();
+  Future<void> deleteAll({required Map<String, String> options}) async {
+    _guardMutation();
+    entries.clear();
+  }
 
   @override
   Future<bool> containsKey({

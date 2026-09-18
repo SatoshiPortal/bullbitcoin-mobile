@@ -192,13 +192,19 @@ void main() {
           () => walletRepository.getWallet(walletId),
         ).thenAnswer((_) async => buildWallet());
         when(() => walletRepository.getWallets()).thenAnswer((_) async => []);
-        storage.scripted.add(Exception('keystore refused the delete'));
+        // Scripted on the MUTATION queue, not the read queue. `trash` performs
+        // no read, so an exception queued on `scripted` was never consumed and
+        // this test passed while exercising nothing.
+        storage.scriptedWrites.add(Exception('keystore refused the delete'));
 
         await expectLater(usecase.execute(walletId: walletId), completes);
 
         verify(
           () => walletRepository.deleteWallet(walletId: walletId),
         ).called(1);
+        // The entry survives the failed delete, which is what makes the
+        // cleanup best-effort rather than silently successful.
+        expect(storage.entries, contains(key()));
       },
     );
   });
