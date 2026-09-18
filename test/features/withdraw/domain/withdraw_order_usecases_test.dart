@@ -265,7 +265,7 @@ void main() {
       when(getUserSummary.execute).thenAnswer((_) async => _userSummary);
 
       expect(
-        (await build().userSummary() as Ok<UserSummary, WithdrawFailure>).value,
+        (await build().execute() as Ok<UserSummary, WithdrawFailure>).value,
         _userSummary,
       );
     });
@@ -275,7 +275,7 @@ void main() {
         getUserSummary.execute,
       ).thenThrow(GetExchangeUserSummaryException(_rawReason));
 
-      switch (await build().userSummary()) {
+      switch (await build().execute()) {
         case Ok():
           fail('a failed load must not report a user summary');
         case Err(:final failure):

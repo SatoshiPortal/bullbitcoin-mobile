@@ -70,7 +70,7 @@ void main() {
 
   group('WithdrawStarted', () {
     test('moves to the amount input on a loaded summary', () async {
-      when(loadContext.userSummary).thenAnswer(
+      when(loadContext.execute).thenAnswer(
         (_) async => const Ok<UserSummary, WithdrawFailure>(_userSummary),
       );
       final bloc = build();
@@ -83,7 +83,7 @@ void main() {
     });
 
     test('keeps the typed failure on the initial state', () async {
-      when(loadContext.userSummary).thenAnswer(
+      when(loadContext.execute).thenAnswer(
         (_) async => const Err<UserSummary, WithdrawFailure>(
           WithdrawUnexpectedFailure('DioException apikey=secret123'),
         ),
@@ -109,7 +109,7 @@ void main() {
       // The amount screen's Retry button re-dispatches WithdrawStarted, so a
       // second attempt must not leave the old failure on the state.
       var attempt = 0;
-      when(loadContext.userSummary).thenAnswer((_) async {
+      when(loadContext.execute).thenAnswer((_) async {
         attempt++;
         return attempt == 1
             ? const Err<UserSummary, WithdrawFailure>(

@@ -41,7 +41,7 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     };
     emit(initialState.copyWith(failure: null));
 
-    switch (await _loadWithdrawContextUsecase.userSummary()) {
+    switch (await _loadWithdrawContextUsecase.execute()) {
       case Ok(:final value):
         emit(initialState.toAmountInputState(userSummary: value));
       case Err(:final failure):

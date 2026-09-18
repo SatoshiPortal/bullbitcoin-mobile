@@ -68,7 +68,7 @@ void main() {
   testWidgets('a failed summary load replaces the form with a reason', (
     tester,
   ) async {
-    when(loadContext.userSummary).thenAnswer(
+    when(loadContext.execute).thenAnswer(
       (_) async => const Err<UserSummary, WithdrawFailure>(
         WithdrawUnexpectedFailure('DioException apikey=secret123'),
       ),
@@ -98,7 +98,7 @@ void main() {
     tester,
   ) async {
     var attempt = 0;
-    when(loadContext.userSummary).thenAnswer((_) async {
+    when(loadContext.execute).thenAnswer((_) async {
       attempt++;
       return attempt == 1
           ? const Err<UserSummary, WithdrawFailure>(
