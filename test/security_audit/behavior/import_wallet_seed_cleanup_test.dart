@@ -101,6 +101,59 @@ void main() {
     ).thenThrow(error);
   }
 
+  group('an imported wallet is never a default wallet', () {
+    test('a passphrase can therefore never reach the swap key', () async {
+      // The Boltz swap master key is derived from the DEFAULT wallet's
+      // secret, and that deriver passes the passphrase where the previous
+      // implementation did not. The derivation is unchanged in practice
+      // only because the default secret never carries one: onboarding's
+      // recovery screen sets allowPassphrase: false, and an import — the
+      // one path that does accept a passphrase — is forced non-default
+      // here. Nothing pinned that second half, so a change to this flag
+      // would silently change an already-stored swap key's derivation for
+      // anyone who then reinstalls.
+      //
+      // The swap key itself is FFI-bound and unreachable from a unit test,
+      // so what is pinned is its input.
+      bool? askedIsDefault;
+      when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
+      when(
+        () => walletRepository.createWallet(
+          secret: any(named: 'secret'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          isDefault: any(named: 'isDefault'),
+          sync: any(named: 'sync'),
+          label: any(named: 'label'),
+        ),
+      ).thenAnswer((invocation) async {
+        // Captured, never asserted here: the usecase catches broadly, so a
+        // TestFailure thrown inside this callback is swallowed into an Err
+        // and the test passes while proving nothing.
+        askedIsDefault = invocation.namedArguments[#isDefault] as bool?;
+        throw const WalletAlreadyExistsException('stop-here');
+      });
+
+      await usecase.execute(mnemonicWords: words, passphrase: 'TREZOR');
+
+      expect(
+        askedIsDefault,
+        isFalse,
+        reason: 'an imported wallet must never become a default wallet',
+      );
+      verify(
+        () => walletRepository.createWallet(
+          secret: any(named: 'secret'),
+          network: any(named: 'network'),
+          scriptType: any(named: 'scriptType'),
+          isDefault: any(named: 'isDefault'),
+          sync: any(named: 'sync'),
+          label: any(named: 'label'),
+        ),
+      ).called(1);
+    });
+  });
+
   group('ImportWalletUsecase serialises concurrent imports', () {
     test('a second execute never runs while the first is in flight', () async {
       // The usecase guards its body with a process-wide Lock. Nothing
