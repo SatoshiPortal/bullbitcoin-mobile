@@ -257,7 +257,7 @@ void main() {
     test('returns the user summary', () async {
       when(getUserSummary.execute).thenAnswer((_) async => _userSummary);
 
-      expect(_ok(await build().userSummary()), _userSummary);
+      expect(_ok(await build().execute()), _userSummary);
     });
 
     test('sanitizes the still-throwing core use-case', () async {
@@ -265,7 +265,7 @@ void main() {
         getUserSummary.execute,
       ).thenThrow(GetExchangeUserSummaryException(_rawReason));
 
-      switch (await build().userSummary()) {
+      switch (await build().execute()) {
         case Ok():
           fail('a failed load must not report a user summary');
         case Err(:final failure):

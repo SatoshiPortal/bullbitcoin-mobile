@@ -18,7 +18,7 @@ class LoadWithdrawContextUsecase {
   /// This is the boundary for the still-throwing core use-case: it is the first
   /// layer the withdraw feature owns.
   @useResult
-  Future<Result<UserSummary, WithdrawFailure>> userSummary() async {
+  Future<Result<UserSummary, WithdrawFailure>> execute() async {
     try {
       return Ok(await _getExchangeUserSummaryUsecase.execute());
     } catch (e, st) {
