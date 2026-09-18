@@ -45,8 +45,8 @@ final class KeychainManifest {
   }
 }
 
-/// Local database IDs are only needed while capturing attributed metadata.
-/// They never become the portable identity of a wallet.
+/// References connect facts within one backup. Recovery resolves them to the
+/// target installation; the source IDs do not dictate target database IDs.
 final class CapturedKeychainManifest {
   final KeychainManifest manifest;
   final Map<String, String> walletReferences;

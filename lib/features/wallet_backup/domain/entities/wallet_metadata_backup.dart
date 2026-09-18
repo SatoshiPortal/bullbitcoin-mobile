@@ -33,7 +33,10 @@ final class BackupFrozenOutput {
     if (!hex.hasMatch(txId) ||
         vout < 0 ||
         vout > 0xffffffff ||
-        (walletReference != null && !hex.hasMatch(walletReference!))) {
+        (walletReference != null &&
+            (walletReference!.isEmpty ||
+                walletReference!.length > 1024 ||
+                RegExp(r'[\x00-\x1f\x7f]').hasMatch(walletReference!)))) {
       throw const FormatException('Invalid frozen output');
     }
   }

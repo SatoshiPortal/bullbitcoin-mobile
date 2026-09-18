@@ -58,6 +58,7 @@ final class KeychainManifestRepositoryImpl
             final wallets = <BackupWallet>[];
             for (final wallet in await _wallets.fetchAll()) {
               final entry = BackupWallet(
+                reference: wallet.id,
                 network: wallet.network,
                 publicDescriptor: wallet.publicDescriptor,
                 signers: wallet.signers

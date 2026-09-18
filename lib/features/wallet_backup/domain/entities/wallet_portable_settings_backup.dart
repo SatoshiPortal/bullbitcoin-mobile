@@ -80,7 +80,11 @@ final class PortableAutoSwapSettings {
         feeThresholdPercent < 0 ||
         feeThresholdPercent > AutoSwap.maximumFeeThresholdPercent ||
         (recipientWalletReference != null &&
-            !RegExp(r'^[0-9a-f]{64}$').hasMatch(recipientWalletReference!))) {
+            (recipientWalletReference!.isEmpty ||
+                recipientWalletReference!.length > 1024 ||
+                RegExp(
+                  r'[\x00-\x1f\x7f]',
+                ).hasMatch(recipientWalletReference!)))) {
       throw const FormatException('Invalid auto-swap preferences');
     }
     final values = AutoSwap(

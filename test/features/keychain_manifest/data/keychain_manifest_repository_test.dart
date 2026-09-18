@@ -152,7 +152,7 @@ void main() {
     },
   );
   test(
-    'portable wallet references ignore local row IDs and descriptor checksum',
+    'backup references preserve upstream IDs for package links without requiring the target to reuse them',
     () async {
       await wallets.store(wallet('old'));
       final first = await capture();
@@ -164,10 +164,8 @@ void main() {
         ),
       );
       final second = await capture();
-      expect(
-        second.manifest.wallets.single.reference,
-        first.manifest.wallets.single.reference,
-      );
+      expect(first.manifest.wallets.single.reference, 'old');
+      expect(second.manifest.wallets.single.reference, 'new');
       expect(second.walletReferences.keys, ['new']);
       expect(second.manifest.wallets.single.birthday, isNull);
     },

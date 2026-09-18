@@ -47,7 +47,7 @@ void main() {
   late WalletMetadataBackupRepositoryImpl repository;
   late StreamController<AutoSwap> swapChanges;
   late StreamController<Result<PayjoinPolicy, PayjoinFailure>> policyChanges;
-  final reference = 'f' * 64;
+  const reference = 'source-wallet-id';
 
   setUpAll(() {
     registerFallbackValue(const AutoSwap());
