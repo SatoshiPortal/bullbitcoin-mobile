@@ -16,13 +16,27 @@ final class BackupCredential {
   final Uint8List _encryptionKey;
   final nostr.Keys _artifact;
   final nostr.Keys _server;
+  final String? sourceFingerprint;
 
-  BackupCredential._(this._encryptionKey, this._artifact, this._server);
+  BackupCredential._(
+    this._encryptionKey,
+    this._artifact,
+    this._server,
+    this.sourceFingerprint,
+  );
 
-  factory BackupCredential.fromSeed(Seed seed) =>
-      BackupCredential.fromWords(deriveWords(seed));
+  factory BackupCredential.fromSeed(Seed seed) => BackupCredential._fromWords(
+    deriveWords(seed),
+    sourceFingerprint: seed.masterFingerprint.toLowerCase(),
+  );
 
-  factory BackupCredential.fromWords(String input) {
+  factory BackupCredential.fromWords(String input) =>
+      BackupCredential._fromWords(input);
+
+  factory BackupCredential._fromWords(
+    String input, {
+    String? sourceFingerprint,
+  }) {
     if (input.length > 256) {
       throw const FormatException('Invalid Data Recovery Words');
     }
@@ -54,6 +68,7 @@ final class BackupCredential {
       ),
       nostr.Keys(child(Bip85Reservations.backupArtifactIdentityPath)),
       nostr.Keys(child(Bip85Reservations.backupServerIdentityPath)),
+      sourceFingerprint,
     );
   }
 
@@ -71,6 +86,10 @@ final class BackupCredential {
   String get artifactPublicKey => _artifact.public;
   String get artifactNpub => _artifact.npub;
   String get serverPublicKey => _server.public;
+
+  // Only the sealed system-key view consumes these, after its reveal warning.
+  String revealArtifactNsec() => _artifact.nsec;
+  String revealServerNsec() => _server.nsec;
 
   String signArtifactHash(String digest) => _sign(_artifact, digest);
   String signServerHash(String digest) => _sign(_server, digest);

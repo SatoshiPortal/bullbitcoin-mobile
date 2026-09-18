@@ -14,10 +14,4 @@ abstract interface class NostrKeyRepository {
 
   @useResult
   Future<Result<void, KeychainManifestFailure>> restore(NostrKeyRecord record);
-
-  @useResult
-  Future<Result<void, KeychainManifestFailure>> update(
-    NostrKeyRecord record, {
-    required DateTime expectedUpdatedAt,
-  });
 }

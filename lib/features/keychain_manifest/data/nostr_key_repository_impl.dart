@@ -64,31 +64,6 @@ final class NostrKeyRepositoryImpl implements NostrKeyRepository {
     return const Ok(null);
   });
 
-  @override
-  Future<Result<void, KeychainManifestFailure>> update(
-    NostrKeyRecord record, {
-    required DateTime expectedUpdatedAt,
-  }) => _transaction(() async {
-    final changed =
-        await (_database.update(_database.keychainNostrKeys)..where(
-              (row) =>
-                  row.publicKey.equals(record.publicKey) &
-                  row.parentFingerprint.equals(record.parentFingerprint) &
-                  row.identity.equals(record.identity) &
-                  row.updatedAt.equals(expectedUpdatedAt.toUtc()),
-            ))
-            .write(
-              KeychainNostrKeysCompanion(
-                purpose: Value(record.purpose),
-                description: Value(record.description),
-                updatedAt: Value(record.updatedAt.toUtc()),
-              ),
-            );
-    return changed == 1
-        ? const Ok(null)
-        : const Err(KeychainManifestChangedFailure());
-  });
-
   KeychainNostrKeysCompanion _model(NostrKeyRecord record) =>
       KeychainNostrKeysCompanion.insert(
         publicKey: record.publicKey,

@@ -21,16 +21,20 @@ void main() {
     masterFingerprint: hex.encode(bip32.Bip32Keys.fromSeed(bytes).fingerprint),
   );
   final time = DateTime.utc(2026, 9, 18);
-  NostrKeyRecord record({String? publicKey, int identity = 1}) =>
-      NostrKeyRecord(
-        parentFingerprint: seed.masterFingerprint,
-        identity: identity,
-        publicKey: publicKey ?? NostrKeyDeriver.publicKey(seed, identity),
-        purpose: 'Personal identity',
-        description: 'Fixture',
-        createdAt: time,
-        updatedAt: time,
-      );
+  NostrKeyRecord record({
+    String? publicKey,
+    int identity = 1,
+    String purpose = 'Personal identity',
+    String description = 'Fixture',
+  }) => NostrKeyRecord(
+    parentFingerprint: seed.masterFingerprint,
+    identity: identity,
+    publicKey: publicKey ?? NostrKeyDeriver.publicKey(seed, identity),
+    purpose: purpose,
+    description: description,
+    createdAt: time,
+    updatedAt: time,
+  );
 
   test(
     'the first user key preserves its independent public and nsec vectors',
@@ -79,5 +83,16 @@ void main() {
       NostrKeyDeriver.publicKey(seed, 99),
       isNot(NostrKeyDeriver.publicKey(seed, 200)),
     );
+  });
+
+  test('names and notes retain the existing form limits', () {
+    expect(
+      () => record(purpose: 'a' * 80, description: 'b' * 200),
+      returnsNormally,
+    );
+    expect(() => record(purpose: 'a' * 81), throwsFormatException);
+    expect(() => record(description: 'b' * 201), throwsFormatException);
+    expect(() => record(purpose: 'line\nbreak'), throwsFormatException);
+    expect(() => record(description: 'line\nbreak'), throwsFormatException);
   });
 }

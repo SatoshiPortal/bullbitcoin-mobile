@@ -85,29 +85,4 @@ void main() {
       expect((await all()).single.purpose, 'Local edit');
     },
   );
-
-  test('stale edit forms cannot replace newer annotations', () async {
-    expect(await repository.insert(key()), isA<Ok>());
-    expect(
-      await repository.update(
-        key(
-          purpose: 'New edit',
-          updatedAt: time.add(const Duration(minutes: 1)),
-        ),
-        expectedUpdatedAt: time,
-      ),
-      isA<Ok>(),
-    );
-    expect(
-      await repository.update(
-        key(
-          purpose: 'Stale edit',
-          updatedAt: time.add(const Duration(minutes: 2)),
-        ),
-        expectedUpdatedAt: time,
-      ),
-      isA<Err>(),
-    );
-    expect((await all()).single.purpose, 'New edit');
-  });
 }

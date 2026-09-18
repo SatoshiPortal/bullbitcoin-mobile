@@ -15,7 +15,3 @@ final class KeychainManifestSeedFailure extends KeychainManifestFailure {
 final class KeychainManifestInvalidKeyFailure extends KeychainManifestFailure {
   const KeychainManifestInvalidKeyFailure();
 }
-
-final class KeychainManifestChangedFailure extends KeychainManifestFailure {
-  const KeychainManifestChangedFailure();
-}

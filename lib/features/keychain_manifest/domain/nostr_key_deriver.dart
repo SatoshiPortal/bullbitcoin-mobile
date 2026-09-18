@@ -23,9 +23,12 @@ abstract final class NostrKeyDeriver {
   static String publicKey(Seed seed, int identity) =>
       _derive(seed, identity).public;
 
-  static String npub(NostrKeyRecord record) => nostr.Bech32Entity.encode(
+  static String npub(NostrKeyRecord record) =>
+      encodePublicKey(record.publicKey);
+
+  static String encodePublicKey(String publicKey) => nostr.Bech32Entity.encode(
     prefix: nostr.Nip19Prefix.npub,
-    data: record.publicKey,
+    data: publicKey,
   );
 
   static String reveal(Seed seed, NostrKeyRecord record) {

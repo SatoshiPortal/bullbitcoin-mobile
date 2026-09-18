@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -214,6 +216,7 @@ class AppRouter {
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
       ...BullVaultRouter.routes,
+      KeychainManifestRouter.route,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
       ...BitBoxRouter.routes,

@@ -2,6 +2,9 @@ import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 
 /// Public inventory only. The private key is re-derived when it is used.
 final class NostrKeyRecord {
+  static const maxPurposeLength = 80;
+  static const maxDescriptionLength = 200;
+
   final String parentFingerprint;
   final int identity;
   final String publicKey;
@@ -24,8 +27,8 @@ final class NostrKeyRecord {
         !RegExp(r'^[0-9a-f]{64}$').hasMatch(publicKey) ||
         purpose.trim().isEmpty ||
         purpose != purpose.trim() ||
-        purpose.length > 120 ||
-        description.length > 2000 ||
+        purpose.length > maxPurposeLength ||
+        description.length > maxDescriptionLength ||
         RegExp(r'[\x00-\x1f\x7f]').hasMatch('$purpose$description') ||
         updatedAt.isBefore(createdAt)) {
       throw const FormatException('Invalid Nostr key record');
