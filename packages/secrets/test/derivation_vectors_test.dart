@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -162,6 +163,46 @@ void main() {
           path: "1608'/0'/0'",
         ),
         throwsA(isA<Bip85Exception>()),
+      );
+    });
+  });
+
+  group('BIP85 against the published specification', () {
+    // The only externally anchored BIP85 value in this repository. Every
+    // other BIP85 constant here was produced by this implementation, so it
+    // would lock in a regression rather than catch one. This one comes from
+    // the BIP85 specification's own test vectors and were re-derived from
+    // the spec independently before being pinned.
+    const specMaster =
+        'xprv9s21ZrQH143K2LBWUUQRFXhucrQqBpKdRRxNVq2zBqsx8HVqFk2uYo8kmbaLL'
+        'HRdqtQpUm98uKfu3vca1LqdGhUtyoFnCNkfmXRyPXLjbKb';
+
+    test("m/83696968'/39'/0'/12'/0' yields the specification's words", () {
+      // BIP85 §BIP39 application, English, 12 words, index 0.
+      // Through the package's own seam, not the dependency's API: what this
+      // pins is how `secrets` asks for a child, not that `bip85_entropy`
+      // implements BIP85.
+      expect(
+        Deriver.bip85
+            .mnemonicFromRoot(
+              specMaster,
+              language: bip39.Language.english,
+              length: bip39.MnemonicLength.words12,
+              index: 0,
+            )
+            .join(' '),
+        'girl mad pet galaxy egg matter matrix prison refuse sense '
+        'ordinary nose',
+      );
+    });
+
+    test("m/83696968'/128169'/64'/0' yields the specification's entropy", () {
+      // BIP85 §HEX application, 64 bytes, index 0. The value is the one
+      // `bip85_entropy` 1.0.2 pins in its own suite (`test/_test_values.dart`).
+      expect(
+        Deriver.bip85.hexFromRoot(specMaster, numBytes: 64, index: 0),
+        '492db4698cf3b73a5a24998aa3e9d7fa96275d85724a91e71aa2d645442f8785'
+        '55d078fd1f1f67e368976f04137b1f7a0d19232136ca50c44614af72b5582a5c',
       );
     });
   });
