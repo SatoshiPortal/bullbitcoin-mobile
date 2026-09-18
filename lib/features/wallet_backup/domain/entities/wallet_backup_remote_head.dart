@@ -21,4 +21,9 @@ final class WalletBackupRemoteHead {
   }
 
   bool get found => ciphertext != null;
+
+  bool sameObjectAs(WalletBackupRemoteHead other) =>
+      generation == other.generation &&
+      etag == other.etag &&
+      ciphertext?.hash == other.ciphertext?.hash;
 }

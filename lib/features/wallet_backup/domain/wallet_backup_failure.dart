@@ -40,6 +40,20 @@ final class WalletBackupConflictFailure extends WalletBackupFailure {
   const WalletBackupConflictFailure();
 }
 
+final class WalletBackupMissingFailure extends WalletBackupFailure {
+  const WalletBackupMissingFailure();
+}
+
+final class WalletBackupConfirmationRequiredFailure
+    extends WalletBackupFailure {
+  const WalletBackupConfirmationRequiredFailure();
+}
+
+final class WalletBackupDeleteRequiresDisabledFailure
+    extends WalletBackupFailure {
+  const WalletBackupDeleteRequiresDisabledFailure();
+}
+
 final class WalletBackupRateLimitedFailure extends WalletBackupFailure {
   final DateTime retryAt;
   const WalletBackupRateLimitedFailure(this.retryAt);
