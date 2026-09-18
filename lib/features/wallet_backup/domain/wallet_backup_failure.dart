@@ -15,3 +15,19 @@ final class WalletBackupChangedFailure extends WalletBackupFailure {
 final class WalletBackupIncompleteFailure extends WalletBackupFailure {
   const WalletBackupIncompleteFailure();
 }
+
+final class WalletBackupInvalidFailure extends WalletBackupFailure {
+  const WalletBackupInvalidFailure();
+}
+
+final class WalletBackupUnsupportedFailure extends WalletBackupFailure {
+  const WalletBackupUnsupportedFailure();
+}
+
+final class WalletBackupTooLargeFailure extends WalletBackupFailure {
+  const WalletBackupTooLargeFailure();
+}
+
+final class WalletBackupCredentialFailure extends WalletBackupFailure {
+  const WalletBackupCredentialFailure();
+}
