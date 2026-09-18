@@ -142,9 +142,16 @@ class RestoreBullVaultUsecase {
         }
         decodedPackage = BullVaultRecoveryPackage(policy: policy);
       }
-      final seed = await _getDefaultSeedUsecase.execute(
-        environment: settings.environment,
-      );
+      Seed? seed;
+      try {
+        seed = await _getDefaultSeedUsecase.execute(
+          environment: settings.environment,
+        );
+      } on Exception {
+        // A public recovery package also works before a default wallet exists.
+        // The existing all-seeds read below distinguishes absence from a
+        // storage failure and still verifies any key that is already present.
+      }
       Seed? verifiedSeed;
       var policy = decodedPackage.policy.withEverydayOwnership(
         SignerEntity.none,
@@ -172,7 +179,7 @@ class RestoreBullVaultUsecase {
         }
       }
 
-      verifySeed(seed);
+      if (seed != null) verifySeed(seed);
       if (verifiedSeed == null) {
         switch (await _getAllSeedsUsecase.execute()) {
           case Err():
