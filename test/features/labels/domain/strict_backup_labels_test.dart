@@ -48,7 +48,7 @@ void main() {
   test('database failure is distinct from an empty strict read', () async {
     expect(
       (await registry<LabelsFacade>().fetchAllForBackup()
-              as Ok<List<Label>, LabelFailure>)
+              as Ok<List<LabelEntity>, LabelFailure>)
           .value,
       isEmpty,
     );
@@ -84,7 +84,8 @@ void main() {
     // Drift may invalidate a table after rollback; consumers reread facts.
     final afterRollback = updates;
     final labels =
-        (await facade.fetchAllForBackup() as Ok<List<Label>, LabelFailure>)
+        (await facade.fetchAllForBackup()
+                as Ok<List<LabelEntity>, LabelFailure>)
             .value;
     expect(labels.single.label, 'Saved');
     expect(await facade.trash(labels.single.id), isA<Ok>());

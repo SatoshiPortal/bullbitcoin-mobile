@@ -78,6 +78,8 @@ graph TB
 
     KEYCHAIN --> BACKUP_IDENTITY
     KEYCHAIN --> SETTINGS
+    WALLET_BACKUP --> LABELS
+    WALLET_BACKUP --> BULL_PAYJOIN
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS

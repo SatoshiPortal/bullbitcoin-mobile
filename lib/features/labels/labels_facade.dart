@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
@@ -13,6 +14,8 @@ import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 
 export 'package:bb_mobile/features/labels/label.dart';
+export 'package:bb_mobile/features/labels/domain/label_entity.dart'
+    show LabelEntity;
 export 'package:bb_mobile/features/labels/new_label.dart';
 export 'package:bb_mobile/features/labels/domain/label_failure.dart';
 export 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
@@ -51,19 +54,8 @@ class LabelsFacade {
     required this._watchChanges,
   });
 
-  Future<Result<List<Label>, LabelFailure>> fetchAllForBackup() async =>
-      (await _getBackupLabels.execute()).map(
-        (labels) => [
-          for (final label in labels)
-            Label(
-              id: label.id,
-              type: label.type,
-              label: label.label,
-              reference: label.reference,
-              origin: label.origin,
-            ),
-        ],
-      );
+  Future<Result<List<LabelEntity>, LabelFailure>> fetchAllForBackup() =>
+      _getBackupLabels.execute();
 
   Stream<void> watchChanges() => _watchChanges.execute();
 
