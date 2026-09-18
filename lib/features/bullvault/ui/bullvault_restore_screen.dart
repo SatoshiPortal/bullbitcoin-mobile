@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
