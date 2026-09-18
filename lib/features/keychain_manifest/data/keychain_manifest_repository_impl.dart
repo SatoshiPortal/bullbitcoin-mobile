@@ -101,4 +101,31 @@ final class KeychainManifestRepositoryImpl
       return const Err(KeychainManifestStorageFailure());
     }
   }
+
+  @override
+  Future<Result<void, KeychainManifestFailure>> restorePublicRecords(
+    KeychainManifest manifest,
+  ) async {
+    try {
+      await _database.transaction(() async {
+        for (final derivation in manifest.derivations) {
+          if (await _bip85.restorePublicRecord(derivation) case Err()) {
+            throw const _CatalogRestoreException();
+          }
+        }
+        for (final key in manifest.nostrKeys) {
+          if (await _nostrKeys.restore(key) case Err()) {
+            throw const _CatalogRestoreException();
+          }
+        }
+      });
+      return const Ok(null);
+    } on Exception {
+      return const Err(KeychainManifestStorageFailure());
+    }
+  }
+}
+
+final class _CatalogRestoreException implements Exception {
+  const _CatalogRestoreException();
 }

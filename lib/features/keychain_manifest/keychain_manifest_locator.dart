@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/restore_public_records_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/nostr_key_repository_impl.dart';
 import 'package:bb_mobile/features/keychain_manifest/data/keychain_manifest_repository_impl.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_repository.dart';
@@ -23,6 +24,7 @@ abstract final class KeychainManifestLocator {
       ),
     );
     locator.registerFactory(() => CaptureKeychainManifestUsecase(locator()));
+    locator.registerFactory(() => RestorePublicRecordsUsecase(locator()));
     locator.registerLazySingleton<NostrKeyRepository>(
       () => NostrKeyRepositoryImpl(locator()),
     );
@@ -36,7 +38,13 @@ abstract final class KeychainManifestLocator {
     locator.registerFactory(() => GetBackupIdentitiesUsecase(locator()));
     locator.registerFactory(() => RevealBackupIdentityUsecase(locator()));
     locator.registerFactory(
-      () => KeychainManifestFacade(locator(), locator(), locator(), locator()),
+      () => KeychainManifestFacade(
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+      ),
     );
     locator.registerFactory(
       () => NostrKeysCubit(

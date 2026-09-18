@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bip85/data/bip85_derivation_model.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
@@ -109,6 +110,22 @@ class Bip85Repository {
         trace: st,
       );
       return Err(Bip85StorageFailure(e.toString()));
+    }
+  }
+
+  @useResult
+  Future<Result<void, Bip85Failure>> restorePublicRecord(
+    Bip85DerivationEntity record,
+  ) async {
+    try {
+      final model = Bip85DerivationModel.fromEntity(record);
+      if (model.index != record.index ||
+          !await _datasource.restorePublicRecord(model)) {
+        return const Err(Bip85StorageFailure());
+      }
+      return const Ok(null);
+    } on Exception {
+      return const Err(Bip85StorageFailure());
     }
   }
 

@@ -10,4 +10,8 @@ abstract interface class KeychainManifestRepository {
     required String artifactPublicKey,
     required String serverPublicKey,
   });
+  @useResult
+  Future<Result<void, KeychainManifestFailure>> restorePublicRecords(
+    KeychainManifest manifest,
+  );
 }

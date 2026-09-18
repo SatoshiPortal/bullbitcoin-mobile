@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/restore_public_records_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/nostr_key_record.dart';
@@ -21,12 +22,14 @@ class KeychainManifestFacade {
   final RestoreNostrKeyUsecase _restoreNostrKey;
   final WatchNostrKeysUsecase _watchNostrKeys;
   final CaptureKeychainManifestUsecase _capture;
+  final RestorePublicRecordsUsecase _restorePublicRecords;
 
   const KeychainManifestFacade(
     this._getNostrKeys,
     this._restoreNostrKey,
     this._watchNostrKeys,
     this._capture,
+    this._restorePublicRecords,
   );
 
   @useResult
@@ -44,4 +47,8 @@ class KeychainManifestFacade {
   Future<Result<CapturedKeychainManifest, KeychainManifestFailure>> capture(
     BackupCredential credential,
   ) => _capture.execute(credential);
+  @useResult
+  Future<Result<void, KeychainManifestFailure>> restorePublicRecords(
+    KeychainManifest manifest,
+  ) => _restorePublicRecords.execute(manifest);
 }

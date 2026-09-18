@@ -162,6 +162,35 @@ class Bip85Datasource {
     }
   }
 
+  /// Adds public recovery metadata only. Existing records remain owned by
+  /// their original seed and keep local aliases and revocation decisions.
+  Future<bool> restorePublicRecord(Bip85DerivationModel record) =>
+      _sqlite.transaction(() async {
+        final path = record.path;
+        final parts = path.split('/');
+        if (path.length > 200 ||
+            parts.length < 2 ||
+            parts.any(
+              (part) =>
+                  !RegExp(r"^(0|[1-9][0-9]*)'$").hasMatch(part) ||
+                  (int.tryParse(part.replaceAll("'", '')) ??
+                          (Bip85Reservations.maxIndex + 1)) >
+                      Bip85Reservations.maxIndex,
+            ) ||
+            parts.first != "${record.application.number}'" ||
+            !RegExp(r'^[0-9a-f]{8}$').hasMatch(record.xprvFingerprint) ||
+            Bip85Reservations.isReservedPath(path)) {
+          throw const FormatException('Invalid public BIP85 record');
+        }
+        final existing = await fetch(path);
+        if (existing != null) {
+          return existing.xprvFingerprint == record.xprvFingerprint &&
+              existing.application == record.application;
+        }
+        await _store(record);
+        return true;
+      });
+
   // We should not use _store without properly formatting the derivation path.
   Future<void> _store(Bip85DerivationModel bip85) async {
     try {
