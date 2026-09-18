@@ -1,5 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 import 'package:secrets/src/crypto/signers/signers.dart';
@@ -122,42 +123,55 @@ final class BitcoinSigner {
         ? bdk.NetworkKind.main
         : bdk.NetworkKind.test;
 
-    final mnemonic = bdk.Mnemonic.fromString(
-      mnemonic: mnemonicSentence(secret),
-    );
-    final secretKey = bdk.DescriptorSecretKey(
-      networkKind: networkKind,
-      mnemonic: mnemonic,
-      // Empty and absent are the same passphrase to BIP39, but the app
-      // has always passed `null` for absent. Keep it.
-      password: secret.passphrase.isNotEmpty ? secret.passphrase : null,
-    );
-
-    bdk.Descriptor keychain(bdk.KeychainKind kind) => switch (scriptType) {
-      ScriptType.bip84 => bdk.Descriptor.newBip84(
-        secretKey: secretKey,
-        keychainKind: kind,
-        networkKind: networkKind,
-      ),
-      ScriptType.bip49 => bdk.Descriptor.newBip49(
-        secretKey: secretKey,
-        keychainKind: kind,
-        networkKind: networkKind,
-      ),
-      ScriptType.bip44 => bdk.Descriptor.newBip44(
-        secretKey: secretKey,
-        keychainKind: kind,
-        networkKind: networkKind,
-      ),
-    };
-
-    final external = keychain(bdk.KeychainKind.external_);
-    final internal = keychain(bdk.KeychainKind.internal);
-    // Nothing to keep: this wallet exists for the length of one signing
-    // session and leaves no file behind.
-    final persister = bdk.Persister.newInMemory();
+    // Every handle is declared before the try and freed in the finally, so a
+    // throw from any allocation still releases the ones already made. The
+    // previous shape opened the try around the Wallet call alone, with five
+    // allocations above it — and Persister.newInMemory() is a throwing
+    // constructor sitting last among them, so a failure there stranded the
+    // xprv-bearing secretKey and both private descriptors until the garbage
+    // collector happened to run their finalizers. That is precisely the
+    // "eventually" this class's dispose discipline exists to avoid.
+    bdk.Mnemonic? mnemonic;
+    bdk.DescriptorSecretKey? secretKey;
+    bdk.Descriptor? external;
+    bdk.Descriptor? internal;
+    bdk.Persister? persister;
+    bdk.Wallet? wallet;
+    Object? bodyFailure;
     try {
-      return bdk.Wallet(
+      mnemonic = bdk.Mnemonic.fromString(mnemonic: mnemonicSentence(secret));
+      secretKey = bdk.DescriptorSecretKey(
+        networkKind: networkKind,
+        mnemonic: mnemonic,
+        // Empty and absent are the same passphrase to BIP39, but the app
+        // has always passed `null` for absent. Keep it.
+        password: secret.passphrase.isNotEmpty ? secret.passphrase : null,
+      );
+
+      bdk.Descriptor keychain(bdk.KeychainKind kind) => switch (scriptType) {
+        ScriptType.bip84 => bdk.Descriptor.newBip84(
+          secretKey: secretKey!,
+          keychainKind: kind,
+          networkKind: networkKind,
+        ),
+        ScriptType.bip49 => bdk.Descriptor.newBip49(
+          secretKey: secretKey!,
+          keychainKind: kind,
+          networkKind: networkKind,
+        ),
+        ScriptType.bip44 => bdk.Descriptor.newBip44(
+          secretKey: secretKey!,
+          keychainKind: kind,
+          networkKind: networkKind,
+        ),
+      };
+
+      external = keychain(bdk.KeychainKind.external_);
+      internal = keychain(bdk.KeychainKind.internal);
+      // Nothing to keep: this wallet exists for the length of one signing
+      // session and leaves no file behind.
+      persister = bdk.Persister.newInMemory();
+      wallet = bdk.Wallet(
         descriptor: external,
         changeDescriptor: internal,
         network: switch (network) {
@@ -169,15 +183,63 @@ final class BitcoinSigner {
         persister: persister,
         lookahead: _lookahead,
       );
+      return wallet;
+    } catch (e) {
+      bodyFailure = e;
+      rethrow;
     } finally {
-      // The persister holds no key, but the class doc promises every handle
-      // is freed, and a promise with one exception is not one.
-      persister.dispose();
-      external.dispose();
-      internal.dispose();
-      secretKey.dispose();
-      mnemonic.dispose();
+      // Each dispose() is a rustCall and can throw. Freed one at a time, so
+      // a failure on one handle never skips the others — a plain sequence
+      // would have leaked every handle after the first throw. Key-bearing
+      // handles go first. If any release failed, the wallet built above
+      // holds both private descriptors and would otherwise leave this
+      // method with nobody left to free it: release it too. Then: if the
+      // body had already failed, that is the cause worth surfacing and the
+      // release failure is logged beside it — throwing here would replace
+      // the allocation error with the cleanup error. Otherwise surface it,
+      // rather than hand out a wallet behind a broken cleanup.
+      final failure = disposeAll(
+        [
+          secretKey?.dispose,
+          mnemonic?.dispose,
+          external?.dispose,
+          internal?.dispose,
+          persister?.dispose,
+        ].nonNulls.toList(),
+      );
+      if (failure != null) {
+        disposeAll([wallet?.dispose].nonNulls.toList());
+        if (bodyFailure != null) {
+          log.warning(
+            'bdk handle release failed after a failed wallet build: '
+            '${describeSafely(failure.error)}',
+          );
+        } else {
+          Error.throwWithStackTrace(failure.error, failure.stackTrace);
+        }
+      }
     }
+  }
+
+  /// Runs every release, attempting each even after one throws.
+  /// Returns the first failure, or null when all released cleanly.
+  ///
+  /// Tear-offs, not handles: `secretKey.dispose` is checked by the compiler,
+  /// where `(handle as dynamic).dispose()` would have turned a renamed bdk
+  /// method into a runtime failure of every signature (AGENTS.md, rule 15).
+  @visibleForTesting
+  static ({Object error, StackTrace stackTrace})? disposeAll(
+    List<void Function()> releases,
+  ) {
+    ({Object error, StackTrace stackTrace})? first;
+    for (final release in releases) {
+      try {
+        release();
+      } catch (e, st) {
+        first ??= (error: e, stackTrace: st);
+      }
+    }
+    return first;
   }
 
   /// Mirrors `BdkWalletDatasource.signPsbt` exactly: a refactor must not

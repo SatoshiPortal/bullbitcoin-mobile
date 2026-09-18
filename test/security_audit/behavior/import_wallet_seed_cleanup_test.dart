@@ -137,8 +137,12 @@ void main() {
         throw const WalletAlreadyExistsException('stop-here');
       });
 
-      await usecase.execute(mnemonicWords: words, passphrase: 'TREZOR');
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        passphrase: 'TREZOR',
+      );
 
+      expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
       expect(
         askedIsDefault,
         isFalse,
