@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bb_mobile/features/wallet_backup/data/backup_json.dart';
 
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
@@ -49,11 +50,7 @@ final class WalletBackupCodecRepositoryImpl
       return const Err(WalletBackupTooLargeFailure());
     }
     try {
-      _checkDepth(source);
-      final decoded = jsonDecode(source);
-      if (decoded is! Map<String, dynamic>) {
-        return const Err(WalletBackupInvalidFailure());
-      }
+      final decoded = readBackupJson(source);
       if (decoded['version'] is! int ||
           decoded['kind'] != WalletBackupSnapshotModel.kind ||
           decoded['version'] != WalletBackupSnapshotModel.version) {
@@ -142,33 +139,4 @@ final class WalletBackupCodecRepositoryImpl
               BackupIdentityKind.server => credential.serverPublicKey,
             },
       );
-
-  // The supported schema is less than 16 levels deep. Reject hostile nesting
-  // before dart:convert recurses; quoted brackets do not count as structure.
-  static void _checkDepth(String source) {
-    var depth = 0;
-    var quoted = false;
-    var escaped = false;
-    for (final character in source.codeUnits) {
-      if (quoted) {
-        if (escaped) {
-          escaped = false;
-        } else if (character == 92) {
-          escaped = true;
-        } else if (character == 34) {
-          quoted = false;
-        }
-      } else if (character == 34) {
-        quoted = true;
-      } else if (character == 123 || character == 91) {
-        if (++depth > 16) {
-          throw const FormatException('Snapshot nesting exceeds schema');
-        }
-      } else if (character == 125 || character == 93) {
-        if (--depth < 0) {
-          throw const FormatException('Invalid snapshot structure');
-        }
-      }
-    }
-  }
 }

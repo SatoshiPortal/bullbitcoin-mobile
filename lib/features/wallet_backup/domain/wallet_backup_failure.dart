@@ -31,3 +31,16 @@ final class WalletBackupTooLargeFailure extends WalletBackupFailure {
 final class WalletBackupCredentialFailure extends WalletBackupFailure {
   const WalletBackupCredentialFailure();
 }
+
+final class WalletBackupNetworkFailure extends WalletBackupFailure {
+  const WalletBackupNetworkFailure();
+}
+
+final class WalletBackupConflictFailure extends WalletBackupFailure {
+  const WalletBackupConflictFailure();
+}
+
+final class WalletBackupRateLimitedFailure extends WalletBackupFailure {
+  final DateTime retryAt;
+  const WalletBackupRateLimitedFailure(this.retryAt);
+}
