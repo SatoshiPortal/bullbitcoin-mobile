@@ -50,9 +50,14 @@ final class LiquidSigner {
     // this package exists to keep things inside — and name it after a
     // wallet fingerprint while we were at it. A temporary directory
     // costs one wallet construction per signature and leaves nothing.
-    final scratch = await Directory(
-      await scratchDirectory(),
-    ).createTemp('lwk_sign_');
+    final parent = Directory(await scratchDirectory());
+    // A process killed mid-signature leaves its directory behind, and the
+    // parent's own purge policy is the OS's, not ours. Sweep stale siblings
+    // before adding one: anything older than an hour cannot be a signature
+    // still in flight, so this races with nothing. Best-effort — a sweep
+    // that fails must not fail the signature.
+    await sweepStale(parent);
+    final scratch = await parent.createTemp('lwk_sign_');
 
     lwk.Wallet? wallet;
     try {
@@ -82,7 +87,13 @@ final class LiquidSigner {
         // A leftover only happens if deletion itself fails; a hard crash
         // mid-signature can also leave one. Worth knowing about, not
         // worth failing a signature over.
-        log.warning('Could not remove lwk scratch directory: $e');
+        // Type and errno only — the one foreign message this file used to
+        // interpolate. It is a dart:io error on a host-chosen path, never
+        // material, but the package's rule is that no foreign text travels.
+        log.warning(
+          'Could not remove lwk scratch directory: ${e.runtimeType} '
+          '${e is FileSystemException ? (e.osError?.errorCode ?? '') : ''}',
+        );
       }
     }
   }
@@ -97,4 +108,59 @@ final class LiquidSigner {
       'lwk cannot express Liquid regtest',
     ),
   };
+
+  static const _stalePrefix = 'lwk_sign_';
+
+  /// Signatures are interactive and finish in seconds. Ten minutes is a wide
+  /// margin for one still running — the one thing the sweep must never
+  /// delete — and no longer than a leftover deserves to live.
+  static const _staleAfter = Duration(minutes: 10);
+
+  /// Sweeps the parent of the host-supplied scratch directory.
+  ///
+  /// Called by `Secrets` at construction, so a leftover of a signature the
+  /// process did not survive does not wait for the next Liquid signature,
+  /// which may never come. Best effort: a failure is logged by type and
+  /// errno, never by path.
+  Future<void> sweepScratch(Future<String> Function() scratchDirectory) async {
+    try {
+      await sweepStale(Directory(await scratchDirectory()));
+    } on Exception catch (e) {
+      log.warning('Could not sweep lwk scratch: ${e.runtimeType}');
+    }
+  }
+
+  /// Removes leftover `lwk_sign_*` directories older than [_staleAfter].
+  ///
+  /// One entry's failure costs that entry only, not the rest of the sweep.
+  /// An mtime in the future is a clock that moved, not a directory that is
+  /// old, and is left alone.
+  Future<void> sweepStale(Directory parent) async {
+    try {
+      if (!await parent.exists()) return;
+      final now = DateTime.now();
+      final cutoff = now.subtract(_staleAfter);
+      await for (final entry in parent.list(followLinks: false)) {
+        if (entry is! Directory) continue;
+        final name = entry.uri.pathSegments.lastWhere((s) => s.isNotEmpty);
+        if (!name.startsWith(_stalePrefix)) continue;
+        try {
+          final modified = (await entry.stat()).modified;
+          if (modified.isAfter(now) || modified.isAfter(cutoff)) continue;
+          await entry.delete(recursive: true);
+        } on FileSystemException catch (e) {
+          // Type and errno only: the path is the host's, the value is nobody's.
+          log.warning(
+            'Could not sweep one stale lwk scratch: ${e.runtimeType} '
+            '${e.osError?.errorCode ?? ''}',
+          );
+        }
+      }
+    } on FileSystemException catch (e) {
+      log.warning(
+        'Could not list lwk scratch: ${e.runtimeType} '
+        '${e.osError?.errorCode ?? ''}',
+      );
+    }
+  }
 }

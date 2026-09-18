@@ -140,8 +140,21 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     } on MissingDefaultSecretException catch (e, st) {
       // The seed is gone and the wallet metadata is not — the fss9 cohort,
       // or a wiped keystore. Distinct from the catch-all below so the log
-      // says which, and so `hasBackup` is what the screen turns on: the
-      // remedy here is "import your backup", not "contact support".
+      // says which, and so the state carries `hasBackup`.
+      //
+      // ⚠️ `hasBackup` reaches `AppStartupFailureScreen` and that screen does
+      // not read it: it renders the same title, message and "contact support"
+      // button on every failure. So this branch changes what is logged, not
+      // what the user is offered — a user whose keystore is gone but whose
+      // encrypted vault exists is still told to contact support, and cannot
+      // reach a restore from here. Reproduced on device, 2026-09-17: the
+      // screen persists across a full restart.
+      //
+      // The remedy this distinction exists for is not implemented. Offering
+      // it means a route from the failure screen into the recovery flow,
+      // which is a product change rather than a fix; tracked separately.
+      // Until then, do not read this branch as "the user is offered a
+      // restore".
       log.severe(
         message: 'App startup: default wallet has no secret',
         error: 'MissingDefaultSecretException',

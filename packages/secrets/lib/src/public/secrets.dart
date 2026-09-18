@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart';
@@ -36,6 +38,11 @@ final class Secrets {
   ///
   /// Tests substitute the store below this type, at `FlutterSecureStoragePlatform.instance`.
   factory Secrets({required Future<String> Function() scratchDirectory}) {
+    // A signature the process did not survive leaves its lwk cache behind;
+    // sweep it now rather than at the next Liquid signature, which may never
+    // come. Same age rule as the pre-signature sweep, so a second `Secrets`
+    // in another isolate cannot take a signature still in flight.
+    unawaited(Signer.liquid.sweepScratch(scratchDirectory));
     return Secrets._(DatabaseKeyRepository(), scratchDirectory);
   }
 
