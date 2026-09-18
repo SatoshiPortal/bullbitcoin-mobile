@@ -236,6 +236,54 @@ void main() {
       expect(target.entries, isEmpty);
     });
 
+    test(
+      'a vault whose words are regrouped into fewer elements is refused',
+      () async {
+        // bip39 joins the list and splits it straight back, so a list of
+        // twelve elements whose join is a valid fifteen-word mnemonic used
+        // to pass both the count check, which reads the list, and the
+        // checksum check, which reads the sentence — and it is the list
+        // that gets stored, rendered and compared. The join here is byte
+        // for byte the published `abandon` fifteen-word vector.
+        const fifteen = [
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'abandon',
+          'address',
+        ];
+        final regrouped = <String>[
+          '${fifteen[0]} ${fifteen[1]} ${fifteen[2]} ${fifteen[3]}',
+          ...fifteen.sublist(4),
+        ];
+        expect(regrouped, hasLength(12));
+        expect(regrouped.join(' '), fifteen.join(' '));
+
+        final file = RecoverBull.createBackup(
+          secret: utf8.encode(json.encode({'mnemonic': regrouped})),
+          backupKey: List<int>.filled(32, 1),
+        ).toJson();
+        final target = FakeSecureStoragePlatform();
+
+        final result = await secretsWith(
+          target,
+        ).restoreVault(file: file, key: '01' * 32);
+
+        expect(err(result), isA<InvalidVaultFailure>());
+        expect(target.entries, isEmpty);
+      },
+    );
+
     test('a vault whose plaintext is not a word list is refused', () async {
       // Sealed directly with the library, bypassing `seal`, so the
       // plaintext can carry a shape `seal` would never write. Before the
