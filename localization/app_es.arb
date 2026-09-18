@@ -595,35 +595,10 @@
   "payExternalWalletDescription": "Pagar desde otro billetera Bitcoin",
   "payRbfActivated": "Replace-by-fee activado",
   "transactionTitle": "Transacciones",
-  "transactionError": "Error - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Detalles de la transacción",
   "transactionDetailTransferProgress": "Progreso de la transferencia",
   "transactionDetailSwapProgress": "Progreso del intercambio",
-  "transactionDetailRetryTransfer": "Reintentar transferencia {action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Reintentar intercambio {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Agregar nota",
-  "transactionDetailBumpFees": "Aumentar tarifas",
   "transactionFilterAll": "Todas",
   "transactionFilterSend": "Enviar",
   "transactionFilterReceive": "Recibir",
@@ -638,7 +613,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "transactionStatusInProgress": "En progreso",
   "transactionStatusPending": "Pendiente",
-  "transactionStatusConfirmed": "Confirmada",
   "transactionStatusTransferCompleted": "Transferencia completada",
   "transactionStatusTransferInProgress": "Transferencia en progreso",
   "transactionStatusPaymentInProgress": "Pago en progreso",
@@ -648,51 +622,9 @@
   "transactionStatusTransferExpired": "Transferencia expirada",
   "transactionStatusSwapExpired": "Intercambio expirado",
   "transactionStatusPayjoinRequested": "Payjoin solicitado",
-  "transactionLabelTransactionId": "ID de transacción",
-  "transactionLabelToWallet": "A billetera",
-  "transactionLabelFromWallet": "Desde billetera",
-  "transactionLabelRecipientAddress": "Dirección del destinatario",
-  "transactionLabelAddress": "Dirección",
-  "transactionLabelAddressNotes": "Notas de dirección",
-  "transactionLabelAmountReceived": "Monto recibido",
-  "transactionLabelAmountSent": "Monto enviado",
-  "transactionLabelTransactionFee": "Tarifa de transacción",
-  "transactionLabelStatus": "Estado",
-  "transactionLabelConfirmationTime": "Tiempo de confirmación",
-  "transactionLabelTransferId": "ID de transferencia",
-  "transactionLabelSwapId": "ID de intercambio",
-  "transactionLabelTransferStatus": "Estado de transferencia",
-  "transactionLabelSwapStatus": "Estado de intercambio",
-  "transactionLabelSwapStatusRefunded": "Reembolsado",
-  "transactionLabelLiquidTransactionId": "ID de transacción Liquid",
-  "transactionLabelBitcoinTransactionId": "ID de transacción Bitcoin",
-  "transactionLabelTotalTransferFees": "Tarifas totales de transferencia",
-  "transactionLabelTotalSwapFees": "Tarifas totales de intercambio",
-  "transactionLabelNetworkFee": "Tarifa de red",
-  "transactionLabelTransferFee": "Tarifa de transferencia",
-  "transactionLabelBoltzSwapFee": "Tarifa de intercambio Boltz",
-  "transactionLabelCreatedAt": "Creado el",
-  "transactionLabelCompletedAt": "Completado el",
-  "transactionLabelPayjoinStatus": "Estado de payjoin",
-  "transactionLabelPayjoinCreationTime": "Tiempo de creación de payjoin",
-  "transactionPayjoinStatusCompleted": "Completado",
-  "transactionPayjoinStatusExpired": "Expirado",
-  "transactionOrderLabelOrderType": "Tipo de orden",
-  "transactionOrderLabelOrderNumber": "Número de orden",
-  "transactionOrderLabelPayinAmount": "Monto de pago",
-  "transactionOrderLabelPayoutAmount": "Monto a recibir",
-  "transactionOrderLabelExchangeRate": "Tipo de cambio",
-  "transactionOrderLabelPayinMethod": "Método de pago",
-  "transactionOrderLabelPayoutMethod": "Método de cobro",
-  "transactionOrderLabelPayinStatus": "Estado de pago",
-  "transactionOrderLabelOrderStatus": "Estado de orden",
-  "transactionOrderLabelPayoutStatus": "Estado de cobro",
   "transactionNotesLabel": "Notas de transacción",
   "transactionNoteAddTitle": "Agregar nota",
-  "transactionNoteEditTitle": "Editar nota",
   "transactionNoteHint": "Nota",
-  "transactionNoteSaveButton": "Guardar",
-  "transactionNoteUpdateButton": "Actualizar",
   "transactionPayjoinSendWithout": "Enviar sin payjoin",
   "transactionSwapProgressInitiated": "Iniciado",
   "transactionSwapProgressPaymentMade": "Pago\nrealizado",
@@ -734,10 +666,6 @@
   "transactionSwapInfoRefundableSwap": "Este intercambio será reembolsado automáticamente en unos segundos. Si no, puede intentar un reembolso manual haciendo clic en el botón \"Reintentar reembolso de intercambio\".",
   "transactionListOngoingTransfersTitle": "Transferencias en curso",
   "transactionListOngoingTransfersDescription": "Estas transferencias están actualmente en progreso. Sus fondos están seguros y estarán disponibles cuando se complete la transferencia.",
-  "transactionListLoadingTransactions": "Cargando transacciones...",
-  "transactionListNoTransactions": "Aún no hay transacciones.",
-  "transactionListToday": "Hoy",
-  "transactionListYesterday": "Ayer",
   "transactionSwapDoNotUninstall": "No desinstale la aplicación hasta que se complete el intercambio.",
   "transactionFeesDeductedFrom": "Estas tarifas se deducirán del monto enviado",
   "transactionFeesTotalDeducted": "Esta es la tarifa total deducida del monto enviado",
@@ -2864,7 +2792,6 @@
     }
   },
   "transactionHistoryTitle": "Historial de transacciones",
-  "transactionHistoryHeading": "Historial de transacciones",
   "exportTransactionsDescription": "Exporta todas las transacciones de tu billetera (Bitcoin, Liquid, Lightning y swaps) como archivo CSV. Filtra por rango de fechas opcionalmente.",
   "exportTransactionsStartDate": "Fecha de inicio",
   "exportTransactionsEndDate": "Fecha final",
@@ -4672,7 +4599,6 @@
   "transactionFilterFunding": "Financiación",
   "transactionFilterReward": "Recompensa",
   "transactionFilterRefund": "Reembolso",
-  "transactionFilterBalanceAdjustment": "Ajuste",
   "transactionListLoadingFailed": "No se pudieron cargar las transacciones.",
   "transactionLabelNetworkFees": "Comisiones de red",
   "walletLiquidRiskDisclosureLabel": "Estos fondos son Liquid L-BTC (no BTC). Más información.",

@@ -328,10 +328,6 @@
   "@fundExchangeInstantSepaInfo": {
     "description": "Info message for Instant SEPA transaction limits"
   },
-  "transactionLabelSwapId": "Změna ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
   "dcaChooseWalletTitle": "Vyberte Bitcoin Peněženka",
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
@@ -604,10 +600,6 @@
   "onboardingEncryptedVaultDescription": "Obnovení zálohování přes cloud pomocí PINu.",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "transactionOrderLabelPayoutStatus": "Stav výplaty",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
   },
   "transactionSwapStatusSwapStatus": "Stav Swapu",
   "@transactionSwapStatusSwapStatus": {
@@ -1030,15 +1022,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "transactionDetailRetryTransfer": "Převod retry {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "To je celkový poplatek odečtený z výše uvedené částky",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -1051,10 +1034,6 @@
   "seedsignerStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na SeedSigner. Skenovat.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "Stav převodu",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "Snažte se koupit nad maximálním množstvím.",
   "@buyAboveMaxAmountError": {
@@ -1146,10 +1125,6 @@
   "payBroadcastFailed": "Vysílání selhalo",
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
-  },
-  "transactionLabelConfirmationTime": "Doba potvrzení",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "payNetworkFees": "Síťové poplatky",
   "@payNetworkFees": {
@@ -1330,10 +1305,6 @@
   "backupWalletHowToDecideBackupLosePhysical": "Jedním z nejčastějších způsobů, jak lidé ztratí svůj Bitcoin je proto, že ztratí fyzickou zálohu. Každý, kdo zjistí, že vaše fyzické zálohování bude schopen vzít všechny vaše Bitcoin. Pokud jste velmi přesvědčeni, že ho můžete dobře skrýt a nikdy neztratíte, je to dobrá volba.",
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
-  },
-  "transactionLabelStatus": "Stav",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
   },
   "transactionSwapDescLnSendDefault": "Váš swap je v průběhu. Tento proces je automatizovaný a může trvat nějaký čas k dokončení.",
   "@transactionSwapDescLnSendDefault": {
@@ -1845,10 +1816,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "Bump poplatky",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "Adresa kopírována do schránky",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -2221,10 +2188,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "Částka odeslána",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "Čeština",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -2248,10 +2211,6 @@
   "sellAmount": "Částka k prodeji",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "Stav Swapu",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "Hledat",
   "@walletDeletionConfirmationCancelButton": {
@@ -2423,10 +2382,6 @@
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
   },
-  "transactionListNoTransactions": "Žádné transakce.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "torSettingsConnectionStatus": "Stav připojení",
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
@@ -2440,10 +2395,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "Nepodporovaný formát QR kódu",
-  "transactionLabelAmountReceived": "Množství přijaté",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "Obnovení obnovit obnovení klenby",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2528,10 +2479,6 @@
   "payPaymentConfirmed": "Potvrzení platby",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "Číslo objednávky",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "Zadejte částku",
   "@buyEnterAmount": {
@@ -2631,15 +2578,6 @@
   "ledgerConnectingSubtext": "Nastavení zabezpečeného připojení...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "Chyba - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "Hledat",
   "@electrumPrivacyNoticeCancel": {
@@ -2823,10 +2761,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "Od peněženky",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "Hodnotit omezený. Prosím, zkuste to znovu {retryIn}",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2978,10 +2912,6 @@
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
   },
-  "transactionNoteSaveButton": "Čeština",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "fundExchangeHelpBeneficiaryName": "Použijte naše oficiální firemní jméno. Nepoužívejte \"Bull Bitcoin\".",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -3033,10 +2963,6 @@
   "payLightningInvoice": "Blesková faktura",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "Výplatní částka",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "Zadejte klávesu Backup ručně >>",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -3113,10 +3039,6 @@
   "receiveSwapId": "Změna ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "Kompletní",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "exchangeBitcoinWalletsDescription": "Nastavte výchozí peněženky adresy pro automatické výběry Bitcoin.",
   "@exchangeBitcoinWalletsDescription": {
@@ -3622,10 +3544,6 @@
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
   },
-  "transactionLabelSwapStatusRefunded": "Vracení peněz",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
-  },
   "receiveLightningInvoice": "Blesková faktura",
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
@@ -3904,10 +3822,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "Transfer poplatek",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "visitRecoverBullMessage": "Navštivte obnovitbull.com pro více informací.",
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
@@ -3949,10 +3863,6 @@
   "importQrDevicePassportStep2": "Zadejte svůj PIN",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "transactionOrderLabelPayoutMethod": "Metoda výplaty",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "Měli byste si koupit alespoň",
   "@buyShouldBuyAtLeast": {
@@ -4291,10 +4201,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "Celkové poplatky za Swap",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "Čeština",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4362,15 +4268,6 @@
   "sendContinue": "Pokračovat",
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
-  },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
   "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
@@ -4981,10 +4878,6 @@
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
   },
-  "transactionLabelCreatedAt": "Vytvořeno na",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
   "bip329LabelsExportSuccess": "Štítky úspěšně exportovány",
   "@bip329LabelsExportSuccess": {
     "description": "Success message after exporting labels"
@@ -5551,10 +5444,6 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "transactionLabelBitcoinTransactionId": "ID transakce Bitcoin",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
   "sellPayinAmount": "Payin částka",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
@@ -5672,10 +5561,6 @@
   "autoswapInfoTitle": "Autoswap je aktivní",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
-  },
-  "transactionLabelPayjoinStatus": "Stav Payjoin",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
   },
   "passportStep2": "Klikněte na Přihlásit se QR kódem",
   "@passportStep2": {
@@ -5810,10 +5695,6 @@
   "fundExchangeMethodArsBankTransferSubtitle": "Odeslání bankovního převodu z vašeho bankovního účtu",
   "@fundExchangeMethodArsBankTransferSubtitle": {
     "description": "Subtitle for Argentina bank transfer payment method"
-  },
-  "transactionOrderLabelExchangeRate": "Směnný kurz",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "Odesílejte převod drátu z vašeho bankovního účtu pomocí bance Bull Bitcoin níže. Vaše banka může vyžadovat pouze některé části těchto údajů.",
   "@fundExchangeBankTransferWireDescription": {
@@ -6245,10 +6126,6 @@
   "@testBackupScreenshot": {
     "description": "Label with X mark warning against taking screenshots"
   },
-  "transactionListLoadingTransactions": "Vkládání transakcí...",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
   "dcaSuccessTitle": "Opakovaný nákup je aktivní!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -6499,10 +6376,6 @@
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
   },
-  "transactionLabelPayjoinCreationTime": "Payjoin vytváření času",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
   "payRBFDisabled": "RBF zakázáno",
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
@@ -6621,10 +6494,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "Síťový poplatek",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDeviceKeystoneStep9": "Zadejte štítek pro peněženky Keystone a klepněte na \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -6636,10 +6505,6 @@
   "payEnterAmountTitle": "Zadejte částku",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "Payin metoda",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "Není možné koupit více než",
   "@buyInputMaxAmountError": {
@@ -6758,10 +6623,6 @@
   "appStartupErrorTitle": "Chyba spuštění",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "Přenos ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "Odeslat",
   "@sendTitle": {
@@ -7011,7 +6872,6 @@
     "description": "Warning message about deleting a seed"
   },
   "transactionHistoryTitle": "Historie transakcí",
-  "transactionHistoryHeading": "Historie transakcí",
   "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
   "exportTransactionsStartDate": "Datum od",
   "exportTransactionsEndDate": "Datum do",
@@ -7074,10 +6934,6 @@
   "buyUpgradeKYC": "Upgrade KYC Úroveň",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  },
-  "transactionOrderLabelOrderType": "Typ objednávky",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "Povolit automatické přenos",
   "@autoswapEnableToggleLabel": {
@@ -7394,10 +7250,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "Stav zakázky",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "Vytvořeno na:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -7430,10 +7282,6 @@
   "transactionLabelSendNetworkFees": "Odeslat poplatky",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "transactionLabelAddress": "Čeština",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
   },
   "urProcessingFailedMessage": "UR zpracování selhalo",
   "@urProcessingFailedMessage": {
@@ -7508,10 +7356,6 @@
   "payCopyInvoice": "Kopírovat fakturu",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
-  },
-  "transactionListYesterday": "Včera",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "walletButtonReceive": "Čeština",
   "@walletButtonReceive": {
@@ -7618,10 +7462,6 @@
   "testBackupEncryptedVaultTag": "Snadné a jednoduché (1 minut)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "transactionLabelAddressNotes": "Poznámky k adresám",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
   },
   "bitboxScreenTroubleshootingStep3": "Restartujte zařízení BitBox02 pomocí odpojení a opětovného připojení.",
   "@bitboxScreenTroubleshootingStep3": {
@@ -7754,10 +7594,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "transactionLabelTransactionFee": "Transakční poplatek",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
   "importWatchOnlyRequired": "Vyžadováno",
   "@importWatchOnlyRequired": {
     "description": "Placeholder hint for required input fields"
@@ -7789,10 +7625,6 @@
   "recoverbullVaultKey": "Vault klíč",
   "@recoverbullVaultKey": {
     "description": "Screen title and label for vault key"
-  },
-  "transactionListToday": "Dnes",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
   },
   "keystoneStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na Keystone. Skenovat.",
   "@keystoneStep12": {
@@ -8038,10 +7870,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "Stav Payin",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "Secure Bitcoin peněženku",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -8178,10 +8006,6 @@
   "backupBestPracticesTitle": "Zálohování nejlepších postupů",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "Adresa příjemce",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupWalletVaultProviderGoogleDrive": "Disk Google",
   "@backupWalletVaultProviderGoogleDrive": {
@@ -8899,10 +8723,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "ID transakce",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "Poplatek za síť Bitcoin bude odečtena z částky, kterou obdržíte a shromáždil Bitcoin horníci",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -9198,10 +9018,6 @@
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "transactionLabelLiquidTransactionId": "ID Tekuté transakce",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
   "payNotAvailable": "N/A",
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
@@ -9422,10 +9238,6 @@
   "payViewTransaction": "Zobrazit Transakce",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "Peněženka",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "Pokud potřebujete zaslat jakékoli jiné dokumenty, nahrát je zde.",
   "@exchangeFileUploadInstructions": {
@@ -9762,10 +9574,6 @@
   "payBatchPayment": "Batch platba",
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz Swap poplatek",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
   },
   "transactionSwapDescLnReceiveFailed": "Byl problém s vaším swapem. Máte-li finanční prostředky vráceny do 24 hodin.",
   "@transactionSwapDescLnReceiveFailed": {
@@ -10124,10 +9932,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "Celkové poplatky za převod",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "Hledat",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -10159,10 +9963,6 @@
   "googleDriveSignInMessage": "Budete muset zaregistrovat do Disku Google",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "transactionNoteEditTitle": "Upravit poznámku",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
   },
   "transactionDetailLabelCompletedAt": "Kompletní",
   "@transactionDetailLabelCompletedAt": {
@@ -10502,10 +10302,6 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionNoteUpdateButton": "Aktualizovat",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
-  },
   "receiveNetworkUnavailable": "{network} je v současné době nedostupná",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10570,10 +10366,6 @@
   "buyGetConfirmedFaster": "Potvrdit rychleji",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "Payin částka",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "Povolit SSL",
   "@electrumEnableSsl": {
@@ -11018,10 +10810,6 @@
   "@transactionStatusSwapExpired": {
     "description": "Status label for expired swaps"
   },
-  "transactionPayjoinStatusCompleted": "Hotovo",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
-  },
   "recoverbullFailed": "Selhalo",
   "@recoverbullFailed": {
     "description": "Status label indicating operation failure"
@@ -11037,10 +10825,6 @@
   "payExpired": "Vypršelo",
   "@payExpired": {
     "description": "Status label for expired invoice"
-  },
-  "transactionPayjoinStatusExpired": "Vypršelo",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "transactionDetailLabelPayjoinExpired": "Vypršelo",
   "@transactionDetailLabelPayjoinExpired": {
@@ -11069,10 +10853,6 @@
   "transactionDetailLabelPayjoinCompleted": "Hotovo",
   "@transactionDetailLabelPayjoinCompleted": {
     "description": "Payjoin completed status"
-  },
-  "transactionStatusConfirmed": "Potvrzeno",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
   },
   "withdrawAmountContinue": "Pokračovat",
   "@withdrawAmountContinue": {
@@ -11939,7 +11719,6 @@
   "transactionFilterFunding": "Financování",
   "transactionFilterReward": "Odměna",
   "transactionFilterRefund": "Vrácení",
-  "transactionFilterBalanceAdjustment": "Úprava",
   "transactionListLoadingFailed": "Transakce se nepodařilo načíst.",
   "transactionLabelNetworkFees": "Síťové poplatky",
   "walletLiquidRiskDisclosureLabel": "Tyto prostředky jsou Liquid L-BTC (nikoli BTC). Více informací.",

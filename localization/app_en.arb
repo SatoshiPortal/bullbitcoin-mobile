@@ -2641,15 +2641,6 @@
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
-  "transactionError": "Error - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Transaction details",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -2662,31 +2653,9 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "transactionDetailRetryTransfer": "Retry Transfer {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Add note",
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"
-  },
-  "transactionDetailBumpFees": "Bump fees",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
   },
   "transactionFilterAll": "All",
   "@transactionFilterAll": {
@@ -2736,10 +2705,6 @@
   "@transactionFilterRefund": {
     "description": "Filter option to show only refund orders"
   },
-  "transactionFilterBalanceAdjustment": "Adjustment",
-  "@transactionFilterBalanceAdjustment": {
-    "description": "Filter option to show only balance adjustment orders"
-  },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -2767,10 +2732,6 @@
   "transactionStatusPending": "Pending",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "transactionStatusConfirmed": "Confirmed",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
   },
   "transactionStatusTransferCompleted": "Transfer Completed",
   "@transactionStatusTransferCompleted": {
@@ -2808,162 +2769,6 @@
   "@transactionStatusPayjoinRequested": {
     "description": "Status label for payjoin transaction requests"
   },
-  "transactionLabelTransactionId": "Transaction ID",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
-  "transactionLabelToWallet": "To wallet",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
-  },
-  "transactionLabelFromWallet": "From wallet",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
-  "transactionLabelRecipientAddress": "Recipient Address",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
-  },
-  "transactionLabelAddress": "Address",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
-  },
-  "transactionLabelAddressNotes": "Address notes",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
-  "transactionLabelAmountReceived": "Amount received",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
-  "transactionLabelAmountSent": "Amount sent",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
-  "transactionLabelTransactionFee": "Transaction Fee",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
-  "transactionLabelStatus": "Status",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
-  "transactionLabelConfirmationTime": "Confirmation time",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
-  },
-  "transactionLabelTransferId": "Transfer ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
-  },
-  "transactionLabelSwapId": "Swap ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
-  "transactionLabelTransferStatus": "Transfer status",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
-  },
-  "transactionLabelSwapStatus": "Swap status",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
-  },
-  "transactionLabelSwapStatusRefunded": "Refunded",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
-  },
-  "transactionLabelLiquidTransactionId": "Liquid transaction ID",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
-  "transactionLabelBitcoinTransactionId": "Bitcoin transaction ID",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
-  "transactionLabelTotalTransferFees": "Total Transfer fees",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
-  "transactionLabelTotalSwapFees": "Total Swap fees",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
-  "transactionLabelNetworkFee": "Network Fee",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
-  "transactionLabelTransferFee": "Transfer Fee",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
-  },
-  "transactionLabelCreatedAt": "Created at",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
-  "transactionLabelCompletedAt": "Completed at",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
-  },
-  "transactionLabelPayjoinStatus": "Payjoin status",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
-  "transactionLabelPayjoinCreationTime": "Payjoin creation time",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
-  "transactionPayjoinStatusCompleted": "Completed",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
-  },
-  "transactionPayjoinStatusExpired": "Expired",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
-  },
-  "transactionOrderLabelOrderType": "Order Type",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
-  },
-  "transactionOrderLabelOrderNumber": "Order Number",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
-  },
-  "transactionOrderLabelPayinAmount": "Payin amount",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
-  },
-  "transactionOrderLabelPayoutAmount": "Payout amount",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
-  },
-  "transactionOrderLabelExchangeRate": "Exchange rate",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
-  },
-  "transactionOrderLabelPayinMethod": "Payin method",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
-  },
-  "transactionOrderLabelPayoutMethod": "Payout method",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
-  },
-  "transactionOrderLabelPayinStatus": "Payin Status",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
-  "transactionOrderLabelOrderStatus": "Order Status",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
-  "transactionOrderLabelPayoutStatus": "Payout Status",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
-  },
   "transactionNotesLabel": "Transaction notes",
   "@transactionNotesLabel": {
     "description": "Label for transaction notes section"
@@ -2972,21 +2777,9 @@
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
   },
-  "transactionNoteEditTitle": "Edit note",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "transactionNoteHint": "Note",
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
-  },
-  "transactionNoteSaveButton": "Save",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
-  "transactionNoteUpdateButton": "Update",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "transactionPayjoinSendWithout": "Send without payjoin",
   "@transactionPayjoinSendWithout": {
@@ -3152,25 +2945,9 @@
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
-  "transactionListLoadingTransactions": "Loading transactions...",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
-  "transactionListNoTransactions": "No transactions yet.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "transactionListLoadingFailed": "Could not load transactions.",
   "@transactionListLoadingFailed": {
     "description": "Error message when transaction loading fails"
-  },
-  "transactionListToday": "Today",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
-  },
-  "transactionListYesterday": "Yesterday",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "transactionSwapDoNotUninstall": "Do not uninstall the app until the swap completes.",
   "@transactionSwapDoNotUninstall": {
@@ -9492,10 +9269,6 @@
   "transactionHistoryTitle": "Transaction History",
   "@transactionHistoryTitle": {
     "description": "Title for the transaction history page and settings entry"
-  },
-  "transactionHistoryHeading": "Transaction History",
-  "@transactionHistoryHeading": {
-    "description": "Main heading on the transaction history page"
   },
   "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
   "@exportTransactionsDescription": {

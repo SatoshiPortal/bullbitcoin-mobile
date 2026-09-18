@@ -49,10 +49,6 @@
   "@translationWarningContributeButton": {
     "description": "Button to open Weblate translation platform"
   },
-  "transactionLabelSwapId": "Swap ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
   "dcaChooseWalletTitle": "बिटकॉइन वॉलेट चुनें",
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
@@ -325,10 +321,6 @@
   "onboardingEncryptedVaultDescription": "अपने PIN का उपयोग करके क्लाउड के माध्यम से अपना बैकअप पुनर्प्राप्त करें।",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "transactionOrderLabelPayoutStatus": "प्राप्ति स्थिति",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
   },
   "transactionSwapStatusSwapStatus": "Swap स्थिति",
   "@transactionSwapStatusSwapStatus": {
@@ -763,15 +755,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "transactionDetailRetryTransfer": "स्थानांतरण {action} पुनः प्रयास करें",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "यह भेजे गए राशि से कुल शुल्क काटा जाता है",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -784,10 +767,6 @@
   "seedsignerStep12": "बुल बिटकॉइन वॉलेट आपको बीजगणक पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "स्थानांतरण स्थिति",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "आप अधिकतम राशि से अधिक खरीदने की कोशिश कर रहे हैं।।",
   "@buyAboveMaxAmountError": {
@@ -887,10 +866,6 @@
   "translationWarningDescription": "इस ऐप में अधिकांश अनुवाद AI द्वारा उत्पन्न किए गए हैं और इनमें अशुद्धियाँ हो सकती हैं। यदि आप कोई त्रुटि देखते हैं या अनुवादों को बेहतर बनाने में सहायता करना चाहते हैं, तो आप हमारे सामुदायिक अनुवाद प्लेटफ़ॉर्म के माध्यम से योगदान दे सकते हैं।",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
-  "transactionLabelConfirmationTime": "पुष्टि का समय",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "languageSettingsScreenTitle": "भाषा",
   "@languageSettingsScreenTitle": {
@@ -1080,10 +1055,6 @@
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
   },
-  "transactionLabelStatus": "स्थिति",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
   "transactionSwapDescLnSendDefault": "आपका swap प्रगति में है। यह प्रक्रिया स्वचालित है और इसे पूरा होने में कुछ समय लग सकता है।",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
@@ -1095,10 +1066,6 @@
   "coreScreensReceiveNetworkFeeLabel": "प्राप्त नेटवर्क शुल्क",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "पूर्ण",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "payEstimatedFee": "अनुमानित शुल्क",
   "@payEstimatedFee": {
@@ -1627,10 +1594,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "शुल्क बढ़ाएं",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "पता क्लिपबोर्ड पर कॉपी हो गया",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1765,10 +1728,6 @@
   "payLastName": "अंतिम नाम",
   "@payLastName": {
     "description": "Label for last name field"
-  },
-  "transactionPayjoinStatusExpired": "समयसीमा समाप्त",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "fundExchangeMethodBankTransferWire": "बैंक ट्रांसफर (Wire या EFT)",
   "@fundExchangeMethodBankTransferWire": {
@@ -2011,10 +1970,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "भेजी गई राशि",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "पैसफल",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -2042,10 +1997,6 @@
   "sellAmount": "बेचना",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "Swap स्थिति",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "रद्द करें",
   "@walletDeletionConfirmationCancelButton": {
@@ -2225,10 +2176,6 @@
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
   },
-  "transactionListNoTransactions": "अभी तक कोई लेनदेन नहीं।",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "torSettingsConnectionStatus": "सम्पर्क करने का विवरण",
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
@@ -2242,10 +2189,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "असमर्थित QR कोड प्रारूप",
-  "transactionLabelAmountReceived": "प्राप्त राशि",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "Recoverbull vault वसूली",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2335,10 +2278,6 @@
   "payPaymentConfirmed": "भुगतान की पुष्टि",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "आदेश संख्या",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "राशि दर्ज करें",
   "@buyEnterAmount": {
@@ -2446,15 +2385,6 @@
   "ledgerConnectingSubtext": "सुरक्षित कनेक्शन स्थापित करना।",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "त्रुटि - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "रद्द करना",
   "@electrumPrivacyNoticeCancel": {
@@ -2642,10 +2572,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "वॉलेट से",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "सीमित दरें {retryIn} में फिर से प्रयास करें",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2809,10 +2735,6 @@
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
   },
-  "transactionNoteSaveButton": "सहेजें",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "fundExchangeHelpBeneficiaryName": "हमारे आधिकारिक कॉर्पोरेट नाम का उपयोग करें। \"Bull बिटकॉइन\" का उपयोग न करें।।",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2864,10 +2786,6 @@
   "payLightningInvoice": "बिजली चालान",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "प्राप्ति राशि",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "मैन्युअल रूप से बैकअप कुंजी दर्ज करें >>",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -2944,10 +2862,6 @@
   "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "पूर्ण हुआ",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "pinCodeCreateTitle": "नया PIN बनाएं",
   "@pinCodeCreateTitle": {
@@ -3350,10 +3264,6 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "transactionStatusConfirmed": "पुष्टि हो गई",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
-  },
   "transactionLabelSendAmount": "भेजने की राशि",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3489,10 +3399,6 @@
   "importColdcardInstructionsStep1": "अपने कोल्डकार्ड क्यू डिवाइस पर लॉग इन करें",
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
-  },
-  "transactionLabelSwapStatusRefunded": "वापस किया गया",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
   },
   "receiveLightningInvoice": "Lightning invoice",
   "@receiveLightningInvoice": {
@@ -3796,10 +3702,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "स्थानांतरण शुल्क",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "visitRecoverBullMessage": "अधिक जानकारी के लिए getbull.com पर जाएं।।",
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
@@ -3841,10 +3743,6 @@
   "importQrDevicePassportStep2": "अपना PIN दर्ज करें",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "transactionOrderLabelPayoutMethod": "प्राप्ति विधि",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "आपको कम से कम खरीदना चाहिए",
   "@buyShouldBuyAtLeast": {
@@ -4203,10 +4101,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "कुल Swap शुल्क",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "त्रुटि",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4278,15 +4172,6 @@
   "sendContinue": "जारी रखें",
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
-  },
-  "transactionDetailRetrySwap": "Swap {action} पुनः प्रयास करें",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "sendErrorSwapCreationFailed": "स्वैप बनाने में विफल रहा।।",
   "sendErrorInvoiceMustContainAmount": "इनवॉइस में एक राशि होनी चाहिए",
@@ -4945,10 +4830,6 @@
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
   },
-  "transactionLabelCreatedAt": "बनाया गया",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
   "bip329LabelsExportSuccess": "लेबल सफलतापूर्वक निर्यात",
   "@bip329LabelsExportSuccess": {
     "description": "Success message after exporting labels"
@@ -5527,10 +5408,6 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "transactionLabelBitcoinTransactionId": "Bitcoin लेनदेन ID",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
   "sellPayinAmount": "भुगतान राशि",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
@@ -5652,10 +5529,6 @@
   "autoswapInfoTitle": "Autoswap सक्रिय है",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
-  },
-  "transactionLabelPayjoinStatus": "Payjoin स्थिति",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
   },
   "passportStep2": "QR कोड के साथ साइन इन करें",
   "@passportStep2": {
@@ -5798,10 +5671,6 @@
   "fundExchangeMethodArsBankTransferSubtitle": "अपने बैंक खाते से एक बैंक ट्रांसफर भेजें",
   "@fundExchangeMethodArsBankTransferSubtitle": {
     "description": "Subtitle for Argentina bank transfer payment method"
-  },
-  "transactionOrderLabelExchangeRate": "विनिमय दर",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "नीचे बुल बिटकॉइन के बैंक विवरण का उपयोग करके अपने बैंक खाते से एक तार अंतरण भेजें। आपके बैंक को इन विवरणों के कुछ हिस्सों की आवश्यकता हो सकती है।।",
   "@fundExchangeBankTransferWireDescription": {
@@ -6254,10 +6123,6 @@
   "@testBackupScreenshot": {
     "description": "Label with X mark warning against taking screenshots"
   },
-  "transactionListLoadingTransactions": "लेनदेन लोड हो रहे हैं...",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
   "dcaSuccessTitle": "Recurring Buy सक्रिय है!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -6524,10 +6389,6 @@
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
   },
-  "transactionLabelPayjoinCreationTime": "Payjoin निर्माण समय",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
   "payRBFDisabled": "RBF विकलांग",
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
@@ -6646,10 +6507,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "नेटवर्क शुल्क",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDeviceKeystoneStep9": "अपने कीस्टोन वॉलेट के लिए एक लेबल दर्ज करें और \"आयात\" टैप करें।",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -6661,10 +6518,6 @@
   "payEnterAmountTitle": "राशि दर्ज करें",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "भुगतान विधि",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "आप अधिक से अधिक नहीं खरीद सकते",
   "@buyInputMaxAmountError": {
@@ -6791,10 +6644,6 @@
   "appStartupErrorTitle": "स्टार्टअप त्रुटि",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "स्थानांतरण ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "भेजें",
   "@sendTitle": {
@@ -7056,7 +6905,6 @@
     "description": "Warning message about deleting a seed"
   },
   "transactionHistoryTitle": "लेनदेन इतिहास",
-  "transactionHistoryHeading": "लेनदेन इतिहास",
   "exportTransactionsDescription": "अपने वॉलेट के सभी लेनदेन (Bitcoin, Liquid, Lightning और स्वैप) को CSV फ़ाइल के रूप में निर्यात करें। वैकल्पिक रूप से तिथि सीमा द्वारा फ़िल्टर करें।",
   "exportTransactionsStartDate": "प्रारंभ तिथि",
   "exportTransactionsEndDate": "समाप्ति तिथि",
@@ -7119,10 +6967,6 @@
   "buyUpgradeKYC": "KYC अपग्रेड स्तर",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  },
-  "transactionOrderLabelOrderType": "आदेश प्रकार",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "ऑटो ट्रांसफर",
   "@autoswapEnableToggleLabel": {
@@ -7451,10 +7295,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "आदेश स्थिति",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "पर बनाया गया:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -7495,10 +7335,6 @@
   "transactionLabelSendNetworkFees": "नेटवर्क भेजने का शुल्क",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "transactionLabelAddress": "पता",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
   },
   "testBackupConfirm": "पुष्टि",
   "@testBackupConfirm": {
@@ -7577,10 +7413,6 @@
   "payCopyInvoice": "चालान कॉपी करें",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
-  },
-  "transactionListYesterday": "कल",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "walletButtonReceive": "प्राप्त करें",
   "@walletButtonReceive": {
@@ -7687,10 +7519,6 @@
   "testBackupEncryptedVaultTag": "आसान और सरल (1 मिनट)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "transactionLabelAddressNotes": "पते के नोट",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
   },
   "bitboxScreenTroubleshootingStep3": "अपने Bitbox02 डिवाइस को अनप्लग करके शुरू करें और इसे फिर से कनेक्ट करें।।",
   "@bitboxScreenTroubleshootingStep3": {
@@ -7831,10 +7659,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "transactionLabelTransactionFee": "लेनदेन शुल्क",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
   "importWatchOnlyRequired": "आवश्यक",
   "@importWatchOnlyRequired": {
     "description": "Placeholder hint for required input fields"
@@ -7870,10 +7694,6 @@
   "recoverbullVaultKey": "वॉल्ट कुंजी",
   "@recoverbullVaultKey": {
     "description": "Screen title and label for vault key"
-  },
-  "transactionListToday": "आज",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
   },
   "keystoneStep12": "बुल बिटकॉइन वॉलेट आपको कीस्टोन पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@keystoneStep12": {
@@ -8132,10 +7952,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "भुगतान स्थिति",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "सुरक्षित बिटकॉइन वॉलेट",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -8272,10 +8088,6 @@
   "backupBestPracticesTitle": "बैकअप सर्वोत्तम प्रथाओं",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "प्राप्तकर्ता पता",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupWalletVaultProviderGoogleDrive": "गूगल ड्राइव",
   "@backupWalletVaultProviderGoogleDrive": {
@@ -9041,10 +8853,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "लेनदेन ID",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "Bitcoin नेटवर्क शुल्क आपको प्राप्त होने वाली राशि से काटा जाएगा और Bitcoin miners द्वारा एकत्र किया जाएगा",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -9360,10 +9168,6 @@
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "transactionLabelLiquidTransactionId": "Liquid लेनदेन ID",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
   "payNotAvailable": "N/A",
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
@@ -9604,10 +9408,6 @@
   "payViewTransaction": "लेनदेन देखें",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "वॉलेट को",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "यदि आपको कोई अन्य दस्तावेज़ भेजने हों, तो उन्हें यहाँ अपलोड करें।",
   "@exchangeFileUploadInstructions": {
@@ -9969,10 +9769,6 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap शुल्क",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
-  },
   "transactionSwapDescLnReceiveFailed": "आपके swap में कोई समस्या हुई। यदि 24 घंटों के भीतर राशि वापस नहीं आती तो कृपया सहायता से संपर्क करें।",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
@@ -10330,10 +10126,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "कुल स्थानांतरण शुल्क",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "Retry",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -10365,10 +10157,6 @@
   "googleDriveSignInMessage": "आपको Google ड्राइव पर हस्ताक्षर करने की आवश्यकता होगी",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "transactionNoteEditTitle": "नोट संपादित करें",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
   },
   "transactionDetailLabelCompletedAt": "पूरा होने का समय",
   "@transactionDetailLabelCompletedAt": {
@@ -10716,10 +10504,6 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionNoteUpdateButton": "अपडेट करें",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
-  },
   "receiveNetworkUnavailable": "{network} वर्तमान में अनुपलब्ध है",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10788,10 +10572,6 @@
   "buyGetConfirmedFaster": "इसे जल्दी पुष्टि कराएं",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "भुगतान राशि",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "SSL",
   "@electrumEnableSsl": {
@@ -11497,7 +11277,6 @@
   "transactionFilterFunding": "फंडिंग",
   "transactionFilterReward": "पुरस्कार",
   "transactionFilterRefund": "वापसी",
-  "transactionFilterBalanceAdjustment": "समायोजन",
   "fundExchangeScamConsentError": "आपकी सहमति दर्ज करने में विफल। कृपया पुनः प्रयास करें।",
   "@fundExchangeScamConsentError": {
     "description": "Error message shown when the scam warning consent API call fails"

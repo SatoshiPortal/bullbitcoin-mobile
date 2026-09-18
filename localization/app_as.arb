@@ -894,35 +894,10 @@
   "payExternalWalletDescription": "আন Bitcoin wallet-ৰ পৰা পৰিশোধ কৰক",
   "payRbfActivated": "Replace-by-fee সক্ৰিয় কৰা হৈছে",
   "transactionTitle": "লেনদেনসমূহ",
-  "transactionError": "ভুল - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "লেনদেনৰ বিৱৰণ",
   "transactionDetailTransferProgress": "Transfer অগ্ৰগতি",
   "transactionDetailSwapProgress": "Swap অগ্ৰগতি",
-  "transactionDetailRetryTransfer": "Transfer {action} পুনৰ চেষ্টা কৰক",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Swap {action} পুনৰ চেষ্টা কৰক",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "টোকা যোগ কৰক",
-  "transactionDetailBumpFees": "মাচুল বৃদ্ধি কৰক",
   "transactionFilterAll": "সকলো",
   "transactionFilterSend": "প্ৰেৰণ",
   "transactionFilterReceive": "গ্ৰহণ",
@@ -935,7 +910,6 @@
   "transactionFilterFunding": "ফান্ডিং",
   "transactionFilterReward": "পুৰস্কাৰ",
   "transactionFilterRefund": "ঘূৰাই দিয়া",
-  "transactionFilterBalanceAdjustment": "সামঞ্জস্য",
   "transactionNetworkLightning": "Lightning",
   "transactionNetworkBitcoin": "Bitcoin",
   "transactionNetworkLiquid": "Liquid",
@@ -943,7 +917,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "transactionStatusInProgress": "চলি আছে",
   "transactionStatusPending": "অপেক্ষাৰত",
-  "transactionStatusConfirmed": "নিশ্চিত হৈছে",
   "transactionStatusTransferCompleted": "Transfer সম্পন্ন হৈছে",
   "transactionStatusTransferInProgress": "Transfer চলি আছে",
   "transactionStatusPaymentInProgress": "পৰিশোধ চলি আছে",
@@ -953,51 +926,9 @@
   "transactionStatusTransferExpired": "Transfer মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusSwapExpired": "Swap মেয়াদ উত্তীৰ্ণ হৈছে",
   "transactionStatusPayjoinRequested": "Payjoin অনুৰোধ কৰা হৈছে",
-  "transactionLabelTransactionId": "লেনদেন ID",
-  "transactionLabelToWallet": "Wallet লৈ",
-  "transactionLabelFromWallet": "Wallet-ৰ পৰা",
-  "transactionLabelRecipientAddress": "প্ৰাপকৰ ঠিকনা",
-  "transactionLabelAddress": "ঠিকনা",
-  "transactionLabelAddressNotes": "ঠিকনাৰ টোকা",
-  "transactionLabelAmountReceived": "গ্ৰহণ কৰা পৰিমাণ",
-  "transactionLabelAmountSent": "প্ৰেৰণ কৰা পৰিমাণ",
-  "transactionLabelTransactionFee": "লেনদেন মাচুল",
-  "transactionLabelStatus": "স্থিতি",
-  "transactionLabelConfirmationTime": "নিশ্চিতকৰণৰ সময়",
-  "transactionLabelTransferId": "Transfer ID",
-  "transactionLabelSwapId": "Swap ID",
-  "transactionLabelTransferStatus": "Transfer স্থিতি",
-  "transactionLabelSwapStatus": "Swap স্থিতি",
-  "transactionLabelSwapStatusRefunded": "ঘূৰাই দিয়া হৈছে",
-  "transactionLabelLiquidTransactionId": "Liquid লেনদেন ID",
-  "transactionLabelBitcoinTransactionId": "Bitcoin লেনদেন ID",
-  "transactionLabelTotalTransferFees": "মুঠ Transfer মাচুল",
-  "transactionLabelTotalSwapFees": "মুঠ Swap মাচুল",
-  "transactionLabelNetworkFee": "নেটৱৰ্ক মাচুল",
-  "transactionLabelTransferFee": "Transfer মাচুল",
-  "transactionLabelBoltzSwapFee": "Boltz Swap মাচুল",
-  "transactionLabelCreatedAt": "তৈয়াৰ হৈছে",
-  "transactionLabelCompletedAt": "সম্পন্ন হৈছে",
-  "transactionLabelPayjoinStatus": "Payjoin স্থিতি",
-  "transactionLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
-  "transactionPayjoinStatusCompleted": "সম্পন্ন হৈছে",
-  "transactionPayjoinStatusExpired": "মেয়াদ উত্তীৰ্ণ হৈছে",
-  "transactionOrderLabelOrderType": "অৰ্ডাৰৰ ধৰণ",
-  "transactionOrderLabelOrderNumber": "অৰ্ডাৰ নম্বৰ",
-  "transactionOrderLabelPayinAmount": "পেইন পৰিমাণ",
-  "transactionOrderLabelPayoutAmount": "পেআউট পৰিমাণ",
-  "transactionOrderLabelExchangeRate": "বিনিময় হাৰ",
-  "transactionOrderLabelPayinMethod": "পেইন পদ্ধতি",
-  "transactionOrderLabelPayoutMethod": "পেআউট পদ্ধতি",
-  "transactionOrderLabelPayinStatus": "পেইন স্থিতি",
-  "transactionOrderLabelOrderStatus": "অৰ্ডাৰৰ স্থিতি",
-  "transactionOrderLabelPayoutStatus": "পেআউট স্থিতি",
   "transactionNotesLabel": "লেনদেনৰ টোকা",
   "transactionNoteAddTitle": "টোকা যোগ কৰক",
-  "transactionNoteEditTitle": "টোকা সম্পাদনা কৰক",
   "transactionNoteHint": "টোকা",
-  "transactionNoteSaveButton": "সংৰক্ষণ কৰক",
-  "transactionNoteUpdateButton": "আপডেট কৰক",
   "transactionPayjoinSendWithout": "Payjoin অবিহনে প্ৰেৰণ কৰক",
   "transactionSwapProgressInitiated": "আৰম্ভ হৈছে",
   "transactionSwapProgressPaymentMade": "পৰিশোধ\nকৰা হৈছে",
@@ -1039,10 +970,6 @@
   "transactionSwapInfoRefundableSwap": "এই swap কেইছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে ঘূৰাই দিয়া হ'ব। নহ'লে, \"Swap Refund পুনৰ চেষ্টা কৰক\" বুটাম ক্লিক কৰি হাতেৰে ঘূৰাই দিয়াৰ চেষ্টা কৰিব পাৰে।",
   "transactionListOngoingTransfersTitle": "চলমান Transfer",
   "transactionListOngoingTransfersDescription": "এই transfer-সমূহ বৰ্তমান চলি আছে। আপোনাৰ ধন সুৰক্ষিত আৰু transfer সম্পন্ন হোৱাৰ পিছত উপলব্ধ হ'ব।",
-  "transactionListLoadingTransactions": "লেনদেন লোড হৈ আছে...",
-  "transactionListNoTransactions": "এতিয়ালৈ কোনো লেনদেন নাই।",
-  "transactionListToday": "আজি",
-  "transactionListYesterday": "কালি",
   "transactionSwapDoNotUninstall": "Swap সম্পন্ন নোহোৱালৈ এপ্প আনইনষ্টল নকৰিব।",
   "transactionFeesDeductedFrom": "এই মাচুল প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা হ'ব",
   "transactionFeesTotalDeducted": "এয়া প্ৰেৰণ কৰা পৰিমাণৰ পৰা কাটি লোৱা মুঠ মাচুল",
@@ -6042,7 +5969,6 @@
     }
   },
   "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
-  "transactionHistoryHeading": "লেনদেনৰ ইতিহাস",
   "exportTransactionsDescription": "আপোনাৰ সকলো ৱালেট লেনদেন (বিটকইন, লিকুইড, লাইটনিং আৰু চোৱাপ) CSV ফাইল হিচাপে এক্সপৰ্ট কৰক। ইচ্ছাকৃতভাৱে তাৰিখৰ পৰিসৰৰ দ্বাৰা ফিল্টাৰ কৰক।",
   "exportTransactionsStartDate": "আৰম্ভৰ তাৰিখ",
   "exportTransactionsEndDate": "শেষৰ তাৰিখ",

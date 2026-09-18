@@ -56,10 +56,6 @@
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
   },
-  "transactionLabelSwapId": "بطاقة الهوية",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
   "dcaChooseWalletTitle": "Choose Bitcoin Wallet",
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
@@ -308,10 +304,6 @@
   "onboardingEncryptedVaultDescription": "إسترجع دعمك عبر السحابة باستخدام جهازك.",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "transactionOrderLabelPayoutStatus": "المرتب",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
   },
   "transactionSwapStatusSwapStatus": "Swap Status",
   "@transactionSwapStatusSwapStatus": {
@@ -731,15 +723,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "transactionDetailRetryTransfer": "Retry Transfer {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "هذا هو مجموع الرسوم المخصومة من المبلغ المرسل",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -752,10 +735,6 @@
   "seedsignerStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (بريد سيغنر) افحصه.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "حالة النقل",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "أنت تحاول شراء أعلى من المبلغ الأقصى.",
   "@buyAboveMaxAmountError": {
@@ -845,10 +824,6 @@
   "translationWarningDescription": "تم إنشاء معظم الترجمات في هذا التطبيق باستخدام الذكاء الاصطناعي وقد تحتوي على أخطاء. إذا لاحظت أي أخطاء أو ترغب في المساعدة في تحسين الترجمات، يمكنك تقديم إصلاح على مستودعنا في GitHub.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
-  "transactionLabelConfirmationTime": "وقت التصديق",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "languageSettingsScreenTitle": "اللغة",
   "@languageSettingsScreenTitle": {
@@ -1022,10 +997,6 @@
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
   },
-  "transactionLabelStatus": "الحالة",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
   "recoverbullErrorMissingBytes": "مفقودة من رد فعل تور Retry but if the issue persists, it is a known issue for some devices with Tor.",
   "@recoverbullErrorMissingBytes": {
     "description": "Error message when Tor response is incomplete"
@@ -1033,10 +1004,6 @@
   "coreScreensReceiveNetworkFeeLabel": "شبكة الاستقبال",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "مكتملة",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "payEstimatedFee": "تقديرات الرسوم",
   "@payEstimatedFee": {
@@ -1509,10 +1476,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "رسوم التعبئة",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "العنوان المنسخ من لوح مشبك",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1647,10 +1610,6 @@
   "payLastName": "الاسم الأخير",
   "@payLastName": {
     "description": "Label for last name field"
-  },
-  "transactionPayjoinStatusExpired": "Expired",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "fundExchangeMethodBankTransferWire": "التحويل المصرفي (Wire or EFT)",
   "@fundExchangeMethodBankTransferWire": {
@@ -1881,10 +1840,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "المبلغ المرسل",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "جواز السفر",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -1912,10 +1867,6 @@
   "sellAmount": "Amount to Sell",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "Swap status",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "إلغاء",
   "@walletDeletionConfirmationCancelButton": {
@@ -2067,10 +2018,6 @@
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
   },
-  "transactionListNoTransactions": "لا صفقات بعد.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "torSettingsConnectionStatus": "الحالة",
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
@@ -2084,10 +2031,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "تنسيق رمز QR غير مدعوم",
-  "transactionLabelAmountReceived": "المبلغ المستلم",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "استرداد الخزنة",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2173,10 +2116,6 @@
   "payPaymentConfirmed": "تم تأكيد الدفع",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "العدد",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "المبلغ المستخدم",
   "@buyEnterAmount": {
@@ -2280,15 +2219,6 @@
   "ledgerConnectingSubtext": "إقامة إتصال آمن...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "Error - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "إلغاء",
   "@electrumPrivacyNoticeCancel": {
@@ -2472,10 +2402,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "من المحفظة",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "معدل محدود حاول مرة أخرى في {retryIn}",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2635,10 +2561,6 @@
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
   },
-  "transactionNoteSaveButton": "أنقذ",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "fundExchangeHelpBeneficiaryName": "استخدم اسم شركتنا الرسمي لا تستخدم \"بول بيتكين\".",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2686,10 +2608,6 @@
   "payLightningInvoice": "فاتورة البرق",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "المبلغ المدفوع",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "أدخل مفتاح الدعم يدوياً",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -2762,10 +2680,6 @@
   "receiveSwapId": "بطاقة الهوية",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "مكتملة",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "pinCodeCreateTitle": "إنشاء دبوس جديد",
   "@pinCodeCreateTitle": {
@@ -3132,10 +3046,6 @@
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
   },
-  "transactionStatusConfirmed": "تم تأكيدها",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
-  },
   "transactionLabelSendAmount": "إرسال",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3267,10 +3177,6 @@
   "importColdcardInstructionsStep1": "إسحبْ إلى جهازِكَ كولدكار Q",
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
-  },
-  "transactionLabelSwapStatusRefunded": "مستردة",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
   },
   "receiveLightningInvoice": "فاتورة البرق",
   "@receiveLightningInvoice": {
@@ -3558,10 +3464,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "Transfer Fee",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "payMyFiatRecipients": "متلقيي المخلص",
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
@@ -3591,10 +3493,6 @@
   "appUnlockAttemptSingular": "محاولة فاشلة",
   "@appUnlockAttemptSingular": {
     "description": "Singular form of 'attempt' for failed unlock attempts"
-  },
-  "transactionOrderLabelPayoutMethod": "طريقة الدفع",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "يجب أن تشتري على الأقل",
   "@buyShouldBuyAtLeast": {
@@ -3941,10 +3839,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "مجموع رسوم Swap",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "الرعب",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4016,15 +3910,6 @@
   "sendContinue": "استمر",
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
-  },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "sendErrorSwapCreationFailed": "فشل في إحداث تبادل.",
   "@sendErrorSwapCreationFailed": {
@@ -4632,10 +4517,6 @@
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
   },
-  "transactionLabelCreatedAt": "أنشئت في",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
   "bip329LabelsExportSuccess": "Labels exported successfully",
   "@bip329LabelsExportSuccess": {
     "description": "Success message after exporting labels"
@@ -5158,10 +5039,6 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "transactionLabelBitcoinTransactionId": "شركة بيتكوين",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
   "sellPayinAmount": "المبلغ المدفوع",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
@@ -5275,10 +5152,6 @@
         "type": "String"
       }
     }
-  },
-  "transactionLabelPayjoinStatus": "منح الجنسية",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
   },
   "passportStep2": "اشارة لرمز QR",
   "@passportStep2": {
@@ -5417,10 +5290,6 @@
   "fundExchangeMethodArsBankTransferSubtitle": "أرسل تحويل مصرفي من حسابك المصرفي",
   "@fundExchangeMethodArsBankTransferSubtitle": {
     "description": "Subtitle for Argentina bank transfer payment method"
-  },
-  "transactionOrderLabelExchangeRate": "سعر الصرف",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "أرسل تحويلاً سلكياً من حسابك المصرفي باستخدام تفاصيل مصرف (بول بيتكين) أدناه بنكك قد يتطلب فقط بعض التفاصيل.",
   "@fundExchangeBankTransferWireDescription": {
@@ -5831,10 +5700,6 @@
   "@testBackupScreenshot": {
     "description": "Label with X mark warning against taking screenshots"
   },
-  "transactionListLoadingTransactions": "صفقات النقل.",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
   "dcaSuccessTitle": "الشراء المتكرر هو نشط!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -6093,10 +5958,6 @@
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
   },
-  "transactionLabelPayjoinCreationTime": "وقت الإنشاء",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
   "payRBFDisabled": "RBF disabled",
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
@@ -6207,10 +6068,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "Network Fee",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "tapWordsInOrderTitle": "تخطي كلمات الاسترداد في\nالأمر الصحيح",
   "@tapWordsInOrderTitle": {
     "description": "Title instructing user to tap words in order"
@@ -6218,10 +6075,6 @@
   "payEnterAmountTitle": "المبلغ",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "طريقة الدفع",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "لا يمكنك شراء أكثر من",
   "@buyInputMaxAmountError": {
@@ -6318,10 +6171,6 @@
   "appStartupErrorTitle": "البداية",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "هوية النقل",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "إرسال",
   "@sendTitle": {
@@ -6575,7 +6424,6 @@
     "description": "Warning message about deleting a seed"
   },
   "transactionHistoryTitle": "سجل المعاملات",
-  "transactionHistoryHeading": "سجل المعاملات",
   "exportTransactionsDescription": "صدّر جميع معاملات محفظتك (بيتكوين، ليكويد، لايتنينغ، والمبادلات) كملف CSV. يمكنك تصفية النطاق الزمني اختيارياً.",
   "exportTransactionsStartDate": "تاريخ البدء",
   "exportTransactionsEndDate": "تاريخ الانتهاء",
@@ -6630,10 +6478,6 @@
   "buyUpgradeKYC": "أعلى مستوى KYC الرتبة",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  },
-  "transactionOrderLabelOrderType": "النوع",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "Enable Auto Transfer",
   "@autoswapEnableToggleLabel": {
@@ -6946,10 +6790,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "النظام",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "أنشئت في:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -6990,10 +6830,6 @@
   "transactionLabelSendNetworkFees": "رسوم الشبكة",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "transactionLabelAddress": "العنوان",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
   },
   "testBackupConfirm": "Confirm",
   "@testBackupConfirm": {
@@ -7068,10 +6904,6 @@
   "payCopyInvoice": "فاتورة النسخ",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
-  },
-  "transactionListYesterday": "أمس",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "walletButtonReceive": "الاستلام",
   "@walletButtonReceive": {
@@ -7174,10 +7006,6 @@
   "testBackupEncryptedVaultTag": "سهلة وبسيطة (دقيقة واحدة)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "transactionLabelAddressNotes": "ملاحظات",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
   },
   "bitboxScreenTroubleshootingStep3": "إعادة تشغيل جهاز بيت بوكس02 الخاص بك عن طريق تطهير وإعادة ربطه.",
   "@bitboxScreenTroubleshootingStep3": {
@@ -7314,10 +7142,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "transactionLabelTransactionFee": "رسوم المعاملات",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
   "importWatchOnlyRequired": "المطلوبة",
   "@importWatchOnlyRequired": {
     "description": "Placeholder hint for required input fields"
@@ -7353,10 +7177,6 @@
   "recoverbullVaultKey": "مفتاح القبو",
   "@recoverbullVaultKey": {
     "description": "Screen title and label for vault key"
-  },
-  "transactionListToday": "اليوم",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
   },
   "keystoneStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (كيستون) افحصه.",
   "@keystoneStep12": {
@@ -7594,10 +7414,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "حالة الأجور",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "محفظة بيتكين آمنة",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -7726,10 +7542,6 @@
   "backupBestPracticesTitle": "أفضل الممارسات",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "العنوان المستقبلي",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "bitboxCubitDeviceNotFound": "لم يعثر على جهاز (بيتبوكس) يرجى ربط جهازك ومحاولة مرة أخرى.",
   "@bitboxCubitDeviceNotFound": {
@@ -8420,10 +8232,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "هوية المعاملات",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "ستخصم رسوم شبكة (بيتكوين) من المبلغ الذي تتلقاه وتجمعه من عمال المناجم في (بيتكوين)",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -8713,10 +8521,6 @@
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "transactionLabelLiquidTransactionId": "هوية المعاملات السائلة",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
   "payNotAvailable": "N/A",
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
@@ -8945,10 +8749,6 @@
   "payViewTransaction": "معاملات اليقظة",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "إلى المحفظة",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "إذا كنت بحاجة إلى إرسال أي وثائق أخرى، تحميلها هنا.",
   "@exchangeFileUploadInstructions": {
@@ -9285,10 +9085,6 @@
   "payBatchPayment": "دفعة",
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
   },
   "sellOrderNumber": "رقم النظام",
   "@sellOrderNumber": {
@@ -9627,10 +9423,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "مجموع رسوم النقل",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "Retry",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -9658,10 +9450,6 @@
   "recoverbullGoogleDriveDeleteConfirmation": "هل أنت متأكد من أنك تريد حذف هذه الخزنة الاحتياطية؟ هذا العمل لا يمكن أن يزول.",
   "@recoverbullGoogleDriveDeleteConfirmation": {
     "description": "Confirmation message for deleting a vault backup"
-  },
-  "transactionNoteEditTitle": "مذكرة إديت",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
   },
   "transactionDetailLabelCompletedAt": "مكتملة",
   "@transactionDetailLabelCompletedAt": {
@@ -10000,10 +9788,6 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionNoteUpdateButton": "آخر",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
-  },
   "receiveNetworkUnavailable": "{network} غير متاح حالياً",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10072,10 +9856,6 @@
   "buyGetConfirmedFaster": "تأكد بسرعة",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "المبلغ المدفوع",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "Enable SSL",
   "@electrumEnableSsl": {
@@ -11835,7 +11615,6 @@
   "transactionFilterFunding": "تمويل",
   "transactionFilterReward": "مكافأة",
   "transactionFilterRefund": "استرداد",
-  "transactionFilterBalanceAdjustment": "تسوية",
   "transactionListLoadingFailed": "تعذّر تحميل المعاملات.",
   "transactionLabelNetworkFees": "رسوم الشبكة",
   "walletLiquidRiskDisclosureLabel": "هذه الأموال هي L-BTC على شبكة السائل (وليست BTC). اطّلع على المزيد.",

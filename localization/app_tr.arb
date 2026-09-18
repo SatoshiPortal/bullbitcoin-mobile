@@ -48,10 +48,6 @@
   "@translationWarningContributeButton": {
     "description": "Button to open GitHub repository for translations"
   },
-  "transactionLabelSwapId": "Swap ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
   "dcaChooseWalletTitle": "Bitcoin Cüzdanı seçin",
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
@@ -324,10 +320,6 @@
   "onboardingEncryptedVaultDescription": "Yedeklerinizi PIN'inizi kullanarak bulut aracılığıyla yeniden keşfedin.",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
-  },
-  "transactionOrderLabelPayoutStatus": "Payout Status",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
   },
   "transactionSwapStatusSwapStatus": "Swap Status",
   "@transactionSwapStatusSwapStatus": {
@@ -759,15 +751,6 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "transactionDetailRetryTransfer": "Retry Transfer {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "Bu, gönderilen miktarın toplam ücretidir",
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
@@ -780,10 +763,6 @@
   "seedsignerStep12": "Bull Bitcoin cüzdanı, SeedSigner'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
-  },
-  "transactionLabelTransferStatus": "Transfer durumu",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
   },
   "buyAboveMaxAmountError": "Maksimum miktarın üzerinde satın almaya çalışıyorsunuz.",
   "@buyAboveMaxAmountError": {
@@ -883,10 +862,6 @@
   "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu yapay zeka kullanılarak oluşturulmuştur ve hatalar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri iyileştirmeye yardımcı olmak isterseniz, GitHub depomuzda bir düzeltme gönderebilirsiniz.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
-  },
-  "transactionLabelConfirmationTime": "Onay zamanı",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "languageSettingsScreenTitle": "Dil Dili",
   "@languageSettingsScreenTitle": {
@@ -1076,10 +1051,6 @@
   "@backupWalletHowToDecideBackupLosePhysical": {
     "description": "Explanation of physical backup risks in decision help modal"
   },
-  "transactionLabelStatus": "Durum durumu",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
   "transactionSwapDescLnSendDefault": "Değişiminiz devam ediyor. Bu süreç otomatikdir ve tamamlamak için biraz zaman alabilir.",
   "@transactionSwapDescLnSendDefault": {
     "description": "Default description for Lightning send swap"
@@ -1091,10 +1062,6 @@
   "coreScreensReceiveNetworkFeeLabel": "Ağ Ücreti Al",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "Tamamlandı",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "payEstimatedFee": "Tahmini",
   "@payEstimatedFee": {
@@ -1619,10 +1586,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "transactionDetailBumpFees": "Bump ücretleri",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "addressCardCopiedMessage": "Adresiniz panboard'a kopyalandı",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -1757,10 +1720,6 @@
   "payLastName": "Son Ad",
   "@payLastName": {
     "description": "Label for last name field"
-  },
-  "transactionPayjoinStatusExpired": "Açıklama",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
   },
   "fundExchangeMethodBankTransferWire": "Banka Transfer (Wire veya EFT)",
   "@fundExchangeMethodBankTransferWire": {
@@ -2003,10 +1962,6 @@
   "@broadcastSignedTxPasteHint": {
     "description": "Hint text for paste input field"
   },
-  "transactionLabelAmountSent": "Gönderilen miktar",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "testBackupPassphrase": "Passphrase",
   "@testBackupPassphrase": {
     "description": "Label for optional passphrase field"
@@ -2034,10 +1989,6 @@
   "sellAmount": "Satmak için",
   "@sellAmount": {
     "description": "Label for Bitcoin amount input"
-  },
-  "transactionLabelSwapStatus": "Swap statüsü",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
   },
   "walletDeletionConfirmationCancelButton": "Cancel",
   "@walletDeletionConfirmationCancelButton": {
@@ -2217,10 +2168,6 @@
   "@hwChooseDevice": {
     "description": "Instruction text for hardware wallet selection"
   },
-  "transactionListNoTransactions": "Henüz işlem yok.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
   "torSettingsConnectionStatus": "Bağlantı Durumu",
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
@@ -2234,10 +2181,6 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "Desteklenmeyen QR kodu formatı",
-  "transactionLabelAmountReceived": "$ aldı",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
   "recoverbullRecoveryTitle": "Recoverbullob kurtarma",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
@@ -2327,10 +2270,6 @@
   "payPaymentConfirmed": "Ödeme Onaylandı",
   "@payPaymentConfirmed": {
     "description": "Status message for confirmed payment"
-  },
-  "transactionOrderLabelOrderNumber": "Sipariş Numarası",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "buyEnterAmount": "Sayı girin",
   "@buyEnterAmount": {
@@ -2438,15 +2377,6 @@
   "ledgerConnectingSubtext": "Güvenli bağlantı kurmak...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
-  },
-  "transactionError": "Hata - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
   },
   "electrumPrivacyNoticeCancel": "Cancel",
   "@electrumPrivacyNoticeCancel": {
@@ -2634,10 +2564,6 @@
   "@swapValidationInsufficientBalance": {
     "description": "Validation error when amount exceeds wallet balance"
   },
-  "transactionLabelFromWallet": "Cüzdandan cüzdan",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
   "recoverbullErrorRateLimited": "Oran sınırlı. Lütfen tekrar deneyin {retryIn}",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
@@ -2801,10 +2727,6 @@
   "@fundExchangeCrBankTransferDescription1": {
     "description": "First part of Costa Rica bank transfer description"
   },
-  "transactionNoteSaveButton": "Kaydet",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "fundExchangeHelpBeneficiaryName": "Resmi şirket adını kullanın. \"Bull Bitcoin\" kullanmayın.",
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
@@ -2856,10 +2778,6 @@
   "payLightningInvoice": "Lightning In bill",
   "@payLightningInvoice": {
     "description": "Label indicating invoice type is Lightning Network"
-  },
-  "transactionOrderLabelPayoutAmount": "Payout amount",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
   },
   "recoverbullSelectEnterBackupKeyManually": "Backup key manuel >>",
   "@recoverbullSelectEnterBackupKeyManually": {
@@ -2936,10 +2854,6 @@
   "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
-  },
-  "transactionLabelCompletedAt": "Tamamlandı",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "pinCodeCreateTitle": "Yeni pin oluşturun",
   "@pinCodeCreateTitle": {
@@ -3338,10 +3252,6 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "transactionStatusConfirmed": "Onaylandı",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
-  },
   "transactionLabelSendAmount": "Gönder",
   "@transactionLabelSendAmount": {
     "description": "Label for send amount in swap details"
@@ -3477,10 +3387,6 @@
   "importColdcardInstructionsStep1": "Giriş yapın Coldcard Q cihazınıza",
   "@importColdcardInstructionsStep1": {
     "description": "ImportColdcardQ: First instruction step"
-  },
-  "transactionLabelSwapStatusRefunded": "Yeniden finanse edildi",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
   },
   "receiveLightningInvoice": "Lightning in bill",
   "@receiveLightningInvoice": {
@@ -3780,10 +3686,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelTransferFee": "Transfer Ücreti",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
   "visitRecoverBullMessage": "Daha fazla bilgi için kurtarmabull.com ziyaret edin.",
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
@@ -3825,10 +3727,6 @@
   "importQrDevicePassportStep2": "PIN'inizi girin",
   "@importQrDevicePassportStep2": {
     "description": "Passport instruction step 2"
-  },
-  "transactionOrderLabelPayoutMethod": "Payout yöntemi",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "buyShouldBuyAtLeast": "En azından satın almalısınız",
   "@buyShouldBuyAtLeast": {
@@ -4183,10 +4081,6 @@
   "@swapErrorAmountExceedsMaximum": {
     "description": "Error when amount is above maximum swap limit"
   },
-  "transactionLabelTotalSwapFees": "Total Swap ücretleri",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "errorLabel": "Hata hatası",
   "@errorLabel": {
     "description": "Label for error messages"
@@ -4258,15 +4152,6 @@
   "sendContinue": "Devam etmeye devam et",
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
-  },
-  "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "sendErrorSwapCreationFailed": "Takas oluşturmak için başarısız oldu.",
   "sendErrorInvoiceMustContainAmount": "Fatura bir miktar içermelidir",
@@ -4921,10 +4806,6 @@
   "@exchangeKycLevelLight": {
     "description": "KYC verification level: Light"
   },
-  "transactionLabelCreatedAt": "Oluşturulduğunda",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
   "bip329LabelsExportSuccess": "Etiketler başarıyla ihraç etti",
   "@bip329LabelsExportSuccess": {
     "description": "Success message after exporting labels"
@@ -5499,10 +5380,6 @@
   "@replaceByFeeFastestTitle": {
     "description": "Title for fastest fee option"
   },
-  "transactionLabelBitcoinTransactionId": "Bitcoin İşlem ID",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
   "sellPayinAmount": "Payin miktarı",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
@@ -5624,10 +5501,6 @@
   "autoswapInfoTitle": "Autoswap aktif",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
-  },
-  "transactionLabelPayjoinStatus": "Payjoin statüsü",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
   },
   "passportStep2": "Click Sign with QR Code",
   "@passportStep2": {
@@ -5770,10 +5643,6 @@
   "fundExchangeMethodArsBankTransferSubtitle": "Banka hesabınızdan bir banka transfer gönderin",
   "@fundExchangeMethodArsBankTransferSubtitle": {
     "description": "Subtitle for Argentina bank transfer payment method"
-  },
-  "transactionOrderLabelExchangeRate": "Değişim oranı",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "fundExchangeBankTransferWireDescription": "Aşağıdaki Bull Bitcoin'in banka bilgilerini kullanarak banka hesabınızdan bir tel transfer gönderin. Bankanız bu ayrıntıların sadece bazı kısımları gerektirebilir.",
   "@fundExchangeBankTransferWireDescription": {
@@ -6226,10 +6095,6 @@
   "@testBackupScreenshot": {
     "description": "Label with X mark warning against taking screenshots"
   },
-  "transactionListLoadingTransactions": "Yükleniyor işlemleri...",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
   "dcaSuccessTitle": "Satın almak Aktif!",
   "@dcaSuccessTitle": {
     "description": "Success screen title after DCA is activated"
@@ -6487,10 +6352,6 @@
   "@exchangeDcaFrequencyHour": {
     "description": "DCA frequency unit: hour"
   },
-  "transactionLabelPayjoinCreationTime": "Payjoin yaratım zamanı",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
   "payRBFDisabled": "RBF engelli",
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
@@ -6609,10 +6470,6 @@
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
-  "transactionLabelNetworkFee": "Network Fee",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDeviceKeystoneStep9": "Keystone cüzdanınız için bir etiket girin ve \"İmport\"a tıklayın",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
@@ -6624,10 +6481,6 @@
   "payEnterAmountTitle": "Girin",
   "@payEnterAmountTitle": {
     "description": "Title for amount entry screen in payment flow"
-  },
-  "transactionOrderLabelPayinMethod": "Payin yöntemi",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
   },
   "buyInputMaxAmountError": "Daha fazla satın alamazsınız",
   "@buyInputMaxAmountError": {
@@ -6750,10 +6603,6 @@
   "appStartupErrorTitle": "Startup Error",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "transactionLabelTransferId": "Transfer ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "sendTitle": "Send Send Send Gönder",
   "@sendTitle": {
@@ -7006,7 +6855,6 @@
     "description": "Warning message about deleting a seed"
   },
   "transactionHistoryTitle": "İşlem geçmişi",
-  "transactionHistoryHeading": "İşlem geçmişi",
   "exportTransactionsDescription": "Cüzdanınızın tüm işlemlerini (Bitcoin, Liquid, Lightning ve takasları) CSV dosyası olarak dışa aktarın. İsteğe bağlı olarak tarih aralığına göre filtreleyin.",
   "exportTransactionsStartDate": "Başlangıç tarihi",
   "exportTransactionsEndDate": "Bitiş tarihi",
@@ -7065,10 +6913,6 @@
   "recoverbullSelectDecryptVault": "Decryptob",
   "@recoverbullSelectDecryptVault": {
     "description": "Primary button text to proceed with vault decryption"
-  },
-  "transactionOrderLabelOrderType": "Sipariş Türü",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "autoswapEnableToggleLabel": "Enable Auto Transfer",
   "@autoswapEnableToggleLabel": {
@@ -7397,10 +7241,6 @@
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
   },
-  "transactionOrderLabelOrderStatus": "Sipariş Durumu",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
   "testBackupCreatedAt": "Oluşturun:",
   "@testBackupCreatedAt": {
     "description": "Label for vault creation timestamp field"
@@ -7441,10 +7281,6 @@
   "transactionLabelSendNetworkFees": "Ağ ücretleri gönder",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
-  },
-  "transactionLabelAddress": "Adres",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
   },
   "testBackupConfirm": "Onay Onay Onay Onaylandı",
   "@testBackupConfirm": {
@@ -7519,10 +7355,6 @@
   "payCopyInvoice": "Kopyalama",
   "@payCopyInvoice": {
     "description": "Button text to copy invoice to clipboard"
-  },
-  "transactionListYesterday": "Dün",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "walletButtonReceive": "Kabul Kabul Al",
   "@walletButtonReceive": {
@@ -7620,10 +7452,6 @@
   "testBackupEncryptedVaultTag": "Kolay ve basit (1 dakika)",
   "@testBackupEncryptedVaultTag": {
     "description": "Tag indicating encrypted vault is quick and easy"
-  },
-  "transactionLabelAddressNotes": "Adres Notları",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
   },
   "bitboxScreenTroubleshootingStep3": "BitBox02 cihazınızı dövme ve yeniden bağlantı kurarak yeniden başlatın.",
   "@bitboxScreenTroubleshootingStep3": {
@@ -7760,10 +7588,6 @@
   "@exchangeAmountInputValidationZero": {
     "description": "Validation message when amount is zero or negative"
   },
-  "transactionLabelTransactionFee": "İşlem Ücreti",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
   "importWatchOnlyRequired": "Gerekli",
   "@importWatchOnlyRequired": {
     "description": "Placeholder hint for required input fields"
@@ -7799,10 +7623,6 @@
   "recoverbullVaultKey": "Pencere",
   "@recoverbullVaultKey": {
     "description": "Screen title and label for vault key"
-  },
-  "transactionListToday": "Bugün",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
   },
   "keystoneStep12": "Bull Bitcoin cüzdanı, Anahtarstone üzerindeki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@keystoneStep12": {
@@ -8061,10 +7881,6 @@
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
-  "transactionOrderLabelPayinStatus": "Payin Status",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "sellSendPaymentSecureWallet": "Güvenli Bitcoin cüzdanı",
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
@@ -8201,10 +8017,6 @@
   "backupBestPracticesTitle": "En iyi uygulamalar",
   "@backupBestPracticesTitle": {
     "description": "Title for backup best practices screen"
-  },
-  "transactionLabelRecipientAddress": "Onaylı Adres",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "backupWalletVaultProviderGoogleDrive": "Google Drive",
   "@backupWalletVaultProviderGoogleDrive": {
@@ -8966,10 +8778,6 @@
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
   },
-  "transactionLabelTransactionId": "İşlem ID",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
   "buyNetworkFeeExplanation": "Bitcoin ağ ücreti, Bitcoin madencileri tarafından aldığınız ve topladığınız miktarın üzerinden silinecektir",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
@@ -9285,10 +9093,6 @@
   "@sendSubmarineSwap": {
     "description": "Feature to swap on-chain to Lightning"
   },
-  "transactionLabelLiquidTransactionId": "Sıvı işlem ID",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
   "payNotAvailable": "N/A",
   "@payNotAvailable": {
     "description": "Placeholder for unavailable information"
@@ -9529,10 +9333,6 @@
   "payViewTransaction": "View Transaction",
   "@payViewTransaction": {
     "description": "Button text to view transaction details"
-  },
-  "transactionLabelToWallet": "Cüzdan için",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
   },
   "exchangeFileUploadInstructions": "Başka herhangi bir belge göndermeniz gerekiyorsa, onları buraya yükleyin.",
   "@exchangeFileUploadInstructions": {
@@ -9890,10 +9690,6 @@
   "@payBatchPayment": {
     "description": "Option to combine multiple payments"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
-  },
   "transactionSwapDescLnReceiveFailed": "Değişiminizle ilgili bir sorun vardı. Lütfen fonlar 24 saat içinde iade edilmediyse iletişim desteği.",
   "@transactionSwapDescLnReceiveFailed": {
     "description": "Description for failed Lightning receive swap"
@@ -10242,10 +10038,6 @@
   "@payPaymentInProgressDescription": {
     "description": "Description for payment in progress"
   },
-  "transactionLabelTotalTransferFees": "Total Transfer ücretleri",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "Retry",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -10277,10 +10069,6 @@
   "googleDriveSignInMessage": "Google Drive'a imzalamanız gerekecek",
   "@googleDriveSignInMessage": {
     "description": "Message about needing to sign in to Google Drive"
-  },
-  "transactionNoteEditTitle": "Not",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
   },
   "transactionDetailLabelCompletedAt": "Tamamlandı",
   "@transactionDetailLabelCompletedAt": {
@@ -10611,10 +10399,6 @@
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
   },
-  "transactionNoteUpdateButton": "Update",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
-  },
   "receiveNetworkUnavailable": "{network} şu anda mevcut değildir",
   "@receiveNetworkUnavailable": {
     "description": "Error when network is down",
@@ -10683,10 +10467,6 @@
   "buyGetConfirmedFaster": "Daha hızlı teyit et",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
-  },
-  "transactionOrderLabelPayinAmount": "Payin miktarı",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "electrumEnableSsl": "Enable SSL",
   "@electrumEnableSsl": {
@@ -11831,7 +11611,6 @@
   "transactionFilterFunding": "Fonlama",
   "transactionFilterReward": "Ödül",
   "transactionFilterRefund": "İade",
-  "transactionFilterBalanceAdjustment": "Düzeltme",
   "transactionListLoadingFailed": "İşlemler yüklenemedi.",
   "transactionLabelNetworkFees": "Ağ ücretleri",
   "walletLiquidRiskDisclosureLabel": "Bu fonlar Liquid L-BTC'dir (BTC değil). Daha fazla bilgi edinin.",
