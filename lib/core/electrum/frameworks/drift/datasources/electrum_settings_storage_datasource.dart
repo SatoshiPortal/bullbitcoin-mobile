@@ -10,6 +10,11 @@ class ElectrumSettingsStorageDatasource {
 
   const ElectrumSettingsStorageDatasource({required this._sqlite});
 
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.electrumSettings))
+      .map((_) {});
+
   Future<void> store(ElectrumSettingsModel settings) async {
     try {
       final row = settings.toSqlite();

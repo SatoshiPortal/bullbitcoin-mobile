@@ -13,6 +13,11 @@ class Bip85Datasource {
 
   Bip85Datasource({required this._sqlite});
 
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.bip85Derivations))
+      .map((_) {});
+
   Future<({String derivation, String hex})> deriveHex({
     required String xprvBase58,
     required int length,

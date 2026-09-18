@@ -18,6 +18,10 @@ class FrozenWalletUtxoDatasource {
 
   /// Upserts a freeze row per outpoint, attributed to [walletId] (the wallet
   /// origin). All-or-nothing via a single batch.
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes =>
+      _db.tableUpdates(TableUpdateQuery.onTable(_db.frozenUtxos)).map((_) {});
+
   Future<void> freezeOutpoints({
     required String walletId,
     required List<Outpoint> outpoints,

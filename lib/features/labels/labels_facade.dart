@@ -6,6 +6,8 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/get_backup_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/watch_label_changes_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
@@ -25,24 +27,45 @@ export 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 
 /// Public contract of the labels feature.
 ///
-/// **Reads are best-effort**: labels are non-critical metadata that enrich
+/// Ordinary reads are best-effort: labels are non-critical metadata that enrich
 /// addresses/transactions, so a lookup failure degrades to an empty result
 /// (logged at the boundary) rather than aborting the caller's flow. **Writes
 /// return [Result]** so the caller can decide what a persistence failure means
 /// for its own flow. The facade itself never throws and never surfaces a raw
 /// reason — callers translate a [LabelFailure] via its presentation extension.
+/// [fetchAllForBackup] also rejects corrupt rows instead of omitting them.
 class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;
   final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
   final StoreLabelUsecase _storeLabelsUsecase;
   final TrashLabelUsecase _trashLabelUsecase;
+  final GetBackupLabelsUsecase _getBackupLabels;
+  final WatchLabelChangesUsecase _watchChanges;
 
   LabelsFacade({
     required this._fetchLabelByReferenceUsecase,
     required this._fetchAllLabelsUsecase,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
+    required this._getBackupLabels,
+    required this._watchChanges,
   });
+
+  Future<Result<List<Label>, LabelFailure>> fetchAllForBackup() async =>
+      (await _getBackupLabels.execute()).map(
+        (labels) => [
+          for (final label in labels)
+            Label(
+              id: label.id,
+              type: label.type,
+              label: label.label,
+              reference: label.reference,
+              origin: label.origin,
+            ),
+        ],
+      );
+
+  Stream<void> watchChanges() => _watchChanges.execute();
 
   Future<List<Label>> fetchByReference(String reference) async {
     final result = await _fetchLabelByReferenceUsecase.execute(reference);
