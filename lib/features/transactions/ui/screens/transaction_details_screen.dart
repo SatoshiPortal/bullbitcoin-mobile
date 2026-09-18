@@ -2,7 +2,9 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -15,6 +17,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/order_swap_status_description.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/swap_progress_indicator.dart';
@@ -22,7 +25,6 @@ import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_descripti
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_status_label.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
-import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
@@ -240,12 +242,16 @@ class TransactionDetailsScreen extends StatelessWidget {
                                         hint: context.loc.transactionNoteHint,
                                       );
                                   if (saved == null || !context.mounted) return;
-                                  cubit.saveTransactionLabel(
-                                    NewLabel.tx(
-                                      transactionId: walletTransaction.txId,
-                                      label: saved,
-                                    ),
-                                  );
+                                  final result = await cubit
+                                      .saveTransactionLabel(saved);
+                                  if (result case Err(:final failure)) {
+                                    if (context.mounted) {
+                                      SnackBarUtils.showSnackBar(
+                                        context,
+                                        failure.toTranslated(context),
+                                      );
+                                    }
+                                  }
                                 },
                                 bgColor: context.appColors.transparent,
                                 textColor: context.appColors.onSurface,
@@ -290,6 +296,10 @@ class _LoadErrorContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final failure = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.loadFailure,
+    );
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -297,7 +307,8 @@ class _LoadErrorContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              context.loc.transactionDetailLoadError,
+              failure?.toTranslated(context) ??
+                  context.loc.transactionDetailLoadError,
               textAlign: TextAlign.center,
               style: context.font.bodyMedium,
             ),

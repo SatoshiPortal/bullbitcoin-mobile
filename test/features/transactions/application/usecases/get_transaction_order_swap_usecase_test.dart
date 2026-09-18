@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -23,18 +23,19 @@ void main() {
 
     final result = await usecase.execute('local-1');
 
-    expect(result.localId, 'local-1');
-    expect(result.orderId, 'order-1');
+    final record = (result as Ok<OrderSwapRecord, TransactionFailure>).value;
+    expect(record.localId, 'local-1');
+    expect(record.orderId, 'order-1');
   });
 
-  test('throws when the local record id is absent', () async {
+  test('reports a missing local record as not-found', () async {
     when(() => swapFacade.getOrder('missing')).thenAnswer(
       (_) async => const Err(SwapOrderNotFoundFailure('Local order not found')),
     );
 
-    await expectLater(
-      usecase.execute('missing'),
-      throwsA(isA<TransactionNotFoundError>()),
+    expect(
+      (await usecase.execute('missing') as Err).failure,
+      isA<TransactionNotFoundFailure>(),
     );
   });
 }

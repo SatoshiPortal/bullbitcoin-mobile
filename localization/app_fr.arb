@@ -4878,5 +4878,9 @@
   "sendErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "sellUnexpectedError": "Votre ordre de vente n'a pas pu être finalisé pour le moment. Veuillez réessayer ou contacter le support.",
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
-  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez."
+  "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
+  "transactionDetailLoadError": "Impossible de charger les détails de la transaction.",
+  "transactionPayjoinBroadcastFailed": "La transaction d'origine n'a pas pu être diffusée. Veuillez réessayer.",
+  "transactionPayjoinOriginalUnavailable": "La transaction d'origine n'est plus disponible pour diffusion.",
+  "transactionLabelLimitReached": "Vous ne pouvez avoir que 10 étiquettes au maximum."
 }

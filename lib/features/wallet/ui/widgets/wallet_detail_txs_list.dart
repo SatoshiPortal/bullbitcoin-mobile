@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,20 +19,18 @@ class WalletDetailTxsList extends StatelessWidget {
       ({
         Map<int, List<Transaction>>? txsByDay,
         List<Transaction>? ongoingSwaps,
-        Object? err,
+        TransactionFailure? failure,
       })
     >(
       selector: (state) => (
         txsByDay: state.filteredTransactionsByDay,
         ongoingSwaps: state.ongoingSwaps,
-        err: state.err,
+        failure: state.failure,
       ),
       builder: (context, selected) => TransactionsByDayList(
         transactionsByDay: selected.txsByDay,
         ongoingSwaps: selected.ongoingSwaps,
-        errorMessage: selected.err != null
-            ? context.loc.transactionListLoadingFailed
-            : null,
+        errorMessage: selected.failure?.toTranslated(context),
         sliver: sliver,
         onDetailsClosed: context.read<TransactionsCubit>().refreshLabels,
       ),

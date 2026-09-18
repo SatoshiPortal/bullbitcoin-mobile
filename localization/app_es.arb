@@ -4829,5 +4829,9 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "transactionDetailLoadError": "No se pudieron cargar los detalles de la transacción.",
+  "transactionPayjoinBroadcastFailed": "No se pudo difundir la transacción original. Por favor, inténtelo de nuevo.",
+  "transactionPayjoinOriginalUnavailable": "La transacción original ya no está disponible para difundirse.",
+  "transactionLabelLimitReached": "Solo puede tener hasta 10 etiquetas."
 }

@@ -3535,5 +3535,9 @@
   "sendErrorExchangeOrderMismatch": "Khoản thanh toán này không còn khớp với đơn hàng. Vui lòng bắt đầu lại thanh toán.",
   "sellUnexpectedError": "Lệnh bán của bạn hiện không thể hoàn tất. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "sellErrorFeeBelowRelayFloor": "Phí mạng quá thấp. Hãy chọn mức phí cao hơn.",
-  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại."
+  "sellErrorFeesUnavailable": "Không thể tải phí mạng. Hãy kiểm tra kết nối và thử lại.",
+  "transactionDetailLoadError": "Không thể tải chi tiết giao dịch.",
+  "transactionPayjoinBroadcastFailed": "Không thể phát sóng giao dịch gốc. Vui lòng thử lại.",
+  "transactionPayjoinOriginalUnavailable": "Giao dịch gốc không còn khả dụng để phát sóng.",
+  "transactionLabelLimitReached": "Bạn chỉ có thể có tối đa 10 nhãn."
 }
