@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/utils/report.dart';
 
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
@@ -463,7 +464,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
-                      final app = AppStartupWidget(app: child!);
+                      final app = BackupSettingsScope(
+                        child: AppStartupWidget(app: child!),
+                      );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug
                       // banner, so this is how testers tell beta from production.

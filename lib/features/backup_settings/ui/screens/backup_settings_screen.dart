@@ -1,17 +1,20 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_reminder_setting.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_test_status_row.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -23,158 +26,221 @@ class BackupSettingsScreen extends StatefulWidget {
 
 class _BackupSettingsScreenState extends State<BackupSettingsScreen> {
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => locator<BackupSettingsCubit>()..checkBackupStatus(),
-      child: const _Screen(),
-    );
-  }
-}
-
-class _Screen extends StatelessWidget {
-  const _Screen();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<BackupSettingsCubit, BackupSettingsState>(
-      listenWhen: (p, c) => p.failure != c.failure && c.failure != null,
-      listener: (context, state) {
-        SnackBarUtils.showSnackBar(
-          context,
-          state.failure!.toTranslated(context),
-        );
-      },
-      child: BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
-        builder: (context, state) {
-          final items = settingsItemsOf(context);
-          return Scaffold(
-            appBar: AppBar(
-              forceMaterialTransparency: true,
-              automaticallyImplyLeading: false,
-              flexibleSpace: TopBar(
-                title: context.loc.settingsBackupTitle,
-                onBack: () => context.pop(),
-              ),
-            ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: _BackupTestStatusWidget(),
-                      ),
-                      const Gap(40),
-                      items
-                          .byId(SettingsItemId.startBackup)
-                          .buildTile(
-                            context,
-                            iconColor: context.appColors.primary,
-                          ),
-                      if (state.lastEncryptedBackup != null ||
-                          state.lastPhysicalBackup != null)
-                        const _TestBackupButton(),
-                      items
-                          .byId(SettingsItemId.recoverbull)
-                          .buildTile(
-                            context,
-                            iconColor: context.appColors.secondary,
-                            textColor: context.appColors.secondary,
-                          ),
-                      if (state.lastEncryptedBackup != null)
-                        const _ViewVaultKeyButton(),
-                      for (final id in backupSettingsDataItemOrder)
-                        items.byId(id).buildTile(context),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _ViewVaultKeyButton extends StatelessWidget {
-  const _ViewVaultKeyButton();
-
-  @override
-  Widget build(BuildContext context) => SettingsEntryItem(
-    icon: Icons.vpn_key,
-    title: context.loc.backupSettingsViewVaultKey,
-    onTap: () => RecoverBullFacade.openViewVaultKey(context),
+  Widget build(BuildContext context) => BlocProvider(
+    create: (_) => locator<BackupSettingsCubit>()..checkBackupStatus(),
+    child: const _RecoveryView(),
   );
 }
 
-class _BackupTestStatusWidget extends StatelessWidget {
-  const _BackupTestStatusWidget();
+class _RecoveryView extends StatelessWidget {
+  const _RecoveryView();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
-      builder: (context, state) {
-        return Column(
-          crossAxisAlignment: .start,
-          children: [
-            _StatusRow(
-              label: context.loc.backupSettingsPhysicalBackup,
-              isTested: state.isDefaultPhysicalBackupTested,
+  Widget build(BuildContext context) =>
+      BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
+        builder: (context, state) => Scaffold(
+          appBar: AppBar(
+            forceMaterialTransparency: true,
+            automaticallyImplyLeading: false,
+            flexibleSpace: TopBar(
+              title: context.loc.walletRecoverySettingsTitle,
+              onBack: () => context.pop(),
             ),
-            const Gap(15),
-            _StatusRow(
-              label: context.loc.backupSettingsEncryptedVault,
-              isTested: state.isDefaultEncryptedBackupTested,
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _StatusRow extends StatelessWidget {
-  final String label;
-  final bool isTested;
-
-  const _StatusRow({required this.label, required this.isTested});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(label, style: context.font.bodyMedium),
-        const Spacer(),
-        Text(
-          isTested
-              ? context.loc.backupSettingsTested
-              : context.loc.backupSettingsNotTested,
-          style: context.font.bodyMedium?.copyWith(
-            color: isTested
-                ? context.appColors.success
-                : context.appColors.error,
+          ),
+          body: SafeArea(
+            child: state.status != BackupSettingsStatus.success
+                ? Center(
+                    child: state.failure == null
+                        ? const CircularProgressIndicator()
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(state.failure!.toTranslated(context)),
+                              const Gap(12),
+                              TextButton(
+                                onPressed: context
+                                    .read<BackupSettingsCubit>()
+                                    .checkBackupStatus,
+                                child: Text(context.loc.retry),
+                              ),
+                            ],
+                          ),
+                  )
+                : _contents(context, state),
           ),
         ),
+      );
+
+  Widget _contents(BuildContext context, BackupSettingsState state) {
+    final noBackup =
+        !state.isDefaultPhysicalBackupTested &&
+        !state.isDefaultEncryptedBackupTested;
+    final dataItems = settingsItemsOf(context);
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      children: [
+        const Gap(8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              BackupTestStatusRow(
+                label: context.loc.backupSettingsPhysicalBackup,
+                testedAt: state.isDefaultPhysicalBackupTested
+                    ? state.lastPhysicalBackup
+                    : null,
+              ),
+              const Gap(15),
+              BackupTestStatusRow(
+                label: context.loc.backupSettingsEncryptedVault,
+                testedAt: state.isDefaultEncryptedBackupTested
+                    ? state.lastEncryptedBackup
+                    : null,
+              ),
+            ],
+          ),
+        ),
+        if (noBackup) ...[
+          const Gap(32),
+          _RecoveryWarningCard(
+            urgent: true,
+            title: context.loc.backupSettingsHeroBackUpTitle,
+            body: context.loc.backupSettingsHeroBackUpBody,
+            action: context.loc.backupSettingsStartBackupAction,
+            onAction: () =>
+                _openOptions(context, state, BackupSettingsFlow.backup),
+          ),
+        ] else ...[
+          if (!state.isDefaultPhysicalBackupTested) ...[
+            const Gap(32),
+            _RecoveryWarningCard(
+              title: context.loc.backupHealthReminderTitle,
+              body: context.loc.backupHealthRecoverbullOnlyBody,
+              action: context.loc.backupHealthAddPhysicalBackupAction,
+              onAction: () => _refreshAfter(
+                context,
+                () => context.pushNamed<void>(
+                  TestWalletBackupFacade.routeName,
+                  extra: TestPhysicalBackupFlow.backup,
+                ),
+              ),
+            ),
+          ],
+          const Gap(24),
+          BBButton.big(
+            label: context.loc.backupSettingsStartBackup,
+            iconData: Icons.save_as,
+            iconFirst: true,
+            onPressed: () =>
+                _openOptions(context, state, BackupSettingsFlow.backup),
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
+          ),
+        ],
+        const Gap(24),
+        SettingsEntryItem(
+          icon: Icons.vpn_key_outlined,
+          title: context.loc.backupSettingsViewVaultKey,
+          onTap: () => RecoverBullFacade.openViewVaultKey(context),
+        ),
+        if (state.lastPhysicalBackup != null ||
+            state.lastEncryptedBackup != null)
+          SettingsEntryItem(
+            icon: Icons.verified_outlined,
+            title: context.loc.backupSettingsTestBackup,
+            onTap: () => _openOptions(context, state, BackupSettingsFlow.test),
+          ),
+        SettingsEntryItem(
+          icon: Icons.cloud_outlined,
+          title: context.loc.backupSettingsEncryptedVaultSettings,
+          onTap: () => _refreshAfter(
+            context,
+            () => RecoverBullFacade.openSettings(context),
+          ),
+        ),
+        for (final id in backupSettingsDataItemOrder)
+          dataItems.byId(id).buildTile(context),
+        const Divider(),
+        const BackupReminderSetting(),
+        const Gap(24),
       ],
     );
   }
+
+  Future<void> _openOptions(
+    BuildContext context,
+    BackupSettingsState state,
+    BackupSettingsFlow flow,
+  ) => _refreshAfter(
+    context,
+    () => context.pushNamed<void>(
+      BackupSettingsSubroute.backupOptions.name,
+      extra: BackupOptionsArgs(
+        flow: flow,
+        hasPhysicalBackup: state.lastPhysicalBackup != null,
+        hasEncryptedBackup: state.lastEncryptedBackup != null,
+      ),
+    ),
+  );
+
+  Future<void> _refreshAfter(
+    BuildContext context,
+    Future<void> Function() open,
+  ) async {
+    await open();
+    if (context.mounted) {
+      await context.read<BackupSettingsCubit>().checkBackupStatus();
+    }
+  }
 }
 
-class _TestBackupButton extends StatelessWidget {
-  const _TestBackupButton();
+class _RecoveryWarningCard extends StatelessWidget {
+  final String title;
+  final String body;
+  final String action;
+  final VoidCallback onAction;
+  final bool urgent;
+
+  const _RecoveryWarningCard({
+    required this.title,
+    required this.body,
+    required this.action,
+    required this.onAction,
+    this.urgent = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SettingsEntryItem(
-      icon: Icons.verified,
-      title: context.loc.backupSettingsTestBackup,
-      onTap: () => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.test,
+    final accent = urgent
+        ? context.appColors.error
+        : context.appColors.onSurface;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.appColors.surfaceContainer,
+        border: Border.all(color: accent, width: urgent ? 2 : 1),
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: context.font.titleMedium?.copyWith(
+              color: accent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Gap(8),
+          Text(body, style: context.font.bodyMedium),
+          const Gap(16),
+          BBButton.big(
+            label: action,
+            onPressed: onAction,
+            bgColor: accent,
+            textColor: context.appColors.surface,
+          ),
+        ],
       ),
     );
   }

@@ -16531,5 +16531,154 @@
   "bullVaultLastResortDelay": "Everyday key can spend alone",
   "@bullVaultLastResortDelay": {},
   "bullVaultLastResortOrder": "Choose a last-resort delay later than inheritance recovery, or turn last-resort recovery off.",
-  "@bullVaultLastResortOrder": {}
+  "@bullVaultLastResortOrder": {},
+  "walletRecoverySettingsTitle": "Wallet Recovery (money backup)",
+  "@walletRecoverySettingsTitle": {
+    "description": "Settings entry and page title for recovering wallet funds"
+  },
+  "backupSettingsHeroBackUpTitle": "Back up your wallet",
+  "@backupSettingsHeroBackUpTitle": {},
+  "backupSettingsHeroBackUpBody": "If this phone is lost, stolen, or broken, your money is gone. Nothing can be recovered without a backup.",
+  "@backupSettingsHeroBackUpBody": {},
+  "backupSettingsStartBackupAction": "START BACKUP",
+  "@backupSettingsStartBackupAction": {},
+  "backupHealthReminderTitle": "Can you still recover your wallet?",
+  "@backupHealthReminderTitle": {},
+  "backupHealthRecoverbullOnlyBody": "Without a physical backup, you cannot recover your wallet if the Encrypted Vault server is unavailable.",
+  "@backupHealthRecoverbullOnlyBody": {},
+  "backupHealthAddPhysicalBackupAction": "ADD A PHYSICAL BACKUP",
+  "@backupHealthAddPhysicalBackupAction": {},
+  "backupSettingsEncryptedVaultSettings": "Encrypted vault settings",
+  "@backupSettingsEncryptedVaultSettings": {
+    "description": "Button text for encrypted vault configuration"
+  },
+  "backupSettingsTestedOn": "Tested {date}",
+  "@backupSettingsTestedOn": {
+    "description": "Status showing when a recovery method was last tested.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupReminderNoBackupTitle": "BACKUP YOUR WALLET NOW",
+  "@backupReminderNoBackupTitle": {
+    "description": "Title for the reminder shown when no recovery method has been tested"
+  },
+  "backupReminderNoBackupBody": "Without a backup, you will lose access to your bitcoin if:",
+  "@backupReminderNoBackupBody": {
+    "description": "Lead-in above the loss-risk list when no recovery method has been tested"
+  },
+  "backupReminderLoseReasonLostPhone": "You lose your phone",
+  "@backupReminderLoseReasonLostPhone": {
+    "description": "No-tested-backup warning bullet: lost phone"
+  },
+  "backupReminderLoseReasonDeletedApp": "You delete the app",
+  "@backupReminderLoseReasonDeletedApp": {
+    "description": "No-tested-backup warning bullet: deleted app"
+  },
+  "backupReminderLoseReasonCriticalIssue": "A critical app or device issue occurs",
+  "@backupReminderLoseReasonCriticalIssue": {
+    "description": "No-tested-backup warning bullet: critical app or device issue"
+  },
+  "backupReminderLoseReasonKeystore": "Your device invalidates the keystore when changing the lockscreen/device authentication",
+  "@backupReminderLoseReasonKeystore": {
+    "description": "No-tested-backup warning bullet: device keystore invalidation"
+  },
+  "backupReminderLoseReasonCloudRestore": "Restoring your device from a cloud backup",
+  "@backupReminderLoseReasonCloudRestore": {
+    "description": "No-tested-backup warning bullet: cloud restore"
+  },
+  "backupReminderNoRecovery": "There is no way to recover your wallet without a backup.",
+  "@backupReminderNoRecovery": {
+    "description": "Closing warning when no recovery method has been tested"
+  },
+  "backupReminderBackUpNow": "YES",
+  "@backupReminderBackUpNow": {
+    "description": "Action to open wallet recovery backup choices"
+  },
+  "backupReminderNotNow": "NO, I UNDERSTAND THE RISK",
+  "@backupReminderNotNow": {
+    "description": "Action to dismiss the no-tested-backup warning for this app process"
+  },
+  "backupReminderLargeBalanceTitle": "YOUR ENCRYPTED VAULT IS YOUR ONLY BACKUP",
+  "@backupReminderLargeBalanceTitle": {
+    "description": "Title for the one-time large-balance physical backup warning"
+  },
+  "backupReminderLargeBalanceBody": "Your encrypted vault is tested, but recovery still depends on the backup server being available. Add and test a physical backup for independent recovery.",
+  "@backupReminderLargeBalanceBody": {
+    "description": "Risk explanation for relying only on an encrypted vault at a large balance"
+  },
+  "backupReminderAddPhysical": "ADD A PHYSICAL BACKUP",
+  "@backupReminderAddPhysical": {
+    "description": "Action to create and test a physical wallet backup"
+  },
+  "backupReminderDismissRisk": "DISMISS WARNING — I UNDERSTAND THE RISKS",
+  "@backupReminderDismissRisk": {
+    "description": "Permanent dismissal for the one-time large-balance warning"
+  },
+  "backupReminderAddPhysicalTitle": "ADD A PHYSICAL BACKUP",
+  "@backupReminderAddPhysicalTitle": {
+    "description": "Title for the periodic physical backup recommendation"
+  },
+  "backupReminderAddPhysicalBody": "Your tested encrypted vault still depends on the backup server. Add and test a physical backup so you can recover without it.",
+  "@backupReminderAddPhysicalBody": {
+    "description": "Explanation for the periodic physical backup recommendation"
+  },
+  "backupReminderLater180Days": "REMIND ME IN 180 DAYS",
+  "@backupReminderLater180Days": {
+    "description": "Action to snooze the add-physical-backup reminder for 180 days"
+  },
+  "backupReminderLater365Days": "REMIND ME IN 365 DAYS",
+  "@backupReminderLater365Days": {
+    "description": "Action to snooze the physical-backup test reminder for 365 days"
+  },
+  "backupReminderLater366Days": "REMIND ME IN 366 DAYS",
+  "@backupReminderLater366Days": {
+    "description": "Action to snooze the encrypted-vault test reminder for 366 days"
+  },
+  "backupReminderTestPhysicalTitle": "TEST YOUR PHYSICAL BACKUP",
+  "@backupReminderTestPhysicalTitle": {
+    "description": "Title for the annual physical backup test reminder"
+  },
+  "backupReminderTestPhysicalBody": "Your last successful physical backup test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderTestPhysicalBody": {
+    "description": "Explanation for the annual physical backup test reminder"
+  },
+  "backupReminderTestPhysical": "TEST PHYSICAL BACKUP",
+  "@backupReminderTestPhysical": {
+    "description": "Action to test a physical wallet backup"
+  },
+  "backupReminderTestVaultTitle": "TEST YOUR ENCRYPTED VAULT",
+  "@backupReminderTestVaultTitle": {
+    "description": "Title for the annual encrypted vault test reminder"
+  },
+  "backupReminderTestVaultBody": "Your last successful encrypted vault test was over a year ago. Test it end to end to make sure it can still recover your wallet.",
+  "@backupReminderTestVaultBody": {
+    "description": "Explanation for the annual encrypted vault test reminder"
+  },
+  "backupReminderTestVault": "TEST ENCRYPTED VAULT",
+  "@backupReminderTestVault": {
+    "description": "Action to test the encrypted vault"
+  },
+  "backupReminderDismissForever": "Dismiss backup reminders forever",
+  "@backupReminderDismissForever": {
+    "description": "Wallet Recovery setting that suppresses every backup reminder on this device"
+  },
+  "backupReminderDismissForeverConfirmTitle": "Dismiss all backup reminders?",
+  "@backupReminderDismissForeverConfirmTitle": {
+    "description": "Confirmation title before permanently suppressing backup reminders"
+  },
+  "backupReminderDismissForeverConfirmBody": "The app will not show backup warnings or test reminders on this device until you turn them back on in Wallet Recovery.",
+  "@backupReminderDismissForeverConfirmBody": {
+    "description": "Confirmation explanation for permanently suppressing backup reminders"
+  },
+  "backupReminderDismissForeverConfirm": "Dismiss forever",
+  "@backupReminderDismissForeverConfirm": {
+    "description": "Confirmation action that permanently suppresses backup reminders"
+  },
+  "backupWalletEncryptedVaultUsesTorTag": "Uses Tor",
+  "@backupWalletEncryptedVaultUsesTorTag": {
+    "description": "Tag on the encrypted wallet backup option disclosing its Tor connection."
+  }
 }
