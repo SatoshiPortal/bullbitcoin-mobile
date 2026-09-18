@@ -22,6 +22,18 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   );
 
   @override
+  Stream<void> get changes => _datasource.changes;
+
+  @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() =>
+      _transaction(
+        () async => Ok(
+          (await _datasource.loadAll()).map(_recordMapper.toEntity).toList(),
+        ),
+        failure: const BullVaultInvalidRecoveryFailure(),
+      );
+
+  @override
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
     String source,
   ) {
@@ -222,8 +234,33 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
     if (record.status != BullVaultLifecycleStatus.active) {
       return const Err(BullVaultInvalidRecoveryFailure());
     }
+    BullVaultRecord? predecessorToLink;
+    final predecessorId = record.previousVaultId;
+    if (predecessorId != null) {
+      final row = await _datasource.load(predecessorId);
+      final previous = row == null ? null : _recordMapper.toEntity(row);
+      if (previous?.status == BullVaultLifecycleStatus.migrating &&
+          previous?.successorWalletId == null) {
+        if (previous!.lineageId != record.lineageId ||
+            previous.vaultGeneration >= record.vaultGeneration ||
+            previous.mobileAccount != record.mobileAccount ||
+            !previous.recoveryPackage.policy.hasSameSignerConfigurationAs(
+              record.recoveryPackage.policy,
+            )) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        predecessorToLink = previous;
+      }
+    }
     final saved = await _save(record);
     if (saved case Err()) return saved;
+    if (predecessorToLink != null) {
+      await _datasource.save(
+        _recordMapper.toModel(
+          predecessorToLink.copyWith(successorWalletId: record.walletId),
+        ),
+      );
+    }
     await _datasource.setWalletHidden(record.walletId, false);
     return const Ok(null);
   }, failure: const BullVaultInvalidRecoveryFailure());

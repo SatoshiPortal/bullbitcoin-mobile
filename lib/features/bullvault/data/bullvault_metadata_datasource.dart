@@ -9,6 +9,17 @@ final class BullVaultMetadataDatasource {
   Future<T> transaction<T>(Future<T> Function() action) =>
       _database.transaction(action);
 
+  Stream<void> get changes => _database
+      .tableUpdates(TableUpdateQuery.onTable(_database.bullVaultRecords))
+      .map((_) {});
+
+  Future<List<BullVaultRecordModel>> loadAll() =>
+      (_database.select(_database.bullVaultRecords)..orderBy([
+            (row) => OrderingTerm.asc(row.lineageId),
+            (row) => OrderingTerm.asc(row.vaultGeneration),
+          ]))
+          .get();
+
   Future<void> save(BullVaultRecordModel model) => transaction(() async {
     final previous = await load(model.walletId);
     final samePackage = previous?.recoveryPackage == model.recoveryPackage;

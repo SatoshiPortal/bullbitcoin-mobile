@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_records_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/decode_bullvault_recovery_package_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
@@ -192,7 +194,21 @@ abstract final class BullVaultLocator {
     locator.registerFactory<CanDeleteBullVaultWalletUsecase>(
       () => CanDeleteBullVaultWalletUsecase(locator()),
     );
-    locator.registerFactory<BullVaultFacade>(() => BullVaultFacade(locator()));
+    locator.registerFactory(() => GetBullVaultRecordsUsecase(locator()));
+    locator.registerFactory(() => WatchBullVaultRecordsUsecase(locator()));
+    locator.registerFactory(
+      () => DecodeBullVaultRecoveryPackageUsecase(locator()),
+    );
+    locator.registerFactory<BullVaultFacade>(
+      () => BullVaultFacade(
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+      ),
+    );
     locator.registerFactory<BullVaultOnboardingCubit>(
       () => BullVaultOnboardingCubit(
         locator(),

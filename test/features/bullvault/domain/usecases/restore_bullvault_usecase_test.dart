@@ -1106,6 +1106,141 @@ void main() {
     expect(repository.records, isEmpty);
   });
 
+  for (final status in [
+    BullVaultLifecycleStatus.pending,
+    BullVaultLifecycleStatus.cancelled,
+    BullVaultLifecycleStatus.migrating,
+  ]) {
+    test(
+      'data recovery stores $status directly without publishing an active vault',
+      () async {
+        final result = await usecase.execute(
+          kind: BullVaultRestoreInputKind.recoveryPackage,
+          source: codec.encode(BullVaultRecoveryPackage(policy: policy)),
+          label: 'History',
+          recoveredStatus: status,
+        );
+        expect(result, isA<Ok>());
+        final value =
+            (result as Ok<BullVaultRestoreResult, BullVaultFailure>).value;
+        expect(value.record.status, status);
+        expect(repository.records[value.wallet.id]!.status, status);
+        expect(repository.publishedWalletIds, isEmpty);
+        expect(descriptorPort.importedWallet!.isHidden, isTrue);
+      },
+    );
+  }
+  test(
+    'cancelled recovery beside an active predecessor never changes the predecessor',
+    () async {
+      const previousId = 'previous-wallet';
+      repository.records[previousId] = BullVaultRecord(
+        walletId: previousId,
+        lineageId: policy.lineageId,
+        vaultGeneration: 0,
+        mobileAccount: 0,
+        birthHeight: policy.birthHeight,
+        recoveryPackage: BullVaultRecoveryPackage(policy: policy),
+        status: BullVaultLifecycleStatus.active,
+        createdAt: policy.createdAt!,
+      );
+      final renewed = _policyAtGeneration(
+        descriptorPort: descriptorPort,
+        signers: signers,
+        lineageId: policy.lineageId,
+      );
+      final result = await usecase.execute(
+        kind: BullVaultRestoreInputKind.recoveryPackage,
+        source: codec.encode(
+          BullVaultRecoveryPackage(
+            previousVaultId: previousId,
+            policy: renewed,
+          ),
+        ),
+        label: 'Cancelled',
+        recoveredStatus: BullVaultLifecycleStatus.cancelled,
+      );
+      expect(result, isA<Ok>());
+      expect(
+        repository.records[previousId]!.status,
+        BullVaultLifecycleStatus.active,
+      );
+      expect(repository.publishedWalletIds, isEmpty);
+    },
+  );
+  test(
+    'data recovery accepts a matching unlinked migrating predecessor',
+    () async {
+      const previousId = 'previous-wallet';
+      repository.records[previousId] = BullVaultRecord(
+        walletId: previousId,
+        lineageId: policy.lineageId,
+        vaultGeneration: 0,
+        mobileAccount: 0,
+        birthHeight: policy.birthHeight,
+        recoveryPackage: BullVaultRecoveryPackage(policy: policy),
+        status: BullVaultLifecycleStatus.migrating,
+        createdAt: policy.createdAt!,
+      );
+      final renewed = _policyAtGeneration(
+        descriptorPort: descriptorPort,
+        signers: signers,
+        lineageId: policy.lineageId,
+      );
+      final result = await usecase.execute(
+        kind: BullVaultRestoreInputKind.recoveryPackage,
+        source: codec.encode(
+          BullVaultRecoveryPackage(
+            previousVaultId: previousId,
+            policy: renewed,
+          ),
+        ),
+        label: 'Current',
+        recoveredStatus: BullVaultLifecycleStatus.active,
+      );
+      expect(result, isA<Ok>());
+    },
+  );
+  test(
+    'a data-backup package can restore its own network without switching app settings',
+    () async {
+      when(
+        () => getDefaultSeed.execute(environment: Environment.mainnet),
+      ).thenThrow(Exception('No default wallet'));
+      final source = testBullVaultRecoveryPackage(
+        network: Network.bitcoinMainnet,
+      );
+      final package = BullVaultRecoveryPackage(
+        policy: descriptorService.recognizeStructure(
+          source.policy.descriptor,
+          Network.bitcoinMainnet,
+        )!,
+      );
+      final decoded = codec.decode(codec.encode(package));
+      expect(decoded.policy.network, Network.bitcoinMainnet);
+      expect(descriptorService.matchesPolicyDescriptor(decoded.policy), isTrue);
+
+      final result = await usecase.execute(
+        kind: BullVaultRestoreInputKind.recoveryPackage,
+        source: codec.encode(package),
+        label: 'Mainnet vault',
+        recoveredStatus: BullVaultLifecycleStatus.active,
+        recoveredNetwork: Network.bitcoinMainnet,
+      );
+      expect(result, isA<Ok>());
+      expect(
+        (result as Ok<BullVaultRestoreResult, BullVaultFailure>)
+            .value
+            .wallet
+            .network,
+        Network.bitcoinMainnet,
+      );
+      verify(
+        () => getDefaultSeed.execute(environment: Environment.mainnet),
+      ).called(1);
+    },
+  );
+
   test('rejects a renewed package beside its active predecessor', () async {
     const previousWalletId = 'previous-wallet';
     repository.records[previousWalletId] = BullVaultRecord(

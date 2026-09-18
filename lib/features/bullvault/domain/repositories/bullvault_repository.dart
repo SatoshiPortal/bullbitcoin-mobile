@@ -6,6 +6,11 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_
 import 'package:meta/meta.dart';
 
 abstract interface class BullVaultRepository {
+  Stream<void> get changes;
+
+  @useResult
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll();
+
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
     String source,
   );
