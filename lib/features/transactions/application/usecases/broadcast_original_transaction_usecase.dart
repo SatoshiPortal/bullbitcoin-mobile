@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart';
+import 'package:meta/meta.dart';
 
 class BroadcastOriginalTransactionUsecase {
   final PayjoinSender _sender;
@@ -14,24 +15,20 @@ class BroadcastOriginalTransactionUsecase {
     };
   }
 
-  Future<PayjoinSession> execute(PayjoinSession payjoin) async {
-    final result = await _sender.broadcastOriginal(payjoin.id);
-    return switch (result) {
-      Ok(:final value) => value,
-      Err(failure: PayjoinFallbackUnavailableFailure()) =>
-        throw BroadcastOriginalTransactionUnavailableException(),
-      Err() => throw BroadcastOriginalTransactionException(
-        'Failed to broadcast original transaction',
+  @useResult
+  Future<Result<PayjoinSession, TransactionFailure>> execute(
+    PayjoinSession payjoin,
+  ) async {
+    return switch (await _sender.broadcastOriginal(payjoin.id)) {
+      Ok(:final value) => Ok(value),
+      Err(failure: PayjoinFallbackUnavailableFailure()) => const Err(
+        TransactionPayjoinFallbackUnavailableFailure(),
+      ),
+      Err(:final failure) => Err(
+        TransactionPayjoinBroadcastFailure(
+          'broadcastOriginal failed: ${failure.runtimeType}',
+        ),
       ),
     };
   }
-}
-
-class BroadcastOriginalTransactionException extends BullException {
-  BroadcastOriginalTransactionException(super.message);
-}
-
-class BroadcastOriginalTransactionUnavailableException extends BullException {
-  BroadcastOriginalTransactionUnavailableException()
-    : super('Original transaction is no longer available for broadcast');
 }

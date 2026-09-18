@@ -14,6 +14,9 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -64,6 +67,13 @@ class _CountingList<T> extends ListBase<T> {
     _items.length = value;
   }
 }
+
+/// Unwraps a successful Result; a failure here is a test-setup mistake.
+List<Transaction> unwrap(bb.Result<List<Transaction>, TransactionFailure> r) =>
+    switch (r) {
+      bb.Ok(:final value) => value,
+      bb.Err(:final failure) => fail('expected transactions, got $failure'),
+    };
 
 void main() {
   late _MockSettingsRepository settingsRepository;
@@ -129,7 +139,9 @@ void main() {
     ).thenAnswer((_) async {});
     when(
       () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer(
+      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+    );
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -150,7 +162,7 @@ void main() {
         () => payjoinSessions.list(any()),
       ).thenAnswer((_) async => Ok([receiver(PayjoinStatus.aborted)]));
 
-      final transactions = await usecase.execute();
+      final transactions = unwrap(await usecase.execute());
 
       expect(transactions, isEmpty);
     },
@@ -161,7 +173,7 @@ void main() {
       () => payjoinSessions.list(any()),
     ).thenAnswer((_) async => Ok([receiver(PayjoinStatus.requested)]));
 
-    final transactions = await usecase.execute();
+    final transactions = unwrap(await usecase.execute());
 
     expect(transactions, hasLength(1));
     expect(transactions.single.payjoin?.status, PayjoinStatus.requested);
@@ -176,7 +188,7 @@ void main() {
         ),
       );
 
-      final transactions = await usecase.execute();
+      final transactions = unwrap(await usecase.execute());
 
       expect(
         transactions,
@@ -204,9 +216,13 @@ void main() {
     ).thenAnswer((_) async => const Ok([]));
     when(
       () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => [_receiveOrderSwap()]);
+    ).thenAnswer(
+      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([
+        _receiveOrderSwap(),
+      ]),
+    );
 
-    final transactions = await usecase.execute();
+    final transactions = unwrap(await usecase.execute());
 
     expect(transactions, hasLength(1));
     expect(transactions.single.walletTransaction?.txId, 'payout-tx');
@@ -246,7 +262,7 @@ void main() {
       ),
     );
 
-    final transactions = await usecase.execute();
+    final transactions = unwrap(await usecase.execute());
 
     expect(
       transactions,
@@ -280,9 +296,12 @@ void main() {
     ).thenAnswer((_) async => const Ok([]));
     when(
       () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => [_chainOrderSwap()]);
+    ).thenAnswer(
+      (_) async =>
+          bb.Ok<List<OrderSwapRecord>, TransactionFailure>([_chainOrderSwap()]),
+    );
 
-    final transactions = await usecase.execute();
+    final transactions = unwrap(await usecase.execute());
 
     expect(transactions, hasLength(1));
     expect(transactions.single.walletTransaction?.txId, 'payin-tx');
@@ -319,7 +338,7 @@ void main() {
         () => payjoinSessions.list(any()),
       ).thenAnswer((_) async => const Ok([]));
 
-      final transactions = await usecase.execute();
+      final transactions = unwrap(await usecase.execute());
 
       expect(transactions, hasLength(count));
       expect(
@@ -351,7 +370,9 @@ void main() {
     ).thenAnswer((_) async => const Ok([]));
     when(
       () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer(
+      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+    );
     when(
       () => walletTransactionRepository.getWalletTransactions(
         walletId: any(named: 'walletId'),
@@ -364,9 +385,13 @@ void main() {
     ).thenAnswer((_) async => const Ok([]));
     when(
       () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => [_receiveOrderSwap()]);
+    ).thenAnswer(
+      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([
+        _receiveOrderSwap(),
+      ]),
+    );
 
-    final transactions = await usecase.execute();
+    final transactions = unwrap(await usecase.execute());
 
     expect(transactions, hasLength(2));
     expect(transactions.singleWhere((tx) => tx.order != null).order, orders[0]);
@@ -393,7 +418,9 @@ void main() {
       ).thenAnswer((_) async => const Ok([]));
       when(
         () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => []);
+      ).thenAnswer(
+        (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+      );
       final validTransaction = _walletTransaction(
         txId: 'valid-tx',
         walletId: 'wallet-1',
@@ -412,7 +439,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [malformedTransaction, validTransaction]);
 
-      final transactions = await usecase.execute();
+      final transactions = unwrap(await usecase.execute());
 
       expect(transactions, hasLength(3));
       expect(transactions.singleWhere((tx) => tx.order == valid).order, valid);

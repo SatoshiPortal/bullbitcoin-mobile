@@ -3535,5 +3535,9 @@
   "sendErrorExchangeOrderMismatch": "Այս վճարումն այլևս չի համապատասխանում պատվերին։ Խնդրում ենք վճարումը սկսել նորից։",
   "sellUnexpectedError": "Ձեր վաճառքի պատվերը այս պահին չհաջողվեց ավարտել։ Խնդրում ենք կրկին փորձել կամ կապվել աջակցման ծառայության հետ։",
   "sellErrorFeeBelowRelayFloor": "Ցանցի վճարը շատ ցածր է։ Ընտրեք ավելի բարձր վճար։",
-  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։"
+  "sellErrorFeesUnavailable": "Ցանցի վճարները չհաջողվեց բեռնել։ Ստուգեք կապը և կրկին փորձեք։",
+  "transactionDetailLoadError": "Չհաջողվեց բեռնել գործարքի մանրամասները։",
+  "transactionPayjoinBroadcastFailed": "Չհաջողվեց հեռարձակել սկզբնական գործարքը։ Խնդրում ենք փորձել կրկին։",
+  "transactionPayjoinOriginalUnavailable": "Սկզբնական գործարքն այլևս հասանելի չէ հեռարձակման համար։",
+  "transactionLabelLimitReached": "Կարող եք ունենալ առավելագույնը 10 պիտակ։"
 }

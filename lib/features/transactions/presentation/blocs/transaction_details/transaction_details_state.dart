@@ -13,15 +13,24 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     int? swapClaimedAmountSat,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
     @Default(false) bool retryingSwap,
-    TransactionNotFoundError? notFoundError,
-    Object? err,
+    TransactionFailure? failure,
   }) = _TransactionDetailsState;
   const TransactionDetailsState._();
 
-  /// The load failed and there is nothing to show. Without this, a failed load
-  /// left the screen on loading skeletons forever.
-  bool get hasLoadError =>
-      transaction == null && (err != null || notFoundError != null);
+  /// The failure to render full-screen: set only when the load left nothing to
+  /// show. A failure on top of a rendered transaction is shown inline instead.
+  /// Without this, a failed load left the screen on loading skeletons forever.
+  TransactionFailure? get loadFailure => transaction == null ? failure : null;
+
+  bool get hasLoadError => loadFailure != null;
+
+  /// The failure the broadcast action owns, so the button renders it inline
+  /// and the UI never has to switch on a failure type itself.
+  TransactionPayjoinBroadcastFailure? get payjoinBroadcastFailure =>
+      switch (failure) {
+        final TransactionPayjoinBroadcastFailure f => f,
+        _ => null,
+      };
 
   bool get isLoading => transaction == null && !hasLoadError;
 

@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/refresh_transaction_labels_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,25 +62,22 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }
 
   Future<void> loadTxs() async {
-    try {
-      // if (state.isSyncing) {
-      //   return; // Already syncing, no need to fetch again
-      // }
-      // Load local txs from db to get latest state from tx details page updates
+    // Load local txs from db to get latest state from tx details page updates
+    emit(state.copyWith(isSyncing: true));
 
-      emit(state.copyWith(isSyncing: true));
-      final transactions = await _getTransactionsUsecase.execute(
-        walletId: state.walletId,
-      );
+    final result = await _getTransactionsUsecase.execute(
+      walletId: state.walletId,
+    );
+    if (isClosed) return;
 
-      _loadGeneration++;
-      emit(
-        state.copyWith(transactions: transactions, isSyncing: false, err: null),
-      );
-    } catch (e) {
-      if (!isClosed) {
-        emit(state.copyWith(err: e, isSyncing: false));
-      }
+    switch (result) {
+      case Ok(:final value):
+        _loadGeneration++;
+        emit(
+          state.copyWith(transactions: value, isSyncing: false, failure: null),
+        );
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure, isSyncing: false));
     }
   }
 

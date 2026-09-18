@@ -12364,5 +12364,9 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "transactionDetailLoadError": "Transaction ki details load nahin ho sakin.",
+  "transactionPayjoinBroadcastFailed": "Original transaction broadcast nahin ho saka. Kripya dobara koshish karein.",
+  "transactionPayjoinOriginalUnavailable": "Original transaction ab broadcast ke liye available nahin hai.",
+  "transactionLabelLimitReached": "Aap zyada se zyada 10 labels rakh sakte hain."
 }

@@ -4820,5 +4820,9 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "transactionDetailLoadError": "Tapahtuman tietoja ei voitu ladata.",
+  "transactionPayjoinBroadcastFailed": "Alkuperäistä tapahtumaa ei voitu lähettää. Yritä uudelleen.",
+  "transactionPayjoinOriginalUnavailable": "Alkuperäinen tapahtuma ei ole enää lähetettävissä.",
+  "transactionLabelLimitReached": "Voit lisätä enintään 10 tunnistetta."
 }

@@ -4870,5 +4870,8 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-Server",
   "settingsWalletSettingsTitle": "Wallet-Einstellungen",
   "settingsSearchWalletSettingsKeywords": "Wallet|Bitcoin|Netzwerkeinstellungen|On-Chain-Einstellungen|Bitcoin-Einstellungen",
-  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet."
+  "electrumOnionUsesTorDescription": "Die Verbindung zu diesem .onion-Server wird über Tor geleitet.",
+  "transactionPayjoinBroadcastFailed": "Die ursprüngliche Transaktion konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+  "transactionPayjoinOriginalUnavailable": "Die ursprüngliche Transaktion steht nicht mehr zum Senden zur Verfügung.",
+  "transactionLabelLimitReached": "Sie können höchstens 10 Labels haben."
 }

@@ -22,9 +22,21 @@ import 'package:bb_mobile/features/transactions/application/usecases/get_transac
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Ok;
+
+/// The use case returns a `Result`; these tests are about what it binds, so a
+/// failure is a test failure rather than a case to assert on.
+List<Transaction> _transactionsOf(
+  bb.Result<List<Transaction>, TransactionFailure> result,
+) => switch (result) {
+  bb.Ok(:final value) => value,
+  bb.Err(:final failure) => fail('expected transactions, got $failure'),
+};
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -116,7 +128,7 @@ void main() {
       () => getTransactionOrderSwapsUsecase.execute(
         walletId: any(named: 'walletId'),
       ),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer((_) async => const Ok([]));
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -172,7 +184,7 @@ void main() {
         ],
       );
 
-      final transactions = await usecase.execute();
+      final transactions = _transactionsOf(await usecase.execute());
 
       final walletRow = transactions.firstWhere(
         (t) => t.walletTransaction?.txId == 'shared-txid',
@@ -222,7 +234,7 @@ void main() {
         ],
       );
 
-      final transactions = await usecase.execute();
+      final transactions = _transactionsOf(await usecase.execute());
 
       expect(transactions, isNotEmpty);
       final walletRow = transactions.firstWhere(

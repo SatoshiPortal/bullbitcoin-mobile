@@ -4832,5 +4832,9 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "transactionDetailLoadError": "无法加载交易详情。",
+  "transactionPayjoinBroadcastFailed": "无法广播原始交易。请重试。",
+  "transactionPayjoinOriginalUnavailable": "原始交易已无法广播。",
+  "transactionLabelLimitReached": "最多只能添加 10 个标签。"
 }

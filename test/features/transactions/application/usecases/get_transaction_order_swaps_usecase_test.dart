@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -24,19 +24,27 @@ void main() {
 
     final result = await usecase.execute(walletId: 'wallet-1');
 
-    expect(result, [order]);
+    expect(result, isA<Ok<List<OrderSwapRecord>, TransactionFailure>>());
+    expect((result as Ok).value, [order]);
   });
 
-  test('maps swap failures to a transaction error', () async {
+  test('maps swap failures into the transaction family', () async {
     when(
       () => swapFacade.getOrders(walletId: any(named: 'walletId')),
     ).thenAnswer(
       (_) async => const Err(SwapStorageFailure('database unavailable')),
     );
 
+    final failure =
+        (await usecase.execute(walletId: 'wallet-1') as Err).failure;
+
+    expect(failure, isA<TransactionSwapUnavailableFailure>());
     expect(
-      () => usecase.execute(walletId: 'wallet-1'),
-      throwsA(isA<TransactionError>()),
+      failure.logMessage,
+      isNot(contains('database unavailable')),
+      reason:
+          'the swap layer'
+          's own reason must not travel on our failure',
     );
   });
 }
