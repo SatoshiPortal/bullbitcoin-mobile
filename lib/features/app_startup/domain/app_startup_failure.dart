@@ -21,6 +21,12 @@ final class AppStartupWalletCheckFailure extends AppStartupFailure {
 /// A default wallet's metadata exists but the keystore, read in full, has no
 /// seed under its fingerprint. Never a locked keystore: that one is
 /// [AppStartupKeychainLockedFailure], transient, and waited out.
+///
+/// ⚠️ Distinct for the log only: `AppStartupFailureScreen` shows the same
+/// message and "contact support" for every variant, so a user whose keystore
+/// is gone but whose encrypted vault exists cannot reach a restore from there
+/// (reproduced on device, 2026-09-17). That route is a product change,
+/// tracked separately.
 final class AppStartupMissingDefaultSecretFailure extends AppStartupFailure {
   const AppStartupMissingDefaultSecretFailure([super.logMessage]);
 }
