@@ -10,4 +10,11 @@ abstract interface class WalletMetadataBackupRepository {
   Future<Result<WalletMetadataBackup, WalletBackupFailure>> capture(
     Map<String, String> walletReferences,
   );
+
+  /// [walletIds] is the reference map produced by successful wallet recovery.
+  @useResult
+  Future<Result<void, WalletBackupFailure>> apply(
+    WalletMetadataBackup metadata,
+    Map<String, String> walletIds,
+  );
 }

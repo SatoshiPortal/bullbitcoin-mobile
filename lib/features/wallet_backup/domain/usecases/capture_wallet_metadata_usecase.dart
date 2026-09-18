@@ -22,3 +22,15 @@ final class WatchWalletMetadataUsecase {
 
   Stream<void> execute() => _repository.changes;
 }
+
+final class ApplyWalletMetadataUsecase {
+  final WalletMetadataBackupRepository _repository;
+
+  const ApplyWalletMetadataUsecase(this._repository);
+
+  @useResult
+  Future<Result<void, WalletBackupFailure>> execute(
+    WalletMetadataBackup metadata,
+    Map<String, String> walletIds,
+  ) => _repository.apply(metadata, walletIds);
+}

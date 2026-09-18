@@ -1,3 +1,10 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
+import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_server_model.dart';
+import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_settings_model.dart';
+import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
 import 'package:async/async.dart' show StreamGroup;
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
@@ -23,6 +30,7 @@ final class WalletMetadataBackupRepositoryImpl
   final LabelsFacade _labels;
   final FrozenWalletUtxoDatasource _frozen;
   final SettingsDatasource _settings;
+  final SettingsRepository _settingsWriter;
   final AutoSwapSettingsRepository _autoSwap;
   final PayjoinPolicyAccess _payjoin;
   final ElectrumServerStorageDatasource _electrumServers;
@@ -35,6 +43,7 @@ final class WalletMetadataBackupRepositoryImpl
     required this._labels,
     required this._frozen,
     required this._settings,
+    required this._settingsWriter,
     required this._autoSwap,
     required this._payjoin,
     required this._electrumServers,
@@ -171,7 +180,173 @@ final class WalletMetadataBackupRepositoryImpl
     }
   }
 
+  @override
+  Future<Result<void, WalletBackupFailure>> apply(
+    WalletMetadataBackup metadata,
+    Map<String, String> walletIds,
+  ) async {
+    try {
+      final desired = metadata.settings;
+      final recipientReference = desired.autoSwap.recipientWalletReference;
+      final recipient = recipientReference == null
+          ? null
+          : _reference(walletIds, recipientReference);
+      final freezes = [
+        for (final output in metadata.frozenOutputs)
+          (
+            walletId: output.walletReference == null
+                ? ''
+                : _reference(walletIds, output.walletReference!),
+            txId: output.txId,
+            vout: output.vout,
+          ),
+      ];
+      await _database.transaction(() async {
+        final labels = await _labels.fetchAllForBackup();
+        if (labels case Err()) {
+          throw const _MetadataWriteException();
+        }
+        final current = {
+          for (final label
+              in (labels as Ok<List<LabelEntity>, LabelFailure>).value)
+            (label.label, label.reference): label,
+        };
+        for (final label in metadata.labels) {
+          final origin = walletIds[label.origin] ?? label.origin;
+          final existing = current[(label.label, label.reference)];
+          if (existing != null) {
+            if (existing.type != label.type || existing.origin != origin) {
+              throw const FormatException('Conflicting label identity');
+            }
+            continue;
+          }
+          if (await _labels.store(
+                NewLabel(
+                  type: label.type,
+                  reference: label.reference,
+                  label: label.label,
+                  origin: origin,
+                ),
+              )
+              case Err()) {
+            throw const _MetadataWriteException();
+          }
+        }
+        for (final output in freezes) {
+          await _frozen.freezeOutpoints(
+            walletId: output.walletId,
+            outpoints: [(txId: output.txId, vout: output.vout)],
+          );
+        }
+        final desiredServers = [
+          for (final network in desired.electrum)
+            for (final server in network.servers)
+              ElectrumServerModel(
+                url: server.url,
+                network: network.network,
+                priority: server.priority,
+                isCustom: true,
+              ),
+        ];
+        final desiredUrls = desiredServers.map((s) => s.url).toSet();
+        for (final server in await _electrumServers.fetchAllServers(
+          isCustom: true,
+        )) {
+          if (!desiredUrls.contains(server.url) &&
+              !await _electrumServers.deleteServer(server.url)) {
+            throw const _MetadataWriteException();
+          }
+        }
+        await _electrumServers.storeBatch(desiredServers);
+        for (final network in desired.electrum) {
+          final previous = await _electrumSettings.fetchByNetwork(
+            network.network,
+          );
+          await _electrumSettings.store(
+            ElectrumSettingsModel(
+              network: network.network,
+              validateDomain: network.validateDomain,
+              stopGap: network.stopGap,
+              timeout: network.timeout,
+              retry: network.retry,
+              socks5: previous.socks5,
+            ),
+          );
+        }
+        for (final network in desired.mempool) {
+          final url = network.customUrl;
+          if (url == null) {
+            final previous = await _mempoolServers.fetchCustomServerByNetwork(
+              network.network,
+            );
+            if (previous != null &&
+                !await _mempoolServers.deleteCustomServer(network.network)) {
+              throw const _MetadataWriteException();
+            }
+          } else {
+            final parsed = MempoolUrlParser.tryParse(url)!;
+            await _mempoolServers.store(
+              MempoolServerModel(
+                url: parsed.cleanUrl,
+                isTestnet: network.network.isTestnet,
+                isLiquid: network.network.isLiquid,
+                isCustom: true,
+                enableSsl: parsed.enableSsl,
+              ),
+            );
+          }
+          await _mempoolSettings.store(
+            MempoolSettingsModel(
+              network: network.network.networkString,
+              useForFeeEstimation: network.useForFeeEstimation,
+            ),
+          );
+        }
+      });
+      // These owners emit their own value streams. Preserve their normal write
+      // semantics instead of emitting values from a transaction that can roll back.
+      await _settingsWriter.setBitcoinUnit(desired.app.bitcoinUnit);
+      await _settingsWriter.setCurrency(desired.app.currency);
+      await _settingsWriter.setLanguage(desired.app.language);
+      await _settingsWriter.setThemeMode(desired.app.themeMode);
+      await _settingsWriter.setHideAmounts(desired.app.hideAmounts);
+      final previousSwap = await _autoSwap.getAutoSwapParams();
+      await _autoSwap.updateAutoSwapParams(
+        AutoSwap(
+          enabled: desired.autoSwap.enabled && recipient != null,
+          balanceThresholdSats: desired.autoSwap.balanceThresholdSats,
+          triggerBalanceSats: desired.autoSwap.triggerBalanceSats,
+          feeThresholdPercent: desired.autoSwap.feeThresholdPercent,
+          alwaysBlock: desired.autoSwap.alwaysBlock,
+          recipientWalletId: recipient,
+          blockTillNextExecution: previousSwap.blockTillNextExecution,
+          showWarning: previousSwap.showWarning,
+        ),
+      );
+      if (await _payjoin.setMinimumAmount(desired.payjoin.minimumAmount)
+          case Err()) {
+        return const Err(WalletBackupIncompleteFailure());
+      }
+      if (await _payjoin.setSessionLifetime(desired.payjoin.sessionLifetime)
+          case Err()) {
+        return const Err(WalletBackupIncompleteFailure());
+      }
+      if (await _payjoin.setEnabled(desired.payjoin.enabled) case Err()) {
+        return const Err(WalletBackupIncompleteFailure());
+      }
+      return const Ok(null);
+    } on Exception {
+      // The common recovery flow owns the durable fence. Never turn a partial
+      // application or a preserved conflict into a successful recovery.
+      return const Err(WalletBackupIncompleteFailure());
+    }
+  }
+
   String _reference(Map<String, String> references, String walletId) =>
       references[walletId] ??
       (throw const FormatException('Missing wallet reference'));
+}
+
+final class _MetadataWriteException implements Exception {
+  const _MetadataWriteException();
 }
