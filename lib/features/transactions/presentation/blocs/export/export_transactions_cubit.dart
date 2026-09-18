@@ -1,6 +1,5 @@
-import 'package:bull_logger/bull_logger.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
-import 'package:bb_mobile/features/transactions/application/application_errors.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,32 +14,30 @@ class ExportTransactionsCubit extends Cubit<ExportTransactionsState> {
   }) : super(const ExportTransactionsState.initial());
 
   Future<void> exportCsv({DateTime? start, DateTime? end}) async {
-    try {
-      emit(const ExportTransactionsState.loading());
+    emit(const ExportTransactionsState.loading());
 
-      final csv = await _exportTransactionsCsvUsecase.execute(
-        start: start,
-        end: end,
-      );
-
-      final saved = await _saver.save(csv);
-      if (!saved) {
-        emit(const ExportTransactionsState.initial());
+    final String csv;
+    switch (await _exportTransactionsCsvUsecase.execute(
+      start: start,
+      end: end,
+    )) {
+      case Ok(:final value):
+        csv = value;
+      case Err(:final failure):
+        emit(ExportTransactionsState.failure(failure));
         return;
-      }
+    }
 
-      emit(const ExportTransactionsState.success());
-    } on NoTransactionsToExportError {
-      emit(const ExportTransactionsState.noTransactions());
-    } on InvalidDateRangeError {
-      emit(const ExportTransactionsState.invalidDateRange());
-    } catch (e, s) {
-      log.severe(
-        message: 'Failed to export transactions CSV',
-        error: e,
-        trace: s,
-      );
-      emit(const ExportTransactionsState.error());
+    switch (await _saver.save(csv)) {
+      // A cancelled save is not a failure: return to the idle form.
+      case Ok(value: final saved):
+        emit(
+          saved
+              ? const ExportTransactionsState.success()
+              : const ExportTransactionsState.initial(),
+        );
+      case Err(:final failure):
+        emit(ExportTransactionsState.failure(failure));
     }
   }
 }

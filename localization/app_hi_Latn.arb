@@ -2017,15 +2017,6 @@
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
-  "transactionError": "Error - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Transaction ki jaankari",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
@@ -2038,31 +2029,9 @@
   "@transactionDetailSwapProgress": {
     "description": "Title for ongoing swap details"
   },
-  "transactionDetailRetryTransfer": "Transfer dobara karo {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Swap dobara karo {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Note jodo",
   "@transactionDetailAddNote": {
     "description": "Button label to add a note to a transaction"
-  },
-  "transactionDetailBumpFees": "Fee badhao",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
   },
   "transactionFilterAll": "Sab",
   "@transactionFilterAll": {
@@ -2112,10 +2081,6 @@
   "@transactionFilterRefund": {
     "description": "Filter option to show only refund orders"
   },
-  "transactionFilterBalanceAdjustment": "Samayojan",
-  "@transactionFilterBalanceAdjustment": {
-    "description": "Filter option to show only balance adjustment orders"
-  },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
@@ -2143,10 +2108,6 @@
   "transactionStatusPending": "Baaki Hai",
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
-  },
-  "transactionStatusConfirmed": "Confirm Ho Gaya",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
   },
   "transactionStatusTransferCompleted": "Transfer Poora Hua",
   "@transactionStatusTransferCompleted": {
@@ -2184,162 +2145,6 @@
   "@transactionStatusPayjoinRequested": {
     "description": "Status label for payjoin transaction requests"
   },
-  "transactionLabelTransactionId": "Transaction ID",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
-  },
-  "transactionLabelToWallet": "Wallet ko",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
-  },
-  "transactionLabelFromWallet": "Wallet se",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
-  },
-  "transactionLabelRecipientAddress": "Praaptakarta ka pata",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
-  },
-  "transactionLabelAddress": "Pata",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
-  },
-  "transactionLabelAddressNotes": "Pate ke notes",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
-  "transactionLabelAmountReceived": "Prapt raashi",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
-  },
-  "transactionLabelAmountSent": "Bheji gayi raashi",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
-  "transactionLabelTransactionFee": "Transaction Fee",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
-  },
-  "transactionLabelStatus": "Sthiti",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
-  },
-  "transactionLabelConfirmationTime": "Confirmation samay",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
-  },
-  "transactionLabelTransferId": "Transfer ID",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
-  },
-  "transactionLabelSwapId": "Swap ID",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
-  "transactionLabelTransferStatus": "Transfer ki sthiti",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
-  },
-  "transactionLabelSwapStatus": "Swap ki sthiti",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
-  },
-  "transactionLabelSwapStatusRefunded": "Wapas Hua",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
-  },
-  "transactionLabelLiquidTransactionId": "Liquid transaction ID",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
-  },
-  "transactionLabelBitcoinTransactionId": "Bitcoin transaction ID",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
-  },
-  "transactionLabelTotalTransferFees": "Kul Transfer fees",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
-  "transactionLabelTotalSwapFees": "Kul Swap fees",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
-  "transactionLabelNetworkFee": "Network Fee",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
-  "transactionLabelTransferFee": "Transfer Fee",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
-  },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
-  },
-  "transactionLabelCreatedAt": "Kab banaya",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
-  "transactionLabelCompletedAt": "Kab poora hua",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
-  },
-  "transactionLabelPayjoinStatus": "Payjoin ki sthiti",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
-  "transactionLabelPayjoinCreationTime": "Payjoin banane ka samay",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
-  },
-  "transactionPayjoinStatusCompleted": "Poora Hua",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
-  },
-  "transactionPayjoinStatusExpired": "Khatam Ho Gaya",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
-  },
-  "transactionOrderLabelOrderType": "Order ka prakar",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
-  },
-  "transactionOrderLabelOrderNumber": "Order number",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
-  },
-  "transactionOrderLabelPayinAmount": "Payin raashi",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
-  },
-  "transactionOrderLabelPayoutAmount": "Payout raashi",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
-  },
-  "transactionOrderLabelExchangeRate": "Vinimay dar",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
-  },
-  "transactionOrderLabelPayinMethod": "Payin ka tarika",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
-  },
-  "transactionOrderLabelPayoutMethod": "Payout ka tarika",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
-  },
-  "transactionOrderLabelPayinStatus": "Payin ki sthiti",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
-  "transactionOrderLabelOrderStatus": "Order ki sthiti",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
-  },
-  "transactionOrderLabelPayoutStatus": "Payout ki sthiti",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
-  },
   "transactionNotesLabel": "Transaction ke notes",
   "@transactionNotesLabel": {
     "description": "Label for transaction notes section"
@@ -2348,21 +2153,9 @@
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
   },
-  "transactionNoteEditTitle": "Note badlo",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "transactionNoteHint": "Note",
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
-  },
-  "transactionNoteSaveButton": "Save Karo",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
-  "transactionNoteUpdateButton": "Update Karo",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "transactionPayjoinSendWithout": "Payjoin ke bina bhejo",
   "@transactionPayjoinSendWithout": {
@@ -2527,22 +2320,6 @@
   "transactionListOngoingTransfersDescription": "Yeh transfers abhi chal rahe hain. Aapke paise surakshit hain aur transfer poora hone par milenge.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
-  },
-  "transactionListLoadingTransactions": "Transactions load ho rahe hain...",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
-  "transactionListNoTransactions": "Abhi koi transaction nahi hai.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
-  },
-  "transactionListToday": "Aaj",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
-  },
-  "transactionListYesterday": "Kal",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "transactionSwapDoNotUninstall": "Swap poora hone tak app uninstall mat karo.",
   "@transactionSwapDoNotUninstall": {
@@ -8124,7 +7901,6 @@
     }
   },
   "transactionHistoryTitle": "Lenden Itihaas",
-  "transactionHistoryHeading": "Lenden Itihaas",
   "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
   "exportTransactionsStartDate": "Shuru ki taarikh",
   "exportTransactionsEndDate": "Antim taarikh",
@@ -12588,5 +12364,9 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "transactionDetailLoadError": "Transaction ki details load nahin ho sakin.",
+  "transactionPayjoinBroadcastFailed": "Original transaction broadcast nahin ho saka. Kripya dobara koshish karein.",
+  "transactionPayjoinOriginalUnavailable": "Original transaction ab broadcast ke liye available nahin hai.",
+  "transactionLabelLimitReached": "Aap zyada se zyada 10 labels rakh sakte hain."
 }

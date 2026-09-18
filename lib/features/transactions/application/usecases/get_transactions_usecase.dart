@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -37,7 +38,8 @@ class GetTransactionsUsecase {
     required this._getTransactionOrderSwapsUsecase,
   });
 
-  Future<List<Transaction>> execute({
+  @useResult
+  Future<Result<List<Transaction>, TransactionFailure>> execute({
     String? walletId,
     bool sync = false,
   }) async {
@@ -78,10 +80,16 @@ class GetTransactionsUsecase {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
       };
-      final orderSwaps = [...loadedOrderSwaps];
+      // A failed swap load degrades the list rather than failing it: wallet
+      // transactions are still worth showing.
+      final resolvedOrderSwaps = switch (loadedOrderSwaps) {
+        Ok(:final value) => value,
+        Err() => const <OrderSwapRecord>[],
+      };
+      final orderSwaps = [...resolvedOrderSwaps];
       final canonicalOrderSwaps = <OrderSwapWalletLeg, OrderSwapRecord>{};
       final secondaryOrderSwapLegs = <OrderSwapWalletLeg>{};
-      for (final orderSwap in loadedOrderSwaps) {
+      for (final orderSwap in resolvedOrderSwaps) {
         final canonical = canonicalOrderSwapWalletLeg(orderSwap);
         if (canonical != null) canonicalOrderSwaps[canonical] = orderSwap;
         secondaryOrderSwapLegs.addAll(secondaryOrderSwapWalletLegs(orderSwap));
@@ -266,7 +274,7 @@ class GetTransactionsUsecase {
       // Combine results of broadcasted transactions, remaining swaps which are
       //  ongoing and remaining payjoins that are unbroadcasted as well
       //  into a single list of Transaction entities.
-      return [
+      return Ok([
         ...dedupedBroadcastedTransactions,
         // A resolved recovered swap with no wallet tx here was only associated
         // via a default/counterpart wallet id; don't show it on that chain.
@@ -314,7 +322,7 @@ class GetTransactionsUsecase {
                   .where((entry) => !consumedOrderIndices.contains(entry.key))
                   .map((entry) => Transaction(order: entry.value))
             : <Transaction>[]),
-      ];
+      ]);
     } catch (e, stackTrace) {
       log.severe(
         message: 'Failed to fetch transactions',

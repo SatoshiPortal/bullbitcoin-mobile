@@ -36,7 +36,6 @@
     }
   },
   "exchangeSettingsSecuritySettingsTitle": "Налаштування безпеки",
-  "transactionNoteUpdateButton": "Оновлення",
   "appStartupContactSupportButton": "Контакти",
   "ledgerHelpTitle": "Ledger усунення несправностей",
   "fundExchangeLabelBankAccountCountry": "Країна банківського рахунку",
@@ -473,27 +472,10 @@
   "payExternalWalletDescription": "Сплатити з іншого біткойн-гаманця",
   "payRbfActivated": "Замініть активоване",
   "transactionTitle": "Твитнуть",
-  "transactionError": "Помилка - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Деталі транзакції",
   "transactionDetailTransferProgress": "Прогрес трансферу",
   "transactionDetailSwapProgress": "Swap Прогрес",
-  "transactionDetailRetryTransfer": "Трансфер з картки {action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Додати замітку",
-  "transactionDetailBumpFees": "Бамперові збори",
   "transactionFilterAll": "Всі",
   "transactionFilterSend": "Відправити",
   "transactionFilterReceive": "Отримати",
@@ -508,7 +490,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → Л-БТ",
   "transactionStatusInProgress": "Прогрес",
   "transactionStatusPending": "Закінчення",
-  "transactionStatusConfirmed": "Підтвердження",
   "transactionStatusTransferCompleted": "Трансфер завершено",
   "transactionStatusPaymentInProgress": "Плата за прогрес",
   "transactionStatusPaymentRefunded": "Повернення платежів",
@@ -517,44 +498,9 @@
   "transactionStatusTransferExpired": "Трансфер Expired",
   "transactionStatusSwapExpired": "Обмінюється",
   "transactionStatusPayjoinRequested": "Payjoin запитав",
-  "transactionLabelTransactionId": "Код транзакції",
-  "transactionLabelToWallet": "Гаманець",
-  "transactionLabelFromWallet": "Від гаманця",
-  "transactionLabelRecipientAddress": "Адреса одержувача",
-  "transactionLabelAddress": "Контакти",
-  "transactionLabelAddressNotes": "Контакти",
-  "transactionLabelAmountReceived": "Сума отримана",
-  "transactionLabelAmountSent": "Сума відправлена",
-  "transactionLabelTransactionFee": "Плата за транзакції",
-  "transactionLabelStatus": "Статус на сервери",
-  "transactionLabelConfirmationTime": "Термін підтвердження",
-  "transactionLabelTransferId": "Трансфер ID",
-  "transactionLabelSwapId": "Обмін ID",
-  "transactionLabelTransferStatus": "Статус на сервери",
-  "transactionLabelSwapStatusRefunded": "Повернення",
-  "transactionLabelLiquidTransactionId": "Ідентифікаційний код",
-  "transactionLabelBitcoinTransactionId": "Код транзакції Bitcoin",
-  "transactionLabelTotalTransferFees": "Сума переказу",
-  "transactionLabelTotalSwapFees": "Загальний обмін",
-  "transactionLabelNetworkFee": "Партнерство",
-  "transactionLabelTransferFee": "Плата за трансфер",
-  "transactionLabelBoltzSwapFee": "Boltz Обмінюється Fee",
-  "transactionLabelCreatedAt": "Створено",
-  "transactionLabelCompletedAt": "Увімкнути",
-  "transactionLabelPayjoinStatus": "Статус на сервери",
-  "transactionLabelPayjoinCreationTime": "Час створення Payjoin",
-  "transactionPayjoinStatusCompleted": "Виконаний",
-  "transactionPayjoinStatusExpired": "Зареєструватися",
-  "transactionOrderLabelOrderType": "Тип замовлення",
-  "transactionOrderLabelOrderNumber": "Номер замовлення",
-  "transactionOrderLabelPayinAmount": "Сума виплат",
-  "transactionOrderLabelPayoutAmount": "Сума виплат",
-  "transactionOrderLabelExchangeRate": "Курс валют",
   "transactionNotesLabel": "Примітки транзакцій",
   "transactionNoteAddTitle": "Додати замітку",
-  "transactionNoteEditTitle": "Редагувати замітку",
   "transactionNoteHint": "Зареєструватися",
-  "transactionNoteSaveButton": "Зберегти",
   "transactionPayjoinSendWithout": "Відправлення без плати",
   "transactionSwapProgressInitiated": "Ініціюється",
   "transactionSwapProgressPaymentMade": "Оплата\nЗроблено",
@@ -587,8 +533,6 @@
   "transactionSwapInfoClaimableTransfer": "Передача буде завершено автоматично протягом декількох секунд. Якщо ви не можете спробувати ручну заяву, натиснувши кнопку \"Retry Transfer Claim\".",
   "transactionSwapInfoClaimableSwap": "Запуск буде завершено автоматично протягом декількох секунд. Якщо ні, ви можете спробувати ручну претензію, натиснувши кнопку \"Retry Swap Claim\".",
   "transactionSwapInfoRefundableTransfer": "Цей переказ буде повернено автоматично протягом декількох секунд. Якщо ні, ви можете спробувати ручне повернення, натиснувши кнопку \"Retry Transfer Refund\".",
-  "transactionListToday": "Сьогодні",
-  "transactionListYesterday": "Погода",
   "transactionSwapDoNotUninstall": "Не встановіть додаток до завершення затискання.",
   "transactionFeesDeductedFrom": "Цей платіж буде відхилений від суми, відправленого",
   "transactionFeesTotalDeducted": "Це загальна плата, яка відхилена від суми, відправленого",
@@ -810,21 +754,7 @@
   "payCompletedDescription": "Після завершення платежу, одержувач отримав кошти.",
   "paySinpeEnviado": "СИНП ЕНВАДО!",
   "payPaymentInProgressDescription": "Ваш платіж був ініційований, а одержувач отримає кошти після отримання вашої операції 1 підтвердження.",
-  "transactionDetailRetrySwap": "Заміна {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionStatusTransferInProgress": "Трансфер в Прогрес",
-  "transactionLabelSwapStatus": "Статус на сервери",
-  "transactionOrderLabelPayinMethod": "Метод Payin",
-  "transactionOrderLabelPayoutMethod": "Спосіб виплати",
-  "transactionOrderLabelPayinStatus": "Статус на сервери",
-  "transactionOrderLabelOrderStatus": "Статус на сервери",
-  "transactionOrderLabelPayoutStatus": "Статус на сервери",
   "transactionSwapStatusSwapStatus": "Статус на сервери",
   "transactionSwapDescLnSendCompleted": "Відшкодування відправлено успішно! Ваш ковпачок тепер завершено.",
   "transactionSwapDescLnSendFailed": "Проблемою була проблема. Ваші кошти будуть повернені в ваш гаманець автоматично.",
@@ -834,8 +764,6 @@
   "transactionSwapInfoRefundableSwap": "Цей клапт буде повернено автоматично протягом декількох секунд. Якщо ні, ви можете спробувати ручне повернення, натиснувши кнопку \"Поновити повернення\".",
   "transactionListOngoingTransfersTitle": "Похідні перекази",
   "transactionListOngoingTransfersDescription": "Ці перекази в даний час знаходяться в стадії. Ваші кошти є безпечними і будуть доступні при заповненні переказу.",
-  "transactionListLoadingTransactions": "Завантаження операцій.",
-  "transactionListNoTransactions": "Ніяких операцій.",
   "transactionDetailLabelPayjoinCompleted": "Виконаний",
   "transactionDetailLabelPayjoinExpired": "Зареєструватися",
   "transactionDetailLabelPayjoinCreationTime": "Час створення Payjoin",
@@ -2666,7 +2594,6 @@
   "dcaConfirmNetwork": "Мережа",
   "allSeedViewDeleteWarningMessage": "Видалення насіння незворотної дії. Тільки робіть це, якщо у вас є безпечні резервні копії цього насіння або асоційованих гаманців повністю зливаються.",
   "transactionHistoryTitle": "Історія транзакцій",
-  "transactionHistoryHeading": "Історія транзакцій",
   "exportTransactionsDescription": "Експортуйте всі транзакції вашого гаманця (Bitcoin, Liquid, Lightning і свопи) як файл CSV. За бажанням відфільтруйте за діапазоном дат.",
   "exportTransactionsStartDate": "Дата початку",
   "exportTransactionsEndDate": "Дата завершення",
@@ -4669,7 +4596,6 @@
   "transactionFilterFunding": "Поповнення",
   "transactionFilterReward": "Винагорода",
   "transactionFilterRefund": "Повернення",
-  "transactionFilterBalanceAdjustment": "Коригування",
   "transactionListLoadingFailed": "Не вдалося завантажити транзакції.",
   "transactionLabelNetworkFees": "Мережеві збори",
   "walletLiquidRiskDisclosureLabel": "Ці кошти — це Liquid L-BTC (не BTC). Дізнатися більше.",
@@ -4903,5 +4829,9 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "transactionDetailLoadError": "Не вдалося завантажити деталі транзакції.",
+  "transactionPayjoinBroadcastFailed": "Не вдалося опублікувати початкову транзакцію. Будь ласка, спробуйте ще раз.",
+  "transactionPayjoinOriginalUnavailable": "Початкова транзакція більше недоступна для публікації.",
+  "transactionLabelLimitReached": "Ви можете мати щонайбільше 10 міток."
 }

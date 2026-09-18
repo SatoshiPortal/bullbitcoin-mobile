@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swap_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/watch_transaction_order_swap_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,34 +9,41 @@ class _MockSwapFacade extends Mock implements SwapFacade {}
 
 void main() {
   late _MockSwapFacade swapFacade;
-  late GetTransactionOrderSwapUsecase usecase;
+  late WatchTransactionOrderSwapUsecase usecase;
 
   setUp(() {
     swapFacade = _MockSwapFacade();
-    usecase = GetTransactionOrderSwapUsecase(swapFacade);
+    usecase = WatchTransactionOrderSwapUsecase(swapFacade);
   });
 
-  test('loads an Exchange order by its local record id', () async {
+  test('wraps each event in Ok', () async {
     when(
-      () => swapFacade.getOrder('local-1'),
-    ).thenAnswer((_) async => Ok(_record()));
+      () => swapFacade.watchOrder('local-1'),
+    ).thenAnswer((_) => Stream.value(Ok(_record())));
 
-    final result = await usecase.execute('local-1');
-
-    final record = (result as Ok<OrderSwapRecord, TransactionFailure>).value;
-    expect(record.localId, 'local-1');
-    expect(record.orderId, 'order-1');
-  });
-
-  test('reports a missing local record as not-found', () async {
-    when(() => swapFacade.getOrder('missing')).thenAnswer(
-      (_) async => const Err(SwapOrderNotFoundFailure('Local order not found')),
-    );
+    final emitted = await usecase.execute('local-1').toList();
 
     expect(
-      (await usecase.execute('missing') as Err).failure,
-      isA<TransactionNotFoundFailure>(),
+      (emitted.single as Ok<OrderSwapRecord, TransactionFailure>).value.localId,
+      'local-1',
     );
+  });
+
+  test('carries a watcher failure as a value, never a throw', () async {
+    when(() => swapFacade.watchOrder('local-1')).thenAnswer(
+      (_) => Stream.value(
+        const Err(
+          SwapStorageFailure('sqlite: database disk image is malformed'),
+        ),
+      ),
+    );
+
+    final emitted = await usecase.execute('local-1').toList();
+
+    final failure = (emitted.single as Err).failure as TransactionFailure;
+    expect(failure, isA<TransactionSwapUnavailableFailure>());
+    expect(failure, isNot(isA<SwapFailure>()));
+    expect(failure.logMessage, isNot(contains('sqlite')));
   });
 }
 
@@ -52,6 +59,8 @@ OrderSwapRecord _record() => OrderSwapRecord(
   destinationWalletId: 'wallet-2',
   destination: 'tb1destination',
   fallback: 'tlq1fallback',
+  // The entity rejects payoutInProgress without a server order, so the
+  // fixture has to be a record that could actually exist.
   order: OrderSwap(
     orderId: 'order-1',
     orderNumber: 1,
