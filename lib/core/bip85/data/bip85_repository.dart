@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -65,14 +66,22 @@ class Bip85Repository {
 
   @useResult
   Future<Result<int, Bip85Failure>> fetchNextIndexForApplication(
-    Bip85Application application,
-  ) async {
+    Bip85Application application, {
+    bip39.MnemonicLength mnemonicLength = bip39.MnemonicLength.words12,
+  }) async {
     try {
       final applicationColumn = Bip85ApplicationColumn.fromEntity(application);
       final index = await _datasource.fetchNextIndexForApplication(
         applicationColumn,
       );
-      return Ok(index);
+      return Ok(
+        Bip85Reservations.nextMnemonicIndex(
+          index,
+          words: application == Bip85Application.bip39
+              ? mnemonicLength.words
+              : 0,
+        ),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.fetchNextIndexForApplication failed',
@@ -87,7 +96,12 @@ class Bip85Repository {
   Future<Result<List<Bip85DerivationEntity>, Bip85Failure>> fetchAll() async {
     try {
       final result = await _datasource.fetchAll();
-      return Ok(result.map((e) => e.toEntity()).toList());
+      return Ok(
+        result
+            .where((e) => !Bip85Reservations.isReservedPath(e.path))
+            .map((e) => e.toEntity())
+            .toList(),
+      );
     } catch (e, st) {
       log.severe(
         message: 'Bip85Repository.fetchAll failed',

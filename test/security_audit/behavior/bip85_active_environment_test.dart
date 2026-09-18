@@ -114,7 +114,10 @@ void main() {
 
     when(() => seedRepository.get(any())).thenAnswer((_) async => seed);
     when(
-      () => bip85Repository.fetchNextIndexForApplication(any()),
+      () => bip85Repository.fetchNextIndexForApplication(
+        any(),
+        mnemonicLength: any(named: 'mnemonicLength'),
+      ),
     ).thenAnswer((_) async => const Ok(0));
     when(
       () => bip85Repository.deriveMnemonic(

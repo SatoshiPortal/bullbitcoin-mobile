@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bip85/data/bip85_derivation_model.dart';
+import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
@@ -59,6 +60,9 @@ class Bip85Datasource {
       const application = Bip85ApplicationColumn.bip39;
       final derivationPath =
           "${application.number}'/${language.toBip85Code()}'/${length.toBip85Code()}'/$index'";
+      if (Bip85Reservations.isReservedPath(derivationPath)) {
+        throw const FormatException('This BIP85 path is reserved for backups');
+      }
 
       // Ensure the xprv is valid.
       final xprv = bip32.Bip32Keys.fromBase58(xprvBase58);
