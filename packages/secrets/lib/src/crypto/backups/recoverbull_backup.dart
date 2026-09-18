@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bip85_entropy/bip85_entropy.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:recoverbull/recoverbull.dart';
+import 'package:secrets/src/crypto/derivers/identity_deriver.dart';
 import 'package:secrets/src/crypto/exceptions.dart';
 
 /// The RecoverBull vault: seals and opens it, and derives the BIP85 key
@@ -135,9 +136,14 @@ final class RecoverBullBackup {
     if (!const {12, 15, 18, 21, 24}.contains(words.length)) {
       throw const InvalidVault('vault mnemonic has an invalid word count');
     }
-    // Wordlist and checksum too, so that a vault whose words are not a mnemonic reads as an invalid vault and never as an invalid *import*. `fromWords` derives no seed.
+    // Wordlist, checksum and element boundaries, so that a vault whose words
+    // are not a mnemonic reads as an invalid vault and never as an invalid
+    // *import*. Routed through the one validator rather than calling bip39
+    // here: `fromWords` joins the list and re-splits it, so on its own it
+    // would accept a list whose elements are several words each and leave
+    // that list to be stored. `check` derives no seed.
     try {
-      Mnemonic.fromWords(words: List<String>.from(words));
+      const IdentityDeriver().check(List<String>.from(words));
     } on MnemonicException {
       throw const InvalidVault('vault mnemonic is not a valid BIP39 mnemonic');
     }

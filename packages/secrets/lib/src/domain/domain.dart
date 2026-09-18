@@ -16,4 +16,5 @@ export 'secret_listing.dart' show InfoListing, SecretListing;
 export 'secret_material.dart'
     show MnemonicMaterial, SecretMaterial, SeedMaterial;
 export 'swap_key.dart' show SwapKey;
+export 'mnemonic_word.dart';
 export 'mnemonic_word_count.dart' show MnemonicWordCount;
