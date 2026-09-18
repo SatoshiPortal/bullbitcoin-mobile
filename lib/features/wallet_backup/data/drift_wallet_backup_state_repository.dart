@@ -114,8 +114,10 @@ final class DriftWalletBackupStateRepository
     if (current.recoveryIncomplete) {
       return const Err(WalletBackupIncompleteFailure());
     }
-    if (current.checkpoint?.etag != expectedEtag ||
-        checkpoint.generation <= (current.checkpoint?.generation ?? 0)) {
+    // A server generation restarts after a deleted head expires. The publisher
+    // verifies that remote head; this local compare-and-swap rejects stale
+    // replies using the checkpoint observed when the operation began.
+    if (current.checkpoint?.etag != expectedEtag) {
       return const Err(WalletBackupChangedFailure());
     }
     WalletBackupState(
