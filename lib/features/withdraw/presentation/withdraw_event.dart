@@ -11,8 +11,5 @@ sealed class WithdrawEvent with _$WithdrawEvent {
     required String amountInput,
     required FiatCurrency fiatCurrency,
   }) = WithdrawAmountInputContinuePressed;
-  /*const factory WithdrawEvent.descriptionInputContinuePressed(
-    String description,
-  ) = WithdrawDescriptionInputContinuePressed;*/
   const factory WithdrawEvent.confirmed() = WithdrawConfirmed;
 }
