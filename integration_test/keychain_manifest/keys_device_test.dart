@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../test/features/nostr_identity/fixtures/backup_credential_vectors.dart';
 import '../../test/features/keychain_manifest/ui/nostr_keys_screen_test.dart'
@@ -48,6 +49,11 @@ void main() {
       );
       final file = File('${directory.path}/keys.sqlite');
       var database = SqliteDatabase(NativeDatabase(file));
+      addTearDown(() async {
+        await database.close();
+        await locator.reset();
+        await directory.delete(recursive: true);
+      });
       final defaults = _Defaults();
       final settings = _Settings();
       when(() => settings.execute()).thenAnswer(
@@ -80,13 +86,19 @@ void main() {
       );
       locator.registerFactory(() => RevealNostrKeyUsecase(defaults, settings));
       locator.registerFactory(() => RevealBackupIdentityUsecase(identities));
+      final router = GoRouter(
+        routes: [
+          GoRoute(path: '/', builder: (_, _) => const NostrKeysScreen()),
+        ],
+      );
+      addTearDown(router.dispose);
       await tester.pumpWidget(
-        MaterialApp(
+        MaterialApp.router(
           theme: AppTheme.themeData(AppThemeType.light),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('en'),
-          home: const NostrKeysScreen(),
+          routerConfig: router,
         ),
       );
       await tester.pumpAndSettle();
@@ -111,7 +123,11 @@ void main() {
         ),
         findsOneWidget,
       );
-      await tester.ensureVisible(find.text('Show nsec'));
+      await tester.scrollUntilVisible(
+        find.text('Show nsec'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
       await tester.tap(find.text('Show nsec'));
       await tester.pumpAndSettle();
       expect(find.text('Show your nsec'), findsOneWidget);
@@ -165,9 +181,6 @@ void main() {
       expect(restored.confirmedContentHash, '4' * 64);
       expect(restored.recoveryIncomplete, isTrue);
       expect(restored.canPublish, isFalse);
-      await database.close();
-      await locator.reset();
-      await directory.delete(recursive: true);
     },
   );
   group('Nostr warning and form controls', screens.main);
