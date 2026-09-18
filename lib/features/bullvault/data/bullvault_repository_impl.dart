@@ -97,6 +97,24 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   });
 
   @override
+  Future<Result<DateTime, BullVaultFailure>> recordBackupTest({
+    required BullVaultRecord expected,
+    required BullVaultBackupTestKind kind,
+    required DateTime testedAt,
+  }) => _transaction(() async {
+    final date = await _datasource.recordBackupTest(
+      walletId: expected.walletId,
+      expectedRecoveryPackage: _recordMapper.toModel(expected).recoveryPackage,
+      server: switch (kind) {
+        BullVaultBackupTestKind.descriptor => false,
+        BullVaultBackupTestKind.server => true,
+      },
+      testedAt: testedAt,
+    );
+    return date == null ? const Err(BullVaultBackupStatusFailure()) : Ok(date);
+  });
+
+  @override
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getLineage(
     String lineageId,
   ) => _transaction(() async {

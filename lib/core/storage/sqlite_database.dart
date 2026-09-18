@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
+import 'package:bb_mobile/core/storage/migrations/schema_16_to_17.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bullvault_records_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_backup_table.dart';
+import 'package:bb_mobile/core/storage/tables/keychain_nostr_keys_table.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/dismissed_announcements_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
@@ -64,6 +67,9 @@ part 'sqlite_database.g.dart';
     SendTransactionPolicyChoices,
     BullVaultRecords,
     BullVaultGenerationReservations,
+    WalletBackupStates,
+    WalletBackupControls,
+    KeychainNostrKeys,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -113,7 +119,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   /// Current drift schema version. Bump in lockstep with adding a new
   /// `Schema<N-1>To<N>.migrate` step in [migration] and regenerating the
   /// schema snapshots (`make drift-migrations`).
-  static const int currentSchemaVersion = 16;
+  static const int currentSchemaVersion = 17;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -172,6 +178,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from13To14: _reportingMigration('from13To14', Schema13To14.migrate),
         from14To15: _reportingMigration('from14To15', Schema14To15.migrate),
         from15To16: _reportingMigration('from15To16', Schema15To16.migrate),
+        from16To17: _reportingMigration('from16To17', Schema16To17.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

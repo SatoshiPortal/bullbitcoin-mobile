@@ -32,6 +32,8 @@ final class BullVaultRecordMapper {
     recoveryPackageConfirmed: entity.recoveryPackageConfirmed,
     mobileBackupDeferred: entity.mobileBackupDeferred,
     createdAt: entity.createdAt.toUtc().toIso8601String(),
+    descriptorTestedAt: entity.descriptorTestedAt?.toUtc(),
+    serverTestedAt: entity.serverTestedAt?.toUtc(),
   );
 
   BullVaultRecord toEntity(BullVaultRecordModel model) {
@@ -65,6 +67,8 @@ final class BullVaultRecordMapper {
       recoveryPackageConfirmed: model.recoveryPackageConfirmed,
       mobileBackupDeferred: model.mobileBackupDeferred,
       createdAt: DateTime.parse(model.createdAt).toUtc(),
+      descriptorTestedAt: model.descriptorTestedAt?.toUtc(),
+      serverTestedAt: model.serverTestedAt?.toUtc(),
     );
   }
 }

@@ -48,6 +48,13 @@ abstract interface class BullVaultRepository {
   Future<Result<void, BullVaultFailure>> save(BullVaultRecord record);
 
   @useResult
+  Future<Result<DateTime, BullVaultFailure>> recordBackupTest({
+    required BullVaultRecord expected,
+    required BullVaultBackupTestKind kind,
+    required DateTime testedAt,
+  });
+
+  @useResult
   Future<Result<void, BullVaultFailure>> publishRestored(
     BullVaultRecord record,
   );
