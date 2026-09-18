@@ -4,12 +4,25 @@ linter:
   rules:
     avoid_classes_with_only_static_members: false
     avoid_redundant_argument_values: false
-    avoid_dynamic_calls: false    
-    
+    avoid_dynamic_calls: false
+    # A workspace member's `src/` is private by convention until something
+    # enforces it. packages/secrets' README asks for this rule by name: one
+    # import of `package:secrets/src/data/data.dart` yields SecretRepository
+    # with a public constructor, whose useMnemonic hands a caller's closure
+    # the live words, passphrase and seed bytes — around the @internal seal
+    # on revealMnemonic and around the sealed word widgets.
+    implementation_imports: true
+
 
 analyzer:
   errors:
     todo: ignore
+    # Reaching into another package's src/ is a boundary violation, not a
+    # style preference, so CI must fail on it rather than warn.
+    implementation_imports: error
+    # The seal on Secret.revealMnemonic: the last gate on a stored mnemonic
+    # must fail a build, not merely warn.
+    invalid_use_of_internal_member: error
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
