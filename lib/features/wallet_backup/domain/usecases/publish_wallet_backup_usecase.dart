@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.da
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
 import 'package:meta/meta.dart';
 
-final class PublishWalletBackupUsecase {
+class PublishWalletBackupUsecase {
   final WalletBackupOperationQueue _operations;
   final NostrIdentityFacade _identity;
   final WalletBackupStateRepository _state;
@@ -60,7 +60,9 @@ final class PublishWalletBackupUsecase {
     final credential =
         (credentialResult as Ok<BackupCredential, NostrIdentityFailure>).value;
     var revision = 0;
-    final subscription = _snapshots.changes.listen((_) => revision++);
+    final subscription = _snapshots.changes.listen((_) {
+      if (revision >= 0) revision++;
+    }, onError: (Object _) => revision = -1);
     try {
       final beforeCapture = revision;
       final capture = await _snapshots.capture(credential);
@@ -70,6 +72,7 @@ final class PublishWalletBackupUsecase {
       final hashResult = _codec.contentHash(snapshot);
       if (hashResult case Err(:final failure)) return Err(failure);
       final hash = (hashResult as Ok<String, WalletBackupFailure>).value;
+      if (revision < 0) return const Err(WalletBackupStorageFailure());
       if (revision != beforeCapture) {
         return const Ok(WalletBackupPublication.pending);
       }
@@ -77,6 +80,7 @@ final class PublishWalletBackupUsecase {
       if (stateResult case Err(:final failure)) return Err(failure);
       final state =
           (stateResult as Ok<WalletBackupState, WalletBackupFailure>).value;
+      if (revision < 0) return const Err(WalletBackupStorageFailure());
       if (!force &&
           replace == null &&
           _unconfirmed?.identity != credential.serverPublicKey &&
@@ -156,6 +160,7 @@ final class PublishWalletBackupUsecase {
       if (head.generation == 0x7fffffffffffffff) {
         return const Err(WalletBackupInvalidFailure());
       }
+      if (revision < 0) return const Err(WalletBackupStorageFailure());
       if (revision != beforeCapture) {
         return const Ok(WalletBackupPublication.pending);
       }
@@ -280,12 +285,14 @@ final class PublishWalletBackupUsecase {
       return const Ok(WalletBackupPublication.pending);
     }
     final beforeCapture = revision();
+    if (beforeCapture < 0) return const Err(WalletBackupStorageFailure());
     final current = await _snapshots.capture(currentCredential);
     if (current case Err(:final failure)) return Err(failure);
     final hash = _codec.contentHash(
       (current as Ok<WalletBackupSnapshot, WalletBackupFailure>).value,
     );
     if (hash case Err(:final failure)) return Err(failure);
+    if (revision() < 0) return const Err(WalletBackupStorageFailure());
     return (hash as Ok<String, WalletBackupFailure>).value == confirmedHash &&
             revision() == beforeCapture
         ? Ok(outcome)

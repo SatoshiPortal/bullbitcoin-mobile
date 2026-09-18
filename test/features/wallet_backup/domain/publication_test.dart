@@ -184,6 +184,31 @@ void main() {
     await directory.delete(recursive: true);
   });
 
+  for (final failedCapture in [1, 2]) {
+    test(
+      'owner notification failure during capture $failedCapture cannot report current data',
+      () async {
+        snapshots.onCapture = () async {
+          if (snapshots.captures == failedCapture) {
+            snapshots.events.addError(
+              const FormatException('fixture notification failure'),
+            );
+          }
+        };
+        final result = await publish.execute();
+        expect(
+          result,
+          isA<Err<WalletBackupPublication, WalletBackupFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<WalletBackupStorageFailure>(),
+          ),
+        );
+        expect(remote.stores, failedCapture == 1 ? 0 : 1);
+      },
+    );
+  }
+
   test(
     'off and durable recovery fence prevent capture and network publication',
     () async {
