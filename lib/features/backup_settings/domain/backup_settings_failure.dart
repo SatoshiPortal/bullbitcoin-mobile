@@ -7,3 +7,8 @@ sealed class BackupSettingsFailure extends Failure {
 final class BackupSettingsUnexpectedFailure extends BackupSettingsFailure {
   const BackupSettingsUnexpectedFailure([super.logMessage]);
 }
+
+final class BackupSettingsWordsUnavailableFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsWordsUnavailableFailure();
+}

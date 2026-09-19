@@ -62,6 +62,7 @@ graph TB
     KEYCHAIN[Keychain Inventory / Nostr Keys]
     BACKUP_IDENTITY[Data Recovery Credential]
     WALLET_BACKUP[Wallet Data Backup]
+    BACKUP_SETTINGS[Backup Settings]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -83,6 +84,10 @@ graph TB
     WALLET_BACKUP --> KEYCHAIN
     WALLET_BACKUP --> BULLVAULT
     WALLET_BACKUP --> BACKUP_IDENTITY
+    BACKUP_SETTINGS --> BACKUP_IDENTITY
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
+    BACKUP_SETTINGS --> SETTINGS
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS

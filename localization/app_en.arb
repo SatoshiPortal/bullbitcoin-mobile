@@ -16917,5 +16917,17 @@
         "type": "String"
       }
     }
+  },
+  "dataBackupWordsTitle": "Data Recovery Words",
+  "@dataBackupWordsTitle": {
+    "description": "Data Backup words display"
+  },
+  "dataBackupWordsExplanation": "These 12 words allow anyone to discover and decrypt your Data Backup. They DO NOT allow you to recover your wallet funds. They are NOT your wallet seed. They are automatically generated from your wallet seed, they don't need to be backed up separately unless you want to give access to data backups to someone else, for example in an inheritance situation.",
+  "@dataBackupWordsExplanation": {
+    "description": "Data Backup words display"
+  },
+  "dataBackupWordsUnavailable": "The matching wallet seed is unavailable. Data Recovery Words cannot be shown.",
+  "@dataBackupWordsUnavailable": {
+    "description": "Data Backup words display"
   }
 }
