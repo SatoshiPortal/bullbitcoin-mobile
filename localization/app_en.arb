@@ -16798,5 +16798,124 @@
   "bullVaultDescriptorActionHelp": "Copy the descriptor, scan your saved QR code, or import your saved descriptor file to continue. Keep a copy outside this phone. Exporting alone does not complete this step.",
   "@bullVaultDescriptorActionHelp": {
     "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultRecoverEntry": "Recover BullVault",
+  "@bullVaultRecoverEntry": {
+    "description": "Settings entry for restoring a BullVault"
+  },
+  "bullVaultUseBullAsSigner": "Use BULL as signer",
+  "@bullVaultUseBullAsSigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCreatePracticeEntry": "Create practice BullVault",
+  "@bullVaultCreatePracticeEntry": {
+    "description": "Secondary BullVault menu entry that starts creation with the practice timeline preselected."
+  },
+  "bullVaultIdentifier": "Vault ID: {id}",
+  "@bullVaultIdentifier": {
+    "description": "Labels the short prefix of a vault wallet identifier on a vault card. Not a master key fingerprint.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultCreatedDate": "Created: {date}",
+  "@bullVaultCreatedDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultExpiryDate": "First recovery: {date}",
+  "@bullVaultExpiryDate": {
+    "description": "BullVault settings and recovery",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bullVaultViewPolicy": "View policy",
+  "@bullVaultViewPolicy": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultViewKeys": "View keys",
+  "@bullVaultViewKeys": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultBackupRecovery": "Backup & recovery",
+  "@bullVaultBackupRecovery": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultRegisterVault": "Register vault on another device",
+  "@bullVaultRegisterVault": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyMobile": "Mobile key",
+  "@bullVaultKeyMobile": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultKeyInheritance": "Inheritance key",
+  "@bullVaultKeyInheritance": {
+    "description": "BullVault descriptor recovery and key inspection"
+  },
+  "bullVaultKeyOnDevice": "On this device",
+  "@bullVaultKeyOnDevice": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyExternal": "External key",
+  "@bullVaultKeyExternal": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultKeyPassphraseRequired": "Passphrase required — not currently verified",
+  "@bullVaultKeyPassphraseRequired": {
+    "description": "BullVault settings and recovery"
+  },
+  "walletPolicyFromStart": "From the start",
+  "@walletPolicyFromStart": {
+    "description": "Timeline label for a spending option with no timelock."
+  },
+  "walletPolicyFromDate": "From {date}",
+  "@walletPolicyFromDate": {
+    "description": "Timeline label for an absolute timestamp condition.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "walletPolicyAnyKeys": "{count, plural, =1{Any one key} =2{Any two keys} other{Any {count} keys}}",
+  "@walletPolicyAnyKeys": {
+    "description": "Heading for a signature threshold where a subset of the listed keys is sufficient.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletPolicyEarlierOptions": "Earlier options remain available. Dates do not move funds automatically.",
+  "@walletPolicyEarlierOptions": {
+    "description": "Reminder beneath alternative spending options, without claiming current chain or key availability."
+  },
+  "walletPolicySignatureCount": "{count, plural, =1{1 signature} other{{count} signatures}}",
+  "@walletPolicySignatureCount": {
+    "description": "Number of signatures required for this spending option.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletPolicyKeyAlone": "{signer} alone",
+  "@walletPolicyKeyAlone": {
+    "description": "Heading for a spending option requiring one signing key.",
+    "placeholders": {
+      "signer": {
+        "type": "String"
+      }
+    }
   }
 }

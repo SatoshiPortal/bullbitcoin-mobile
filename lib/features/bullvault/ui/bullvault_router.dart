@@ -1,4 +1,8 @@
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_settings_screen.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_menu_screen.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_cosigner_screen.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
@@ -17,12 +21,25 @@ abstract final class BullVaultRouter {
   static const scannerRouteName = 'bullVaultScanner';
 
   static final routes = [
+    menuRoute,
     route,
     scannerRoute,
     restoreRoute,
     settingsRoute,
+    policyRoute,
+    keysRoute,
+    renewRoute,
     cosignerRoute,
   ];
+
+  static final menuRoute = GoRoute(
+    name: BullVaultFacade.menuRouteName,
+    path: '/bullvault',
+    builder: (context, state) => BlocProvider(
+      create: (_) => locator<BullVaultSettingsCubit>()..load(),
+      child: const BullVaultMenuScreen(),
+    ),
+  );
 
   static final cosignerRoute = GoRoute(
     name: BullVaultFacade.cosignerRouteName,
@@ -39,9 +56,11 @@ abstract final class BullVaultRouter {
     name: BullVaultFacade.createRouteName,
     path: '/bullvault/create',
     builder: (context, state) => BlocProvider(
-      create: (_) =>
-          locator<BullVaultOnboardingCubit>()
-            ..load(walletId: state.uri.queryParameters['walletId']),
+      create: (_) => locator<BullVaultOnboardingCubit>()
+        ..load(
+          walletId: state.uri.queryParameters['walletId'],
+          practice: state.uri.queryParameters['practice'] == 'true',
+        ),
       child: const BullVaultOnboardingScreen(),
     ),
   );
@@ -62,13 +81,50 @@ abstract final class BullVaultRouter {
     path: '/bullvault/restore',
     builder: (context, state) => BlocProvider(
       create: (_) => locator<BullVaultRestoreCubit>(),
-      child: const BullVaultRestoreScreen(),
+      child: BullVaultRestoreScreen(
+        onRecovered: (result) => locator<BullVaultRecoveryNoticeCubit>().record(
+          walletId: result.wallet.id,
+          label: result.wallet.displayLabel(context),
+        ),
+      ),
     ),
   );
 
-  static final settingsRoute = GoRoute(
-    name: BullVaultFacade.settingsRouteName,
-    path: '/bullvault/:walletId/settings',
+  static final settingsRoute = _inspectionRoute(
+    BullVaultFacade.settingsRouteName,
+    'settings',
+    BullVaultSettingsPage.selected,
+  );
+  static final policyRoute = _inspectionRoute(
+    BullVaultFacade.policyRouteName,
+    'policy',
+    BullVaultSettingsPage.policy,
+  );
+  static final keysRoute = _inspectionRoute(
+    BullVaultFacade.keysRouteName,
+    'keys',
+    BullVaultSettingsPage.keys,
+  );
+
+  static GoRoute _inspectionRoute(
+    String name,
+    String path,
+    BullVaultSettingsPage page,
+  ) => GoRoute(
+    name: name,
+    path: '/bullvault/:walletId/$path',
+    builder: (context, state) {
+      final id = state.pathParameters['walletId']!;
+      return BlocProvider(
+        create: (_) => locator<BullVaultSettingsCubit>()..load(id),
+        child: BullVaultSettingsScreen(walletId: id, page: page),
+      );
+    },
+  );
+
+  static final renewRoute = GoRoute(
+    name: BullVaultFacade.renewRouteName,
+    path: '/bullvault/:walletId/renew',
     builder: (context, state) {
       final walletId = state.pathParameters['walletId']!;
       return BlocProvider(

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_records_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/import_bullvault_cosigner_usecase.dart';
@@ -5,6 +6,10 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cub
 import 'package:bb_mobile/features/bullvault/domain/usecases/decode_bullvault_recovery_package_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/load_bullvault_menu_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/inspect_bullvault_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_settings_cubit.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/ensure_canonical_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -61,20 +66,11 @@ abstract final class BullVaultLocator {
   static void setup(GetIt locator) {
     locator<SettingsFacade>().registerEntry(
       SettingsEntryContribution(
-        id: 'bullvault-create',
+        id: 'bullvault',
         section: SettingsEntrySection.wallet,
-        title: (localization) => localization.bullVaultCreateEntry,
+        title: (localization) => localization.bullVaultWalletLabel,
         icon: Icons.security,
-        open: (context) => context.pushNamed(BullVaultFacade.createRouteName),
-      ),
-    );
-    locator<SettingsFacade>().registerEntry(
-      SettingsEntryContribution(
-        id: 'bullvault-restore',
-        section: SettingsEntrySection.wallet,
-        title: (localization) => localization.bullVaultRestoreEntry,
-        icon: Icons.restore_page_outlined,
-        open: (context) => context.pushNamed(BullVaultFacade.restoreRouteName),
+        open: (context) => context.pushNamed(BullVaultFacade.menuRouteName),
       ),
     );
     locator.registerLazySingleton<BullVaultMetadataDatasource>(
@@ -202,6 +198,20 @@ abstract final class BullVaultLocator {
       () => CanDeleteBullVaultWalletUsecase(locator()),
     );
     locator.registerFactory(() => GetBullVaultRecordsUsecase(locator()));
+    locator.registerFactory(
+      () => LoadBullVaultMenuUsecase(locator(), locator<GetSettingsUsecase>()),
+    );
+    locator.registerFactory(
+      () => InspectBullVaultUsecase(
+        locator(),
+        locator<GetWalletUsecase>(),
+        locator<SeedVerificationPort>(),
+      ),
+    );
+    locator.registerLazySingleton<BullVaultRecoveryNoticeCubit>(
+      BullVaultRecoveryNoticeCubit.new,
+    );
+    locator.registerFactory(() => BullVaultSettingsCubit(locator(), locator()));
     locator.registerFactory(() => WatchBullVaultRecordsUsecase(locator()));
     locator.registerFactory(
       () => DecodeBullVaultRecoveryPackageUsecase(locator()),

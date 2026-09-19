@@ -20,7 +20,9 @@ import 'package:go_router/go_router.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
 class BullVaultRestoreScreen extends StatefulWidget {
-  const BullVaultRestoreScreen({super.key});
+  final void Function(BullVaultRestoreResult)? onRecovered;
+
+  const BullVaultRestoreScreen({super.key, this.onRecovered});
 
   @override
   State<BullVaultRestoreScreen> createState() => _BullVaultRestoreScreenState();
@@ -82,6 +84,8 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
                   context,
                   failure.toTranslated(context),
                 );
+              } else if (!state.isRestoring && state.result != null) {
+                widget.onRecovered?.call(state.result!);
               }
             },
             builder: (context, state) => state.result != null

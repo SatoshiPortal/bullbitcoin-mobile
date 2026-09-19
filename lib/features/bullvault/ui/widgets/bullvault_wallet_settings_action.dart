@@ -23,7 +23,9 @@ final class BullVaultWalletSettingsAction extends StatelessWidget {
       BullVaultLifecycleStatus.pending ||
       BullVaultLifecycleStatus.cancelled => details.record.previousVaultId,
     };
-    if (routeWalletId == null) return const SizedBox.shrink();
+    if (details.hasPreviousFunds && routeWalletId == null) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: BullButton.big(
@@ -31,8 +33,12 @@ final class BullVaultWalletSettingsAction extends StatelessWidget {
             ? context.loc.bullVaultPreviousFundsAction
             : context.loc.bullVaultSettingsTitle,
         onPressed: () => context.pushNamed(
-          BullVaultFacade.settingsRouteName,
-          pathParameters: {'walletId': routeWalletId},
+          details.hasPreviousFunds
+              ? BullVaultFacade.renewRouteName
+              : BullVaultFacade.settingsRouteName,
+          pathParameters: {
+            'walletId': details.hasPreviousFunds ? routeWalletId! : wallet.id,
+          },
           extra: wallet.displayLabel(context),
         ),
         bgColor: context.appColors.primary,

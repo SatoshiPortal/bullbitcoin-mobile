@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'dart:async';
 
@@ -13,7 +14,6 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_sourc
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_onboarding_snapshot.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
-import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_reference.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/activate_initial_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/check_bullvault_mobile_backups_usecase.dart';
@@ -60,6 +60,40 @@ class _NoRecoveryFile extends Fake
     implements PickBullVaultRecoveryFileUsecase {}
 
 void main() {
+  test('the practice shortcut preselects hours for new creation', () async {
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    when(load.execute).thenAnswer(
+      (_) async =>
+          const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
+    );
+    final cubit = _cubit(load: load);
+    await cubit.load(practice: true);
+    expect(cubit.state.schedule.unit, BullVaultScheduleUnit.hours);
+    await cubit.close();
+  });
+  test('the practice shortcut preserves a resumed setup schedule', () async {
+    final load = _MockLoadBullVaultOnboardingUsecase();
+    final encode = _MockEncodeRecoveryPackageUsecase();
+    final result = _completionResult();
+    when(load.execute).thenAnswer(
+      (_) async => Ok(
+        BullVaultOnboardingLoad(
+          network: Network.bitcoinMainnet,
+          snapshot: BullVaultOnboardingSnapshot(
+            result: result,
+            mobileBackupStatus: null,
+          ),
+        ),
+      ),
+    );
+    when(() => encode.execute(result.recoveryPackage)).thenReturn('{}');
+    final cubit = _cubit(load: load, encode: encode);
+    await cubit.load(practice: true);
+    expect(cubit.state.schedule.unit, BullVaultScheduleUnit.years);
+    expect(cubit.state.result, same(result));
+    await cubit.close();
+  });
+
   setUpAll(() {
     registerFallbackValue(
       BullVaultCreateRequest(

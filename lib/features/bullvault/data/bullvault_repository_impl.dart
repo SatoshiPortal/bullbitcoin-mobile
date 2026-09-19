@@ -73,6 +73,23 @@ final class BullVaultRepositoryImpl implements BullVaultRepository {
   Stream<void> get changes => _datasource.changes;
 
   @override
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getVisible(
+    Network network,
+  ) async => (await getAll()).map((records) {
+    final visible =
+        records
+            .where(
+              (record) =>
+                  record.recoveryPackage.policy.network.isTestnet ==
+                      network.isTestnet &&
+                  record.status != BullVaultLifecycleStatus.cancelled,
+            )
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return List.unmodifiable(visible);
+  });
+
+  @override
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll() =>
       _transaction(
         () async => Ok(

@@ -20,6 +20,11 @@ export 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart'
     show BullVaultRouter;
 
 class BullVaultFacade {
+  static const menuRouteName = 'bullVaultMenu';
+  static const policyRouteName = 'bullVaultPolicy';
+  static const keysRouteName = 'bullVaultKeys';
+  static const backupRouteName = 'bullVaultBackup';
+  static const renewRouteName = 'bullVaultRenew';
   static const createRouteName = 'bullVaultCreate';
   static const restoreRouteName = 'bullVaultRestore';
   static const settingsRouteName = 'bullVaultSettings';

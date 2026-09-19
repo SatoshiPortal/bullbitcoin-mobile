@@ -11,6 +11,11 @@ abstract interface class BullVaultRepository {
   @useResult
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> getAll();
 
+  @useResult
+  Future<Result<List<BullVaultRecord>, BullVaultFailure>> getVisible(
+    Network network,
+  );
+
   Result<BullVaultRecoveryPackage, BullVaultFailure> decodeRecoveryPackage(
     String source,
   );

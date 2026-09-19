@@ -71,7 +71,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
   }
 
-  Future<void> load({String? walletId}) async {
+  Future<void> load({String? walletId, bool practice = false}) async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _loadBullVaultOnboardingUsecase.execute(
       walletId: walletId,
@@ -82,6 +82,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         final snapshot = value.snapshot;
         if (snapshot == null) {
           emit(state.copyWith(network: value.network, isLoading: false));
+          if (practice) setPracticeMode(true);
         } else {
           _restoreCompletionState(value.network, snapshot);
         }
