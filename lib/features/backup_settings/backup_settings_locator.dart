@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_contents_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_data_backup_files_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_file_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_data_backup_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/update_data_backup_lifecycle_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -20,6 +25,30 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backu
 
 class BackupSettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory(
+      () => DataBackupContentsCubit(locator(), locator()),
+    );
+    locator.registerFactory(() => ExportDataBackupFileUsecase(locator()));
+    locator.registerFactory(() => InspectDataBackupFileUsecase(locator()));
+    locator.registerFactory(() => RecoverDataBackupFileUsecase(locator()));
+    locator.registerFactory(
+      () => DataBackupFileCubit(locator(), locator(), locator()),
+    );
+    locator.registerFactory(() => LoadDataBackupStatusUsecase(locator()));
+    locator.registerFactory(() => WatchDataBackupStatusUsecase(locator()));
+    locator.registerFactory(() => SetDataBackupEnabledUsecase(locator()));
+    locator.registerFactory(() => PublishDataBackupUsecase(locator()));
+    locator.registerFactory(() => DeleteDataBackupUsecase(locator()));
+    locator.registerFactory(() => LoadLocalDataBackupUsecase(locator()));
+    locator.registerFactory(
+      () => DataBackupSettingsCubit(
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+        locator(),
+      ),
+    );
     locator.registerFactory(() => UpdateDataBackupLifecycleUsecase(locator()));
     locator.registerFactory(() => RecoverVaultsUsecase(locator()));
     locator.registerFactory(() => VaultRecoveryCubit(locator()));

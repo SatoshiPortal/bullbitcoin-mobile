@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/ui/widgets/data_backup_recovery_result.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
@@ -61,26 +62,8 @@ class DataBackupRecoveryScreen extends StatelessWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(24),
                   children: [
-                    if (state.result case final result?) ...[
-                      Text(
-                        result.complete
-                            ? context.loc.dataBackupRecoveryComplete
-                            : context.loc.dataBackupRecoveryIncomplete,
-                      ),
-                      for (final entry
-                          in result.wallets.walletReferences.entries)
-                        ListTile(
-                          title: Text(entry.key),
-                          subtitle: Text(entry.value),
-                        ),
-                      for (final reference in result.wallets.failedReferences)
-                        ListTile(
-                          title: Text(reference),
-                          subtitle: Text(
-                            context.loc.dataBackupWalletNotRecovered,
-                          ),
-                        ),
-                    ],
+                    if (state.result case final result?)
+                      DataBackupRecoveryResult(result: result),
                     if (state.failure case final failure?
                         when state.result == null ||
                             failure is! BackupSettingsRecoveryIncompleteFailure)

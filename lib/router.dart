@@ -234,9 +234,9 @@ class AppRouter {
             );
           }
         },
-        onDataRecovered: (inspection, result) {
+        onDataRecovered: (snapshot, result) {
           if (!result.complete) return;
-          final ids = inspection.snapshot!.vaults
+          final ids = snapshot.vaults
               .map((vault) => result.wallets.walletReferences[vault.reference])
               .whereType<String>();
           unawaited(_recordRecoveredVaults(ids));

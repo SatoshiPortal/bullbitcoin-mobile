@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_reminder_setting.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/backup_test_status_row.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
-import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -75,7 +75,6 @@ class _RecoveryView extends StatelessWidget {
     final noBackup =
         !state.isDefaultPhysicalBackupTested &&
         !state.isDefaultEncryptedBackupTested;
-    final dataItems = settingsItemsOf(context);
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
@@ -158,8 +157,15 @@ class _RecoveryView extends StatelessWidget {
             () => RecoverBullFacade.openSettings(context),
           ),
         ),
-        for (final id in backupSettingsDataItemOrder)
-          dataItems.byId(id).buildTile(context),
+        SettingsEntryItem(
+          icon: Icons.cloud_upload_outlined,
+          title: context.loc.dataBackupTitle,
+          onTap: () => _refreshAfter(
+            context,
+            () => context.pushNamed<void>(BackupSettingsRoute.dataBackup.name),
+          ),
+        ),
+        const BackupDataExportEntries(),
         const Divider(),
         const BackupReminderSetting(),
         const Gap(24),

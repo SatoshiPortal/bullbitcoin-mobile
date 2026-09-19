@@ -49,11 +49,11 @@ class DataBackupRecoveryCubit extends Cubit<DataBackupRecoveryState> {
     emit(const DataBackupRecoveryInitial());
   }
 
-  Future<void> inspect() async {
+  Future<void> inspect({String? words}) async {
     if (state.busy) return;
     final request = ++_request;
     emit(const DataBackupRecoveryInitial(busy: true));
-    final result = await _inspect.execute();
+    final result = await _inspect.execute(words: words);
     if (isClosed || request != _request) return;
     emit(switch (result) {
       Ok(:final value) => DataBackupRecoveryPreview(value),
@@ -61,7 +61,10 @@ class DataBackupRecoveryCubit extends Cubit<DataBackupRecoveryState> {
     });
   }
 
-  Future<void> recover({bool enableAfterRecovery = false}) async {
+  Future<void> recover({
+    bool enableAfterRecovery = false,
+    String? words,
+  }) async {
     final current = state;
     if (current is! DataBackupRecoveryPreview ||
         current.busy ||
@@ -73,6 +76,7 @@ class DataBackupRecoveryCubit extends Cubit<DataBackupRecoveryState> {
     final result = await _recover.execute(
       current.inspection,
       confirmed: true,
+      words: words,
       enableAfterRecovery: enableAfterRecovery,
     );
     if (isClosed || request != _request) return;

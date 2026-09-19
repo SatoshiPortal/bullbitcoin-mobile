@@ -6,10 +6,13 @@ import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.da
 
 final class BuildWalletBackupSnapshotUsecase {
   final WalletBackupSnapshotRepository _repository;
-  const BuildWalletBackupSnapshotUsecase(this._repository);
-  Future<Result<WalletBackupSnapshot, WalletBackupFailure>> execute(
-    BackupCredential credential,
-  ) => _repository.capture(credential);
+  final NostrIdentityFacade _identity;
+  const BuildWalletBackupSnapshotUsecase(this._repository, this._identity);
+  Future<Result<WalletBackupSnapshot, WalletBackupFailure>> execute() async =>
+      switch (await _identity.resolve()) {
+        Err() => const Err(WalletBackupCredentialFailure()),
+        Ok(:final value) => await _repository.capture(value),
+      };
 }
 
 final class WatchWalletBackupSnapshotUsecase {

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
@@ -6,7 +7,6 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_publication.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
@@ -31,6 +31,8 @@ class _Wallets extends Fake implements WalletInventoryBackupRepository {}
 
 class _Metadata extends Fake implements WalletMetadataBackupRepository {}
 
+class _Files extends Fake implements WalletBackupFileRepository {}
+
 void main() {
   late GetIt services;
   late SqliteDatabase database;
@@ -44,6 +46,8 @@ void main() {
     services.registerSingleton<BullVaultFacade>(_Vaults());
     services.registerSingleton<KeychainManifestFacade>(_Catalog());
     WalletBackupLocator.setup(services);
+    await services.unregister<WalletBackupFileRepository>();
+    services.registerSingleton<WalletBackupFileRepository>(_Files());
     await services.unregister<WalletBackupSnapshotRepository>();
     services.registerSingleton<WalletBackupSnapshotRepository>(_Snapshots());
     await services.unregister<BullVaultBackupRepository>();
@@ -56,6 +60,12 @@ void main() {
   tearDown(() async {
     await services.reset();
     await database.close();
+  });
+  test('all screens share the consent request owner', () {
+    expect(
+      services<SetWalletBackupEnabledUsecase>(),
+      same(services<SetWalletBackupEnabledUsecase>()),
+    );
   });
   test(
     'opening control keeps the undecided choice without a credential lookup',

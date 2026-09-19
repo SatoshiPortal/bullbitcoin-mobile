@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -327,6 +328,28 @@ void main() {
       expect((await localState()).checkpoint!.generation, 1);
     },
   );
+  WalletBackupInspection inspection() => WalletBackupInspection(
+    identity: credential.serverPublicKey,
+    head: remote.head,
+    snapshot: remote.head.ciphertext == null
+        ? null
+        : _value(codec.decrypt(remote.head.ciphertext!, credential)),
+  );
+  test(
+    'replacement authorization cannot follow a switch to a different identity',
+    () async {
+      final approved = inspection();
+      final other = BackupCredential.fromWords(
+        'legal winner thank year wave sausage worth useful legal winner thank yellow',
+      );
+      when(identity.resolve).thenAnswer((_) async => Ok(other));
+      final result = await publish.execute(replace: approved);
+      expect((result as Err).failure, isA<WalletBackupChangedFailure>());
+      expect(remote.fetches, 0);
+      expect(remote.stores, 0);
+      expect(snapshots.captures, 0);
+    },
+  );
   test(
     'different remote data needs explicit Replace and a stale inspected head cannot replace',
     () async {
@@ -342,14 +365,14 @@ void main() {
         isA<WalletBackupConflictFailure>(),
       );
       expect(remote.stores, 0);
-      final inspected = remote.head;
+      final inspected = inspection();
       remote.install(credential, remote.head.ciphertext!, 2);
       expect(
         (await publish.execute(replace: inspected) as Err).failure,
         isA<WalletBackupConflictFailure>(),
       );
       expect(
-        _value(await publish.execute(replace: remote.head)),
+        _value(await publish.execute(replace: inspection())),
         WalletBackupPublication.published,
       );
       expect(remote.head.generation, 3);
@@ -445,7 +468,7 @@ void main() {
       remote.head = WalletBackupRemoteHead(generation: 0, etag: null);
       snapshots.edit();
       expect(
-        _value(await publish.execute(replace: remote.head)),
+        _value(await publish.execute(replace: inspection())),
         WalletBackupPublication.published,
       );
       expect((await localState()).checkpoint!.generation, 1);

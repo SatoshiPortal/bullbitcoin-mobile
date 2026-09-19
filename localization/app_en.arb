@@ -17110,5 +17110,185 @@
   "dataBackupSourceFingerprint": "Source seed fingerprint",
   "@dataBackupSourceFingerprint": {
     "description": "Fingerprint of the seed whose public inventory is in this backup"
+  },
+  "dataBackupChanged": "The wallet or backup changed. Inspect the backup again before continuing.",
+  "@dataBackupChanged": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupInvalid": "This backup could not be verified. Its contents have not been accepted.",
+  "@dataBackupInvalid": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUnsupported": "This backup uses a format this app does not support. Update the app before trying again.",
+  "@dataBackupUnsupported": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupTooLarge": "This backup exceeds the supported size.",
+  "@dataBackupTooLarge": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConflict": "The server holds a different backup. Inspect it before choosing to recover it or replace it with this device's data.",
+  "@dataBackupConflict": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConfirmationRequired": "Confirm this action before continuing.",
+  "@dataBackupConfirmationRequired": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDeleteRequiresDisabled": "Turn off automatic Data Backup before deleting the server backup.",
+  "@dataBackupDeleteRequiresDisabled": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConsentTitle": "Enable automatic Data Backup?",
+  "@dataBackupConsentTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupConsentBody": "Encrypted public wallet details, BullVault data, labels and settings will be sent to the Bull Bitcoin backup server. Your wallet seed and private keys are not included. You can turn this off at any time. Data Backup does not replace your wallet recovery backup.",
+  "@dataBackupConsentBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupEnable": "Enable Data Backup",
+  "@dataBackupEnable": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupAutomatic": "Automatic Data Backup",
+  "@dataBackupAutomatic": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUndecided": "Automatic backup has not been set up.",
+  "@dataBackupUndecided": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupOff": "Automatic backup is off.",
+  "@dataBackupOff": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupPending": "Waiting to back up the latest data.",
+  "@dataBackupPending": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupInProgress": "Backing up data…",
+  "@dataBackupInProgress": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupSucceeded": "Backup succeeded.",
+  "@dataBackupSucceeded": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupLastSuccess": "Last successful server backup",
+  "@dataBackupLastSuccess": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupNow": "Back up now",
+  "@dataBackupNow": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFinishRecovery": "Finish data recovery",
+  "@dataBackupFinishRecovery": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDeleted": "The server backup was deleted. Automatic Data Backup remains off.",
+  "@dataBackupDeleted": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDelete": "Delete server backup",
+  "@dataBackupDelete": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupDeleteBody": "Delete the encrypted Data Backup from the server? Local wallets, data and files remain on this device. Automatic Data Backup will remain off.",
+  "@dataBackupDeleteBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupContentsTitle": "Backup contents",
+  "@dataBackupContentsTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupCheckServer": "Check server backup",
+  "@dataBackupCheckServer": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFilesTitle": "Backup files",
+  "@dataBackupFilesTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReadableWarning": "Export a readable backup?",
+  "@dataBackupReadableWarning": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReadableBody": "Anyone with this file can read your public wallet details, labels and settings. It contains no wallet seeds or private keys, but it can reveal your financial activity. Store and share it carefully. Editing it invalidates its signature.",
+  "@dataBackupReadableBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileExported": "Backup file exported.",
+  "@dataBackupFileExported": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupExportEncrypted": "Export encrypted backup file",
+  "@dataBackupExportEncrypted": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupExportReadable": "Export readable JSON backup",
+  "@dataBackupExportReadable": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupImportFile": "Import backup file",
+  "@dataBackupImportFile": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUseFile": "Use this file",
+  "@dataBackupUseFile": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupUseServer": "Use the server backup",
+  "@dataBackupUseServer": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileApplyWarning": "Recover the selected copy? This applies its public wallet details, labels and settings to this device. Choosing the file while automatic Data Backup is on also replaces the server copy after recovery succeeds. It does not recover wallet seeds or grant signing access.",
+  "@dataBackupFileApplyWarning": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileComparison": "Inspect the file and server copy, then choose which one to recover. No data is applied until you confirm your choice.",
+  "@dataBackupFileComparison": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileAutomaticOn": "Automatic Data Backup is on.",
+  "@dataBackupFileAutomaticOn": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileAutomaticOff": "Automatic Data Backup is off. Recovering this file changes this device only.",
+  "@dataBackupFileAutomaticOff": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileServerUnavailable": "The server copy could not be checked. You can choose the file. If automatic backup is on, publication stays paused until recovery and reconciliation are completed.",
+  "@dataBackupFileServerUnavailable": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileSame": "The file and server contain the same data.",
+  "@dataBackupFileSame": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileDifferent": "The file and server contain different data.",
+  "@dataBackupFileDifferent": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupFileCreated": "File created",
+  "@dataBackupFileCreated": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReplace": "Replace server backup",
+  "@dataBackupReplace": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupReplaceBody": "Replace the server copy you just inspected with this device’s current data? Recover any data you need from the server first.",
+  "@dataBackupReplaceBody": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupWordsApplyWarning": "Recover public wallet details, BullVault data, labels and settings from this backup? This changes the data on this device. It does not restore wallet seeds or grant signing access.",
+  "@dataBackupWordsApplyWarning": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "dataBackupWordsRecoveryHelp": "Enter the 12 Data Recovery Words to inspect a Data Backup. You will review and confirm before its wallets, labels or settings are applied.",
+  "@dataBackupWordsRecoveryHelp": {
+    "description": "Data Backup controls and explicit recovery actions"
   }
 }

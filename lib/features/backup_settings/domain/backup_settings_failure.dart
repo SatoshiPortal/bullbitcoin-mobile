@@ -15,15 +15,17 @@ sealed class BackupSettingsFailure extends Failure {
           const BackupSettingsRecoveryIncompleteFailure(),
         WalletBackupRateLimitedFailure(:final retryAt) =>
           BackupSettingsRateLimitedFailure(retryAt),
-        WalletBackupStorageFailure() ||
-        WalletBackupChangedFailure() ||
-        WalletBackupInvalidFailure() ||
-        WalletBackupUnsupportedFailure() ||
-        WalletBackupTooLargeFailure() ||
-        WalletBackupConflictFailure() ||
-        WalletBackupConfirmationRequiredFailure() ||
+        WalletBackupChangedFailure() => const BackupSettingsChangedFailure(),
+        WalletBackupInvalidFailure() => const BackupSettingsInvalidFailure(),
+        WalletBackupUnsupportedFailure() =>
+          const BackupSettingsUnsupportedFailure(),
+        WalletBackupTooLargeFailure() => const BackupSettingsTooLargeFailure(),
+        WalletBackupConflictFailure() => const BackupSettingsConflictFailure(),
+        WalletBackupConfirmationRequiredFailure() =>
+          const BackupSettingsConfirmationRequiredFailure(),
         WalletBackupDeleteRequiresDisabledFailure() =>
-          const BackupSettingsUnexpectedFailure(),
+          const BackupSettingsDeleteRequiresDisabledFailure(),
+        WalletBackupStorageFailure() => const BackupSettingsUnexpectedFailure(),
       };
 }
 
@@ -56,4 +58,34 @@ final class BackupSettingsRateLimitedFailure extends BackupSettingsFailure {
 final class BackupSettingsWordsUnavailableFailure
     extends BackupSettingsFailure {
   const BackupSettingsWordsUnavailableFailure();
+}
+
+final class BackupSettingsChangedFailure extends BackupSettingsFailure {
+  const BackupSettingsChangedFailure();
+}
+
+final class BackupSettingsInvalidFailure extends BackupSettingsFailure {
+  const BackupSettingsInvalidFailure();
+}
+
+final class BackupSettingsUnsupportedFailure extends BackupSettingsFailure {
+  const BackupSettingsUnsupportedFailure();
+}
+
+final class BackupSettingsTooLargeFailure extends BackupSettingsFailure {
+  const BackupSettingsTooLargeFailure();
+}
+
+final class BackupSettingsConflictFailure extends BackupSettingsFailure {
+  const BackupSettingsConflictFailure();
+}
+
+final class BackupSettingsConfirmationRequiredFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsConfirmationRequiredFailure();
+}
+
+final class BackupSettingsDeleteRequiresDisabledFailure
+    extends BackupSettingsFailure {
+  const BackupSettingsDeleteRequiresDisabledFailure();
 }

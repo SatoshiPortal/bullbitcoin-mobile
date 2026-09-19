@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
@@ -39,12 +40,12 @@ class PublishWalletBackupUsecase {
   @useResult
   Future<Result<WalletBackupPublication, WalletBackupFailure>> execute({
     bool force = false,
-    WalletBackupRemoteHead? replace,
+    WalletBackupInspection? replace,
   }) => _operations.run(() => _publish(force: force, replace: replace));
 
   Future<Result<WalletBackupPublication, WalletBackupFailure>> _publish({
     required bool force,
-    required WalletBackupRemoteHead? replace,
+    required WalletBackupInspection? replace,
   }) async {
     switch (await _permitted()) {
       case Err(:final failure):
@@ -60,6 +61,9 @@ class PublishWalletBackupUsecase {
     }
     final credential =
         (credentialResult as Ok<BackupCredential, NostrIdentityFailure>).value;
+    if (replace != null && replace.identity != credential.serverPublicKey) {
+      return const Err(WalletBackupChangedFailure());
+    }
     var revision = 0;
     final subscription = _snapshots.changes.listen((_) {
       if (revision >= 0) revision++;
@@ -96,8 +100,8 @@ class PublishWalletBackupUsecase {
       final head =
           (fetched as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
       if (replace != null &&
-          (replace.etag != head.etag ||
-              replace.generation != head.generation)) {
+          (replace.head.etag != head.etag ||
+              replace.head.generation != head.generation)) {
         return const Err(WalletBackupConflictFailure());
       }
       String? remoteHash;

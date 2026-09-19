@@ -1,0 +1,143 @@
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
+import 'package:bb_mobile/features/backup_settings/domain/data_backup_status.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_data_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import '../vault_recovery_fixture.dart';
+
+class _Backups extends Mock implements WalletBackupFacade {}
+
+void main() {
+  late _Backups backups;
+  late LoadDataBackupStatusUsecase load;
+  setUp(() {
+    backups = _Backups();
+    load = LoadDataBackupStatusUsecase(backups);
+  });
+
+  for (final enabled in [null, false]) {
+    test(
+      'opening $enabled controls does not read a credential or job',
+      () async {
+        when(
+          backups.getControl,
+        ).thenAnswer((_) async => Ok(WalletBackupControl(enabled: enabled)));
+        final result = await load.execute();
+        expect(
+          (result as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value
+              .control
+              .enabled,
+          enabled,
+        );
+        verifyNever(backups.getState);
+        verifyNever(() => backups.publicationStatus);
+      },
+    );
+  }
+
+  test(
+    'an unavailable credential keeps the enabled control and its off action',
+    () async {
+      when(
+        backups.getControl,
+      ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: true)));
+      when(
+        backups.getState,
+      ).thenAnswer((_) async => const Err(WalletBackupCredentialFailure()));
+      final result =
+          (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(result.control.enabled, isTrue);
+      expect(result.failure, isA<BackupSettingsWordsUnavailableFailure>());
+      verifyNever(() => backups.publicationStatus);
+    },
+  );
+
+  test('off during status read wins over a stale successful job', () async {
+    when(
+      backups.getControl,
+    ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: true)));
+    when(backups.getState).thenAnswer(
+      (_) async => Ok(WalletBackupState(identity: 'a' * 64, enabled: false)),
+    );
+    final result =
+        (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+            .value;
+    expect(result.control.enabled, isFalse);
+    expect(result.publication, isNull);
+    verifyNever(() => backups.publicationStatus);
+  });
+
+  test(
+    'current identity checkpoint is required before displaying a success date',
+    () async {
+      when(
+        backups.getControl,
+      ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: true)));
+      when(backups.getState).thenAnswer(
+        (_) async => Ok(WalletBackupState(identity: 'a' * 64, enabled: true)),
+      );
+      when(() => backups.publicationStatus).thenReturn(
+        const WalletBackupJobStatus(
+          result: Ok(WalletBackupPublication.published),
+        ),
+      );
+      final result =
+          (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(result.lastSuccessAt, isNull);
+      expect(result.isUpToDate, isFalse);
+    },
+  );
+
+  test(
+    'conflict remains actionable instead of becoming an unexpected error',
+    () async {
+      when(
+        backups.getControl,
+      ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: true)));
+      when(backups.getState).thenAnswer(
+        (_) async => Ok(WalletBackupState(identity: 'a' * 64, enabled: true)),
+      );
+      when(() => backups.publicationStatus).thenReturn(
+        const WalletBackupJobStatus(result: Err(WalletBackupConflictFailure())),
+      );
+      final result =
+          (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(result.failure, isA<BackupSettingsConflictFailure>());
+    },
+  );
+
+  test(
+    'cancelled replace does not publish; accepted replacement keeps its inspection',
+    () async {
+      final inspection = vaultRecoveryFixture().inspection;
+      final publish = PublishDataBackupUsecase(backups);
+      expect(
+        await publish.execute(replace: inspection, confirmed: false),
+        isA<Err>(),
+      );
+      verifyZeroInteractions(backups);
+      when(
+        () => backups.publish(force: true, replace: inspection),
+      ).thenAnswer((_) async => const Ok(WalletBackupPublication.published));
+      expect(
+        await publish.execute(replace: inspection, confirmed: true),
+        isA<Ok>(),
+      );
+      verify(() => backups.publish(force: true, replace: inspection)).called(1);
+    },
+  );
+
+  test('cancelled delete makes no owner call', () async {
+    expect(
+      await DeleteDataBackupUsecase(backups).execute(confirmed: false),
+      isA<Err>(),
+    );
+    verifyZeroInteractions(backups);
+  });
+}

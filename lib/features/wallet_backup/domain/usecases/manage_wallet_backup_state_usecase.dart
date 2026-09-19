@@ -36,7 +36,8 @@ final class SetWalletBackupEnabledUsecase {
   final WalletBackupOperationQueue _operations;
   final NostrIdentityFacade _identity;
   final WalletBackupStateRepository _state;
-  const SetWalletBackupEnabledUsecase({
+  int _request = 0;
+  SetWalletBackupEnabledUsecase({
     required this._operations,
     required this._identity,
     required this._state,
@@ -44,14 +45,17 @@ final class SetWalletBackupEnabledUsecase {
 
   @useResult
   Future<Result<void, WalletBackupFailure>> execute(bool enabled) {
-    // Off interrupts automatic work immediately. Enabling is ordered after any
-    // active deletion/recovery, so an old queued job cannot undo deletion.
+    final request = ++_request;
+    // Off interrupts immediately and also cancels an earlier queued enable.
     if (!enabled) return _state.setEnabled(false);
-    return _operations.run(
-      () async => switch (await _identity.resolve()) {
+    return _operations.run(() async {
+      if (request != _request) return const Ok(null);
+      final resolved = await _identity.resolve();
+      if (request != _request) return const Ok(null);
+      return switch (resolved) {
         Err() => const Err(WalletBackupCredentialFailure()),
         Ok() => await _state.setEnabled(true),
-      },
-    );
+      };
+    });
   }
 }

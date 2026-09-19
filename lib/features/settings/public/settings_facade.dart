@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 
+export '../ui/widgets/backup_data_export_entries.dart';
 export '../ui/widgets/wallet_policy_view.dart';
 export '../ui/widgets/wallet_keys_view.dart';
 export '../domain/settings_failure.dart';

@@ -16,6 +16,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import '../backup_snapshot_fixture.dart';
 
+class _Identity extends Mock implements NostrIdentityFacade {}
+
 class _Manifest extends Mock implements KeychainManifestFacade {}
 
 class _Metadata extends Mock implements WalletMetadataBackupRepository {}
@@ -27,6 +29,7 @@ void main() {
   final fixture = backupSnapshotFixture(credential);
   late SqliteDatabase db;
   late _Manifest manifest;
+  late _Identity identity;
   late _Metadata metadata;
   late _Vaults vaults;
   late BuildWalletBackupSnapshotUsecase build;
@@ -62,7 +65,9 @@ void main() {
       wallets: WalletMetadataDatasource(sqlite: db),
       bip85: Bip85Datasource(sqlite: db),
     );
-    build = BuildWalletBackupSnapshotUsecase(repository);
+    identity = _Identity();
+    when(identity.resolve).thenAnswer((_) async => Ok(credential));
+    build = BuildWalletBackupSnapshotUsecase(repository, identity);
   });
   tearDown(() async {
     await changes.close();
@@ -72,7 +77,7 @@ void main() {
     'one capture uses the same manifest references for metadata and vaults',
     () async {
       final snapshot =
-          (await build.execute(credential)
+          (await build.execute()
                   as Ok<WalletBackupSnapshot, WalletBackupFailure>)
               .value;
       expect(snapshot.manifest, same(fixture.manifest));
@@ -89,7 +94,7 @@ void main() {
     when(
       () => manifest.capture(any()),
     ).thenAnswer((_) async => const Err(KeychainManifestStorageFailure()));
-    expect(await build.execute(credential), isA<Err>());
+    expect(await build.execute(), isA<Err>());
     verifyNever(() => metadata.capture(any()));
     when(() => manifest.capture(any())).thenAnswer(
       (_) async => Ok(
@@ -102,8 +107,22 @@ void main() {
     when(
       () => metadata.capture(any()),
     ).thenAnswer((_) async => const Err(WalletBackupIncompleteFailure()));
-    expect(await build.execute(credential), isA<Err>());
+    expect(await build.execute(), isA<Err>());
   });
+  test(
+    'local preview resolves only at the explicit capture and fails without capture when unavailable',
+    () async {
+      verifyZeroInteractions(identity);
+      when(
+        identity.resolve,
+      ).thenAnswer((_) async => const Err(InvalidDataRecoveryWords()));
+      expect(
+        await build.execute(),
+        isA<Err<WalletBackupSnapshot, WalletBackupFailure>>(),
+      );
+      verifyNever(() => manifest.capture(any()));
+    },
+  );
   test('owner invalidations reach the snapshot watcher', () async {
     final invalidated = WatchWalletBackupSnapshotUsecase(
       repository,

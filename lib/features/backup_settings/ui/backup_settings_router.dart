@@ -1,3 +1,13 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bb_mobile/features/backup_settings/ui/widgets/data_backup_file_actions.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_backup_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/data_backup_words_recovery_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/data_backup_contents_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/data_backup_settings_screen.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_contents_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_file_cubit.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/data_backup_recovery_screen.dart';
@@ -54,6 +64,9 @@ class BackupSettingsSettingsRouter {
 }
 
 enum BackupSettingsRoute {
+  dataBackup('/data-backup'),
+  dataContents('/data-backup/contents'),
+  dataRecoverWords('/data-backup/recover/words'),
   vaultWords('/bullvault/recover/words'),
   dataRecovery('/data-backup/recover'),
   dataWords('/data-backup/words');
@@ -74,9 +87,84 @@ class DataBackupRecoveryArgs {
 abstract final class BackupSettingsRouter {
   static List<GoRoute> recoveryRoutes({
     required void Function(VaultBackupRecovery) onVaultsRecovered,
-    required void Function(WalletBackupInspection, WalletBackupRecovery)
+    required void Function(WalletBackupSnapshot, WalletBackupRecovery)
     onDataRecovered,
   }) => [
+    GoRoute(
+      name: BackupSettingsRoute.dataBackup.name,
+      path: BackupSettingsRoute.dataBackup.path,
+      builder: (context, _) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => locator<DataBackupSettingsCubit>()..start(),
+          ),
+          BlocProvider(create: (_) => locator<DataBackupFileCubit>()),
+        ],
+        child: DataBackupSettingsScreen(
+          onContents: (server) => context.pushNamed<void>(
+            BackupSettingsRoute.dataContents.name,
+            extra: server,
+          ),
+          onWords: () =>
+              context.pushNamed<void>(BackupSettingsRoute.dataWords.name),
+          onRecovery: () =>
+              context.pushNamed<void>(BackupSettingsRoute.dataRecovery.name),
+          onRecoverWords: () => context.pushNamed<void>(
+            BackupSettingsRoute.dataRecoverWords.name,
+          ),
+          fileActions: DataBackupFileActions(onRecovered: onDataRecovered),
+          dataExports: const BackupDataExportEntries(),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: BackupSettingsRoute.dataContents.name,
+      path: BackupSettingsRoute.dataContents.path,
+      builder: (context, state) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => locator<DataBackupSettingsCubit>()..start(),
+          ),
+          BlocProvider(
+            create: (_) =>
+                locator<DataBackupContentsCubit>()
+                  ..load(server: state.extra == true),
+          ),
+        ],
+        child: DataBackupContentsScreen(
+          onRecover: (inspection) => context.pushNamed<void>(
+            BackupSettingsRoute.dataRecovery.name,
+            extra: DataBackupRecoveryArgs(inspection: inspection),
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: BackupSettingsRoute.dataRecoverWords.name,
+      path: BackupSettingsRoute.dataRecoverWords.path,
+      builder: (_, _) => BlocProvider(
+        create: (_) => locator<DataBackupRecoveryCubit>(),
+        child: DataBackupWordsRecoveryScreen(
+          onRecovered: (inspection, result) =>
+              onDataRecovered(inspection.snapshot!, result),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: BullVaultFacade.backupRouteName,
+      path: '/bullvault/:walletId/backup',
+      builder: (context, state) {
+        final walletId = state.pathParameters['walletId']!;
+        return BlocProvider(
+          create: (_) => locator<VaultBackupCubit>()..load(walletId),
+          child: VaultBackupScreen(
+            walletId: walletId,
+            onOpenDataBackup: () =>
+                context.pushNamed<void>(BackupSettingsRoute.dataBackup.name),
+          ),
+        );
+      },
+    ),
     GoRoute(
       name: BullVaultFacade.restoreRouteName,
       path: '/bullvault/restore',
@@ -114,7 +202,8 @@ abstract final class BackupSettingsRouter {
             return cubit;
           },
           child: DataBackupRecoveryScreen(
-            onRecovered: onDataRecovered,
+            onRecovered: (inspection, result) =>
+                onDataRecovered(inspection.snapshot!, result),
             enableAfterRecovery: args.enableAfterRecovery,
           ),
         );

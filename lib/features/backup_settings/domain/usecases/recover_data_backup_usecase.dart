@@ -8,9 +8,11 @@ class InspectDataBackupUsecase {
   const InspectDataBackupUsecase(this._backups);
 
   @useResult
-  Future<Result<WalletBackupInspection, BackupSettingsFailure>>
-  execute() async =>
-      (await _backups.inspect()).mapErr(BackupSettingsFailure.fromDataBackup);
+  Future<Result<WalletBackupInspection, BackupSettingsFailure>> execute({
+    String? words,
+  }) async => (await _backups.inspect(
+    words: words,
+  )).mapErr(BackupSettingsFailure.fromDataBackup);
 }
 
 class RecoverDataBackupUsecase {
@@ -22,10 +24,14 @@ class RecoverDataBackupUsecase {
     WalletBackupInspection inspection, {
     required bool confirmed,
     bool enableAfterRecovery = false,
+    String? words,
   }) async {
-    if (!confirmed) return const Err(BackupSettingsUnexpectedFailure());
+    if (!confirmed) {
+      return const Err(BackupSettingsConfirmationRequiredFailure());
+    }
     return (await _backups.recover(
       inspection,
+      words: words,
       enableAfterRecovery: enableAfterRecovery,
     )).mapErr(BackupSettingsFailure.fromDataBackup);
   }

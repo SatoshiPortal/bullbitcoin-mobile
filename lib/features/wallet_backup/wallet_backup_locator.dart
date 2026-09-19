@@ -96,13 +96,16 @@ abstract final class WalletBackupLocator {
       ),
     );
     locator.registerLazySingleton(WalletBackupOperationQueue.new);
+    locator.registerFactory(
+      () => BuildWalletBackupSnapshotUsecase(locator(), locator()),
+    );
     locator.registerFactory(() => GetWalletBackupControlUsecase(locator()));
     locator.registerFactory(
       () => GetWalletBackupStateUsecase(locator(), locator()),
     );
     locator.registerFactory(() => WatchWalletBackupStateUsecase(locator()));
     locator.registerFactory(() => WatchWalletBackupSnapshotUsecase(locator()));
-    locator.registerFactory(
+    locator.registerLazySingleton(
       () => SetWalletBackupEnabledUsecase(
         operations: locator(),
         identity: locator(),
@@ -208,10 +211,19 @@ abstract final class WalletBackupLocator {
     );
     locator.registerFactory(
       () => WalletBackupFacade(
+        pickFile: locator(),
+        exportFile: locator(),
+        compareFile: locator(),
+        recoverFile: locator(),
         getControl: locator(),
         inspect: locator(),
         recover: locator(),
         recoverVaults: locator(),
+        getState: locator(),
+        setEnabled: locator(),
+        publish: locator(),
+        delete: locator(),
+        capture: locator(),
         watchState: locator(),
         watcher: locator(),
       ),

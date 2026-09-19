@@ -499,6 +499,26 @@ void main() {
     },
   );
 
+  test(
+    'a later off cancels an enable still resolving the credential',
+    () async {
+      final enable = SetWalletBackupEnabledUsecase(
+        operations: operations,
+        identity: identity,
+        state: state,
+      );
+      final resolving =
+          Completer<Result<BackupCredential, NostrIdentityFailure>>();
+      when(identity.resolve).thenAnswer((_) => resolving.future);
+      final enabling = enable.execute(true);
+      await Future<void>.delayed(Duration.zero);
+      expect(await enable.execute(false), isA<Ok>());
+      resolving.complete(Ok(credential));
+      expect(await enabling, isA<Ok>());
+      expect(value(await state.getControl()).enabled, isFalse);
+    },
+  );
+
   WalletBackupSnapshot selectedFileSnapshot() => WalletBackupSnapshot(
     manifest: snapshot.manifest,
     vaults: snapshot.vaults,
