@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_b
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/inspect_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_files_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_bullvault_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
@@ -197,6 +198,16 @@ abstract final class WalletBackupLocator {
       ),
       dispose: (watcher) => watcher.dispose(),
     );
-    locator.registerFactory(() => WalletBackupFacade(locator(), locator()));
+    locator.registerFactory(
+      () => RestoreBullVaultBackupUsecase(
+        repository: locator(),
+        state: locator(),
+        operations: locator(),
+        inspect: locator(),
+      ),
+    );
+    locator.registerFactory(
+      () => WalletBackupFacade(locator(), locator(), locator(), locator()),
+    );
   }
 }

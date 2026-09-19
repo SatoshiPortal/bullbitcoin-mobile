@@ -33,6 +33,7 @@ class BullVaultFacade {
   static const renewRouteName = 'bullVaultRenew';
   static const createRouteName = 'bullVaultCreate';
   static const restoreRouteName = 'bullVaultRestore';
+  static const descriptorRestoreRouteName = 'bullVaultDescriptorRestore';
   static const settingsRouteName = 'bullVaultSettings';
   static const cosignerRouteName = 'bullVaultCosigner';
 

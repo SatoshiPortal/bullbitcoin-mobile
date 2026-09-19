@@ -14,6 +14,7 @@ abstract interface class BullVaultBackupRepository {
   @useResult
   Future<Result<WalletInventoryRecovery, WalletBackupFailure>> restore(
     List<BullVaultBackupEntry> entries,
-    List<BackupWallet> wallets,
-  );
+    List<BackupWallet> wallets, {
+    bool Function()? abandoned,
+  });
 }

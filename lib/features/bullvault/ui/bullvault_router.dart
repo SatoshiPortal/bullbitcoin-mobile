@@ -76,8 +76,8 @@ abstract final class BullVaultRouter {
   );
 
   static final restoreRoute = GoRoute(
-    name: BullVaultFacade.restoreRouteName,
-    path: '/bullvault/restore',
+    name: BullVaultFacade.descriptorRestoreRouteName,
+    path: '/bullvault/restore/descriptor',
     builder: (context, state) => BlocProvider(
       create: (_) => locator<BullVaultRestoreCubit>(),
       child: BullVaultRestoreScreen(

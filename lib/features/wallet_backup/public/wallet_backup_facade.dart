@@ -5,9 +5,16 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/inspect_wallet_
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_bullvault_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/vault_backup_recovery.dart';
 
+export '../domain/entities/vault_backup_recovery.dart';
 export '../domain/entities/bullvault_backup_entry.dart';
 export '../domain/entities/wallet_backup_inspection.dart';
+export '../domain/entities/wallet_backup_recovery.dart';
+export '../domain/entities/wallet_inventory_recovery.dart';
 export '../domain/entities/wallet_backup_remote_head.dart';
 export '../domain/entities/wallet_backup_snapshot.dart';
 export '../domain/entities/wallet_backup_state.dart';
@@ -16,15 +23,33 @@ export '../domain/wallet_backup_failure.dart';
 class WalletBackupFacade {
   final GetWalletBackupControlUsecase _getControl;
   final InspectWalletBackupUsecase _inspect;
+  final RecoverWalletBackupUsecase _recover;
+  final RestoreBullVaultBackupUsecase _recoverVaults;
 
-  const WalletBackupFacade(this._getControl, this._inspect);
+  const WalletBackupFacade(
+    this._getControl,
+    this._inspect,
+    this._recover,
+    this._recoverVaults,
+  );
+
+  @useResult
+  Future<Result<VaultBackupRecovery?, WalletBackupFailure>> recoverVaults({
+    String? words,
+    bool Function()? abandoned,
+  }) => _recoverVaults.execute(words: words, abandoned: abandoned);
+
+  @useResult
+  Future<Result<WalletBackupRecovery, WalletBackupFailure>> recover(
+    WalletBackupInspection inspection, {
+    bool enableAfterRecovery = false,
+  }) => _recover.execute(inspection, enableAfterRecovery: enableAfterRecovery);
 
   @useResult
   Future<Result<WalletBackupControl, WalletBackupFailure>> getControl() =>
       _getControl.execute();
 
   @useResult
-  Future<Result<WalletBackupInspection, WalletBackupFailure>> inspect({
-    String? words,
-  }) => _inspect.execute(words: words);
+  Future<Result<WalletBackupInspection, WalletBackupFailure>> inspect() =>
+      _inspect.execute();
 }

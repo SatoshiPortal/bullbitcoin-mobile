@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
@@ -19,18 +23,33 @@ class _Vaults extends Mock implements BullVaultFacade {}
 
 class _Snapshots extends Fake implements WalletBackupSnapshotRepository {}
 
+class _Catalog extends Mock implements KeychainManifestFacade {}
+
+class _NativeVaults extends Fake implements BullVaultBackupRepository {}
+
+class _Wallets extends Fake implements WalletInventoryBackupRepository {}
+
+class _Metadata extends Fake implements WalletMetadataBackupRepository {}
+
 void main() {
   late GetIt services;
   late SqliteDatabase database;
   late _Identity identity;
-  setUp(() {
+  setUp(() async {
     services = GetIt.asNewInstance();
     database = SqliteDatabase(NativeDatabase.memory());
     identity = _Identity();
     services.registerSingleton<SqliteDatabase>(database);
     services.registerSingleton<NostrIdentityFacade>(identity);
     services.registerSingleton<BullVaultFacade>(_Vaults());
+    services.registerSingleton<KeychainManifestFacade>(_Catalog());
     WalletBackupLocator.setup(services);
+    await services.unregister<BullVaultBackupRepository>();
+    await services.unregister<WalletInventoryBackupRepository>();
+    await services.unregister<WalletMetadataBackupRepository>();
+    services.registerSingleton<BullVaultBackupRepository>(_NativeVaults());
+    services.registerSingleton<WalletInventoryBackupRepository>(_Wallets());
+    services.registerSingleton<WalletMetadataBackupRepository>(_Metadata());
   });
   tearDown(() async {
     await services.reset();
@@ -77,10 +96,10 @@ void main() {
       when(
         () => identity.fromWords('invalid'),
       ).thenReturn(const Err(InvalidDataRecoveryWords()));
-      final result = await services<WalletBackupFacade>().inspect(
+      final result = await services<WalletBackupFacade>().recoverVaults(
         words: 'invalid',
       );
-      expect(result, isA<Err<WalletBackupInspection, WalletBackupFailure>>());
+      expect(result, isA<Err<VaultBackupRecovery?, WalletBackupFailure>>());
       verify(() => identity.fromWords('invalid')).called(1);
       verifyNever(identity.resolve);
     },

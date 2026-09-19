@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/features/wallet_backup/data/bullvault_backup_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/bullvault_backup_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_bullvault_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,8 +21,7 @@ class _Devices extends Mock implements WalletSignerDevicePort {}
 void main() {
   late SqliteDatabase database;
   late _Vaults vaults;
-  late CaptureBullVaultBackupUsecase capture;
-  late RestoreBullVaultBackupUsecase restore;
+  late BullVaultBackupRepositoryImpl repository;
   final old = testBullVaultCreateResult(
     walletId: 'old-source',
     status: BullVaultLifecycleStatus.migrating,
@@ -93,20 +91,18 @@ void main() {
         ),
       );
     });
-    final repository = BullVaultBackupRepositoryImpl(
+    repository = BullVaultBackupRepositoryImpl(
       database: database,
       vaults: vaults,
       wallets: WalletMetadataDatasource(sqlite: database),
       signerDevices: _Devices(),
     );
-    capture = CaptureBullVaultBackupUsecase(repository);
-    restore = RestoreBullVaultBackupUsecase(repository);
   });
   tearDown(() => database.close());
   test(
     'captures every lifecycle record with native packages and no local test receipts',
     () async {
-      final result = await capture.execute({
+      final result = await repository.capture({
         'old-source': 'old-source',
         'new-source': 'new-source',
       });
@@ -125,18 +121,21 @@ void main() {
   test(
     'missing manifest wallet or unreadable vault inventory is incomplete',
     () async {
-      expect(await capture.execute({'old-source': 'old-source'}), isA<Err>());
+      expect(
+        await repository.capture({'old-source': 'old-source'}),
+        isA<Err>(),
+      );
       when(
         vaults.listRecords,
       ).thenAnswer((_) async => const Err(BullVaultInvalidRecoveryFailure()));
-      expect(await capture.execute({}), isA<Err>());
+      expect(await repository.capture({}), isA<Err>());
     },
   );
   test(
     'restores oldest first and remaps predecessor IDs before invoking the vault owner',
     () async {
       final result =
-          (await restore.execute(entries.reversed.toList(), wallets)
+          (await repository.restore(entries.reversed.toList(), wallets)
                   as Ok<WalletInventoryRecovery, WalletBackupFailure>)
               .value;
       expect(result.complete, isTrue);
@@ -151,7 +150,7 @@ void main() {
   test(
     'missing predecessor and mismatched descriptor reject before the first mutation',
     () async {
-      expect(await restore.execute([entries.last], wallets), isA<Err>());
+      expect(await repository.restore([entries.last], wallets), isA<Err>());
       final wrong = BackupWallet(
         reference: wallets.first.reference,
         network: wallets.first.network,
@@ -160,7 +159,10 @@ void main() {
         isDefault: false,
         isHidden: false,
       );
-      expect(await restore.execute(entries, [wrong, wallets.last]), isA<Err>());
+      expect(
+        await repository.restore(entries, [wrong, wallets.last]),
+        isA<Err>(),
+      );
       expect(submitted, isEmpty);
     },
   );
@@ -176,11 +178,65 @@ void main() {
         ),
       ).thenAnswer((_) async => const Err(BullVaultInvalidRecoveryFailure()));
       final result =
-          (await restore.execute(entries, wallets)
+          (await repository.restore(entries, wallets)
                   as Ok<WalletInventoryRecovery, WalletBackupFailure>)
               .value;
       expect(result.failedReferences, ['old-source', 'new-source']);
       expect(submitted, hasLength(1));
+    },
+  );
+  test(
+    'abandoning after one vault stops later imports and reports unfinished references',
+    () async {
+      final result =
+          (await repository.restore(
+                    entries,
+                    wallets,
+                    abandoned: () => submitted.isNotEmpty,
+                  )
+                  as Ok<WalletInventoryRecovery, WalletBackupFailure>)
+              .value;
+      expect(submitted, hasLength(1));
+      expect(result.walletReferences, {'old-source': 'old-target'});
+      expect(result.failedReferences, ['new-source']);
+    },
+  );
+  test(
+    'a vault without a saved label uses its public reference for the existing importer',
+    () async {
+      final source = wallets.first;
+      final unnamed = BackupWallet(
+        reference: source.reference,
+        network: source.network,
+        publicDescriptor: source.publicDescriptor,
+        signers: [],
+        isDefault: false,
+        isHidden: false,
+      );
+      when(
+        () => vaults.restoreFromRecoveryPackage(
+          source: any(named: 'source'),
+          label: any(named: 'label'),
+          status: any(named: 'status'),
+          network: any(named: 'network'),
+        ),
+      ).thenAnswer((call) async {
+        expect(call.namedArguments[#label], source.reference);
+        return Ok(
+          BullVaultRestoreResult(
+            wallet: old.wallet,
+            record: old.record,
+            mobileAccess: BullVaultMobileAccess.unavailable,
+          ),
+        );
+      });
+      final result = await repository.restore([entries.first], [unnamed]);
+      expect(
+        (result as Ok<WalletInventoryRecovery, WalletBackupFailure>)
+            .value
+            .complete,
+        isTrue,
+      );
     },
   );
 }

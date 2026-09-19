@@ -17006,5 +17006,109 @@
   "vaultBackupEnable": "Turn on Data Backup",
   "@vaultBackupEnable": {
     "description": "Per-vault backup action or test status"
+  },
+  "vaultRecoveryDescriptorEntry": "Recover from a descriptor or recovery file",
+  "@vaultRecoveryDescriptorEntry": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupRecoverWithWords": "Recover with Data Recovery Words",
+  "@dataBackupRecoverWithWords": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupSourceLocal": "Contents on this device",
+  "@dataBackupSourceLocal": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupSourceServer": "Contents fetched from the backup server",
+  "@dataBackupSourceServer": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupSourceFile": "Contents from the backup file",
+  "@dataBackupSourceFile": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupPublicContentsExplanation": "This backup contains public wallet details and settings. It does not contain wallet seeds or private keys. Recovering it does not give this device permission to sign.",
+  "@dataBackupPublicContentsExplanation": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupWallets": "Wallets",
+  "@dataBackupWallets": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupPortableSettingsExplanation": "Also includes theme, balance visibility, automatic transfer preferences, Payjoin preferences, Electrum servers, block explorers and fee source settings.",
+  "@dataBackupPortableSettingsExplanation": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupEnterWords": "Enter the 12 Data Recovery Words to find and inspect the backup. These are not your wallet seed words.",
+  "@dataBackupEnterWords": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupInspect": "Inspect backup",
+  "@dataBackupInspect": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupRecover": "Recover this backup",
+  "@dataBackupRecover": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupRecoveryComplete": "Data recovery completed.",
+  "@dataBackupRecoveryComplete": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupWalletNotRecovered": "Wallet not recovered",
+  "@dataBackupWalletNotRecovered": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "dataBackupChangeWords": "Enter different words",
+  "@dataBackupChangeWords": {
+    "description": "Data Backup inspection and recovery"
+  },
+  "vaultRecoverySearch": "Search for vaults",
+  "@vaultRecoverySearch": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryDescription": "Searches the Data Backup server for vaults saved with this wallet.",
+  "@vaultRecoveryDescription": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryWordsHelp": "Enter the 12 Data Recovery Words to recover the vaults in that backup. This does not restore wallet seed words or apply other wallet settings.",
+  "@vaultRecoveryWordsHelp": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryNoCredential": "This device cannot access the wallet’s Data Recovery Words. Use a recovery file, descriptor, or enter Data Recovery Words.",
+  "@vaultRecoveryNoCredential": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryManualTitle": "Other ways to recover",
+  "@vaultRecoveryManualTitle": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryNone": "No BullVaults were found in this backup.",
+  "@vaultRecoveryNone": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryIncomplete": "Some vaults could not be recovered. Data Backup remains paused.",
+  "@vaultRecoveryIncomplete": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryComplete": "Vaults recovered",
+  "@vaultRecoveryComplete": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryOpenVault": "Open vault",
+  "@vaultRecoveryOpenVault": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryNoSpendDisclosure": "Recovering a vault does not supply its signing keys. Open the vault to inspect its keys or add a matching cosigner.",
+  "@vaultRecoveryNoSpendDisclosure": {
+    "description": "BullVault discovery and recovery"
+  },
+  "vaultRecoveryDescriptorHelp": "Import a saved recovery file, scan a QR code, or paste the descriptor.",
+  "@vaultRecoveryDescriptorHelp": {
+    "description": "BullVault discovery and recovery"
+  },
+  "dataBackupSourceFingerprint": "Source seed fingerprint",
+  "@dataBackupSourceFingerprint": {
+    "description": "Fingerprint of the seed whose public inventory is in this backup"
   }
 }

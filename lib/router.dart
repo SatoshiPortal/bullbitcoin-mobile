@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -216,6 +219,22 @@ class AppRouter {
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
       ...BullVaultRouter.routes,
+      ...BackupSettingsRouter.recoveryRoutes(
+        onVaultsRecovered: (result) {
+          if (result.complete) {
+            unawaited(
+              _recordRecoveredVaults(result.wallets.walletReferences.values),
+            );
+          }
+        },
+        onDataRecovered: (inspection, result) {
+          if (!result.complete) return;
+          final ids = inspection.snapshot!.vaults
+              .map((vault) => result.wallets.walletReferences[vault.reference])
+              .whereType<String>();
+          unawaited(_recordRecoveredVaults(ids));
+        },
+      ),
       KeychainManifestRouter.route,
       ...ImportColdcardRouter.routes,
       ...LedgerRouter.routes,
@@ -233,4 +252,20 @@ class AppRouter {
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+
+  static Future<void> _recordRecoveredVaults(Iterable<String> ids) async {
+    for (final id in ids) {
+      try {
+        final wallet = await locator<GetWalletUsecase>().execute(id);
+        final context = rootNavigatorKey.currentContext;
+        if (wallet == null || context == null || !context.mounted) continue;
+        locator<BullVaultRecoveryNoticeCubit>().record(
+          walletId: wallet.id,
+          label: wallet.displayLabel(context),
+        );
+      } on GetWalletException {
+        // Do not announce a vault whose target record cannot be read.
+      }
+    }
+  }
 }

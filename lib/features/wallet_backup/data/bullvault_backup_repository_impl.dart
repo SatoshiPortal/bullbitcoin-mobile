@@ -67,8 +67,9 @@ final class BullVaultBackupRepositoryImpl implements BullVaultBackupRepository {
   @override
   Future<Result<WalletInventoryRecovery, WalletBackupFailure>> restore(
     List<BullVaultBackupEntry> entries,
-    List<BackupWallet> wallets,
-  ) async {
+    List<BackupWallet> wallets, {
+    bool Function()? abandoned,
+  }) async {
     try {
       BullVaultBackupEntry.validateInventory(entries, wallets);
     } on FormatException {
@@ -84,6 +85,10 @@ final class BullVaultBackupRepositoryImpl implements BullVaultBackupRepository {
     final references = <String, String>{};
     final failed = <String>[];
     for (final entry in ordered) {
+      if (abandoned?.call() ?? false) {
+        failed.add(entry.reference);
+        continue;
+      }
       try {
         final previous = entry.recoveryPackage.previousVaultId;
         if (previous != null && !references.containsKey(previous)) {
@@ -100,7 +105,9 @@ final class BullVaultBackupRepositoryImpl implements BullVaultBackupRepository {
           );
           switch (await _vaults.restoreFromRecoveryPackage(
             source: _vaults.encodeRecoveryPackage(package),
-            label: sourceWallet.label ?? '',
+            label: sourceWallet.label?.trim().isNotEmpty == true
+                ? sourceWallet.label!
+                : entry.reference,
             status: entry.status,
             network: package.policy.network,
           )) {
