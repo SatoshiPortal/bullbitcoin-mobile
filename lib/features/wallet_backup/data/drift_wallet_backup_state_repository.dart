@@ -107,6 +107,7 @@ final class DriftWalletBackupStateRepository
       // A vault import can retry its own fence, but cannot finish an incomplete full-data recovery.
       if (current?.recoveryScope == _fullRecovery) return const Ok(null);
     }
+    // A completed full recovery supersedes an earlier partial vault recovery.
     final scope = incomplete ? (vaultOnly ? _vaultRecovery : _fullRecovery) : 0;
     await _database
         .into(_database.walletBackupControls)

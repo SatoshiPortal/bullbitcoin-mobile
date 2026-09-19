@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dar
 class UpdateDataBackupLifecycleUsecase {
   final WalletBackupFacade _backups;
   final WizardFacade _wizard;
+  // The app scope retains one instance so all of its updates share this guard.
   int _request = 0;
   UpdateDataBackupLifecycleUsecase(this._backups, this._wizard);
 
