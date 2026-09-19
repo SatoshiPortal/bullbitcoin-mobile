@@ -119,7 +119,7 @@ void main() {
         find.text(loc.walletDetailsAbsoluteBlockCondition(900000)),
         findsOneWidget,
       );
-      expect(find.text(loc.walletPolicyFromStart), findsNothing);
+      expect(find.text('From the start'), findsNothing);
       expect(find.text(loc.bullVaultKeyOnDevice), findsOneWidget);
       await pump(
         tester,
@@ -133,7 +133,7 @@ void main() {
           ],
         ),
       );
-      expect(find.text(loc.walletPolicyFromStart), findsNothing);
+      expect(find.text('From the start'), findsNothing);
       expect(find.text(loc.walletDetailsAllConditionsRequired), findsOneWidget);
       expect(
         find.text(loc.walletDetailsAbsoluteBlockCondition(900000)),
@@ -161,7 +161,7 @@ void main() {
         find.text(loc.walletDetailsRelativeBlocksCondition(144)),
         findsOneWidget,
       );
-      expect(find.text(loc.walletPolicyFromStart), findsNothing);
+      expect(find.text('From the start'), findsNothing);
       await pump(
         tester,
         BitcoinThresholdPolicyNode(
@@ -185,7 +185,7 @@ void main() {
         find.text(loc.walletDetailsAbsoluteBlockCondition(900000)),
         findsOneWidget,
       );
-      expect(find.text(loc.walletPolicyFromStart), findsNothing);
+      expect(find.text('From the start'), findsNothing);
     },
   );
   testWidgets('absolute timestamps retain explicit UTC and nonzero seconds', (
