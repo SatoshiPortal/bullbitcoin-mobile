@@ -93,6 +93,9 @@ final class BullVaultRecord {
     }
   }
 
+  bool get recoveryPackageVerified =>
+      recoveryPackageConfirmed && descriptorTestedAt != null;
+
   BullVaultRecord copyWith({
     String? successorWalletId,
     BullVaultLifecycleStatus? status,
@@ -101,6 +104,7 @@ final class BullVaultRecord {
     Set<String>? completedHardwareSignerIds,
     bool? recoveryPackageConfirmed,
     bool? mobileBackupDeferred,
+    DateTime? descriptorTestedAt,
   }) => BullVaultRecord(
     walletId: walletId,
     lineageId: lineageId,
@@ -120,7 +124,7 @@ final class BullVaultRecord {
         recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
     mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
     createdAt: createdAt,
-    descriptorTestedAt: descriptorTestedAt,
+    descriptorTestedAt: descriptorTestedAt ?? this.descriptorTestedAt,
     serverTestedAt: serverTestedAt,
   );
 }

@@ -59,6 +59,7 @@ class ActivateBullVaultRenewalUsecase {
     };
     if (replacement.status != BullVaultLifecycleStatus.pending ||
         !replacement.recoveryPackageConfirmed ||
+        replacement.descriptorTestedAt == null ||
         !replacement.completedHardwareSignerIds.containsAll(
           requiredSignerIds,
         )) {

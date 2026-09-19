@@ -18,6 +18,9 @@ abstract interface class BullVaultRepository {
   String encodeRecoveryPackage(BullVaultRecoveryPackage recoveryPackage);
 
   @useResult
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile();
+
+  @useResult
   Future<Result<int, BullVaultFailure>> reserveNextGeneration(
     BullVaultRecord current,
   );

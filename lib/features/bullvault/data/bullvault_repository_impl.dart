@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bullvault/data/bullvault_metadata_datasource.dart';
@@ -9,17 +13,61 @@ import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.da
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:file_picker/file_picker.dart';
 
 final class BullVaultRepositoryImpl implements BullVaultRepository {
   final BullVaultMetadataDatasource _datasource;
   final BullVaultRecordMapper _recordMapper;
   final BullVaultRecoveryPackageCodec _recoveryPackageCodec;
+  final FilePicker? _filePicker;
 
   BullVaultRepositoryImpl(
     this._datasource,
     this._recordMapper,
-    this._recoveryPackageCodec,
-  );
+    this._recoveryPackageCodec, {
+    this._filePicker,
+  });
+
+  @override
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile() async {
+    try {
+      final selected = await (_filePicker ?? FilePicker.platform).pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['json', 'txt'],
+        withData: false,
+        withReadStream: true,
+      );
+      if (selected == null || selected.files.isEmpty) return const Ok(null);
+      if (selected.files.length != 1) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final file = selected.files.single;
+      if (file.size > BullVaultRecoveryPackage.maximumFileBytes) {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final Stream<List<int>> source;
+      if (file.readStream != null) {
+        source = file.readStream!;
+      } else if (file.path != null) {
+        source = File(file.path!).openRead();
+      } else if (file.bytes != null) {
+        source = Stream.value(file.bytes!);
+      } else {
+        return const Err(BullVaultInvalidRecoveryFailure());
+      }
+      final bytes = BytesBuilder(copy: false);
+      await for (final chunk in source) {
+        if (bytes.length + chunk.length >
+            BullVaultRecoveryPackage.maximumFileBytes) {
+          return const Err(BullVaultInvalidRecoveryFailure());
+        }
+        bytes.add(chunk);
+      }
+      return Ok(utf8.decode(bytes.takeBytes()));
+    } on Exception {
+      return const Err(BullVaultInvalidRecoveryFailure());
+    }
+  }
 
   @override
   Stream<void> get changes => _datasource.changes;

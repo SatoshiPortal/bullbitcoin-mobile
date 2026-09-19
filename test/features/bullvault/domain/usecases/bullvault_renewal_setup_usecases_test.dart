@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/verify_bullvault_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -100,6 +101,17 @@ final class _RenewalRepository extends Fake implements BullVaultRepository {
   }
 }
 
+class _VerifiedCopy extends Fake
+    implements VerifyBullVaultDescriptorBackupUsecase {
+  @override
+  Future<Result<DateTime, BullVaultFailure>> execute({
+    required BullVaultRecord expected,
+    required String source,
+  }) async => source.isEmpty
+      ? const Err(BullVaultBackupMismatchFailure())
+      : Ok(DateTime.utc(2026, 9, 18));
+}
+
 void main() {
   test(
     'retries setup after a wallet read failure without saving progress',
@@ -112,7 +124,11 @@ void main() {
       when(
         () => getWallet.execute(replacement.walletId),
       ).thenThrow(GetWalletException('Wallet storage unavailable'));
-      final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
+      final usecase = UpdateBullVaultSetupUsecase(
+        repository,
+        getWallet,
+        _VerifiedCopy(),
+      );
 
       final failed = await usecase.execute(
         walletId: replacement.walletId,
@@ -237,7 +253,11 @@ void main() {
     when(
       () => getWallet.execute(replacement.walletId),
     ).thenAnswer((_) async => _replacementWallet());
-    final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
+    final usecase = UpdateBullVaultSetupUsecase(
+      repository,
+      getWallet,
+      _VerifiedCopy(),
+    );
 
     final signerResult = await usecase.execute(
       walletId: replacement.walletId,
@@ -246,6 +266,7 @@ void main() {
     final recoveryResult = await usecase.execute(
       walletId: replacement.walletId,
       recoveryPackageConfirmed: true,
+      descriptorReadBack: 'saved-copy',
     );
 
     expect(
@@ -273,7 +294,11 @@ void main() {
       when(
         () => getWallet.execute(active.walletId),
       ).thenAnswer((_) async => _initialWallet());
-      final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
+      final usecase = UpdateBullVaultSetupUsecase(
+        repository,
+        getWallet,
+        _VerifiedCopy(),
+      );
 
       final result = await usecase.execute(
         walletId: active.walletId,
@@ -296,7 +321,11 @@ void main() {
     when(
       () => getWallet.execute(active.walletId),
     ).thenAnswer((_) async => _replacementWallet());
-    final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
+    final usecase = UpdateBullVaultSetupUsecase(
+      repository,
+      getWallet,
+      _VerifiedCopy(),
+    );
 
     final hardware = await usecase.execute(
       walletId: active.walletId,
@@ -305,6 +334,7 @@ void main() {
     final recovery = await usecase.execute(
       walletId: active.walletId,
       recoveryPackageConfirmed: true,
+      descriptorReadBack: 'saved-copy',
     );
 
     expect(hardware, isA<Ok<BullVaultRecord, BullVaultFailure>>());
@@ -323,6 +353,7 @@ void main() {
     final usecase = UpdateBullVaultSetupUsecase(
       repository,
       _MockGetWalletUsecase(),
+      _VerifiedCopy(),
     );
 
     final result = await usecase.execute(
@@ -611,6 +642,7 @@ void main() {
     );
     final initial = created.record.copyWith(
       recoveryPackageConfirmed: true,
+      descriptorTestedAt: DateTime.utc(2026, 9, 18),
       completedHardwareSignerIds: const {'everyday', 'cold'},
     );
     final wallet = created.wallet.copyWith(
@@ -688,6 +720,9 @@ BullVaultRecord _replacement({
   status: BullVaultLifecycleStatus.pending,
   completedHardwareSignerIds: completedHardwareSignerIds,
   recoveryPackageConfirmed: recoveryPackageConfirmed,
+  descriptorTestedAt: recoveryPackageConfirmed
+      ? DateTime.utc(2026, 9, 18)
+      : null,
   createdAt: DateTime.utc(2028),
 );
 
@@ -700,6 +735,7 @@ BullVaultRecord _initial({String? mobileSeedFingerprint}) => BullVaultRecord(
   birthHeight: 3_000_000,
   recoveryPackage: testBullVaultRecoveryPackage(lineageId: 'initial-lineage'),
   status: BullVaultLifecycleStatus.pending,
+  descriptorTestedAt: DateTime.utc(2026, 9, 18),
   createdAt: DateTime.utc(2027),
 );
 

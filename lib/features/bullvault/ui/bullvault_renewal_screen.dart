@@ -613,8 +613,9 @@ final class _RenewalSetup extends StatelessWidget {
     return switch (state.step) {
       BullVaultRenewalStep.review => const SizedBox.shrink(),
       BullVaultRenewalStep.recoveryPackage => BullVaultRecoveryPackageStep(
-        exported: state.recoveryPackageExported,
+        descriptor: result.policy.descriptor,
         confirmed: state.recoveryPackageConfirmed,
+        onImport: context.read<BullVaultRenewalCubit>().importRecoveryPackage,
         onSave: () => _shareRecoveryPackage(context, state),
         onConfirm: context.read<BullVaultRenewalCubit>().confirmRecoveryPackage,
       ),
@@ -668,9 +669,6 @@ final class _RenewalSetup extends StatelessWidget {
       context,
       content: state.recoveryPackageContent!,
       policyId: state.renewal!.replacement.policy.id,
-      onExported: context
-          .read<BullVaultRenewalCubit>()
-          .markRecoveryPackageExported,
     );
   }
 }

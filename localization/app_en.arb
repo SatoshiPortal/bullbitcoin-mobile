@@ -16774,5 +16774,29 @@
   "bullVaultCosignerMismatch": "These words and passphrase do not match a cosigner in this vault. Nothing was imported.",
   "@bullVaultCosignerMismatch": {
     "description": "BullVault settings and recovery"
+  },
+  "bullVaultVerifyDescriptor": "Verify your saved copy",
+  "@bullVaultVerifyDescriptor": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorVerified": "Saved copy verified",
+  "@bullVaultDescriptorVerified": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorMismatch": "This descriptor does not match this vault. Check that you selected the correct vault and generation.",
+  "@bullVaultDescriptorMismatch": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorImportHint": "Paste the descriptor or import the saved recovery file.",
+  "@bullVaultDescriptorImportHint": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultImportFile": "Import file",
+  "@bullVaultImportFile": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultDescriptorActionHelp": "Copy the descriptor, scan your saved QR code, or import your saved descriptor file to continue. Keep a copy outside this phone. Exporting alone does not complete this step.",
+  "@bullVaultDescriptorActionHelp": {
+    "description": "BullVault descriptor recovery and key inspection"
   }
 }

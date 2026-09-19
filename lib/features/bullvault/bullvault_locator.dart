@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_records_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/import_bullvault_cosigner_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
@@ -38,6 +39,7 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/resume_bullvault_on
 import 'package:bb_mobile/features/bullvault/domain/usecases/resume_bullvault_renewal_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_setup_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/verify_bullvault_descriptor_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/update_bullvault_registration_name_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_migration_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_details_usecase.dart';
@@ -185,7 +187,10 @@ abstract final class BullVaultLocator {
       () => LoadBullVaultRenewalUsecase(locator(), locator(), locator()),
     );
     locator.registerLazySingleton<UpdateBullVaultSetupUsecase>(
-      () => UpdateBullVaultSetupUsecase(locator(), locator()),
+      () => UpdateBullVaultSetupUsecase(locator(), locator(), locator()),
+    );
+    locator.registerLazySingleton<VerifyBullVaultDescriptorBackupUsecase>(
+      () => VerifyBullVaultDescriptorBackupUsecase(locator(), locator()),
     );
     locator.registerFactory<UpdateBullVaultRegistrationNameUsecase>(
       () => UpdateBullVaultRegistrationNameUsecase(locator()),
@@ -211,6 +216,7 @@ abstract final class BullVaultLocator {
         locator(),
       ),
     );
+    locator.registerFactory(() => PickBullVaultRecoveryFileUsecase(locator()));
     locator.registerFactory<BullVaultOnboardingCubit>(
       () => BullVaultOnboardingCubit(
         locator(),
@@ -221,6 +227,7 @@ abstract final class BullVaultLocator {
         locator(),
         locator(),
         locator<UpdateBullVaultRegistrationNameUsecase>(),
+        pickRecoveryFile: locator(),
       ),
     );
     locator.registerFactory<BullVaultHomeAlertCubit>(
@@ -257,6 +264,7 @@ abstract final class BullVaultLocator {
         locator(),
         locator(),
         walletId: walletId,
+        pickRecoveryFile: locator(),
         prepareTimeReferenceUsecase: locator(),
         watchDetailsUsecase: locator(),
       ),

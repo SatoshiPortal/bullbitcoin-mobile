@@ -1,22 +1,75 @@
+import 'package:flutter/services.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBackupOptionCard, BullButton, BullInfoCard, Gap;
+    show
+        BullBackupOptionCard,
+        BullButton,
+        BullInfoCard,
+        BullPasteInput,
+        BullSnackBar,
+        Gap;
 import 'package:flutter/material.dart';
 
-final class BullVaultRecoveryPackageStep extends StatelessWidget {
-  final bool exported;
+final class BullVaultRecoveryPackageStep extends StatefulWidget {
+  final String descriptor;
   final bool confirmed;
   final Future<void> Function() onSave;
-  final Future<void> Function() onConfirm;
+  final Future<void> Function(String) onConfirm;
+  final Future<void> Function() onImport;
 
   const BullVaultRecoveryPackageStep({
     super.key,
-    required this.exported,
+    required this.descriptor,
     required this.confirmed,
     required this.onSave,
     required this.onConfirm,
+    required this.onImport,
+  });
+
+  @override
+  State<BullVaultRecoveryPackageStep> createState() =>
+      _RecoveryPackageStepState();
+}
+
+final class _RecoveryPackageStepState
+    extends State<BullVaultRecoveryPackageStep> {
+  String _input = '';
+  bool _busy = false;
+
+  Future<void> _run(Future<void> Function() action) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await action();
+    } on Exception {
+      if (mounted) {
+        BullSnackBar.show(context, message: context.loc.oopsSomethingWentWrong);
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _copy() => _run(() async {
+    await Clipboard.setData(ClipboardData(text: widget.descriptor));
+    final copy = await Clipboard.getData(Clipboard.kTextPlain);
+    if (mounted) await widget.onConfirm(copy?.text ?? '');
+  });
+
+  Future<void> _scan() => _run(() async {
+    final value = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => const BullVaultScannerScreen(
+          purpose: BullVaultScannerPurpose.descriptor,
+        ),
+      ),
+    );
+    if (!mounted || value == null) return;
+    setState(() => _input = value);
+    await widget.onConfirm(value);
   });
 
   @override
@@ -45,26 +98,64 @@ final class BullVaultRecoveryPackageStep extends StatelessWidget {
       const Gap(24),
       BullButton.big(
         label: context.loc.bullVaultSaveRecoveryData,
-        onPressed: onSave,
+        disabled: _busy,
+        onPressed: () => _run(widget.onSave),
         bgColor: context.appColors.secondary,
         textColor: context.appColors.onSecondary,
         outlined: true,
         borderColor: context.appColors.secondary,
       ),
-      if (exported) ...[
+      const Gap(12),
+      Text(
+        context.loc.bullVaultDescriptorActionHelp,
+        style: context.font.bodyMedium,
+      ),
+      const Gap(12),
+      BullButton.big(
+        label: context.loc.copyDialogButton,
+        disabled: _busy,
+        onPressed: _copy,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
+      ),
+      const Gap(12),
+      BullPasteInput(
+        text: _input,
+        hint: context.loc.bullVaultDescriptorImportHint,
+        enabled: !_busy,
+        minLines: 2,
+        maxLines: 5,
+        onChanged: (value) => setState(() => _input = value),
+        onScan: _scan,
+        onPasteError: (_) => BullSnackBar.show(
+          context,
+          message: context.loc.oopsSomethingWentWrong,
+        ),
+      ),
+      const Gap(12),
+      BullButton.big(
+        label: context.loc.bullVaultVerifyDescriptor,
+        disabled: _busy || _input.trim().isEmpty,
+        onPressed: () => _run(() => widget.onConfirm(_input)),
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
+      ),
+      const Gap(12),
+      BullButton.big(
+        label: context.loc.bullVaultImportFile,
+        disabled: _busy,
+        onPressed: () => _run(widget.onImport),
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
+        outlined: true,
+        borderColor: context.appColors.secondary,
+      ),
+      if (widget.confirmed) ...[
         const Gap(12),
-        Material(
-          color: context.appColors.surfaceContainer,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: context.appColors.border),
-            borderRadius: BorderRadius.circular(2),
-          ),
-          child: CheckboxListTile(
-            value: confirmed,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            title: Text(context.loc.bullVaultRecoveryPackageConfirmation),
-            onChanged: confirmed ? null : (_) => onConfirm(),
-          ),
+        Text(
+          context.loc.bullVaultDescriptorVerified,
+          style: context.font.bodyMedium,
+          textAlign: TextAlign.center,
         ),
       ],
     ],

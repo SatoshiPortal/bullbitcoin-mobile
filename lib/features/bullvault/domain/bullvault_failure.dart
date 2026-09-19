@@ -32,6 +32,10 @@ final class BullVaultBackupStatusFailure extends BullVaultFailure {
   const BullVaultBackupStatusFailure([super.logMessage]);
 }
 
+final class BullVaultBackupMismatchFailure extends BullVaultFailure {
+  const BullVaultBackupMismatchFailure();
+}
+
 final class BullVaultRenewalFailure extends BullVaultFailure {
   const BullVaultRenewalFailure([super.logMessage]);
 }
