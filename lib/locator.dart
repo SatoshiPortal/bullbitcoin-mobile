@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/wallet_backup_locator.dart';
 import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.dart';
 import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
@@ -188,6 +189,7 @@ class AppLocator {
     BullVaultLocator.setup(locator);
     NostrIdentityLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
+    WalletBackupLocator.setup(locator);
   }
 }
 
