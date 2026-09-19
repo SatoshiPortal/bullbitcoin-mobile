@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/vault_backup_re
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/inspect_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 
 /// Reuses the native vault importer without applying the rest of the snapshot.
 final class RestoreBullVaultBackupUsecase {
-  final BullVaultBackupRepository _repository;
+  final WalletInventoryBackupRepository _repository;
   final WalletBackupStateRepository _state;
   final WalletBackupOperationQueue _operations;
   final InspectWalletBackupUsecase _inspect;
@@ -54,7 +54,7 @@ final class RestoreBullVaultBackupUsecase {
     if (await _state.setRecoveryIncomplete(true) case Err(:final failure)) {
       return Err(failure);
     }
-    final restored = await _repository.restore(
+    final restored = await _repository.restoreVaults(
       snapshot.vaults,
       snapshot.manifest.wallets,
       abandoned: abandoned,

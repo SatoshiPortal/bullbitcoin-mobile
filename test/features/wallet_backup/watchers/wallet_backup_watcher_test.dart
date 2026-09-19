@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_publication.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
@@ -14,7 +14,7 @@ import 'package:mocktail/mocktail.dart';
 
 class _Publish extends Mock implements PublishWalletBackupUsecase {}
 
-class _Snapshots extends Mock implements WalletBackupSnapshotRepository {}
+class _Snapshots extends Mock implements WalletBackupCodecRepository {}
 
 class _State extends Mock implements WalletBackupStateRepository {}
 

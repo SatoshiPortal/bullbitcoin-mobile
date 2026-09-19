@@ -15,15 +15,14 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/backup_server_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
+import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/apply_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/inspect_wallet_backup_usecase.dart';
@@ -42,8 +41,6 @@ class _Identity extends Mock implements NostrIdentityFacade {}
 class _Catalog extends Mock implements KeychainManifestFacade {}
 
 class _Wallets extends Mock implements WalletInventoryBackupRepository {}
-
-class _Vaults extends Mock implements BullVaultBackupRepository {}
 
 class _Metadata extends Mock implements WalletMetadataBackupRepository {}
 
@@ -142,14 +139,13 @@ class _Remote implements WalletBackupRemoteRepository {
 void main() {
   final credential = BackupCredential.fromWords(backupFixtureWords);
   final snapshot = backupSnapshotFixture(credential, populated: false);
-  final codec = WalletBackupCodecRepositoryImpl(_VaultCodec());
+  final codec = backupCodecFixture(_VaultCodec());
   late SqliteDatabase database;
   late DriftWalletBackupStateRepository state;
   late WalletBackupOperationQueue operations;
   late _Identity identity;
   late _Catalog catalog;
   late _Wallets wallets;
-  late _Vaults vaults;
   late _Metadata metadata;
   late _Remote remote;
   late InspectWalletBackupUsecase inspect;
@@ -171,7 +167,6 @@ void main() {
     identity = _Identity();
     catalog = _Catalog();
     wallets = _Wallets();
-    vaults = _Vaults();
     metadata = _Metadata();
     remote = _Remote();
     mutations = 0;
@@ -192,7 +187,7 @@ void main() {
         WalletInventoryRecovery(walletReferences: {}, failedReferences: []),
       ),
     );
-    when(() => vaults.restore([], [])).thenAnswer(
+    when(() => wallets.restoreVaults([], [])).thenAnswer(
       (_) async => Ok(
         WalletInventoryRecovery(walletReferences: {}, failedReferences: []),
       ),
@@ -205,7 +200,6 @@ void main() {
       codec: codec,
       catalog: catalog,
       wallets: wallets,
-      vaults: vaults,
       metadata: metadata,
     );
     inspect = InspectWalletBackupUsecase(

@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_f
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
@@ -21,14 +20,12 @@ final class ExportWalletBackupFileUsecase {
   final WalletBackupOperationQueue _operations;
   final NostrIdentityFacade _identity;
   final WalletBackupStateRepository _state;
-  final WalletBackupSnapshotRepository _snapshots;
   final WalletBackupCodecRepository _codec;
   final WalletBackupFileRepository _files;
   const ExportWalletBackupFileUsecase({
     required this._operations,
     required this._identity,
     required this._state,
-    required this._snapshots,
     required this._codec,
     required this._files,
   });
@@ -66,12 +63,12 @@ final class ExportWalletBackupFileUsecase {
     final credential =
         (resolved as Ok<BackupCredential, NostrIdentityFailure>).value;
     var changed = false, observationFailed = false;
-    final subscription = _snapshots.changes.listen(
+    final subscription = _codec.changes.listen(
       (_) => changed = true,
       onError: (Object _) => observationFailed = true,
     );
     try {
-      final captured = await _snapshots.capture(credential);
+      final captured = await _codec.capture(credential);
       if (captured case Err(:final failure)) return Err(failure);
       if (observationFailed) return const Err(WalletBackupStorageFailure());
       if (changed) return const Err(WalletBackupChangedFailure());

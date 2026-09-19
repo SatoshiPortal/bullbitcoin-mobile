@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -20,6 +22,10 @@ import 'package:mocktail/mocktail.dart';
 class _Importer extends Mock implements BitcoinDescriptorPort {}
 
 class _Seeds extends Mock implements SeedVerificationPort {}
+
+class _Vaults extends Fake implements BullVaultFacade {}
+
+class _SignerDevices extends Fake implements WalletSignerDevicePort {}
 
 void main() {
   late SqliteDatabase database;
@@ -150,6 +156,8 @@ void main() {
     });
     inventory = WalletInventoryBackupRepositoryImpl(
       database: database,
+      vaults: _Vaults(),
+      signerDevices: _SignerDevices(),
       wallets: metadata,
       descriptors: importer,
       seeds: seeds,

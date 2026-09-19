@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_s
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
@@ -19,7 +18,6 @@ class PublishWalletBackupUsecase {
   final WalletBackupOperationQueue _operations;
   final NostrIdentityFacade _identity;
   final WalletBackupStateRepository _state;
-  final WalletBackupSnapshotRepository _snapshots;
   final WalletBackupCodecRepository _codec;
   final WalletBackupRemoteRepository _remote;
   final DateTime Function() _now;
@@ -29,7 +27,6 @@ class PublishWalletBackupUsecase {
     required this._operations,
     required this._identity,
     required this._state,
-    required this._snapshots,
     required this._codec,
     required this._remote,
     this._now = _utcNow,
@@ -65,12 +62,12 @@ class PublishWalletBackupUsecase {
       return const Err(WalletBackupChangedFailure());
     }
     var revision = 0;
-    final subscription = _snapshots.changes.listen((_) {
+    final subscription = _codec.changes.listen((_) {
       if (revision >= 0) revision++;
     }, onError: (Object _) => revision = -1);
     try {
       final beforeCapture = revision;
-      final capture = await _snapshots.capture(credential);
+      final capture = await _codec.capture(credential);
       if (capture case Err(:final failure)) return Err(failure);
       final snapshot =
           (capture as Ok<WalletBackupSnapshot, WalletBackupFailure>).value;
@@ -271,7 +268,7 @@ class PublishWalletBackupUsecase {
     }
     final beforeCapture = revision();
     if (beforeCapture < 0) return const Err(WalletBackupStorageFailure());
-    final current = await _snapshots.capture(currentCredential);
+    final current = await _codec.capture(currentCredential);
     if (current case Err(:final failure)) return Err(failure);
     final hash = _codec.contentHash(
       (current as Ok<WalletBackupSnapshot, WalletBackupFailure>).value,

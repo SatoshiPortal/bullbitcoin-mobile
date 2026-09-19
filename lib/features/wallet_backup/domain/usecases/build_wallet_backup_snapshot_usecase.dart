@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 
 final class BuildWalletBackupSnapshotUsecase {
-  final WalletBackupSnapshotRepository _repository;
+  final WalletBackupCodecRepository _repository;
   final NostrIdentityFacade _identity;
   const BuildWalletBackupSnapshotUsecase(this._repository, this._identity);
   Future<Result<WalletBackupSnapshot, WalletBackupFailure>> execute() async =>
@@ -16,7 +16,7 @@ final class BuildWalletBackupSnapshotUsecase {
 }
 
 final class WatchWalletBackupSnapshotUsecase {
-  final WalletBackupSnapshotRepository _repository;
+  final WalletBackupCodecRepository _repository;
   const WatchWalletBackupSnapshotUsecase(this._repository);
   Stream<void> execute() => _repository.changes;
 }

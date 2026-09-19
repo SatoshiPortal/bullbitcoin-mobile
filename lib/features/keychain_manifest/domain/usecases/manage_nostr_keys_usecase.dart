@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_path.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -59,7 +59,7 @@ final class CreateNostrKeyUsecase {
           )) {
             if (entry.identity >= identity) identity = entry.identity + 1;
           }
-          if (Bip85Reservations.isNostrAppReservedIdentity(identity)) {
+          if (isNostrAppReservedIdentity(identity)) {
             identity = 200;
           }
           final publicKey = NostrKeyDeriver.publicKey(seed, identity);

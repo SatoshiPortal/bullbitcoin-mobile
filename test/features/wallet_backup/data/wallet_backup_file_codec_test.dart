@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
+import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:crypto/crypto.dart';
@@ -22,7 +22,7 @@ void main() {
     'legal winner thank year wave sausage worth useful legal winner thank yellow',
   );
   final snapshot = backupSnapshotFixture(credential);
-  final codec = WalletBackupCodecRepositoryImpl(_Vaults());
+  final codec = backupCodecFixture(_Vaults());
   String encode(WalletBackupFileFormat format) =>
       value(codec.encodeFile(snapshot, credential, format: format));
   Map<String, dynamic> envelope(WalletBackupFileFormat format) =>

@@ -8,9 +8,8 @@ import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_
 import 'package:bb_mobile/features/wallet_backup/domain/entities/bullvault_backup_entry.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/apply_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -23,8 +22,6 @@ import '../../bullvault/bullvault_test_fixture.dart';
 class _Catalog extends Mock implements KeychainManifestFacade {}
 
 class _Wallets extends Mock implements WalletInventoryBackupRepository {}
-
-class _Vaults extends Mock implements BullVaultBackupRepository {}
 
 class _Metadata extends Mock implements WalletMetadataBackupRepository {}
 
@@ -42,7 +39,6 @@ void main() {
   late DriftWalletBackupStateRepository state;
   late _Catalog catalog;
   late _Wallets wallets;
-  late _Vaults vaults;
   late _Metadata metadata;
   late _Codec codec;
   late ApplyWalletBackupSnapshotUsecase apply;
@@ -54,7 +50,6 @@ void main() {
       codec: codec,
       catalog: catalog,
       wallets: wallets,
-      vaults: vaults,
       metadata: metadata,
     );
   }
@@ -71,7 +66,6 @@ void main() {
     state = DriftWalletBackupStateRepository(database);
     catalog = _Catalog();
     wallets = _Wallets();
-    vaults = _Vaults();
     metadata = _Metadata();
     codec = _Codec();
     stages.clear();
@@ -97,7 +91,7 @@ void main() {
       );
     });
     when(
-      () => vaults.restore(snapshot.vaults, snapshot.manifest.wallets),
+      () => wallets.restoreVaults(snapshot.vaults, snapshot.manifest.wallets),
     ).thenAnswer((_) async {
       await stage('vaults');
       return Ok(
@@ -171,7 +165,7 @@ void main() {
         return const Ok(null);
       });
       when(
-        () => vaults.restore(source.vaults, source.manifest.wallets),
+        () => wallets.restoreVaults(source.vaults, source.manifest.wallets),
       ).thenAnswer((_) async {
         await stage('vaults');
         return Ok(

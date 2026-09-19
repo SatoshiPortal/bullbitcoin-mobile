@@ -3,7 +3,6 @@ import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_fa
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
@@ -18,7 +17,6 @@ final class ApplyWalletBackupSnapshotUsecase {
   final WalletBackupCodecRepository _codec;
   final KeychainManifestFacade _catalog;
   final WalletInventoryBackupRepository _wallets;
-  final BullVaultBackupRepository _vaults;
   final WalletMetadataBackupRepository _metadata;
 
   const ApplyWalletBackupSnapshotUsecase({
@@ -26,7 +24,6 @@ final class ApplyWalletBackupSnapshotUsecase {
     required this._codec,
     required this._catalog,
     required this._wallets,
-    required this._vaults,
     required this._metadata,
   });
 
@@ -87,7 +84,7 @@ final class ApplyWalletBackupSnapshotUsecase {
         ordinary,
         initialWalletLabels: initialWalletLabels,
       ),
-      await _vaults.restore(source.vaults, source.manifest.wallets),
+      await _wallets.restoreVaults(source.vaults, source.manifest.wallets),
     ]) {
       switch (result) {
         case Err(:final failure):

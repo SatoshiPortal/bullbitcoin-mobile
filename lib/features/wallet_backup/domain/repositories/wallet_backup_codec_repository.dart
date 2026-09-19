@@ -44,4 +44,9 @@ abstract interface class WalletBackupCodecRepository {
     WalletBackupCiphertext ciphertext,
     BackupCredential credential,
   );
+  Stream<void> get changes;
+  @useResult
+  Future<Result<WalletBackupSnapshot, WalletBackupFailure>> capture(
+    BackupCredential credential,
+  );
 }

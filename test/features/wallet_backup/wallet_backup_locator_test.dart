@@ -1,13 +1,12 @@
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
@@ -21,11 +20,9 @@ class _Identity extends Mock implements NostrIdentityFacade {}
 
 class _Vaults extends Mock implements BullVaultFacade {}
 
-class _Snapshots extends Fake implements WalletBackupSnapshotRepository {}
+class _Snapshots extends Fake implements WalletBackupCodecRepository {}
 
 class _Catalog extends Mock implements KeychainManifestFacade {}
-
-class _NativeVaults extends Fake implements BullVaultBackupRepository {}
 
 class _Wallets extends Fake implements WalletInventoryBackupRepository {}
 
@@ -48,12 +45,10 @@ void main() {
     WalletBackupLocator.setup(services);
     await services.unregister<WalletBackupFileRepository>();
     services.registerSingleton<WalletBackupFileRepository>(_Files());
-    await services.unregister<WalletBackupSnapshotRepository>();
-    services.registerSingleton<WalletBackupSnapshotRepository>(_Snapshots());
-    await services.unregister<BullVaultBackupRepository>();
+    await services.unregister<WalletBackupCodecRepository>();
+    services.registerSingleton<WalletBackupCodecRepository>(_Snapshots());
     await services.unregister<WalletInventoryBackupRepository>();
     await services.unregister<WalletMetadataBackupRepository>();
-    services.registerSingleton<BullVaultBackupRepository>(_NativeVaults());
     services.registerSingleton<WalletInventoryBackupRepository>(_Wallets());
     services.registerSingleton<WalletMetadataBackupRepository>(_Metadata());
   });

@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
+import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_metadata_backup.dart';
@@ -28,7 +28,7 @@ T value<T>(Result<T, WalletBackupFailure> result) =>
 void main() {
   final credential = BackupCredential.fromWords(backupFixtureWords);
   final vaults = _Vaults();
-  final codec = WalletBackupCodecRepositoryImpl(vaults);
+  final codec = backupCodecFixture(vaults);
   final snapshot = backupSnapshotFixture(credential);
   for (final populated in [true, false]) {
     test(

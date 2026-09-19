@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_path.dart';
 
 /// Public inventory only. The private key is re-derived when it is used.
 final class NostrKeyRecord {
@@ -22,7 +22,7 @@ final class NostrKeyRecord {
     required this.createdAt,
     required this.updatedAt,
   }) {
-    Bip85Reservations.nostrUserKeyPath(identity);
+    nostrUserKeyPath(identity);
     if (!RegExp(r'^[0-9a-f]{8}$').hasMatch(parentFingerprint) ||
         !RegExp(r'^[0-9a-f]{64}$').hasMatch(publicKey) ||
         purpose.trim().isEmpty ||
@@ -35,5 +35,5 @@ final class NostrKeyRecord {
     }
   }
 
-  String get derivationPath => Bip85Reservations.nostrUserKeyPath(identity);
+  String get derivationPath => nostrUserKeyPath(identity);
 }

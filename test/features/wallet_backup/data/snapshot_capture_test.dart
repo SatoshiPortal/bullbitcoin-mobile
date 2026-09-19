@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -5,9 +6,9 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_snapshot_repository_impl.dart';
+import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
@@ -22,7 +23,9 @@ class _Manifest extends Mock implements KeychainManifestFacade {}
 
 class _Metadata extends Mock implements WalletMetadataBackupRepository {}
 
-class _Vaults extends Mock implements BullVaultBackupRepository {}
+class _Vaults extends Mock implements WalletInventoryBackupRepository {}
+
+class _VaultCodec extends Mock implements BullVaultFacade {}
 
 void main() {
   final credential = BackupCredential.fromWords(backupFixtureWords);
@@ -33,7 +36,7 @@ void main() {
   late _Metadata metadata;
   late _Vaults vaults;
   late BuildWalletBackupSnapshotUsecase build;
-  late WalletBackupSnapshotRepositoryImpl repository;
+  late WalletBackupCodecRepositoryImpl repository;
   late StreamController<void> changes;
   setUpAll(() => registerFallbackValue(credential));
   setUp(() {
@@ -53,15 +56,18 @@ void main() {
     when(
       () => metadata.capture(any()),
     ).thenAnswer((_) async => Ok(fixture.metadata));
-    when(() => vaults.capture(any())).thenAnswer((_) async => const Ok([]));
+    when(
+      () => vaults.captureVaults(any()),
+    ).thenAnswer((_) async => const Ok([]));
     when(() => metadata.changes).thenAnswer((_) => changes.stream);
-    when(() => vaults.changes).thenAnswer((_) => const Stream.empty());
+    when(() => vaults.vaultChanges).thenAnswer((_) => const Stream.empty());
     when(manifest.watchNostrKeys).thenAnswer((_) => const Stream.empty());
-    repository = WalletBackupSnapshotRepositoryImpl(
+    repository = WalletBackupCodecRepositoryImpl(
       database: db,
       manifest: manifest,
       metadata: metadata,
-      vaults: vaults,
+      inventory: vaults,
+      vaults: _VaultCodec(),
       wallets: WalletMetadataDatasource(sqlite: db),
       bip85: Bip85Datasource(sqlite: db),
     );
@@ -86,7 +92,7 @@ void main() {
         () => metadata.capture({'source-wallet': 'source-wallet'}),
       ).called(1);
       verify(
-        () => vaults.capture({'source-wallet': 'source-wallet'}),
+        () => vaults.captureVaults({'source-wallet': 'source-wallet'}),
       ).called(1);
     },
   );

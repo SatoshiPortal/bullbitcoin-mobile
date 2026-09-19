@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/backup_server_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
+import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_publication.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_s
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_metadata_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
@@ -33,12 +33,26 @@ class _Vaults extends Mock implements BullVaultFacade {}
 T _value<T>(Result<T, WalletBackupFailure> result) =>
     (result as Ok<T, WalletBackupFailure>).value;
 
-class _Snapshots implements WalletBackupSnapshotRepository {
+class _Snapshots extends Mock implements WalletBackupCodecRepository {
   final events = StreamController<void>.broadcast(sync: true);
   WalletBackupSnapshot current;
   Future<void> Function()? onCapture;
   int captures = 0;
-  _Snapshots(this.current);
+  final WalletBackupCodecRepository codec;
+  _Snapshots(this.current, this.codec);
+  @override
+  Result<String, WalletBackupFailure> contentHash(WalletBackupSnapshot value) =>
+      codec.contentHash(value);
+  @override
+  Result<WalletBackupCiphertext, WalletBackupFailure> encrypt(
+    WalletBackupSnapshot value,
+    BackupCredential credential,
+  ) => codec.encrypt(value, credential);
+  @override
+  Result<WalletBackupSnapshot, WalletBackupFailure> decrypt(
+    WalletBackupCiphertext value,
+    BackupCredential credential,
+  ) => codec.decrypt(value, credential);
   @override
   Stream<void> get changes => events.stream;
   @override
@@ -145,7 +159,7 @@ class _Remote implements WalletBackupRemoteRepository {
 
 void main() {
   final credential = BackupCredential.fromWords(backupFixtureWords);
-  final codec = WalletBackupCodecRepositoryImpl(_Vaults());
+  final codec = backupCodecFixture(_Vaults());
   late Directory directory;
   late SqliteDatabase db;
   late DriftWalletBackupStateRepository state;
@@ -157,8 +171,7 @@ void main() {
     operations: WalletBackupOperationQueue(),
     identity: identity,
     state: state,
-    snapshots: snapshots,
-    codec: codec,
+    codec: snapshots,
     remote: remote,
     now: () => DateTime.utc(2026, 9, 18, 12),
   );
@@ -173,7 +186,7 @@ void main() {
     );
     state = DriftWalletBackupStateRepository(db);
     _value(await state.setEnabled(true));
-    snapshots = _Snapshots(backupSnapshotFixture(credential));
+    snapshots = _Snapshots(backupSnapshotFixture(credential), codec);
     remote = _Remote();
     identity = _Identity();
     when(identity.resolve).thenAnswer((_) async => Ok(credential));
@@ -353,7 +366,7 @@ void main() {
   test(
     'different remote data needs explicit Replace and a stale inspected head cannot replace',
     () async {
-      final other = _Snapshots(snapshots.current)..edit();
+      final other = _Snapshots(snapshots.current, codec)..edit();
       addTearDown(other.events.close);
       remote.install(
         credential,

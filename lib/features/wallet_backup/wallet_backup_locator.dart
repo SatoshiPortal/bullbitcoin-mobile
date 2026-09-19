@@ -1,17 +1,13 @@
 import 'package:bb_mobile/features/wallet_backup/data/backup_server_http_transport.dart';
-import 'package:bb_mobile/features/wallet_backup/data/bullvault_backup_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/file_picker_wallet_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_remote_repository_impl.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_snapshot_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_inventory_backup_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_metadata_backup_repository_impl.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
@@ -49,7 +45,15 @@ abstract final class WalletBackupLocator {
       () => DriftWalletBackupStateRepository(locator()),
     );
     locator.registerLazySingleton<WalletBackupCodecRepository>(
-      () => WalletBackupCodecRepositoryImpl(locator()),
+      () => WalletBackupCodecRepositoryImpl(
+        vaults: locator(),
+        database: locator(),
+        manifest: locator(),
+        metadata: locator(),
+        inventory: locator(),
+        wallets: locator(),
+        bip85: locator(),
+      ),
     );
     locator.registerLazySingleton<WalletBackupFileRepository>(
       () => FilePickerWalletBackupRepository(FilePicker.platform),
@@ -69,30 +73,14 @@ abstract final class WalletBackupLocator {
         mempoolSettings: locator(),
       ),
     );
-    locator.registerLazySingleton<BullVaultBackupRepository>(
-      () => BullVaultBackupRepositoryImpl(
-        database: locator(),
-        vaults: locator(),
-        wallets: locator(),
-        signerDevices: locator(),
-      ),
-    );
     locator.registerLazySingleton<WalletInventoryBackupRepository>(
       () => WalletInventoryBackupRepositoryImpl(
         database: locator(),
         wallets: locator(),
         descriptors: locator(),
         seeds: locator(),
-      ),
-    );
-    locator.registerLazySingleton<WalletBackupSnapshotRepository>(
-      () => WalletBackupSnapshotRepositoryImpl(
-        database: locator(),
-        manifest: locator(),
-        metadata: locator(),
         vaults: locator(),
-        wallets: locator(),
-        bip85: locator(),
+        signerDevices: locator(),
       ),
     );
     locator.registerLazySingleton(WalletBackupOperationQueue.new);
@@ -125,7 +113,6 @@ abstract final class WalletBackupLocator {
         operations: locator(),
         identity: locator(),
         state: locator(),
-        snapshots: locator(),
         codec: locator(),
         remote: locator(),
       ),
@@ -136,7 +123,6 @@ abstract final class WalletBackupLocator {
         codec: locator(),
         catalog: locator(),
         wallets: locator(),
-        vaults: locator(),
         metadata: locator(),
       ),
     );
@@ -164,7 +150,6 @@ abstract final class WalletBackupLocator {
         operations: locator(),
         identity: locator(),
         state: locator(),
-        snapshots: locator(),
         codec: locator(),
         files: locator(),
       ),

@@ -39,21 +39,4 @@ void main() {
       expect(Bip85Reservations.isReservedPath(path), isFalse, reason: path);
     }
   });
-
-  test(
-    'user Nostr identities preserve the existing user and application ranges',
-    () {
-      expect(Bip85Reservations.nostrUserKeyPath(99), "128002'/99'/1'");
-      expect(Bip85Reservations.nostrUserKeyPath(200), "128002'/200'/1'");
-      for (final index in [0, 100, 199, 0x80000000]) {
-        expect(
-          () => Bip85Reservations.nostrUserKeyPath(index),
-          throwsFormatException,
-        );
-      }
-      expect(Bip85Reservations.nostrUserKeyIdentity("128002'/200'/1'"), 200);
-      expect(Bip85Reservations.nostrUserKeyIdentity("128002'/101'/1'"), isNull);
-      expect(Bip85Reservations.nostrUserKeyIdentity("128002'/1'/2'"), isNull);
-    },
-  );
 }

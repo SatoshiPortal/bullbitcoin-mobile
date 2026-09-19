@@ -1,18 +1,24 @@
+import 'package:async/async.dart' show StreamGroup;
+import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'dart:convert';
 import 'package:bb_mobile/features/wallet_backup/data/backup_json.dart';
 
-import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
-import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_snapshot_model.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_file_model.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:crypto/crypto.dart';
 import 'package:recoverbull/recoverbull.dart';
 import 'package:nostr/nostr.dart' as nostr;
@@ -22,7 +28,22 @@ final class WalletBackupCodecRepositoryImpl
   static const maximumPlaintextBytes = WalletBackupCiphertext.maximumBytes - 64;
   final BullVaultFacade _vaults;
 
-  const WalletBackupCodecRepositoryImpl(this._vaults);
+  final SqliteDatabase _database;
+  final KeychainManifestFacade _manifest;
+  final WalletMetadataBackupRepository _metadata;
+  final WalletInventoryBackupRepository _inventory;
+  final WalletMetadataDatasource _wallets;
+  final Bip85Datasource _bip85;
+
+  const WalletBackupCodecRepositoryImpl({
+    required this._vaults,
+    required this._database,
+    required this._manifest,
+    required this._metadata,
+    required this._inventory,
+    required this._wallets,
+    required this._bip85,
+  });
 
   @override
   Result<Set<WalletBackupDifference>, WalletBackupFailure> differences(
@@ -341,4 +362,51 @@ final class WalletBackupCodecRepositoryImpl
               BackupIdentityKind.server => credential.serverPublicKey,
             },
       );
+  @override
+  Stream<void> get changes => StreamGroup.merge([
+    _wallets.changes,
+    _bip85.changes,
+    _manifest.watchNostrKeys(),
+    _metadata.changes,
+    _inventory.vaultChanges,
+  ]);
+
+  @override
+  Future<Result<WalletBackupSnapshot, WalletBackupFailure>> capture(
+    BackupCredential credential,
+  ) async {
+    try {
+      // SQL owners share this read transaction; Payjoin keeps its existing separate store, and the publisher's invalidation epoch covers that race.
+      return await _database.transaction(() async {
+        final inventory = await _manifest.capture(credential);
+        if (inventory case Err()) {
+          return const Err(WalletBackupIncompleteFailure());
+        }
+        final captured =
+            (inventory as Ok<CapturedKeychainManifest, KeychainManifestFailure>)
+                .value;
+        final metadata = await _metadata.capture(captured.walletReferences);
+        if (metadata case Err(:final failure)) return Err(failure);
+        final vaults = await _inventory.captureVaults(
+          captured.walletReferences,
+        );
+        if (vaults case Err(:final failure)) return Err(failure);
+        return switch ((metadata, vaults)) {
+          (Ok(value: final metadata), Ok(value: final vaults)) => Ok(
+            WalletBackupSnapshot(
+              manifest: captured.manifest,
+              metadata: metadata,
+              vaults: vaults,
+            ),
+          ),
+          (Err(:final failure), _) => Err(failure),
+          (_, Err(:final failure)) => Err(failure),
+        };
+      });
+    } on FormatException {
+      return const Err(WalletBackupIncompleteFailure());
+    } on Exception {
+      return const Err(WalletBackupStorageFailure());
+    }
+  }
 }

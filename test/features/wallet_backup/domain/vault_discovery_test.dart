@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_s
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
@@ -28,7 +28,7 @@ class _Remote extends Mock implements WalletBackupRemoteRepository {}
 
 class _Codec extends Mock implements WalletBackupCodecRepository {}
 
-class _Vaults extends Mock implements BullVaultBackupRepository {}
+class _Vaults extends Mock implements WalletInventoryBackupRepository {}
 
 class _State extends Fake implements WalletBackupStateRepository {
   bool incomplete = false;
@@ -103,7 +103,7 @@ void main() {
     when(() => remote.fetch(credential)).thenAnswer((_) async => Ok(head));
     when(() => codec.decrypt(ciphertext, credential)).thenReturn(Ok(snapshot));
     when(
-      () => vaults.restore(
+      () => vaults.restoreVaults(
         snapshot.vaults,
         snapshot.manifest.wallets,
         abandoned: any(named: 'abandoned'),
@@ -161,7 +161,7 @@ void main() {
     'partial vault import retains actual results and the durable publication fence',
     () async {
       when(
-        () => vaults.restore(
+        () => vaults.restoreVaults(
           snapshot.vaults,
           snapshot.manifest.wallets,
           abandoned: any(named: 'abandoned'),

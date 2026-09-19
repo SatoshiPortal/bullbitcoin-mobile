@@ -8,15 +8,14 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
+import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/bullvault_backup_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_snapshot_repository.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/apply_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_files_usecase.dart';
@@ -30,15 +29,13 @@ class _Identity extends Mock implements NostrIdentityFacade {}
 
 class _State extends Mock implements WalletBackupStateRepository {}
 
-class _Snapshots extends Mock implements WalletBackupSnapshotRepository {}
+class _Snapshots extends Mock implements WalletBackupCodecRepository {}
 
 class _Files extends Mock implements WalletBackupFileRepository {}
 
 class _Catalog extends Mock implements KeychainManifestFacade {}
 
 class _Wallets extends Mock implements WalletInventoryBackupRepository {}
-
-class _Vaults extends Mock implements BullVaultBackupRepository {}
 
 class _Metadata extends Mock implements WalletMetadataBackupRepository {}
 
@@ -51,7 +48,7 @@ T value<T>(Result<T, WalletBackupFailure> result) =>
 void main() {
   final credential = BackupCredential.fromWords(backupFixtureWords);
   final snapshot = backupSnapshotFixture(credential, populated: false);
-  final codec = WalletBackupCodecRepositoryImpl(_VaultCodec());
+  final codec = backupCodecFixture(_VaultCodec());
   late _Identity identity;
   late _State state;
   late _Snapshots snapshots;
@@ -76,7 +73,6 @@ void main() {
     catalog = _Catalog();
     metadata = _Metadata();
     final wallets = _Wallets();
-    final vaults = _Vaults();
     incomplete = false;
     applied = 0;
     changes = StreamController<void>.broadcast(sync: true);
@@ -96,6 +92,19 @@ void main() {
       incomplete = call.positionalArguments.single as bool;
       return const Ok(null);
     });
+    when(
+      () => snapshots.encodeFile(
+        snapshot,
+        credential,
+        format: any(named: 'format'),
+      ),
+    ).thenAnswer(
+      (call) => codec.encodeFile(
+        snapshot,
+        credential,
+        format: call.namedArguments[#format] as WalletBackupFileFormat,
+      ),
+    );
     when(() => snapshots.changes).thenAnswer((_) => changes.stream);
     when(
       () => snapshots.capture(credential),
@@ -113,7 +122,7 @@ void main() {
         WalletInventoryRecovery(walletReferences: {}, failedReferences: []),
       ),
     );
-    when(() => vaults.restore([], [])).thenAnswer(
+    when(() => wallets.restoreVaults([], [])).thenAnswer(
       (_) async => Ok(
         WalletInventoryRecovery(walletReferences: {}, failedReferences: []),
       ),
@@ -126,8 +135,7 @@ void main() {
       operations: operations,
       identity: identity,
       state: state,
-      snapshots: snapshots,
-      codec: codec,
+      codec: snapshots,
       files: files,
     );
     decode = DecodeWalletBackupFileUsecase(identity: identity, codec: codec);
@@ -136,7 +144,6 @@ void main() {
       codec: codec,
       catalog: catalog,
       wallets: wallets,
-      vaults: vaults,
       metadata: metadata,
     );
     final remote = _Remote();

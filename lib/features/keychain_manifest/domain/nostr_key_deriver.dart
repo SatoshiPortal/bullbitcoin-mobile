@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/bip85/domain/bip85_reservations.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/nostr_key_path.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -8,7 +8,7 @@ import 'package:nostr/nostr.dart' as nostr;
 
 abstract final class NostrKeyDeriver {
   static nostr.Keys _derive(Seed seed, int identity) {
-    final path = Bip85Reservations.nostrUserKeyPath(identity);
+    final path = nostrUserKeyPath(identity);
     final root = Bip32Derivation.getXprvFromSeed(
       seed.bytes,
       Network.bitcoinMainnet,

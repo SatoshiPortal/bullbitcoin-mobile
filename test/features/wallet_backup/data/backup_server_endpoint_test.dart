@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/backup_server_http_transport.dart';
-import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
+import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_remote_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
@@ -36,7 +36,7 @@ void main() {
         BackupServerHttpTransport(dio: dio, origin: uri),
       );
       final credential = BackupCredential.fromWords(backupFixtureWords);
-      final codec = WalletBackupCodecRepositoryImpl(_Vaults());
+      final codec = backupCodecFixture(_Vaults());
       final snapshot = backupSnapshotFixture(credential);
       final ciphertext = _value(codec.encrypt(snapshot, credential));
       final initial = _value(await repository.fetch(credential));

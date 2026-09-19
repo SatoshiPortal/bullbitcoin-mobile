@@ -52,32 +52,6 @@ abstract final class Bip85Reservations {
     return words == 12 && index == backupWords.index ? index + 1 : index;
   }
 
-  static bool isNostrAppReservedIdentity(int identity) =>
-      identity >= 100 && identity <= 199;
-
-  static String nostrUserKeyPath(int identity) {
-    if (identity < 1 ||
-        identity > maxIndex ||
-        isNostrAppReservedIdentity(identity)) {
-      throw const FormatException('Invalid Nostr key index');
-    }
-    return "128002'/$identity'/1'";
-  }
-
-  static int? nostrUserKeyIdentity(String path) {
-    final parts = _normalize(path)?.split('/');
-    if (parts == null ||
-        parts.length != 3 ||
-        parts.first != "128002'" ||
-        parts.last != "1'") {
-      return null;
-    }
-    final identity = int.parse(parts[1].replaceAll("'", ''));
-    return identity >= 1 && !isNostrAppReservedIdentity(identity)
-        ? identity
-        : null;
-  }
-
   static String? _normalize(String path) {
     var parts = path.trim().split('/');
     if (parts.first == 'm') parts = parts.sublist(1);
