@@ -23,6 +23,7 @@ class VerifyBullVaultDescriptorBackupUsecase {
   Future<Result<DateTime, BullVaultFailure>> execute({
     required BullVaultRecord expected,
     required String source,
+    BullVaultBackupTestKind kind = BullVaultBackupTestKind.descriptor,
   }) async {
     if (source.length > BullVaultRecoveryPackage.maximumFileBytes ||
         utf8.encode(source).length >
@@ -65,7 +66,7 @@ class VerifyBullVaultDescriptorBackupUsecase {
     }
     return _repository.recordBackupTest(
       expected: expected,
-      kind: BullVaultBackupTestKind.descriptor,
+      kind: kind,
       testedAt: _clock().toUtc(),
     );
   }

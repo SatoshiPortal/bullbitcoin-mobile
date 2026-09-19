@@ -9,9 +9,23 @@ import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_backup
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_vault_backup_usecase.dart';
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_backup_cubit.dart';
 
 class BackupSettingsLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory(
+      () => LoadVaultBackupUsecase(locator(), locator(), locator()),
+    );
+    locator.registerFactory(
+      () => CheckVaultServerBackupUsecase(locator(), locator()),
+    );
+    locator.registerFactory(
+      () => VerifyVaultDescriptorBackupUsecase(locator()),
+    );
+    locator.registerFactory(
+      () => VaultBackupCubit(locator(), locator(), locator()),
+    );
     locator.registerFactory(
       () => RevealDataRecoveryWordsUsecase(
         locator<GetSettingsUsecase>(),

@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_onboarding_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_renewal_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

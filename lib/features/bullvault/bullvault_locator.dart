@@ -198,6 +198,7 @@ abstract final class BullVaultLocator {
       () => CanDeleteBullVaultWalletUsecase(locator()),
     );
     locator.registerFactory(() => GetBullVaultRecordsUsecase(locator()));
+    locator.registerFactory(() => GetBullVaultRecordUsecase(locator()));
     locator.registerFactory(
       () => LoadBullVaultMenuUsecase(locator(), locator<GetSettingsUsecase>()),
     );
@@ -218,6 +219,9 @@ abstract final class BullVaultLocator {
     );
     locator.registerFactory<BullVaultFacade>(
       () => BullVaultFacade(
+        locator(),
+        locator(),
+        locator(),
         locator(),
         locator(),
         locator(),

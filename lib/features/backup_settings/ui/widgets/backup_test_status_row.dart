@@ -6,12 +6,17 @@ import 'package:flutter/material.dart';
 class BackupTestStatusRow extends StatelessWidget {
   final String label;
   final DateTime? testedAt;
+  final bool _comingSoon;
 
   const BackupTestStatusRow({
     super.key,
     required this.label,
     required this.testedAt,
-  });
+  }) : _comingSoon = false;
+
+  const BackupTestStatusRow.comingSoon({super.key, required this.label})
+    : testedAt = null,
+      _comingSoon = true;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +30,15 @@ class BackupTestStatusRow extends StatelessWidget {
             Expanded(child: Text(label, style: context.font.bodyMedium)),
             const Gap(12),
             Text(
-              date == null
+              _comingSoon
+                  ? context.loc.vaultBackupComingSoon
+                  : date == null
                   ? context.loc.backupSettingsNotTested
                   : context.loc.backupSettingsTested,
               style: context.font.bodyMedium?.copyWith(
-                color: date == null
+                color: _comingSoon
+                    ? context.appColors.onSurfaceVariant
+                    : date == null
                     ? context.appColors.error
                     : context.appColors.success,
               ),

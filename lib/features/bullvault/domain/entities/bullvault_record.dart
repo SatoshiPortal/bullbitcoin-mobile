@@ -105,6 +105,7 @@ final class BullVaultRecord {
     bool? recoveryPackageConfirmed,
     bool? mobileBackupDeferred,
     DateTime? descriptorTestedAt,
+    DateTime? serverTestedAt,
   }) => BullVaultRecord(
     walletId: walletId,
     lineageId: lineageId,
@@ -125,6 +126,6 @@ final class BullVaultRecord {
     mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
     createdAt: createdAt,
     descriptorTestedAt: descriptorTestedAt ?? this.descriptorTestedAt,
-    serverTestedAt: serverTestedAt,
+    serverTestedAt: serverTestedAt ?? this.serverTestedAt,
   );
 }

@@ -16929,5 +16929,82 @@
   "dataBackupWordsUnavailable": "The matching wallet seed is unavailable. Data Recovery Words cannot be shown.",
   "@dataBackupWordsUnavailable": {
     "description": "Data Backup words display"
+  },
+  "dataBackupNetworkFailure": "Could not connect to the backup server. Try again.",
+  "@dataBackupNetworkFailure": {
+    "description": "Data Backup status"
+  },
+  "dataBackupMissing": "No Data Backup was found on the server.",
+  "@dataBackupMissing": {
+    "description": "Data Backup status"
+  },
+  "dataBackupRecoveryIncomplete": "Data recovery is incomplete. Automatic backup is paused until recovery is completed.",
+  "@dataBackupRecoveryIncomplete": {
+    "description": "Data Backup status"
+  },
+  "dataBackupRetryAt": "The backup server is busy. Try again after {time}.",
+  "@dataBackupRetryAt": {
+    "description": "Data Backup status",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dataBackupTitle": "Data Backup",
+  "@dataBackupTitle": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupDescriptor": "Descriptor backup",
+  "@vaultBackupDescriptor": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupCheckAgain": "Check again",
+  "@vaultBackupCheckAgain": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupEnableGuidance": "Turn on Data Backup to automatically save this vault’s recovery package.",
+  "@vaultBackupEnableGuidance": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupNostr": "Nostr",
+  "@vaultBackupNostr": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupBitcoin": "Bitcoin",
+  "@vaultBackupBitcoin": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupBip138": "BIP138",
+  "@vaultBackupBip138": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupComingSoon": "Coming soon",
+  "@vaultBackupComingSoon": {
+    "description": "Per-vault Backup and Recovery"
+  },
+  "vaultBackupActions": "Backup actions",
+  "@vaultBackupActions": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupViewDescriptor": "View descriptor",
+  "@vaultBackupViewDescriptor": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupExportDescriptor": "Export recovery package",
+  "@vaultBackupExportDescriptor": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupLastTestedTitle": "Last tested",
+  "@vaultBackupLastTestedTitle": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupChecking": "Checking…",
+  "@vaultBackupChecking": {
+    "description": "Per-vault backup action or test status"
+  },
+  "vaultBackupEnable": "Turn on Data Backup",
+  "@vaultBackupEnable": {
+    "description": "Per-vault backup action or test status"
   }
 }

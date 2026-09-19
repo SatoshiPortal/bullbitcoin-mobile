@@ -14,6 +14,16 @@ final class GetBullVaultRecordsUsecase {
       _repository.getAll();
 }
 
+final class GetBullVaultRecordUsecase {
+  final BullVaultRepository _repository;
+
+  const GetBullVaultRecordUsecase(this._repository);
+
+  @useResult
+  Future<Result<BullVaultRecord?, BullVaultFailure>> execute(String walletId) =>
+      _repository.getByWalletId(walletId);
+}
+
 final class WatchBullVaultRecordsUsecase {
   final BullVaultRepository _repository;
 

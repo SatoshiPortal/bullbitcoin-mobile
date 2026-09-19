@@ -10,12 +10,18 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/can_delete_bullvault_wallet_usecase.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/verify_bullvault_descriptor_backup_usecase.dart';
 
 export 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 export 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
 export 'package:bb_mobile/features/bullvault/public/bullvault_contributions.dart';
+export 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart'
+    show BullVaultScannerScreen, BullVaultScannerPurpose;
+export 'package:bb_mobile/features/bullvault/ui/bullvault_recovery_package_share.dart'
+    show shareBullVaultRecoveryPackage;
 export 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart'
     show BullVaultRouter;
 
@@ -37,6 +43,9 @@ class BullVaultFacade {
   final EncodeBullVaultRecoveryPackageUsecase _encodePackage;
   final DecodeBullVaultRecoveryPackageUsecase _decodePackage;
   final RestoreBullVaultUsecase _restore;
+  final GetBullVaultRecordUsecase _getRecord;
+  final VerifyBullVaultDescriptorBackupUsecase _verifyBackup;
+  final PickBullVaultRecoveryFileUsecase _pickFile;
 
   const BullVaultFacade(
     this._canDeleteWalletUsecase,
@@ -45,7 +54,26 @@ class BullVaultFacade {
     this._encodePackage,
     this._decodePackage,
     this._restore,
+    this._getRecord,
+    this._verifyBackup,
+    this._pickFile,
   );
+
+  @useResult
+  Future<Result<String?, BullVaultFailure>> pickRecoveryFile() =>
+      _pickFile.execute();
+
+  @useResult
+  Future<Result<BullVaultRecord?, BullVaultFailure>> getRecord(
+    String walletId,
+  ) => _getRecord.execute(walletId);
+
+  @useResult
+  Future<Result<DateTime, BullVaultFailure>> verifyBackup({
+    required BullVaultRecord expected,
+    required String source,
+    BullVaultBackupTestKind kind = BullVaultBackupTestKind.descriptor,
+  }) => _verifyBackup.execute(expected: expected, source: source, kind: kind);
 
   @useResult
   Future<Result<List<BullVaultRecord>, BullVaultFailure>> listRecords() =>

@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_state.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
-import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullInputText, BullPasteInput, Gap;
 import 'package:file_picker/file_picker.dart';

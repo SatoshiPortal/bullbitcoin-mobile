@@ -107,6 +107,7 @@ class _VerifiedCopy extends Fake
   Future<Result<DateTime, BullVaultFailure>> execute({
     required BullVaultRecord expected,
     required String source,
+    BullVaultBackupTestKind kind = BullVaultBackupTestKind.descriptor,
   }) async => source.isEmpty
       ? const Err(BullVaultBackupMismatchFailure())
       : Ok(DateTime.utc(2026, 9, 18));

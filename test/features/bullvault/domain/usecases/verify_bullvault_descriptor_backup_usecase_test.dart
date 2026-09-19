@@ -246,4 +246,38 @@ void main() {
       expect((await read()).descriptorTestedAt, now);
     },
   );
+  test(
+    'a server descriptor check writes only the selected server receipt',
+    () async {
+      final selected = await read();
+      final result = await verify.execute(
+        expected: selected,
+        source: selected.recoveryPackage.policy.descriptor,
+        kind: BullVaultBackupTestKind.server,
+      );
+      expect(result, isA<Ok<DateTime, BullVaultFailure>>());
+      final stored = await read();
+      expect(stored.serverTestedAt, now);
+      expect(stored.descriptorTestedAt, isNull);
+      expect(stored.recoveryPackageConfirmed, isFalse);
+      expect(records.loads, 0);
+      expect(selected.copyWith(serverTestedAt: now).serverTestedAt, now);
+      expect(selected.serverTestedAt, isNull);
+    },
+  );
+
+  test('server mismatch cannot update either receipt', () async {
+    final other = testBullVaultCreateResult(includesInheritance: true).record;
+    expect(
+      await verify.execute(
+        expected: await read(),
+        source: other.recoveryPackage.policy.descriptor,
+        kind: BullVaultBackupTestKind.server,
+      ),
+      isA<Err<DateTime, BullVaultFailure>>(),
+    );
+    final stored = await read();
+    expect(stored.serverTestedAt, isNull);
+    expect(stored.descriptorTestedAt, isNull);
+  });
 }
