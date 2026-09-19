@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_key_summary.da
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BullVaultPolicyPanel extends StatelessWidget {
   final BullVaultInspection inspection;
@@ -305,8 +306,11 @@ class _Stage extends StatelessWidget {
     final date = DateTime.fromMillisecondsSinceEpoch(
       seconds * 1000,
       isUtc: true,
-    ).toLocal();
-    final loc = MaterialLocalizations.of(context);
-    return '${loc.formatMediumDate(date)} ${loc.formatTimeOfDay(TimeOfDay.fromDateTime(date))}';
+    );
+    final format = DateFormat.yMMMd(
+      Localizations.localeOf(context).toLanguageTag(),
+    );
+    final clock = date.second == 0 ? format.add_Hm() : format.add_Hms();
+    return '${clock.format(date)} ${date.timeZoneName}';
   }
 }

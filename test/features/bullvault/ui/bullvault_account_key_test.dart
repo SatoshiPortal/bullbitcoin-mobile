@@ -43,6 +43,12 @@ void main() {
           tester.widget<QrDisplayWidget>(find.byType(QrDisplayWidget)).data,
           expected,
         );
+        final dialogCopy = find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(CopyInput),
+        );
+        expect(dialogCopy, findsOneWidget);
+        expect(tester.widget<CopyInput>(dialogCopy).text, expected);
         Navigator.of(tester.element(find.byType(QrDisplayWidget))).pop();
         await tester.pumpAndSettle();
       }

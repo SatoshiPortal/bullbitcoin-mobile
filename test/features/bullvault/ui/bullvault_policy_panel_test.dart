@@ -172,4 +172,30 @@ void main() {
       expect(find.text(loc.walletPolicyFromStart), findsNothing);
     },
   );
+  testWidgets('date headers retain explicit UTC and nonzero seconds', (
+    tester,
+  ) async {
+    for (final second in [0, 6]) {
+      final date = DateTime.utc(2027, 1, 2, 14, 5, second);
+      await pump(
+        tester,
+        BitcoinThresholdPolicyNode(
+          id: 'dated',
+          threshold: 2,
+          children: [
+            BitcoinAbsoluteTimelockPolicyNode(
+              id: 'clock',
+              type: .timestamp,
+              value: date.millisecondsSinceEpoch ~/ 1000,
+            ),
+            signature(0),
+          ],
+        ),
+      );
+      final stamp = second == 0
+          ? 'Jan 2, 2027 14:05 UTC'
+          : 'Jan 2, 2027 14:05:06 UTC';
+      expect(find.text(loc.walletPolicyFromDate(stamp)), findsOneWidget);
+    }
+  });
 }
