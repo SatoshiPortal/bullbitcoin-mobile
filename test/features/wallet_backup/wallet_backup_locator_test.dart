@@ -44,6 +44,8 @@ void main() {
     services.registerSingleton<BullVaultFacade>(_Vaults());
     services.registerSingleton<KeychainManifestFacade>(_Catalog());
     WalletBackupLocator.setup(services);
+    await services.unregister<WalletBackupSnapshotRepository>();
+    services.registerSingleton<WalletBackupSnapshotRepository>(_Snapshots());
     await services.unregister<BullVaultBackupRepository>();
     await services.unregister<WalletInventoryBackupRepository>();
     await services.unregister<WalletMetadataBackupRepository>();
@@ -70,8 +72,6 @@ void main() {
   test(
     'off survives subsequent reads and publication never reads identity or inventory',
     () async {
-      await services.unregister<WalletBackupSnapshotRepository>();
-      services.registerSingleton<WalletBackupSnapshotRepository>(_Snapshots());
       expect(
         await services<SetWalletBackupEnabledUsecase>().execute(false),
         isA<Ok>(),

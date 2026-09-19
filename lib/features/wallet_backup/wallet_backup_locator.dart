@@ -207,7 +207,14 @@ abstract final class WalletBackupLocator {
       ),
     );
     locator.registerFactory(
-      () => WalletBackupFacade(locator(), locator(), locator(), locator()),
+      () => WalletBackupFacade(
+        getControl: locator(),
+        inspect: locator(),
+        recover: locator(),
+        recoverVaults: locator(),
+        watchState: locator(),
+        watcher: locator(),
+      ),
     );
   }
 }

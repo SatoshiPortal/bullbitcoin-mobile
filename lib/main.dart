@@ -96,6 +96,15 @@ void resumePayjoinsOnAppResume(
   }
 }
 
+@visibleForTesting
+Widget buildBackupSettingsScope(BuildContext context, Widget child) {
+  final started = context.watch<AppStartupBloc>().state is AppStartupSuccess;
+  final hasDefaultWallet = context.select<WalletBloc, bool>(
+    (bloc) => bloc.state.wallets.any((wallet) => wallet.isDefault),
+  );
+  return BackupSettingsScope(ready: started && hasDefaultWallet, child: child);
+}
+
 class Bull {
   static final _diagnosticRuntime = DiagnosticRuntimeContext();
   static Future<void> init({String? payjoinDatabasePath}) async {
@@ -464,8 +473,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     builder: (context, child) {
-                      final app = BackupSettingsScope(
-                        child: AppStartupWidget(app: child!),
+                      final app = buildBackupSettingsScope(
+                        context,
+                        AppStartupWidget(app: child!),
                       );
                       // Mark beta-channel builds (`make android beta`) with a
                       // corner banner. Release mode drops the Flutter debug

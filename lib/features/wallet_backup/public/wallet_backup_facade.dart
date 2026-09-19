@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/watchers/wallet_backup_watcher.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
@@ -26,12 +27,21 @@ class WalletBackupFacade {
   final RecoverWalletBackupUsecase _recover;
   final RestoreBullVaultBackupUsecase _recoverVaults;
 
-  const WalletBackupFacade(
-    this._getControl,
-    this._inspect,
-    this._recover,
-    this._recoverVaults,
-  );
+  final WatchWalletBackupStateUsecase _watchState;
+  final WalletBackupWatcher _watcher;
+
+  const WalletBackupFacade({
+    required this._getControl,
+    required this._inspect,
+    required this._recover,
+    required this._recoverVaults,
+    required this._watchState,
+    required this._watcher,
+  });
+
+  Stream<void> watchState() => _watchState.execute();
+  void resumeAutomatic() => _watcher.resume();
+  Future<void> stopAutomatic() => _watcher.stop();
 
   @useResult
   Future<Result<VaultBackupRecovery?, WalletBackupFailure>> recoverVaults({

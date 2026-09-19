@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/update_data_backup_lifecycle_usecase.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -12,15 +14,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class BackupSettingsScope extends StatelessWidget {
+class BackupSettingsScope extends StatefulWidget {
   final Widget child;
+  final bool ready;
+  const BackupSettingsScope({
+    super.key,
+    required this.child,
+    required this.ready,
+  });
 
-  const BackupSettingsScope({super.key, required this.child});
+  @override
+  State<BackupSettingsScope> createState() => _BackupSettingsScopeState();
+}
+
+class _BackupSettingsScopeState extends State<BackupSettingsScope> {
+  late final UpdateDataBackupLifecycleUsecase _lifecycle;
+  late final AppLifecycleListener _listener;
+  late final StreamSubscription<void> _changes;
+  bool _foreground = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = locator<UpdateDataBackupLifecycleUsecase>();
+    final current = WidgetsBinding.instance.lifecycleState;
+    _foreground = current == null || current == AppLifecycleState.resumed;
+    _listener = AppLifecycleListener(
+      onStateChange: (state) {
+        _foreground = state == AppLifecycleState.resumed;
+        _update();
+      },
+    );
+    _changes = _lifecycle.changes.listen(
+      (_) => _update(),
+      onError: (Object _) {
+        unawaited(_lifecycle.execute(ready: false, foreground: _foreground));
+      },
+    );
+    _update();
+  }
+
+  void _update() => unawaited(
+    _lifecycle.execute(ready: widget.ready, foreground: _foreground),
+  );
+
+  @override
+  void didUpdateWidget(BackupSettingsScope oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.ready != widget.ready) _update();
+  }
+
+  @override
+  void dispose() {
+    _listener.dispose();
+    unawaited(_changes.cancel());
+    unawaited(_lifecycle.execute(ready: false, foreground: false));
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (_) => locator<BackupReminderCubit>()..loadPreferences(),
-    child: child,
+    child: widget.child,
   );
 }
 
