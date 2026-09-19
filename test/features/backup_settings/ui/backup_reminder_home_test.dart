@@ -127,24 +127,109 @@ void main() {
     );
     expect(millis, greaterThanOrEqualTo(before.millisecondsSinceEpoch));
   });
+  testWidgets('encrypted-only guidance snoozes for 180 days without testing', (
+    tester,
+  ) async {
+    final loc = AppLocalizationsEn();
+    final tested = DateTime.now().subtract(const Duration(days: 200));
+    final wallet = _wallet(encrypted: tested);
+    await pump(tester, wallet);
+    expect(
+      (tester.widget<AlertDialog>(find.byType(AlertDialog)).title! as Text)
+          .data,
+      loc.backupReminderAddPhysicalTitle,
+    );
+    expect(find.text(loc.backupReminderAddPhysicalBody), findsOneWidget);
+    expect(
+      find.widgetWithText(FilledButton, loc.backupReminderAddPhysical),
+      findsOneWidget,
+    );
+    final before = DateTime.now().add(const Duration(days: 180));
+    await tester.tap(find.text(loc.backupReminderLater180Days));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(
+      (await SharedPreferences.getInstance()).getInt(
+        'backup_reminders_add_physical_snooze_until',
+      ),
+      greaterThanOrEqualTo(before.millisecondsSinceEpoch),
+    );
+    expect(wallet.latestEncryptedBackup, tested);
+    expect(wallet.isPhysicalBackupTested, isFalse);
+  });
+
+  testWidgets('encrypted test reminder keeps its warning and 366-day snooze', (
+    tester,
+  ) async {
+    final loc = AppLocalizationsEn();
+    final tested = DateTime.now().subtract(const Duration(days: 400));
+    SharedPreferences.setMockInitialValues({
+      'backup_reminders_physical_test_snooze_until': DateTime.now()
+          .add(const Duration(days: 1))
+          .millisecondsSinceEpoch,
+    });
+    final wallet = _wallet(physical: tested, encrypted: tested);
+    await pump(tester, wallet);
+    expect(find.text(loc.backupReminderTestVaultTitle), findsOneWidget);
+    expect(find.text(loc.backupReminderTestVaultBody), findsOneWidget);
+    expect(find.text(loc.backupReminderTestVault), findsOneWidget);
+    final before = DateTime.now().add(const Duration(days: 366));
+    await tester.tap(find.text(loc.backupReminderLater366Days));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(
+      (await SharedPreferences.getInstance()).getInt(
+        'backup_reminders_vault_test_snooze_until',
+      ),
+      greaterThanOrEqualTo(before.millisecondsSinceEpoch),
+    );
+    expect(wallet.latestEncryptedBackup, tested);
+  });
+
+  testWidgets('ten-million-sat warning persists its one-time dismissal', (
+    tester,
+  ) async {
+    final loc = AppLocalizationsEn();
+    final wallet = _wallet(sats: 10000000, encrypted: DateTime.now());
+    await pump(tester, wallet);
+    expect(find.text(loc.backupReminderLargeBalanceTitle), findsOneWidget);
+    expect(find.text(loc.backupReminderLargeBalanceBody), findsOneWidget);
+    expect(
+      find.widgetWithText(FilledButton, loc.backupReminderAddPhysical),
+      findsOneWidget,
+    );
+    await tester.tap(find.text(loc.backupReminderDismissRisk));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(
+      (await SharedPreferences.getInstance()).getBool(
+        'backup_reminders_large_balance_dismissed',
+      ),
+      isTrue,
+    );
+    expect(wallet.isPhysicalBackupTested, isFalse);
+  });
 }
 
-Wallet _wallet({int sats = 1, DateTime? physical}) => Wallet(
-  origin: 'default',
-  network: Network.bitcoinMainnet,
-  isDefault: true,
-  signers: [
-    WalletSigner.single(
-      masterFingerprint: 'deadbeef',
-      xpubFingerprint: 'cafebabe',
-      xpub: 'xpub',
-      signer: SignerEntity.local,
-      signerDevice: null,
-    ),
-  ],
-  scriptType: ScriptType.bip84,
-  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
-  balanceSat: BigInt.from(sats),
-  latestPhysicalBackup: physical,
-  isPhysicalBackupTested: physical != null,
-);
+Wallet _wallet({int sats = 1, DateTime? physical, DateTime? encrypted}) =>
+    Wallet(
+      origin: 'default',
+      network: Network.bitcoinMainnet,
+      isDefault: true,
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: 'deadbeef',
+          xpubFingerprint: 'cafebabe',
+          xpub: 'xpub',
+          signer: SignerEntity.local,
+          signerDevice: null,
+        ),
+      ],
+      scriptType: ScriptType.bip84,
+      publicDescriptor: 'wpkh(xpub/<0;1>/*)',
+      balanceSat: BigInt.from(sats),
+      latestPhysicalBackup: physical,
+      latestEncryptedBackup: encrypted,
+      isEncryptedVaultTested: encrypted != null,
+      isPhysicalBackupTested: physical != null,
+    );

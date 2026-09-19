@@ -12,6 +12,9 @@ import '../../test/features/backup_settings/ui/backup_reminder_home_test.dart'
 import '../../test/features/backup_settings/ui/backup_settings_screen_test.dart'
     as recovery;
 
+import '../../test/features/backup_settings/domain/backup_reminder_test.dart'
+    as timing;
+
 // Run separately from the app's storage integration suite: these UI fixtures
 // supply wallet facts and own their locator registrations. The first test uses
 // real platform preferences; the shared widget cases use in-memory preferences.
@@ -46,6 +49,7 @@ void main() {
     );
   });
 
+  group('Reminder timing and priority', timing.main);
   group('Wallet Recovery presentation', recovery.main);
   group('Reminder dialogs and controls', reminders.main);
   group('Backup options', options.main);

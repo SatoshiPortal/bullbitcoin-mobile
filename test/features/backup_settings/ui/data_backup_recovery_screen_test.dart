@@ -54,8 +54,8 @@ void main() {
         value: cubit,
         child: DataBackupRecoveryScreen(
           onRecovered: (source, result) {
-            expect(source, same(inspection));
-            expect(result.complete, isTrue);
+            expectSync(source, same(inspection));
+            expectSync(result.complete, isTrue);
             completed++;
           },
         ),

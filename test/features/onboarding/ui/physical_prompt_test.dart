@@ -37,8 +37,8 @@ void main() {
             builder: (context, state) {
               opened++;
               final args = state.extra! as DataBackupRecoveryArgs;
-              expect(args.enableAfterRecovery, isTrue);
-              expect(args.initialWalletLabels, {'new-wallet': null});
+              expectSync(args.enableAfterRecovery, isTrue);
+              expectSync(args.initialWalletLabels, {'new-wallet': null});
               return Scaffold(
                 body: TextButton(
                   onPressed: () => context.pop(),
