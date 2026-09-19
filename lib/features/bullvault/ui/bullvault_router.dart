@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_cosigner_screen.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
@@ -14,7 +16,24 @@ import 'package:go_router/go_router.dart';
 abstract final class BullVaultRouter {
   static const scannerRouteName = 'bullVaultScanner';
 
-  static final routes = [route, scannerRoute, restoreRoute, settingsRoute];
+  static final routes = [
+    route,
+    scannerRoute,
+    restoreRoute,
+    settingsRoute,
+    cosignerRoute,
+  ];
+
+  static final cosignerRoute = GoRoute(
+    name: BullVaultFacade.cosignerRouteName,
+    path: '/bullvault/:walletId/cosigner',
+    builder: (context, state) => BlocProvider(
+      create: (_) => locator<BullVaultCosignerCubit>(
+        param1: state.pathParameters['walletId']!,
+      ),
+      child: const BullVaultCosignerScreen(),
+    ),
+  );
 
   static final route = GoRoute(
     name: BullVaultFacade.createRouteName,

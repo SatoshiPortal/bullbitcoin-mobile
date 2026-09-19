@@ -20,5 +20,7 @@ extension BullVaultFailureL10n on BullVaultFailure {
       context.loc.bullVaultCancelRenewalHasFunds,
     BullVaultInvalidRecoveryFailure() =>
       context.loc.bullVaultFailureInvalidRecovery,
+    BullVaultCosignerMismatchFailure() => context.loc.bullVaultCosignerMismatch,
+    BullVaultCosignerImportFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

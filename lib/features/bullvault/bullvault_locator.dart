@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_records_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/import_bullvault_cosigner_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_cosigner_cubit.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/decode_bullvault_recovery_package_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_default_seed_usecase.dart';
@@ -229,6 +231,17 @@ abstract final class BullVaultLocator {
     );
     locator.registerFactory<BullVaultRestoreCubit>(
       () => BullVaultRestoreCubit(locator()),
+    );
+    locator.registerFactory(
+      () => ImportBullVaultCosignerUsecase(
+        locator(),
+        locator<GetWalletUsecase>(),
+        locator<EnsureCanonicalSeedUsecase>(),
+        locator<WalletSignerOwnershipPort>(),
+      ),
+    );
+    locator.registerFactoryParam<BullVaultCosignerCubit, String, void>(
+      (walletId, _) => BullVaultCosignerCubit(locator(), walletId: walletId),
     );
     locator.registerFactory<BullVaultWalletSettingsCubit>(
       () => BullVaultWalletSettingsCubit(locator()),

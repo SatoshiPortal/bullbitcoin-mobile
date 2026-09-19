@@ -16746,5 +16746,33 @@
   "settingsNostrKeysServerIdentity": "Backup server key",
   "@settingsNostrKeysServerIdentity": {},
   "settingsNostrKeysBackupChain": "Derive the Data Recovery Words first, then derive this key from those words.",
-  "@settingsNostrKeysBackupChain": {}
+  "@settingsNostrKeysBackupChain": {},
+  "bullVaultImportCosigner": "Import cosigner key",
+  "@bullVaultImportCosigner": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarningTitle": "Are you sure?",
+  "@bullVaultCosignerWarningTitle": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarning": "Doing this will make funds available for spending by this wallet. Only do this if you want to permanently remove funds from the vault. This is acceptable if you are the beneficiary of an inheritance key, or if the other cosign devices are not available.",
+  "@bullVaultCosignerWarning": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerWarningClarification": "The vault’s required signatures and timelocks still apply. Importing a key does not move funds; you must separately review and approve a transaction.",
+  "@bullVaultCosignerWarningClarification": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerContinue": "Continue to key import",
+  "@bullVaultCosignerContinue": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerStored": "The matching seed will be saved securely on this device. Its passphrase is never saved; enter it again when signing.",
+  "@bullVaultCosignerStored": {
+    "description": "BullVault settings and recovery"
+  },
+  "bullVaultCosignerMismatch": "These words and passphrase do not match a cosigner in this vault. Nothing was imported.",
+  "@bullVaultCosignerMismatch": {
+    "description": "BullVault settings and recovery"
+  }
 }

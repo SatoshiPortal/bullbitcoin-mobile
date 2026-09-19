@@ -43,3 +43,11 @@ final class BullVaultRenewalHasFundsFailure extends BullVaultFailure {
 final class BullVaultInvalidRecoveryFailure extends BullVaultFailure {
   const BullVaultInvalidRecoveryFailure([super.logMessage]);
 }
+
+final class BullVaultCosignerMismatchFailure extends BullVaultFailure {
+  const BullVaultCosignerMismatchFailure();
+}
+
+final class BullVaultCosignerImportFailure extends BullVaultFailure {
+  const BullVaultCosignerImportFailure();
+}
