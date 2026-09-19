@@ -49,7 +49,9 @@ class BackupSettingsLocator {
         locator(),
       ),
     );
-    locator.registerFactory(() => UpdateDataBackupLifecycleUsecase(locator()));
+    locator.registerFactory(
+      () => UpdateDataBackupLifecycleUsecase(locator(), locator()),
+    );
     locator.registerFactory(() => RecoverVaultsUsecase(locator()));
     locator.registerFactory(() => VaultRecoveryCubit(locator()));
     locator.registerFactory(() => InspectDataBackupUsecase(locator()));

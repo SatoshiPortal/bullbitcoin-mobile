@@ -6,7 +6,13 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 /// the wizard merely *displayed* (e.g. brightness-detected theme,
 /// keyboard-detected language) stay out of the touched set and never
 /// clobber existing user values when `kCurrentWizardVersion` bumps.
-enum WizardField { language, themeMode, defaultCurrency, reportingConsent }
+enum WizardField {
+  dataBackupEnabled,
+  language,
+  themeMode,
+  defaultCurrency,
+  reportingConsent,
+}
 
 /// Tagged variant for the `reportingConsent` parameter of
 /// [WizardChoices.copyWith].
@@ -38,6 +44,7 @@ class WizardChoices {
     this.themeMode = AppThemeMode.system,
     this.defaultCurrency = 'USD',
     this.reportingConsent,
+    this.dataBackupEnabled,
     this.touched = const <WizardField>{},
   });
 
@@ -48,6 +55,7 @@ class WizardChoices {
   // Page 3 of the wizard requires an explicit Yes/No before the wizard can
   // be completed via Next/Skip/Get started.
   final bool? reportingConsent;
+  final bool? dataBackupEnabled;
 
   /// Tracks which fields the user explicitly picked via the wizard's UI
   /// controls (theme/language/currency pickers, mission Yes/No buttons).
@@ -65,8 +73,10 @@ class WizardChoices {
     AppThemeMode? themeMode,
     String? defaultCurrency,
     ConsentArg reportingConsent = _consentUnset,
+    ConsentArg dataBackupEnabled = _consentUnset,
   }) {
     final t = Set<WizardField>.from(touched);
+    if (dataBackupEnabled is ConsentValue) t.add(WizardField.dataBackupEnabled);
     if (language != null) t.add(WizardField.language);
     if (themeMode != null) t.add(WizardField.themeMode);
     if (defaultCurrency != null) t.add(WizardField.defaultCurrency);
@@ -77,6 +87,10 @@ class WizardChoices {
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
+      dataBackupEnabled: switch (dataBackupEnabled) {
+        ConsentValue(:final value) => value,
+        _ConsentUnset() => this.dataBackupEnabled,
+      },
       reportingConsent: switch (reportingConsent) {
         ConsentValue(:final value) => value,
         _ConsentUnset() => this.reportingConsent,
@@ -95,6 +109,7 @@ class WizardChoices {
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,
       reportingConsent: reportingConsent,
+      dataBackupEnabled: dataBackupEnabled,
       touched: touched,
     );
   }

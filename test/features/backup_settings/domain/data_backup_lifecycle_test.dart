@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/update_data_backup_lifecycle_usecase.dart';
@@ -7,18 +8,38 @@ import 'package:mocktail/mocktail.dart';
 
 class _Backups extends Mock implements WalletBackupFacade {}
 
+class _Wizard extends Mock implements WizardFacade {}
+
 void main() {
   late _Backups backups;
+  late _Wizard wizard;
   late UpdateDataBackupLifecycleUsecase lifecycle;
   setUp(() {
     backups = _Backups();
+    wizard = _Wizard();
+    when(
+      wizard.applyPendingBackupChoice,
+    ).thenAnswer((_) async => const Ok(null));
     when(backups.stopAutomatic).thenAnswer((_) async {});
-    lifecycle = UpdateDataBackupLifecycleUsecase(backups);
+    lifecycle = UpdateDataBackupLifecycleUsecase(backups, wizard);
   });
   test(
     'startup without a ready wallet stops without even reading consent',
     () async {
       await lifecycle.execute(ready: false, foreground: true);
+      verify(backups.stopAutomatic).called(1);
+      verifyNever(backups.getControl);
+      verifyZeroInteractions(wizard);
+      verifyNever(backups.resumeAutomatic);
+    },
+  );
+  test(
+    'failed pending choice stops without proceeding to publication',
+    () async {
+      when(
+        wizard.applyPendingBackupChoice,
+      ).thenAnswer((_) async => const Err(WizardApplyFailure()));
+      await lifecycle.execute(ready: true, foreground: true);
       verify(backups.stopAutomatic).called(1);
       verifyNever(backups.getControl);
       verifyNever(backups.resumeAutomatic);

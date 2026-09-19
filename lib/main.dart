@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'dart:async';
 import 'dart:io' show InternetAddress, Platform;
 
@@ -125,7 +126,10 @@ class Bull {
     await initLocator(payjoinDatabasePath: payjoinDatabasePath);
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
-    await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    if (await locator<ApplyPendingWizardChoicesUsecase>().execute()
+        case Err()) {
+      throw Exception('Could not apply setup choices');
+    }
     final settings = locator<SettingsRepository>();
     _diagnosticRuntime.setTorLoader(
       () => _loadTorContext(settings, locator<bull_tor.Tor>()),

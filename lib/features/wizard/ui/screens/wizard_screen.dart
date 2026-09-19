@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wizard/presentation/wizard_failure_l10n.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/data_backup_step.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -18,7 +20,7 @@ import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
+/// 5-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
 /// from the last page's "Get started" button. `initState` runs a
@@ -85,6 +87,16 @@ class _WizardScreenState extends State<WizardScreen> {
   }
 
   void _tryFinish(WizardChoices choices) {
+    if (context.read<WizardBloc>().state.saving) return;
+    if (choices.dataBackupEnabled == null) {
+      _controller.animateToPage(
+        WizardPage.dataBackup.index,
+        duration: _pageDuration,
+        curve: _pageCurve,
+      );
+      SnackBarUtils.showSnackBar(context, context.loc.wizardDataBackupRequired);
+      return;
+    }
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
         WizardPage.mission.index,
@@ -103,6 +115,7 @@ class _WizardScreenState extends State<WizardScreen> {
     final vGap = Device.screen.height * 0.02;
 
     final isWelcome = _page == WizardPage.welcome;
+    final isDataBackup = _page == WizardPage.dataBackup;
     final isMission = _page == WizardPage.mission;
     final isLast = _page.isLast;
     return PopScope(
@@ -128,8 +141,24 @@ class _WizardScreenState extends State<WizardScreen> {
           children: [
             if (isWelcome) const WelcomeBgPattern(),
             SafeArea(
-              child: BlocBuilder<WizardBloc, WizardState>(
-                buildWhen: (a, b) => a.choices != b.choices,
+              child: BlocConsumer<WizardBloc, WizardState>(
+                listenWhen: (a, b) => a.saving && !b.saving,
+                listener: (context, state) {
+                  if (state.failure case final failure?) {
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      failure.toTranslated(context),
+                    );
+                  } else if (!state.finished &&
+                      _page == WizardPage.dataBackup) {
+                    _controller.nextPage(
+                      duration: _pageDuration,
+                      curve: _pageCurve,
+                    );
+                  }
+                },
+                buildWhen: (a, b) =>
+                    a.choices != b.choices || a.saving != b.saving,
                 builder: (context, state) {
                   final c = state.choices;
                   final bloc = context.read<WizardBloc>();
@@ -154,6 +183,7 @@ class _WizardScreenState extends State<WizardScreen> {
                                   setState(() => _page = WizardPage.values[i]),
                               children: [
                                 const WelcomeStep(),
+                                const DataBackupStep(),
                                 CustomizeStep(
                                   themeMode: c.themeMode,
                                   language: c.language,
@@ -206,7 +236,40 @@ class _WizardScreenState extends State<WizardScreen> {
                                 ),
                                 SizedBox(height: vGap),
                               ],
-                              if (isMission)
+                              if (isDataBackup) ...[
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: BBButton.big(
+                                    key: const ValueKey(
+                                      'wizard-data-backup-enable',
+                                    ),
+                                    label: context.loc.dataBackupEnable,
+                                    disabled: state.saving,
+                                    onPressed: () => bloc.add(
+                                      const WizardEvent.dataBackupPicked(true),
+                                    ),
+                                    bgColor: context.appColors.primary,
+                                    textColor: context.appColors.onPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: BBButton.big(
+                                    key: const ValueKey(
+                                      'wizard-data-backup-decline',
+                                    ),
+                                    label: context.loc.wizardDataBackupDecline,
+                                    disabled: state.saving,
+                                    onPressed: () => bloc.add(
+                                      const WizardEvent.dataBackupPicked(false),
+                                    ),
+                                    bgColor: context.appColors.surface,
+                                    textColor: context.appColors.onSurface,
+                                    outlined: true,
+                                  ),
+                                ),
+                              ] else if (isMission)
                                 MissionConsentRow(
                                   consent: c.reportingConsent,
                                   onYes: () => _pickConsent(true),
@@ -219,6 +282,7 @@ class _WizardScreenState extends State<WizardScreen> {
                                     label: isLast
                                         ? context.loc.getStartedButton
                                         : context.loc.wizardNextButton,
+                                    disabled: state.saving,
                                     onPressed: () => _advance(c),
                                     // Same scheme as `CreateWalletButton`
                                     // on the splash: high-contrast

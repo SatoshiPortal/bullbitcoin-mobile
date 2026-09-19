@@ -113,8 +113,10 @@ class WalletBackupFacade {
   Future<Result<WalletBackupState, WalletBackupFailure>> getState() =>
       _getState.execute();
   @useResult
-  Future<Result<void, WalletBackupFailure>> setEnabled(bool enabled) =>
-      _setEnabled.execute(enabled);
+  Future<Result<void, WalletBackupFailure>> setEnabled(
+    bool enabled, {
+    bool onlyIfUndecided = false,
+  }) => _setEnabled.execute(enabled, onlyIfUndecided: onlyIfUndecided);
   @useResult
   Future<Result<WalletBackupPublication, WalletBackupFailure>> publish({
     bool force = false,

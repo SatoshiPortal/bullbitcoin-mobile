@@ -63,6 +63,7 @@ graph TB
     BACKUP_IDENTITY[Data Recovery Credential]
     WALLET_BACKUP[Wallet Data Backup]
     BACKUP_SETTINGS[Backup Settings]
+    WIZARD[Setup Wizard]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -87,6 +88,8 @@ graph TB
     WALLET_BACKUP --> BACKUP_IDENTITY
     BACKUP_SETTINGS --> BACKUP_IDENTITY
     BACKUP_SETTINGS --> WALLET_BACKUP
+    BACKUP_SETTINGS --> WIZARD
+    WIZARD --> WALLET_BACKUP
     BACKUP_SETTINGS --> BULLVAULT
     BACKUP_SETTINGS --> RECOVERBULL
     BACKUP_SETTINGS --> BACKUPS

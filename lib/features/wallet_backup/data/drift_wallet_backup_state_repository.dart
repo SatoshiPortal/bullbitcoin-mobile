@@ -68,21 +68,29 @@ final class DriftWalletBackupStateRepository
       });
 
   @override
-  Future<Result<void, WalletBackupFailure>> setEnabled(bool enabled) =>
-      _transaction(() async {
-        await _database
-            .into(_database.walletBackupControls)
-            .insert(
-              WalletBackupControlsCompanion.insert(
-                id: const Value(1),
-                enabled: Value(enabled),
-              ),
-              onConflict: DoUpdate(
-                (_) => WalletBackupControlsCompanion(enabled: Value(enabled)),
-              ),
-            );
-        return const Ok(null);
-      });
+  Future<Result<void, WalletBackupFailure>> setEnabled(
+    bool enabled, {
+    bool onlyIfUndecided = false,
+  }) => _transaction(() async {
+    if (onlyIfUndecided) {
+      final current = await (_database.select(
+        _database.walletBackupControls,
+      )..where((row) => row.id.equals(1))).getSingleOrNull();
+      if (current?.enabled != null) return const Ok(null);
+    }
+    await _database
+        .into(_database.walletBackupControls)
+        .insert(
+          WalletBackupControlsCompanion.insert(
+            id: const Value(1),
+            enabled: Value(enabled),
+          ),
+          onConflict: DoUpdate(
+            (_) => WalletBackupControlsCompanion(enabled: Value(enabled)),
+          ),
+        );
+    return const Ok(null);
+  });
 
   @override
   Future<Result<void, WalletBackupFailure>> setRecoveryIncomplete(

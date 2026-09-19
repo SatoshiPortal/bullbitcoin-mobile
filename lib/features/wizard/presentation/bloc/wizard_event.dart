@@ -2,6 +2,8 @@ part of 'wizard_bloc.dart';
 
 @freezed
 sealed class WizardEvent with _$WizardEvent {
+  const factory WizardEvent.dataBackupPicked(bool enabled) =
+      _WizardDataBackupPicked;
   const factory WizardEvent.themePicked(AppThemeMode mode) = _WizardThemePicked;
   const factory WizardEvent.languagePicked(Language language) =
       _WizardLanguagePicked;

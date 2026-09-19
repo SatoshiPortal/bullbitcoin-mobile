@@ -58,6 +58,29 @@ void main() {
   );
 
   test(
+    'the pending wizard choice initializes once and never overwrites a later explicit choice',
+    () async {
+      expect(
+        await repository.setEnabled(true, onlyIfUndecided: true),
+        isA<Ok>(),
+      );
+      await reopen();
+      expect(
+        await repository.setEnabled(false, onlyIfUndecided: true),
+        isA<Ok>(),
+      );
+      expect((await state()).enabled, isTrue);
+      expect(await repository.setEnabled(false), isA<Ok>());
+      await reopen();
+      expect(
+        await repository.setEnabled(true, onlyIfUndecided: true),
+        isA<Ok>(),
+      );
+      expect((await state()).enabled, isFalse);
+    },
+  );
+
+  test(
     'consent, off, checkpoint and acknowledged content survive database reopen',
     () async {
       final initial =

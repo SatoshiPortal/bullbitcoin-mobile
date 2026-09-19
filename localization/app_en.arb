@@ -17318,5 +17318,17 @@
   "settingsSearchDataBackupKeywords": "data backup|metadata|labels|server backup|data recovery words",
   "@settingsSearchDataBackupKeywords": {
     "description": "Data Backup controls and explicit recovery actions"
+  },
+  "wizardDataBackupDecline": "No, keep automatic backup off",
+  "@wizardDataBackupDecline": {
+    "description": "Data Backup consent in the setup wizard"
+  },
+  "wizardDataBackupRequired": "Choose whether to enable automatic Data Backup before continuing.",
+  "@wizardDataBackupRequired": {
+    "description": "Data Backup consent in the setup wizard"
+  },
+  "wizardDataBackupSaveFailed": "Your backup choice could not be saved. Please try again.",
+  "@wizardDataBackupSaveFailed": {
+    "description": "Data Backup consent in the setup wizard"
   }
 }

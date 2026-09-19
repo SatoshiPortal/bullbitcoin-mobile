@@ -10,7 +10,10 @@ abstract interface class WalletBackupStateRepository {
   Future<Result<WalletBackupState, WalletBackupFailure>> get(String identity);
 
   @useResult
-  Future<Result<void, WalletBackupFailure>> setEnabled(bool enabled);
+  Future<Result<void, WalletBackupFailure>> setEnabled(
+    bool enabled, {
+    bool onlyIfUndecided = false,
+  });
 
   @useResult
   Future<Result<WalletBackupControl, WalletBackupFailure>> getControl();

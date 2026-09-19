@@ -44,17 +44,33 @@ final class SetWalletBackupEnabledUsecase {
   });
 
   @useResult
-  Future<Result<void, WalletBackupFailure>> execute(bool enabled) {
-    final request = ++_request;
+  Future<Result<void, WalletBackupFailure>> execute(
+    bool enabled, {
+    bool onlyIfUndecided = false,
+  }) {
+    final request = onlyIfUndecided ? _request : ++_request;
     // Off interrupts immediately and also cancels an earlier queued enable.
-    if (!enabled) return _state.setEnabled(false);
+    if (!enabled) {
+      return _state.setEnabled(false, onlyIfUndecided: onlyIfUndecided);
+    }
     return _operations.run(() async {
       if (request != _request) return const Ok(null);
+      if (onlyIfUndecided) {
+        switch (await _state.getControl()) {
+          case Err(:final failure):
+            return Err(failure);
+          case Ok(value: final control) when control.enabled != null:
+            return const Ok(null);
+          case Ok():
+            break;
+        }
+        if (request != _request) return const Ok(null);
+      }
       final resolved = await _identity.resolve();
       if (request != _request) return const Ok(null);
       return switch (resolved) {
         Err() => const Err(WalletBackupCredentialFailure()),
-        Ok() => await _state.setEnabled(true),
+        Ok() => await _state.setEnabled(true, onlyIfUndecided: onlyIfUndecided),
       };
     });
   }
