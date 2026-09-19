@@ -17346,5 +17346,90 @@
   "dataBackupSetupFailed": "Data Backup setup could not finish.",
   "@dataBackupSetupFailed": {
     "description": "Data Backup home setup status"
+  },
+  "dataBackupNotRecorded": "Not recorded",
+  "@dataBackupNotRecorded": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupNoEntries": "No entries",
+  "@dataBackupNoEntries": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupWalletReference": "Wallet reference",
+  "@dataBackupWalletReference": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupDefaultWallet": "Default wallet",
+  "@dataBackupDefaultWallet": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupHiddenWallet": "Hidden wallet",
+  "@dataBackupHiddenWallet": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupBirthday": "Wallet birthday",
+  "@dataBackupBirthday": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupRecordedSigner": "Signer recorded in this copy",
+  "@dataBackupRecordedSigner": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupDescriptorPath": "Descriptor path",
+  "@dataBackupDescriptorPath": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusActive": "Active",
+  "@dataBackupStatusActive": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusInactive": "Inactive",
+  "@dataBackupStatusInactive": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusRevoked": "Revoked",
+  "@dataBackupStatusRevoked": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusMigrating": "Migrating",
+  "@dataBackupStatusMigrating": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupStatusCancelled": "Cancelled",
+  "@dataBackupStatusCancelled": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupUpdatedAt": "Updated at",
+  "@dataBackupUpdatedAt": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupLabelInput": "Input",
+  "@dataBackupLabelInput": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupLabelOutput": "Output",
+  "@dataBackupLabelOutput": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupHideAmounts": "Hide amounts",
+  "@dataBackupHideAmounts": {
+    "description": "Read-only Data Backup inventory detail"
+  },
+  "dataBackupSecondsValue": "{seconds} seconds",
+  "@dataBackupSecondsValue": {
+    "description": "Read-only Data Backup inventory detail",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "dataBackupSourceDevice": "On the source device",
+  "@dataBackupSourceDevice": {
+    "description": "Public signer facts recorded in the selected backup copy"
+  },
+  "dataBackupMasterFingerprint": "Master fingerprint",
+  "@dataBackupMasterFingerprint": {
+    "description": "Public signer facts recorded in the selected backup copy"
   }
 }
