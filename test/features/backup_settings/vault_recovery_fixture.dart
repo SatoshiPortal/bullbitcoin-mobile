@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';

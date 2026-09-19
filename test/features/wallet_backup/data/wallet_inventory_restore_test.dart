@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/wallet_inventory_backup_repository_impl.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/restore_wallet_inventory_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +26,6 @@ void main() {
   late WalletMetadataDatasource metadata;
   late _Importer importer;
   late _Seeds seeds;
-  late RestoreWalletInventoryUsecase restore;
   late WalletInventoryBackupRepositoryImpl inventory;
   var imports = 0;
   final key = WalletDescriptorKey(
@@ -87,7 +85,7 @@ void main() {
     isPhysicalBackupTested: false,
   );
   Future<WalletInventoryRecovery> recover(List<BackupWallet> entries) async =>
-      (await restore.execute(entries)
+      (await inventory.restore(entries)
               as Ok<WalletInventoryRecovery, WalletBackupFailure>)
           .value;
 
@@ -156,7 +154,6 @@ void main() {
       descriptors: importer,
       seeds: seeds,
     );
-    restore = RestoreWalletInventoryUsecase(inventory);
   });
   tearDown(() => database.close());
 

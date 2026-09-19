@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';

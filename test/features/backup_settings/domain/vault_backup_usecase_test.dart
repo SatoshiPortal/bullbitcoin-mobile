@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';

@@ -30,8 +30,6 @@ export '../domain/entities/wallet_backup_job_status.dart';
 export '../domain/entities/bullvault_backup_entry.dart';
 export '../domain/entities/wallet_backup_inspection.dart';
 export '../domain/entities/wallet_backup_recovery.dart';
-export '../domain/entities/wallet_inventory_recovery.dart';
-export '../domain/entities/wallet_backup_remote_head.dart';
 export '../domain/entities/wallet_backup_snapshot.dart';
 export '../domain/entities/wallet_backup_state.dart';
 export '../domain/wallet_backup_failure.dart';

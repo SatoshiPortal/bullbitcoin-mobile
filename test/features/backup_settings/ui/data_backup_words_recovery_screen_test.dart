@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
