@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
@@ -71,7 +72,7 @@ void main() {
   }
 
   testWidgets(
-    'timeline keeps the three two-key combinations and verified access',
+    'shared renderer keeps the threshold, all keys and verified access',
     (tester) async {
       final rule = BitcoinThresholdPolicyNode(
         id: 'two-of-three',
@@ -80,23 +81,26 @@ void main() {
       );
       for (final dark in [false, true]) {
         await pump(tester, rule, dark: dark);
-        expect(find.text(loc.walletPolicyFromStart), findsOneWidget);
-        expect(find.text(loc.walletPolicyAnyKeys(2)), findsOneWidget);
-        for (final pair in ['0-1', '0-2', '1-2']) {
+        expect(find.byType(WalletPolicyDetailsContent), findsOneWidget);
+        expect(
+          find.text(loc.walletPolicySignaturesRequired(2, 3)),
+          findsOneWidget,
+        );
+        for (final signer in signers) {
           expect(
-            find.byKey(ValueKey('two-of-three-combination-$pair')),
+            find.textContaining(signer.displayFingerprint),
             findsOneWidget,
           );
         }
-        expect(find.text(loc.bullVaultKeyOnDevice), findsNWidgets(2));
-        expect(find.text(loc.bullVaultKeyExternal), findsNWidgets(2));
-        expect(find.text(loc.walletDetailsUnavailableLabel), findsNWidgets(2));
+        expect(find.text(loc.bullVaultKeyOnDevice), findsOneWidget);
+        expect(find.text(loc.bullVaultKeyExternal), findsOneWidget);
+        expect(find.text(loc.walletDetailsUnavailableLabel), findsOneWidget);
         expect(tester.takeException(), isNull);
       }
     },
   );
   testWidgets(
-    'only an exact absolute timelock and signatures can become a date header',
+    'absolute and mixed conditions retain their exact block height and required conditions',
     (tester) async {
       final clock = BitcoinAbsoluteTimelockPolicyNode(
         id: 'clock',
@@ -111,7 +115,10 @@ void main() {
           children: [clock, signature(0)],
         ),
       );
-      expect(find.text(loc.walletPolicyAfterBlock(900000)), findsOneWidget);
+      expect(
+        find.text(loc.walletDetailsAbsoluteBlockCondition(900000)),
+        findsOneWidget,
+      );
       expect(find.text(loc.walletPolicyFromStart), findsNothing);
       expect(find.text(loc.bullVaultKeyOnDevice), findsOneWidget);
       await pump(
@@ -128,7 +135,10 @@ void main() {
       );
       expect(find.text(loc.walletPolicyFromStart), findsNothing);
       expect(find.text(loc.walletDetailsAllConditionsRequired), findsOneWidget);
-      expect(find.text(loc.walletPolicyAfterBlock(900000)), findsOneWidget);
+      expect(
+        find.text(loc.walletDetailsAbsoluteBlockCondition(900000)),
+        findsOneWidget,
+      );
       expect(find.text(loc.walletPolicyHashPreimage), findsOneWidget);
     },
   );
@@ -147,7 +157,10 @@ void main() {
           children: [clock, signature(0)],
         ),
       );
-      expect(find.text(loc.walletPolicyWaitBlocks(144)), findsOneWidget);
+      expect(
+        find.text(loc.walletDetailsRelativeBlocksCondition(144)),
+        findsOneWidget,
+      );
       expect(find.text(loc.walletPolicyFromStart), findsNothing);
       await pump(
         tester,
@@ -165,14 +178,17 @@ void main() {
         ),
       );
       expect(
-        find.text(loc.walletPolicyConditionsRequired(1, 2)),
+        find.text(loc.walletDetailsCompleteConditions(1, 2)),
         findsOneWidget,
       );
-      expect(find.text(loc.walletPolicyAfterBlock(900000)), findsOneWidget);
+      expect(
+        find.text(loc.walletDetailsAbsoluteBlockCondition(900000)),
+        findsOneWidget,
+      );
       expect(find.text(loc.walletPolicyFromStart), findsNothing);
     },
   );
-  testWidgets('date headers retain explicit UTC and nonzero seconds', (
+  testWidgets('absolute timestamps retain explicit UTC and nonzero seconds', (
     tester,
   ) async {
     for (final second in [0, 6]) {
@@ -195,7 +211,10 @@ void main() {
       final stamp = second == 0
           ? 'Jan 2, 2027 14:05 UTC'
           : 'Jan 2, 2027 14:05:06 UTC';
-      expect(find.text(loc.walletPolicyFromDate(stamp)), findsOneWidget);
+      expect(
+        find.text(loc.walletDetailsAbsoluteTimeCondition(stamp)),
+        findsOneWidget,
+      );
     }
   });
 }
