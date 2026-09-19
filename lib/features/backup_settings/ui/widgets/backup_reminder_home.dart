@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backup_setup_cubit.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/update_data_backup_lifecycle_usecase.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -29,6 +30,7 @@ class BackupSettingsScope extends StatefulWidget {
 
 class _BackupSettingsScopeState extends State<BackupSettingsScope> {
   late final UpdateDataBackupLifecycleUsecase _lifecycle;
+  late final DataBackupSetupCubit _setup;
   late final AppLifecycleListener _listener;
   late final StreamSubscription<void> _changes;
   bool _foreground = true;
@@ -37,6 +39,7 @@ class _BackupSettingsScopeState extends State<BackupSettingsScope> {
   void initState() {
     super.initState();
     _lifecycle = locator<UpdateDataBackupLifecycleUsecase>();
+    _setup = DataBackupSetupCubit(_lifecycle);
     final current = WidgetsBinding.instance.lifecycleState;
     _foreground = current == null || current == AppLifecycleState.resumed;
     _listener = AppLifecycleListener(
@@ -48,15 +51,14 @@ class _BackupSettingsScopeState extends State<BackupSettingsScope> {
     _changes = _lifecycle.changes.listen(
       (_) => _update(),
       onError: (Object _) {
-        unawaited(_lifecycle.execute(ready: false, foreground: _foreground));
+        unawaited(_setup.update(ready: false, foreground: _foreground));
       },
     );
     _update();
   }
 
-  void _update() => unawaited(
-    _lifecycle.execute(ready: widget.ready, foreground: _foreground),
-  );
+  void _update() =>
+      unawaited(_setup.update(ready: widget.ready, foreground: _foreground));
 
   @override
   void didUpdateWidget(BackupSettingsScope oldWidget) {
@@ -68,13 +70,18 @@ class _BackupSettingsScopeState extends State<BackupSettingsScope> {
   void dispose() {
     _listener.dispose();
     unawaited(_changes.cancel());
-    unawaited(_lifecycle.execute(ready: false, foreground: false));
+    unawaited(_setup.close());
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<BackupReminderCubit>()..loadPreferences(),
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider<DataBackupSetupCubit>.value(value: _setup),
+      BlocProvider(
+        create: (_) => locator<BackupReminderCubit>()..loadPreferences(),
+      ),
+    ],
     child: widget.child,
   );
 }

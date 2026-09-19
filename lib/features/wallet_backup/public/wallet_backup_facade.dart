@@ -139,11 +139,13 @@ class WalletBackupFacade {
   Future<Result<WalletBackupRecovery, WalletBackupFailure>> recover(
     WalletBackupInspection inspection, {
     bool enableAfterRecovery = false,
+    Map<String, String?> initialWalletLabels = const {},
     String? words,
   }) => _recover.execute(
     inspection,
     words: words,
     enableAfterRecovery: enableAfterRecovery,
+    initialWalletLabels: initialWalletLabels,
   );
 
   @useResult

@@ -14,10 +14,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class DataBackupRecoveryScreen extends StatelessWidget {
   final void Function(WalletBackupInspection, WalletBackupRecovery) onRecovered;
   final bool enableAfterRecovery;
+  final Map<String, String?> initialWalletLabels;
   const DataBackupRecoveryScreen({
     super.key,
     required this.onRecovered,
     this.enableAfterRecovery = false,
+    this.initialWalletLabels = const {},
   });
 
   @override
@@ -93,9 +95,11 @@ class DataBackupRecoveryScreen extends StatelessWidget {
                         loading: state.busy,
                         bgColor: context.appColors.primary,
                         textColor: context.appColors.onPrimary,
-                        onPressed: () => context
-                            .read<DataBackupRecoveryCubit>()
-                            .recover(enableAfterRecovery: enableAfterRecovery),
+                        onPressed: () =>
+                            context.read<DataBackupRecoveryCubit>().recover(
+                              enableAfterRecovery: enableAfterRecovery,
+                              initialWalletLabels: initialWalletLabels,
+                            ),
                       ),
                     if (state.result?.complete == true ||
                         state.inspection.snapshot == null)

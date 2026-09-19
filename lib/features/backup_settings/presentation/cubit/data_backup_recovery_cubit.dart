@@ -63,6 +63,7 @@ class DataBackupRecoveryCubit extends Cubit<DataBackupRecoveryState> {
 
   Future<void> recover({
     bool enableAfterRecovery = false,
+    Map<String, String?> initialWalletLabels = const {},
     String? words,
   }) async {
     final current = state;
@@ -78,6 +79,7 @@ class DataBackupRecoveryCubit extends Cubit<DataBackupRecoveryState> {
       confirmed: true,
       words: words,
       enableAfterRecovery: enableAfterRecovery,
+      initialWalletLabels: initialWalletLabels,
     );
     if (isClosed || request != _request) return;
     emit(switch (result) {

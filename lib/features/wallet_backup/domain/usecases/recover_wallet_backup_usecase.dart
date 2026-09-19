@@ -34,6 +34,7 @@ final class RecoverWalletBackupUsecase {
     WalletBackupInspection inspection, {
     String? words,
     bool enableAfterRecovery = false,
+    Map<String, String?> initialWalletLabels = const {},
   }) => _operations.run(() async {
     final resolved = words == null
         ? await _identity.resolve()
@@ -62,6 +63,7 @@ final class RecoverWalletBackupUsecase {
         (decoded as Ok<WalletBackupSnapshot, WalletBackupFailure>).value;
     final applied = await _apply.execute(
       snapshot,
+      initialWalletLabels: initialWalletLabels,
       revalidate: () async => switch (await _remote.fetch(credential)) {
         Err(:final failure) => Err(failure),
         Ok(:final value) => Ok(value.sameObjectAs(head)),

@@ -29,8 +29,9 @@ final class WalletInventoryBackupRepositoryImpl
 
   @override
   Future<Result<WalletInventoryRecovery, WalletBackupFailure>> restore(
-    List<BackupWallet> wallets,
-  ) async {
+    List<BackupWallet> wallets, {
+    Map<String, String?> initialWalletLabels = const {},
+  }) async {
     if (wallets.map((entry) => entry.reference).toSet().length !=
         wallets.length) {
       return const Err(WalletBackupIncompleteFailure());
@@ -39,7 +40,11 @@ final class WalletInventoryBackupRepositoryImpl
     final failed = <String>[];
     for (final entry in wallets) {
       try {
-        final id = await _restoreOne(entry, references.values.toSet());
+        final id = await _restoreOne(
+          entry,
+          references.values.toSet(),
+          initialWalletLabels,
+        );
         references[entry.reference] = id;
       } on Exception {
         failed.add(entry.reference);
@@ -53,7 +58,11 @@ final class WalletInventoryBackupRepositoryImpl
     );
   }
 
-  Future<String> _restoreOne(BackupWallet entry, Set<String> resolved) async {
+  Future<String> _restoreOne(
+    BackupWallet entry,
+    Set<String> resolved,
+    Map<String, String?> initialWalletLabels,
+  ) async {
     final descriptor = _canonical(entry.publicDescriptor, entry.network);
     return _database.transaction(() async {
       final installed = await _wallets.fetchAll();
@@ -66,7 +75,13 @@ final class WalletInventoryBackupRepositoryImpl
         if (resolved.contains(id)) {
           throw const FormatException('Duplicate wallet');
         }
-        // A recovered source preference cannot overwrite an existing local one.
+        // Only this physical restore's new, still-unedited label can be filled from the backup.
+        final current = matches.single;
+        if (initialWalletLabels.containsKey(id) &&
+            current.label == initialWalletLabels[id] &&
+            entry.label != null) {
+          await _wallets.store(current.copyWith(label: entry.label));
+        }
         return id;
       }
       if (!entry.network.isBitcoin ||

@@ -77,9 +77,11 @@ enum BackupSettingsRoute {
 class DataBackupRecoveryArgs {
   final WalletBackupInspection? inspection;
   final bool enableAfterRecovery;
+  final Map<String, String?> initialWalletLabels;
   const DataBackupRecoveryArgs({
     this.inspection,
     this.enableAfterRecovery = false,
+    this.initialWalletLabels = const {},
   });
 }
 
@@ -204,6 +206,7 @@ abstract final class BackupSettingsRouter {
             onRecovered: (inspection, result) =>
                 onDataRecovered(inspection.snapshot!, result),
             enableAfterRecovery: args.enableAfterRecovery,
+            initialWalletLabels: args.initialWalletLabels,
           ),
         );
       },

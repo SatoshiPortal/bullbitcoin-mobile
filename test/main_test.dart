@@ -42,7 +42,7 @@ void main() {
           ready: any(named: 'ready'),
           foreground: any(named: 'foreground'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => const Ok(null));
       locator.registerSingleton<UpdateDataBackupLifecycleUsecase>(lifecycle);
       addTearDown(() async {
         await changes.close();

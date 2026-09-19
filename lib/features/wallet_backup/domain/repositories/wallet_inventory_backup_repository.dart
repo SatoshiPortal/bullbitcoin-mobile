@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 abstract interface class WalletInventoryBackupRepository {
   @useResult
   Future<Result<WalletInventoryRecovery, WalletBackupFailure>> restore(
-    List<BackupWallet> wallets,
-  );
+    List<BackupWallet> wallets, {
+    Map<String, String?> initialWalletLabels = const {},
+  });
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/seed_recovery_completion.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -171,6 +172,7 @@ class AppRouter {
             featureWarningsBuilder: (context, wallets) => Column(
               children: [
                 BackupReminderHomeContribution(wallets: wallets),
+                const DataBackupSetupBanner(),
                 BullVaultHomeContribution(wallets: wallets),
               ],
             ),
@@ -178,7 +180,9 @@ class AppRouter {
           ...ExchangeRouter.routes,
         ],
       ),
-      OnboardingRouter.route,
+      OnboardingRouter.route(
+        onPhysicalRestore: offerDataBackupAfterPhysicalRestore,
+      ),
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute(
         featureSliverBuilder: (context, wallet) => wallet.isBitcoin

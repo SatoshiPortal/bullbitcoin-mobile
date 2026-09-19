@@ -17330,5 +17330,21 @@
   "wizardDataBackupSaveFailed": "Your backup choice could not be saved. Please try again.",
   "@wizardDataBackupSaveFailed": {
     "description": "Data Backup consent in the setup wizard"
+  },
+  "dataBackupRestoreCheckTitle": "Check for Data Backups?",
+  "@dataBackupRestoreCheckTitle": {
+    "description": "Optional check after physical wallet recovery"
+  },
+  "dataBackupRestoreCheckBody": "Your wallet has been recovered. Check for its saved labels, settings, keys and vaults? You can review the backup before applying it. A complete recovery also enables automatic Data Backup.",
+  "@dataBackupRestoreCheckBody": {
+    "description": "Optional check after physical wallet recovery"
+  },
+  "dataBackupSettingUp": "Setting up Data Backup…",
+  "@dataBackupSettingUp": {
+    "description": "Data Backup home setup status"
+  },
+  "dataBackupSetupFailed": "Data Backup setup could not finish.",
+  "@dataBackupSetupFailed": {
+    "description": "Data Backup home setup status"
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/result.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/update_data_backup_lifecycle_usecase.dart';
 import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
@@ -20,7 +21,7 @@ void main() {
         ready: any(named: 'ready'),
         foreground: any(named: 'foreground'),
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
     locator.registerSingleton<UpdateDataBackupLifecycleUsecase>(lifecycle);
   });
   tearDown(() async {

@@ -35,6 +35,7 @@ final class ApplyWalletBackupSnapshotUsecase {
     WalletBackupSnapshot snapshot, {
     Future<Result<bool, WalletBackupFailure>> Function()? revalidate,
     bool keepRecoveryIncomplete = false,
+    Map<String, String?> initialWalletLabels = const {},
   }) async {
     // Apply the same strict validation to constructed and decoded snapshots.
     final encoded = _codec.encode(snapshot);
@@ -82,7 +83,10 @@ final class ApplyWalletBackupSnapshotUsecase {
         .where((wallet) => !vaultReferences.contains(wallet.reference))
         .toList();
     for (final result in [
-      await _wallets.restore(ordinary),
+      await _wallets.restore(
+        ordinary,
+        initialWalletLabels: initialWalletLabels,
+      ),
       await _vaults.restore(source.vaults, source.manifest.wallets),
     ]) {
       switch (result) {

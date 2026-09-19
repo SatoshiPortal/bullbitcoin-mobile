@@ -24,6 +24,7 @@ class RecoverDataBackupUsecase {
     WalletBackupInspection inspection, {
     required bool confirmed,
     bool enableAfterRecovery = false,
+    Map<String, String?> initialWalletLabels = const {},
     String? words,
   }) async {
     if (!confirmed) {
@@ -33,6 +34,7 @@ class RecoverDataBackupUsecase {
       inspection,
       words: words,
       enableAfterRecovery: enableAfterRecovery,
+      initialWalletLabels: initialWalletLabels,
     )).mapErr(BackupSettingsFailure.fromDataBackup);
   }
 }

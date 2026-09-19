@@ -28,6 +28,7 @@ void main() {
   late _Importer importer;
   late _Seeds seeds;
   late RestoreWalletInventoryUsecase restore;
+  late WalletInventoryBackupRepositoryImpl inventory;
   var imports = 0;
   final key = WalletDescriptorKey(
     id: 'key-0',
@@ -149,17 +150,41 @@ void main() {
         balanceSat: BigInt.zero,
       );
     });
-    restore = RestoreWalletInventoryUsecase(
-      WalletInventoryBackupRepositoryImpl(
-        database: database,
-        wallets: metadata,
-        descriptors: importer,
-        seeds: seeds,
-      ),
+    inventory = WalletInventoryBackupRepositoryImpl(
+      database: database,
+      wallets: metadata,
+      descriptors: importer,
+      seeds: seeds,
     );
+    restore = RestoreWalletInventoryUsecase(inventory);
   });
   tearDown(() => database.close());
 
+  for (final edited in [false, true]) {
+    test(
+      'physical recovery restores a new default label only if still unchanged: edited=$edited',
+      () async {
+        await metadata.store(
+          stored('new-default', label: edited ? 'My edit' : null),
+        );
+        final result = await inventory.restore(
+          [entry()],
+          initialWalletLabels: {'new-default': null},
+        );
+        expect(
+          (result as Ok<WalletInventoryRecovery, WalletBackupFailure>)
+              .value
+              .complete,
+          isTrue,
+        );
+        expect(
+          (await metadata.fetch('new-default'))!.label,
+          edited ? 'My edit' : 'Recovered name',
+        );
+        expect(imports, 0);
+      },
+    );
+  }
   test(
     'imports through the upstream owner and remaps without inventing a default or local key',
     () async {
