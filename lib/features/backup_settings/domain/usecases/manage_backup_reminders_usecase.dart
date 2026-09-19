@@ -47,7 +47,6 @@ final class DismissBackupReminderUsecase {
     BackupReminder reminder, {
     DateTime? now,
   }) => switch (reminder) {
-    BackupReminder.noTestedBackup => Future.value(const Ok(null)),
     BackupReminder.largeBalanceNeedsPhysicalBackup =>
       _repository.dismissLargeBalanceWarning(),
     _ => _repository.snooze(

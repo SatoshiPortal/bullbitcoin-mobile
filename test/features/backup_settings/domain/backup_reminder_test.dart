@@ -14,18 +14,18 @@ void main() {
   }) => BackupReminder.select(wallets, settings, now);
 
   test('requires one mainnet Bitcoin default and a funded local wallet', () {
-    final wallet = _wallet();
+    final wallet = _wallet(encrypted: now, sats: 10000000);
     expect(select([]), isNull);
     expect(select([wallet.copyWith(isDefault: false)]), isNull);
     expect(select([wallet, wallet.copyWith(origin: 'duplicate')]), isNull);
     expect(select([wallet.copyWith(network: Network.bitcoinTestnet)]), isNull);
     expect(select([wallet.copyWith(balanceSat: BigInt.zero)]), isNull);
     expect(select([wallet.copyWith(signers: [])]), isNull);
-    expect(select([wallet]), BackupReminder.noTestedBackup);
+    expect(select([wallet]), BackupReminder.largeBalanceNeedsPhysicalBackup);
   });
 
   test('disabling all reminders takes priority without altering dates', () {
-    final wallet = _wallet();
+    final wallet = _wallet(encrypted: now, sats: 10000000);
     expect(
       select([
         wallet,
@@ -33,19 +33,24 @@ void main() {
       isNull,
     );
     expect(wallet.latestPhysicalBackup, isNull);
-    expect(select([wallet]), BackupReminder.noTestedBackup);
+    expect(select([wallet]), BackupReminder.largeBalanceNeedsPhysicalBackup);
   });
 
-  test('untested backup warning precedes the large balance warning', () {
-    expect(select([_wallet(sats: 10000000)]), BackupReminder.noTestedBackup);
+  test('zero-backup case is left to the production overlay', () {
+    expect(select([_wallet(sats: 10000000)]), isNull);
   });
 
-  test('a creation timestamp without a successful test keeps the warning', () {
-    expect(
-      select([_wallet(encrypted: now).copyWith(isEncryptedVaultTested: false)]),
-      BackupReminder.noTestedBackup,
-    );
-  });
+  test(
+    'a creation timestamp without a successful test stays with the overlay',
+    () {
+      expect(
+        select([
+          _wallet(encrypted: now).copyWith(isEncryptedVaultTested: false),
+        ]),
+        isNull,
+      );
+    },
+  );
 
   test(
     'large balance warning starts at ten million sats and is dismissible',

@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/backup_settings/domain/backup_reminder.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/backup_settings_failure_l10n.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_reminder_cubit.dart';
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/locator.dart';
@@ -82,11 +81,6 @@ class _BackupReminderHomeState extends State<BackupReminderHomeContribution> {
     _dialogOpen = false;
     if (act != true || !mounted) return;
     switch (reminder) {
-      case BackupReminder.noTestedBackup:
-        await context.pushNamed<void>(
-          BackupSettingsSubroute.backupOptions.name,
-          extra: BackupSettingsFlow.backup,
-        );
       case BackupReminder.largeBalanceNeedsPhysicalBackup ||
           BackupReminder.addPhysicalBackup:
         await context.pushNamed<void>(
@@ -130,12 +124,6 @@ class _ReminderDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = context.loc;
     final (title, body, primary, secondary) = switch (reminder) {
-      BackupReminder.noTestedBackup => (
-        loc.backupReminderNoBackupTitle,
-        loc.backupReminderNoBackupBody,
-        loc.backupReminderBackUpNow,
-        loc.backupReminderNotNow,
-      ),
       BackupReminder.largeBalanceNeedsPhysicalBackup => (
         loc.backupReminderLargeBalanceTitle,
         loc.backupReminderLargeBalanceBody,
@@ -170,31 +158,6 @@ class _ReminderDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(body),
-              if (reminder == BackupReminder.noTestedBackup) ...[
-                const SizedBox(height: 8),
-                for (final reason in [
-                  loc.backupReminderLoseReasonLostPhone,
-                  loc.backupReminderLoseReasonDeletedApp,
-                  loc.backupReminderLoseReasonCriticalIssue,
-                  loc.backupReminderLoseReasonKeystore,
-                  loc.backupReminderLoseReasonCloudRestore,
-                ])
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('•  '),
-                        Expanded(child: Text(reason)),
-                      ],
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                Text(
-                  loc.backupReminderNoRecovery,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
               if (state.failure != null)
                 Text(state.failure!.toTranslated(context)),
             ],

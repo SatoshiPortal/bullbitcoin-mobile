@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 enum BackupReminder {
-  noTestedBackup,
   largeBalanceNeedsPhysicalBackup,
   addPhysicalBackup,
   testPhysicalBackup,
@@ -11,7 +10,7 @@ enum BackupReminder {
     addPhysicalBackup => const Duration(days: 180),
     testPhysicalBackup => const Duration(days: 365),
     testEncryptedVault => const Duration(days: 366),
-    noTestedBackup || largeBalanceNeedsPhysicalBackup => null,
+    largeBalanceNeedsPhysicalBackup => null,
   };
 
   static BackupReminder? select(
@@ -42,7 +41,8 @@ enum BackupReminder {
     final encrypted = wallet.isEncryptedVaultTested
         ? wallet.latestEncryptedBackup
         : null;
-    if (physical == null && encrypted == null) return noTestedBackup;
+    // The production BackupWarningOverlay owns the zero-backup case.
+    if (physical == null && encrypted == null) return null;
 
     if (physical == null && encrypted != null) {
       if (balance >= BigInt.from(10000000) &&
@@ -98,7 +98,6 @@ final class BackupReminderPreferences {
     BackupReminder.addPhysicalBackup => addPhysicalUntil,
     BackupReminder.testPhysicalBackup => physicalTestUntil,
     BackupReminder.testEncryptedVault => encryptedTestUntil,
-    BackupReminder.noTestedBackup ||
     BackupReminder.largeBalanceNeedsPhysicalBackup => null,
   };
 }

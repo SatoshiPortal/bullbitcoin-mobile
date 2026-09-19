@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
+import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
@@ -36,10 +38,19 @@ void main() {
     WidgetTester tester,
     Wallet wallet, {
     bool includeHomeWarnings = false,
+    bool includeOverlay = false,
   }) async {
     final wallets = _WalletBloc();
     when(() => wallets.state).thenReturn(WalletState(wallets: [wallet]));
     when(() => wallets.stream).thenAnswer((_) => const Stream.empty());
+    final content = Scaffold(
+      body: Column(
+        children: [
+          if (includeHomeWarnings) const HomeWarnings(),
+          BackupReminderHomeContribution(wallets: [wallet]),
+        ],
+      ),
+    );
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
@@ -51,52 +62,51 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('en'),
-          home: Scaffold(
-            body: Column(
-              children: [
-                if (includeHomeWarnings) const HomeWarnings(),
-                BackupReminderHomeContribution(wallets: [wallet]),
-              ],
-            ),
-          ),
+          home: includeOverlay ? BackupWarningOverlay(child: content) : content,
         ),
       ),
     );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('the warning keeps every loss reason and is shown only once', (
-    tester,
-  ) async {
-    await pump(tester, _wallet());
-    expect(find.text('BACKUP YOUR WALLET NOW'), findsOneWidget);
-    for (final text in [
-      'You lose your phone',
-      'You delete the app',
-      'A critical app or device issue occurs',
-      'Your device invalidates the keystore when changing the lockscreen/device authentication',
-      'Restoring your device from a cloud backup',
-      'There is no way to recover your wallet without a backup.',
-    ]) {
-      expect(find.text(text), findsOneWidget);
-    }
-    await tester.tap(find.text('NO, I UNDERSTAND THE RISK'));
-    await tester.pumpAndSettle();
-    await pump(tester, _wallet(sats: 2));
-    expect(find.byType(AlertDialog), findsNothing);
-    expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
-  });
+  testWidgets(
+    'zero backup uses the upstream overlay and card without a replacement dialog',
+    (tester) async {
+      final loc = AppLocalizationsEn();
+      await pump(
+        tester,
+        _wallet(),
+        includeHomeWarnings: true,
+        includeOverlay: true,
+      );
+      expect(find.text(loc.backupWarningTitle), findsOneWidget);
+      expect(find.text(loc.backupWarningDescription), findsOneWidget);
+      expect(find.byType(BackupCard), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+    },
+  );
 
-  testWidgets('a saved disable choice suppresses the warning after restart', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({
-      'backup_reminders_dismiss_forever': true,
-    });
-    await pump(tester, _wallet(), includeHomeWarnings: true);
-    expect(find.byType(AlertDialog), findsNothing);
-    expect(find.byType(BackupCard), findsNothing);
-  });
+  testWidgets(
+    'reminder disable leaves the production zero-backup warning intact',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'backup_reminders_dismiss_forever': true,
+      });
+      await pump(
+        tester,
+        _wallet(),
+        includeHomeWarnings: true,
+        includeOverlay: true,
+      );
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(BackupCard), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().backupWarningTitle),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('cycle snooze is persisted by the reminder action', (
     tester,
@@ -104,8 +114,10 @@ void main() {
     await pump(
       tester,
       _wallet(physical: DateTime.now().subtract(const Duration(days: 400))),
+      includeOverlay: true,
     );
     expect(find.text('TEST YOUR PHYSICAL BACKUP'), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().backupWarningTitle), findsNothing);
     final before = DateTime.now().add(const Duration(days: 365));
     await tester.tap(find.text('REMIND ME IN 365 DAYS'));
     await tester.pumpAndSettle();

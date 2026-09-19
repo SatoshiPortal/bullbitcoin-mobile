@@ -31,6 +31,8 @@ void main() {
       scriptType: ScriptType.bip84,
       publicDescriptor: 'wpkh(xpub/<0;1>/*)',
       balanceSat: BigInt.one,
+      isPhysicalBackupTested: true,
+      latestPhysicalBackup: DateTime.utc(2020),
     ),
   ];
 
@@ -47,11 +49,11 @@ void main() {
 
   test('one dialog per session, including action or cancellation', () async {
     await cubit.evaluate(wallets);
-    expect(cubit.state.reminder, BackupReminder.noTestedBackup);
-    expect(cubit.claimReminder(BackupReminder.noTestedBackup), isTrue);
+    expect(cubit.state.reminder, BackupReminder.testPhysicalBackup);
+    expect(cubit.claimReminder(BackupReminder.testPhysicalBackup), isTrue);
     await cubit.evaluate(wallets);
     expect(cubit.state.reminder, isNull);
-    expect(cubit.claimReminder(BackupReminder.noTestedBackup), isFalse);
+    expect(cubit.claimReminder(BackupReminder.testPhysicalBackup), isFalse);
     expect(repository.writes, 0);
   });
 
@@ -66,7 +68,7 @@ void main() {
       expect(cubit.state.reminder, isNull);
       expect(await cubit.setDisabled(false), isTrue);
       expect(cubit.state.disabled, isFalse);
-      expect(cubit.state.reminder, BackupReminder.noTestedBackup);
+      expect(cubit.state.reminder, BackupReminder.testPhysicalBackup);
       expect(repository.writes, 2);
     },
   );
