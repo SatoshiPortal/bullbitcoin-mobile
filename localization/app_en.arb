@@ -17290,5 +17290,33 @@
   "dataBackupWordsRecoveryHelp": "Enter the 12 Data Recovery Words to inspect a Data Backup. You will review and confirm before its wallets, labels or settings are applied.",
   "@dataBackupWordsRecoveryHelp": {
     "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsWalletAndBitcoinTitle": "Wallet and Bitcoin",
+  "@settingsWalletAndBitcoinTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsAppAndDeviceTitle": "App and device",
+  "@settingsAppAndDeviceTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsToolsTitle": "Tools",
+  "@settingsToolsTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsHelpAndInfoTitle": "Help and info",
+  "@settingsHelpAndInfoTitle": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsSearchToolsKeywords": "tools|broadcast|map|BIP85",
+  "@settingsSearchToolsKeywords": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsSearchHelpAndInfoKeywords": "help|support|GitHub|status|logs|terms",
+  "@settingsSearchHelpAndInfoKeywords": {
+    "description": "Data Backup controls and explicit recovery actions"
+  },
+  "settingsSearchDataBackupKeywords": "data backup|metadata|labels|server backup|data recovery words",
+  "@settingsSearchDataBackupKeywords": {
+    "description": "Data Backup controls and explicit recovery actions"
   }
 }

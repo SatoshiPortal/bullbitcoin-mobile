@@ -64,7 +64,6 @@ class BackupSettingsSettingsRouter {
 }
 
 enum BackupSettingsRoute {
-  dataBackup('/data-backup'),
   dataContents('/data-backup/contents'),
   dataRecoverWords('/data-backup/recover/words'),
   vaultWords('/bullvault/recover/words'),
@@ -91,8 +90,8 @@ abstract final class BackupSettingsRouter {
     onDataRecovered,
   }) => [
     GoRoute(
-      name: BackupSettingsRoute.dataBackup.name,
-      path: BackupSettingsRoute.dataBackup.path,
+      name: SettingsRoute.dataBackup.name,
+      path: SettingsRoute.dataBackup.path,
       builder: (context, _) => MultiBlocProvider(
         providers: [
           BlocProvider(
@@ -160,7 +159,7 @@ abstract final class BackupSettingsRouter {
           child: VaultBackupScreen(
             walletId: walletId,
             onOpenDataBackup: () =>
-                context.pushNamed<void>(BackupSettingsRoute.dataBackup.name),
+                context.pushNamed<void>(SettingsRoute.dataBackup.name),
           ),
         );
       },

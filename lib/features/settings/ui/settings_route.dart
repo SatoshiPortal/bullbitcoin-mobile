@@ -1,6 +1,9 @@
 enum SettingsRoute {
   settings('/settings'),
   search('search'),
+  tools('tools'),
+  helpAndInfo('help-and-info'),
+  dataBackup('/data-backup'),
   pinCode('pin-code'),
   language('language'),
   currency('currency'),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/ui/screens/settings_group_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -46,7 +47,7 @@ import 'package:bb_mobile/features/settings/ui/screens/settings_search_screen.da
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_failed_sheet.dart';
-import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
+import 'package:bb_mobile/features/status_check/public/service_status.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -66,11 +67,21 @@ class SettingsRouter {
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
-      child: const AllSettingsScreen(),
-    ),
+    builder: (context, state) => const AllSettingsScreen(),
     routes: [
+      GoRoute(
+        name: SettingsRoute.tools.name,
+        path: SettingsRoute.tools.path,
+        builder: (_, _) => const SettingsGroupScreen.tools(),
+      ),
+      GoRoute(
+        name: SettingsRoute.helpAndInfo.name,
+        path: SettingsRoute.helpAndInfo.path,
+        builder: (_, _) => BlocProvider(
+          create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+          child: const SettingsGroupScreen.help(),
+        ),
+      ),
       GoRoute(
         name: SettingsRoute.search.name,
         path: SettingsRoute.search.path,

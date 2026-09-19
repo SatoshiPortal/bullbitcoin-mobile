@@ -81,26 +81,32 @@ void main() {
     test('places wallet import under the Wallet section', () {
       final items = _englishItems();
 
-      expect(items.byId(SettingsItemId.backup).title, 'Backup');
+      expect(
+        items.byId(SettingsItemId.backup).title,
+        'Wallet Recovery (money backup)',
+      );
       expect(
         items.byId(SettingsItemId.importWallet).section,
         SettingsItemSection.wallet,
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import wallet',
+        'Settings → Wallet and Bitcoin → Import wallet',
       );
       expect(backupSettingsDataItemOrder, [
         SettingsItemId.labels,
         SettingsItemId.transactionHistory,
       ]);
       expect(walletSettingsItemOrder, [
-        SettingsItemId.payjoin,
-        SettingsItemId.autoswap,
+        SettingsItemId.backup,
+        SettingsItemId.dataBackup,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,
-        SettingsItemId.broadcastTransaction,
+        SettingsItemId.autoswap,
+        SettingsItemId.payjoin,
+        SettingsItemId.extension,
+        SettingsItemId.seedViewer,
       ]);
     });
 
@@ -109,24 +115,18 @@ void main() {
       final rootItems = items.inSection(SettingsItemSection.root);
 
       expect(rootItems.map((item) => item.id), [
-        SettingsItemId.appSettings,
-        SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
-        SettingsItemId.btcMap,
-        SettingsItemId.termsOfService,
-        SettingsItemId.servicesStatus,
-        SettingsItemId.logs,
+        SettingsItemId.appSettings,
+        SettingsItemId.tools,
+        SettingsItemId.helpAndInfo,
       ]);
       expect(rootItems.map((item) => item.title), [
-        'App',
-        'Backup',
-        'Wallet',
+        'Wallet and Bitcoin',
         'Exchange',
-        'Map',
-        'Terms of Service',
-        'Service Status',
-        'Logs',
+        'App and device',
+        'Tools',
+        'Help and info',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
@@ -206,18 +206,23 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Backup → Transaction History',
+        'Settings → Wallet and Bitcoin → Data Backup → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Backup ← Transaction History',
+        'Settings ← Wallet and Bitcoin ← Data Backup ← Transaction History',
       );
     });
 
     test('omits inaccessible superuser settings', () {
       final items = _englishItems();
 
-      expect(searchSettings(items, 'dev mode'), isEmpty);
+      // The existing substring matcher can also match an accessible mode under
+      // the new App and device breadcrumb; the guarded control stays absent.
+      expect(
+        searchSettings(items, 'dev mode').map((item) => item.id),
+        isNot(contains(SettingsItemId.devMode)),
+      );
       expect(searchSettings(items, 'seed viewer'), isEmpty);
       expect(searchSettings(items, 'testnet user credentials'), isEmpty);
     });

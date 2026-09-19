@@ -162,7 +162,7 @@ class _RecoveryView extends StatelessWidget {
           title: context.loc.dataBackupTitle,
           onTap: () => _refreshAfter(
             context,
-            () => context.pushNamed<void>(BackupSettingsRoute.dataBackup.name),
+            () => context.pushNamed<void>(SettingsRoute.dataBackup.name),
           ),
         ),
         const BackupDataExportEntries(),
