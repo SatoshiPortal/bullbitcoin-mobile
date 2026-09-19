@@ -9667,8 +9667,8 @@ class Shape53 extends i0.VersionedTable {
       columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get enabled =>
       columnsByName['enabled']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get incomplete =>
-      columnsByName['incomplete']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get recoveryScope =>
+      columnsByName['recovery_scope']! as i1.GeneratedColumn<int>;
 }
 
 i1.GeneratedColumn<int> _column_337(String aliasedName) =>
@@ -9689,11 +9689,11 @@ i1.GeneratedColumn<int> _column_338(String aliasedName) =>
     );
 i1.GeneratedColumn<int> _column_339(String aliasedName) =>
     i1.GeneratedColumn<int>(
-      'incomplete',
+      'recovery_scope',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
-      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (incomplete IN (0, 1))',
+      $customConstraints: 'NOT NULL DEFAULT 0',
       defaultValue: const i1.CustomExpression('0'),
     );
 

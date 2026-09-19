@@ -20,8 +20,9 @@ abstract interface class WalletBackupStateRepository {
 
   @useResult
   Future<Result<void, WalletBackupFailure>> setRecoveryIncomplete(
-    bool incomplete,
-  );
+    bool incomplete, {
+    bool vaultOnly = false,
+  });
 
   @useResult
   Future<Result<void, WalletBackupFailure>> recordPublication({

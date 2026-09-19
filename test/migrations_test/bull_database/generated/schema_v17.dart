@@ -13971,17 +13971,17 @@ class WalletBackupControls extends Table
     requiredDuringInsert: false,
     $customConstraints: 'NULL CHECK (enabled IN (0, 1))',
   );
-  late final GeneratedColumn<int> incomplete = GeneratedColumn<int>(
-    'incomplete',
+  late final GeneratedColumn<int> recoveryScope = GeneratedColumn<int>(
+    'recovery_scope',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (incomplete IN (0, 1))',
+    $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, enabled, incomplete];
+  List<GeneratedColumn> get $columns => [id, enabled, recoveryScope];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -14004,9 +14004,9 @@ class WalletBackupControls extends Table
         DriftSqlType.int,
         data['${effectivePrefix}enabled'],
       ),
-      incomplete: attachedDatabase.typeMapping.read(
+      recoveryScope: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}incomplete'],
+        data['${effectivePrefix}recovery_scope'],
       )!,
     );
   }
@@ -14026,11 +14026,11 @@ class WalletBackupControlsData extends DataClass
     implements Insertable<WalletBackupControlsData> {
   final int id;
   final int? enabled;
-  final int incomplete;
+  final int recoveryScope;
   const WalletBackupControlsData({
     required this.id,
     this.enabled,
-    required this.incomplete,
+    required this.recoveryScope,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -14039,7 +14039,7 @@ class WalletBackupControlsData extends DataClass
     if (!nullToAbsent || enabled != null) {
       map['enabled'] = Variable<int>(enabled);
     }
-    map['incomplete'] = Variable<int>(incomplete);
+    map['recovery_scope'] = Variable<int>(recoveryScope);
     return map;
   }
 
@@ -14049,7 +14049,7 @@ class WalletBackupControlsData extends DataClass
       enabled: enabled == null && nullToAbsent
           ? const Value.absent()
           : Value(enabled),
-      incomplete: Value(incomplete),
+      recoveryScope: Value(recoveryScope),
     );
   }
 
@@ -14061,7 +14061,7 @@ class WalletBackupControlsData extends DataClass
     return WalletBackupControlsData(
       id: serializer.fromJson<int>(json['id']),
       enabled: serializer.fromJson<int?>(json['enabled']),
-      incomplete: serializer.fromJson<int>(json['incomplete']),
+      recoveryScope: serializer.fromJson<int>(json['recoveryScope']),
     );
   }
   @override
@@ -14070,18 +14070,18 @@ class WalletBackupControlsData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'enabled': serializer.toJson<int?>(enabled),
-      'incomplete': serializer.toJson<int>(incomplete),
+      'recoveryScope': serializer.toJson<int>(recoveryScope),
     };
   }
 
   WalletBackupControlsData copyWith({
     int? id,
     Value<int?> enabled = const Value.absent(),
-    int? incomplete,
+    int? recoveryScope,
   }) => WalletBackupControlsData(
     id: id ?? this.id,
     enabled: enabled.present ? enabled.value : this.enabled,
-    incomplete: incomplete ?? this.incomplete,
+    recoveryScope: recoveryScope ?? this.recoveryScope,
   );
   WalletBackupControlsData copyWithCompanion(
     WalletBackupControlsCompanion data,
@@ -14089,9 +14089,9 @@ class WalletBackupControlsData extends DataClass
     return WalletBackupControlsData(
       id: data.id.present ? data.id.value : this.id,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
-      incomplete: data.incomplete.present
-          ? data.incomplete.value
-          : this.incomplete,
+      recoveryScope: data.recoveryScope.present
+          ? data.recoveryScope.value
+          : this.recoveryScope,
     );
   }
 
@@ -14100,58 +14100,58 @@ class WalletBackupControlsData extends DataClass
     return (StringBuffer('WalletBackupControlsData(')
           ..write('id: $id, ')
           ..write('enabled: $enabled, ')
-          ..write('incomplete: $incomplete')
+          ..write('recoveryScope: $recoveryScope')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, enabled, incomplete);
+  int get hashCode => Object.hash(id, enabled, recoveryScope);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is WalletBackupControlsData &&
           other.id == this.id &&
           other.enabled == this.enabled &&
-          other.incomplete == this.incomplete);
+          other.recoveryScope == this.recoveryScope);
 }
 
 class WalletBackupControlsCompanion
     extends UpdateCompanion<WalletBackupControlsData> {
   final Value<int> id;
   final Value<int?> enabled;
-  final Value<int> incomplete;
+  final Value<int> recoveryScope;
   const WalletBackupControlsCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
-    this.incomplete = const Value.absent(),
+    this.recoveryScope = const Value.absent(),
   });
   WalletBackupControlsCompanion.insert({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
-    this.incomplete = const Value.absent(),
+    this.recoveryScope = const Value.absent(),
   });
   static Insertable<WalletBackupControlsData> custom({
     Expression<int>? id,
     Expression<int>? enabled,
-    Expression<int>? incomplete,
+    Expression<int>? recoveryScope,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (enabled != null) 'enabled': enabled,
-      if (incomplete != null) 'incomplete': incomplete,
+      if (recoveryScope != null) 'recovery_scope': recoveryScope,
     });
   }
 
   WalletBackupControlsCompanion copyWith({
     Value<int>? id,
     Value<int?>? enabled,
-    Value<int>? incomplete,
+    Value<int>? recoveryScope,
   }) {
     return WalletBackupControlsCompanion(
       id: id ?? this.id,
       enabled: enabled ?? this.enabled,
-      incomplete: incomplete ?? this.incomplete,
+      recoveryScope: recoveryScope ?? this.recoveryScope,
     );
   }
 
@@ -14164,8 +14164,8 @@ class WalletBackupControlsCompanion
     if (enabled.present) {
       map['enabled'] = Variable<int>(enabled.value);
     }
-    if (incomplete.present) {
-      map['incomplete'] = Variable<int>(incomplete.value);
+    if (recoveryScope.present) {
+      map['recovery_scope'] = Variable<int>(recoveryScope.value);
     }
     return map;
   }
@@ -14175,7 +14175,7 @@ class WalletBackupControlsCompanion
     return (StringBuffer('WalletBackupControlsCompanion(')
           ..write('id: $id, ')
           ..write('enabled: $enabled, ')
-          ..write('incomplete: $incomplete')
+          ..write('recoveryScope: $recoveryScope')
           ..write(')'))
         .toString();
   }

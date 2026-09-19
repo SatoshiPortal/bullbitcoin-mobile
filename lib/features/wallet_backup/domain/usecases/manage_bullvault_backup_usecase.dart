@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/vault_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_state.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_inventory_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
@@ -46,12 +45,9 @@ final class RestoreBullVaultBackupUsecase {
         ),
       );
     }
-    final controlResult = await _state.getControl();
-    if (controlResult case Err(:final failure)) return Err(failure);
-    final control =
-        (controlResult as Ok<WalletBackupControl, WalletBackupFailure>).value;
-    if (abandoned?.call() ?? false) return const Ok(null);
-    if (await _state.setRecoveryIncomplete(true) case Err(:final failure)) {
+    if (await _state.setRecoveryIncomplete(true, vaultOnly: true) case Err(
+      :final failure,
+    )) {
       return Err(failure);
     }
     final restored = await _repository.restoreVaults(
@@ -74,8 +70,8 @@ final class RestoreBullVaultBackupUsecase {
         wallets = value;
     }
     // A vault-only recovery cannot clear an earlier incomplete full recovery.
-    if (wallets.complete && failure == null && !control.recoveryIncomplete) {
-      if (await _state.setRecoveryIncomplete(false) case Err(
+    if (wallets.complete && failure == null) {
+      if (await _state.setRecoveryIncomplete(false, vaultOnly: true) case Err(
         failure: final error,
       )) {
         failure = error;

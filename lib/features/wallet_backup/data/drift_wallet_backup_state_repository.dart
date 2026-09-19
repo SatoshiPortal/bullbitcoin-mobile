@@ -7,6 +7,9 @@ import 'package:drift/drift.dart';
 
 final class DriftWalletBackupStateRepository
     implements WalletBackupStateRepository {
+  static const _vaultRecovery = 1;
+  static const _fullRecovery = 2;
+
   final SqliteDatabase _database;
 
   const DriftWalletBackupStateRepository(this._database);
@@ -49,7 +52,7 @@ final class DriftWalletBackupStateRepository
             ),
       confirmedContentHash: row?.confirmedContentHash,
       lastSuccessAt: row?.lastSuccessAt?.toUtc(),
-      recoveryIncomplete: recovery?.incomplete ?? false,
+      recoveryIncomplete: (recovery?.recoveryScope ?? 0) != 0,
     );
   }
 
@@ -62,7 +65,7 @@ final class DriftWalletBackupStateRepository
         return Ok(
           WalletBackupControl(
             enabled: row?.enabled,
-            recoveryIncomplete: row?.incomplete ?? false,
+            recoveryIncomplete: (row?.recoveryScope ?? 0) != 0,
           ),
         );
       });
@@ -94,17 +97,26 @@ final class DriftWalletBackupStateRepository
 
   @override
   Future<Result<void, WalletBackupFailure>> setRecoveryIncomplete(
-    bool incomplete,
-  ) => _transaction(() async {
+    bool incomplete, {
+    bool vaultOnly = false,
+  }) => _transaction(() async {
+    if (vaultOnly) {
+      final current = await (_database.select(
+        _database.walletBackupControls,
+      )..where((row) => row.id.equals(1))).getSingleOrNull();
+      // A vault import can retry its own fence, but cannot finish an incomplete full-data recovery.
+      if (current?.recoveryScope == _fullRecovery) return const Ok(null);
+    }
+    final scope = incomplete ? (vaultOnly ? _vaultRecovery : _fullRecovery) : 0;
     await _database
         .into(_database.walletBackupControls)
         .insert(
           WalletBackupControlsCompanion.insert(
             id: const Value(1),
-            incomplete: Value(incomplete),
+            recoveryScope: Value(scope),
           ),
           onConflict: DoUpdate(
-            (_) => WalletBackupControlsCompanion(incomplete: Value(incomplete)),
+            (_) => WalletBackupControlsCompanion(recoveryScope: Value(scope)),
           ),
         );
     return const Ok(null);

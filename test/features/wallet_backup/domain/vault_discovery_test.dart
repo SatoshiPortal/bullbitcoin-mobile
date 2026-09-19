@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/wallet_backup/domain/entities/vault_backup_recovery.dart';
+import 'dart:io';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
+import 'package:drift/native.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
@@ -31,17 +36,21 @@ class _Codec extends Mock implements WalletBackupCodecRepository {}
 class _Vaults extends Mock implements WalletInventoryBackupRepository {}
 
 class _State extends Fake implements WalletBackupStateRepository {
-  bool incomplete = false;
+  int scope = 0;
+  bool get incomplete => scope != 0;
+  set incomplete(bool value) => scope = value ? 2 : 0;
   final writes = <bool>[];
   @override
   Future<Result<WalletBackupControl, WalletBackupFailure>> getControl() async =>
       Ok(WalletBackupControl(enabled: false, recoveryIncomplete: incomplete));
   @override
   Future<Result<void, WalletBackupFailure>> setRecoveryIncomplete(
-    bool value,
-  ) async {
+    bool value, {
+    bool vaultOnly = false,
+  }) async {
+    if (vaultOnly && scope == 2) return const Ok(null);
     writes.add(value);
-    incomplete = value;
+    scope = value ? (vaultOnly ? 1 : 2) : 0;
     return const Ok(null);
   }
 }
@@ -154,7 +163,7 @@ void main() {
       final result = await restore.execute();
       expect(result, isA<Ok>());
       expect(state.incomplete, isTrue);
-      expect(state.writes, [true]);
+      expect(state.writes, isEmpty);
     },
   );
   test(
@@ -210,4 +219,86 @@ void main() {
     verifyZeroInteractions(vaults);
     expect(state.writes, isEmpty);
   });
+
+  for (final earlierFullRecovery in [false, true]) {
+    test(
+      'partial vault retry after restart preserves only an earlier full recovery: $earlierFullRecovery',
+      () async {
+        final directory = await Directory.systemTemp.createTemp('vault-retry-');
+        final file = File('${directory.path}/backup.sqlite');
+        var database = SqliteDatabase(NativeDatabase(file));
+        var disk = DriftWalletBackupStateRepository(database);
+        addTearDown(() async {
+          await database.close();
+          await directory.delete(recursive: true);
+        });
+        expect(await disk.setEnabled(true), isA<Ok>());
+        if (earlierFullRecovery) {
+          expect(await disk.setRecoveryIncomplete(true), isA<Ok>());
+        }
+        var partial = true;
+        when(
+          () => vaults.restoreVaults(
+            snapshot.vaults,
+            snapshot.manifest.wallets,
+            abandoned: any(named: 'abandoned'),
+          ),
+        ).thenAnswer((_) async {
+          expect(
+            (await disk.getControl()
+                    as Ok<WalletBackupControl, WalletBackupFailure>)
+                .value
+                .recoveryIncomplete,
+            isTrue,
+          );
+          return Ok(
+            WalletInventoryRecovery(
+              walletReferences: partial ? {} : {'vault-source': 'actual-vault'},
+              failedReferences: partial ? ['vault-source'] : [],
+            ),
+          );
+        });
+        Future<Result<VaultBackupRecovery?, WalletBackupFailure>> attempt() =>
+            RestoreBullVaultBackupUsecase(
+              repository: vaults,
+              state: disk,
+              operations: WalletBackupOperationQueue(),
+              inspect: InspectWalletBackupUsecase(
+                identity: identity,
+                remote: remote,
+                codec: codec,
+              ),
+            ).execute(words: backupFixtureWords);
+        (await attempt()).fold(
+          (report) => expect(report!.complete, isFalse),
+          (failure) => fail('$failure'),
+        );
+        await database.close();
+        database = SqliteDatabase(NativeDatabase(file));
+        disk = DriftWalletBackupStateRepository(database);
+        expect(
+          (await disk.get(credential.serverPublicKey)
+                  as Ok<WalletBackupState, WalletBackupFailure>)
+              .value
+              .canPublish,
+          isFalse,
+        );
+        partial = false;
+        (await attempt()).fold(
+          (report) => expect(report!.complete, isTrue),
+          (failure) => fail('$failure'),
+        );
+        await database.close();
+        database = SqliteDatabase(NativeDatabase(file));
+        disk = DriftWalletBackupStateRepository(database);
+        expect(
+          (await disk.getControl()
+                  as Ok<WalletBackupControl, WalletBackupFailure>)
+              .value
+              .recoveryIncomplete,
+          earlierFullRecovery,
+        );
+      },
+    );
+  }
 }

@@ -17,7 +17,7 @@ class WalletBackupStates extends Table {
 class WalletBackupControls extends Table {
   IntColumn get id => integer()();
   BoolColumn get enabled => boolean().nullable()();
-  BoolColumn get incomplete => boolean().withDefault(const Constant(false))();
+  IntColumn get recoveryScope => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

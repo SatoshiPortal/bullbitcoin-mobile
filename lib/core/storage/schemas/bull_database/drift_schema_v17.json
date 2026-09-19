@@ -3407,15 +3407,11 @@
             "dsl_features": []
           },
           {
-            "name": "incomplete",
-            "getter_name": "incomplete",
-            "moor_type": "bool",
+            "name": "recovery_scope",
+            "getter_name": "recoveryScope",
+            "moor_type": "int",
             "nullable": false,
             "customConstraints": null,
-            "defaultConstraints": "CHECK (\"incomplete\" IN (0, 1))",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"incomplete\" IN (0, 1))"
-            },
             "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
@@ -3934,7 +3930,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_backup_controls\" (\"id\" INTEGER NOT NULL, \"enabled\" INTEGER NULL CHECK (\"enabled\" IN (0, 1)), \"incomplete\" INTEGER NOT NULL DEFAULT 0 CHECK (\"incomplete\" IN (0, 1)), PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_backup_controls\" (\"id\" INTEGER NOT NULL, \"enabled\" INTEGER NULL CHECK (\"enabled\" IN (0, 1)), \"recovery_scope\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"id\"));"
         }
       ]
     },

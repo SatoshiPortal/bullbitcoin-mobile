@@ -318,7 +318,7 @@ void main() {
     () async {
       value(await state.setRecoveryIncomplete(true));
       await database.customStatement(
-        "CREATE TRIGGER fail_completion BEFORE UPDATE OF incomplete ON wallet_backup_controls WHEN NEW.incomplete = 0 BEGIN SELECT RAISE(ABORT, 'fixture failure'); END",
+        "CREATE TRIGGER fail_completion BEFORE UPDATE OF recovery_scope ON wallet_backup_controls WHEN NEW.recovery_scope = 0 BEGIN SELECT RAISE(ABORT, 'fixture failure'); END",
       );
       final result = value(await apply.execute(snapshot));
       expect(result.complete, isFalse);
