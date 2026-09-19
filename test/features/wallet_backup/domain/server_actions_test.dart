@@ -1,6 +1,15 @@
 import 'dart:async';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_metadata_backup.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/compare_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_files_usecase.dart'
+    show DecodeWalletBackupFileUsecase;
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -48,7 +57,8 @@ class _Remote implements WalletBackupRemoteRepository {
     generation: 0,
     etag: null,
   );
-  int fetches = 0, deletes = 0;
+  int fetches = 0, deletes = 0, stores = 0;
+  bool unavailable = false, loseStoreReply = false;
   bool loseDeleteReply = false;
   Future<void> Function()? afterDelete;
   void install(BackupCredential credential, WalletBackupCiphertext ciphertext) {
@@ -70,6 +80,7 @@ class _Remote implements WalletBackupRemoteRepository {
     BackupCredential credential,
   ) async {
     fetches++;
+    if (unavailable) return const Err(WalletBackupNetworkFailure());
     return Ok(head);
   }
 
@@ -79,7 +90,26 @@ class _Remote implements WalletBackupRemoteRepository {
     WalletBackupCiphertext ciphertext, {
     required int generation,
     required String? expectedEtag,
-  }) => throw UnimplementedError();
+  }) async {
+    stores++;
+    if (unavailable) return const Err(WalletBackupNetworkFailure());
+    if (expectedEtag != head.etag || generation != head.generation + 1) {
+      return const Err(WalletBackupConflictFailure());
+    }
+    install(credential, ciphertext);
+    if (loseStoreReply) {
+      loseStoreReply = false;
+      return const Err(WalletBackupNetworkFailure());
+    }
+    return Ok(
+      WalletBackupCheckpoint(
+        generation: head.generation,
+        etag: head.etag!,
+        ciphertextHash: ciphertext.hash,
+      ),
+    );
+  }
+
   @override
   Future<Result<WalletBackupRemoteHead, WalletBackupFailure>> delete(
     BackupCredential credential, {
@@ -125,6 +155,8 @@ void main() {
   late InspectWalletBackupUsecase inspect;
   late RecoverWalletBackupUsecase recover;
   late DeleteWalletBackupUsecase delete;
+  late CompareWalletBackupFileUsecase compareFile;
+  late RecoverWalletBackupFileUsecase recoverFile;
   var mutations = 0;
   late WalletBackupCiphertext ciphertext;
 
@@ -194,6 +226,26 @@ void main() {
       identity: identity,
       state: state,
       remote: remote,
+    );
+    final decodeFile = DecodeWalletBackupFileUsecase(
+      identity: identity,
+      codec: codec,
+    );
+    compareFile = CompareWalletBackupFileUsecase(
+      decode: decodeFile,
+      inspect: inspect,
+      state: state,
+      codec: codec,
+    );
+    recoverFile = RecoverWalletBackupFileUsecase(
+      operations: operations,
+      identity: identity,
+      state: state,
+      remote: remote,
+      codec: codec,
+      decode: decodeFile,
+      apply: apply,
+      recoverRemote: recover,
     );
     ciphertext = value(codec.encrypt(snapshot, credential));
     remote.install(credential, ciphertext);
@@ -444,6 +496,342 @@ void main() {
       await running;
       await enabling;
       expect(value(await state.getControl()).enabled, isTrue);
+    },
+  );
+
+  WalletBackupSnapshot selectedFileSnapshot() => WalletBackupSnapshot(
+    manifest: snapshot.manifest,
+    vaults: snapshot.vaults,
+    metadata: WalletMetadataBackup(
+      labels: [
+        LabelEntity(
+          id: 0,
+          type: LabelType.address,
+          label: 'Chosen file',
+          reference: 'fixture-address',
+        ),
+      ],
+      frozenOutputs: snapshot.metadata.frozenOutputs,
+      settings: snapshot.metadata.settings,
+    ),
+  );
+  String selectedFile() => value(
+    codec.encodeFile(
+      selectedFileSnapshot(),
+      credential,
+      format: WalletBackupFileFormat.readable,
+    ),
+  );
+
+  test(
+    'file comparison reports same, different sections, absent and unavailable without applying',
+    () async {
+      final same = value(
+        await compareFile.execute(
+          value(
+            codec.encodeFile(
+              snapshot,
+              credential,
+              format: WalletBackupFileFormat.encrypted,
+            ),
+          ),
+        ),
+      );
+      expect(same.situation, WalletBackupImportSituation.same);
+      final different = value(await compareFile.execute(selectedFile()));
+      expect(different.situation, WalletBackupImportSituation.different);
+      expect(different.differences, {WalletBackupDifference.metadata});
+      expect(mutations, 0);
+      remote.head = WalletBackupRemoteHead(generation: 0, etag: null);
+      expect(
+        value(await compareFile.execute(selectedFile())).situation,
+        WalletBackupImportSituation.automaticBackupDisabled,
+      );
+      value(await state.setEnabled(true));
+      expect(
+        value(await compareFile.execute(selectedFile())).situation,
+        WalletBackupImportSituation.noServerBackup,
+      );
+      remote.unavailable = true;
+      expect(
+        value(await compareFile.execute(selectedFile())).situation,
+        WalletBackupImportSituation.serverUnavailable,
+      );
+      expect(value(await state.getControl()).recoveryIncomplete, isFalse);
+    },
+  );
+  test(
+    'choosing a file with automatic backup off applies locally without writing the server',
+    () async {
+      value(await state.setEnabled(false));
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      final result = value(
+        await recoverFile.execute(
+          source,
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+          confirmed: true,
+        ),
+      );
+      expect(result.complete, isTrue);
+      expect(remote.stores, 0);
+      expect(mutations, 1);
+      expect(value(await state.getControl()).enabled, isFalse);
+    },
+  );
+  test(
+    'choosing a file with backup on replaces the inspected head and acknowledges exactly the selected copy',
+    () async {
+      value(await state.setEnabled(true));
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      final result = value(
+        await recoverFile.execute(
+          source,
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+          confirmed: true,
+        ),
+      );
+      expect(result.complete, isTrue);
+      expect(remote.stores, 1);
+      final restored = value(
+        codec.decrypt(remote.head.ciphertext!, credential),
+      );
+      expect(
+        value(codec.contentHash(restored)),
+        value(codec.contentHash(selectedFileSnapshot())),
+      );
+      final local = value(await state.get(credential.serverPublicKey));
+      expect(
+        local.confirmedContentHash,
+        value(codec.contentHash(selectedFileSnapshot())),
+      );
+      expect(local.checkpoint!.etag, remote.head.etag);
+      expect(local.recoveryIncomplete, isFalse);
+    },
+  );
+  test(
+    'choosing the server applies the single inspected server copy instead of the file',
+    () async {
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      when(() => metadata.apply(any(), {})).thenAnswer((call) async {
+        expect(
+          (call.positionalArguments.first as WalletMetadataBackup).labels,
+          isEmpty,
+        );
+        return const Ok(null);
+      });
+      final result = value(
+        await recoverFile.execute(
+          source,
+          comparison: comparison,
+          source: WalletBackupImportSource.server,
+          confirmed: true,
+        ),
+      );
+      expect(result.complete, isTrue);
+      expect(remote.stores, 0);
+    },
+  );
+  test('a stale file/server comparison prevents mutation', () async {
+    value(await state.setEnabled(true));
+    final source = selectedFile();
+    final comparison = value(await compareFile.execute(source));
+    remote.install(credential, ciphertext);
+    expect(
+      await recoverFile.execute(
+        source,
+        comparison: comparison,
+        source: WalletBackupImportSource.file,
+        confirmed: true,
+      ),
+      isA<Err>(),
+    );
+    expect(mutations, 0);
+    expect(remote.stores, 0);
+  });
+  test(
+    'a server edit during file application leaves the fence and prevents overwrite',
+    () async {
+      value(await state.setEnabled(true));
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      when(() => metadata.apply(any(), {})).thenAnswer((_) async {
+        remote.install(credential, ciphertext);
+        return const Ok(null);
+      });
+      final result = value(
+        await recoverFile.execute(
+          source,
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+          confirmed: true,
+        ),
+      );
+      expect(result.complete, isFalse);
+      expect(remote.stores, 0);
+      expect(value(await state.getControl()).recoveryIncomplete, isTrue);
+    },
+  );
+  test('partial file recovery never replaces the remote copy', () async {
+    value(await state.setEnabled(true));
+    final source = selectedFile();
+    final comparison = value(await compareFile.execute(source));
+    when(
+      () => metadata.apply(any(), {}),
+    ).thenAnswer((_) async => const Err(WalletBackupStorageFailure()));
+    final result = value(
+      await recoverFile.execute(
+        source,
+        comparison: comparison,
+        source: WalletBackupImportSource.file,
+        confirmed: true,
+      ),
+    );
+    expect(result.complete, isFalse);
+    expect(remote.stores, 0);
+    expect(value(await state.getControl()).recoveryIncomplete, isTrue);
+  });
+  test(
+    'a lost file replacement reply remains fenced and retry recognizes accepted content',
+    () async {
+      value(await state.setEnabled(true));
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      remote.loseStoreReply = true;
+      expect(
+        value(
+          await recoverFile.execute(
+            source,
+            comparison: comparison,
+            source: WalletBackupImportSource.file,
+            confirmed: true,
+          ),
+        ).complete,
+        isFalse,
+      );
+      expect(value(await state.getControl()).recoveryIncomplete, isTrue);
+      expect(
+        value(
+          await recoverFile.execute(
+            source,
+            comparison: comparison,
+            source: WalletBackupImportSource.file,
+            confirmed: true,
+          ),
+        ).complete,
+        isTrue,
+      );
+      expect(remote.stores, 1);
+      expect(value(await state.getControl()).recoveryIncomplete, isFalse);
+    },
+  );
+  test(
+    'an explicitly chosen offline file restores locally but cannot release publication until server reconciliation',
+    () async {
+      value(await state.setEnabled(true));
+      remote.unavailable = true;
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      final result = value(
+        await recoverFile.execute(
+          source,
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+          confirmed: true,
+        ),
+      );
+      expect(result.metadataRestored, isTrue);
+      expect(result.complete, isFalse);
+      expect(value(await state.getControl()).recoveryIncomplete, isTrue);
+      remote.unavailable = false;
+      final current = value(await compareFile.execute(source));
+      expect(
+        value(
+          await recoverFile.execute(
+            source,
+            comparison: current,
+            source: WalletBackupImportSource.file,
+            confirmed: true,
+          ),
+        ).complete,
+        isTrue,
+      );
+      expect(value(await state.getControl()).recoveryIncomplete, isFalse);
+    },
+  );
+  test(
+    'disabling during file application finishes locally without a replacement write',
+    () async {
+      value(await state.setEnabled(true));
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      when(() => metadata.apply(any(), {})).thenAnswer((_) async {
+        value(await state.setEnabled(false));
+        return const Ok(null);
+      });
+      expect(
+        value(
+          await recoverFile.execute(
+            source,
+            comparison: comparison,
+            source: WalletBackupImportSource.file,
+            confirmed: true,
+          ),
+        ).complete,
+        isTrue,
+      );
+      expect(remote.stores, 0);
+      expect(value(await state.getControl()).enabled, isFalse);
+    },
+  );
+
+  test(
+    'enabling after a local-only comparison requires a fresh comparison before server replacement',
+    () async {
+      value(await state.setEnabled(false));
+      final source = selectedFile();
+      final comparison = value(await compareFile.execute(source));
+      value(await state.setEnabled(true));
+      expect(
+        await recoverFile.execute(
+          source,
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+          confirmed: true,
+        ),
+        isA<Err>(),
+      );
+      expect(mutations, 0);
+      expect(remote.stores, 0);
+    },
+  );
+
+  test(
+    'a different authenticated file cannot reuse an earlier comparison',
+    () async {
+      final comparison = value(await compareFile.execute(selectedFile()));
+      final different = value(
+        codec.encodeFile(
+          snapshot,
+          credential,
+          format: WalletBackupFileFormat.readable,
+        ),
+      );
+      expect(
+        await recoverFile.execute(
+          different,
+          comparison: comparison,
+          source: WalletBackupImportSource.file,
+          confirmed: true,
+        ),
+        isA<Err>(),
+      );
+      expect(mutations, 0);
+      expect(remote.stores, 0);
     },
   );
 }

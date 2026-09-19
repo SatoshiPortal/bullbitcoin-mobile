@@ -3,6 +3,7 @@ final class WalletBackupFileModel {
   final String kind;
   final int version;
   final String format;
+  final int createdAt;
   final String publicKey;
   final String signature;
   final Object payload;
@@ -11,6 +12,7 @@ final class WalletBackupFileModel {
     this.kind = fileKind,
     this.version = 1,
     required this.format,
+    required this.createdAt,
     required this.publicKey,
     required this.signature,
     required this.payload,
@@ -21,6 +23,7 @@ final class WalletBackupFileModel {
       'kind',
       'version',
       'format',
+      'createdAt',
       'publicKey',
       'signature',
       'payload',
@@ -30,6 +33,7 @@ final class WalletBackupFileModel {
         json['kind'] is! String ||
         json['version'] is! int ||
         json['format'] is! String ||
+        json['createdAt'] is! int ||
         json['publicKey'] is! String ||
         json['signature'] is! String ||
         json['payload'] == null) {
@@ -39,6 +43,7 @@ final class WalletBackupFileModel {
       kind: json['kind'] as String,
       version: json['version'] as int,
       format: json['format'] as String,
+      createdAt: json['createdAt'] as int,
       publicKey: json['publicKey'] as String,
       signature: json['signature'] as String,
       payload: json['payload'] as Object,
@@ -49,6 +54,7 @@ final class WalletBackupFileModel {
     'kind': kind,
     'version': version,
     'format': format,
+    'createdAt': createdAt,
     'publicKey': publicKey,
     'signature': signature,
     'payload': payload,

@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.d
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_snapshot_model.dart';
 import 'package:bb_mobile/features/wallet_backup/data/models/wallet_backup_file_model.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
@@ -22,6 +23,29 @@ final class WalletBackupCodecRepositoryImpl
   final BullVaultFacade _vaults;
 
   const WalletBackupCodecRepositoryImpl(this._vaults);
+
+  @override
+  Result<Set<WalletBackupDifference>, WalletBackupFailure> differences(
+    WalletBackupSnapshot left,
+    WalletBackupSnapshot right,
+  ) {
+    final a = encode(left), b = encode(right);
+    if (a case Err(:final failure)) return Err(failure);
+    if (b case Err(:final failure)) return Err(failure);
+    final aJson =
+        jsonDecode((a as Ok<String, WalletBackupFailure>).value)
+            as Map<String, dynamic>;
+    final bJson =
+        jsonDecode((b as Ok<String, WalletBackupFailure>).value)
+            as Map<String, dynamic>;
+    return Ok(
+      Set.unmodifiable({
+        for (final part in WalletBackupDifference.values)
+          if (jsonEncode(aJson[part.name]) != jsonEncode(bJson[part.name]))
+            part,
+      }),
+    );
+  }
 
   @override
   Result<String, WalletBackupFailure> encodeFile(
@@ -51,11 +75,18 @@ final class WalletBackupCodecRepositoryImpl
           signedContent = (encoded as Ok<String, WalletBackupFailure>).value;
           payload = jsonDecode(signedContent) as Object;
       }
+      final createdAt = DateTime.now().toUtc().millisecondsSinceEpoch;
       final model = WalletBackupFileModel(
         format: format.name,
+        createdAt: createdAt,
         publicKey: credential.artifactPublicKey,
         signature: credential.signArtifactHash(
-          _fileDigest(format, credential.artifactPublicKey, signedContent),
+          _fileDigest(
+            format,
+            credential.artifactPublicKey,
+            signedContent,
+            createdAt,
+          ),
         ),
         payload: payload,
       );
@@ -79,6 +110,9 @@ final class WalletBackupCodecRepositoryImpl
     }
     try {
       final model = WalletBackupFileModel.fromJson(readBackupJson(source));
+      if (model.createdAt < 0 || model.createdAt > 8640000000000000) {
+        return const Err(WalletBackupInvalidFailure());
+      }
       if (model.kind != WalletBackupFileModel.fileKind || model.version != 1) {
         return const Err(WalletBackupUnsupportedFailure());
       }
@@ -122,7 +156,12 @@ final class WalletBackupCodecRepositoryImpl
       }
       if (!nostr.Schnorr.verify(
         publicKey: model.publicKey,
-        message: _fileDigest(format, model.publicKey, signedContent),
+        message: _fileDigest(
+          format,
+          model.publicKey,
+          signedContent,
+          model.createdAt,
+        ),
         signature: model.signature,
       )) {
         return const Err(WalletBackupInvalidFailure());
@@ -148,7 +187,16 @@ final class WalletBackupCodecRepositoryImpl
       if (credential != null && !_matchesCredential(verified, credential)) {
         return const Err(WalletBackupCredentialFailure());
       }
-      return Ok(WalletBackupFile(format: format, snapshot: verified));
+      return Ok(
+        WalletBackupFile(
+          format: format,
+          snapshot: verified,
+          createdAt: DateTime.fromMillisecondsSinceEpoch(
+            model.createdAt,
+            isUtc: true,
+          ),
+        ),
+      );
     } on Exception {
       return const Err(WalletBackupInvalidFailure());
     }
@@ -158,6 +206,7 @@ final class WalletBackupCodecRepositoryImpl
     WalletBackupFileFormat format,
     String publicKey,
     String content,
+    int createdAt,
   ) => sha256
       .convert(
         utf8.encode(
@@ -166,6 +215,7 @@ final class WalletBackupCodecRepositoryImpl
             '1',
             format.name,
             publicKey,
+            createdAt.toString(),
             content,
           ].join('\u0000'),
         ),

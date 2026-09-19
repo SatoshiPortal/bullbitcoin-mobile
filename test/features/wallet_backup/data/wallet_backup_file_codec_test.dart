@@ -56,6 +56,7 @@ void main() {
                 '1',
                 'readable',
                 credential.artifactPublicKey,
+                (model['createdAt'] as int).toString(),
                 canonical,
               ].join('\u0000'),
             ),
@@ -77,6 +78,7 @@ void main() {
                 '1',
                 'encrypted',
                 credential.artifactPublicKey,
+                (model['createdAt'] as int).toString(),
                 canonical,
               ].join('\u0000'),
             ),
@@ -184,4 +186,24 @@ void main() {
       expect(codec.encodeFile(snapshot, wrong, format: format), isA<Err>());
     }
   });
+
+  test(
+    'the file export date is authenticated and does not alter snapshot content',
+    () {
+      final model = envelope(WalletBackupFileFormat.readable);
+      expect(model['createdAt'], isA<int>());
+      expect(
+        value(
+          codec.decodeFile(jsonEncode(model)),
+        ).createdAt.millisecondsSinceEpoch,
+        model['createdAt'],
+      );
+      expect(
+        (model['payload'] as Map<String, dynamic>).containsKey('createdAt'),
+        isFalse,
+      );
+      model['createdAt'] = (model['createdAt'] as int) + 1;
+      expect(codec.decodeFile(jsonEncode(model)), isA<Err>());
+    },
+  );
 }

@@ -34,6 +34,7 @@ final class ApplyWalletBackupSnapshotUsecase {
   Future<Result<WalletBackupRecovery, WalletBackupFailure>> execute(
     WalletBackupSnapshot snapshot, {
     Future<Result<bool, WalletBackupFailure>> Function()? revalidate,
+    bool keepRecoveryIncomplete = false,
   }) async {
     // Apply the same strict validation to constructed and decoded snapshots.
     final encoded = _codec.encode(snapshot);
@@ -125,8 +126,10 @@ final class ApplyWalletBackupSnapshotUsecase {
           break;
       }
     }
-    if (await _state.setRecoveryIncomplete(false) case Err(:final failure)) {
-      return Ok(report(failure));
+    if (!keepRecoveryIncomplete) {
+      if (await _state.setRecoveryIncomplete(false) case Err(:final failure)) {
+        return Ok(report(failure));
+      }
     }
     return Ok(report());
   }

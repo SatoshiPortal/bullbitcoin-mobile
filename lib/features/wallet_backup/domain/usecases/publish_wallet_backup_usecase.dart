@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/store_wallet_backup_ciphertext_usecase.dart';
 import 'package:meta/meta.dart';
 
 class PublishWalletBackupUsecase {
@@ -183,33 +184,13 @@ class PublishWalletBackupUsecase {
         ciphertext,
         hash,
       );
-      final stored = await _remote.store(
-        credential,
-        ciphertext,
-        generation: generation,
-        expectedEtag: head.etag,
-      );
+      final stored = await StoreWalletBackupCiphertextUsecase(
+        remote: _remote,
+        codec: _codec,
+      ).execute(credential, ciphertext, current: head, contentHash: hash);
       if (stored case Err(:final failure)) return Err(failure);
-      final receipt =
-          (stored as Ok<WalletBackupCheckpoint, WalletBackupFailure>).value;
-      final readback = await _remote.fetch(credential);
-      if (readback case Err(:final failure)) return Err(failure);
       final confirmed =
-          (readback as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
-      if (confirmed.generation != receipt.generation ||
-          confirmed.etag != receipt.etag ||
-          confirmed.ciphertext?.hash != ciphertext.hash) {
-        return const Err(WalletBackupConflictFailure());
-      }
-      final decoded = _codec.decrypt(confirmed.ciphertext!, credential);
-      if (decoded case Err(:final failure)) return Err(failure);
-      final verifiedHash = _codec.contentHash(
-        (decoded as Ok<WalletBackupSnapshot, WalletBackupFailure>).value,
-      );
-      if (verifiedHash case Err(:final failure)) return Err(failure);
-      if ((verifiedHash as Ok<String, WalletBackupFailure>).value != hash) {
-        return const Err(WalletBackupInvalidFailure());
-      }
+          (stored as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
       final acknowledged = await _acknowledge(
         credential.serverPublicKey,
         state,

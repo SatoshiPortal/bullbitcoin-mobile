@@ -19,4 +19,12 @@ final class WalletBackupRecovery {
       publicRecordsRestored &&
       metadataRestored &&
       failure == null;
+
+  WalletBackupRecovery withFailure(WalletBackupFailure failure) =>
+      WalletBackupRecovery(
+        wallets: wallets,
+        publicRecordsRestored: publicRecordsRestored,
+        metadataRestored: metadataRestored,
+        failure: failure,
+      );
 }
