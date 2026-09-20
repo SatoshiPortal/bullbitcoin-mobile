@@ -28,6 +28,16 @@ final class DriftWalletBackupStateRepository
   Future<Result<WalletBackupState, WalletBackupFailure>> get(String identity) =>
       _transaction(() async => Ok(await _load(identity)));
 
+  @override
+  Future<Result<DateTime?, WalletBackupFailure>> getLastSuccessAt() =>
+      _transaction(() async {
+        final latest = _database.walletBackupStates.lastSuccessAt.max();
+        final row = await (_database.selectOnly(
+          _database.walletBackupStates,
+        )..addColumns([latest])).getSingle();
+        return Ok(row.read(latest)?.toUtc());
+      });
+
   Future<WalletBackupState> _load(String identity) async {
     final row = await (_database.select(
       _database.walletBackupStates,

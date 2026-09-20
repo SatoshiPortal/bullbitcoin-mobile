@@ -4,9 +4,13 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inve
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failure.dart';
+import 'package:bb_mobile/features/backup_settings/domain/data_backup_status.dart';
+import 'package:bb_mobile/features/backup_settings/domain/usecases/manage_data_backup_usecase.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
@@ -112,6 +116,54 @@ void main() {
         (control as Ok<WalletBackupControl, WalletBackupFailure>).value.enabled,
         isFalse,
       );
+      verifyZeroInteractions(identity);
+    },
+  );
+  test(
+    'off status reads the newest stored date without resolving the seed',
+    () async {
+      when(
+        identity.resolve,
+      ).thenAnswer((_) async => const Err(BackupCredentialUnavailable()));
+      final state = services<WalletBackupStateRepository>();
+      expect(await state.setEnabled(false), isA<Ok>());
+      final load = LoadDataBackupStatusUsecase(services<WalletBackupFacade>());
+      final empty =
+          (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(empty.control.enabled, isFalse);
+      expect(empty.lastSuccessAt, isNull);
+      verifyZeroInteractions(identity);
+
+      final latest = DateTime.utc(2026, 9, 20);
+      for (final (key, date) in [
+        ('a' * 64, latest),
+        ('b' * 64, latest.subtract(const Duration(days: 1))),
+      ]) {
+        expect(
+          await state.recordPublication(
+            identity: key,
+            expectedEtag: null,
+            checkpoint: WalletBackupCheckpoint(
+              generation: 1,
+              etag: '1' * 64,
+              ciphertextHash: '2' * 64,
+            ),
+            contentHash: '3' * 64,
+            succeededAt: date,
+          ),
+          isA<Ok>(),
+        );
+      }
+      final result =
+          (await load.execute(retryPublication: true)
+                  as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(result.control.enabled, isFalse);
+      expect(result.lastSuccessAt, latest);
+      expect(result.failure, isNull);
+      expect(result.publication, isNull);
+      expect(result.publishing, isFalse);
       verifyZeroInteractions(identity);
     },
   );

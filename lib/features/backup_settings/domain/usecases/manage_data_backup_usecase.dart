@@ -19,16 +19,26 @@ class LoadDataBackupStatusUsecase {
     }
     final control =
         (controlResult as Ok<WalletBackupControl, WalletBackupFailure>).value;
-    // An undecided page does not resolve a credential. Off still reads the current identity's local checkpoint, never the server or job.
+    // An undecided/off page is not permission to read the wallet seed.
     if (control.enabled == null) return Ok(DataBackupStatus(control: control));
+    if (control.enabled == false) {
+      final date = await _backups.getLastSuccessAt();
+      return Ok(
+        DataBackupStatus(
+          control: control,
+          lastSuccessAt: switch (date) {
+            Ok(:final value) => value,
+            Err() => null,
+          },
+        ),
+      );
+    }
     final stateResult = await _backups.getState();
     if (stateResult case Err(:final failure)) {
       return Ok(
         DataBackupStatus(
           control: control,
-          failure: control.enabled == true
-              ? BackupSettingsFailure.fromDataBackup(failure)
-              : null,
+          failure: BackupSettingsFailure.fromDataBackup(failure),
         ),
       );
     }

@@ -9,6 +9,10 @@ abstract interface class WalletBackupStateRepository {
   @useResult
   Future<Result<WalletBackupState, WalletBackupFailure>> get(String identity);
 
+  /// Most recent stored acknowledgement across identities; no credential needed.
+  @useResult
+  Future<Result<DateTime?, WalletBackupFailure>> getLastSuccessAt();
+
   @useResult
   Future<Result<void, WalletBackupFailure>> setEnabled(
     bool enabled, {

@@ -24,6 +24,10 @@ final class GetWalletBackupStateUsecase {
   final WalletBackupStateRepository _state;
   const GetWalletBackupStateUsecase(this._identity, this._state);
   @useResult
+  Future<Result<DateTime?, WalletBackupFailure>> getLastSuccessAt() =>
+      _state.getLastSuccessAt();
+
+  @useResult
   Future<Result<WalletBackupState, WalletBackupFailure>> execute() async =>
       switch (await _identity.resolve()) {
         Err() => const Err(WalletBackupCredentialFailure()),

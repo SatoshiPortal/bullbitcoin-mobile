@@ -15,6 +15,7 @@ void main() {
   setUp(() {
     backups = _Backups();
     load = LoadDataBackupStatusUsecase(backups);
+    when(backups.getLastSuccessAt).thenAnswer((_) async => const Ok(null));
   });
 
   test('undecided controls do not resolve a credential or job', () async {
@@ -26,24 +27,26 @@ void main() {
             .value;
     expect(result.control.enabled, isNull);
     verifyNever(backups.getState);
+    verifyNever(backups.getLastSuccessAt);
     verifyNever(() => backups.publicationStatus);
   });
 
   test(
-    'off with an unavailable identity remains usable without inventing a date',
+    'off with an unreadable stored date remains usable without inventing one',
     () async {
       when(
         backups.getControl,
       ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: false)));
       when(
-        backups.getState,
-      ).thenAnswer((_) async => const Err(WalletBackupCredentialFailure()));
+        backups.getLastSuccessAt,
+      ).thenAnswer((_) async => const Err(WalletBackupStorageFailure()));
       final result =
           (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
               .value;
       expect(result.control.enabled, isFalse);
       expect(result.lastSuccessAt, isNull);
       expect(result.failure, isNull);
+      verifyNever(backups.getState);
       verifyNever(() => backups.publicationStatus);
     },
   );
@@ -67,26 +70,13 @@ void main() {
   );
 
   test(
-    'off retains the current identity last success without reading a job',
+    'off retains the stored last success without reading an identity or job',
     () async {
       final date = DateTime.utc(2026, 9, 19);
       when(
         backups.getControl,
       ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: false)));
-      when(backups.getState).thenAnswer(
-        (_) async => Ok(
-          WalletBackupState(
-            identity: 'a' * 64,
-            enabled: false,
-            checkpoint: WalletBackupCheckpoint(
-              generation: 1,
-              etag: 'b' * 64,
-              ciphertextHash: 'c' * 64,
-            ),
-            lastSuccessAt: date,
-          ),
-        ),
-      );
+      when(backups.getLastSuccessAt).thenAnswer((_) async => Ok(date));
       final result =
           (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
               .value;
@@ -94,6 +84,7 @@ void main() {
       expect(result.control.enabled, isFalse);
       expect(result.publication, isNull);
       expect(result.isUpToDate, isFalse);
+      verifyNever(backups.getState);
       verifyNever(() => backups.publicationStatus);
       verifyNever(backups.resumeAutomatic);
       verifyNever(backups.retryAutomatic);

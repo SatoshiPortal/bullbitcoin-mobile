@@ -109,6 +109,9 @@ class WalletBackupFacade {
   Future<Result<WalletBackupState, WalletBackupFailure>> getState() =>
       _getState.execute();
   @useResult
+  Future<Result<DateTime?, WalletBackupFailure>> getLastSuccessAt() =>
+      _getState.getLastSuccessAt();
+  @useResult
   Future<Result<void, WalletBackupFailure>> setEnabled(
     bool enabled, {
     bool onlyIfUndecided = false,
