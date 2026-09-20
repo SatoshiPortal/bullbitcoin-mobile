@@ -97,7 +97,9 @@ abstract final class BackupSettingsRouter {
       builder: (context, _) => MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (_) => locator<DataBackupSettingsCubit>()..start(),
+            create: (_) =>
+                locator<DataBackupSettingsCubit>()
+                  ..start(retryPublication: true),
           ),
           BlocProvider(create: (_) => locator<DataBackupFileCubit>()),
         ],

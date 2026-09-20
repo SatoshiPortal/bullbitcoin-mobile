@@ -47,13 +47,17 @@ class _DataBackupSettingsScreenState extends State<DataBackupSettingsScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      context.read<DataBackupSettingsCubit>().refresh();
+      context.read<DataBackupSettingsCubit>().refresh(retryPublication: true);
     }
   }
 
   Future<void> _open(Future<void> Function() action) async {
     await action();
-    if (mounted) await context.read<DataBackupSettingsCubit>().refresh();
+    if (mounted) {
+      await context.read<DataBackupSettingsCubit>().refresh(
+        retryPublication: true,
+      );
+    }
   }
 
   Future<void> _enable(bool enabled) async {
@@ -127,7 +131,10 @@ class _DataBackupSettingsScreenState extends State<DataBackupSettingsScreen>
       child: BlocBuilder<DataBackupSettingsCubit, DataBackupSettingsState>(
         builder: (context, state) {
           final data = state.data;
-          final failure = state.failure ?? state.readFailure ?? data?.failure;
+          final failure =
+              state.failure ??
+              state.readFailure ??
+              (data?.publishing == true ? null : data?.failure);
           return ListView(
             padding: const EdgeInsets.all(24),
             children: [
@@ -177,9 +184,13 @@ class _DataBackupSettingsScreenState extends State<DataBackupSettingsScreen>
                 const Gap(16),
                 Text(failure.toTranslated(context)),
               ],
-              if (state.readFailure != null || data == null)
+              if (failure != null || data == null)
                 TextButton(
-                  onPressed: context.read<DataBackupSettingsCubit>().refresh,
+                  onPressed: state.loading || state.working
+                      ? null
+                      : () => context.read<DataBackupSettingsCubit>().refresh(
+                          retryPublication: true,
+                        ),
                   child: Text(context.loc.retry),
                 ),
               if (state.deleted) Text(context.loc.dataBackupDeleted),

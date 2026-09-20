@@ -30,6 +30,8 @@ class _Metadata extends Fake implements WalletMetadataBackupRepository {}
 
 class _Files extends Fake implements WalletBackupFileRepository {}
 
+class _Publish extends Mock implements PublishWalletBackupUsecase {}
+
 void main() {
   late GetIt services;
   late SqliteDatabase database;
@@ -61,6 +63,24 @@ void main() {
       services<SetWalletBackupEnabledUsecase>(),
       same(services<SetWalletBackupEnabledUsecase>()),
     );
+  });
+
+  test('manual publication updates the same status read by settings', () async {
+    final publish = _Publish();
+    await services.unregister<PublishWalletBackupUsecase>();
+    services.registerSingleton<PublishWalletBackupUsecase>(publish);
+    final facade = services<WalletBackupFacade>();
+    when(
+      () => publish.execute(force: true),
+    ).thenAnswer((_) async => const Err(WalletBackupNetworkFailure()));
+    expect(await facade.publish(force: true), isA<Err>());
+    expect(facade.publicationStatus.result, isA<Err>());
+    when(
+      () => publish.execute(force: true),
+    ).thenAnswer((_) async => const Ok(WalletBackupPublication.published));
+    expect(await facade.publish(force: true), isA<Ok>());
+    expect(facade.publicationStatus.result, isA<Ok>());
+    expect(facade.publicationStatus.running, isFalse);
   });
   test(
     'opening control keeps the undecided choice without a credential lookup',

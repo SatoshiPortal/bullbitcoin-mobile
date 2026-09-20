@@ -101,6 +101,43 @@ void main() {
     expect(cubit.state.data!.control.enabled, isFalse);
   });
 
+  test(
+    'screen entry requests publication once, owner refreshes only read',
+    () async {
+      when(
+        () => load.execute(retryPublication: true),
+      ).thenAnswer((_) async => const Ok(on));
+      await cubit.start(retryPublication: true);
+      await cubit.refresh();
+      verify(() => load.execute(retryPublication: true)).called(1);
+      verify(load.execute).called(1);
+    },
+  );
+
+  test(
+    'retry intent survives an already pending read and clears action failure',
+    () async {
+      await cubit.start();
+      when(
+        () => publish.execute(),
+      ).thenAnswer((_) async => const Err(BackupSettingsNetworkFailure()));
+      await cubit.publish();
+      expect(cubit.state.failure, isNotNull);
+      final pending =
+          Completer<Result<DataBackupStatus, BackupSettingsFailure>>();
+      when(load.execute).thenAnswer((_) => pending.future);
+      when(
+        () => load.execute(retryPublication: true),
+      ).thenAnswer((_) async => const Ok(on));
+      final reading = cubit.refresh();
+      await cubit.refresh(retryPublication: true);
+      pending.complete(const Ok(on));
+      await reading;
+      expect(cubit.state.failure, isNull);
+      verify(() => load.execute(retryPublication: true)).called(1);
+    },
+  );
+
   test('cancelled deletion never calls its use case', () async {
     await cubit.delete(confirmed: false);
     verifyZeroInteractions(delete);

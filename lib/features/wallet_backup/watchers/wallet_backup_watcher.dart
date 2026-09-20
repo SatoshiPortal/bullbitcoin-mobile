@@ -3,6 +3,7 @@ import 'package:async/async.dart' show StreamGroup;
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_job_status.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_publication.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
@@ -23,6 +24,7 @@ final class WalletBackupWatcher {
   bool _active = false, _disposed = false, _running = false, _dirty = false;
   bool _waitingToRetry = false;
   int _networkAttempt = 0;
+  int _publications = 0;
 
   WalletBackupWatcher({
     required this._publish,
@@ -33,6 +35,23 @@ final class WalletBackupWatcher {
 
   WalletBackupJobStatus get status => _status;
   Stream<WalletBackupJobStatus> get statuses => _statuses.stream;
+
+  /// Manual and scheduled attempts report through the same status owner.
+  Future<Result<WalletBackupPublication, WalletBackupFailure>> publish({
+    bool force = false,
+    WalletBackupInspection? replace,
+  }) async {
+    _publications++;
+    _emit(const WalletBackupJobStatus(running: true));
+    final Result<WalletBackupPublication, WalletBackupFailure> result;
+    try {
+      result = await _publish.execute(force: force, replace: replace);
+    } finally {
+      _publications--;
+    }
+    _emit(WalletBackupJobStatus(running: _publications > 0, result: result));
+    return result;
+  }
 
   void start() {
     if (_active || _disposed) return;
@@ -63,6 +82,9 @@ final class WalletBackupWatcher {
     _request(trigger: 'resume');
   }
 
+  // A screen can retry an active watcher; only the lifecycle owner starts it.
+  void retry() => _request(trigger: 'retry');
+
   void _request({required String trigger}) {
     if (!_active || _disposed) return;
     _dirty = true;
@@ -90,15 +112,13 @@ final class WalletBackupWatcher {
     if (!_active || _disposed || _running) return;
     _dirty = false;
     _running = true;
-    _emit(WalletBackupJobStatus(running: true, result: _status.result));
     final Result<WalletBackupPublication, WalletBackupFailure> result;
     try {
-      result = await _publish.execute();
+      result = await publish();
     } finally {
       _running = false;
     }
     if (!_active || _disposed) return;
-    _emit(WalletBackupJobStatus(result: result));
     switch (result) {
       case Err(failure: WalletBackupRateLimitedFailure(:final retryAt)):
         final remaining = retryAt.difference(_now());

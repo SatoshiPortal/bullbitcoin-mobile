@@ -203,7 +203,6 @@ abstract final class WalletBackupLocator {
         recoverVaults: locator(),
         getState: locator(),
         setEnabled: locator(),
-        publish: locator(),
         delete: locator(),
         capture: locator(),
         watchState: locator(),

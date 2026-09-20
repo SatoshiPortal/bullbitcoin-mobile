@@ -31,6 +31,7 @@ class DataBackupSettingsCubit extends Cubit<DataBackupSettingsState> {
   final DeleteDataBackupUsecase _delete;
   StreamSubscription<void>? _subscription;
   bool _refreshing = false, _refreshAgain = false;
+  bool _retryRequested = false;
   int _action = 0;
 
   DataBackupSettingsCubit(
@@ -41,7 +42,7 @@ class DataBackupSettingsCubit extends Cubit<DataBackupSettingsState> {
     this._delete,
   ) : super(const DataBackupSettingsState(loading: true));
 
-  Future<void> start() async {
+  Future<void> start({bool retryPublication = false}) async {
     _subscription ??= _watch.execute().listen(
       (_) => unawaited(refresh()),
       onError: (Object _) {
@@ -57,18 +58,30 @@ class DataBackupSettingsCubit extends Cubit<DataBackupSettingsState> {
         }
       },
     );
-    await refresh();
+    await refresh(retryPublication: retryPublication);
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({bool retryPublication = false}) async {
     if (isClosed) return;
+    _retryRequested |= retryPublication;
+    if (retryPublication) {
+      emit(
+        DataBackupSettingsState(
+          data: state.data,
+          loading: true,
+          working: state.working,
+        ),
+      );
+    }
     _refreshAgain = true;
     if (_refreshing) return;
     _refreshing = true;
     try {
       do {
         _refreshAgain = false;
-        final result = await _load.execute();
+        final retry = _retryRequested;
+        _retryRequested = false;
+        final result = await _load.execute(retryPublication: retry);
         if (isClosed) return;
         if (_refreshAgain) continue;
         emit(switch (result) {

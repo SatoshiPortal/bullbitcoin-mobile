@@ -22,6 +22,7 @@ void main() {
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => cubit.setEnabled(any())).thenAnswer((_) async {});
     when(cubit.refresh).thenAnswer((_) async {});
+    when(() => cubit.refresh(retryPublication: true)).thenAnswer((_) async {});
     when(() => cubit.delete(confirmed: true)).thenAnswer((_) async {});
   });
   Future<void> pump(WidgetTester tester, DataBackupSettingsState state) async {
@@ -58,6 +59,21 @@ void main() {
       ),
     );
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('a publication network failure offers retry', (tester) async {
+    await pump(
+      tester,
+      const DataBackupSettingsState(
+        data: DataBackupStatus(
+          control: WalletBackupControl(enabled: true),
+          failure: BackupSettingsNetworkFailure(),
+        ),
+      ),
+    );
+    expect(find.text(loc.retry), findsOneWidget);
+    await tester.tap(find.text(loc.retry));
+    verify(() => cubit.refresh(retryPublication: true)).called(1);
   });
 
   testWidgets('cancelled enable never changes the consent choice', (

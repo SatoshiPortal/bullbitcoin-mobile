@@ -10,7 +10,9 @@ class LoadDataBackupStatusUsecase {
   const LoadDataBackupStatusUsecase(this._backups);
 
   @useResult
-  Future<Result<DataBackupStatus, BackupSettingsFailure>> execute() async {
+  Future<Result<DataBackupStatus, BackupSettingsFailure>> execute({
+    bool retryPublication = false,
+  }) async {
     final controlResult = await _backups.getControl();
     if (controlResult case Err(:final failure)) {
       return Err(BackupSettingsFailure.fromDataBackup(failure));
@@ -35,6 +37,9 @@ class LoadDataBackupStatusUsecase {
       recoveryIncomplete: state.recoveryIncomplete,
     );
     if (current.enabled != true) return Ok(DataBackupStatus(control: current));
+    if (retryPublication && !current.recoveryIncomplete) {
+      _backups.retryAutomatic();
+    }
     final job = _backups.publicationStatus;
     return Ok(
       DataBackupStatus(

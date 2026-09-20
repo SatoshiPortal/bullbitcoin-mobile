@@ -118,10 +118,60 @@ void main() {
       watcher.resume();
       time.elapse(const Duration(milliseconds: 500));
       expect(calls, 6);
+      for (final delay in [5, 15, 30, 60]) {
+        final before = calls;
+        time.elapse(Duration(seconds: delay - 1));
+        expect(calls, before);
+        time.elapse(const Duration(seconds: 1));
+        expect(calls, before + 1);
+      }
       unawaited(watcher.dispose());
       time.flushMicrotasks();
     }),
   );
+
+  test('screen retry cannot start a watcher stopped by lifecycle', () {
+    fakeAsync((time) {
+      final watcher = create(time)..retry();
+      time.elapse(const Duration(seconds: 1));
+      expect(calls, 0);
+      expect(ownerEvents.hasListener, isFalse);
+      watcher.start();
+      time.elapse(const Duration(milliseconds: 500));
+      expect(calls, 1);
+      unawaited(watcher.stop());
+      time.flushMicrotasks();
+      watcher.retry();
+      time.elapse(const Duration(seconds: 1));
+      expect(calls, 1);
+      unawaited(watcher.dispose());
+      time.flushMicrotasks();
+    });
+  });
+
+  test('a new attempt clears the old network failure while waiting', () {
+    fakeAsync((time) {
+      final pending =
+          Completer<Result<WalletBackupPublication, WalletBackupFailure>>();
+      when(() => publish.execute()).thenAnswer((_) {
+        calls++;
+        return calls == 1
+            ? Future.value(const Err(WalletBackupNetworkFailure()))
+            : pending.future;
+      });
+      final watcher = create(time)..start();
+      time.elapse(const Duration(milliseconds: 500));
+      expect(watcher.status.result, isA<Err>());
+      time.elapse(const Duration(seconds: 5));
+      expect(watcher.status.running, isTrue);
+      expect(watcher.status.result, isNull);
+      pending.complete(const Ok(WalletBackupPublication.published));
+      time.flushMicrotasks();
+      expect(watcher.status.result, isA<Ok>());
+      unawaited(watcher.dispose());
+      time.flushMicrotasks();
+    });
+  });
 
   test(
     'owner events and resume do not shorten the transport retry time',

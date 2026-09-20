@@ -56,6 +56,43 @@ void main() {
     },
   );
 
+  for (final enabled in [null, false, true]) {
+    for (final incomplete in [false, true]) {
+      test(
+        'retry respects consent $enabled and recovery fence $incomplete',
+        () async {
+          when(backups.getControl).thenAnswer(
+            (_) async => Ok(
+              WalletBackupControl(
+                enabled: enabled,
+                recoveryIncomplete: incomplete,
+              ),
+            ),
+          );
+          when(backups.getState).thenAnswer(
+            (_) async => Ok(
+              WalletBackupState(
+                identity: 'a' * 64,
+                enabled: enabled,
+                recoveryIncomplete: incomplete,
+              ),
+            ),
+          );
+          when(
+            () => backups.publicationStatus,
+          ).thenReturn(const WalletBackupJobStatus());
+          expect(await load.execute(retryPublication: true), isA<Ok>());
+          if (enabled == true && !incomplete) {
+            verify(backups.retryAutomatic).called(1);
+          } else {
+            verifyNever(backups.retryAutomatic);
+          }
+          verifyNever(backups.resumeAutomatic);
+        },
+      );
+    }
+  }
+
   test('off during status read wins over a stale successful job', () async {
     when(
       backups.getControl,

@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_p
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_backup_snapshot_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/delete_wallet_backup_usecase.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/watchers/wallet_backup_watcher.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
@@ -45,7 +44,6 @@ class WalletBackupFacade {
 
   final GetWalletBackupStateUsecase _getState;
   final SetWalletBackupEnabledUsecase _setEnabled;
-  final PublishWalletBackupUsecase _publish;
   final DeleteWalletBackupUsecase _delete;
   final BuildWalletBackupSnapshotUsecase _capture;
 
@@ -68,7 +66,6 @@ class WalletBackupFacade {
     required this._recoverVaults,
     required this._getState,
     required this._setEnabled,
-    required this._publish,
     required this._delete,
     required this._capture,
     required this._watchState,
@@ -76,6 +73,7 @@ class WalletBackupFacade {
   });
 
   void resumeAutomatic() => _watcher.resume();
+  void retryAutomatic() => _watcher.retry();
   Future<void> stopAutomatic() => _watcher.stop();
 
   WalletBackupJobStatus get publicationStatus => _watcher.status;
@@ -119,7 +117,7 @@ class WalletBackupFacade {
   Future<Result<WalletBackupPublication, WalletBackupFailure>> publish({
     bool force = false,
     WalletBackupInspection? replace,
-  }) => _publish.execute(force: force, replace: replace);
+  }) => _watcher.publish(force: force, replace: replace);
   @useResult
   Future<Result<void, WalletBackupFailure>> delete({required bool confirmed}) =>
       _delete.execute(confirmed: confirmed);
