@@ -581,26 +581,23 @@ void main() {
           ),
         ),
       );
-      expect(same.situation, WalletBackupImportSituation.same);
+      expect(same.server?.snapshot, isNotNull);
+      expect(same.differences, isEmpty);
       final different = value(await compareFile.execute(selectedFile()));
-      expect(different.situation, WalletBackupImportSituation.different);
       expect(different.differences, {WalletBackupDifference.metadata});
       expect(mutations, 0);
       remote.head = WalletBackupRemoteHead(generation: 0, etag: null);
-      expect(
-        value(await compareFile.execute(selectedFile())).situation,
-        WalletBackupImportSituation.automaticBackupDisabled,
-      );
+      final disabled = value(await compareFile.execute(selectedFile()));
+      expect(disabled.automaticBackupEnabled, isFalse);
+      expect(disabled.server?.head.found, isFalse);
       value(await state.setEnabled(true));
-      expect(
-        value(await compareFile.execute(selectedFile())).situation,
-        WalletBackupImportSituation.noServerBackup,
-      );
+      final missing = value(await compareFile.execute(selectedFile()));
+      expect(missing.automaticBackupEnabled, isTrue);
+      expect(missing.server?.head.found, isFalse);
       remote.unavailable = true;
-      expect(
-        value(await compareFile.execute(selectedFile())).situation,
-        WalletBackupImportSituation.serverUnavailable,
-      );
+      final unavailable = value(await compareFile.execute(selectedFile()));
+      expect(unavailable.server, isNull);
+      expect(unavailable.serverFailure, isA<WalletBackupNetworkFailure>());
       expect(value(await state.getControl()).recoveryIncomplete, isFalse);
     },
   );

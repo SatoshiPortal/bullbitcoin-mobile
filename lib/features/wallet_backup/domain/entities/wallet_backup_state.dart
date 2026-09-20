@@ -40,8 +40,6 @@ final class WalletBackupState {
       throw const FormatException('Invalid backup state');
     }
   }
-
-  bool get canPublish => enabled == true && !recoveryIncomplete;
 }
 
 final class WalletBackupControl {

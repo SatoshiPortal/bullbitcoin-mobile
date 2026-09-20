@@ -268,8 +268,8 @@ void main() {
       expect(value(await state.getControl()).recoveryIncomplete, isTrue);
       expect(value(await state.getControl()).enabled, isTrue);
       expect(
-        value(await state.get(credential.serverPublicKey)).canPublish,
-        isFalse,
+        value(await state.get(credential.serverPublicKey)).recoveryIncomplete,
+        isTrue,
       );
     },
   );

@@ -120,7 +120,7 @@ class PublishWalletBackupUsecase {
     if (pending != null &&
         pending.identity == credential.serverPublicKey &&
         pending.generation == head.generation &&
-        pending.ciphertext.hash == head.ciphertext?.hash &&
+        pending.ciphertextHash == head.ciphertext?.hash &&
         pending.contentHash == remoteHash) {
       final acknowledged = await _acknowledge(
         credential.serverPublicKey,
@@ -133,7 +133,6 @@ class PublishWalletBackupUsecase {
       return await _finish(
         credential,
         pending.contentHash,
-        () => _codec.revision,
         WalletBackupPublication.upToDate,
       );
     }
@@ -146,12 +145,7 @@ class PublishWalletBackupUsecase {
       );
       if (acknowledged case Err(:final failure)) return Err(failure);
       _unconfirmed = null;
-      return await _finish(
-        credential,
-        hash,
-        () => _codec.revision,
-        WalletBackupPublication.upToDate,
-      );
+      return await _finish(credential, hash, WalletBackupPublication.upToDate);
     }
     if (replace == null &&
         (state.checkpoint?.etag != head.etag ||
@@ -181,7 +175,7 @@ class PublishWalletBackupUsecase {
     _unconfirmed = _UnconfirmedPublication(
       credential.serverPublicKey,
       generation,
-      ciphertext,
+      ciphertext.hash,
       hash,
     );
     final stored = await StoreWalletBackupCiphertextUsecase(
@@ -199,12 +193,7 @@ class PublishWalletBackupUsecase {
     );
     if (acknowledged case Err(:final failure)) return Err(failure);
     _unconfirmed = null;
-    return await _finish(
-      credential,
-      hash,
-      () => _codec.revision,
-      WalletBackupPublication.published,
-    );
+    return await _finish(credential, hash, WalletBackupPublication.published);
   }
 
   Future<Result<bool, WalletBackupFailure>> _permitted() async =>
@@ -244,7 +233,6 @@ class PublishWalletBackupUsecase {
   Future<Result<WalletBackupPublication, WalletBackupFailure>> _finish(
     BackupCredential original,
     String confirmedHash,
-    int Function() revision,
     WalletBackupPublication outcome,
   ) async {
     switch (await _permitted()) {
@@ -262,7 +250,7 @@ class PublishWalletBackupUsecase {
     if (currentCredential.serverPublicKey != original.serverPublicKey) {
       return const Ok(WalletBackupPublication.pending);
     }
-    final beforeCapture = revision();
+    final beforeCapture = _codec.revision;
     if (beforeCapture < 0) return const Err(WalletBackupStorageFailure());
     final current = await _codec.capture(currentCredential);
     if (current case Err(:final failure)) return Err(failure);
@@ -270,25 +258,25 @@ class PublishWalletBackupUsecase {
       (current as Ok<WalletBackupSnapshot, WalletBackupFailure>).value,
     );
     if (hash case Err(:final failure)) return Err(failure);
-    if (revision() < 0) return const Err(WalletBackupStorageFailure());
+    if (_codec.revision < 0) return const Err(WalletBackupStorageFailure());
     return (hash as Ok<String, WalletBackupFailure>).value == confirmedHash &&
-            revision() == beforeCapture
+            _codec.revision == beforeCapture
         ? Ok(outcome)
         : const Ok(WalletBackupPublication.pending);
   }
 }
 
-// Only encrypted/public facts survive an uncertain response. No credential or
-// plaintext is cached. A restart reconciles remote canonical content instead.
+// Retain only the hashes needed to recognize a lost acknowledgement.
+// A restart reconciles remote canonical content instead.
 final class _UnconfirmedPublication {
   final String identity;
   final int generation;
-  final WalletBackupCiphertext ciphertext;
+  final String ciphertextHash;
   final String contentHash;
   const _UnconfirmedPublication(
     this.identity,
     this.generation,
-    this.ciphertext,
+    this.ciphertextHash,
     this.contentHash,
   );
 }

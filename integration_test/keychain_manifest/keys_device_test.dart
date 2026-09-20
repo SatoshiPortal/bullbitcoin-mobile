@@ -180,7 +180,6 @@ void main() {
       expect(restored.checkpoint?.generation, 4);
       expect(restored.confirmedContentHash, '4' * 64);
       expect(restored.recoveryIncomplete, isTrue);
-      expect(restored.canPublish, isFalse);
     },
   );
   group('Nostr warning and form controls', screens.main);

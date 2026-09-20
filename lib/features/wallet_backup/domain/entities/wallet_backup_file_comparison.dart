@@ -2,14 +2,6 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_f
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 
-enum WalletBackupImportSituation {
-  automaticBackupDisabled,
-  serverUnavailable,
-  noServerBackup,
-  same,
-  different,
-}
-
 enum WalletBackupImportSource { file, server }
 
 enum WalletBackupDifference { inventory, metadata, vaults }
@@ -33,14 +25,4 @@ final class WalletBackupFileComparison {
       throw const FormatException('Inconsistent file comparison');
     }
   }
-
-  WalletBackupImportSituation get situation => server == null
-      ? WalletBackupImportSituation.serverUnavailable
-      : !server!.head.found
-      ? (automaticBackupEnabled
-            ? WalletBackupImportSituation.noServerBackup
-            : WalletBackupImportSituation.automaticBackupDisabled)
-      : differences.isEmpty
-      ? WalletBackupImportSituation.same
-      : WalletBackupImportSituation.different;
 }

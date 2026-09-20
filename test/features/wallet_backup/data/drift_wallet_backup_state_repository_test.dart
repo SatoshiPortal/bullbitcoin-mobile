@@ -110,7 +110,6 @@ void main() {
       expect(await repository.setRecoveryIncomplete(true), isA<Ok>());
       await reopen();
       for (final key in [identity, secondIdentity]) {
-        expect((await state(key)).canPublish, isFalse);
         expect((await state(key)).recoveryIncomplete, isTrue);
       }
       expect(await publish(), isA<Err<void, WalletBackupFailure>>());

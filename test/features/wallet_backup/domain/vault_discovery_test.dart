@@ -280,8 +280,8 @@ void main() {
           (await disk.get(credential.serverPublicKey)
                   as Ok<WalletBackupState, WalletBackupFailure>)
               .value
-              .canPublish,
-          isFalse,
+              .recoveryIncomplete,
+          isTrue,
         );
         partial = false;
         (await attempt()).fold(

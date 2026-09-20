@@ -34,7 +34,6 @@ void main() {
           credential.artifactPublicKey,
           backupCredentialVectorNostrPublicKey,
         );
-        expect(credential.artifactNpub, backupCredentialVectorNostrNpub);
         expect(
           credential.serverPublicKey,
           backupCredentialVectorServerPublicKey,

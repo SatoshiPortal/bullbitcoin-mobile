@@ -84,7 +84,6 @@ final class BackupCredential {
 
   Uint8List get encryptionKey => Uint8List.fromList(_encryptionKey);
   String get artifactPublicKey => _artifact.public;
-  String get artifactNpub => _artifact.npub;
   String get serverPublicKey => _server.public;
 
   // Only the sealed system-key view consumes these, after its reveal warning.
