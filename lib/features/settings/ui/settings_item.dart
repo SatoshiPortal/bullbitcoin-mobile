@@ -486,22 +486,25 @@ List<SettingsItem> buildSettingsItems({
         [english.importWalletHardwareTitle],
       ),
     ),
-    SettingsItem(
-      id: SettingsItemId.signingKeyExport,
-      section: SettingsItemSection.bullvault,
-      title: localization.signingKeyExportTitle,
-      path: path(
-        SettingsItemSection.bullvault,
-        localization.signingKeyExportTitle,
+    if (isSuperuser)
+      SettingsItem(
+        id: SettingsItemId.signingKeyExport,
+        section: SettingsItemSection.bullvault,
+        title: localization.signingKeyExportTitle,
+        path: path(
+          SettingsItemSection.bullvault,
+          localization.signingKeyExportTitle,
+        ),
+        icon: Icons.key,
+        isSuperuser: true,
+        open: (context) =>
+            context.pushNamed(SettingsRoute.signingKeyExport.name),
+        keywords: _keywords(
+          localization.settingsSearchSigningKeyExportKeywords,
+          english.settingsSearchSigningKeyExportKeywords,
+          [english.signingKeyExportTitle],
+        ),
       ),
-      icon: Icons.key,
-      open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
-      keywords: _keywords(
-        localization.settingsSearchSigningKeyExportKeywords,
-        english.settingsSearchSigningKeyExportKeywords,
-        [english.signingKeyExportTitle],
-      ),
-    ),
     SettingsItem(
       id: SettingsItemId.payjoin,
       section: SettingsItemSection.wallet,
@@ -751,6 +754,7 @@ List<SettingsItem> buildSettingsItems({
   ];
 
   for (final contribution in contributions) {
+    if (contribution.isSuperuser && !isSuperuser) continue;
     final section = switch (contribution.section) {
       SettingsEntrySection.wallet => SettingsItemSection.wallet,
       SettingsEntrySection.tools => SettingsItemSection.tools,
@@ -763,6 +767,7 @@ List<SettingsItem> buildSettingsItems({
         title: title,
         path: path(section, title),
         icon: contribution.icon,
+        isSuperuser: contribution.isSuperuser,
         open: contribution.open,
         keywords: [contribution.title(english)],
       ),

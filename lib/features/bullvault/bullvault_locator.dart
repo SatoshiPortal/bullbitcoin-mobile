@@ -54,13 +54,13 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_renewal_cubi
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_experimental_disclaimer.dart';
 import 'package:bb_mobile/features/recoverbull/public/recoverbull_facade.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 
 abstract final class BullVaultLocator {
   static void setup(GetIt locator) {
@@ -70,7 +70,8 @@ abstract final class BullVaultLocator {
         section: SettingsEntrySection.wallet,
         title: (localization) => localization.bullVaultMenuTitle,
         icon: Icons.security,
-        open: (context) => context.pushNamed(BullVaultFacade.menuRouteName),
+        isSuperuser: true,
+        open: openBullVaultMenu,
       ),
     );
     locator.registerLazySingleton<BullVaultMetadataDatasource>(

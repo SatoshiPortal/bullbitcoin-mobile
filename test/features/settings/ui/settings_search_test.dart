@@ -143,7 +143,7 @@ void main() {
     test(
       'signer export is searchable under BullVault and absent from Wallet entries',
       () {
-        final items = _englishItems();
+        final items = _englishItems(isSuperuser: true);
         final signer = items.byId(SettingsItemId.signingKeyExport);
         expect(
           items.inSection(SettingsItemSection.wallet),

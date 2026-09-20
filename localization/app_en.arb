@@ -17391,5 +17391,13 @@
   "statusCheckDataBackupServer": "Data Backup Server",
   "@statusCheckDataBackupServer": {
     "description": "Service Status row for the wallet data backup server"
+  },
+  "bullVaultExperimentalWarningTitle": "Experimental feature",
+  "@bullVaultExperimentalWarningTitle": {
+    "description": "Title of the warning shown each time BullVault is opened from Settings."
+  },
+  "bullVaultExperimentalWarningMessage": "BullVault is experimental. Do not use it for real funds.",
+  "@bullVaultExperimentalWarningMessage": {
+    "description": "Warning requiring explicit acknowledgement before entering the experimental BullVault feature."
   }
 }

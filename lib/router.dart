@@ -70,6 +70,18 @@ class AppRouter {
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
+    redirect: (context, state) {
+      final isBullVault =
+          state.uri.path == '/bullvault' ||
+          state.uri.path.startsWith('/bullvault/') ||
+          state.uri.path ==
+              '${SettingsRoute.settings.path}/${SettingsRoute.signingKeyExport.path}';
+      if (isBullVault &&
+          context.read<SettingsCubit>().state.isSuperuser != true) {
+        return SettingsRoute.settings.path;
+      }
+      return null;
+    },
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
