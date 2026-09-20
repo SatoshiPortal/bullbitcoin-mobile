@@ -62,24 +62,18 @@ final class ExportWalletBackupFileUsecase {
     if (resolved case Err()) return const Err(WalletBackupCredentialFailure());
     final credential =
         (resolved as Ok<BackupCredential, NostrIdentityFailure>).value;
-    var changed = false, observationFailed = false;
-    final subscription = _codec.changes.listen(
-      (_) => changed = true,
-      onError: (Object _) => observationFailed = true,
-    );
-    try {
-      final captured = await _codec.capture(credential);
-      if (captured case Err(:final failure)) return Err(failure);
-      if (observationFailed) return const Err(WalletBackupStorageFailure());
-      if (changed) return const Err(WalletBackupChangedFailure());
-      return _codec.encodeFile(
-        (captured as Ok<WalletBackupSnapshot, WalletBackupFailure>).value,
-        credential,
-        format: format,
-      );
-    } finally {
-      await subscription.cancel();
+    final beforeCapture = _codec.revision;
+    final captured = await _codec.capture(credential);
+    if (captured case Err(:final failure)) return Err(failure);
+    if (_codec.revision < 0) return const Err(WalletBackupStorageFailure());
+    if (_codec.revision != beforeCapture) {
+      return const Err(WalletBackupChangedFailure());
     }
+    return _codec.encodeFile(
+      (captured as Ok<WalletBackupSnapshot, WalletBackupFailure>).value,
+      credential,
+      format: format,
+    );
   }
 }
 

@@ -130,7 +130,7 @@ final class WalletBackupWatcher {
     _networkAttempt = 0;
     final subscription = _subscription;
     _subscription = null;
-    await subscription?.cancel();
+    subscription?.cancel().ignore();
   }
 
   Future<void> dispose() async {

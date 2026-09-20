@@ -76,9 +76,25 @@ void main() {
     build = BuildWalletBackupSnapshotUsecase(repository, identity);
   });
   tearDown(() async {
+    repository.dispose();
     await changes.close();
     await db.close();
   });
+  test(
+    'revision and watcher listeners share one lifetime owner subscription',
+    () async {
+      final first = repository.changes.listen((_) {});
+      final before = repository.revision;
+      changes.add(null);
+      await Future<void>.delayed(Duration.zero);
+      expect(repository.revision, greaterThan(before));
+      await first.cancel();
+      final second = repository.changes.listen((_) {});
+      verify(() => metadata.changes).called(1);
+      await second.cancel();
+    },
+  );
+
   test(
     'one capture uses the same manifest references for metadata and vaults',
     () async {

@@ -61,141 +61,83 @@ class PublishWalletBackupUsecase {
     if (replace != null && replace.identity != credential.serverPublicKey) {
       return const Err(WalletBackupChangedFailure());
     }
-    var revision = 0;
-    final subscription = _codec.changes.listen((_) {
-      if (revision >= 0) revision++;
-    }, onError: (Object _) => revision = -1);
-    try {
-      final beforeCapture = revision;
-      final capture = await _codec.capture(credential);
-      if (capture case Err(:final failure)) return Err(failure);
-      final snapshot =
-          (capture as Ok<WalletBackupSnapshot, WalletBackupFailure>).value;
-      final hashResult = _codec.contentHash(snapshot);
-      if (hashResult case Err(:final failure)) return Err(failure);
-      final hash = (hashResult as Ok<String, WalletBackupFailure>).value;
-      if (revision < 0) return const Err(WalletBackupStorageFailure());
-      if (revision != beforeCapture) {
-        return const Ok(WalletBackupPublication.pending);
+    final beforeCapture = _codec.revision;
+    final capture = await _codec.capture(credential);
+    if (capture case Err(:final failure)) return Err(failure);
+    final snapshot =
+        (capture as Ok<WalletBackupSnapshot, WalletBackupFailure>).value;
+    final hashResult = _codec.contentHash(snapshot);
+    if (hashResult case Err(:final failure)) return Err(failure);
+    final hash = (hashResult as Ok<String, WalletBackupFailure>).value;
+    if (_codec.revision < 0) return const Err(WalletBackupStorageFailure());
+    if (_codec.revision != beforeCapture) {
+      return const Ok(WalletBackupPublication.pending);
+    }
+    final stateResult = await _state.get(credential.serverPublicKey);
+    if (stateResult case Err(:final failure)) return Err(failure);
+    final state =
+        (stateResult as Ok<WalletBackupState, WalletBackupFailure>).value;
+    if (_codec.revision < 0) return const Err(WalletBackupStorageFailure());
+    if (!force &&
+        replace == null &&
+        _unconfirmed?.identity != credential.serverPublicKey &&
+        state.checkpoint != null &&
+        state.confirmedContentHash == hash) {
+      return _codec.revision == beforeCapture
+          ? const Ok(WalletBackupPublication.upToDate)
+          : const Ok(WalletBackupPublication.pending);
+    }
+    final fetched = await _remote.fetch(credential);
+    if (fetched case Err(:final failure)) return Err(failure);
+    final head =
+        (fetched as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
+    if (replace != null &&
+        (replace.head.etag != head.etag ||
+            replace.head.generation != head.generation)) {
+      return const Err(WalletBackupConflictFailure());
+    }
+    String? remoteHash;
+    if (head.ciphertext case final ciphertext?) {
+      switch (_codec.decrypt(ciphertext, credential)) {
+        case Ok(:final value):
+          switch (_codec.contentHash(value)) {
+            case Ok(:final value):
+              remoteHash = value;
+            case Err(:final failure):
+              return Err(failure);
+          }
+        case Err():
+          if (replace == null) {
+            return const Err(WalletBackupConflictFailure());
+          }
       }
-      final stateResult = await _state.get(credential.serverPublicKey);
-      if (stateResult case Err(:final failure)) return Err(failure);
-      final state =
-          (stateResult as Ok<WalletBackupState, WalletBackupFailure>).value;
-      if (revision < 0) return const Err(WalletBackupStorageFailure());
-      if (!force &&
-          replace == null &&
-          _unconfirmed?.identity != credential.serverPublicKey &&
-          state.checkpoint != null &&
-          state.confirmedContentHash == hash) {
-        return revision == beforeCapture
-            ? const Ok(WalletBackupPublication.upToDate)
-            : const Ok(WalletBackupPublication.pending);
-      }
-      final fetched = await _remote.fetch(credential);
-      if (fetched case Err(:final failure)) return Err(failure);
-      final head =
-          (fetched as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
-      if (replace != null &&
-          (replace.head.etag != head.etag ||
-              replace.head.generation != head.generation)) {
-        return const Err(WalletBackupConflictFailure());
-      }
-      String? remoteHash;
-      if (head.ciphertext case final ciphertext?) {
-        switch (_codec.decrypt(ciphertext, credential)) {
-          case Ok(:final value):
-            switch (_codec.contentHash(value)) {
-              case Ok(:final value):
-                remoteHash = value;
-              case Err(:final failure):
-                return Err(failure);
-            }
-          case Err():
-            if (replace == null) {
-              return const Err(WalletBackupConflictFailure());
-            }
-        }
-      }
-      final pending = _unconfirmed;
-      if (pending != null &&
-          pending.identity == credential.serverPublicKey &&
-          pending.generation == head.generation &&
-          pending.ciphertext.hash == head.ciphertext?.hash &&
-          pending.contentHash == remoteHash) {
-        final acknowledged = await _acknowledge(
-          credential.serverPublicKey,
-          state,
-          head,
-          pending.contentHash,
-        );
-        if (acknowledged case Err(:final failure)) return Err(failure);
-        _unconfirmed = null;
-        return await _finish(
-          credential,
-          pending.contentHash,
-          () => revision,
-          WalletBackupPublication.upToDate,
-        );
-      }
-      if (head.found && remoteHash == hash) {
-        final acknowledged = await _acknowledge(
-          credential.serverPublicKey,
-          state,
-          head,
-          hash,
-        );
-        if (acknowledged case Err(:final failure)) return Err(failure);
-        _unconfirmed = null;
-        return await _finish(
-          credential,
-          hash,
-          () => revision,
-          WalletBackupPublication.upToDate,
-        );
-      }
-      if (replace == null &&
-          (state.checkpoint?.etag != head.etag ||
-              state.checkpoint == null && head.generation != 0)) {
-        return const Err(WalletBackupConflictFailure());
-      }
-      if (head.generation == 0x7fffffffffffffff) {
-        return const Err(WalletBackupInvalidFailure());
-      }
-      if (revision < 0) return const Err(WalletBackupStorageFailure());
-      if (revision != beforeCapture) {
-        return const Ok(WalletBackupPublication.pending);
-      }
-      switch (await _permitted()) {
-        case Err(:final failure):
-          return Err(failure);
-        case Ok(value: false):
-          return const Ok(WalletBackupPublication.inactive);
-        case Ok():
-          break;
-      }
-      final encrypted = _codec.encrypt(snapshot, credential);
-      if (encrypted case Err(:final failure)) return Err(failure);
-      final ciphertext =
-          (encrypted as Ok<WalletBackupCiphertext, WalletBackupFailure>).value;
-      final generation = head.generation + 1;
-      _unconfirmed = _UnconfirmedPublication(
-        credential.serverPublicKey,
-        generation,
-        ciphertext,
-        hash,
-      );
-      final stored = await StoreWalletBackupCiphertextUsecase(
-        remote: _remote,
-        codec: _codec,
-      ).execute(credential, ciphertext, current: head, contentHash: hash);
-      if (stored case Err(:final failure)) return Err(failure);
-      final confirmed =
-          (stored as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
+    }
+    final pending = _unconfirmed;
+    if (pending != null &&
+        pending.identity == credential.serverPublicKey &&
+        pending.generation == head.generation &&
+        pending.ciphertext.hash == head.ciphertext?.hash &&
+        pending.contentHash == remoteHash) {
       final acknowledged = await _acknowledge(
         credential.serverPublicKey,
         state,
-        confirmed,
+        head,
+        pending.contentHash,
+      );
+      if (acknowledged case Err(:final failure)) return Err(failure);
+      _unconfirmed = null;
+      return await _finish(
+        credential,
+        pending.contentHash,
+        () => _codec.revision,
+        WalletBackupPublication.upToDate,
+      );
+    }
+    if (head.found && remoteHash == hash) {
+      final acknowledged = await _acknowledge(
+        credential.serverPublicKey,
+        state,
+        head,
         hash,
       );
       if (acknowledged case Err(:final failure)) return Err(failure);
@@ -203,12 +145,62 @@ class PublishWalletBackupUsecase {
       return await _finish(
         credential,
         hash,
-        () => revision,
-        WalletBackupPublication.published,
+        () => _codec.revision,
+        WalletBackupPublication.upToDate,
       );
-    } finally {
-      await subscription.cancel();
     }
+    if (replace == null &&
+        (state.checkpoint?.etag != head.etag ||
+            state.checkpoint == null && head.generation != 0)) {
+      return const Err(WalletBackupConflictFailure());
+    }
+    if (head.generation == 0x7fffffffffffffff) {
+      return const Err(WalletBackupInvalidFailure());
+    }
+    if (_codec.revision < 0) return const Err(WalletBackupStorageFailure());
+    if (_codec.revision != beforeCapture) {
+      return const Ok(WalletBackupPublication.pending);
+    }
+    switch (await _permitted()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: false):
+        return const Ok(WalletBackupPublication.inactive);
+      case Ok():
+        break;
+    }
+    final encrypted = _codec.encrypt(snapshot, credential);
+    if (encrypted case Err(:final failure)) return Err(failure);
+    final ciphertext =
+        (encrypted as Ok<WalletBackupCiphertext, WalletBackupFailure>).value;
+    final generation = head.generation + 1;
+    _unconfirmed = _UnconfirmedPublication(
+      credential.serverPublicKey,
+      generation,
+      ciphertext,
+      hash,
+    );
+    final stored = await StoreWalletBackupCiphertextUsecase(
+      remote: _remote,
+      codec: _codec,
+    ).execute(credential, ciphertext, current: head, contentHash: hash);
+    if (stored case Err(:final failure)) return Err(failure);
+    final confirmed =
+        (stored as Ok<WalletBackupRemoteHead, WalletBackupFailure>).value;
+    final acknowledged = await _acknowledge(
+      credential.serverPublicKey,
+      state,
+      confirmed,
+      hash,
+    );
+    if (acknowledged case Err(:final failure)) return Err(failure);
+    _unconfirmed = null;
+    return await _finish(
+      credential,
+      hash,
+      () => _codec.revision,
+      WalletBackupPublication.published,
+    );
   }
 
   Future<Result<bool, WalletBackupFailure>> _permitted() async =>

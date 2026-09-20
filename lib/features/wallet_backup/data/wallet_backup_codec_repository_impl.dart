@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:async/async.dart' show StreamGroup;
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -34,8 +35,12 @@ final class WalletBackupCodecRepositoryImpl
   final WalletInventoryBackupRepository _inventory;
   final WalletMetadataDatasource _wallets;
   final Bip85Datasource _bip85;
+  final _changes = StreamController<void>.broadcast(sync: true);
+  StreamSubscription<void>? _ownerSubscription;
+  int _revision = 0;
+  bool _disposed = false;
 
-  const WalletBackupCodecRepositoryImpl({
+  WalletBackupCodecRepositoryImpl({
     required this._vaults,
     required this._database,
     required this._manifest,
@@ -363,13 +368,48 @@ final class WalletBackupCodecRepositoryImpl
             },
       );
   @override
-  Stream<void> get changes => StreamGroup.merge([
-    _wallets.changes,
-    _bip85.changes,
-    _manifest.watchNostrKeys(),
-    _metadata.changes,
-    _inventory.vaultChanges,
-  ]);
+  Stream<void> get changes {
+    _observeOwners();
+    return _changes.stream;
+  }
+
+  @override
+  int get revision {
+    _observeOwners();
+    return _revision;
+  }
+
+  void _observeOwners() {
+    if (_disposed || _ownerSubscription != null) return;
+    // Owner async* streams may wait indefinitely for another event on cancel.
+    // Keep one subscription for this owner; consumers cancel only our relay.
+    _ownerSubscription =
+        StreamGroup.merge([
+          _wallets.changes,
+          _bip85.changes,
+          _manifest.watchNostrKeys(),
+          _metadata.changes,
+          _inventory.vaultChanges,
+        ]).listen(
+          (_) {
+            if (_revision >= 0) _revision++;
+            _changes.add(null);
+          },
+          onError: (Object _) {
+            _revision = -1;
+            _changes.addError(const WalletBackupStorageFailure());
+          },
+        );
+  }
+
+  @override
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    _revision = -1;
+    _ownerSubscription?.cancel().ignore();
+    _changes.close().ignore();
+  }
 
   @override
   Future<Result<WalletBackupSnapshot, WalletBackupFailure>> capture(

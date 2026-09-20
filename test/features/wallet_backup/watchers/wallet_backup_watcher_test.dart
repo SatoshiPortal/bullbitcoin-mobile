@@ -195,6 +195,29 @@ void main() {
     }),
   );
 
+  test('stop returns while an async owner is waiting for its next event', () {
+    Stream<void> idleOwner() async* {
+      await for (final _ in ownerEvents.stream) {
+        yield null;
+      }
+    }
+
+    when(() => snapshots.changes).thenAnswer((_) => idleOwner());
+    fakeAsync((time) {
+      final watcher = create(time)..start();
+      time.elapse(const Duration(milliseconds: 500));
+      var stopped = false;
+      unawaited(watcher.stop().then((_) => stopped = true));
+      time.flushMicrotasks();
+      expect(stopped, isTrue);
+      expect(time.nonPeriodicTimerCount, 0);
+      ownerEvents.add(null);
+      time.flushMicrotasks();
+      unawaited(watcher.dispose());
+      time.flushMicrotasks();
+    });
+  });
+
   test(
     'an owner notification error stops scheduling until resume reconnects',
     () => fakeAsync((time) {

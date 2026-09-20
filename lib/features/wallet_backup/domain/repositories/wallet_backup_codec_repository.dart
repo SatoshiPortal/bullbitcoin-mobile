@@ -45,6 +45,10 @@ abstract interface class WalletBackupCodecRepository {
     BackupCredential credential,
   );
   Stream<void> get changes;
+
+  /// A negative revision means reliable owner-change observation was lost.
+  int get revision;
+  void dispose();
   @useResult
   Future<Result<WalletBackupSnapshot, WalletBackupFailure>> capture(
     BackupCredential credential,

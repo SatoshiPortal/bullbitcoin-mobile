@@ -54,6 +54,7 @@ abstract final class WalletBackupLocator {
         wallets: locator(),
         bip85: locator(),
       ),
+      dispose: (codec) => codec.dispose(),
     );
     locator.registerLazySingleton<WalletBackupFileRepository>(
       () => FilePickerWalletBackupRepository(FilePicker.platform),

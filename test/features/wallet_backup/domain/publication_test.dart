@@ -2,13 +2,17 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_i
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/data/backup_server_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/data/drift_wallet_backup_state_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/data/wallet_backup_codec_repository_impl.dart';
 import '../backup_codec_fixture.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_ciphertext.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_publication.dart';
@@ -18,6 +22,8 @@ import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_s
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_metadata_backup.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_codec_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_inventory_backup_repository.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_metadata_backup_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
@@ -30,16 +36,29 @@ class _Identity extends Mock implements NostrIdentityFacade {}
 
 class _Vaults extends Mock implements BullVaultFacade {}
 
+class _Manifest extends Mock implements KeychainManifestFacade {}
+
+class _Metadata extends Mock implements WalletMetadataBackupRepository {}
+
+class _Inventory extends Mock implements WalletInventoryBackupRepository {}
+
 T _value<T>(Result<T, WalletBackupFailure> result) =>
     (result as Ok<T, WalletBackupFailure>).value;
 
 class _Snapshots extends Mock implements WalletBackupCodecRepository {
   final events = StreamController<void>.broadcast(sync: true);
+  int _revision = 0;
   WalletBackupSnapshot current;
   Future<void> Function()? onCapture;
   int captures = 0;
   final WalletBackupCodecRepository codec;
-  _Snapshots(this.current, this.codec);
+  _Snapshots(this.current, this.codec) {
+    events.stream.listen((_) {
+      if (_revision >= 0) _revision++;
+    }, onError: (Object _) => _revision = -1);
+  }
+  @override
+  int get revision => _revision;
   @override
   Result<String, WalletBackupFailure> contentHash(WalletBackupSnapshot value) =>
       codec.contentHash(value);
@@ -197,6 +216,78 @@ void main() {
     await db.close();
     await directory.delete(recursive: true);
   });
+
+  test(
+    'publication completes while an async owner waits for its next event',
+    () async {
+      final owner = StreamController<void>.broadcast();
+      final listening = Completer<void>();
+      Stream<void> watchOwner() async* {
+        if (!listening.isCompleted) listening.complete();
+        await for (final _ in owner.stream) {
+          yield null;
+        }
+      }
+
+      final fixture = backupSnapshotFixture(credential);
+      final manifest = _Manifest();
+      final metadata = _Metadata();
+      final inventory = _Inventory();
+      registerFallbackValue(credential);
+      when(() => manifest.capture(any())).thenAnswer(
+        (_) async => Ok(
+          CapturedKeychainManifest(
+            manifest: fixture.manifest,
+            walletReferences: {'source-wallet': 'source-wallet'},
+          ),
+        ),
+      );
+      when(manifest.watchNostrKeys).thenAnswer((_) => const Stream.empty());
+      when(() => metadata.changes).thenAnswer((_) => watchOwner());
+      when(
+        () => metadata.capture(any()),
+      ).thenAnswer((_) async => Ok(fixture.metadata));
+      when(
+        () => inventory.vaultChanges,
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => inventory.captureVaults(any()),
+      ).thenAnswer((_) async => Ok(fixture.vaults));
+      final observed = WalletBackupCodecRepositoryImpl(
+        vaults: _Vaults(),
+        database: db,
+        manifest: manifest,
+        metadata: metadata,
+        inventory: inventory,
+        wallets: WalletMetadataDatasource(sqlite: db),
+        bip85: Bip85Datasource(sqlite: db),
+      );
+      final subscription = observed.changes.listen((_) {});
+      await listening.future;
+      final publisher = PublishWalletBackupUsecase(
+        operations: WalletBackupOperationQueue(),
+        identity: identity,
+        state: state,
+        codec: observed,
+        remote: remote,
+      );
+      try {
+        expect(
+          _value(await publisher.execute().timeout(const Duration(seconds: 2))),
+          WalletBackupPublication.published,
+        );
+        expect(remote.stores, 1);
+        expect(
+          _value(await publisher.execute().timeout(const Duration(seconds: 2))),
+          WalletBackupPublication.upToDate,
+        );
+      } finally {
+        observed.dispose();
+        await owner.close();
+        await subscription.cancel();
+      }
+    },
+  );
 
   for (final failedCapture in [1, 2]) {
     test(

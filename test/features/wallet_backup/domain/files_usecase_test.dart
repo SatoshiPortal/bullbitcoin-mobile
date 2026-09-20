@@ -76,6 +76,11 @@ void main() {
     incomplete = false;
     applied = 0;
     changes = StreamController<void>.broadcast(sync: true);
+    var revision = 0;
+    changes.stream.listen((_) {
+      if (revision >= 0) revision++;
+    }, onError: (Object _) => revision = -1);
+    when(() => snapshots.revision).thenAnswer((_) => revision);
     when(identity.resolve).thenAnswer((_) async => Ok(credential));
     when(
       () => identity.fromWords('wrong'),
