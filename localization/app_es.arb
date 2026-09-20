@@ -4903,5 +4903,10 @@
   "sendErrorExchangeOrderMismatch": "Este pago ya no coincide con la orden. Vuelva a iniciar el pago.",
   "sellUnexpectedError": "Su orden de venta no se pudo completar en este momento. Inténtelo de nuevo o contacte con el soporte.",
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
-  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo."
+  "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
+  "withdrawInteracSecurityDetailsTitle": "Detalles de seguridad de Interac",
+  "withdrawInteracSaveAsDefault": "Guardar estos datos como predeterminados",
+  "withdrawInteracSecurityQuestionLengthError": "La pregunta de seguridad debe tener entre 3 y 40 caracteres",
+  "withdrawInteracSecurityAnswerLengthError": "La respuesta de seguridad debe tener entre 3 y 40 caracteres",
+  "withdrawInteracSecurityAnswerFormatError": "Usa letras, números o guiones sin espacios"
 }

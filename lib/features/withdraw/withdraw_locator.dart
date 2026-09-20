@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
@@ -34,6 +35,7 @@ class WithdrawLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+        recipientsFacade: locator<RecipientsFacade>(),
       ),
     );
   }

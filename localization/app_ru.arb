@@ -4912,5 +4912,10 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "withdrawInteracSecurityDetailsTitle": "Данные безопасности Interac",
+  "withdrawInteracSaveAsDefault": "Сохранить эти данные по умолчанию",
+  "withdrawInteracSecurityQuestionLengthError": "Контрольный вопрос должен содержать от 3 до 40 символов",
+  "withdrawInteracSecurityAnswerLengthError": "Контрольный ответ должен содержать от 3 до 40 символов",
+  "withdrawInteracSecurityAnswerFormatError": "Используйте буквы, цифры или дефисы без пробелов"
 }

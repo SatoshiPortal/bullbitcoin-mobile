@@ -103,7 +103,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
 
   String _getRecipientInfoLabel(
     BuildContext context,
-    RecipientViewModel? recipient,
+    RecipientSelection? recipient,
   ) {
     if (recipient == null) return context.loc.withdrawConfirmBankAccount;
 
@@ -137,7 +137,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     }
   }
 
-  String? _getRecipientInfoValue(RecipientViewModel? recipient) {
+  String? _getRecipientInfoValue(RecipientSelection? recipient) {
     if (recipient == null) return null;
 
     switch (recipient.type) {
