@@ -10201,5 +10201,10 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "withdrawInteracSecurityDetailsTitle": "Данни за сигурност на Interac",
+  "withdrawInteracSaveAsDefault": "Запази тези данни по подразбиране",
+  "withdrawInteracSecurityQuestionLengthError": "Контролният въпрос трябва да е между 3 и 40 знака",
+  "withdrawInteracSecurityAnswerLengthError": "Контролният отговор трябва да е между 3 и 40 знака",
+  "withdrawInteracSecurityAnswerFormatError": "Използвайте букви, цифри или тирета без интервали"
 }

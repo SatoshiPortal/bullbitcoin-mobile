@@ -32,7 +32,8 @@ abstract class ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
-    bool isETransfer = false,
+    String? securityQuestion,
+    String? securityAnswer,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<WithdrawOrder> confirmWithdrawOrder(String orderId);

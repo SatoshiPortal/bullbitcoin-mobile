@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'recipient_view_model.freezed.dart';
 
-@freezed
+@Freezed(toStringOverride: false)
 sealed class RecipientViewModel with _$RecipientViewModel {
   const factory RecipientViewModel({
     required String id,
@@ -13,6 +13,8 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? firstname,
     String? lastname,
     String? email,
+    String? securityQuestion,
+    String? securityAnswer,
     bool? isCorporate,
     String? corporateName,
     String? ownerName,
@@ -40,6 +42,8 @@ sealed class RecipientViewModel with _$RecipientViewModel {
       firstname: dto.details.firstname,
       lastname: dto.details.lastname,
       email: dto.details.email,
+      securityQuestion: dto.details.securityQuestion,
+      securityAnswer: dto.details.securityAnswer,
       isCorporate: dto.details.isCorporate,
       corporateName: dto.details.corporateName,
       ownerName: dto.details.ownerName,
@@ -61,6 +65,8 @@ sealed class RecipientViewModel with _$RecipientViewModel {
 
   String get jurisdictionCode => type.jurisdictionCode;
   String get currencyCode => type.currencyCode;
+  bool get requiresInteracSecurityDetails =>
+      type == RecipientType.interacEmailCad;
 
   String? get displayName {
     // Check corporate first for all types

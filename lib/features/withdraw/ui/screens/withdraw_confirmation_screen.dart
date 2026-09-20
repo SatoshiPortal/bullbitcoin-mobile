@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +103,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
 
   String _getRecipientInfoLabel(
     BuildContext context,
-    RecipientViewModel? recipient,
+    RecipientSelection? recipient,
   ) {
     if (recipient == null) return context.loc.withdrawConfirmBankAccount;
 
@@ -138,7 +137,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     }
   }
 
-  String? _getRecipientInfoValue(RecipientViewModel? recipient) {
+  String? _getRecipientInfoValue(RecipientSelection? recipient) {
     if (recipient == null) return null;
 
     switch (recipient.type) {

@@ -23,8 +23,8 @@ class InteracEmailCadDetails extends RecipientDetails {
   @override
   final String email;
   final String name;
-  final String securityQuestion;
-  final String securityAnswer;
+  final String? securityQuestion;
+  final String? securityAnswer;
 
   const InteracEmailCadDetails._({
     super.label,
@@ -32,8 +32,8 @@ class InteracEmailCadDetails extends RecipientDetails {
     super.isOwner,
     required this.email,
     required this.name,
-    required this.securityQuestion,
-    required this.securityAnswer,
+    this.securityQuestion,
+    this.securityAnswer,
   });
 
   factory InteracEmailCadDetails.create({
@@ -42,8 +42,8 @@ class InteracEmailCadDetails extends RecipientDetails {
     bool? isOwner,
     required String email,
     required String name,
-    String securityQuestion = 'What is your favorite color?',
-    String securityAnswer = 'Orange',
+    String? securityQuestion,
+    String? securityAnswer,
   }) {
     if (email.trim().isEmpty) {
       throw ArgumentError('Email cannot be empty');
@@ -51,12 +51,16 @@ class InteracEmailCadDetails extends RecipientDetails {
     if (name.trim().isEmpty) {
       throw ArgumentError('Name cannot be empty');
     }
-    if (securityQuestion.trim().isEmpty) {
-      throw ArgumentError('Security question cannot be empty');
-    }
-    if (securityAnswer.trim().isEmpty) {
-      throw ArgumentError('Security answer cannot be empty');
-    }
+    final trimmedSecurityQuestion = securityQuestion?.trim();
+    final trimmedSecurityAnswer = securityAnswer?.trim();
+    final normalizedSecurityQuestion = trimmedSecurityQuestion?.isEmpty == false
+        ? trimmedSecurityQuestion
+        : null;
+    final normalizedSecurityAnswer = trimmedSecurityAnswer?.isEmpty == false
+        ? trimmedSecurityAnswer
+        : null;
+    final hasCompleteSecurityDetails =
+        normalizedSecurityQuestion != null && normalizedSecurityAnswer != null;
 
     return InteracEmailCadDetails._(
       label: label,
@@ -64,8 +68,12 @@ class InteracEmailCadDetails extends RecipientDetails {
       isOwner: isOwner,
       email: email.trim(),
       name: name.trim(),
-      securityQuestion: securityQuestion.trim(),
-      securityAnswer: securityAnswer.trim(),
+      securityQuestion: hasCompleteSecurityDetails
+          ? normalizedSecurityQuestion
+          : null,
+      securityAnswer: hasCompleteSecurityDetails
+          ? normalizedSecurityAnswer
+          : null,
     );
   }
 

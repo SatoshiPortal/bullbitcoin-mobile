@@ -5,11 +5,15 @@ import 'package:bb_mobile/features/recipients/application/usecases/add_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
+import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -65,6 +69,20 @@ class RecipientsLocator {
         recipientsGateway: locator<RecipientsGatewayPort>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+    locator.registerFactory<UpdateInteracSecurityDetailsUsecase>(
+      () => UpdateInteracSecurityDetailsUsecase(
+        locator<InteracSecurityDetailsRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<InteracSecurityDetailsRepository>(
+      () => InteracSecurityDetailsRepositoryImpl(
+        locator<RecipientsGatewayPort>(),
+        locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<RecipientsFacade>(
+      () => RecipientsFacade(locator<UpdateInteracSecurityDetailsUsecase>()),
     );
   }
 

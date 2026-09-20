@@ -12588,5 +12588,10 @@
   "sendErrorExchangeOrderMismatch": "Yah payment ab order se match nahi karta. Kripya payment phir se shuru karein.",
   "sellUnexpectedError": "Aapka sell order abhi complete nahi ho saka. Kripya phir koshish karein ya support se sampark karein.",
   "sellErrorFeeBelowRelayFloor": "Network fee bahut kam hai. Zyada fee chunein.",
-  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein."
+  "sellErrorFeesUnavailable": "Network fees load nahi ho sake. Apna connection check karein aur phir koshish karein.",
+  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "withdrawInteracSaveAsDefault": "In details ko default ke roop mein save karein",
+  "withdrawInteracSecurityQuestionLengthError": "Security question 3-40 characters ka hona chahiye",
+  "withdrawInteracSecurityAnswerLengthError": "Security answer 3-40 characters ka hona chahiye",
+  "withdrawInteracSecurityAnswerFormatError": "Spaces ke bina letters, numbers ya hyphens use karein"
 }

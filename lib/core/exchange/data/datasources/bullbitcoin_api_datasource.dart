@@ -425,26 +425,19 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String apiKey,
     required double fiatAmount,
     required String recipientId,
-    bool isETransfer = false,
+    String? securityQuestion,
+    String? securityAnswer,
   }) async {
-    /**
-     *   "paymentProcessorData": {
-    "securityQuestion": "What is your favorite color?",
-    "securityAnswer": "Blue"
-  }
-  if e-transfer fails with 400 for security Q/A
-     */
     final params = <String, dynamic>{
       'fiatAmount': fiatAmount,
       'recipientId': recipientId,
+      if (securityQuestion != null && securityAnswer != null)
+        'paymentProcessorData': {
+          'securityQuestion': securityQuestion,
+          'securityAnswer': securityAnswer,
+        },
     };
 
-    if (isETransfer) {
-      params['paymentProcessorData'] = {
-        'securityQuestion': 'What is your favorite color?',
-        'securityAnswer': 'Orange',
-      };
-    }
     final resp = await _http.post(
       _ordersPath,
       data: {

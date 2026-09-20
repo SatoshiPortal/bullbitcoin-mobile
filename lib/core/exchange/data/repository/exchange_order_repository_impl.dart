@@ -535,7 +535,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
-    bool isETransfer = false,
+    String? securityQuestion,
+    String? securityAnswer,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -550,7 +551,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
         fiatAmount: fiatAmount,
         recipientId: recipientId,
-        isETransfer: isETransfer,
+        securityQuestion: securityQuestion,
+        securityAnswer: securityAnswer,
       );
 
       final order = orderModel.toEntity(isTestnet: _isTestnet) as WithdrawOrder;
@@ -566,8 +568,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         maxAmount: e.maxAmount,
         currency: e.currency,
       );
-    } catch (e) {
-      throw Exception('Failed to create withdrawal order: $e');
+    } catch (_) {
+      throw Exception('Failed to create withdrawal order');
     }
   }
 

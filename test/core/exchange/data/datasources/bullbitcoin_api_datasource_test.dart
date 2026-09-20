@@ -15,6 +15,12 @@ Response<dynamic> _elements(List<Map<String, dynamic>> elements) => Response(
   },
 );
 
+Response<dynamic> _order(Map<String, dynamic> order) => Response(
+  requestOptions: RequestOptions(path: '/ak/api-orders'),
+  statusCode: 200,
+  data: {'result': order},
+);
+
 void main() {
   late _MockDio dio;
   late BullbitcoinApiDatasource datasource;
@@ -57,6 +63,78 @@ void main() {
       final orders = await datasource.listOrderSummaries(apiKey: 'key');
 
       expect(orders.map((o) => o.orderId), ['expired-1', 'good-1']);
+    });
+  });
+
+  group('createWithdrawalOrder', () {
+    test('sends the withdrawal amount and recipient reference', () async {
+      when(
+        () => dio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async => _order(orderJsonFixture()));
+
+      await datasource.createWithdrawalOrder(
+        apiKey: 'key',
+        fiatAmount: 100,
+        recipientId: 'recipient-1',
+      );
+
+      final request =
+          verify(
+                () => dio.post(
+                  '/ak/api-orders',
+                  data: captureAny(named: 'data'),
+                  options: any(named: 'options'),
+                ),
+              ).captured.single
+              as Map<String, dynamic>;
+
+      expect(request, {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createWithdrawalOrder',
+        'params': {'fiatAmount': 100.0, 'recipientId': 'recipient-1'},
+      });
+    });
+
+    test('sends supplied Interac security details', () async {
+      when(
+        () => dio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async => _order(orderJsonFixture()));
+
+      await datasource.createWithdrawalOrder(
+        apiKey: 'key',
+        fiatAmount: 100,
+        recipientId: 'recipient-1',
+        securityQuestion: 'Favourite city?',
+        securityAnswer: 'Montreal',
+      );
+
+      final request =
+          verify(
+                () => dio.post(
+                  '/ak/api-orders',
+                  data: captureAny(named: 'data'),
+                  options: any(named: 'options'),
+                ),
+              ).captured.single
+              as Map<String, dynamic>;
+
+      expect(request['params'], {
+        'fiatAmount': 100.0,
+        'recipientId': 'recipient-1',
+        'paymentProcessorData': {
+          'securityQuestion': 'Favourite city?',
+          'securityAnswer': 'Montreal',
+        },
+      });
     });
   });
 }
