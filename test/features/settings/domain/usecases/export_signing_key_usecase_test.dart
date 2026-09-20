@@ -337,6 +337,26 @@ void main() {
     },
   );
 
+  test('stores the marked account origin, not the next proposal', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    expect(await usecase.execute(account: 1), isA<Ok>());
+    final result = await usecase.execute(
+      account: 1,
+      markUsed: true,
+      description: 'Family vault',
+    );
+
+    expect(result, isA<Ok>());
+    expect((result as Ok).value.account, 0);
+    expect(labels.saved.single.origin, "[5a3469b6/48'/0'/1'/2']");
+  });
+
   for (final labelFailure in [false, true]) {
     test(
       'marking keeps the used account reserved when label failure is $labelFailure',

@@ -97,6 +97,9 @@ class ExportSigningKeyUsecase {
                   type: LabelType.extendedPublicKey,
                   reference: usedXpub,
                   label: description!.trim(),
+                  origin:
+                      '[${seed.masterFingerprint.toLowerCase()}/'
+                      '${Bip48Derivation.path(coinType: coinType, account: account!).substring(2)}]',
                 ),
               )
               is Ok;
