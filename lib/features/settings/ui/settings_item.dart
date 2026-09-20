@@ -73,7 +73,6 @@ const backupSettingsDataItemOrder = [
 ];
 
 const walletSettingsItemOrder = [
-  SettingsItemId.backup,
   SettingsItemId.dataBackup,
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
@@ -182,12 +181,7 @@ List<SettingsItem> buildSettingsItems({
   List<String> path(SettingsItemSection section, String title) =>
       switch (section) {
         SettingsItemSection.root => [rootSection, title],
-        SettingsItemSection.backup => [
-          rootSection,
-          walletSection,
-          backupSection,
-          title,
-        ],
+        SettingsItemSection.backup => [rootSection, backupSection, title],
         SettingsItemSection.wallet => [rootSection, walletSection, title],
         SettingsItemSection.app => [rootSection, appSection, title],
         SettingsItemSection.tools => [rootSection, toolsSection, title],
@@ -280,9 +274,9 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.backup,
-      section: SettingsItemSection.wallet,
+      section: SettingsItemSection.root,
       title: backupSection,
-      path: path(SettingsItemSection.wallet, backupSection),
+      path: path(SettingsItemSection.root, backupSection),
       icon: Icons.backup_outlined,
       open: (context) => context.pushNamed(SettingsRoute.backupSettings.name),
       keywords: _keywords(
@@ -451,10 +445,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.servicesStatus,
-      section: SettingsItemSection.help,
+      section: SettingsItemSection.root,
       title: localization.settingsServiceStatusTitle,
       path: path(
-        SettingsItemSection.help,
+        SettingsItemSection.root,
         localization.settingsServiceStatusTitle,
       ),
       icon: Icons.monitor_heart,
@@ -779,11 +773,13 @@ List<SettingsItem> buildSettingsItems({
 
   return [
     for (final id in [
+      SettingsItemId.backup,
       SettingsItemId.walletSettings,
       SettingsItemId.exchange,
       SettingsItemId.appSettings,
       SettingsItemId.tools,
       SettingsItemId.helpAndInfo,
+      SettingsItemId.servicesStatus,
     ])
       items.byId(id),
     ...items.where((item) => item.section != SettingsItemSection.root),

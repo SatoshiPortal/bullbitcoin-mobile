@@ -98,7 +98,6 @@ void main() {
         SettingsItemId.transactionHistory,
       ]);
       expect(walletSettingsItemOrder, [
-        SettingsItemId.backup,
         SettingsItemId.dataBackup,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
@@ -115,18 +114,22 @@ void main() {
       final rootItems = items.inSection(SettingsItemSection.root);
 
       expect(rootItems.map((item) => item.id), [
+        SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
         SettingsItemId.appSettings,
         SettingsItemId.tools,
         SettingsItemId.helpAndInfo,
+        SettingsItemId.servicesStatus,
       ]);
       expect(rootItems.map((item) => item.title), [
+        'Wallet Recovery (money backup)',
         'Wallet and Bitcoin',
         'Exchange',
         'App and device',
         'Tools',
         'Help and info',
+        'Service Status',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');

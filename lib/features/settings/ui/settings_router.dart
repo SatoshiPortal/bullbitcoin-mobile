@@ -67,7 +67,10 @@ class SettingsRouter {
   }) => GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => const AllSettingsScreen(),
+    builder: (context, state) => BlocProvider(
+      create: (_) => locator<ServiceStatusCubit>(),
+      child: const AllSettingsScreen(),
+    ),
     routes: [
       GoRoute(
         name: SettingsRoute.tools.name,
@@ -77,10 +80,7 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.helpAndInfo.name,
         path: SettingsRoute.helpAndInfo.path,
-        builder: (_, _) => BlocProvider(
-          create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
-          child: const SettingsGroupScreen.help(),
-        ),
+        builder: (_, _) => const SettingsGroupScreen.help(),
       ),
       GoRoute(
         name: SettingsRoute.search.name,

@@ -4,22 +4,32 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final localization = AppLocalizationsEn();
-  test('root Settings keeps exactly the five selected groups in order', () {
-    final items = buildSettingsItems(localization: localization);
-    expect(
-      items.inSection(SettingsItemSection.root).map((item) => item.id.name),
-      ['walletSettings', 'exchange', 'appSettings', 'tools', 'helpAndInfo'],
-    );
-    expect(
-      items.map((item) => item.id.name),
-      isNot(contains('passphraseWallets')),
-    );
-  });
+  test(
+    'root Settings keeps the five groups and direct recovery and status entries',
+    () {
+      final items = buildSettingsItems(localization: localization);
+      expect(
+        items.inSection(SettingsItemSection.root).map((item) => item.id.name),
+        [
+          'backup',
+          'walletSettings',
+          'exchange',
+          'appSettings',
+          'tools',
+          'helpAndInfo',
+          'servicesStatus',
+        ],
+      );
+      expect(
+        items.map((item) => item.id.name),
+        isNot(contains('passphraseWallets')),
+      );
+    },
+  );
   test(
     'wallet group reserves the selected order without a Passphrase slot',
     () {
       expect(walletSettingsItemOrder.map((id) => id.name), [
-        'backup',
         'dataBackup',
         'importWallet',
         'electrum',
