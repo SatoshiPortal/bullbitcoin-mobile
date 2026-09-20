@@ -145,6 +145,7 @@ void main() {
   late DriftWalletBackupStateRepository state;
   late WalletBackupOperationQueue operations;
   late _Identity identity;
+  late SetWalletBackupEnabledUsecase consent;
   late _Catalog catalog;
   late _Wallets wallets;
   late _Metadata metadata;
@@ -166,6 +167,7 @@ void main() {
     state = DriftWalletBackupStateRepository(database);
     operations = WalletBackupOperationQueue();
     identity = _Identity();
+    consent = SetWalletBackupEnabledUsecase(identity: identity, state: state);
     catalog = _Catalog();
     wallets = _Wallets();
     metadata = _Metadata();
@@ -209,6 +211,7 @@ void main() {
       codec: codec,
     );
     recover = RecoverWalletBackupUsecase(
+      consent: consent,
       operations: operations,
       identity: identity,
       state: state,
@@ -357,6 +360,41 @@ void main() {
       isNull,
     );
   });
+  for (final queued in [false, true]) {
+    test(
+      'Off remains final during consented recovery: queued=$queued',
+      () async {
+        value(await consent.execute(false));
+        final selected = await inspection();
+        final entered = Completer<void>();
+        final released = Completer<void>();
+        Future<void> pause() async {
+          entered.complete();
+          await released.future;
+        }
+
+        Future<Result<void, WalletBackupFailure>>? earlier;
+        if (queued) {
+          earlier = operations.run(() async {
+            await pause();
+            return const Ok(null);
+          });
+        } else {
+          when(() => metadata.apply(any(), {})).thenAnswer((_) async {
+            await pause();
+            return const Ok(null);
+          });
+        }
+        final pending = recover.execute(selected, enableAfterRecovery: true);
+        await entered.future;
+        value(await consent.execute(false));
+        released.complete();
+        if (earlier != null) await earlier;
+        expect(value(await pending).complete, isTrue);
+        expect(value(await state.getControl()).enabled, isFalse);
+      },
+    );
+  }
   test(
     'seedless words recovery cannot enable a different or absent default identity',
     () async {

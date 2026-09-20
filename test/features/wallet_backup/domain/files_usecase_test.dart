@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file_comparison.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_remote_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_usecase.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/recover_wallet_backup_file_usecase.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
@@ -161,6 +162,10 @@ void main() {
       codec: codec,
       apply: apply,
       recoverRemote: RecoverWalletBackupUsecase(
+        consent: SetWalletBackupEnabledUsecase(
+          identity: identity,
+          state: state,
+        ),
         operations: operations,
         identity: identity,
         state: state,

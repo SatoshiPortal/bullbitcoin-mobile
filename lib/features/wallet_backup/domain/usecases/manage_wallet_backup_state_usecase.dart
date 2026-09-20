@@ -45,11 +45,17 @@ final class SetWalletBackupEnabledUsecase {
     required this._state,
   });
 
+  int get revision => _request;
+
   @useResult
   Future<Result<void, WalletBackupFailure>> execute(
     bool enabled, {
     bool onlyIfUndecided = false,
+    int? expectedRevision,
   }) {
+    if (expectedRevision != null && expectedRevision != _request) {
+      return Future.value(const Ok(null));
+    }
     final request = onlyIfUndecided ? _request : ++_request;
     return _setEnabled(enabled, request, onlyIfUndecided).timeout(
       _deadline,

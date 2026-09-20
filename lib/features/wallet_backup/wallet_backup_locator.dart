@@ -126,6 +126,7 @@ abstract final class WalletBackupLocator {
     );
     locator.registerFactory(
       () => RecoverWalletBackupUsecase(
+        consent: locator(),
         operations: locator(),
         identity: locator(),
         state: locator(),
