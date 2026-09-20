@@ -17,26 +17,36 @@ void main() {
     load = LoadDataBackupStatusUsecase(backups);
   });
 
-  for (final enabled in [null, false]) {
-    test(
-      'opening $enabled controls does not read a credential or job',
-      () async {
-        when(
-          backups.getControl,
-        ).thenAnswer((_) async => Ok(WalletBackupControl(enabled: enabled)));
-        final result = await load.execute();
-        expect(
-          (result as Ok<DataBackupStatus, BackupSettingsFailure>)
-              .value
-              .control
-              .enabled,
-          enabled,
-        );
-        verifyNever(backups.getState);
-        verifyNever(() => backups.publicationStatus);
-      },
-    );
-  }
+  test('undecided controls do not resolve a credential or job', () async {
+    when(
+      backups.getControl,
+    ).thenAnswer((_) async => const Ok(WalletBackupControl()));
+    final result =
+        (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+            .value;
+    expect(result.control.enabled, isNull);
+    verifyNever(backups.getState);
+    verifyNever(() => backups.publicationStatus);
+  });
+
+  test(
+    'off with an unavailable identity remains usable without inventing a date',
+    () async {
+      when(
+        backups.getControl,
+      ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: false)));
+      when(
+        backups.getState,
+      ).thenAnswer((_) async => const Err(WalletBackupCredentialFailure()));
+      final result =
+          (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(result.control.enabled, isFalse);
+      expect(result.lastSuccessAt, isNull);
+      expect(result.failure, isNull);
+      verifyNever(() => backups.publicationStatus);
+    },
+  );
 
   test(
     'an unavailable credential keeps the enabled control and its off action',
@@ -53,6 +63,40 @@ void main() {
       expect(result.control.enabled, isTrue);
       expect(result.failure, isA<BackupSettingsWordsUnavailableFailure>());
       verifyNever(() => backups.publicationStatus);
+    },
+  );
+
+  test(
+    'off retains the current identity last success without reading a job',
+    () async {
+      final date = DateTime.utc(2026, 9, 19);
+      when(
+        backups.getControl,
+      ).thenAnswer((_) async => const Ok(WalletBackupControl(enabled: false)));
+      when(backups.getState).thenAnswer(
+        (_) async => Ok(
+          WalletBackupState(
+            identity: 'a' * 64,
+            enabled: false,
+            checkpoint: WalletBackupCheckpoint(
+              generation: 1,
+              etag: 'b' * 64,
+              ciphertextHash: 'c' * 64,
+            ),
+            lastSuccessAt: date,
+          ),
+        ),
+      );
+      final result =
+          (await load.execute() as Ok<DataBackupStatus, BackupSettingsFailure>)
+              .value;
+      expect(result.lastSuccessAt, date);
+      expect(result.control.enabled, isFalse);
+      expect(result.publication, isNull);
+      expect(result.isUpToDate, isFalse);
+      verifyNever(() => backups.publicationStatus);
+      verifyNever(backups.resumeAutomatic);
+      verifyNever(backups.retryAutomatic);
     },
   );
 

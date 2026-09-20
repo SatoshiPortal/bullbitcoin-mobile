@@ -61,6 +61,38 @@ void main() {
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
   });
 
+  testWidgets('off displays the stored successful backup date without a time', (
+    tester,
+  ) async {
+    final date = DateTime(2026, 9, 19, 13, 45);
+    await pump(
+      tester,
+      DataBackupSettingsState(
+        data: DataBackupStatus(
+          control: const WalletBackupControl(enabled: false),
+          lastSuccessAt: date,
+        ),
+      ),
+    );
+    final material = MaterialLocalizations.of(
+      tester.element(find.byType(DataBackupSettingsScreen)),
+    );
+    expect(
+      find.text(
+        '${loc.dataBackupLastSuccess}: ${material.formatMediumDate(date)}',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining(
+        material.formatTimeOfDay(TimeOfDay.fromDateTime(date)),
+      ),
+      findsNothing,
+    );
+    expect(find.text(loc.dataBackupOff), findsOneWidget);
+    expect(find.text(loc.dataBackupSucceeded), findsNothing);
+  });
+
   testWidgets('a publication network failure offers retry', (tester) async {
     await pump(
       tester,

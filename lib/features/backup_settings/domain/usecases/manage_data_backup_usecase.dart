@@ -19,14 +19,16 @@ class LoadDataBackupStatusUsecase {
     }
     final control =
         (controlResult as Ok<WalletBackupControl, WalletBackupFailure>).value;
-    // An undecided/off page is not permission to read the wallet seed.
-    if (control.enabled != true) return Ok(DataBackupStatus(control: control));
+    // An undecided page does not resolve a credential. Off still reads the current identity's local checkpoint, never the server or job.
+    if (control.enabled == null) return Ok(DataBackupStatus(control: control));
     final stateResult = await _backups.getState();
     if (stateResult case Err(:final failure)) {
       return Ok(
         DataBackupStatus(
           control: control,
-          failure: BackupSettingsFailure.fromDataBackup(failure),
+          failure: control.enabled == true
+              ? BackupSettingsFailure.fromDataBackup(failure)
+              : null,
         ),
       );
     }
@@ -36,7 +38,11 @@ class LoadDataBackupStatusUsecase {
       enabled: state.enabled,
       recoveryIncomplete: state.recoveryIncomplete,
     );
-    if (current.enabled != true) return Ok(DataBackupStatus(control: current));
+    if (current.enabled != true) {
+      return Ok(
+        DataBackupStatus(control: current, lastSuccessAt: state.lastSuccessAt),
+      );
+    }
     if (retryPublication && !current.recoveryIncomplete) {
       _backups.retryAutomatic();
     }
