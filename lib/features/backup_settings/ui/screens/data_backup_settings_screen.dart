@@ -14,7 +14,6 @@ class DataBackupSettingsScreen extends StatefulWidget {
   final Future<void> Function() onRecovery;
   final Future<void> Function() onRecoverWords;
   final Widget fileActions;
-  final Widget dataExports;
   const DataBackupSettingsScreen({
     super.key,
     required this.onContents,
@@ -22,7 +21,6 @@ class DataBackupSettingsScreen extends StatefulWidget {
     required this.onRecovery,
     required this.onRecoverWords,
     required this.fileActions,
-    required this.dataExports,
   });
 
   @override
@@ -227,8 +225,6 @@ class _DataBackupSettingsScreenState extends State<DataBackupSettingsScreen>
                 style: context.font.titleMedium,
               ),
               widget.fileActions,
-              const Gap(24),
-              widget.dataExports,
               const Gap(24),
               SettingsEntryItem(
                 key: const ValueKey('data-backup-delete'),

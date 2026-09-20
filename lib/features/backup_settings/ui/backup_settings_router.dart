@@ -116,7 +116,6 @@ abstract final class BackupSettingsRouter {
             BackupSettingsRoute.dataRecoverWords.name,
           ),
           fileActions: DataBackupFileActions(onRecovered: onDataRecovered),
-          dataExports: const BackupDataExportEntries(),
         ),
       ),
     ),

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 
-enum SettingsEntrySection { wallet }
+enum SettingsEntrySection { wallet, tools }
 
 final class SettingsEntryContribution {
   final String id;

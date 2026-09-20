@@ -42,7 +42,6 @@ void main() {
             onRecovery: () async {},
             onRecoverWords: () async {},
             fileActions: const SizedBox.shrink(),
-            dataExports: const SizedBox.shrink(),
           ),
         ),
       ),

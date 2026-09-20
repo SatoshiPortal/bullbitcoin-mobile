@@ -67,11 +67,6 @@ enum SettingsItemId {
 
 enum SettingsItemSection { root, backup, wallet, app, tools, help }
 
-const backupSettingsDataItemOrder = [
-  SettingsItemId.labels,
-  SettingsItemId.transactionHistory,
-];
-
 const walletSettingsItemOrder = [
   SettingsItemId.dataBackup,
   SettingsItemId.importWallet,
@@ -322,14 +317,12 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.labels,
-      section: SettingsItemSection.backup,
+      section: SettingsItemSection.tools,
       title: localization.backupSettingsLabelsButton,
-      path: [
-        rootSection,
-        walletSection,
-        localization.dataBackupTitle,
+      path: path(
+        SettingsItemSection.tools,
         localization.backupSettingsLabelsButton,
-      ],
+      ),
       icon: Icons.sell,
       open: (context) => context.push(LabelsRouter.route.path),
       keywords: _keywords(
@@ -340,14 +333,12 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.transactionHistory,
-      section: SettingsItemSection.backup,
+      section: SettingsItemSection.tools,
       title: localization.transactionHistoryTitle,
-      path: [
-        rootSection,
-        walletSection,
-        localization.dataBackupTitle,
+      path: path(
+        SettingsItemSection.tools,
         localization.transactionHistoryTitle,
-      ],
+      ),
       icon: Icons.file_download,
       open: (context) =>
           context.pushNamed(TransactionsRoute.exportTransactions.name),
@@ -756,6 +747,7 @@ List<SettingsItem> buildSettingsItems({
   for (final contribution in contributions) {
     final section = switch (contribution.section) {
       SettingsEntrySection.wallet => SettingsItemSection.wallet,
+      SettingsEntrySection.tools => SettingsItemSection.tools,
     };
     final title = contribution.title(localization);
     items.add(

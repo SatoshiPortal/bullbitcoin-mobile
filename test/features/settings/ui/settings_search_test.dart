@@ -93,10 +93,14 @@ void main() {
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
         'Settings → Wallet and Bitcoin → Import wallet',
       );
-      expect(backupSettingsDataItemOrder, [
+      for (final id in [
         SettingsItemId.labels,
         SettingsItemId.transactionHistory,
-      ]);
+      ]) {
+        final item = items.byId(id);
+        expect(item.section, SettingsItemSection.tools);
+        expect(item.path, ['Settings', 'Tools', item.title]);
+      }
       expect(walletSettingsItemOrder, [
         SettingsItemId.dataBackup,
         SettingsItemId.importWallet,
@@ -209,11 +213,11 @@ void main() {
 
       expect(
         result.location(TextDirection.ltr),
-        'Settings → Wallet and Bitcoin → Data Backup → Transaction History',
+        'Settings → Tools → Transaction History',
       );
       expect(
         result.location(TextDirection.rtl),
-        'Settings ← Wallet and Bitcoin ← Data Backup ← Transaction History',
+        'Settings ← Tools ← Transaction History',
       );
     });
 

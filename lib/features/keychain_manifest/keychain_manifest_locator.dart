@@ -57,7 +57,7 @@ abstract final class KeychainManifestLocator {
     locator<SettingsFacade>().registerEntry(
       SettingsEntryContribution(
         id: 'nostr-keys',
-        section: SettingsEntrySection.wallet,
+        section: SettingsEntrySection.tools,
         title: (loc) => loc.settingsNostrKeysTitle,
         icon: Icons.key_outlined,
         open: (context) =>
