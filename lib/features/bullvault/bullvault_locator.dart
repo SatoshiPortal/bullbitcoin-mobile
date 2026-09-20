@@ -251,7 +251,7 @@ abstract final class BullVaultLocator {
       () => GetBullVaultFundedPredecessorUsecase(locator(), locator()),
     );
     locator.registerFactory<BullVaultRestoreCubit>(
-      () => BullVaultRestoreCubit(locator()),
+      () => BullVaultRestoreCubit(locator(), locator()),
     );
     locator.registerFactory(
       () => ImportBullVaultCosignerUsecase(

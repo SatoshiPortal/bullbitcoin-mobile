@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
@@ -10,6 +11,8 @@ import '../bullvault_test_fixture.dart';
 
 class _MockRestoreBullVaultUsecase extends Mock
     implements RestoreBullVaultUsecase {}
+
+class _Pick extends Mock implements PickBullVaultRecoveryFileUsecase {}
 
 void main() {
   late _MockRestoreBullVaultUsecase usecase;
@@ -33,7 +36,7 @@ void main() {
         ),
       ),
     );
-    final cubit = BullVaultRestoreCubit(usecase);
+    final cubit = BullVaultRestoreCubit(usecase, _Pick());
     addTearDown(cubit.close);
     final statesFuture = cubit.stream.take(2).toList();
 
@@ -57,7 +60,7 @@ void main() {
         label: 'Vault',
       ),
     ).thenAnswer((_) async => const Err(BullVaultInvalidRecoveryFailure()));
-    final cubit = BullVaultRestoreCubit(usecase);
+    final cubit = BullVaultRestoreCubit(usecase, _Pick());
     addTearDown(cubit.close);
     final statesFuture = cubit.stream.take(2).toList();
 

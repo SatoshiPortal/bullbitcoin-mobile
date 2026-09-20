@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_record.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_recovery_package.dart';
 import 'dart:async';
@@ -21,11 +22,16 @@ import 'package:mocktail/mocktail.dart';
 class _MockRestoreBullVaultUsecase extends Mock
     implements RestoreBullVaultUsecase {}
 
+class _Pick extends Mock implements PickBullVaultRecoveryFileUsecase {}
+
 void main() {
   setUpAll(() => registerFallbackValue(BullVaultRestoreInputKind.descriptor));
   testWidgets('fills the descriptor field from a QR scan', (tester) async {
     const descriptor = 'tr(test-descriptor)';
-    final cubit = BullVaultRestoreCubit(_MockRestoreBullVaultUsecase());
+    final cubit = BullVaultRestoreCubit(
+      _MockRestoreBullVaultUsecase(),
+      _Pick(),
+    );
     addTearDown(cubit.close);
     final router = GoRouter(
       routes: [
@@ -120,7 +126,7 @@ void main() {
         _ => const Err(BullVaultInvalidRecoveryFailure()),
       };
     });
-    final cubit = BullVaultRestoreCubit(restore);
+    final cubit = BullVaultRestoreCubit(restore, _Pick());
     addTearDown(cubit.close);
     await tester.pumpWidget(
       MaterialApp(
@@ -197,7 +203,7 @@ void main() {
           mobilePassphrase: null,
         ),
       ).thenAnswer((_) async => Ok(result));
-      final cubit = BullVaultRestoreCubit(restore);
+      final cubit = BullVaultRestoreCubit(restore, _Pick());
       final announced = <BullVaultRestoreResult>[];
       final restoring = <bool>[];
       final router = GoRouter(

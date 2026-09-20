@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:bb_mobile/core/utils/result.dart';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_stat
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullInputText, BullPasteInput, Gap;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -33,8 +32,6 @@ class BullVaultRestoreScreen extends StatefulWidget {
 
 class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     with PrivacyScreen {
-  static const _maxPackageBytes = 1024 * 1024;
-
   var _label = '';
   var _mobilePassphrase = '';
   var _descriptor = '';
@@ -271,36 +268,20 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
   );
 
   Future<void> _pickPackage() async {
-    try {
-      final selection = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['json'],
-      );
-      if (!mounted || selection == null || selection.files.isEmpty) return;
-      final path = selection.files.single.path;
-      if (path == null) return;
-      final file = File(path);
-      if (await file.length() > _maxPackageBytes) {
-        if (mounted) {
-          SnackBarUtils.showSnackBar(
-            context,
-            context.loc.bullVaultFailureInvalidRecovery,
-          );
-        }
-        return;
-      }
-      final content = await file.readAsString();
-      if (!mounted) return;
-      await _restoreSource(
-        kind: BullVaultRestoreInputKind.recoveryPackage,
-        source: content,
-      );
-    } on FileSystemException {
-      if (!mounted) return;
-      SnackBarUtils.showSnackBar(
-        context,
-        context.loc.bullVaultFailureInvalidRecovery,
-      );
+    final picked = await context
+        .read<BullVaultRestoreCubit>()
+        .pickRecoveryFile();
+    if (!mounted) return;
+    switch (picked) {
+      case Err(:final failure):
+        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+      case Ok(value: final source?):
+        await _restoreSource(
+          kind: BullVaultRestoreInputKind.recoveryPackage,
+          source: source,
+        );
+      case Ok():
+        break;
     }
   }
 

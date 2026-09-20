@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
@@ -25,6 +26,8 @@ class _Backups extends Mock implements WalletBackupFacade {}
 
 class _Restore extends Mock implements RestoreBullVaultUsecase {}
 
+class _Pick extends Mock implements PickBullVaultRecoveryFileUsecase {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const privacy = MethodChannel('com.flutterplaza.no_screenshot_methods');
@@ -34,7 +37,7 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(privacy, (_) async => true);
-    locator.registerFactory(() => BullVaultRestoreCubit(_Restore()));
+    locator.registerFactory(() => BullVaultRestoreCubit(_Restore(), _Pick()));
     backups = _Backups();
     when(
       () => backups.recoverVaults(
