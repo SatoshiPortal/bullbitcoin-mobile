@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -38,7 +39,10 @@ class PublishWalletBackupUsecase {
   Future<Result<WalletBackupPublication, WalletBackupFailure>> execute({
     bool force = false,
     WalletBackupInspection? replace,
-  }) => _operations.run(() => _publish(force: force, replace: replace));
+  }) => _operations.run(
+    () => _publish(force: force, replace: replace),
+    name: WalletBackupOperation.publish,
+  );
 
   Future<Result<WalletBackupPublication, WalletBackupFailure>> _publish({
     required bool force,

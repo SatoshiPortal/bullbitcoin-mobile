@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/wallet_backup/domain/usecases/build_wallet_ba
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/manage_wallet_backup_state_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/usecases/publish_wallet_backup_usecase.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 final class WalletBackupWatcher {
   static const _debounce = Duration(milliseconds: 500);
@@ -41,7 +42,7 @@ final class WalletBackupWatcher {
           _watchSnapshot.execute(),
           _watchState.execute(),
         ]).listen(
-          (_) => _request(),
+          (_) => _request(trigger: 'owner_change'),
           onError: (Object _) {
             unawaited(stop());
             _emit(
@@ -51,7 +52,7 @@ final class WalletBackupWatcher {
             );
           },
         );
-    _request();
+    _request(trigger: 'start');
   }
 
   void resume() {
@@ -59,20 +60,27 @@ final class WalletBackupWatcher {
       start();
       return;
     }
-    _request();
+    _request(trigger: 'resume');
   }
 
-  void _request() {
+  void _request({required String trigger}) {
     if (!_active || _disposed) return;
     _dirty = true;
     if (_running || _waitingToRetry) return;
     _networkAttempt = 0;
-    _schedule(_debounce);
+    _schedule(_debounce, trigger: trigger);
   }
 
-  void _schedule(Duration delay, {bool retry = false}) {
+  void _schedule(
+    Duration delay, {
+    bool retry = false,
+    required String trigger,
+  }) {
     _timer?.cancel();
     _waitingToRetry = retry;
+    log.fine(
+      'wallet_backup schedule trigger=$trigger delay_ms=${delay.inMilliseconds} attempt=$_networkAttempt',
+    );
     _timer = Timer(delay, () => unawaited(_run()));
   }
 
@@ -97,12 +105,14 @@ final class WalletBackupWatcher {
         _schedule(
           remaining > Duration.zero ? remaining : const Duration(seconds: 1),
           retry: true,
+          trigger: 'retry_after',
         );
       case Err(failure: WalletBackupNetworkFailure()):
         if (_networkAttempt < _networkDelays.length) {
           _schedule(
             Duration(seconds: _networkDelays[_networkAttempt++]),
             retry: true,
+            trigger: 'network_retry',
           );
         }
       case Err():
@@ -110,7 +120,7 @@ final class WalletBackupWatcher {
       case Ok(:final value):
         _networkAttempt = 0;
         if (_dirty || value == WalletBackupPublication.pending) {
-          _schedule(_debounce);
+          _schedule(_debounce, trigger: 'pending_change');
         }
     }
   }

@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/data/backup_json.dart';
 import 'package:bb_mobile/features/wallet_backup/data/backup_server_protocol.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:dio/dio.dart';
 
 /// One client and one Retry-After gate for every BULL operation. It never logs
@@ -50,21 +52,31 @@ final class BackupServerHttpTransport {
     final limit = method == 'PUT'
         ? BackupServerProtocol.maximumBodyBytes
         : BackupServerProtocol.smallBodyBytes;
-    if (utf8.encode(encoded).length > limit) {
+    final size = utf8.encode(encoded).length;
+    if (size > limit) {
       return const Err(WalletBackupTooLargeFailure());
     }
     final cancel = CancelToken();
     final deadline = Timer(_timeout, () => cancel.cancel());
+    final elapsed = Stopwatch()..start();
+    int? status;
+    Result<Map<String, dynamic>, WalletBackupFailure> result;
     try {
-      return await _request(method, path, encoded, cancel).timeout(_timeout);
+      result = await _request(
+        method,
+        path,
+        encoded,
+        cancel,
+        (value) => status = value,
+      ).timeout(_timeout);
     } on TimeoutException {
-      return const Err(WalletBackupNetworkFailure());
+      result = const Err(WalletBackupNetworkFailure());
     } on DioException {
-      return const Err(WalletBackupNetworkFailure());
+      result = const Err(WalletBackupNetworkFailure());
     } on FormatException {
-      return const Err(WalletBackupInvalidFailure());
+      result = const Err(WalletBackupInvalidFailure());
     } on Exception {
-      return const Err(WalletBackupNetworkFailure());
+      result = const Err(WalletBackupNetworkFailure());
     } finally {
       deadline.cancel();
       // Dio's stream wrapper uses cancellation to close its native response,
@@ -72,6 +84,36 @@ final class BackupServerHttpTransport {
       cancel.cancel();
       await cancel.whenCancel;
     }
+    elapsed.stop();
+    final failure = switch (result) {
+      Err(:final failure) => failure,
+      Ok() => null,
+    };
+    // Neither the origin nor arbitrary path/method strings enter logs.
+    final safePath =
+        const {
+          '/api/v1/wallet-backups',
+          '/api/v1/wallet-backups/fetch',
+        }.contains(path)
+        ? path
+        : 'unknown';
+    final safeMethod = const {'POST', 'PUT', 'DELETE'}.contains(method)
+        ? method
+        : 'unknown';
+    final retrySeconds = failure is WalletBackupRateLimitedFailure
+        ? failure.retryAt.difference(_now()).inSeconds
+        : null;
+    final message =
+        'wallet_backup http method=$safeMethod path=$safePath '
+        'http_status=$status failure_class=${failure?.runtimeType ?? 'none'} '
+        'elapsed_ms=${elapsed.elapsedMilliseconds} size_bucket=${walletBackupSizeBucket(size)} '
+        'retry_after_seconds=$retrySeconds';
+    if (failure == null) {
+      log.fine(message);
+    } else {
+      log.warning(message);
+    }
+    return result;
   }
 
   Future<Result<Map<String, dynamic>, WalletBackupFailure>> _request(
@@ -79,6 +121,7 @@ final class BackupServerHttpTransport {
     String path,
     String body,
     CancelToken cancel,
+    void Function(int?) receivedStatus,
   ) async {
     final response = await _dio.requestUri<ResponseBody>(
       _origin.resolve(path),
@@ -96,6 +139,7 @@ final class BackupServerHttpTransport {
       ),
     );
     final status = response.statusCode;
+    receivedStatus(status);
     if (status == 429) {
       final now = _now();
       final values = response.headers['retry-after'] ?? const [];

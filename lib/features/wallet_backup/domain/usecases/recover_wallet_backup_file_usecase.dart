@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
@@ -57,7 +58,10 @@ final class RecoverWalletBackupFileUsecase {
       // inspection. Do not nest a second queued operation around it.
       return _recoverRemote.execute(inspection!, words: words);
     }
-    return _operations.run(() => _recoverFile(encodedFile, comparison, words));
+    return _operations.run(
+      () => _recoverFile(encodedFile, comparison, words),
+      name: WalletBackupOperation.recoverFile,
+    );
   }
 
   Future<Result<WalletBackupRecovery, WalletBackupFailure>> _recoverFile(

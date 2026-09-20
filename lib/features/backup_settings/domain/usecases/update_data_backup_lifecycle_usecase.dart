@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/backup_settings/domain/backup_settings_failur
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
+import 'package:bull_logger/bull_logger.dart';
 
 /// Consent/readiness gate for the existing app scope, not a publication owner.
 class UpdateDataBackupLifecycleUsecase {
@@ -20,12 +21,18 @@ class UpdateDataBackupLifecycleUsecase {
     final request = ++_request;
     if (!ready || !foreground) {
       await _backups.stopAutomatic();
+      log.fine(
+        'wallet_backup lifecycle ready=$ready foreground=$foreground enabled=unknown action=stop',
+      );
       return const Ok(null);
     }
     final pendingChoice = await _wizard.applyPendingBackupChoice();
     if (request != _request) return const Ok(null);
     if (pendingChoice case Err()) {
       await _backups.stopAutomatic();
+      log.fine(
+        'wallet_backup lifecycle ready=$ready foreground=$foreground enabled=unknown action=stop',
+      );
       return const Err(BackupSettingsUnexpectedFailure());
     }
     final result = await _backups.getControl();
@@ -33,10 +40,19 @@ class UpdateDataBackupLifecycleUsecase {
     switch (result) {
       case Ok(value: final control) when control.enabled == true:
         _backups.resumeAutomatic();
+        log.fine(
+          'wallet_backup lifecycle ready=$ready foreground=$foreground enabled=true action=resume',
+        );
       case Ok() || Err():
         // Missing/unreadable consent is closed; the settings screen reports
         // read failures through its existing control read.
         await _backups.stopAutomatic();
+        final enabled = result is Ok<WalletBackupControl, WalletBackupFailure>
+            ? result.value.enabled
+            : null;
+        log.fine(
+          'wallet_backup lifecycle ready=$ready foreground=$foreground enabled=$enabled action=stop',
+        );
     }
     return result.mapErr(BackupSettingsFailure.fromDataBackup);
   }

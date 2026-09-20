@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_file.dart';
@@ -33,17 +34,21 @@ final class ExportWalletBackupFileUsecase {
     bool confirmed = false,
   }) async {
     if (format == WalletBackupFileFormat.readable && !confirmed) {
-      return const Err(WalletBackupConfirmationRequiredFailure());
+      return logWalletBackupCompletion(
+        WalletBackupOperation.export,
+        const Err(WalletBackupConfirmationRequiredFailure()),
+      );
     }
     // Preparing a file is read-only and does not wait for network mutations. The native save dialog has no user-interaction deadline.
     final encoded = await _encode(format).timeout(
       const Duration(minutes: 1),
       onTimeout: () => const Err(WalletBackupTimeoutFailure()),
     );
-    return switch (encoded) {
+    final Result<bool, WalletBackupFailure> result = switch (encoded) {
       Err(:final failure) => Err(failure),
       Ok(:final value) => await _files.save(value, format: format),
     };
+    return logWalletBackupCompletion(WalletBackupOperation.export, result);
   }
 
   Future<Result<String, WalletBackupFailure>> _encode(

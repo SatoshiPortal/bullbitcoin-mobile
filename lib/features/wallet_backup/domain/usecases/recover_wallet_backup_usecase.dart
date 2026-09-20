@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
@@ -106,7 +107,7 @@ final class RecoverWalletBackupUsecase {
       }
     }
     return Ok(result);
-  });
+  }, name: WalletBackupOperation.recover);
 
   Future<bool> _isCurrentIdentity(String identity) async =>
       switch (await _identity.resolve()) {

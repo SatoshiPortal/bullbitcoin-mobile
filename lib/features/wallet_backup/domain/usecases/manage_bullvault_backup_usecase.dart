@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/vault_backup_recovery.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_inspection.dart';
@@ -84,5 +85,5 @@ final class RestoreBullVaultBackupUsecase {
         failure: failure,
       ),
     );
-  });
+  }, name: WalletBackupOperation.recoverVaults);
 }

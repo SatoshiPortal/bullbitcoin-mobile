@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_diagnostics.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_remote_head.dart';
@@ -69,5 +70,5 @@ final class DeleteWalletBackupUsecase {
       identity: credential.serverPublicKey,
       expectedEtag: local.checkpoint!.etag,
     );
-  });
+  }, name: WalletBackupOperation.delete);
 }
