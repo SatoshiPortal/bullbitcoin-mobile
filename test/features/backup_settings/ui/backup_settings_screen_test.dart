@@ -102,14 +102,25 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('untested wallet shows the warning card and view-key action', (
+  testWidgets(
+    'untested wallet shows its warning without a nonexistent vault key',
+    (tester) async {
+      await pump(tester);
+      expect(find.text('Wallet Recovery (money backup)'), findsOneWidget);
+      expect(find.text('Back up your wallet'), findsOneWidget);
+      expect(find.text('START BACKUP'), findsOneWidget);
+      expect(find.byIcon(Icons.vpn_key_outlined), findsNothing);
+      expect(find.byType(BullSwitch), findsOneWidget);
+    },
+  );
+
+  testWidgets('money backup keeps reminders and removes data destinations', (
     tester,
   ) async {
     await pump(tester);
-    expect(find.text('Wallet Recovery (money backup)'), findsOneWidget);
-    expect(find.text('Back up your wallet'), findsOneWidget);
-    expect(find.text('START BACKUP'), findsOneWidget);
-    expect(find.byIcon(Icons.vpn_key_outlined), findsOneWidget);
+    expect(find.text('Data Backup'), findsNothing);
+    expect(find.text('Labels'), findsNothing);
+    expect(find.text('Transaction History'), findsNothing);
     expect(find.byType(BullSwitch), findsOneWidget);
   });
 
@@ -123,6 +134,7 @@ void main() {
     await pump(tester);
     expect(find.text('Back up your wallet'), findsOneWidget);
     expect(find.textContaining('February 3, 2026'), findsNothing);
+    expect(find.byIcon(Icons.vpn_key_outlined), findsOneWidget);
     expect(find.byIcon(Icons.verified_outlined), findsOneWidget);
     await tester.tap(find.byIcon(Icons.verified_outlined));
     await tester.pumpAndSettle();
