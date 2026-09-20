@@ -16149,10 +16149,6 @@
   "@bullVaultRestoreEntry": {
     "description": "Settings entry for restoring a BullVault"
   },
-  "bullVaultRestoreTitle": "Restore BullVault",
-  "@bullVaultRestoreTitle": {
-    "description": "Title of the BullVault restore screen"
-  },
   "bullVaultRestoreDescription": "Use a BullVault recovery package when possible. A compatible descriptor can be used as a fallback.",
   "@bullVaultRestoreDescription": {
     "description": "Explains BullVault restore choices"
@@ -16911,7 +16907,7 @@
   "@vaultBackupEnable": {
     "description": "Per-vault backup action or test status"
   },
-  "vaultRecoveryDescriptorEntry": "Recover from a descriptor or recovery file",
+  "vaultRecoveryDescriptorEntry": "Descriptor or recovery file",
   "@vaultRecoveryDescriptorEntry": {
     "description": "Data Backup inspection and recovery"
   },
@@ -16997,10 +16993,6 @@
   },
   "vaultRecoveryNoSpendDisclosure": "Recovering a vault does not supply its signing keys. Open the vault to inspect its keys or add a matching cosigner.",
   "@vaultRecoveryNoSpendDisclosure": {
-    "description": "BullVault discovery and recovery"
-  },
-  "vaultRecoveryDescriptorHelp": "Import a saved recovery file, scan a QR code, or paste the descriptor.",
-  "@vaultRecoveryDescriptorHelp": {
     "description": "BullVault discovery and recovery"
   },
   "dataBackupSourceFingerprint": "Source seed fingerprint",

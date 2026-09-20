@@ -33,7 +33,7 @@ void main() {
           path: '/',
           builder: (context, state) => BlocProvider.value(
             value: cubit,
-            child: const BullVaultRestoreScreen(),
+            child: const Scaffold(body: BullVaultRestoreScreen()),
           ),
         ),
         GoRoute(
@@ -129,7 +129,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: cubit,
-          child: const BullVaultRestoreScreen(),
+          child: const Scaffold(body: BullVaultRestoreScreen()),
         ),
       ),
     );
@@ -199,13 +199,19 @@ void main() {
       ).thenAnswer((_) async => Ok(result));
       final cubit = BullVaultRestoreCubit(restore);
       final announced = <BullVaultRestoreResult>[];
+      final restoring = <bool>[];
       final router = GoRouter(
         routes: [
           GoRoute(
             path: '/',
             builder: (_, _) => BlocProvider.value(
               value: cubit,
-              child: BullVaultRestoreScreen(onRecovered: announced.add),
+              child: Scaffold(
+                body: BullVaultRestoreScreen(
+                  onRecovered: announced.add,
+                  onRestoringChanged: restoring.add,
+                ),
+              ),
             ),
           ),
         ],
@@ -263,12 +269,14 @@ void main() {
       );
       await tester.pump();
       final duringRetry = announced.length;
+      expect(restoring.last, isTrue);
       pending.complete(const Err(BullVaultInvalidRecoveryFailure()));
       await retry;
       await tester.pump();
       await tester.pump(const Duration(seconds: 4));
       await tester.pumpAndSettle();
       expect(duringRetry, 1);
+      expect(restoring.last, isFalse);
       expect(announced, [result]);
     },
   );

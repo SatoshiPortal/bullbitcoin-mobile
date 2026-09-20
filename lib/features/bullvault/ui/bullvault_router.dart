@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_recovery_notice_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_settings_screen.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_cubit.dart';
@@ -23,7 +24,6 @@ abstract final class BullVaultRouter {
     menuRoute,
     route,
     scannerRoute,
-    restoreRoute,
     settingsRoute,
     policyRoute,
     keysRoute,
@@ -75,16 +75,16 @@ abstract final class BullVaultRouter {
     ),
   );
 
-  static final restoreRoute = GoRoute(
-    name: BullVaultFacade.descriptorRestoreRouteName,
-    path: '/bullvault/restore/descriptor',
-    builder: (context, state) => BlocProvider(
-      create: (_) => locator<BullVaultRestoreCubit>(),
-      child: BullVaultRestoreScreen(
-        onRecovered: (result) => locator<BullVaultRecoveryNoticeCubit>().record(
-          walletId: result.wallet.id,
-          label: result.wallet.displayLabel(context),
-        ),
+  static Widget restoreView(
+    BuildContext context, {
+    ValueChanged<bool>? onRestoringChanged,
+  }) => BlocProvider(
+    create: (_) => locator<BullVaultRestoreCubit>(),
+    child: BullVaultRestoreScreen(
+      onRestoringChanged: onRestoringChanged,
+      onRecovered: (result) => locator<BullVaultRecoveryNoticeCubit>().record(
+        walletId: result.wallet.id,
+        label: result.wallet.displayLabel(context),
       ),
     ),
   );

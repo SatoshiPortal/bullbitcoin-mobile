@@ -13,7 +13,6 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_reco
 import 'package:bb_mobile/features/backup_settings/ui/screens/data_backup_recovery_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/data_recovery_words_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_screen.dart';
-import 'package:bb_mobile/features/backup_settings/ui/screens/vault_words_recovery_screen.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/locator.dart';
@@ -66,7 +65,6 @@ class BackupSettingsSettingsRouter {
 enum BackupSettingsRoute {
   dataContents('/data-backup/contents'),
   dataRecoverWords('/data-backup/recover/words'),
-  vaultWords('/bullvault/recover/words'),
   dataRecovery('/data-backup/recover'),
   dataWords('/data-backup/words');
 
@@ -174,18 +172,12 @@ abstract final class BackupSettingsRouter {
         create: (_) => locator<VaultRecoveryCubit>()..search(),
         child: VaultRecoveryScreen(
           onRecovered: onVaultsRecovered,
-          onDescriptor: () =>
-              context.pushNamed(BullVaultFacade.descriptorRestoreRouteName),
-          onWords: () => context.pushNamed(BackupSettingsRoute.vaultWords.name),
+          descriptorBuilder: (onRestoringChanged) =>
+              BullVaultRouter.restoreView(
+                context,
+                onRestoringChanged: onRestoringChanged,
+              ),
         ),
-      ),
-    ),
-    GoRoute(
-      name: BackupSettingsRoute.vaultWords.name,
-      path: BackupSettingsRoute.vaultWords.path,
-      builder: (_, _) => BlocProvider(
-        create: (_) => locator<VaultRecoveryCubit>(),
-        child: VaultWordsRecoveryScreen(onRecovered: onVaultsRecovered),
       ),
     ),
     GoRoute(

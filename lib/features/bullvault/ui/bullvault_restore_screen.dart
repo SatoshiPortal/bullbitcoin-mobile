@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
@@ -20,8 +19,13 @@ import 'package:screen_privacy/screen_privacy.dart';
 
 class BullVaultRestoreScreen extends StatefulWidget {
   final void Function(BullVaultRestoreResult)? onRecovered;
+  final ValueChanged<bool>? onRestoringChanged;
 
-  const BullVaultRestoreScreen({super.key, this.onRecovered});
+  const BullVaultRestoreScreen({
+    super.key,
+    this.onRecovered,
+    this.onRestoringChanged,
+  });
 
   @override
   State<BullVaultRestoreScreen> createState() => _BullVaultRestoreScreenState();
@@ -63,137 +67,125 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     );
     return PopScope(
       canPop: !isRestoring,
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            onBack: () => context.pop(),
-            backEnabled: !isRestoring,
-            title: context.loc.bullVaultRestoreTitle,
-          ),
-        ),
-        body: SafeArea(
-          child: BlocConsumer<BullVaultRestoreCubit, BullVaultRestoreState>(
-            listenWhen: (previous, current) =>
-                previous.failure != current.failure ||
-                previous.result != current.result,
-            listener: (context, state) {
-              if (state.failure case final failure?) {
-                SnackBarUtils.showSnackBar(
-                  context,
-                  state.result == null
-                      ? failure.toTranslated(context)
-                      : context.loc.bullVaultRestoreMobilePassphraseFailure,
-                );
-              } else if (!state.isRestoring && state.result != null) {
-                widget.onRecovered?.call(state.result!);
-              }
-            },
-            builder: (context, state) => state.result != null
-                ? _restored(context, state.result!, state.isRestoring)
-                : ListView(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      child: BlocConsumer<BullVaultRestoreCubit, BullVaultRestoreState>(
+        listenWhen: (previous, current) =>
+            previous.isRestoring != current.isRestoring ||
+            previous.failure != current.failure ||
+            previous.result != current.result,
+        listener: (context, state) {
+          widget.onRestoringChanged?.call(state.isRestoring);
+          if (state.failure case final failure?) {
+            SnackBarUtils.showSnackBar(
+              context,
+              state.result == null
+                  ? failure.toTranslated(context)
+                  : context.loc.bullVaultRestoreMobilePassphraseFailure,
+            );
+          } else if (!state.isRestoring && state.result != null) {
+            widget.onRecovered?.call(state.result!);
+          }
+        },
+        builder: (context, state) => state.result != null
+            ? _restored(context, state.result!, state.isRestoring)
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                children: [
+                  Text(
+                    context.loc.bullVaultRestoreDescription,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                  ),
+                  const Gap(24),
+                  Text(
+                    context.loc.labelInputLabel,
+                    style: context.font.bodyMedium,
+                  ),
+                  const Gap(8),
+                  BullInputText(
+                    value: _label,
+                    onChanged: (value) => setState(() => _label = value),
+                    disabled: state.isRestoring,
+                    maxLines: 1,
+                  ),
+                  const Gap(28),
+                  Text(
+                    context.loc.bullVaultRestorePackageTitle,
+                    style: context.font.titleMedium,
+                  ),
+                  const Gap(8),
+                  Text(
+                    context.loc.bullVaultRestorePackageDescription,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                  ),
+                  const Gap(16),
+                  BullButton.big(
+                    label: context.loc.bullVaultChooseRecoveryPackage,
+                    onPressed: _pickPackage,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
+                    iconData: Icons.file_open_outlined,
+                    iconFirst: true,
+                    disabled: state.isRestoring,
+                  ),
+                  const Gap(28),
+                  Row(
                     children: [
-                      Text(
-                        context.loc.bullVaultRestoreDescription,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(24),
-                      Text(
-                        context.loc.labelInputLabel,
-                        style: context.font.bodyMedium,
-                      ),
-                      const Gap(8),
-                      BullInputText(
-                        value: _label,
-                        onChanged: (value) => setState(() => _label = value),
-                        disabled: state.isRestoring,
-                        maxLines: 1,
-                      ),
-                      const Gap(28),
-                      Text(
-                        context.loc.bullVaultRestorePackageTitle,
-                        style: context.font.titleMedium,
-                      ),
-                      const Gap(8),
-                      Text(
-                        context.loc.bullVaultRestorePackageDescription,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(16),
-                      BullButton.big(
-                        label: context.loc.bullVaultChooseRecoveryPackage,
-                        onPressed: _pickPackage,
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
-                        iconData: Icons.file_open_outlined,
-                        iconFirst: true,
-                        disabled: state.isRestoring,
-                      ),
-                      const Gap(28),
-                      Row(
-                        children: [
-                          const Expanded(child: Divider()),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              context.loc.bullVaultOr,
-                              style: context.font.bodySmall?.copyWith(
-                                color: context.appColors.textMuted,
-                              ),
-                            ),
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          context.loc.bullVaultOr,
+                          style: context.font.bodySmall?.copyWith(
+                            color: context.appColors.textMuted,
                           ),
-                          const Expanded(child: Divider()),
-                        ],
-                      ),
-                      const Gap(28),
-                      Text(
-                        context.loc.bullVaultCompatibleDescriptorTitle,
-                        style: context.font.titleMedium,
-                      ),
-                      const Gap(8),
-                      Text(
-                        context.loc.bullVaultRestoreDescriptorDescription,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.textMuted,
                         ),
                       ),
-                      const Gap(16),
-                      BullPasteInput(
-                        text: _descriptor,
-                        hint: context.loc.bullVaultDescriptorHint,
-                        onChanged: (value) =>
-                            setState(() => _descriptor = value),
-                        onScan: _scanDescriptor,
-                        onPasteError: (_) => SnackBarUtils.showSnackBar(
-                          context,
-                          context.loc.bullVaultFailureInvalidRecovery,
-                        ),
-                        enabled: !state.isRestoring,
-                        minLines: 4,
-                        maxLines: 8,
-                      ),
-                      const Gap(12),
-                      BullButton.big(
-                        label: context.loc.bullVaultRestoreDescriptorAction,
-                        onPressed: _restoreDescriptor,
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
-                        disabled: state.isRestoring,
-                      ),
-                      if (state.isRestoring) ...[
-                        const Gap(24),
-                        const Center(child: CircularProgressIndicator()),
-                      ],
+                      const Expanded(child: Divider()),
                     ],
                   ),
-          ),
-        ),
+                  const Gap(28),
+                  Text(
+                    context.loc.bullVaultCompatibleDescriptorTitle,
+                    style: context.font.titleMedium,
+                  ),
+                  const Gap(8),
+                  Text(
+                    context.loc.bullVaultRestoreDescriptorDescription,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                  ),
+                  const Gap(16),
+                  BullPasteInput(
+                    text: _descriptor,
+                    hint: context.loc.bullVaultDescriptorHint,
+                    onChanged: (value) => setState(() => _descriptor = value),
+                    onScan: _scanDescriptor,
+                    onPasteError: (_) => SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.bullVaultFailureInvalidRecovery,
+                    ),
+                    enabled: !state.isRestoring,
+                    minLines: 4,
+                    maxLines: 8,
+                  ),
+                  const Gap(12),
+                  BullButton.big(
+                    label: context.loc.bullVaultRestoreDescriptorAction,
+                    onPressed: _restoreDescriptor,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                    disabled: state.isRestoring,
+                  ),
+                  if (state.isRestoring) ...[
+                    const Gap(24),
+                    const Center(child: CircularProgressIndicator()),
+                  ],
+                ],
+              ),
       ),
     );
   }

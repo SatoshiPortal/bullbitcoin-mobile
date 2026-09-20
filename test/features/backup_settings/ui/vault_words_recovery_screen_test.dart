@@ -54,7 +54,9 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: BlocProvider.value(
               value: cubit,
-              child: VaultWordsRecoveryScreen(onRecovered: (_) => completed++),
+              child: Scaffold(
+                body: VaultWordsRecoveryScreen(onRecovered: (_) => completed++),
+              ),
             ),
           ),
         );

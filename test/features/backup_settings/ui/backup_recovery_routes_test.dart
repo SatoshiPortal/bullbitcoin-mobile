@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/bullvault/domain/usecases/restore_bullvault_usecase.dart';
+import 'package:bb_mobile/features/bullvault/presentation/bullvault_restore_cubit.dart';
+import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
+import 'package:bb_mobile/features/backup_settings/ui/screens/vault_recovery_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/backup_settings/domain/usecases/recover_data_backup_usecase.dart';
@@ -6,7 +10,6 @@ import 'package:bb_mobile/features/backup_settings/presentation/cubit/data_backu
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/vault_recovery_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/vault_words_recovery_screen.dart';
-import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/features/wallet_backup/public/wallet_backup_facade.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
@@ -20,6 +23,8 @@ import '../vault_recovery_fixture.dart';
 
 class _Backups extends Mock implements WalletBackupFacade {}
 
+class _Restore extends Mock implements RestoreBullVaultUsecase {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const privacy = MethodChannel('com.flutterplaza.no_screenshot_methods');
@@ -29,6 +34,7 @@ void main() {
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(privacy, (_) async => true);
+    locator.registerFactory(() => BullVaultRestoreCubit(_Restore()));
     backups = _Backups();
     when(
       () => backups.recoverVaults(
@@ -57,12 +63,6 @@ void main() {
           onVaultsRecovered: (_) {},
           onDataRecovered: (_, _) {},
         ),
-        GoRoute(
-          path: '/bullvault/restore/descriptor',
-          name: BullVaultFacade.descriptorRestoreRouteName,
-          builder: (_, _) =>
-              const Scaffold(body: Text('descriptor destination')),
-        ),
       ],
     );
   });
@@ -85,18 +85,32 @@ void main() {
   }
 
   testWidgets(
-    'the retained restore route reaches both manual destinations without a seed',
+    'the recovery page shows both manual inputs without another page or a local seed',
     (tester) async {
       await pump(tester);
       expect(find.text(loc.vaultRecoveryNoCredential), findsOneWidget);
-      await tester.tap(find.text(loc.vaultRecoveryDescriptorEntry));
+      await tester.tap(find.byIcon(Icons.keyboard_arrow_down));
       await tester.pumpAndSettle();
-      expect(find.text('descriptor destination'), findsOneWidget);
-      router.pop();
+      await tester.tap(find.text(loc.vaultRecoveryDescriptorEntry).last);
       await tester.pumpAndSettle();
-      await tester.tap(find.text(loc.dataBackupRecoverWithWords));
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/bullvault/restore',
+      );
+      expect(find.byType(VaultRecoveryScreen), findsOneWidget);
+      expect(find.byType(BullVaultRestoreScreen), findsOneWidget);
+      expect(find.byType(Scaffold), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.keyboard_arrow_down));
       await tester.pumpAndSettle();
+      await tester.tap(find.text(loc.dataBackupWordsTitle).last);
+      await tester.pumpAndSettle();
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/bullvault/restore',
+      );
+      expect(find.byType(VaultRecoveryScreen), findsOneWidget);
       expect(find.byType(VaultWordsRecoveryScreen), findsOneWidget);
+      expect(find.byType(Scaffold), findsOneWidget);
       verify(
         () => backups.recoverVaults(
           words: null,

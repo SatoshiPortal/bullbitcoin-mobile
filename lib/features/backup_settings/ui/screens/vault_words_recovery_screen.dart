@@ -33,10 +33,8 @@ class _VaultWordsRecoveryScreenState extends State<VaultWordsRecoveryScreen>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.loc.dataBackupRecoverWithWords)),
-    body: SafeArea(
-      child: BlocConsumer<VaultRecoveryCubit, VaultRecoveryState>(
+  Widget build(BuildContext context) =>
+      BlocConsumer<VaultRecoveryCubit, VaultRecoveryState>(
         listener: (_, state) {
           if (state.result case final result?
               when result.complete &&
@@ -85,7 +83,5 @@ class _VaultWordsRecoveryScreenState extends State<VaultWordsRecoveryScreen>
                   ),
                 ],
               ),
-      ),
-    ),
-  );
+      );
 }
