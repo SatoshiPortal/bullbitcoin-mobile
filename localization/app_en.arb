@@ -17363,5 +17363,13 @@
   "signingKeyRegisterDescriptor": "Register wallet descriptor",
   "@signingKeyRegisterDescriptor": {
     "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "bullVaultRestoreMobilePassphraseAction": "Use mobile passphrase",
+  "@bullVaultRestoreMobilePassphraseAction": {
+    "description": "After recovering a vault, verify the existing passphrase for its mobile key"
+  },
+  "bullVaultRestoreMobilePassphraseFailure": "Could not restore mobile access. You can still continue with this vault.",
+  "@bullVaultRestoreMobilePassphraseFailure": {
+    "description": "The optional mobile-access attempt failed after the vault was successfully restored"
   }
 }

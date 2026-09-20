@@ -33,6 +33,7 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
   BullVaultProtection protection = BullVaultProtection.standard,
   bool includesInheritance = false,
   bool usesBullMobile = true,
+  String? mobilePassphrase,
 }) {
   final createdAt = DateTime.utc(2027);
   final everyday = _signer(
@@ -40,7 +41,16 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
     0,
     network,
     signer: usesBullMobile ? SignerEntity.local : SignerEntity.remote,
+    password: mobilePassphrase,
   );
+  final mobileRecovery = mobilePassphrase == null
+      ? null
+      : _signer(
+          BullVaultSignerRole.delayedMobileRecovery,
+          0,
+          network,
+          signer: SignerEntity.local,
+        );
   final cold = _signer(BullVaultSignerRole.cold, 1, network);
   final secondCold = protection.usesTwoColdKeys
       ? _signer(BullVaultSignerRole.secondCold, 2, network)
@@ -65,6 +75,7 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
       network: network,
       protection: protection,
       everydayKey: everyday,
+      delayedMobileRecoveryKey: mobileRecovery,
       coldKey: cold,
       secondColdKey: secondCold,
       inheritanceKey: inheritance,
@@ -73,6 +84,7 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
     ),
     protection: protection,
     everydayKey: everyday,
+    delayedMobileRecoveryKey: mobileRecovery,
     coldKey: cold,
     secondColdKey: secondCold,
     inheritanceKey: inheritance,
@@ -103,6 +115,7 @@ BullVaultCreateResult testBullVaultCreateResult({
   BullVaultProtection protection = BullVaultProtection.standard,
   bool includesInheritance = false,
   bool usesBullMobile = true,
+  String? mobilePassphrase,
 }) {
   final recoveryPackage = testBullVaultRecoveryPackage(
     previousVaultId: previousVaultId,
@@ -112,6 +125,7 @@ BullVaultCreateResult testBullVaultCreateResult({
     protection: protection,
     includesInheritance: includesInheritance,
     usesBullMobile: usesBullMobile,
+    mobilePassphrase: mobilePassphrase,
   );
   final policy = recoveryPackage.policy;
   final createdAt = DateTime.utc(2027);
@@ -233,10 +247,12 @@ BullVaultSignerKey _signer(
   int mnemonicIndex,
   Network network, {
   SignerEntity? signer,
+  String? password,
 }) {
   final derived = deriveSignerKeys(
     testMnemonics[mnemonicIndex],
     isTestnet: network.isTestnet,
+    password: password,
   );
   return BullVaultSignerKey(
     role: role,
@@ -247,6 +263,7 @@ BullVaultSignerKey _signer(
       xpubFingerprint: derived.fingerprint,
       xpub: derived.xpub.split(']').last,
       derivationPath: "m/48'/${network.coinType}'/0'/2'",
+      requiresPassphrase: password != null,
     ),
     signer:
         signer ??

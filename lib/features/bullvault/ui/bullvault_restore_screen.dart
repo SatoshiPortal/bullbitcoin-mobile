@@ -34,6 +34,7 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
   var _label = '';
   var _mobilePassphrase = '';
   var _descriptor = '';
+  ({BullVaultRestoreInputKind kind, String source})? _restoredSource;
 
   @override
   void initState() {
@@ -81,14 +82,16 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
               if (state.failure case final failure?) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  failure.toTranslated(context),
+                  state.result == null
+                      ? failure.toTranslated(context)
+                      : context.loc.bullVaultRestoreMobilePassphraseFailure,
                 );
               } else if (!state.isRestoring && state.result != null) {
                 widget.onRecovered?.call(state.result!);
               }
             },
             builder: (context, state) => state.result != null
-                ? _restored(context, state.result!)
+                ? _restored(context, state.result!, state.isRestoring)
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                     children: [
@@ -109,31 +112,6 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
                         onChanged: (value) => setState(() => _label = value),
                         disabled: state.isRestoring,
                         maxLines: 1,
-                      ),
-                      const Gap(16),
-                      Text(
-                        context.loc.bullVaultRestoreMobilePassphraseLabel,
-                        style: context.font.bodyMedium,
-                      ),
-                      const Gap(8),
-                      BullInputText(
-                        value: _mobilePassphrase,
-                        onChanged: (value) =>
-                            setState(() => _mobilePassphrase = value),
-                        disabled: state.isRestoring,
-                        obscure: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        smartQuotesType: SmartQuotesType.disabled,
-                        smartDashesType: SmartDashesType.disabled,
-                        maxLines: 1,
-                      ),
-                      const Gap(8),
-                      Text(
-                        context.loc.bullVaultRestoreMobilePassphraseDescription,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
                       ),
                       const Gap(28),
                       Text(
@@ -220,41 +198,85 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     );
   }
 
-  Widget _restored(BuildContext context, BullVaultRestoreResult result) =>
-      ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text(
-            context.loc.bullVaultRestoreCompleteTitle,
-            style: context.font.titleLarge,
+  Widget _restored(
+    BuildContext context,
+    BullVaultRestoreResult result,
+    bool isRestoring,
+  ) => ListView(
+    padding: const EdgeInsets.all(24),
+    children: [
+      Text(
+        context.loc.bullVaultRestoreCompleteTitle,
+        style: context.font.titleLarge,
+      ),
+      const Gap(16),
+      Text(switch (result.mobileAccess) {
+        BullVaultMobileAccess.available =>
+          context.loc.bullVaultRestoreMobileAvailable,
+        BullVaultMobileAccess.recoveryOnly =>
+          context.loc.bullVaultRestoreRecoveryOnly,
+        BullVaultMobileAccess.unavailable =>
+          context.loc.bullVaultRestoreWatchOnly,
+      }, style: context.font.bodyLarge),
+      const Gap(16),
+      Text(
+        context.loc.bullVaultRestoreHardwareSetup,
+        style: context.font.bodyMedium,
+      ),
+      if (result.mobileAccess != BullVaultMobileAccess.available &&
+          result.record.recoveryPackage.policy.delayedMobileRecoveryKey !=
+              null) ...[
+        const Gap(24),
+        Text(
+          context.loc.bullVaultRestoreMobilePassphraseLabel,
+          style: context.font.bodyMedium,
+        ),
+        const Gap(8),
+        ExcludeSemantics(
+          child: BullInputText(
+            value: _mobilePassphrase,
+            onChanged: (value) => setState(() => _mobilePassphrase = value),
+            disabled: isRestoring,
+            obscure: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            smartQuotesType: SmartQuotesType.disabled,
+            smartDashesType: SmartDashesType.disabled,
+            maxLines: 1,
           ),
-          const Gap(16),
-          Text(switch (result.mobileAccess) {
-            BullVaultMobileAccess.available =>
-              context.loc.bullVaultRestoreMobileAvailable,
-            BullVaultMobileAccess.recoveryOnly =>
-              context.loc.bullVaultRestoreRecoveryOnly,
-            BullVaultMobileAccess.unavailable =>
-              context.loc.bullVaultRestoreWatchOnly,
-          }, style: context.font.bodyLarge),
-          const Gap(16),
-          Text(
-            context.loc.bullVaultRestoreHardwareSetup,
-            style: context.font.bodyMedium,
-          ),
-          const Gap(32),
-          BullButton.big(
-            label: context.loc.continueButton,
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
-            onPressed: () => context.pushReplacementNamed(
-              BullVaultFacade.settingsRouteName,
-              pathParameters: {'walletId': result.wallet.id},
-              extra: result.wallet.label ?? context.loc.bullVaultWalletLabel,
-            ),
-          ),
-        ],
-      );
+        ),
+        const Gap(8),
+        Text(
+          context.loc.bullVaultRestoreMobilePassphraseDescription,
+          style: context.font.bodySmall,
+        ),
+        const Gap(16),
+        BullButton.big(
+          label: context.loc.bullVaultRestoreMobilePassphraseAction,
+          onPressed: _restoreMobile,
+          disabled:
+              isRestoring ||
+              _mobilePassphrase.isEmpty ||
+              _restoredSource == null,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
+        ),
+      ],
+      if (isRestoring) ...[const Gap(16), const LinearProgressIndicator()],
+      const Gap(32),
+      BullButton.big(
+        label: context.loc.continueButton,
+        disabled: isRestoring,
+        bgColor: context.appColors.primary,
+        textColor: context.appColors.onPrimary,
+        onPressed: () => context.pushReplacementNamed(
+          BullVaultFacade.settingsRouteName,
+          pathParameters: {'walletId': result.wallet.id},
+          extra: result.wallet.label ?? context.loc.bullVaultWalletLabel,
+        ),
+      ),
+    ],
+  );
 
   Future<void> _pickPackage() async {
     try {
@@ -277,11 +299,9 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
       }
       final content = await file.readAsString();
       if (!mounted) return;
-      await context.read<BullVaultRestoreCubit>().restore(
+      await _restoreSource(
         kind: BullVaultRestoreInputKind.recoveryPackage,
         source: content,
-        label: _label,
-        mobilePassphrase: _mobilePassphrase,
       );
     } on FileSystemException {
       if (!mounted) return;
@@ -292,13 +312,35 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
     }
   }
 
-  Future<void> _restoreDescriptor() =>
-      context.read<BullVaultRestoreCubit>().restore(
-        kind: BullVaultRestoreInputKind.descriptor,
-        source: _descriptor,
+  Future<void> _restoreSource({
+    required BullVaultRestoreInputKind kind,
+    required String source,
+  }) async {
+    final cubit = context.read<BullVaultRestoreCubit>();
+    if (cubit.state.isRestoring) return;
+    _restoredSource = (kind: kind, source: source);
+    await cubit.restore(kind: kind, source: source, label: _label);
+  }
+
+  Future<void> _restoreDescriptor() => _restoreSource(
+    kind: BullVaultRestoreInputKind.descriptor,
+    source: _descriptor,
+  );
+
+  Future<void> _restoreMobile() async {
+    final input = _restoredSource;
+    if (input == null || _mobilePassphrase.isEmpty) return;
+    try {
+      await context.read<BullVaultRestoreCubit>().restore(
+        kind: input.kind,
+        source: input.source,
         label: _label,
         mobilePassphrase: _mobilePassphrase,
       );
+    } finally {
+      if (mounted) setState(() => _mobilePassphrase = '');
+    }
+  }
 
   Future<void> _scanDescriptor() async {
     final descriptor = await context.pushNamed<String>(
