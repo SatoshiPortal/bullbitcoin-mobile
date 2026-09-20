@@ -95,7 +95,10 @@ class DataBackupFileActions extends StatelessWidget {
                   ? null
                   : context.read<DataBackupFileCubit>().inspect,
             ),
-            if (state.busy) const LinearProgressIndicator(),
+            if (state.busy) ...[
+              const LinearProgressIndicator(),
+              Text(context.loc.dataBackupPreparingFile),
+            ],
           ],
         ),
       );

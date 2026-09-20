@@ -145,7 +145,6 @@ abstract final class WalletBackupLocator {
     locator.registerFactory(() => PickWalletBackupFileUsecase(locator()));
     locator.registerFactory(
       () => ExportWalletBackupFileUsecase(
-        operations: locator(),
         identity: locator(),
         state: locator(),
         codec: locator(),

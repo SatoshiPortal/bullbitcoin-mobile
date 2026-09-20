@@ -17347,5 +17347,9 @@
   "dataBackupTimeout": "The backup operation timed out. Please try again.",
   "@dataBackupTimeout": {
     "description": "Shown when a Data Backup action exceeds its deadline."
+  },
+  "dataBackupPreparingFile": "Preparing backup file…",
+  "@dataBackupPreparingFile": {
+    "description": "Progress while preparing an exported backup or inspecting a selected backup file."
   }
 }

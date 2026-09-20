@@ -57,6 +57,7 @@ void main() {
   late _Metadata metadata;
   late StreamController<void> changes;
   late ExportWalletBackupFileUsecase export;
+  late WalletBackupOperationQueue operations;
   late DecodeWalletBackupFileUsecase decode;
   late RecoverWalletBackupFileUsecase recover;
   var incomplete = false, applied = 0;
@@ -135,9 +136,8 @@ void main() {
     when(
       () => metadata.apply(any(), {}),
     ).thenAnswer((_) async => const Ok(null));
-    final operations = WalletBackupOperationQueue();
+    operations = WalletBackupOperationQueue();
     export = ExportWalletBackupFileUsecase(
-      operations: operations,
       identity: identity,
       state: state,
       codec: snapshots,
@@ -184,6 +184,41 @@ void main() {
     server: null,
     serverFailure: const WalletBackupNetworkFailure(),
     automaticBackupEnabled: false,
+  );
+
+  test('file export reaches save while publication is still pending', () async {
+    final pending = Completer<Result<void, WalletBackupFailure>>();
+    final publishing = operations.run(() => pending.future);
+    final exporting = export.execute(WalletBackupFileFormat.encrypted);
+    try {
+      expect(
+        value(await exporting.timeout(const Duration(seconds: 2))),
+        isTrue,
+      );
+      expect(pending.isCompleted, isFalse);
+      verify(
+        () => files.save(any(), format: WalletBackupFileFormat.encrypted),
+      ).called(1);
+    } finally {
+      pending.complete(const Ok(null));
+      await publishing;
+      await exporting;
+    }
+  });
+
+  test(
+    'a recovery starting during capture prevents exporting a partial file',
+    () async {
+      when(() => snapshots.capture(credential)).thenAnswer((_) async {
+        incomplete = true;
+        return Ok(snapshot);
+      });
+      expect(
+        await export.execute(WalletBackupFileFormat.encrypted),
+        isA<Err>(),
+      );
+      verifyZeroInteractions(files);
+    },
   );
 
   test(

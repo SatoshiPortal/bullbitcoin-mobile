@@ -6,7 +6,6 @@ import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_back
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_file_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/repositories/wallet_backup_state_repository.dart';
 import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_failure.dart';
-import 'package:bb_mobile/features/wallet_backup/domain/wallet_backup_operation_queue.dart';
 import 'package:meta/meta.dart';
 
 final class PickWalletBackupFileUsecase {
@@ -17,13 +16,11 @@ final class PickWalletBackupFileUsecase {
 }
 
 final class ExportWalletBackupFileUsecase {
-  final WalletBackupOperationQueue _operations;
   final NostrIdentityFacade _identity;
   final WalletBackupStateRepository _state;
   final WalletBackupCodecRepository _codec;
   final WalletBackupFileRepository _files;
   const ExportWalletBackupFileUsecase({
-    required this._operations,
     required this._identity,
     required this._state,
     required this._codec,
@@ -38,9 +35,11 @@ final class ExportWalletBackupFileUsecase {
     if (format == WalletBackupFileFormat.readable && !confirmed) {
       return const Err(WalletBackupConfirmationRequiredFailure());
     }
-    // Only capture/encoding shares the mutation queue. Native save interaction
-    // need not block publication, nor retain the credential used by _encode.
-    final encoded = await _operations.run(() => _encode(format));
+    // Preparing a file is read-only and does not wait for network mutations. The native save dialog has no user-interaction deadline.
+    final encoded = await _encode(format).timeout(
+      const Duration(minutes: 1),
+      onTimeout: () => const Err(WalletBackupTimeoutFailure()),
+    );
     return switch (encoded) {
       Err(:final failure) => Err(failure),
       Ok(:final value) => await _files.save(value, format: format),
@@ -65,6 +64,15 @@ final class ExportWalletBackupFileUsecase {
     final beforeCapture = _codec.revision;
     final captured = await _codec.capture(credential);
     if (captured case Err(:final failure)) return Err(failure);
+    // Recovery may have started since the first control read.
+    switch (await _state.getControl()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: final control) when control.recoveryIncomplete:
+        return const Err(WalletBackupIncompleteFailure());
+      case Ok():
+        break;
+    }
     if (_codec.revision < 0) return const Err(WalletBackupStorageFailure());
     if (_codec.revision != beforeCapture) {
       return const Err(WalletBackupChangedFailure());
