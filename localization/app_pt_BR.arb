@@ -1570,10 +1570,6 @@
   "@ledgerSuccessVerifyTitle": {
     "description": "Success message title for address verification on Ledger"
   },
-  "importWalletImportMnemonic": "Importação Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "systemLabelExchangeBuy": "Comprar",
   "@systemLabelExchangeBuy": {
     "description": "System label for exchange buy transactions"
@@ -1862,10 +1858,6 @@
   "receiveCopyOrScanAddressOnly": "Copiar ou escanear endereço somente",
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
-  },
-  "walletSettingsImportWalletTitle": "Carteira de importação",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "jadeInstructionsTitle": "Blockstream Jade PSBT Instruções",
   "@jadeInstructionsTitle": {
@@ -4713,10 +4705,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "Visite o Recoverbull.com para obter mais informações.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "importWalletTitle": "Adicionar uma nova carteira",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "testBackupGoogleDrivePrivacyPart1": "Esta informação ",
   "@testBackupGoogleDrivePrivacyPart1": {
@@ -12209,7 +12197,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|mapa Bitcoin|mapa de comerciantes|lugares que aceitam bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termos e condições|informações legais|acordo do usuário|TOS",
   "settingsSearchServicesStatusKeywords": "status dos serviços|status do sistema|online|indisponibilidade",
-  "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemônico|carteira somente leitura|carteira de hardware",
   "settingsSearchBroadcastTransactionKeywords": "transmitir transação assinada|publicar transação|transação bruta|hexadecimal da transação|PSBT",
   "settingsSearchPayjoinKeywords": "privacidade Payjoin|transação colaborativa|Payjoin|P2EP",
   "settingsSearchAutoswapKeywords": "troca automática|swap automático|transferência automática|saldo da carteira instantânea|Autoswap",

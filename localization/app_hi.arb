@@ -1872,10 +1872,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "अगला Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -2006,10 +2002,6 @@
   "sellSendPaymentAdvanced": "उन्नत सेटिंग्स",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "वॉलेट आयात करें",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google ड्राइव से जुड़ने में विफल रहा",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -4916,10 +4908,6 @@
   "connectHardwareWalletKeystone": "कीस्टोन",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "एक नया वॉलेट जोड़ें",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "डिफ़ॉल्ट सर्वर",
   "@mempoolSettingsDefaultServer": {
@@ -12387,7 +12375,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|बिटकॉइन मानचित्र|व्यापारियों का मानचित्र|बिटकॉइन खर्च करने की जगहें",
   "settingsSearchTermsOfServiceKeywords": "नियम और शर्तें|कानूनी|उपयोगकर्ता समझौता|TOS",
   "settingsSearchServicesStatusKeywords": "सेवाओं की स्थिति|सिस्टम की स्थिति|ऑनलाइन|सेवा बाधित",
-  "settingsSearchImportWalletKeywords": "वॉलेट जोड़ें|वॉलेट पुनर्प्राप्त करें|रिकवरी वाक्यांश आयात करें|केवल देखने वाला वॉलेट|हार्डवेयर वॉलेट",
   "settingsSearchBroadcastTransactionKeywords": "हस्ताक्षरित लेनदेन प्रसारित करें|लेनदेन भेजें|रॉ लेनदेन|लेनदेन hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin गोपनीयता|सहयोगी लेनदेन|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|स्वचालित स्वैप|स्वचालित ट्रांसफर|तत्काल वॉलेट बैलेंस",

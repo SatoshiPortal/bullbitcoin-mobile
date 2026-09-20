@@ -2082,10 +2082,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "Další Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -2216,10 +2212,6 @@
   "sellSendPaymentAdvanced": "Pokročilé nastavení",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "Import Peněženka",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Připojil se k Disku Google",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -4952,10 +4944,6 @@
   "connectHardwareWalletKeystone": "Čeština",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "Přidat novou peněženku",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "Výchozí server",
   "@mempoolSettingsDefaultServer": {
@@ -12197,7 +12185,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|bitcoinová mapa|mapa obchodníků|místa přijímající bitcoin",
   "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",
   "settingsSearchServicesStatusKeywords": "stav služeb|stav systému|online|výpadek",
-  "settingsSearchImportWalletKeywords": "přidat peněženku|obnovit peněženku|importovat mnemonickou frázi|peněženka pouze pro sledování|hardwarová peněženka",
   "settingsSearchBroadcastTransactionKeywords": "odeslat podepsanou transakci|publikovat transakci|surová transakce|hex transakce|PSBT",
   "settingsSearchPayjoinKeywords": "soukromí Payjoin|společná transakce|Payjoin|P2EP",
   "settingsSearchAutoswapKeywords": "automatická směna|automatický swap|automatický převod|zůstatek okamžité peněženky|Autoswap",

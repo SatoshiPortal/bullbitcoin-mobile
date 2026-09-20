@@ -1664,10 +1664,6 @@
       }
     }
   },
-  "importWalletImportMnemonic": "- Импортирай мнемоника",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "Създайте ръчно резервно копие на вашите деривационни пътища.",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -1773,10 +1769,6 @@
   "sellSelectNetwork": "Изберете мрежа",
   "@sellSelectNetwork": {
     "description": "Screen title for network selection"
-  },
-  "walletSettingsImportWalletTitle": "Импортиране на портфейл",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Неуспешно свързване с Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -3907,10 +3899,6 @@
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "- Добави нов портфейл",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "Сървър по подразбиране",
   "@mempoolSettingsDefaultServer": {
@@ -10198,7 +10186,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|биткойн карта|карта на търговците|места за плащане с биткойн",
   "settingsSearchTermsOfServiceKeywords": "общи условия|правна информация|потребителско споразумение|TOS",
   "settingsSearchServicesStatusKeywords": "състояние на услугите|системен статус|онлайн|прекъсване",
-  "settingsSearchImportWalletKeywords": "добавяне на портфейл|възстановяване на портфейл|импортиране на мнемонична фраза|портфейл само за наблюдение|хардуерен портфейл",
   "settingsSearchBroadcastTransactionKeywords": "излъчване на подписана транзакция|публикуване на транзакция|сурова транзакция|hex на транзакция|PSBT",
   "settingsSearchPayjoinKeywords": "поверителност с Payjoin|съвместна транзакция|Payjoin|P2EP",
   "settingsSearchAutoswapKeywords": "автоматичен суап|автоматична размяна|автоматично прехвърляне|баланс на незабавния портфейл|Autoswap",

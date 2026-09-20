@@ -1,3 +1,7 @@
+import 'package:bb_mobile/features/import_mnemonic/router.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -9,6 +13,16 @@ import 'package:get_it/get_it.dart';
 
 class ImportMnemonicLocator {
   static void setup(GetIt locator) {
+    locator<SettingsFacade>().registerEntry(
+      SettingsEntryContribution(
+        id: 'import-seed',
+        section: SettingsEntrySection.wallet,
+        title: (loc) => loc.importWalletSeedTitle,
+        icon: Icons.password_outlined,
+        open: (context) =>
+            context.pushNamed(ImportMnemonicRoute.importMnemonicHome.name),
+      ),
+    );
     locator.registerFactory<CheckDuplicateMnemonicUsecase>(
       () => CheckDuplicateMnemonicUsecase(
         seedRepository: locator<SeedRepository>(),

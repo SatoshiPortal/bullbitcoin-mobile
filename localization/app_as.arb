@@ -379,7 +379,6 @@
       }
     }
   },
-  "walletSettingsImportWalletTitle": "Wallet আমদানি কৰক",
   "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্ৰচাৰ কৰক",
   "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 নিৰ্ণায়ক Entropies",
@@ -5797,17 +5796,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "নতুন wallet যোগ কৰক",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Hardware Wallet সংযোগ কৰক",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Mnemonic আমদানি কৰক",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Watch-only আমদানি কৰক",
   "@importWalletImportWatchOnly": {
@@ -9326,7 +9317,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|বিটকইন মানচিত্ৰ|ব্যৱসায়ীৰ মানচিত্ৰ|বিটকইন খৰচ কৰাৰ ঠাই",
   "settingsSearchTermsOfServiceKeywords": "চৰ্ত আৰু নিয়মাৱলী|আইনী|ব্যৱহাৰকাৰী চুক্তি|TOS",
   "settingsSearchServicesStatusKeywords": "সেৱাৰ স্বাস্থ্য|চিষ্টেমৰ স্থিতি|অনলাইন|সেৱা বন্ধ",
-  "settingsSearchImportWalletKeywords": "ৱালেট যোগ কৰক|ৱালেট পুনৰুদ্ধাৰ|Mnemonic আমদানি|Watch-only ৱালেট|হাৰ্ডৱেৰ ৱালেট",
   "settingsSearchBroadcastTransactionKeywords": "স্বাক্ষৰিত লেনদেন প্ৰচাৰ|লেনদেন পঠিয়াওক|কেঁচা লেনদেন|লেনদেন hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin গোপনীয়তা|সহযোগিতামূলক লেনদেন|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|স্বয়ংক্ৰিয় swap|স্বয়ংক্ৰিয় transfer|তাৎক্ষণিক ৱালেট বেলেঞ্চ",

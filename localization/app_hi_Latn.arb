@@ -614,10 +614,6 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Wallet Import Karo",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
-  },
   "bitcoinSettingsBroadcastTransactionTitle": "Transaction Broadcast Karo",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
@@ -7887,17 +7883,9 @@
   "@jadeStep15": {
     "description": "Jade final instruction about broadcasting"
   },
-  "importWalletTitle": "Naya wallet add karo",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
-  },
   "importWalletConnectHardware": "Hardware Wallet Connect Karo",
   "@importWalletConnectHardware": {
     "description": "Button to connect hardware wallet"
-  },
-  "importWalletImportMnemonic": "Mnemonic Import Karo",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
   },
   "importWalletImportWatchOnly": "Watch-only import karo",
   "@importWalletImportWatchOnly": {
@@ -12602,7 +12590,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|bitcoin ka naksha|merchant map|bitcoin kharch karne ki jagah",
   "settingsSearchTermsOfServiceKeywords": "niyam aur shartein|kanooni|user agreement|TOS",
   "settingsSearchServicesStatusKeywords": "service health|system status|online|service outage",
-  "settingsSearchImportWalletKeywords": "wallet add karein|wallet recover karein|recovery phrase import karein|watch-only wallet|hardware wallet",
   "settingsSearchBroadcastTransactionKeywords": "signed transaction broadcast karein|transaction bhejein|raw transaction|transaction hex|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin privacy|milkar ki gayi transaction|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|automatic swap|auto transfer|instant wallet balance",

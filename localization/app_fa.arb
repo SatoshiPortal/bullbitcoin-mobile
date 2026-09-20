@@ -2566,10 +2566,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "واردات Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "بعدی Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -2687,10 +2683,6 @@
   "sellSendPaymentAdvanced": "تنظیمات پیشرفته",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "واردات کیف پول",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "شکست در اتصال به Google Drive",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -5113,10 +5105,6 @@
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "اضافه کردن کیف پول جدید",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "خطای Server",
   "@mempoolSettingsDefaultServer": {
@@ -12197,7 +12185,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|نقشه بیت کوین|نقشه پذیرندگان|محل خرج کردن بیت کوین",
   "settingsSearchTermsOfServiceKeywords": "شرایط و ضوابط|موارد حقوقی|توافق نامه کاربر|TOS",
   "settingsSearchServicesStatusKeywords": "سلامت سرویس|وضعیت سیستم|آنلاین|قطعی سرویس",
-  "settingsSearchImportWalletKeywords": "افزودن کیف پول|بازیابی کیف پول|وارد کردن عبارت بازیابی|کیف پول فقط نظارتی|کیف پول سخت افزاری",
   "settingsSearchBroadcastTransactionKeywords": "انتشار تراکنش امضا شده|ارسال تراکنش|تراکنش خام|هگز تراکنش|PSBT",
   "settingsSearchPayjoinKeywords": "حریم خصوصی Payjoin|تراکنش مشارکتی|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|مبادله خودکار|انتقال خودکار|موجودی کیف پول آنی",

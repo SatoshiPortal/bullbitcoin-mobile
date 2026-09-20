@@ -1602,10 +1602,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "Εισαγωγή Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "Next Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -1704,10 +1700,6 @@
   "sellSendPaymentAdvanced": "Προχωρημένες ρυθμίσεις",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "Εισαγωγή Wallet",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "payEnterInvoice": "Εισάγετε Invoice",
   "@payEnterInvoice": {
@@ -4172,10 +4164,6 @@
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "Προσθέστε ένα νέο πορτοφόλι",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "Default Server",
   "@mempoolSettingsDefaultServer": {
@@ -12197,7 +12185,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|χάρτης Bitcoin|χάρτης εμπόρων|μέρη που δέχονται bitcoin",
   "settingsSearchTermsOfServiceKeywords": "όροι και προϋποθέσεις|νομικά|συμφωνία χρήστη|TOS",
   "settingsSearchServicesStatusKeywords": "κατάσταση υπηρεσιών|κατάσταση συστήματος|σε σύνδεση|διακοπή λειτουργίας",
-  "settingsSearchImportWalletKeywords": "προσθήκη πορτοφολιού|ανάκτηση πορτοφολιού|εισαγωγή μνημονικής φράσης|πορτοφόλι μόνο παρακολούθησης|πορτοφόλι υλικού",
   "settingsSearchBroadcastTransactionKeywords": "μετάδοση υπογεγραμμένης συναλλαγής|δημοσίευση συναλλαγής|ακατέργαστη συναλλαγή|hex συναλλαγής|PSBT",
   "settingsSearchPayjoinKeywords": "ιδιωτικότητα Payjoin|συνεργατική συναλλαγή|Payjoin|P2EP",
   "settingsSearchAutoswapKeywords": "αυτόματη ανταλλαγή|αυτόματο swap|αυτόματη μεταφορά|υπόλοιπο άμεσου πορτοφολιού|Autoswap",

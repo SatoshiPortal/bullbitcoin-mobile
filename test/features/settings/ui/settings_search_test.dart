@@ -91,7 +91,7 @@ void main() {
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet and Bitcoin → Import wallet',
+        'Settings → Wallet and Bitcoin → Hardware wallet',
       );
       for (final id in [
         SettingsItemId.labels,

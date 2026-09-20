@@ -1872,10 +1872,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "수입 Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "다음 Mnemonic",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -2006,10 +2002,6 @@
   "sellSendPaymentAdvanced": "고급 설정",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "수입 지갑",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "backupWalletErrorGoogleDriveConnection": "Google 드라이브에 연결 실패",
   "@backupWalletErrorGoogleDriveConnection": {
@@ -4916,10 +4908,6 @@
   "connectHardwareWalletKeystone": "키스톤",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "새로운 지갑 추가",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "기본 서버",
   "@mempoolSettingsDefaultServer": {
@@ -12197,7 +12185,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|비트코인 지도|가맹점 지도|비트코인 사용처",
   "settingsSearchTermsOfServiceKeywords": "이용 약관|법률 정보|사용자 계약|TOS",
   "settingsSearchServicesStatusKeywords": "서비스 상태|시스템 상태|온라인|서비스 중단",
-  "settingsSearchImportWalletKeywords": "지갑 추가|지갑 복구|니모닉 가져오기|읽기 전용 지갑|하드웨어 지갑",
   "settingsSearchBroadcastTransactionKeywords": "서명된 거래 전파|거래 푸시|원시 거래|거래 16진수|PSBT",
   "settingsSearchPayjoinKeywords": "Payjoin 개인정보 보호|협업 거래|P2EP",
   "settingsSearchAutoswapKeywords": "자동 스왑|자동 교환|자동 전송|즉시 지갑 잔액",

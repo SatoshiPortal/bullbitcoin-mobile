@@ -466,18 +466,18 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.importWallet,
       section: SettingsItemSection.wallet,
-      title: localization.walletSettingsImportWalletTitle,
+      title: localization.importWalletHardwareTitle,
       path: path(
         SettingsItemSection.wallet,
-        localization.walletSettingsImportWalletTitle,
+        localization.importWalletHardwareTitle,
       ),
       icon: Icons.sim_card_download,
       open: (context) =>
           context.pushNamed(ImportWalletRoute.importWalletHome.name),
       keywords: _keywords(
-        localization.settingsSearchImportWalletKeywords,
-        english.settingsSearchImportWalletKeywords,
-        [english.walletSettingsImportWalletTitle],
+        '${localization.importWalletSectionHardware}|${localization.importWalletImportWatchOnly}',
+        '${english.importWalletSectionHardware}|${english.importWalletImportWatchOnly}',
+        [english.importWalletHardwareTitle],
       ),
     ),
     SettingsItem(

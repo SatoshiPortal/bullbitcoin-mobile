@@ -1754,10 +1754,6 @@
   "@importQrDeviceJadeName": {
     "description": "Name of Blockstream Jade device"
   },
-  "importWalletImportMnemonic": "Import Mnemonic",
-  "@importWalletImportMnemonic": {
-    "description": "Button to import wallet from seed phrase"
-  },
   "bip85NextMnemonic": "التالي",
   "@bip85NextMnemonic": {
     "description": "Button to derive next mnemonic entropy"
@@ -1880,10 +1876,6 @@
   "sellSendPaymentAdvanced": "المراحل المتقدمة",
   "@sellSendPaymentAdvanced": {
     "description": "Advanced settings button"
-  },
-  "walletSettingsImportWalletTitle": "جدار استيراد",
-  "@walletSettingsImportWalletTitle": {
-    "description": "Title for the import wallet option in Bitcoin settings"
   },
   "payEnterInvoice": "الفواتير",
   "@payEnterInvoice": {
@@ -4603,10 +4595,6 @@
   "connectHardwareWalletKeystone": "Keystone",
   "@connectHardwareWalletKeystone": {
     "description": "Keystone hardware wallet option"
-  },
-  "importWalletTitle": "إضافة محفظة جديدة",
-  "@importWalletTitle": {
-    "description": "AppBar title for wallet import selection screen"
   },
   "mempoolSettingsDefaultServer": "خادم",
   "@mempoolSettingsDefaultServer": {
@@ -12200,7 +12188,6 @@
   "settingsSearchBtcMapKeywords": "BTC Map|خريطة بيتكوين|خريطة التجار|أماكن إنفاق بيتكوين",
   "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
   "settingsSearchServicesStatusKeywords": "حالة الخدمات|حالة النظام|متصل|انقطاع الخدمة",
-  "settingsSearchImportWalletKeywords": "إضافة محفظة|استعادة محفظة|استيراد عبارة الاسترداد|محفظة للمشاهدة فقط|محفظة أجهزة",
   "settingsSearchBroadcastTransactionKeywords": "بث معاملة موقعة|إرسال المعاملة|معاملة خام|بيانات المعاملة السداسية|PSBT",
   "settingsSearchPayjoinKeywords": "خصوصية Payjoin|معاملة تعاونية|P2EP",
   "settingsSearchAutoswapKeywords": "Autoswap|مبادلة تلقائية|تحويل تلقائي|رصيد المحفظة الفورية",
