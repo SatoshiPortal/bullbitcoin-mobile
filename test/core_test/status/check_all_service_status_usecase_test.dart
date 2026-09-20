@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
@@ -50,6 +52,65 @@ SettingsEntity _settings({required bool useTorProxy, int port = 9050}) =>
       useTorProxy: useTorProxy,
       torProxyPort: port,
     );
+
+class _ProbeClient extends Mock implements HttpClient {}
+
+class _ProbeRequest extends Mock implements HttpClientRequest {}
+
+class _ProbeHeaders extends Mock implements HttpHeaders {}
+
+class _ProbeResponse extends Mock implements HttpClientResponse {
+  final Stream<List<int>> _body;
+  _ProbeResponse(this._body);
+  @override
+  StreamSubscription<List<int>> listen(
+    void Function(List<int>)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => _body.listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
+}
+
+CheckAllServiceStatusUsecase _backupProbeUsecase() {
+  final electrum = _MockElectrumConnectivityPort();
+  when(
+    () => electrum.checkServersInUseAreOnlineForNetwork(any()),
+  ).thenAnswer((_) async => true);
+  final rates = _MockExchangeRateRepository();
+  when(
+    () => rates.getCurrencyValue(
+      amountSat: any(named: 'amountSat'),
+      currency: any(named: 'currency'),
+    ),
+  ).thenAnswer((_) async => 100);
+  final fees = _MockFeesRepository();
+  when(
+    () => fees.getNetworkFees(network: any(named: 'network')),
+  ).thenAnswer((_) async => throw Exception('unrelated fee probe'));
+  final policy = _MockPayjoinPolicyAccess();
+  when(policy.load).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+  final wallets = _MockWalletRepository();
+  when(wallets.isTorRequired).thenAnswer((_) async => false);
+  final settings = _MockSettingsRepository();
+  when(settings.fetch).thenAnswer((_) async => _settings(useTorProxy: false));
+  return CheckAllServiceStatusUsecase(
+    electrumConnectivityPort: electrum,
+    exchangeRateRepository: rates,
+    payjoinPolicy: policy,
+    payjoinDiagnostics: _MockPayjoinDiagnostics(),
+    feesRepository: fees,
+    walletRepository: wallets,
+    ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
+    checkServerConnectionUsecase: _MockCheckServerConnectionUsecase(),
+    settingsRepository: settings,
+    tor: _MockTor(),
+  );
+}
 
 void main() {
   setUpAll(() {
@@ -457,5 +518,112 @@ void main() {
       usecase.execute(network: Network.bitcoinMainnet),
       throwsA(isA<StateError>()),
     );
+  });
+  group('Data Backup server reachability', () {
+    final origin = Uri.parse('https://backup.test');
+    final endpoint = origin.resolve('/api/v1/wallet-backups/fetch');
+    const invalidRequest = '{"code":"BackupInvalidRequest","status":"ERROR"}';
+    for (final (code, type, body, expected) in [
+      (400, 'application/json', invalidRequest, ServiceStatus.online),
+      (400, 'text/html', '<html>bad request</html>', ServiceStatus.offline),
+      (
+        400,
+        'application/json',
+        '{"code":"Other","status":"ERROR"}',
+        ServiceStatus.offline,
+      ),
+      (
+        400,
+        'application/json',
+        '{"code":"BackupInvalidRequest","status":"OK"}',
+        ServiceStatus.offline,
+      ),
+      (400, 'application/json', 'not json', ServiceStatus.offline),
+      (200, 'application/json', invalidRequest, ServiceStatus.offline),
+      (500, 'application/json', invalidRequest, ServiceStatus.offline),
+      (302, 'application/json', invalidRequest, ServiceStatus.offline),
+      (
+        400,
+        'application/json',
+        '${' ' * 4096}$invalidRequest',
+        ServiceStatus.offline,
+      ),
+    ]) {
+      test('HTTP $code / $type / ${body.length} bytes: $expected', () async {
+        final client = _ProbeClient();
+        final request = _ProbeRequest();
+        final headers = _ProbeHeaders();
+        final response = _ProbeResponse(Stream.value(utf8.encode(body)));
+        when(() => client.postUrl(endpoint)).thenAnswer((_) async => request);
+        when(() => request.headers).thenReturn(headers);
+        when(() => request.close()).thenAnswer((_) async => response);
+        when(() => response.statusCode).thenReturn(code);
+        when(() => response.headers).thenReturn(headers);
+        when(() => headers.contentType).thenReturn(ContentType.parse(type));
+        final updates = <AllServicesStatus>[];
+        final result = await HttpOverrides.runZoned(
+          () => _backupProbeUsecase().execute(
+            network: Network.bitcoinMainnet,
+            backupServerOrigin: origin,
+            onUpdate: updates.add,
+          ),
+          createHttpClient: (_) => client,
+        );
+        expect(result.backupServer.status, expected);
+        expect(result.backupServer.lastChecked, isNotNull);
+        expect(updates.any((s) => s.backupServer.status == expected), isTrue);
+        verify(() => client.postUrl(endpoint)).called(1);
+        verify(() => request.write('{}')).called(1);
+        verify(() => request.followRedirects = false).called(1);
+        verify(() => headers.contentType = ContentType.json).called(1);
+        verify(() => client.close(force: true)).called(1);
+      });
+    }
+
+    test('a hung request reports offline and closes its client', () async {
+      final client = _ProbeClient();
+      final request = _ProbeRequest();
+      when(() => client.postUrl(endpoint)).thenAnswer((_) async => request);
+      when(() => request.headers).thenReturn(_ProbeHeaders());
+      when(
+        () => request.close(),
+      ).thenAnswer((_) => Completer<HttpClientResponse>().future);
+      final result = await HttpOverrides.runZoned(
+        () => _backupProbeUsecase().execute(
+          network: Network.bitcoinMainnet,
+          backupServerOrigin: origin,
+        ),
+        createHttpClient: (_) => client,
+      ).timeout(const Duration(seconds: 15));
+      expect(result.backupServer.status, ServiceStatus.offline);
+      verify(() => client.close(force: true)).called(1);
+    });
+
+    test('backup server failure participates in the aggregate status', () {
+      const online = ServiceStatusInfo(
+        status: ServiceStatus.online,
+        name: 'fixture',
+      );
+      const all = AllServicesStatus(
+        internetConnection: online,
+        bitcoinElectrum: online,
+        liquidElectrum: online,
+        payjoin: online,
+        pricer: online,
+        mempool: online,
+        tor: online,
+        recoverbull: online,
+        backupServer: online,
+      );
+      expect(all.allServicesOnline, isTrue);
+      expect(
+        all
+            .copyWith(
+              backupServer: online.copyWith(status: ServiceStatus.offline),
+            )
+            .allServicesOnline,
+        isFalse,
+      );
+    });
   });
 }

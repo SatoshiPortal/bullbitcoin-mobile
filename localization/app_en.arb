@@ -17387,5 +17387,9 @@
   "recoverbullKeyUseServer": "Use server instead",
   "@recoverbullKeyUseServer": {
     "description": "RecoverBull View Backup Key"
+  },
+  "statusCheckDataBackupServer": "Data Backup Server",
+  "@statusCheckDataBackupServer": {
+    "description": "Service Status row for the wallet data backup server"
   }
 }
