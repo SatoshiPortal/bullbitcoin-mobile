@@ -179,6 +179,7 @@ class SettingsLocator {
       return SigningKeyExportCubit(
         exportSigningKeyUsecase: ExportSigningKeyUsecase(
           accountSession,
+          labelsFacade: locator(),
           getDefaultSeedUsecase: locator(),
           getSettingsUsecase: locator(),
         ),

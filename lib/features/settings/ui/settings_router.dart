@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_group_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -62,6 +63,7 @@ export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
 class SettingsRouter {
   static GoRoute route({
+    void Function(BuildContext)? onRegisterDescriptor,
     WalletDetailsActionsBuilder? walletDetailsActionsBuilder,
     WalletDeletionGuard? walletDeletionGuard,
   }) => GoRoute(
@@ -175,7 +177,11 @@ class SettingsRouter {
         path: SettingsRoute.signingKeyExport.path,
         builder: (context, state) => BlocProvider(
           create: (_) => locator<SigningKeyExportCubit>()..load(),
-          child: const SigningKeyExportScreen(),
+          child: SigningKeyExportScreen(
+            onRegisterDescriptor: onRegisterDescriptor == null
+                ? null
+                : () => onRegisterDescriptor(context),
+          ),
         ),
       ),
       GoRoute(

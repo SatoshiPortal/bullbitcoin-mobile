@@ -10,6 +10,7 @@ class SigningKeyExportState {
   final bool isReserved;
   final bool isLoading;
   final int? markedAccount;
+  final bool descriptionSaved;
   final SettingsFailure? failure;
 
   const SigningKeyExportState({
@@ -18,6 +19,7 @@ class SigningKeyExportState {
     this.isReserved = false,
     this.isLoading = false,
     this.markedAccount,
+    this.descriptionSaved = true,
     this.failure,
   });
 
@@ -27,6 +29,7 @@ class SigningKeyExportState {
     bool? isReserved,
     bool? isLoading,
     int? markedAccount,
+    bool? descriptionSaved,
     bool clearMarkedAccount = false,
     SettingsFailure? failure,
     bool clearFailure = false,
@@ -38,6 +41,7 @@ class SigningKeyExportState {
     markedAccount: clearMarkedAccount
         ? null
         : markedAccount ?? this.markedAccount,
+    descriptionSaved: descriptionSaved ?? this.descriptionSaved,
     failure: clearFailure ? null : failure ?? this.failure,
   );
 }
@@ -48,6 +52,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
   int _requestId = 0;
   int? _requestedAccount;
   bool _markUsed = false;
+  String? _description;
 
   SigningKeyExportCubit({
     required this._exportSigningKeyUsecase,
@@ -59,6 +64,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
   }
 
   Future<void> selectAccount(int account) async {
+    if (_markUsed && state.isLoading) return;
     if ((!state.isLoading && state.account == account) ||
         (state.isLoading && _requestedAccount == account)) {
       return;
@@ -68,10 +74,13 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
     await _export(account: account);
   }
 
-  Future<void> markAccountUsed() async {
-    if (state.isReserved || state.descriptorKey.isEmpty) return;
+  Future<void> markAccountUsed(String description) async {
+    if (state.isLoading || state.isReserved || state.descriptorKey.isEmpty) {
+      return;
+    }
     _requestedAccount = state.account;
     _markUsed = true;
+    _description = description;
     await _export(account: state.account, markUsed: true);
   }
 
@@ -101,6 +110,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
     final result = await _exportSigningKeyUsecase.execute(
       account: account,
       markUsed: markUsed,
+      description: markUsed ? _description : null,
     );
     if (isClosed || requestId != _requestId) return;
 
@@ -108,6 +118,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
       if (markUsed) {
         _requestedAccount = null;
         _markUsed = false;
+        _description = null;
       }
       emit(
         state.copyWith(
@@ -116,6 +127,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
           isReserved: export.isReserved,
           isLoading: false,
           markedAccount: export.markedAccount,
+          descriptionSaved: export.descriptionSaved,
           clearFailure: true,
         ),
       );

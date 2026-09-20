@@ -8,16 +8,19 @@ import 'package:bb_mobile/features/settings/domain/signing_key_account_session.d
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class ExportSigningKeyUsecase {
   final GetDefaultSeedUsecase _getDefaultSeedUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final SigningKeyAccountSession _accountSession;
+  final LabelsFacade _labelsFacade;
 
   ExportSigningKeyUsecase(
     this._accountSession, {
     required this._getDefaultSeedUsecase,
     required this._getSettingsUsecase,
+    required this._labelsFacade,
   });
 
   @useResult
@@ -28,11 +31,18 @@ class ExportSigningKeyUsecase {
         String descriptorKey,
         bool isReserved,
         int? markedAccount,
+        bool descriptionSaved,
       }),
       SettingsFailure
     >
   >
-  execute({int? account, bool markUsed = false}) async {
+  execute({int? account, bool markUsed = false, String? description}) async {
+    if (markUsed &&
+        (account == null ||
+            description == null ||
+            description.trim().isEmpty)) {
+      return const Err(SettingsSigningKeyExportFailure());
+    }
     final requestId = _accountSession.beginRequest();
     try {
       final settings = await _getSettingsUsecase.execute();
@@ -41,6 +51,19 @@ class ExportSigningKeyUsecase {
       );
       final isTestnet = settings.environment.isTestnet;
       final coinType = isTestnet ? 1 : 0;
+      final network = isTestnet
+          ? Network.bitcoinTestnet
+          : Network.bitcoinMainnet;
+      final usedXpub = markUsed
+          ? Bip32Derivation.deriveXpub(
+              seedBytes: seed.bytes,
+              derivationPath: Bip48Derivation.path(
+                coinType: coinType,
+                account: account!,
+              ),
+              network: network,
+            )
+          : null;
       final selectionResult = await _accountSession.select(
         requestId: requestId,
         seedFingerprint: seed.masterFingerprint,
@@ -59,9 +82,6 @@ class ExportSigningKeyUsecase {
         coinType: coinType,
         account: selection.account,
       );
-      final network = isTestnet
-          ? Network.bitcoinTestnet
-          : Network.bitcoinMainnet;
       final xpub = Bip32Derivation.deriveXpub(
         seedBytes: seed.bytes,
         derivationPath: derivationPath,
@@ -69,12 +89,25 @@ class ExportSigningKeyUsecase {
       );
       final originPath = derivationPath.substring(2).replaceAll("'", 'h');
 
+      // A description failure does not undo the successful reservation.
+      final descriptionSaved =
+          usedXpub == null ||
+          await _labelsFacade.store(
+                NewLabel(
+                  type: LabelType.extendedPublicKey,
+                  reference: usedXpub,
+                  label: description!.trim(),
+                ),
+              )
+              is Ok;
+
       return Ok((
         account: selection.account,
         descriptorKey:
             '[${seed.masterFingerprint.toLowerCase()}/$originPath]$xpub',
         isReserved: selection.isReserved,
         markedAccount: selection.markedAccount,
+        descriptionSaved: descriptionSaved,
       ));
     } on Exception catch (error, stackTrace) {
       log.severe(

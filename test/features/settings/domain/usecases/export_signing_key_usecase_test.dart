@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class _MockGetDefaultSeedUsecase extends Mock
     implements GetDefaultSeedUsecase {}
@@ -25,11 +26,30 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockBip48AccountRepository extends Mock
     implements Bip48AccountRepository {}
 
+class _FakeLabels extends Fake implements LabelsFacade {
+  final saved = <NewLabel>[];
+  bool fail = false;
+  @override
+  Future<Result<Label, LabelFailure>> store(NewLabel label) async {
+    if (fail) return const Err(LabelUnexpectedFailure());
+    saved.add(label);
+    return Ok(
+      Label(
+        id: saved.length,
+        type: label.type,
+        label: label.label,
+        reference: label.reference,
+      ),
+    );
+  }
+}
+
 void main() {
   late _MockGetDefaultSeedUsecase getDefaultSeed;
   late _MockGetSettingsUsecase getSettings;
   late _MockBip48AccountRepository accountRepository;
   late ExportSigningKeyUsecase usecase;
+  late _FakeLabels labels;
   late ReleaseSigningKeyAccountUsecase releaseUsecase;
 
   final seed = Seed.bytes(
@@ -48,8 +68,10 @@ void main() {
     getSettings = _MockGetSettingsUsecase();
     accountRepository = _MockBip48AccountRepository();
     final accountSession = SigningKeyAccountSession(accountRepository);
+    labels = _FakeLabels();
     usecase = ExportSigningKeyUsecase(
       accountSession,
+      labelsFacade: labels,
       getDefaultSeedUsecase: getDefaultSeed,
       getSettingsUsecase: getSettings,
     );
@@ -245,7 +267,14 @@ void main() {
     firstSettings.complete(settings);
     expect(await first, isA<Err>());
 
-    expect(await usecase.execute(account: 8, markUsed: true), isA<Ok>());
+    expect(
+      await usecase.execute(
+        account: 8,
+        markUsed: true,
+        description: 'Family vault',
+      ),
+      isA<Ok>(),
+    );
     final committed =
         verify(
               () => accountRepository.commitClaim(
@@ -287,7 +316,7 @@ void main() {
         }
         return const Ok(Bip48AccountClaim(account: 0, token: 'next'));
       });
-      await cubit.markAccountUsed();
+      await cubit.markAccountUsed('Family vault');
       expect(cubit.state.failure, isA<SettingsSigningKeyExportFailure>());
       await cubit.load();
       expect(cubit.state.failure, isNull);
@@ -307,6 +336,52 @@ void main() {
       expect((committed.account, committed.token), (7, 'exact-7'));
     },
   );
+
+  for (final labelFailure in [false, true]) {
+    test(
+      'marking keeps the used account reserved when label failure is $labelFailure',
+      () async {
+        when(() => getSettings.execute()).thenAnswer(
+          (_) async => const SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        );
+        final previous = (await usecase.execute(account: 7) as Ok).value;
+        labels.fail = labelFailure;
+        final result = await usecase.execute(
+          account: 7,
+          markUsed: true,
+          description: 'Family vault',
+        );
+        expect(result, isA<Ok>());
+        final next = (result as Ok).value;
+        expect(next.markedAccount, 7);
+        expect(next.account, 0);
+        expect(next.descriptionSaved, !labelFailure);
+        final committed =
+            verify(
+                  () => accountRepository.commitClaim(
+                    seedFingerprint: seed.masterFingerprint,
+                    coinType: 0,
+                    claim: captureAny(named: 'claim'),
+                  ),
+                ).captured.single
+                as Bip48AccountClaim;
+        expect(committed.account, 7);
+        if (labelFailure) {
+          expect(labels.saved, isEmpty);
+        } else {
+          final saved = labels.saved.single;
+          expect(saved.label, 'Family vault');
+          expect(saved.type, LabelType.extendedPublicKey);
+          expect(saved.reference, previous.descriptorKey.split(']').last);
+          expect(saved.reference, isNot(next.descriptorKey.split(']').last));
+        }
+      },
+    );
+  }
 
   test('maps seed lookup errors to a settings failure', () async {
     when(
