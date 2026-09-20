@@ -60,6 +60,6 @@ class RecoverBullFacade {
   static Future<void> openViewVaultKey(BuildContext context) async {
     final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
     if (confirmed != true || !context.mounted) return;
-    openRecoverBullFlow(context, flow: RecoverBullFlow.viewVaultKey);
+    await context.pushNamed<void>(RecoverBullRoute.localVaultKey.name);
   }
 }
