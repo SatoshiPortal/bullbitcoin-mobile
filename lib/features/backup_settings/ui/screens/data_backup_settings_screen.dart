@@ -133,7 +133,8 @@ class _DataBackupSettingsScreenState extends State<DataBackupSettingsScreen>
             children: [
               Text(context.loc.dataBackupPublicContentsExplanation),
               const Gap(24),
-              if (state.loading) const LinearProgressIndicator(),
+              if (state.loading || state.working)
+                const LinearProgressIndicator(),
               if (data != null) ...[
                 Row(
                   children: [

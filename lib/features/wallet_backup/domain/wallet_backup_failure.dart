@@ -36,6 +36,10 @@ final class WalletBackupNetworkFailure extends WalletBackupFailure {
   const WalletBackupNetworkFailure();
 }
 
+final class WalletBackupTimeoutFailure extends WalletBackupFailure {
+  const WalletBackupTimeoutFailure();
+}
+
 final class WalletBackupConflictFailure extends WalletBackupFailure {
   const WalletBackupConflictFailure();
 }

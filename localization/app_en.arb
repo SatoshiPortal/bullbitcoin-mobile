@@ -17343,5 +17343,9 @@
   "dataBackupMasterFingerprint": "Master fingerprint",
   "@dataBackupMasterFingerprint": {
     "description": "Public signer facts recorded in the selected backup copy"
+  },
+  "dataBackupTimeout": "The backup operation timed out. Please try again.",
+  "@dataBackupTimeout": {
+    "description": "Shown when a Data Backup action exceeds its deadline."
   }
 }

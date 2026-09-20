@@ -95,11 +95,8 @@ abstract final class WalletBackupLocator {
     locator.registerFactory(() => WatchWalletBackupStateUsecase(locator()));
     locator.registerFactory(() => WatchWalletBackupSnapshotUsecase(locator()));
     locator.registerLazySingleton(
-      () => SetWalletBackupEnabledUsecase(
-        operations: locator(),
-        identity: locator(),
-        state: locator(),
-      ),
+      () =>
+          SetWalletBackupEnabledUsecase(identity: locator(), state: locator()),
     );
     locator.registerFactory(
       () => InspectWalletBackupUsecase(

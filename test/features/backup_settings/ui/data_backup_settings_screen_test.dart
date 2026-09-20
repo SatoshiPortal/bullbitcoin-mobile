@@ -49,6 +49,17 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('an action in progress has visible feedback', (tester) async {
+    await pump(
+      tester,
+      const DataBackupSettingsState(
+        working: true,
+        data: DataBackupStatus(control: WalletBackupControl(enabled: false)),
+      ),
+    );
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+  });
+
   testWidgets('cancelled enable never changes the consent choice', (
     tester,
   ) async {

@@ -7,6 +7,7 @@ sealed class BackupSettingsFailure extends Failure {
   static BackupSettingsFailure fromDataBackup(WalletBackupFailure failure) =>
       switch (failure) {
         WalletBackupNetworkFailure() => const BackupSettingsNetworkFailure(),
+        WalletBackupTimeoutFailure() => const BackupSettingsTimeoutFailure(),
         WalletBackupMissingFailure() =>
           const BackupSettingsDataMissingFailure(),
         WalletBackupCredentialFailure() =>
@@ -39,6 +40,10 @@ final class BackupSettingsVaultMismatchFailure extends BackupSettingsFailure {
 
 final class BackupSettingsNetworkFailure extends BackupSettingsFailure {
   const BackupSettingsNetworkFailure();
+}
+
+final class BackupSettingsTimeoutFailure extends BackupSettingsFailure {
+  const BackupSettingsTimeoutFailure();
 }
 
 final class BackupSettingsDataMissingFailure extends BackupSettingsFailure {

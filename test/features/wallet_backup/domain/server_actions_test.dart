@@ -1,3 +1,4 @@
+import 'package:fake_async/fake_async.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -437,11 +438,15 @@ void main() {
       await checkpoint();
       value(await state.setEnabled(false));
       final gate = Completer<void>();
-      final previous = operations.run(() => gate.future);
+      final previous = operations.run(() async {
+        await gate.future;
+        return const Ok<void, WalletBackupFailure>(null);
+      });
       final deleting = delete.execute(confirmed: true);
       final following = operations.run(() async {
         expect(value(await state.getControl()).enabled, isFalse);
         expect(remote.head.found, isFalse);
+        return const Ok<void, WalletBackupFailure>(null);
       });
       await Future<void>.delayed(Duration.zero);
       expect(remote.deletes, 0);
@@ -467,16 +472,18 @@ void main() {
   );
 
   test(
-    'turning off takes effect during an operation; enabling waits in the queue',
+    'enable and off finish while an earlier operation is still pending',
     () async {
       final enable = SetWalletBackupEnabledUsecase(
-        operations: operations,
         identity: identity,
         state: state,
       );
       value(await state.setEnabled(true));
       final gate = Completer<void>();
-      final running = operations.run(() => gate.future);
+      final running = operations.run(() async {
+        await gate.future;
+        return const Ok<void, WalletBackupFailure>(null);
+      });
       expect(await enable.execute(false), isA<Ok>());
       expect(value(await state.getControl()).enabled, isFalse);
       var completed = false;
@@ -484,20 +491,43 @@ void main() {
         expect(result, isA<Ok>());
         completed = true;
       });
-      await Future<void>.delayed(Duration.zero);
-      expect(completed, isFalse);
-      gate.complete();
-      await running;
-      await enabling;
-      expect(value(await state.getControl()).enabled, isTrue);
+      try {
+        await enabling.timeout(const Duration(seconds: 2));
+        expect(completed, isTrue);
+        expect(gate.isCompleted, isFalse);
+        expect(value(await state.getControl()).enabled, isTrue);
+      } finally {
+        gate.complete();
+        await running;
+        await enabling;
+      }
     },
   );
+
+  test('a timed out credential check cannot enable backup later', () async {
+    value(await state.setEnabled(false));
+    final enable = SetWalletBackupEnabledUsecase(
+      identity: identity,
+      state: state,
+    );
+    final resolving =
+        Completer<Result<BackupCredential, NostrIdentityFailure>>();
+    when(identity.resolve).thenAnswer((_) => resolving.future);
+    fakeAsync((time) {
+      Result<void, WalletBackupFailure>? result;
+      unawaited(enable.execute(true).then((value) => result = value));
+      time.elapse(const Duration(minutes: 1));
+      expect(result, isA<Err<void, WalletBackupFailure>>());
+      resolving.complete(Ok(credential));
+      time.flushMicrotasks();
+    });
+    expect(value(await state.getControl()).enabled, isFalse);
+  });
 
   test(
     'a later off cancels an enable still resolving the credential',
     () async {
       final enable = SetWalletBackupEnabledUsecase(
-        operations: operations,
         identity: identity,
         state: state,
       );

@@ -17,6 +17,7 @@ extension BackupSettingsFailureL10n on BackupSettingsFailure {
     BackupSettingsVaultMismatchFailure() =>
       context.loc.bullVaultDescriptorMismatch,
     BackupSettingsNetworkFailure() => context.loc.dataBackupNetworkFailure,
+    BackupSettingsTimeoutFailure() => context.loc.dataBackupTimeout,
     BackupSettingsDataMissingFailure() => context.loc.dataBackupMissing,
     BackupSettingsRecoveryIncompleteFailure() =>
       context.loc.dataBackupRecoveryIncomplete,
