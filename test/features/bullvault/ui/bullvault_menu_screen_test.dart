@@ -105,10 +105,16 @@ void main() {
     (tester) async {
       await cubit.load();
       await pump(tester);
+      expect(find.text('BullVault (multisig)'), findsOneWidget);
       expect(find.text(loc.bullVaultCreateEntry), findsOneWidget);
       expect(find.text(loc.bullVaultRecoverEntry), findsOneWidget);
       expect(find.text(loc.bullVaultUseBullAsSigner), findsOneWidget);
       expect(find.text(loc.bullVaultCreatePracticeEntry), findsOneWidget);
+      await tester.tap(find.text(loc.bullVaultUseBullAsSigner));
+      await tester.pumpAndSettle();
+      expect(destinations.last.name, SettingsRoute.signingKeyExport.name);
+      router.pop();
+      await tester.pumpAndSettle();
       await tester.tap(find.text(loc.bullVaultCreatePracticeEntry));
       await tester.pumpAndSettle();
       expect(destinations.last.uri.queryParameters, {'practice': 'true'});

@@ -17343,5 +17343,9 @@
   "importWalletSeedTitle": "Import seed",
   "@importWalletSeedTitle": {
     "description": "Direct Settings entry to the existing seed import flow"
+  },
+  "bullVaultMenuTitle": "BullVault (multisig)",
+  "@bullVaultMenuTitle": {
+    "description": "BullVault menu title and Settings entry"
   }
 }

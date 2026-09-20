@@ -68,7 +68,7 @@ abstract final class BullVaultLocator {
       SettingsEntryContribution(
         id: 'bullvault',
         section: SettingsEntrySection.wallet,
-        title: (localization) => localization.bullVaultWalletLabel,
+        title: (localization) => localization.bullVaultMenuTitle,
         icon: Icons.security,
         open: (context) => context.pushNamed(BullVaultFacade.menuRouteName),
       ),

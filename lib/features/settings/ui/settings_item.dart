@@ -65,7 +65,7 @@ enum SettingsItemId {
   extension,
 }
 
-enum SettingsItemSection { root, backup, wallet, app, tools, help }
+enum SettingsItemSection { root, backup, wallet, bullvault, app, tools, help }
 
 const walletSettingsItemOrder = [
   SettingsItemId.dataBackup,
@@ -178,6 +178,12 @@ List<SettingsItem> buildSettingsItems({
         SettingsItemSection.root => [rootSection, title],
         SettingsItemSection.backup => [rootSection, backupSection, title],
         SettingsItemSection.wallet => [rootSection, walletSection, title],
+        SettingsItemSection.bullvault => [
+          rootSection,
+          walletSection,
+          localization.bullVaultMenuTitle,
+          title,
+        ],
         SettingsItemSection.app => [rootSection, appSection, title],
         SettingsItemSection.tools => [rootSection, toolsSection, title],
         SettingsItemSection.help => [rootSection, helpSection, title],
@@ -482,10 +488,10 @@ List<SettingsItem> buildSettingsItems({
     ),
     SettingsItem(
       id: SettingsItemId.signingKeyExport,
-      section: SettingsItemSection.wallet,
+      section: SettingsItemSection.bullvault,
       title: localization.signingKeyExportTitle,
       path: path(
-        SettingsItemSection.wallet,
+        SettingsItemSection.bullvault,
         localization.signingKeyExportTitle,
       ),
       icon: Icons.key,

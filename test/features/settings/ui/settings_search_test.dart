@@ -140,6 +140,29 @@ void main() {
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
     });
 
+    test(
+      'signer export is searchable under BullVault and absent from Wallet entries',
+      () {
+        final items = _englishItems();
+        final signer = items.byId(SettingsItemId.signingKeyExport);
+        expect(
+          items.inSection(SettingsItemSection.wallet),
+          isNot(contains(signer)),
+        );
+        expect(
+          items.inSection(SettingsItemSection.tools),
+          isNot(contains(signer)),
+        );
+        expect(signer.path, [
+          'Settings',
+          'Wallet and Bitcoin',
+          'BullVault (multisig)',
+          signer.title,
+        ]);
+        expect(searchSettings(items, signer.title).first, signer);
+      },
+    );
+
     test('groups developer controls at the bottom of App Settings', () {
       final ids = _englishItems(
         isSuperuser: true,

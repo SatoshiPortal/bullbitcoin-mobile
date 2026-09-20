@@ -51,7 +51,7 @@ final class _BullVaultMenuScreenState extends State<BullVaultMenuScreen>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.loc.bullVaultWalletLabel)),
+    appBar: AppBar(title: Text(context.loc.bullVaultMenuTitle)),
     body: SafeArea(
       child: BlocBuilder<BullVaultSettingsCubit, BullVaultSettingsState>(
         builder: (context, state) => switch (state) {
