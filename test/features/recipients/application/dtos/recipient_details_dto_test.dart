@@ -5,6 +5,58 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/mode
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  group('Interac security credentials', () {
+    test('preserves credentials supplied by the user', () {
+      const dto = RecipientDetailsDto(
+        recipientType: RecipientType.interacEmailCad,
+        email: 'recipient@example.com',
+        name: 'Recipient',
+        securityQuestion: 'What is the invoice number?',
+        securityAnswer: 'Invoice-123',
+      );
+
+      final details = dto.toDomain() as InteracEmailCadDetails;
+
+      expect(details.securityQuestion, 'What is the invoice number?');
+      expect(details.securityAnswer, 'Invoice-123');
+    });
+
+    test('represents missing credentials as absent', () {
+      const dto = RecipientDetailsDto(
+        recipientType: RecipientType.interacEmailCad,
+        email: 'recipient@example.com',
+        name: 'Recipient',
+      );
+
+      final details = dto.toDomain() as InteracEmailCadDetails;
+
+      expect(details.securityQuestion, isNull);
+      expect(details.securityAnswer, isNull);
+    });
+
+    test('normalizes an incomplete credential pair to absent', () {
+      for (final dto in [
+        const RecipientDetailsDto(
+          recipientType: RecipientType.interacEmailCad,
+          email: 'recipient@example.com',
+          name: 'Recipient',
+          securityQuestion: 'Favourite city?',
+        ),
+        const RecipientDetailsDto(
+          recipientType: RecipientType.interacEmailCad,
+          email: 'recipient@example.com',
+          name: 'Recipient',
+          securityAnswer: 'Montreal',
+        ),
+      ]) {
+        final details = dto.toDomain() as InteracEmailCadDetails;
+
+        expect(details.securityQuestion, isNull);
+        expect(details.securityAnswer, isNull);
+      }
+    });
+  });
+
   group('nullable SINPE owner name', () {
     test('mobile recipient remains valid without an owner name', () {
       const dto = RecipientDetailsDto(

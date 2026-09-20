@@ -4906,5 +4906,10 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "withdrawInteracSecurityDetailsTitle": "Interac 安全信息",
+  "withdrawInteracSaveAsDefault": "将这些信息保存为默认值",
+  "withdrawInteracSecurityQuestionLengthError": "安全问题必须为 3–40 个字符",
+  "withdrawInteracSecurityAnswerLengthError": "安全答案必须为 3–40 个字符",
+  "withdrawInteracSecurityAnswerFormatError": "请使用字母、数字或连字符，不能包含空格"
 }

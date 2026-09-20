@@ -275,8 +275,8 @@ class RecipientDetailsDto {
           isOwner: isOwner,
           email: email!,
           name: name!,
-          securityQuestion: securityQuestion ?? 'What is your favorite color?',
-          securityAnswer: securityAnswer ?? 'Orange',
+          securityQuestion: securityQuestion,
+          securityAnswer: securityAnswer,
         );
 
       case RecipientType.billPaymentCad:

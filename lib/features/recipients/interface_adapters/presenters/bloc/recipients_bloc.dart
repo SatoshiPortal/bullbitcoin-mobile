@@ -268,7 +268,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ) async {
     emit(state.copyWith(isAddingRecipient: true, failedToAddRecipient: null));
     try {
-      log.info('Trying to add recipient: ${event.recipient}');
+      log.info('Trying to add recipient');
       final result = await _addRecipientUsecase.execute(
         AddRecipientParams(recipientDetails: event.recipient.toDto()),
       );
@@ -379,7 +379,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ) async {
     emit(state.copyWith(failedToSelectRecipient: null));
     try {
-      log.info('Recipient selected: ${event.recipient}');
+      log.info('Recipient selected');
       if (_onRecipientSelectedHook != null) {
         await _onRecipientSelectedHook(event.recipient, isNew: false);
       }

@@ -9,6 +9,13 @@ abstract class RecipientsGatewayPort {
     bool isFiatRecipient = true,
     required bool isTestnet,
   });
+  Future<void> updateInteracSecurityDetails({
+    required String recipientId,
+    required String email,
+    required String? securityQuestion,
+    required String? securityAnswer,
+    required bool isTestnet,
+  });
   Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,

@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
+import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_payment_details_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -12,6 +13,7 @@ import 'package:go_router/go_router.dart';
 enum WithdrawRoute {
   withdraw('/withdraw'),
   withdrawRecipients('/withdraw/recipients'),
+  withdrawPaymentDetails('/withdraw/payment-details'),
   withdrawConfirmation('/withdraw/confirmation'),
   withdrawSuccess('/withdraw/success');
 
@@ -49,6 +51,17 @@ class WithdrawRouter {
             BlocListener<WithdrawBloc, WithdrawState>(
               listenWhen: (previous, current) =>
                   previous is WithdrawRecipientInputState &&
+                  current is WithdrawPaymentDetailsInputState,
+              listener: (context, state) {
+                context.pushNamed(
+                  WithdrawRoute.withdrawPaymentDetails.name,
+                  extra: context.read<WithdrawBloc>(),
+                );
+              },
+            ),
+            BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen: (previous, current) =>
+                  previous is WithdrawRecipientInputState &&
                   current is WithdrawConfirmationState,
               listener: (context, state) {
                 context.pushNamed(
@@ -71,6 +84,28 @@ class WithdrawRouter {
           return BlocProvider.value(
             value: bloc,
             child: const WithdrawRecipientsScreen(),
+          );
+        },
+      ),
+      GoRoute(
+        path: WithdrawRoute.withdrawPaymentDetails.path,
+        name: WithdrawRoute.withdrawPaymentDetails.name,
+        builder: (context, state) {
+          final bloc = state.extra! as WithdrawBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocListener<WithdrawBloc, WithdrawState>(
+              listenWhen: (previous, current) =>
+                  previous is WithdrawPaymentDetailsInputState &&
+                  current is WithdrawConfirmationState,
+              listener: (context, state) {
+                context.pushNamed(
+                  WithdrawRoute.withdrawConfirmation.name,
+                  extra: bloc,
+                );
+              },
+              child: const WithdrawPaymentDetailsScreen(),
+            ),
           );
         },
       ),

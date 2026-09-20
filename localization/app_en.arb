@@ -14683,5 +14683,25 @@
   "payErrorFeesUnavailable": "Network fees could not be loaded. Check your connection and try again.",
   "@payErrorFeesUnavailable": {
     "description": "Shown when no fee could be resolved for a pay payin, so it cannot be built."
+  },
+  "withdrawInteracSecurityDetailsTitle": "Interac security details",
+  "@withdrawInteracSecurityDetailsTitle": {
+    "description": "Title for the Interac security question and answer screen."
+  },
+  "withdrawInteracSaveAsDefault": "Save these details as default",
+  "@withdrawInteracSaveAsDefault": {
+    "description": "Checkbox label for saving Interac security details on the recipient."
+  },
+  "withdrawInteracSecurityQuestionLengthError": "Security question must be 3-40 characters",
+  "@withdrawInteracSecurityQuestionLengthError": {
+    "description": "Validation error for an Interac security question outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerLengthError": "Security answer must be 3-40 characters",
+  "@withdrawInteracSecurityAnswerLengthError": {
+    "description": "Validation error for an Interac security answer outside the allowed length."
+  },
+  "withdrawInteracSecurityAnswerFormatError": "Use letters, numbers, or hyphens without spaces",
+  "@withdrawInteracSecurityAnswerFormatError": {
+    "description": "Validation error for unsupported Interac security answer characters."
   }
 }
