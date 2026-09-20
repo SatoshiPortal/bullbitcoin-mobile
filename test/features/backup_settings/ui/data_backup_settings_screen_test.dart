@@ -60,7 +60,7 @@ void main() {
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('off displays the stored successful backup date without a time', (
+  testWidgets('off displays the stored successful backup date and local time', (
     tester,
   ) async {
     final date = DateTime(2026, 9, 19, 13, 45);
@@ -78,15 +78,9 @@ void main() {
     );
     expect(
       find.text(
-        '${loc.dataBackupLastSuccess}: ${material.formatMediumDate(date)}',
+        '${loc.dataBackupLastSuccess}: ${material.formatMediumDate(date)}, ${material.formatTimeOfDay(TimeOfDay.fromDateTime(date))}',
       ),
       findsOneWidget,
-    );
-    expect(
-      find.textContaining(
-        material.formatTimeOfDay(TimeOfDay.fromDateTime(date)),
-      ),
-      findsNothing,
     );
     expect(find.text(loc.dataBackupOff), findsOneWidget);
     expect(find.text(loc.dataBackupSucceeded), findsNothing);

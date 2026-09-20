@@ -156,7 +156,7 @@ class _DataBackupSettingsScreenState extends State<DataBackupSettingsScreen>
                 Text(_status(context, data)),
                 if (data.lastSuccessAt case final date?)
                   Text(
-                    '${context.loc.dataBackupLastSuccess}: ${MaterialLocalizations.of(context).formatMediumDate(date.toLocal())}',
+                    '${context.loc.dataBackupLastSuccess}: ${MaterialLocalizations.of(context).formatMediumDate(date.toLocal())}, ${TimeOfDay.fromDateTime(date.toLocal()).format(context)}',
                   ),
                 const Gap(16),
                 if (data.control.enabled == true &&
