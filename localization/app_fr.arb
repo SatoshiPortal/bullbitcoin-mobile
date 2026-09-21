@@ -4969,5 +4969,10 @@
   "sellErrorFeeBelowRelayFloor": "Frais de réseau trop bas. Choisissez des frais plus élevés.",
   "sellErrorFeesUnavailable": "Les frais de réseau n'ont pas pu être chargés. Vérifiez votre connexion et réessayez.",
   "bullVaultExperimentalWarningTitle": "Fonctionnalité expérimentale",
-  "bullVaultExperimentalWarningMessage": "BullVault est expérimental. Ne l’utilisez pas avec des fonds réels."
+  "bullVaultExperimentalWarningMessage": "BullVault est expérimental. Ne l’utilisez pas avec des fonds réels.",
+  "signingKeyUsedTitle": "Clés déjà utilisées",
+  "signingKeyUsedNone": "Aucune clé partagée pour le moment",
+  "signingKeyUsedLegacy": "Utilisée, sans description",
+  "signingKeyUsedIncomplete": "Certaines données n’ont pas pu être lues",
+  "signingKeyUsedWallet": "Portefeuille sur cet appareil"
 }

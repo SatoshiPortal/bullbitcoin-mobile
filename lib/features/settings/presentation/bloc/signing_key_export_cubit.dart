@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/export_signing_key_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/release_signing_key_account_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,8 @@ class SigningKeyExportState {
   final bool isLoading;
   final int? markedAccount;
   final bool descriptionSaved;
+  final List<UsedSigningKeyAccount> usedAccounts;
+  final bool usedAccountsIncomplete;
   final SettingsFailure? failure;
 
   const SigningKeyExportState({
@@ -20,6 +23,8 @@ class SigningKeyExportState {
     this.isLoading = false,
     this.markedAccount,
     this.descriptionSaved = true,
+    this.usedAccounts = const [],
+    this.usedAccountsIncomplete = false,
     this.failure,
   });
 
@@ -30,6 +35,8 @@ class SigningKeyExportState {
     bool? isLoading,
     int? markedAccount,
     bool? descriptionSaved,
+    List<UsedSigningKeyAccount>? usedAccounts,
+    bool? usedAccountsIncomplete,
     bool clearMarkedAccount = false,
     SettingsFailure? failure,
     bool clearFailure = false,
@@ -42,6 +49,9 @@ class SigningKeyExportState {
         ? null
         : markedAccount ?? this.markedAccount,
     descriptionSaved: descriptionSaved ?? this.descriptionSaved,
+    usedAccounts: usedAccounts ?? this.usedAccounts,
+    usedAccountsIncomplete:
+        usedAccountsIncomplete ?? this.usedAccountsIncomplete,
     failure: clearFailure ? null : failure ?? this.failure,
   );
 }
@@ -128,6 +138,8 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
           isLoading: false,
           markedAccount: export.markedAccount,
           descriptionSaved: export.descriptionSaved,
+          usedAccounts: export.usedAccounts,
+          usedAccountsIncomplete: export.usedAccountsIncomplete,
           clearFailure: true,
         ),
       );

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/result.dart';
@@ -49,6 +50,8 @@ void main() {
           isReserved: false,
           markedAccount: null,
           descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+          usedAccountsIncomplete: false,
         )),
       );
       final pending = Completer<void>();
@@ -66,6 +69,8 @@ void main() {
           isReserved: false,
           markedAccount: 0,
           descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+          usedAccountsIncomplete: false,
         ));
       });
       await cubit.load();
@@ -107,6 +112,8 @@ void main() {
         isReserved: false,
         markedAccount: null,
         descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: false,
       )),
     );
 
@@ -131,6 +138,8 @@ void main() {
         isReserved: false,
         markedAccount: null,
         descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: false,
       )),
     );
 
@@ -155,6 +164,8 @@ void main() {
         isReserved: false,
         markedAccount: null,
         descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: false,
       )),
     );
     when(
@@ -171,6 +182,8 @@ void main() {
         isReserved: false,
         markedAccount: null,
         descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: false,
       ));
     });
 
@@ -214,6 +227,8 @@ void main() {
           isReserved: false,
           markedAccount: null,
           descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+          usedAccountsIncomplete: false,
         ));
       });
       when(
@@ -229,6 +244,8 @@ void main() {
           isReserved: false,
           markedAccount: null,
           descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+          usedAccountsIncomplete: false,
         )),
       );
 
@@ -259,6 +276,8 @@ void main() {
           isReserved: false,
           markedAccount: null,
           descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+          usedAccountsIncomplete: false,
         )),
       );
       when(
@@ -274,6 +293,8 @@ void main() {
           isReserved: false,
           markedAccount: 0,
           descriptionSaved: true,
+          usedAccounts: <UsedSigningKeyAccount>[],
+          usedAccountsIncomplete: false,
         )),
       );
 
@@ -300,6 +321,8 @@ void main() {
         isReserved: true,
         markedAccount: null,
         descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: false,
       )),
     );
 

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/list_used_signing_key_accounts_usecase.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -26,6 +28,9 @@ class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 class _MockBip48AccountRepository extends Mock
     implements Bip48AccountRepository {}
 
+class _MockUsedAccounts extends Mock
+    implements ListUsedSigningKeyAccountsUsecase {}
+
 class _FakeLabels extends Fake implements LabelsFacade {
   final saved = <NewLabel>[];
   bool fail = false;
@@ -50,6 +55,7 @@ void main() {
   late _MockBip48AccountRepository accountRepository;
   late ExportSigningKeyUsecase usecase;
   late _FakeLabels labels;
+  late _MockUsedAccounts listUsed;
   late ReleaseSigningKeyAccountUsecase releaseUsecase;
 
   final seed = Seed.bytes(
@@ -69,9 +75,19 @@ void main() {
     accountRepository = _MockBip48AccountRepository();
     final accountSession = SigningKeyAccountSession(accountRepository);
     labels = _FakeLabels();
+    listUsed = _MockUsedAccounts();
+    when(
+      () => listUsed.execute(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+      ),
+    ).thenAnswer(
+      (_) async => (accounts: <UsedSigningKeyAccount>[], incomplete: false),
+    );
     usecase = ExportSigningKeyUsecase(
       accountSession,
       labelsFacade: labels,
+      listUsedAccounts: listUsed,
       getDefaultSeedUsecase: getDefaultSeed,
       getSettingsUsecase: getSettings,
     );
@@ -118,6 +134,124 @@ void main() {
         claim: any(named: 'claim'),
       ),
     ).thenAnswer((_) async => const Ok(null));
+  });
+
+  test('awaits reservation repair before proposing an account', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final repaired =
+        Completer<({List<UsedSigningKeyAccount> accounts, bool incomplete})>();
+    when(
+      () => listUsed.execute(
+        seedFingerprint: seed.masterFingerprint,
+        coinType: 0,
+      ),
+    ).thenAnswer((_) => repaired.future);
+    final pending = usecase.execute();
+    await Future<void>.delayed(Duration.zero);
+    verifyNever(
+      () => accountRepository.claimNext(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+      ),
+    );
+    repaired.complete((
+      accounts: const [
+        UsedSigningKeyAccount(
+          account: 1,
+          source: UsedSigningKeySource.memo,
+          description: 'Restored vault',
+        ),
+      ],
+      incomplete: false,
+    ));
+    final result = await pending;
+    expect(
+      (result as Ok).value.usedAccounts.single.description,
+      'Restored vault',
+    );
+    verify(
+      () => accountRepository.claimNext(
+        seedFingerprint: seed.masterFingerprint,
+        coinType: 0,
+      ),
+    ).called(1);
+  });
+
+  test(
+    'known used accounts still warn when reservation repair fails',
+    () async {
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(
+        () => listUsed.execute(
+          seedFingerprint: seed.masterFingerprint,
+          coinType: 0,
+        ),
+      ).thenAnswer(
+        (_) async => (
+          accounts: const [
+            UsedSigningKeyAccount(
+              account: 0,
+              source: UsedSigningKeySource.memo,
+              description: 'Restored vault',
+            ),
+          ],
+          incomplete: true,
+        ),
+      );
+      final result = await usecase.execute();
+      expect((result as Ok).value.isReserved, isTrue);
+      expect((result as Ok).value.usedAccountsIncomplete, isTrue);
+    },
+  );
+
+  test('reloads used accounts after saving the memo', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => listUsed.execute(
+        seedFingerprint: seed.masterFingerprint,
+        coinType: 0,
+      ),
+    ).thenAnswer(
+      (_) async => (
+        accounts: [
+          for (final label in labels.saved)
+            UsedSigningKeyAccount(
+              account: 1,
+              source: UsedSigningKeySource.memo,
+              description: label.label,
+            ),
+        ],
+        incomplete: false,
+      ),
+    );
+    expect(await usecase.execute(account: 1), isA<Ok>());
+    final result = await usecase.execute(
+      account: 1,
+      markUsed: true,
+      description: 'Family vault',
+    );
+    expect(
+      (result as Ok).value.usedAccounts.single.description,
+      'Family vault',
+    );
   });
 
   test('exports a BIP48 account key on mainnet', () async {

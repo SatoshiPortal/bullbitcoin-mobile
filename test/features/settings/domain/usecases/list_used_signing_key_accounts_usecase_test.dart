@@ -227,17 +227,19 @@ void main() {
     },
   );
 
-  test(
-    'reservation failure retains known rows and marks the list incomplete',
-    () async {
-      labels.labels = [_memo(1)];
-      accounts.failRead = true;
-      accounts.failWrite = true;
-      final result = await load();
-      expect(result.accounts.single.account, 1);
-      expect(result.incomplete, isTrue);
-    },
-  );
+  for (final readFailure in [true, false]) {
+    test(
+      'reservation failure retains known rows (read failure: $readFailure)',
+      () async {
+        labels.labels = [_memo(1)];
+        accounts.failRead = readFailure;
+        accounts.failWrite = !readFailure;
+        final result = await load();
+        expect(result.accounts.single.account, 1);
+        expect(result.incomplete, isTrue);
+      },
+    );
+  }
 
   test(
     'restored memos rebuild empty local reservations and survive restart',

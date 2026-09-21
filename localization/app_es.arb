@@ -4919,5 +4919,10 @@
   "sellErrorFeeBelowRelayFloor": "Tarifa de red demasiado baja. Elija una tarifa más alta.",
   "sellErrorFeesUnavailable": "No se pudieron cargar las tarifas de red. Compruebe su conexión e inténtelo de nuevo.",
   "bullVaultExperimentalWarningTitle": "Función experimental",
-  "bullVaultExperimentalWarningMessage": "BullVault es experimental. No lo uses con fondos reales."
+  "bullVaultExperimentalWarningMessage": "BullVault es experimental. No lo uses con fondos reales.",
+  "signingKeyUsedTitle": "Claves ya utilizadas",
+  "signingKeyUsedNone": "Todavía no se ha compartido ninguna clave",
+  "signingKeyUsedLegacy": "Utilizada, sin descripción",
+  "signingKeyUsedIncomplete": "No se pudieron leer algunos registros",
+  "signingKeyUsedWallet": "Billetera en este dispositivo"
 }

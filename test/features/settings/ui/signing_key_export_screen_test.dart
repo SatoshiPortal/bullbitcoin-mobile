@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -46,6 +47,16 @@ void main() {
               isReserved: false,
               markedAccount: account,
               descriptionSaved: descriptionSaved,
+              usedAccounts: [
+                UsedSigningKeyAccount(
+                  account: account,
+                  source: descriptionSaved
+                      ? UsedSigningKeySource.memo
+                      : UsedSigningKeySource.legacy,
+                  description: descriptionSaved ? 'Family vault' : null,
+                ),
+              ],
+              usedAccountsIncomplete: false,
             ));
           }
           return Ok((
@@ -54,6 +65,8 @@ void main() {
             isReserved: false,
             markedAccount: null,
             descriptionSaved: true,
+            usedAccounts: <UsedSigningKeyAccount>[],
+            usedAccountsIncomplete: false,
           ));
         });
         final cubit = SigningKeyExportCubit(
@@ -87,6 +100,8 @@ void main() {
           ),
         );
 
+        expect(find.text('Keys already used'), findsOneWidget);
+        expect(find.text('No keys handed out yet'), findsOneWidget);
         expect(find.byType(TextField), findsOneWidget);
         expect(cubit.state.account, 0);
         expect(cubit.state.descriptorKey, 'signing-key-0');
@@ -132,6 +147,16 @@ void main() {
         ).called(1);
         expect(cubit.state.account, 1);
         expect(cubit.state.markedAccount, 12);
+        await tester.drag(find.byType(ListView), const Offset(0, 1400));
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            descriptionSaved
+                ? 'Account 12 — Family vault'
+                : 'Account 12 — Used, no description',
+          ),
+          findsOneWidget,
+        );
         expect(
           find.textContaining('Account 12 is marked as used'),
           findsOneWidget,
@@ -168,6 +193,8 @@ void main() {
         isReserved: true,
         markedAccount: null,
         descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: false,
       )),
     );
     final cubit = SigningKeyExportCubit(
@@ -197,5 +224,127 @@ void main() {
 
     expect(find.byType(QrDisplayWidget), findsOneWidget);
     expect(find.text('I used this key'), findsNothing);
+  });
+  testWidgets('shows used rows in order and selects the tapped account', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final export = _MockExportSigningKeyUsecase();
+    final release = _MockReleaseSigningKeyAccountUsecase();
+    when(release.execute).thenAnswer((_) async => const Ok(null));
+    const rows = [
+      UsedSigningKeyAccount(
+        account: 0,
+        source: UsedSigningKeySource.wallet,
+        description: 'Home vault',
+      ),
+      UsedSigningKeyAccount(
+        account: 1,
+        source: UsedSigningKeySource.memo,
+        description: 'Cold key',
+      ),
+      UsedSigningKeyAccount(
+        account: 2,
+        source: UsedSigningKeySource.memo,
+        description: 'Inheritance key',
+      ),
+    ];
+    when(
+      () => export.execute(
+        account: any(named: 'account'),
+        markUsed: any(named: 'markUsed'),
+        description: any(named: 'description'),
+      ),
+    ).thenAnswer((invocation) async {
+      final account = invocation.namedArguments[#account] as int? ?? 3;
+      return Ok((
+        account: account,
+        descriptorKey: 'key-$account',
+        isReserved: account < 3,
+        markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: rows,
+        usedAccountsIncomplete: false,
+      ));
+    });
+    final cubit = SigningKeyExportCubit(
+      exportSigningKeyUsecase: export,
+      releaseSigningKeyAccountUsecase: release,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: cubit,
+          child: const SigningKeyExportScreen(),
+        ),
+      ),
+    );
+    final wallet = find.text('Account 0 — Home vault');
+    final cold = find.text('Account 1 — Cold key');
+    final heir = find.text('Account 2 — Inheritance key');
+    expect(tester.getTopLeft(wallet).dy, lessThan(tester.getTopLeft(cold).dy));
+    expect(tester.getTopLeft(cold).dy, lessThan(tester.getTopLeft(heir).dy));
+    expect(
+      tester.getTopLeft(heir).dy,
+      lessThan(tester.getTopLeft(find.byType(TextField)).dy),
+    );
+    expect(cubit.state.account, 3);
+    await tester.tap(cold);
+    await tester.pumpAndSettle();
+    expect(cubit.state.account, 1);
+    expect(cubit.state.isReserved, isTrue);
+    expect(find.byType(QrDisplayWidget), findsNothing);
+  });
+
+  testWidgets('does not present an incomplete empty list as unused keys', (
+    tester,
+  ) async {
+    final export = _MockExportSigningKeyUsecase();
+    final release = _MockReleaseSigningKeyAccountUsecase();
+    when(release.execute).thenAnswer((_) async => const Ok(null));
+    when(
+      () => export.execute(
+        account: any(named: 'account'),
+        markUsed: any(named: 'markUsed'),
+        description: any(named: 'description'),
+      ),
+    ).thenAnswer(
+      (_) async => const Ok((
+        account: 0,
+        descriptorKey: 'key-0',
+        isReserved: false,
+        markedAccount: null,
+        descriptionSaved: true,
+        usedAccounts: <UsedSigningKeyAccount>[],
+        usedAccountsIncomplete: true,
+      )),
+    );
+    final cubit = SigningKeyExportCubit(
+      exportSigningKeyUsecase: export,
+      releaseSigningKeyAccountUsecase: release,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: cubit,
+          child: const SigningKeyExportScreen(),
+        ),
+      ),
+    );
+    expect(find.text('Some records could not be read'), findsOneWidget);
+    expect(find.text('No keys handed out yet'), findsNothing);
   });
 }

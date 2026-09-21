@@ -17399,5 +17399,15 @@
   "bullVaultExperimentalWarningMessage": "BullVault is experimental. Do not use it for real funds.",
   "@bullVaultExperimentalWarningMessage": {
     "description": "Warning requiring explicit acknowledgement before entering the experimental BullVault feature."
-  }
+  },
+  "signingKeyUsedTitle": "Keys already used",
+  "@signingKeyUsedTitle": {},
+  "signingKeyUsedNone": "No keys handed out yet",
+  "@signingKeyUsedNone": {},
+  "signingKeyUsedLegacy": "Used, no description",
+  "@signingKeyUsedLegacy": {},
+  "signingKeyUsedIncomplete": "Some records could not be read",
+  "@signingKeyUsedIncomplete": {},
+  "signingKeyUsedWallet": "Wallet on this device",
+  "@signingKeyUsedWallet": {}
 }
