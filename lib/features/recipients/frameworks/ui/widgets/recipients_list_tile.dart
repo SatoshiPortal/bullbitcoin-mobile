@@ -9,12 +9,14 @@ class RecipientsListTile extends StatelessWidget {
   final RecipientViewModel recipient;
   final bool selected;
   final void Function() onTap;
+  final VoidCallback onEdit;
 
   const RecipientsListTile({
     super.key,
     required this.recipient,
     this.selected = false,
     required this.onTap,
+    required this.onEdit,
   });
 
   @override
@@ -51,15 +53,25 @@ class RecipientsListTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                RadioGroup<bool>(
-                  groupValue: selected,
-                  onChanged: (_) => onTap(),
-                  child: Radio<bool>(
-                    value: true,
-                    activeColor: context.appColors.primary,
-                    materialTapTargetSize: .shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      tooltip: context.loc.recipientsEdit,
+                      onPressed: onEdit,
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
+                    RadioGroup<bool>(
+                      groupValue: selected,
+                      onChanged: (_) => onTap(),
+                      child: Radio<bool>(
+                        value: true,
+                        activeColor: context.appColors.primary,
+                        materialTapTargetSize: .shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

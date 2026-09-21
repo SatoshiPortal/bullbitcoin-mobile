@@ -11572,6 +11572,7 @@
   "recoverbullSettingsTitle": "Ρυθμίσεις Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL διακομιστή κλειδιών",
   "recoverbullSettingsEdit": "Επεξεργασία",
+  "recipientsEdit": "Επεξεργασία",
   "recoverbullSettingsCancel": "Ακύρωση",
   "recoverbullSettingsSave": "Αποθήκευση",
   "recoverbullSettingsUrlRequired": "Απαιτείται URL",

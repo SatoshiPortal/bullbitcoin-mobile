@@ -4371,6 +4371,7 @@
   "recoverbullSettingsTitle": "Definições do Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL do servidor de chaves",
   "recoverbullSettingsEdit": "Editar",
+  "recipientsEdit": "Editar",
   "recoverbullSettingsCancel": "Cancelar",
   "recoverbullSettingsSave": "Guardar",
   "recoverbullSettingsUrlRequired": "O URL é obrigatório",

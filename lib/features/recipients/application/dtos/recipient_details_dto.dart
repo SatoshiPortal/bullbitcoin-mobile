@@ -232,6 +232,10 @@ class RecipientDetailsDto {
           label: d.label,
           isDefault: d.isDefault,
           name: d.name,
+          lastname: d.lastname,
+          email: d.email,
+          isCorporate: d.isCorporate,
+          corporateName: d.corporateName,
           accountType: d.accountType,
           bankAccount: d.bankAccount,
           bankCode: d.bankCode,
@@ -248,6 +252,10 @@ class RecipientDetailsDto {
           label: d.label,
           isDefault: d.isDefault,
           phoneNumber: d.phoneNumber,
+          lastname: d.lastname,
+          email: d.email,
+          isCorporate: d.isCorporate,
+          corporateName: d.corporateName,
           documentId: d.documentId,
           documentType: d.documentType,
           name: d.name,
@@ -450,7 +458,7 @@ class RecipientDetailsDto {
           name: name!,
         );
       case RecipientType.pseColombia:
-        if (name == null) {
+        if (isCorporate != true && name == null) {
           throw StateError('name is required for PSE_COLOMBIA.');
         }
         if (accountType == null) {
@@ -472,15 +480,22 @@ class RecipientDetailsDto {
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          name: name!,
+          name: name,
           accountType: accountType!,
           bankAccount: bankAccount!,
           bankCode: bankCode!,
           bankName: bankName ?? '',
           documentId: documentId!,
           documentType: documentType!,
+          lastname: lastname,
+          email: email,
+          isCorporate: isCorporate,
+          corporateName: corporateName,
         );
       case RecipientType.nequiColombia:
+        if (isCorporate != true && name == null) {
+          throw StateError('name is required for NEQUI_COLOMBIA.');
+        }
         return NequiColombiaDetails.create(
           label: label,
           isDefault: def,
@@ -490,7 +505,11 @@ class RecipientDetailsDto {
           phoneNumber: phoneNumber ?? bankAccount!,
           documentId: documentId!,
           documentType: documentType!,
-          name: name!,
+          name: name,
+          lastname: lastname,
+          email: email,
+          isCorporate: isCorporate,
+          corporateName: corporateName,
         );
     }
   }

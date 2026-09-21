@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 
 /// Base class for form data from UI layer
@@ -12,6 +13,8 @@ sealed class RecipientFormDataModel {
 
   /// Transform form data to application DTO
   RecipientDetailsDto toDto();
+
+  RecipientDetails toDomain() => toDto().toDomain();
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -21,15 +24,15 @@ sealed class RecipientFormDataModel {
 class InteracEmailCadFormDataModel extends RecipientFormDataModel {
   final String email;
   final String name;
-  final String securityQuestion;
-  final String securityAnswer;
+  final String? securityQuestion;
+  final String? securityAnswer;
   final bool isOwner;
 
   const InteracEmailCadFormDataModel({
     required this.email,
     required this.name,
-    required this.securityQuestion,
-    required this.securityAnswer,
+    this.securityQuestion,
+    this.securityAnswer,
     required this.isOwner,
     super.label,
   }) : super(type: RecipientType.interacEmailCad);
@@ -221,11 +224,11 @@ class SpeiCardMxnFormDataModel extends RecipientFormDataModel {
 
 class SinpeIbanUsdFormDataModel extends RecipientFormDataModel {
   final String iban;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeIbanUsdFormDataModel({
     required this.iban,
-    required this.ownerName,
+    this.ownerName,
     super.label,
   }) : super(type: RecipientType.sinpeIbanUsd);
 
@@ -242,11 +245,11 @@ class SinpeIbanUsdFormDataModel extends RecipientFormDataModel {
 
 class SinpeIbanCrcFormDataModel extends RecipientFormDataModel {
   final String iban;
-  final String ownerName;
+  final String? ownerName;
 
   const SinpeIbanCrcFormDataModel({
     required this.iban,
-    required this.ownerName,
+    this.ownerName,
     super.label,
   }) : super(type: RecipientType.sinpeIbanCrc);
 
@@ -316,7 +319,11 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
   final String bankAccount;
   final String documentType;
   final String documentId;
-  final String name;
+  final String? name;
+  final String? lastname;
+  final String? email;
+  final bool? isCorporate;
+  final String? corporateName;
 
   const PseColombiaFormDataModel({
     required this.bankCode,
@@ -324,7 +331,11 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
     required this.bankAccount,
     required this.documentType,
     required this.documentId,
-    required this.name,
+    this.name,
+    this.lastname,
+    this.email,
+    this.isCorporate,
+    this.corporateName,
     super.label,
   }) : super(type: RecipientType.pseColombia);
 
@@ -338,6 +349,10 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
       documentType: documentType,
       documentId: documentId,
       name: name,
+      lastname: lastname,
+      email: email,
+      isCorporate: isCorporate,
+      corporateName: corporateName,
       label: label,
     );
   }
@@ -347,13 +362,21 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
   final String phoneNumber;
   final String documentType;
   final String documentId;
-  final String name;
+  final String? name;
+  final String? lastname;
+  final String? email;
+  final bool? isCorporate;
+  final String? corporateName;
 
   const NequiColombiaFormDataModel({
     required this.phoneNumber,
     required this.documentType,
     required this.documentId,
-    required this.name,
+    this.name,
+    this.lastname,
+    this.email,
+    this.isCorporate,
+    this.corporateName,
     super.label,
   }) : super(type: RecipientType.nequiColombia);
 
@@ -365,6 +388,10 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
       documentType: documentType,
       documentId: documentId,
       name: name,
+      lastname: lastname,
+      email: email,
+      isCorporate: isCorporate,
+      corporateName: corporateName,
       label: label,
     );
   }

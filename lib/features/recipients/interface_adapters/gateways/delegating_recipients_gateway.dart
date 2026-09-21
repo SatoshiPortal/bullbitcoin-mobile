@@ -35,26 +35,6 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }
 
   @override
-  Future<void> updateInteracSecurityDetails({
-    required String recipientId,
-    required String email,
-    required String? securityQuestion,
-    required String? securityAnswer,
-    required bool isTestnet,
-  }) {
-    final gateway = isTestnet
-        ? _bullBitcoinTestnetApiClient
-        : _bullbitcoinApiClient;
-    return gateway.updateInteracSecurityDetails(
-      recipientId: recipientId,
-      email: email,
-      securityQuestion: securityQuestion,
-      securityAnswer: securityAnswer,
-      isTestnet: isTestnet,
-    );
-  }
-
-  @override
   Future<({List<Recipient> recipients, int totalRecipients})> listRecipients({
     bool fiatOnly = true,
     required bool isTestnet,

@@ -11456,6 +11456,7 @@
   "recoverbullSettingsTitle": "Recoverbull 설정",
   "recoverbullSettingsKeyServerUrl": "키 서버 URL",
   "recoverbullSettingsEdit": "편집",
+  "recipientsEdit": "편집",
   "recoverbullSettingsCancel": "취소",
   "recoverbullSettingsSave": "저장",
   "recoverbullSettingsUrlRequired": "URL이 필요합니다",

@@ -5,9 +5,12 @@ import 'package:bb_mobile/features/recipients/application/usecases/add_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
-import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/domain/interac_security_details_repository.dart';
+import 'package:bb_mobile/features/recipients/domain/update_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/data/recipient_update_datasource.dart';
+import 'package:bb_mobile/features/recipients/data/recipient_update_repository_impl.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/recipient_update_repository.dart';
 import 'package:bb_mobile/features/recipients/domain/update_interac_security_details_usecase.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -58,6 +61,20 @@ class RecipientsLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
+    locator.registerFactory<UpdateRecipientUsecase>(
+      () => UpdateRecipientUsecase(
+        locator<RecipientUpdateRepository>(),
+        locator<SettingsFacade>(),
+      ),
+    );
+    locator.registerFactory<RecipientUpdateRepository>(
+      () => RecipientUpdateRepositoryImpl(
+        RecipientUpdateDatasource(
+          locator<Dio>(instanceName: 'authenticatedBullBitcoinApiClient'),
+          locator<Dio>(instanceName: 'authenticatedBullBitcoinApiTestClient'),
+        ),
+      ),
+    );
     locator.registerFactory<CheckSinpeUsecase>(
       () => CheckSinpeUsecase(
         recipientsGateway: locator<RecipientsGatewayPort>(),
@@ -72,13 +89,8 @@ class RecipientsLocator {
     );
     locator.registerFactory<UpdateInteracSecurityDetailsUsecase>(
       () => UpdateInteracSecurityDetailsUsecase(
-        locator<InteracSecurityDetailsRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<InteracSecurityDetailsRepository>(
-      () => InteracSecurityDetailsRepositoryImpl(
-        locator<RecipientsGatewayPort>(),
-        locator<SettingsRepository>(),
+        locator<RecipientUpdateRepository>(),
+        locator<SettingsFacade>(),
       ),
     );
     locator.registerLazySingleton<RecipientsFacade>(
@@ -101,6 +113,7 @@ class RecipientsLocator {
         onRecipientSelectedHook: onRecipientSelected,
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         addRecipientUsecase: locator<AddRecipientUsecase>(),
+        updateRecipientUsecase: locator<UpdateRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),
         listCadBillersUsecase: locator<ListCadBillersUsecase>(),

@@ -2,15 +2,18 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SepaEurForm extends StatefulWidget {
-  const SepaEurForm({super.key, this.hookError});
+  const SepaEurForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -40,9 +43,14 @@ class SepaEurFormState extends State<SepaEurForm> {
         .read<RecipientsBloc>()
         .state
         .onlyOwnerRecipients;
-    if (_onlyOwnerPermitted) {
-      _isMyAccount = true;
-    }
+    final recipient = widget.recipient;
+    _iban = recipient?.iban ?? '';
+    _firstname = recipient?.firstname ?? '';
+    _lastname = recipient?.lastname ?? '';
+    _corporateName = recipient?.corporateName ?? '';
+    _label = recipient?.label ?? '';
+    _isCorporate = recipient?.isCorporate ?? false;
+    _isMyAccount = recipient?.isOwner ?? _onlyOwnerPermitted;
   }
 
   @override
@@ -67,7 +75,7 @@ class SepaEurFormState extends State<SepaEurForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -81,7 +89,9 @@ class SepaEurFormState extends State<SepaEurForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _iban,
             labelText: context.loc.recipientsFieldIban,
+            errorText: recipientUpdateFieldError(context, 'iban'),
             hintText: context.loc.recipientsFieldIbanHint,
             focusNode: _ibanFocusNode,
             autofocus: true,
@@ -124,7 +134,10 @@ class SepaEurFormState extends State<SepaEurForm> {
           const Gap(12.0),
           if (!_isCorporate) ...[
             BBTextFormField(
+              key: const ValueKey('sepa-firstname'),
+              initialValue: _firstname,
               labelText: context.loc.recipientsFieldFirstName,
+              errorText: recipientUpdateFieldError(context, 'firstname'),
               hintText: context.loc.recipientsFieldFirstNameHint,
               focusNode: _firstnameFocusNode,
               textInputAction: .next,
@@ -140,7 +153,10 @@ class SepaEurFormState extends State<SepaEurForm> {
             ),
             const Gap(12.0),
             BBTextFormField(
+              key: const ValueKey('sepa-lastname'),
+              initialValue: _lastname,
               labelText: context.loc.recipientsFieldLastName,
+              errorText: recipientUpdateFieldError(context, 'lastname'),
               hintText: context.loc.recipientsFieldLastNameHint,
               focusNode: _lastnameFocusNode,
               textInputAction: .next,
@@ -158,7 +174,10 @@ class SepaEurFormState extends State<SepaEurForm> {
           ],
           if (_isCorporate) ...[
             BBTextFormField(
+              key: const ValueKey('sepa-corporate-name'),
+              initialValue: _corporateName,
               labelText: context.loc.recipientsFieldCorporateName,
+              errorText: recipientUpdateFieldError(context, 'corporateName'),
               hintText: context.loc.recipientsFieldCorporateNameHint,
               focusNode: _corporateNameFocusNode,
               textInputAction: .next,
@@ -175,7 +194,10 @@ class SepaEurFormState extends State<SepaEurForm> {
             const Gap(12.0),
           ],
           BBTextFormField(
+            key: const ValueKey('sepa-label'),
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
+            errorText: recipientUpdateFieldError(context, 'label'),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -228,6 +250,7 @@ class SepaEurFormState extends State<SepaEurForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),

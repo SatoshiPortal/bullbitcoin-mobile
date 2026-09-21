@@ -1,15 +1,16 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class BankAccountArgentinaForm extends StatefulWidget {
-  const BankAccountArgentinaForm({super.key, this.hookError});
+  const BankAccountArgentinaForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -27,6 +28,15 @@ class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
   String _label = '';
 
   @override
+  void initState() {
+    super.initState();
+    final recipient = widget.recipient;
+    _claveUniform = recipient?.bankAccount ?? '';
+    _name = recipient?.name ?? '';
+    _label = recipient?.label ?? '';
+  }
+
+  @override
   void dispose() {
     _cbuCvuFocusNode.dispose();
     _nameFocusNode.dispose();
@@ -42,7 +52,7 @@ class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -56,7 +66,9 @@ class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _claveUniform,
             labelText: context.loc.recipientsFieldCvuCbu,
+            errorText: recipientUpdateFieldError(context, 'claveUniform'),
             hintText: context.loc.recipientsFieldCvuCbuHint,
             focusNode: _cbuCvuFocusNode,
             autofocus: true,
@@ -73,7 +85,9 @@ class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _name,
             labelText: context.loc.recipientsFieldName,
+            errorText: recipientUpdateFieldError(context, 'name'),
             hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
@@ -89,7 +103,9 @@ class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
+            errorText: recipientUpdateFieldError(context, 'label'),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -105,6 +121,7 @@ class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),

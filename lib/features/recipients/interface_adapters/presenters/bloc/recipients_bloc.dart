@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/update_recipient_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
@@ -26,6 +30,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     this._onRecipientSelectedHook,
     required this._getExchangeUserSummaryUsecase,
     required this._addRecipientUsecase,
+    required this._updateRecipientUsecase,
     required this._getRecipientsUsecase,
     required this._checkSinpeUsecase,
     required this._listCadBillersUsecase,
@@ -44,6 +49,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     );
     on<RecipientsSearchChanged>(_onSearchChanged, transformer: restartable());
     on<RecipientsAdded>(_onAdded);
+    on<RecipientsUpdated>(_onUpdated, transformer: droppable());
+    on<RecipientsUpdateFailureCleared>(_onUpdateFailureCleared);
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
@@ -60,6 +67,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   })?
   _onRecipientSelectedHook;
   final AddRecipientUsecase _addRecipientUsecase;
+  final UpdateRecipientUsecase _updateRecipientUsecase;
   final GetRecipientsUsecase _getRecipientsUsecase;
   final CheckSinpeUsecase _checkSinpeUsecase;
   final ListCadBillersUsecase _listCadBillersUsecase;
@@ -290,6 +298,60 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     } finally {
       emit(state.copyWith(isAddingRecipient: false));
     }
+  }
+
+  Future<void> _onUpdated(
+    RecipientsUpdated event,
+    Emitter<RecipientsState> emit,
+  ) async {
+    emit(
+      state.copyWith(isUpdatingRecipient: true, failedToUpdateRecipient: null),
+    );
+    final result = await _updateRecipientUsecase.execute(
+      UpdateRecipientParams(
+        recipientId: event.recipientId,
+        recipientDetails: event.recipient,
+      ),
+    );
+    switch (result) {
+      case Ok():
+        final updatedRecipient = RecipientViewModel.fromDetails(
+          id: event.recipientId,
+          details: event.recipient,
+        );
+        emit(
+          state.copyWith(
+            recipients: state.recipients
+                ?.map(
+                  (recipient) => recipient.id == event.recipientId
+                      ? updatedRecipient.copyWith(
+                          ownerName:
+                              updatedRecipient.ownerName ?? recipient.ownerName,
+                          bankName:
+                              updatedRecipient.bankName ?? recipient.bankName,
+                        )
+                      : recipient,
+                )
+                .toList(),
+          ),
+        );
+        await _loadFirstPage(emit, clearList: false);
+        emit(state.copyWith(isUpdatingRecipient: false));
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            isUpdatingRecipient: false,
+            failedToUpdateRecipient: failure,
+          ),
+        );
+    }
+  }
+
+  void _onUpdateFailureCleared(
+    RecipientsUpdateFailureCleared event,
+    Emitter<RecipientsState> emit,
+  ) {
+    emit(state.copyWith(failedToUpdateRecipient: null));
   }
 
   Future<void> _onSinpeChecked(

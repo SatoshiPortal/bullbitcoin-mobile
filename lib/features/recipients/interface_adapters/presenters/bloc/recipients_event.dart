@@ -11,6 +11,12 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsSearchChanged;
   const factory RecipientsEvent.added(RecipientFormDataModel recipient) =
       RecipientsAdded;
+  const factory RecipientsEvent.updated({
+    required String recipientId,
+    required RecipientDetails recipient,
+  }) = RecipientsUpdated;
+  const factory RecipientsEvent.updateFailureCleared() =
+      RecipientsUpdateFailureCleared;
   const factory RecipientsEvent.sinpeChecked(String phoneNumber) =
       RecipientsSinpeChecked;
   const factory RecipientsEvent.cadBillersSearched(String query) =

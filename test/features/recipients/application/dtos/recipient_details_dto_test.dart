@@ -34,7 +34,7 @@ void main() {
       expect(details.securityAnswer, isNull);
     });
 
-    test('normalizes an incomplete credential pair to absent', () {
+    test('preserves incomplete credential pairs returned by the API', () {
       for (final dto in [
         const RecipientDetailsDto(
           recipientType: RecipientType.interacEmailCad,
@@ -50,9 +50,8 @@ void main() {
         ),
       ]) {
         final details = dto.toDomain() as InteracEmailCadDetails;
-
-        expect(details.securityQuestion, isNull);
-        expect(details.securityAnswer, isNull);
+        expect(details.securityQuestion, dto.securityQuestion);
+        expect(details.securityAnswer, dto.securityAnswer);
       }
     });
   });

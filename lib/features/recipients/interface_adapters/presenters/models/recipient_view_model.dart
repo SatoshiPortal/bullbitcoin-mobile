@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_dto.dart';
+import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -23,43 +25,43 @@ sealed class RecipientViewModel with _$RecipientViewModel {
     String? payeeCode,
     String? payeeAccountNumber,
     String? institutionNumber,
+    String? institutionCode,
     String? transitNumber,
     String? accountNumber,
+    String? defaultComment,
     String? iban,
     String? clabe,
     String? phoneNumber,
     String? debitcard,
     bool? isOwner,
     String? bankAccount,
+    String? bankCode,
+    String? bankName,
+    String? accountType,
+    String? documentId,
+    String? documentType,
   }) = _RecipientViewModel;
   const RecipientViewModel._();
 
   factory RecipientViewModel.fromDto(RecipientDto dto) {
-    return RecipientViewModel(
+    return _fromDetailsDto(
       id: dto.recipientId,
       type: dto.recipientType,
-      name: dto.details.name,
-      firstname: dto.details.firstname,
-      lastname: dto.details.lastname,
-      email: dto.details.email,
-      securityQuestion: dto.details.securityQuestion,
-      securityAnswer: dto.details.securityAnswer,
-      isCorporate: dto.details.isCorporate,
-      corporateName: dto.details.corporateName,
-      ownerName: dto.details.ownerName,
-      label: dto.details.label,
-      payeeName: dto.details.payeeName,
-      payeeCode: dto.details.payeeCode,
-      payeeAccountNumber: dto.details.payeeAccountNumber,
-      institutionNumber: dto.details.institutionNumber,
-      transitNumber: dto.details.transitNumber,
-      accountNumber: dto.details.accountNumber,
-      iban: dto.details.iban,
-      clabe: dto.details.clabe,
-      phoneNumber: dto.details.phoneNumber,
-      debitcard: dto.details.debitcard,
+      details: dto.details,
       isOwner: dto.isOwner,
-      bankAccount: dto.details.bankAccount ?? dto.details.claveUniform,
+    );
+  }
+
+  factory RecipientViewModel.fromDetails({
+    required String id,
+    required RecipientDetails details,
+  }) {
+    final dto = RecipientDetailsDto.fromDomain(details);
+    return _fromDetailsDto(
+      id: id,
+      type: details.type,
+      details: dto,
+      isOwner: details.isOwner,
     );
   }
 
@@ -170,4 +172,51 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         return name;
     }
   }
+}
+
+RecipientViewModel _fromDetailsDto({
+  required String id,
+  required RecipientType type,
+  required RecipientDetailsDto details,
+  required bool? isOwner,
+}) {
+  return RecipientViewModel(
+    id: id,
+    type: type,
+    name: details.name,
+    firstname: details.firstname,
+    lastname: details.lastname,
+    email: details.email,
+    securityQuestion: details.securityQuestion,
+    securityAnswer: details.securityAnswer,
+    isCorporate:
+        details.isCorporate ??
+        (type == RecipientType.sepaEur &&
+            (details.corporateName?.isNotEmpty ?? false)),
+    corporateName: details.corporateName,
+    ownerName: details.ownerName,
+    label: details.label,
+    payeeName: details.payeeName,
+    payeeCode: details.payeeCode,
+    payeeAccountNumber: details.payeeAccountNumber,
+    institutionNumber: details.institutionNumber,
+    institutionCode: details.institutionCode,
+    transitNumber: details.transitNumber,
+    accountNumber: details.accountNumber,
+    defaultComment: details.defaultComment,
+    iban: details.iban,
+    clabe: details.clabe,
+    phoneNumber:
+        details.phoneNumber ??
+        details.phone ??
+        (type == RecipientType.nequiColombia ? details.bankAccount : null),
+    debitcard: details.debitcard,
+    isOwner: isOwner,
+    bankAccount: details.bankAccount ?? details.claveUniform,
+    bankCode: details.bankCode,
+    bankName: details.bankName,
+    accountType: details.accountType,
+    documentId: details.documentId,
+    documentType: details.documentType,
+  );
 }

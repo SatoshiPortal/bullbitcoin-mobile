@@ -11572,6 +11572,7 @@
   "recoverbullSettingsTitle": "Nastavení Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL serveru klíčů",
   "recoverbullSettingsEdit": "Upravit",
+  "recipientsEdit": "Upravit",
   "recoverbullSettingsCancel": "Zrušit",
   "recoverbullSettingsSave": "Uložit",
   "recoverbullSettingsUrlRequired": "URL je povinná",

@@ -13266,6 +13266,10 @@
   "@recoverbullSettingsEdit": {
     "description": "Button to edit the Recoverbull key server URL"
   },
+  "recipientsEdit": "Edit",
+  "@recipientsEdit": {
+    "description": "Tooltip for editing a saved recipient."
+  },
   "recoverbullSettingsUrlHint": "http://example.onion",
   "@recoverbullSettingsUrlHint": {
     "description": "Hint text for the Recoverbull key server URL input"

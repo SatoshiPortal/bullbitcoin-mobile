@@ -2,15 +2,18 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class BankTransferCadForm extends StatefulWidget {
-  const BankTransferCadForm({super.key, this.hookError});
+  const BankTransferCadForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -41,9 +44,14 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
         .read<RecipientsBloc>()
         .state
         .onlyOwnerRecipients;
-    if (_onlyOwnerPermitted) {
-      _isMyAccount = true;
-    }
+    final recipient = widget.recipient;
+    _institutionNumber = recipient?.institutionNumber ?? '';
+    _transitNumber = recipient?.transitNumber ?? '';
+    _accountNumber = recipient?.accountNumber ?? '';
+    _name = recipient?.name ?? '';
+    _defaultComment = recipient?.defaultComment ?? '';
+    _label = recipient?.label ?? '';
+    _isMyAccount = recipient?.isOwner ?? _onlyOwnerPermitted;
   }
 
   @override
@@ -69,7 +77,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -83,7 +91,9 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _institutionNumber,
             labelText: context.loc.recipientsFieldInstitutionNumber,
+            errorText: recipientUpdateFieldError(context, 'institutionNumber'),
             hintText: context.loc.recipientsFieldInstitutionNumberHint,
             focusNode: _institutionNumberFocusNode,
             autofocus: true,
@@ -100,7 +110,9 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _transitNumber,
             labelText: context.loc.recipientsFieldTransitNumber,
+            errorText: recipientUpdateFieldError(context, 'transitNumber'),
             hintText: context.loc.recipientsFieldTransitNumberHint,
             focusNode: _transitNumberFocusNode,
             textInputAction: .next,
@@ -116,7 +128,9 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _accountNumber,
             labelText: context.loc.recipientsFieldAccountNumber,
+            errorText: recipientUpdateFieldError(context, 'accountNumber'),
             hintText: context.loc.recipientsFieldAccountNumberHint,
             focusNode: _accountNumberFocusNode,
             textInputAction: .next,
@@ -132,7 +146,9 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _name,
             labelText: context.loc.recipientsFieldName,
+            errorText: recipientUpdateFieldError(context, 'name'),
             hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
@@ -148,7 +164,9 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _defaultComment,
             labelText: context.loc.recipientsFieldDefaultComment,
+            errorText: recipientUpdateFieldError(context, 'defaultComment'),
             hintText: context.loc.recipientsFieldDefaultCommentHint,
             focusNode: _defaultCommentFocusNode,
             textInputAction: .next,
@@ -162,7 +180,9 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
+            errorText: recipientUpdateFieldError(context, 'label'),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -215,6 +235,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),

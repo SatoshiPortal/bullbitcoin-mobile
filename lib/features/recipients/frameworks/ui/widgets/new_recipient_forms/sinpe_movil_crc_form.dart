@@ -4,8 +4,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,8 +38,9 @@ String? validateSinpeMovilPhone(String? value, AppLocalizations loc) {
 }
 
 class SinpeMovilCrcForm extends StatefulWidget {
-  const SinpeMovilCrcForm({super.key, this.hookError});
+  const SinpeMovilCrcForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -49,6 +52,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   final FocusNode _phoneNumberFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
   String _phoneNumber = '';
+  String _initialPhoneNumber = '';
   final TextEditingController _ownerNameController = TextEditingController();
   String _label = '';
   late StreamSubscription<RecipientsState> _stateSubscription;
@@ -56,13 +60,21 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   bool get _isPhoneValid =>
       validateSinpeMovilPhone(_phoneNumber, context.loc) == null;
 
-  bool get _isOwnerValidated => _ownerNameController.text.trim().isNotEmpty;
+  bool get _isOwnerValidated =>
+      _ownerNameController.text.trim().isNotEmpty ||
+      (widget.recipient != null && _phoneNumber == _initialPhoneNumber);
 
   @override
   void initState() {
     super.initState();
+    final recipient = widget.recipient;
+    _phoneNumber = recipient?.phoneNumber ?? '';
+    _initialPhoneNumber = _phoneNumber;
+    _ownerNameController.text = recipient?.ownerName ?? '';
+    _label = recipient?.label ?? '';
     _stateSubscription = context.read<RecipientsBloc>().stream.listen((state) {
-      if (_ownerNameController.text != state.sinpeOwnerName) {
+      if (state.sinpeOwnerName.isNotEmpty &&
+          _ownerNameController.text != state.sinpeOwnerName) {
         setState(() {
           _ownerNameController.text = state.sinpeOwnerName;
         });
@@ -87,7 +99,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -105,7 +117,9 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _phoneNumber,
             labelText: context.loc.recipientsFieldPhoneNumber,
+            errorText: recipientUpdateFieldError(context, 'phoneNumber'),
             hintText: context.loc.recipientsFieldSinpePhoneNumberHint,
             focusNode: _phoneNumberFocusNode,
             autofocus: true,
@@ -136,6 +150,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             builder: (context, isChecking) {
               return BBTextFormField(
                 labelText: context.loc.recipientsFieldOwnerName,
+                errorText: recipientUpdateFieldError(context, 'ownerName'),
                 hintText: context.loc.recipientsFieldOwnerNameSinpeHint,
                 controller: _ownerNameController,
                 disabled: true,
@@ -158,7 +173,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                         color: context.appColors.outline,
                       ),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) {
+                  if ((v == null || v.trim().isEmpty) && !_isOwnerValidated) {
                     return context.loc.recipientsValidationSinpeOwner;
                   }
                   return null;
@@ -168,7 +183,9 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
+            errorText: recipientUpdateFieldError(context, 'label'),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -185,6 +202,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             onPressed: _submitForm,
             hookError: widget.hookError,
             formDisabled: !_isPhoneValid || !_isOwnerValidated,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),

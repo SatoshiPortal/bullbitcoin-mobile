@@ -11,3 +11,9 @@ final class RecipientsUnexpectedFailure extends RecipientsFailure {
 final class RecipientsInvalidSecurityDetailsFailure extends RecipientsFailure {
   const RecipientsInvalidSecurityDetailsFailure([super.logMessage]);
 }
+
+final class RecipientsInvalidFieldsFailure extends RecipientsFailure {
+  const RecipientsInvalidFieldsFailure(this.fields, [super.logMessage]);
+
+  final Set<String> fields;
+}
