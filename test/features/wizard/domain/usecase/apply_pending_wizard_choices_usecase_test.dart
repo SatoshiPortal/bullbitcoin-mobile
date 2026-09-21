@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -29,12 +31,18 @@ void main() {
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
-    when(() => settings.setLanguage(any())).thenAnswer((_) async {});
-    when(() => settings.setThemeMode(any())).thenAnswer((_) async {});
-    when(() => settings.setCurrency(any())).thenAnswer((_) async {});
+    when(
+      () => settings.setLanguage(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => settings.setThemeMode(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(
+      () => settings.setCurrency(any()),
+    ).thenAnswer((_) async => const Ok(null));
     when(
       () => settings.setErrorReportingEnabled(any()),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => const Ok(null));
   });
 
   test('short-circuits when nothing is staged', () async {
@@ -114,6 +122,29 @@ void main() {
     verify(() => settings.setCurrency('CAD')).called(1);
     verify(() => settings.setErrorReportingEnabled(false)).called(1);
     verify(() => wizard.clearPending()).called(1);
+    verify(() => wizard.markComplete()).called(1);
+  });
+
+  // A transient storage error must not cost the user what they picked during
+  // onboarding: the pending choices stay so the next launch retries them.
+  test('keeps the pending choices when a write fails', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        language: Language.unitedStatesEnglish,
+        themeMode: AppThemeMode.dark,
+        defaultCurrency: 'CAD',
+        reportingConsent: false,
+        touched: {WizardField.defaultCurrency},
+      ),
+    );
+    when(
+      () => settings.setCurrency(any()),
+    ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+
+    await usecase.execute();
+
+    verifyNever(() => wizard.clearPending());
+    // Still complete: re-running onboarding would be worse than a quiet retry.
     verify(() => wizard.markComplete()).called(1);
   });
 }

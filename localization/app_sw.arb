@@ -697,10 +697,8 @@
   "settingsAppSettingsTitle": "Mipangilio ya Programu",
   "settingsTermsOfServiceTitle": "Masharti ya Huduma",
   "settingsAppVersionLabel": "Toleo la programu: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Hali ya Huduma",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsThemeTitle": "Mandhari",
   "settingsDevModeWarningTitle": "Hali ya Msanidi",
   "settingsDevModeWarningMessage": "Hali hii ina hatari. Kwa kuiwasha, unakiri kuwa unaweza kupoteza fedha",
@@ -3600,5 +3598,8 @@
   "sendErrorExchangeOrderMismatch": "Malipo haya hayalingani tena na oda. Tafadhali anza malipo upya.",
   "sellUnexpectedError": "Agizo lako la kuuza halikuweza kukamilika kwa sasa. Tafadhali jaribu tena au wasiliana na msaada.",
   "sellErrorFeeBelowRelayFloor": "Ada ya mtandao ni ndogo mno. Chagua ada kubwa zaidi.",
-  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
+  "sellErrorFeesUnavailable": "Ada za mtandao hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena.",
+  "settingsErrorSavingSetting": "Mpangilio huo haukuweza kuhifadhiwa. Tafadhali jaribu tena.",
+  "settingsErrorConsentNotGiven": "Mpangilio huu unahitaji uthibitisho wako kabla ya kubadilishwa.",
+  "settingsErrorLoadingLogs": "Kumbukumbu za uchunguzi hazikuweza kutayarishwa. Tafadhali jaribu tena."
 }

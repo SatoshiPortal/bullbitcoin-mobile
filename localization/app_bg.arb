@@ -175,10 +175,6 @@
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
   },
-  "settingsTelegramLabel": "## Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
-  },
   "exchangeSettingsSecuritySettingsTitle": "Настройки за сигурност",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
@@ -3524,10 +3520,6 @@
   "transactionDetailLabelPayinStatus": "Статус на плащането",
   "@transactionDetailLabelPayinStatus": {
     "description": "Label for payin status"
-  },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
   },
   "importWatchOnlySelectDerivation": "Изберете деривация",
   "@importWatchOnlySelectDerivation": {
@@ -10201,5 +10193,8 @@
   "sendErrorExchangeOrderMismatch": "Това плащане вече не съответства на заявката. Моля, започнете плащането отново.",
   "sellUnexpectedError": "Вашата поръчка за продажба не можа да бъде завършена в момента. Моля, опитайте отново или се свържете с поддръжката.",
   "sellErrorFeeBelowRelayFloor": "Мрежовата такса е твърде ниска. Изберете по-висока такса.",
-  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
+  "sellErrorFeesUnavailable": "Мрежовите такси не можаха да бъдат заредени. Проверете връзката си и опитайте отново.",
+  "settingsErrorSavingSetting": "Тази настройка не можа да бъде запазена. Моля, опитайте отново.",
+  "settingsErrorConsentNotGiven": "Тази настройка изисква вашето потвърждение, преди да бъде променена.",
+  "settingsErrorLoadingLogs": "Диагностичните дневници не можаха да бъдат подготвени. Моля, опитайте отново."
 }

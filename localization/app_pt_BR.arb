@@ -3815,10 +3815,6 @@
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
-  "settingsRecoverbullTitle": "Recuperação",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "broadcastSignedTxTitle": "Transação de transmissão",
   "@broadcastSignedTxTitle": {
     "description": "AppBar title for broadcast signed transaction screen"
@@ -4196,10 +4192,6 @@
   "transactionSwapDescChainClaimable": "A transação foi confirmada. Está a reivindicar os fundos para completar a sua transferência.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
-  },
-  "settingsTelegramLabel": "Telegrama",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
   },
   "exchangeKycLevelLimited": "Limitação",
   "@exchangeKycLevelLimited": {
@@ -12212,5 +12204,8 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "settingsErrorSavingSetting": "Não foi possível salvar essa configuração. Por favor, tente novamente.",
+  "settingsErrorConsentNotGiven": "Esta configuração precisa da sua confirmação antes de ser alterada.",
+  "settingsErrorLoadingLogs": "Não foi possível preparar os logs de diagnóstico. Por favor, tente novamente."
 }

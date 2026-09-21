@@ -1409,7 +1409,6 @@
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "Trasferimenti in dollari statunitensi (USD)",
   "transactionDetailLabelPayinStatus": "Stato di pagamento",
   "importQrDeviceSpecterStep9": "Scansiona il codice QR visualizzato sul tuo Specter",
-  "settingsRecoverbullTitle": "Recoverbull",
   "buyInputKycPending": "Verifica dell'identità KYC in sospeso",
   "importWatchOnlySelectDerivation": "Selezionare la derivazione",
   "walletAddressTypeLegacy": "Legacy",
@@ -1423,7 +1422,6 @@
     }
   },
   "fundExchangeMethodRegularSepaSubtitle": "Utilizzare solo per operazioni più grandi superiori a €30.000",
-  "settingsTelegramLabel": "Telegramma",
   "walletDetailsSignerDeviceNotSupported": "Non supportato",
   "exchangeLandingDisclaimerLegal": "L'accesso ai servizi di scambio sarà limitato ai paesi in cui Bull Bitcoin può operare legalmente e può richiedere KYC.",
   "backupWalletEncryptedVaultTitle": "Criptato",
@@ -4906,5 +4904,8 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "settingsErrorSavingSetting": "Non è stato possibile salvare questa impostazione. Si prega di riprovare.",
+  "settingsErrorConsentNotGiven": "Questa impostazione richiede la tua conferma prima di poter essere modificata.",
+  "settingsErrorLoadingLogs": "Non è stato possibile preparare i log di diagnostica. Si prega di riprovare."
 }

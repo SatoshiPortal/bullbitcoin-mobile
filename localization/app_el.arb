@@ -3736,10 +3736,6 @@
   "@importQrDeviceSpecterStep9": {
     "description": "Specter instruction step 9"
   },
-  "settingsRecoverbullTitle": "Recoverbull",
-  "@settingsRecoverbullTitle": {
-    "description": "Title for the Recoverbull backup section in app settings"
-  },
   "buyInputKycPending": "Εκκρεμής Επαλήθευση Ταυτότητας KYC",
   "@buyInputKycPending": {
     "description": "KYC pending info card title"
@@ -3768,10 +3764,6 @@
   "fundExchangeMethodRegularSepaSubtitle": "Μόνο χρήση για μεγαλύτερες συναλλαγές άνω των €30.000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
-  },
-  "settingsTelegramLabel": "Telegram",
-  "@settingsTelegramLabel": {
-    "description": "Label for the Telegram link in settings"
   },
   "walletDetailsSignerDeviceNotSupported": "Δεν υποστηρίζεται",
   "@walletDetailsSignerDeviceNotSupported": {
@@ -12200,5 +12192,8 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "settingsErrorSavingSetting": "Δεν ήταν δυνατή η αποθήκευση αυτής της ρύθμισης. Παρακαλώ δοκιμάστε ξανά.",
+  "settingsErrorConsentNotGiven": "Αυτή η ρύθμιση απαιτεί την επιβεβαίωσή σας πριν αλλάξει.",
+  "settingsErrorLoadingLogs": "Δεν ήταν δυνατή η προετοιμασία των αρχείων διαγνωστικών. Παρακαλώ δοκιμάστε ξανά."
 }

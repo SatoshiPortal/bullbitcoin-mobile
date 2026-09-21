@@ -79,11 +79,9 @@
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
   "settingsAppVersionLabel": "Sovellusversio: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsGetHelpLabel": "Pyydä apua",
   "settingsServiceStatusTitle": "Palveluiden tila",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "Kieli",
   "settingsThemeTitle": "Teema",
   "settingsDevModeWarningTitle": "Kehittäjätila",
@@ -4894,5 +4892,8 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "settingsErrorSavingSetting": "Asetusta ei voitu tallentaa. Yritä uudelleen.",
+  "settingsErrorConsentNotGiven": "Tämä asetus vaatii vahvistuksesi ennen muuttamista.",
+  "settingsErrorLoadingLogs": "Vianmäärityslokeja ei voitu valmistella. Yritä uudelleen."
 }

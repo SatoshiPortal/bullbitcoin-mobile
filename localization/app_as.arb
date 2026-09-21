@@ -292,10 +292,8 @@
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
   "settingsAppVersionLabel": "এপ্প সংস্কৰণ: ",
-  "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "সেৱাৰ স্থিতি",
-  "settingsRecoverbullTitle": "Recoverbull",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
   "settingsDevModeWarningTitle": "Dev মোড",
@@ -9336,5 +9334,8 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "settingsErrorSavingSetting": "সেই ছেটিংটো সংৰক্ষণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "settingsErrorConsentNotGiven": "এই ছেটিং সলনি কৰাৰ আগতে আপোনাৰ নিশ্চিতকৰণৰ প্ৰয়োজন।",
+  "settingsErrorLoadingLogs": "নিদান লগসমূহ প্ৰস্তুত কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
 }

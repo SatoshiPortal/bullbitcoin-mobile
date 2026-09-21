@@ -1410,7 +1410,6 @@
   "fundExchangeCostaRicaMethodIbanUsdSubtitle": "美元转账资金",
   "transactionDetailLabelPayinStatus": "Payin Status",
   "importQrDeviceSpecterStep9": "页: 1",
-  "settingsRecoverbullTitle": "Recoverbull",
   "buyInputKycPending": "KYC ID 有待核查",
   "importWatchOnlySelectDerivation": "选择性衍生物",
   "walletAddressTypeLegacy": "遗产",
@@ -1424,7 +1423,6 @@
     }
   },
   "fundExchangeMethodRegularSepaSubtitle": "只使用30 000欧元以上的大宗交易",
-  "settingsTelegramLabel": "电报",
   "walletDetailsSignerDeviceNotSupported": "未获得支持",
   "exchangeLandingDisclaimerLegal": "进入交换服务将仅限于“鹿特丹”能够合法运作并且可能需要“科索沃”的国家.",
   "backupWalletEncryptedVaultTitle": "加密",
@@ -4906,5 +4904,8 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "settingsErrorSavingSetting": "无法保存该设置。请重试。",
+  "settingsErrorConsentNotGiven": "更改此设置需要您的确认。",
+  "settingsErrorLoadingLogs": "无法准备诊断日志。请重试。"
 }
