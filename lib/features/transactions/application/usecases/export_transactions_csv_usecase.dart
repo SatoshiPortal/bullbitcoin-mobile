@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/application/application_errors.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:meta/meta.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 
 // this covers self-custodial wallet activity only, not exchange orders
@@ -14,12 +17,22 @@ class ExportTransactionsCsvUsecase {
     required this._formatter,
   });
 
-  Future<String> execute({DateTime? start, DateTime? end}) async {
+  @useResult
+  Future<Result<String, TransactionFailure>> execute({
+    DateTime? start,
+    DateTime? end,
+  }) async {
     if (start != null && end != null && start.isAfter(end)) {
-      throw InvalidDateRangeError();
+      return const Err(TransactionExportInvalidRangeFailure());
     }
 
-    final transactions = await _getTransactionsUsecase.execute();
+    final List<Transaction> transactions;
+    switch (await _getTransactionsUsecase.execute()) {
+      case Ok(:final value):
+        transactions = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
 
     // Preserve the input's UTC-ness when rounding up to the next day:
     // building a plain (local) DateTime from a UTC end's wall-clock fields
@@ -47,10 +60,19 @@ class ExportTransactionsCsvUsecase {
     final rows = filtered.toList()..sort(_byTimestamp);
 
     if (rows.isEmpty) {
-      throw NoTransactionsToExportError();
+      return const Err(TransactionExportEmptyFailure());
     }
 
-    return _formatter.format(rows);
+    try {
+      return Ok(_formatter.format(rows));
+    } catch (e, st) {
+      log.severe(
+        message: 'Failed to format the CSV export',
+        error: e,
+        trace: st,
+      );
+      return Err(TransactionExportFailure('format failed: ${e.runtimeType}'));
+    }
   }
 
   int _byTimestamp(Transaction a, Transaction b) {

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,15 +19,17 @@ class TxList extends StatelessWidget {
       (TransactionsCubit cubit) => cubit.state.ongoingSwaps,
     );
 
-    final err = context.select((TransactionsCubit cubit) => cubit.state.err);
+    final failure = context.select(
+      (TransactionsCubit cubit) => cubit.state.failure,
+    );
 
     final refreshLabels = context.read<TransactionsCubit>().refreshLabels;
 
-    if (err != null) {
+    if (failure != null) {
       return TransactionsByDayList(
         transactionsByDay: const {},
         ongoingSwaps: ongoingSwaps,
-        errorMessage: context.loc.transactionListLoadingFailed,
+        errorMessage: failure.toTranslated(context),
         sliver: sliver,
         onDetailsClosed: refreshLabels,
       );

@@ -7,6 +7,11 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:bb_mobile/core/utils/result.dart' as bb;
+import 'package:bb_mobile/features/swap/public/swap_facade.dart'
+    show OrderSwapRecord;
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -28,6 +33,13 @@ class _MockGetTransactionOrderSwapsUsecase extends Mock
     implements GetTransactionOrderSwapsUsecase {}
 
 const _txId = 'tx-1';
+
+/// Unwraps a successful Result; a failure here is a test-setup mistake.
+List<Transaction> unwrap(bb.Result<List<Transaction>, TransactionFailure> r) =>
+    switch (r) {
+      bb.Ok(:final value) => value,
+      bb.Err(:final failure) => fail('expected transactions, got $failure'),
+    };
 
 void main() {
   late _MockSettingsRepository settingsRepository;
@@ -66,9 +78,9 @@ void main() {
     when(
       () => swapHistoryRepository.getSwapByTxId(any()),
     ).thenAnswer((_) async => null);
-    when(
-      () => getTransactionOrderSwapsUsecase.execute(),
-    ).thenAnswer((_) async => []);
+    when(() => getTransactionOrderSwapsUsecase.execute()).thenAnswer(
+      (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+    );
   });
 
   test(
@@ -83,7 +95,7 @@ void main() {
         () => mainnetOrderRepository.getOrderByTxId(_txId),
       ).thenAnswer((_) async => order);
 
-      final transactions = await usecase.execute(_txId);
+      final transactions = unwrap(await usecase.execute(_txId));
 
       expect(transactions, hasLength(1));
       expect(transactions.single.payjoin, payjoin);
@@ -102,7 +114,7 @@ void main() {
       () => mainnetOrderRepository.getOrderByTxId(_txId),
     ).thenAnswer((_) async => null);
 
-    final transactions = await usecase.execute(_txId);
+    final transactions = unwrap(await usecase.execute(_txId));
 
     expect(transactions, hasLength(1));
     expect(transactions.single.payjoin, payjoin);

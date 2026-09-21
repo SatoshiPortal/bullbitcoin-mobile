@@ -555,35 +555,10 @@
   "payExternalWalletDescription": "Maksa toisesta Bitcoin-lompakosta",
   "payRbfActivated": "Replace-by-fee aktivoitu",
   "transactionTitle": "Transaktiot",
-  "transactionError": "Virhe - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Transaktion tiedot",
   "transactionDetailTransferProgress": "Siirron edistyminen",
   "transactionDetailSwapProgress": "Swapin edistyminen",
-  "transactionDetailRetryTransfer": "Yritä siirtoa uudelleen {action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "transactionDetailRetrySwap": "Yritä uudelleen swappiä {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Lisää kuvaus",
-  "transactionDetailBumpFees": "Aktivoi RFB",
   "transactionFilterAll": "Kaikki",
   "transactionFilterSend": "Lähetetty",
   "transactionFilterReceive": "Vastaanotettu",
@@ -598,7 +573,6 @@
   "transactionSwapBitcoinToLiquid": "BTC → L-BTC",
   "transactionStatusInProgress": "Käynnissä",
   "transactionStatusPending": "Odottaa",
-  "transactionStatusConfirmed": "Vahvistettu",
   "transactionStatusTransferCompleted": "Siirto suoritettu",
   "transactionStatusTransferInProgress": "Siirto käynnissä",
   "transactionStatusPaymentInProgress": "Maksu käynnissä",
@@ -608,51 +582,9 @@
   "transactionStatusTransferExpired": "Siirto vanhentunut",
   "transactionStatusSwapExpired": "Vanhentunut swap",
   "transactionStatusPayjoinRequested": "Payjoin pyydetty",
-  "transactionLabelTransactionId": "Transaktion ID",
-  "transactionLabelToWallet": "Kohdelompakko",
-  "transactionLabelFromWallet": "Lähdelompakko",
-  "transactionLabelRecipientAddress": "Vastaanottajan osoite",
-  "transactionLabelAddress": "Osoite",
-  "transactionLabelAddressNotes": "Osoitteen kuvaus",
-  "transactionLabelAmountReceived": "Vastaanotettu määrä",
-  "transactionLabelAmountSent": "Lähetetty määrä",
-  "transactionLabelTransactionFee": "Transaktiomaksu",
-  "transactionLabelStatus": "Tila",
-  "transactionLabelConfirmationTime": "Vahvistusaika",
-  "transactionLabelTransferId": "Swap-tunnus",
-  "transactionLabelSwapId": "Vaihto-ID",
-  "transactionLabelTransferStatus": "Siirron tila",
-  "transactionLabelSwapStatus": "Swapin tila",
-  "transactionLabelSwapStatusRefunded": "Palautettu",
-  "transactionLabelLiquidTransactionId": "Liquid-transaktion ID",
-  "transactionLabelBitcoinTransactionId": "Bitcoin-transaktion ID",
-  "transactionLabelTotalTransferFees": "Swapin kokonaiskulut",
-  "transactionLabelTotalSwapFees": "Vaihtojen kokonaiskulut",
-  "transactionLabelNetworkFee": "Verkkokulu",
-  "transactionLabelTransferFee": "Siirtokulu",
-  "transactionLabelBoltzSwapFee": "Boltz-vaihtokulu",
-  "transactionLabelCreatedAt": "Luotu",
-  "transactionLabelCompletedAt": "Suoritettu",
-  "transactionLabelPayjoinStatus": "Payjoin-tila",
-  "transactionLabelPayjoinCreationTime": "Payjoin luontiaika",
-  "transactionPayjoinStatusCompleted": "Valmis",
-  "transactionPayjoinStatusExpired": "Vanhentunut",
-  "transactionOrderLabelOrderType": "Tilaustyyppi",
-  "transactionOrderLabelOrderNumber": "Tilausnumero",
-  "transactionOrderLabelPayinAmount": "Maksun määrä",
-  "transactionOrderLabelPayoutAmount": "Ulosmaksun määrä",
-  "transactionOrderLabelExchangeRate": "Vaihtokurssi",
-  "transactionOrderLabelPayinMethod": "Sisäänmaksutapa",
-  "transactionOrderLabelPayoutMethod": "Ulosmaksutapa",
-  "transactionOrderLabelPayinStatus": "Sisäänmaksun tila",
-  "transactionOrderLabelOrderStatus": "Pyynnöntila",
-  "transactionOrderLabelPayoutStatus": "Ulosmaksun tila",
   "transactionNotesLabel": "Transaktion muistiinpanot",
   "transactionNoteAddTitle": "Lisää kuvaus",
-  "transactionNoteEditTitle": "Muokkaa kuvausta",
   "transactionNoteHint": "Muistiinpano",
-  "transactionNoteSaveButton": "Tallenna",
-  "transactionNoteUpdateButton": "Päivitä",
   "transactionPayjoinSendWithout": "Lähetä ilman payjoinia",
   "transactionSwapProgressInitiated": "Aloitettu",
   "transactionSwapProgressPaymentMade": "Maksu\nSuoritettu",
@@ -694,10 +626,6 @@
   "transactionSwapInfoRefundableSwap": "Tämä vaihto hyvitetään automaattisesti muutamassa sekunnissa. Jos ei, voit yrittää manuaalista hyvitystä napsauttamalla \"Retry Swap Refund\" -painiketta.",
   "transactionListOngoingTransfersTitle": "Käynnissä olevat siirrot",
   "transactionListOngoingTransfersDescription": "Nämä siirrot ovat parhaillaan käynnissä. Varasi ovat turvassa ja ne tulevat saataville siirron valmistuessa.",
-  "transactionListLoadingTransactions": "Ladataan transaktioita...",
-  "transactionListNoTransactions": "Ei transaktioita.",
-  "transactionListToday": "Tänään",
-  "transactionListYesterday": "Eilen",
   "transactionSwapDoNotUninstall": "Älä poista sovellusta ennen kuin swap on valmis.",
   "transactionFeesDeductedFrom": "Nämä kulut vähennetään lähetetystä summasta",
   "transactionFeesTotalDeducted": "Nämä ovat lähetetystä summasta vähennetyt kokonaiskulut.",
@@ -2813,7 +2741,6 @@
     }
   },
   "transactionHistoryTitle": "Tapahtumahistoria",
-  "transactionHistoryHeading": "Tapahtumahistoria",
   "exportTransactionsDescription": "Vie kaikki lompakkosi tapahtumat (Bitcoin, Liquid, Lightning ja swapit) CSV-tiedostona. Halutessasi suodata päivämääräväliltä.",
   "exportTransactionsStartDate": "Alkupäivä",
   "exportTransactionsEndDate": "Loppupäivä",
@@ -4660,7 +4587,6 @@
   "transactionFilterFunding": "Talletus",
   "transactionFilterReward": "Palkkio",
   "transactionFilterRefund": "Hyvitys",
-  "transactionFilterBalanceAdjustment": "Oikaisu",
   "transactionListLoadingFailed": "Tapahtumia ei voitu ladata.",
   "transactionLabelNetworkFees": "Verkkokulut",
   "walletLiquidRiskDisclosureLabel": "Nämä varat ovat Liquid L-BTC:tä (ei BTC:tä). Lue lisää.",
@@ -4894,5 +4820,9 @@
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sellUnexpectedError": "Myyntitoimeksiantoasi ei voitu viimeistellä juuri nyt. Yritä uudelleen tai ota yhteyttä tukeen.",
   "sellErrorFeeBelowRelayFloor": "Verkkomaksu on liian pieni. Valitse suurempi maksu.",
-  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
+  "sellErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+  "transactionDetailLoadError": "Tapahtuman tietoja ei voitu ladata.",
+  "transactionPayjoinBroadcastFailed": "Alkuperäistä tapahtumaa ei voitu lähettää. Yritä uudelleen.",
+  "transactionPayjoinOriginalUnavailable": "Alkuperäinen tapahtuma ei ole enää lähetettävissä.",
+  "transactionLabelLimitReached": "Voit lisätä enintään 10 tunnistetta."
 }

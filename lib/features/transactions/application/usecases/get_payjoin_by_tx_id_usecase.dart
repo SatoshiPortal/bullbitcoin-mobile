@@ -1,22 +1,25 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/result.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart';
+import 'package:meta/meta.dart';
 
 class GetPayjoinByTxIdUsecase {
   final PayjoinSessions _sessions;
 
   const GetPayjoinByTxIdUsecase(this._sessions);
 
-  Future<PayjoinSession> execute(String transactionId) async {
-    final result = await _sessions.byTransactionId(transactionId);
-    return switch (result) {
-      Ok(value: [final session, ...]) => session,
-      Ok() => throw GetPayjoinByTxIdException('Payjoin not found'),
-      Err() => throw GetPayjoinByTxIdException('Failed to load Payjoin'),
+  @useResult
+  Future<Result<PayjoinSession, TransactionFailure>> execute(
+    String transactionId,
+  ) async {
+    return switch (await _sessions.byTransactionId(transactionId)) {
+      Ok(value: [final session, ...]) => Ok(session),
+      Ok() => const Err(TransactionNotFoundFailure('payjoin not found')),
+      Err(:final failure) => Err(
+        TransactionUnexpectedFailure(
+          'byTransactionId failed: ${failure.runtimeType}',
+        ),
+      ),
     };
   }
-}
-
-class GetPayjoinByTxIdException extends BullException {
-  GetPayjoinByTxIdException(super.message);
 }

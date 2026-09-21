@@ -19,10 +19,6 @@
   "@fundExchangeSepaDescriptionExactly": {
     "description": "Emphasized word 'exactly' in SEPA description"
   },
-  "transactionLabelSwapId": "ID do balanço",
-  "@transactionLabelSwapId": {
-    "description": "Label for swap ID"
-  },
   "dcaChooseWalletTitle": "Escolha Bitcoin Wallet",
   "@dcaChooseWalletTitle": {
     "description": "AppBar title for wallet selection screen"
@@ -242,10 +238,6 @@
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {
     "description": "Name of Krux device"
-  },
-  "transactionOrderLabelPayoutStatus": "Status de pagamento",
-  "@transactionOrderLabelPayoutStatus": {
-    "description": "Label for order payout status"
   },
   "sellSendPaymentAboveMax": "Você está tentando vender acima da quantidade máxima que pode ser vendida com esta carteira.",
   "@sellSendPaymentAboveMax": {
@@ -697,10 +689,6 @@
   "@broadcastSignedTxAmount": {
     "description": "Label for transaction amount"
   },
-  "transactionLabelTransferStatus": "Status de transferência",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
-  },
   "customLocationTitle": "Localização personalizada",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
@@ -782,15 +770,6 @@
   "@receiveShareAddress": {
     "description": "Button to share via system share sheet"
   },
-  "transactionDetailRetryTransfer": "Transferência de Restrição {action}",
-  "@transactionDetailRetryTransfer": {
-    "description": "Button label to retry a failed transfer action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "electrumNetworkLiquid": "Líquido",
   "@electrumNetworkLiquid": {
     "description": "Liquid network tab label"
@@ -798,10 +777,6 @@
   "fundExchangeSepaDescription": "Envie uma transferência SEPA da sua conta bancária usando os detalhes abaixo ",
   "@fundExchangeSepaDescription": {
     "description": "Description for SEPA transfer (first part, before 'exactly')"
-  },
-  "transactionLabelConfirmationTime": "Tempo de confirmação",
-  "@transactionLabelConfirmationTime": {
-    "description": "Label for transaction confirmation timestamp"
   },
   "bitboxScreenSegwitBip84": "Segwit (BIP84)",
   "@bitboxScreenSegwitBip84": {
@@ -989,14 +964,6 @@
   "coreScreensReceiveNetworkFeeLabel": "Receber Taxas de Rede",
   "@coreScreensReceiveNetworkFeeLabel": {
     "description": "Label for receive network fee field"
-  },
-  "transactionPayjoinStatusCompleted": "Completada",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
-  },
-  "transactionLabelStatus": "Estado",
-  "@transactionLabelStatus": {
-    "description": "Label for transaction status"
   },
   "buyConfirmPayoutWallet": "Carteira de pagamento",
   "buyPayoutMethodLiquid": "L-BTC na Liquid",
@@ -1473,10 +1440,6 @@
   "@swapTransferRefundedMessage": {
     "description": "Refund completion message"
   },
-  "transactionDetailBumpFees": "Taxas de Bump",
-  "@transactionDetailBumpFees": {
-    "description": "Button label to increase transaction fees via RBF"
-  },
   "sellAccountName": "Nome da conta",
   "@sellAccountName": {
     "description": "Label for bank account holder name"
@@ -1683,10 +1646,6 @@
   "@importQrDeviceJadeStep6": {
     "description": "Jade instruction step 6"
   },
-  "transactionPayjoinStatusExpired": "Expirou",
-  "@transactionPayjoinStatusExpired": {
-    "description": "Payjoin status: expired"
-  },
   "howToDecideVaultLocationText2": "Um local personalizado pode ser muito mais seguro, dependendo de qual local você escolher. Você também deve ter certeza de não perder o arquivo de backup ou perder o dispositivo no qual seu arquivo de backup é armazenado.",
   "@howToDecideVaultLocationText2": {
     "description": "Second paragraph explaining custom location benefits"
@@ -1843,10 +1802,6 @@
   "@withdrawConfirmPhone": {
     "description": "Field label for phone number"
   },
-  "transactionLabelSwapStatus": "Status do balanço",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
-  },
   "receiveCopyOrScanAddressOnly": "Copiar ou escanear endereço somente",
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
@@ -1875,10 +1830,6 @@
   "@broadcastSignedTxCameraButton": {
     "description": "Button to open camera QR scanner"
   },
-  "transactionLabelAmountSent": "Montante enviado",
-  "@transactionLabelAmountSent": {
-    "description": "Label for sent amount"
-  },
   "payFeeBreakdown": "Repartição das taxas",
   "@payFeeBreakdown": {
     "description": "Section header for detailed fee information"
@@ -1906,10 +1857,6 @@
   "recoverbullRecoveryTitle": "Recuperação do vault do Recoverbull",
   "@recoverbullRecoveryTitle": {
     "description": "AppBar title for vault recovery screen"
-  },
-  "transactionListNoTransactions": "Ainda não há transações.",
-  "@transactionListNoTransactions": {
-    "description": "Message displayed when there are no transactions"
   },
   "sendSignWithBitBox": "Sinal com BitBox",
   "@sendSignWithBitBox": {
@@ -1969,10 +1916,6 @@
   "payNoRecipientsFound": "Nenhum destinatário encontrado para pagar.",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
-  },
-  "transactionLabelAmountReceived": "Montante recebido",
-  "@transactionLabelAmountReceived": {
-    "description": "Label for received amount"
   },
   "pinCodeManageTitle": "Gerenciar seu PIN de segurança",
   "@pinCodeManageTitle": {
@@ -2148,15 +2091,6 @@
   "@torSettingsPortValidationEmpty": {
     "description": "Validation error when port is empty"
   },
-  "transactionError": "Erro - {error}",
-  "@transactionError": {
-    "description": "Error message displayed when transaction loading fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyConfirmBitcoinPrice": "Preço de Bitcoin",
   "@buyConfirmBitcoinPrice": {
     "description": "Field label for Bitcoin price"
@@ -2313,10 +2247,6 @@
   "buyEnterAmount": "Insira quantidade",
   "@buyEnterAmount": {
     "description": "Label for amount input field in buy flow"
-  },
-  "transactionOrderLabelOrderNumber": "Número de ordem",
-  "@transactionOrderLabelOrderNumber": {
-    "description": "Label for order number"
   },
   "kruxStep8": "   - Mover o laser vermelho para cima e para baixo sobre o código QR",
   "@kruxStep8": {
@@ -2491,10 +2421,6 @@
   "@payAddressRequired": {
     "description": "Validation error for empty address field"
   },
-  "transactionOrderLabelPayoutAmount": "Quantidade de pagamento",
-  "@transactionOrderLabelPayoutAmount": {
-    "description": "Label for order payout amount"
-  },
   "buyConfirmationTime": "Tempo de confirmação",
   "@buyConfirmationTime": {
     "description": "Label for estimated confirmation time"
@@ -2502,10 +2428,6 @@
   "coldcardStep12": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "@coldcardStep12": {
     "description": "Coldcard instruction to return to app"
-  },
-  "transactionLabelFromWallet": "Da carteira",
-  "@transactionLabelFromWallet": {
-    "description": "Label for source wallet"
   },
   "testBackupGoogleDrivePrivacyPart2": "não terá ",
   "@testBackupGoogleDrivePrivacyPart2": {
@@ -2562,10 +2484,6 @@
   "backupWalletGoogleDrivePrivacyMessage2": "não terá ",
   "@backupWalletGoogleDrivePrivacyMessage2": {
     "description": "Second part of privacy message (bold)"
-  },
-  "transactionLabelCompletedAt": "Completa em",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
   },
   "encryptedVaultRecommendation": "Vault criptografado: ",
   "@encryptedVaultRecommendation": {
@@ -3277,10 +3195,6 @@
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"
   },
-  "transactionStatusConfirmed": "Confirmado",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
-  },
   "kruxStep16": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "@kruxStep16": {
     "description": "Krux final instruction about broadcasting"
@@ -3296,10 +3210,6 @@
   "seedsignerInstructionsTitle": "Instruções do SeedSigner",
   "@seedsignerInstructionsTitle": {
     "description": "Title for SeedSigner signing instructions modal"
-  },
-  "transactionLabelTransferFee": "Taxa de transferência",
-  "@transactionLabelTransferFee": {
-    "description": "Label for transfer fee component"
   },
   "bitboxErrorConnectionFailed": "Falhado para se conectar ao dispositivo BitBox. Por favor, verifique a sua ligação.",
   "@bitboxErrorConnectionFailed": {
@@ -3353,10 +3263,6 @@
   "@importColdcardScanning": {
     "description": "Status while scanning"
   },
-  "transactionLabelSwapStatusRefunded": "Reembolsos",
-  "@transactionLabelSwapStatusRefunded": {
-    "description": "Status label for refunded swaps"
-  },
   "exchangeBitcoinWalletsTitle": "Carteiras Bitcoin padrão",
   "@exchangeBitcoinWalletsTitle": {
     "description": "Title for the default Bitcoin wallets section in exchange"
@@ -3372,10 +3278,6 @@
   "payMyFiatRecipients": "Os meus destinatários fiat",
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
-  },
-  "transactionOrderLabelPayoutMethod": "Método de pagamento",
-  "@transactionOrderLabelPayoutMethod": {
-    "description": "Label for order payout method"
   },
   "receiveLightningInvoice": "Fatura de relâmpago",
   "@receiveLightningInvoice": {
@@ -3791,10 +3693,6 @@
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
   },
-  "transactionLabelTotalSwapFees": "Total taxas de swap",
-  "@transactionLabelTotalSwapFees": {
-    "description": "Label for total swap fees"
-  },
   "rbfErrorAlreadyConfirmed": "A transação original foi confirmada",
   "@rbfErrorAlreadyConfirmed": {
     "description": "Error when trying to RBF a confirmed transaction"
@@ -4075,15 +3973,6 @@
   "importQrDeviceJadeStep2": "Selecione \"Modo QR\" no menu principal",
   "@importQrDeviceJadeStep2": {
     "description": "Jade instruction step 2"
-  },
-  "transactionDetailRetrySwap": "Retira Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "description": "Button label to retry a failed swap action",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
   },
   "testnetModeSettingsLabel": "Modo de Testnet",
   "@testnetModeSettingsLabel": {
@@ -4883,10 +4772,6 @@
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
-  "transactionLabelCreatedAt": "Criado em",
-  "@transactionLabelCreatedAt": {
-    "description": "Label for creation timestamp"
-  },
   "receiveGenerationFailed": "Falhado para gerar {type}",
   "@receiveGenerationFailed": {
     "description": "Error when address/invoice generation fails",
@@ -4981,10 +4866,6 @@
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
-  "transactionLabelPayjoinStatus": "Estado de Payjoin",
-  "@transactionLabelPayjoinStatus": {
-    "description": "Label for payjoin status"
-  },
   "mempoolCustomServerAdd": "Adicionar Servidor Personalizado",
   "@mempoolCustomServerAdd": {
     "description": "Button text to add custom mempool server"
@@ -5073,10 +4954,6 @@
   "ledgerHelpStep2": "Certifique-se de que seu telefone tem Bluetooth ligado e permitido.",
   "@ledgerHelpStep2": {
     "description": "Second troubleshooting step for Ledger connection issues"
-  },
-  "transactionOrderLabelExchangeRate": "Taxa de câmbio",
-  "@transactionOrderLabelExchangeRate": {
-    "description": "Label for order exchange rate"
   },
   "recoverbullSelectVaultProvider": "Selecione Provedor de Vault",
   "@recoverbullSelectVaultProvider": {
@@ -5350,10 +5227,6 @@
   "receiveVerifyAddressOnLedger": "Verificar endereço no Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
-  },
-  "transactionLabelBitcoinTransactionId": "ID de transação de Bitcoin",
-  "@transactionLabelBitcoinTransactionId": {
-    "description": "Label for Bitcoin network transaction ID"
   },
   "seedsignerStep9": "Revise o endereço de destino e o valor, e confirme a assinatura no SeedSigner.",
   "@seedsignerStep9": {
@@ -5790,10 +5663,6 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "transactionOrderLabelPayinMethod": "Método de pagamento",
-  "@transactionOrderLabelPayinMethod": {
-    "description": "Label for order payin method"
-  },
   "transactionSwapInfoClaimableSwap": "A troca será concluída automaticamente dentro de alguns segundos. Se não, você pode tentar uma reivindicação manual clicando no botão \"Retentar Swap Claim\".",
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
@@ -6003,17 +5872,9 @@
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
   },
-  "transactionListLoadingTransactions": "Carregando transações...",
-  "@transactionListLoadingTransactions": {
-    "description": "Message displayed while loading transactions"
-  },
   "sendSwapCancelled": "Cancelamento do Swap",
   "@sendSwapCancelled": {
     "description": "Message when user cancels swap"
-  },
-  "transactionLabelTransferId": "ID de transferência",
-  "@transactionLabelTransferId": {
-    "description": "Label for transfer/swap ID"
   },
   "fundExchangeMethodBankTransferWireSubtitle": "Melhor e mais confiável opção para maiores quantidades (mesmo ou dia seguinte)",
   "@fundExchangeMethodBankTransferWireSubtitle": {
@@ -6373,10 +6234,6 @@
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
-  "transactionLabelNetworkFee": "Taxa de rede",
-  "@transactionLabelNetworkFee": {
-    "description": "Label for network fee component"
-  },
   "importQrDevicePassportStep9": "Digitalizar o código QR exibido no seu Passaporte",
   "@importQrDevicePassportStep9": {
     "description": "Passport instruction step 9"
@@ -6401,10 +6258,6 @@
   "receiveLightning": "Luz",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
-  },
-  "transactionLabelPayjoinCreationTime": "Tempo de criação Payjoin",
-  "@transactionLabelPayjoinCreationTime": {
-    "description": "Label for payjoin creation timestamp"
   },
   "psbtFlowClickDone": "Clique em \"Estou feito\" na carteira Bull Bitcoin.",
   "@psbtFlowClickDone": {
@@ -6592,10 +6445,6 @@
   "importQrDeviceSeedsignerStep4": "Selecione \"Export Xpub\"",
   "@importQrDeviceSeedsignerStep4": {
     "description": "SeedSigner instruction step 4"
-  },
-  "transactionOrderLabelOrderStatus": "Status da ordem",
-  "@transactionOrderLabelOrderStatus": {
-    "description": "Label for order status"
   },
   "recoverbullTestBackupDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "@recoverbullTestBackupDescription": {
@@ -6845,10 +6694,6 @@
   "@receiveBitcoin": {
     "description": "Label for receiving Bitcoin on the base layer"
   },
-  "transactionLabelAddressNotes": "Notas de endereço",
-  "@transactionLabelAddressNotes": {
-    "description": "Label for address notes/labels"
-  },
   "exchangeStatisticsBuyStats": "Comprar Estatísticas",
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
@@ -6896,10 +6741,6 @@
   "bitboxActionSignTransactionSuccess": "Transação assinada com sucesso",
   "@bitboxActionSignTransactionSuccess": {
     "description": "Success text for sign transaction"
-  },
-  "transactionOrderLabelOrderType": "Tipo de ordem",
-  "@transactionOrderLabelOrderType": {
-    "description": "Label for order type"
   },
   "sellFastest": "Mais rápido",
   "@sellFastest": {
@@ -7285,10 +7126,6 @@
   "@ledgerButtonManagePermissions": {
     "description": "Button label to open app permissions settings"
   },
-  "transactionLabelAddress": "Endereço",
-  "@transactionLabelAddress": {
-    "description": "Label for transaction address"
-  },
   "payAmountRequired": "O montante é necessário",
   "@payAmountRequired": {
     "description": "Validation error for empty amount field"
@@ -7321,10 +7158,6 @@
   "payAccountNumber": "Número de conta",
   "@payAccountNumber": {
     "description": "Label for account number"
-  },
-  "transactionListYesterday": "Ontem",
-  "@transactionListYesterday": {
-    "description": "Date label for yesterday's transactions"
   },
   "backupButton": "Backup",
   "@backupButton": {
@@ -7556,10 +7389,6 @@
   "@walletNetworkLiquid": {
     "description": "Network label for Liquid mainnet"
   },
-  "transactionListToday": "Hoje",
-  "@transactionListToday": {
-    "description": "Date label for today's transactions"
-  },
   "sendSlowPaymentWarning": "Aviso de pagamento lento",
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
@@ -7579,10 +7408,6 @@
   "payLiquidNetwork": "Rede líquida",
   "@payLiquidNetwork": {
     "description": "Option for Liquid Network payment"
-  },
-  "transactionLabelTransactionFee": "Taxa de transação",
-  "@transactionLabelTransactionFee": {
-    "description": "Label for transaction fee"
   },
   "payEmail": "Email",
   "@payEmail": {
@@ -7769,10 +7594,6 @@
   "@settingsDevModeWarningMessage": {
     "description": "Warning message displayed when enabling developer mode"
   },
-  "transactionOrderLabelPayinStatus": "Estado de Payin",
-  "@transactionOrderLabelPayinStatus": {
-    "description": "Label for order payin status"
-  },
   "ledgerErrorRejectedByUser": "A transação foi rejeitada pelo usuário no dispositivo Ledger.",
   "@ledgerErrorRejectedByUser": {
     "description": "Error message when user rejects transaction on Ledger (error code 6985)"
@@ -7909,10 +7730,6 @@
   "recoverbullErrorUnexpected": "Erro inesperado, veja logs",
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
-  },
-  "transactionLabelLiquidTransactionId": "ID de transação líquida",
-  "@transactionLabelLiquidTransactionId": {
-    "description": "Label for Liquid network transaction ID"
   },
   "ledgerProcessingSignSubtext": "Por favor, confirme a transação no seu dispositivo Ledger...",
   "@ledgerProcessingSignSubtext": {
@@ -8056,10 +7873,6 @@
   "@importWalletSectionGeneric": {
     "description": "Section header for generic wallet types"
   },
-  "transactionLabelToWallet": "Para a carteira",
-  "@transactionLabelToWallet": {
-    "description": "Label for destination wallet"
-  },
   "buyPaymentMethod": "Método de pagamento",
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
@@ -8075,10 +7888,6 @@
   "backupWalletEncryptedVaultDescription": "Backup anônimo com criptografia forte usando sua nuvem.",
   "@backupWalletEncryptedVaultDescription": {
     "description": "Description of encrypted vault backup method"
-  },
-  "transactionLabelRecipientAddress": "Endereço de destinatário",
-  "@transactionLabelRecipientAddress": {
-    "description": "Label for recipient address"
   },
   "swapProgressTitle": "Transferência interna",
   "@swapProgressTitle": {
@@ -8631,10 +8440,6 @@
   "@paySendMax": {
     "description": "Button to set amount to maximum available"
   },
-  "transactionLabelTotalTransferFees": "Total das taxas de transferência",
-  "@transactionLabelTotalTransferFees": {
-    "description": "Label for total transfer fees"
-  },
   "recoverbullRetry": "Repito",
   "@recoverbullRetry": {
     "description": "Button text to retry failed operation"
@@ -9124,10 +8929,6 @@
   "testBackupSuccessButton": "Entendido",
   "@testBackupSuccessButton": {
     "description": "Button to dismiss success screen"
-  },
-  "transactionLabelTransactionId": "ID de transação",
-  "@transactionLabelTransactionId": {
-    "description": "Label for transaction ID field"
   },
   "importWalletLedger": "Ledger",
   "@importWalletLedger": {
@@ -9879,10 +9680,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "transactionLabelBoltzSwapFee": "Boltz Swap Fee",
-  "@transactionLabelBoltzSwapFee": {
-    "description": "Label for Boltz swap fee component"
-  },
   "sendEstimatedDeliveryFewHours": "poucas horas",
   "@sendEstimatedDeliveryFewHours": {
     "description": "Estimated delivery time of a few hours"
@@ -10110,10 +9907,6 @@
   "payUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "@payUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
-  },
-  "transactionOrderLabelPayinAmount": "Quantidade de pagamento",
-  "@transactionOrderLabelPayinAmount": {
-    "description": "Label for order payin amount"
   },
   "backupWalletSuccessDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "@backupWalletSuccessDescription": {
@@ -10586,10 +10379,6 @@
       }
     }
   },
-  "transactionNoteSaveButton": "Salvar",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
   "exportingVaultButton": "Exportação...",
   "@exportingVaultButton": {
     "description": "Button label shown while exporting vault"
@@ -10881,7 +10670,6 @@
     "description": "Button to derive next hex entropy"
   },
   "transactionHistoryTitle": "Histórico de transações",
-  "transactionHistoryHeading": "Histórico de transações",
   "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e swaps) como arquivo CSV. Filtre opcionalmente por intervalo de datas.",
   "exportTransactionsStartDate": "Data inicial",
   "exportTransactionsEndDate": "Data final",
@@ -11127,10 +10915,6 @@
   "@importWatchOnlyDisclaimerTitle": {
     "description": "Title for derivation path warning disclaimer"
   },
-  "transactionNoteEditTitle": "Editar nota",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "importMnemonicSelectType": "Selecione um tipo de carteira para importar",
   "@importMnemonicSelectType": {
     "description": "Instruction to select wallet type"
@@ -11162,10 +10946,6 @@
   "transactionSwapDescLnReceivePaid": "O pagamento foi recebido! Estamos agora a transmitir a transação em cadeia para a sua carteira.",
   "@transactionSwapDescLnReceivePaid": {
     "description": "Description for paid Lightning receive swap"
-  },
-  "transactionNoteUpdateButton": "Atualização",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "walletDetailsNetworkLabel": "Rede",
   "@walletDetailsNetworkLabel": {
@@ -11954,7 +11734,6 @@
   "transactionFilterFunding": "Financiamento",
   "transactionFilterReward": "Recompensa",
   "transactionFilterRefund": "Reembolso",
-  "transactionFilterBalanceAdjustment": "Ajuste",
   "transactionListLoadingFailed": "Não foi possível carregar as transações.",
   "transactionLabelNetworkFees": "Taxas de rede",
   "walletLiquidRiskDisclosureLabel": "Estes fundos são Liquid L-BTC (não BTC). Saiba mais.",
@@ -12212,5 +11991,9 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "transactionDetailLoadError": "Não foi possível carregar os detalhes da transação.",
+  "transactionPayjoinBroadcastFailed": "Não foi possível transmitir a transação original. Por favor, tente novamente.",
+  "transactionPayjoinOriginalUnavailable": "A transação original não está mais disponível para transmissão.",
+  "transactionLabelLimitReached": "Você pode ter no máximo 10 etiquetas."
 }

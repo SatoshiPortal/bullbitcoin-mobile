@@ -23,7 +23,7 @@ abstract class TransactionsState with _$TransactionsState {
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
     @Default(false) bool exchangeOnly,
-    Object? err,
+    TransactionFailure? failure,
   }) = _TransactionsState;
   const TransactionsState._();
 

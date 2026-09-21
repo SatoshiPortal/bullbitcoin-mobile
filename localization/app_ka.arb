@@ -34,21 +34,9 @@
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"
   },
-  "transactionNoteEditTitle": "შენიშვნის ჩასწორება",
-  "@transactionNoteEditTitle": {
-    "description": "Title for edit note dialog"
-  },
   "transactionNoteHint": "შენიშვნა",
   "@transactionNoteHint": {
     "description": "Hint text for note input field"
-  },
-  "transactionNoteSaveButton": "შენახვა",
-  "@transactionNoteSaveButton": {
-    "description": "Button label to save a note"
-  },
-  "transactionNoteUpdateButton": "განახლება",
-  "@transactionNoteUpdateButton": {
-    "description": "Button label to update a note"
   },
   "transactionPayjoinSendWithout": "გაგზავნა payjoin-ის გარეშე",
   "@transactionPayjoinSendWithout": {
@@ -141,26 +129,6 @@
   "transactionStatusInProgress": "მიმდინარეობს",
   "@transactionStatusInProgress": {
     "description": "Status label for transactions in progress"
-  },
-  "transactionStatusConfirmed": "დადასტურებულია",
-  "@transactionStatusConfirmed": {
-    "description": "Status label for confirmed transactions"
-  },
-  "transactionLabelTransferStatus": "გადაცემის სტატუსი",
-  "@transactionLabelTransferStatus": {
-    "description": "Label for transfer status"
-  },
-  "transactionLabelSwapStatus": "მიმოცვლის სტატუსი",
-  "@transactionLabelSwapStatus": {
-    "description": "Label for swap status"
-  },
-  "transactionLabelCompletedAt": "დასრულებულია",
-  "@transactionLabelCompletedAt": {
-    "description": "Label for completion timestamp"
-  },
-  "transactionPayjoinStatusCompleted": "დასრულებულია",
-  "@transactionPayjoinStatusCompleted": {
-    "description": "Payjoin status: completed"
   },
   "transactionDetailLabelCompletedAt": "დასრულებულია",
   "@transactionDetailLabelCompletedAt": {
@@ -433,7 +401,6 @@
   "payPaymentDescription": "გადახდის აღწერა",
   "transactionDetailLabelPaymentDescription": "გადახდის აღწერა",
   "transactionHistoryTitle": "ტრანზაქციების ისტორია",
-  "transactionHistoryHeading": "ტრანზაქციების ისტორია",
   "exportTransactionsDescription": "გადმოწერეთ თქვენი საფულის ყველა ტრანზაქცია (Bitcoin, Liquid, Lightning და სვაპები) CSV ფაილის სახით. სურვილისამებრ გაფილტრეთ თარიღების მიხედვით.",
   "exportTransactionsStartDate": "დაწყების თარიღი",
   "exportTransactionsEndDate": "დასრულების თარიღი",
@@ -1386,13 +1353,9 @@
   "payExternalWalletDescription": "გადაიხადეთ სხვა Bitcoin საფულედან",
   "payRbfActivated": "Replace-by-fee გააქტიურებულია",
   "transactionTitle": "ტრანზაქციები",
-  "transactionError": "შეცდომა - {error}",
   "transactionDetailTitle": "ტრანზაქციის დეტალები",
   "transactionDetailTransferProgress": "გადარიცხვის მიმდინარეობა",
   "transactionDetailSwapProgress": "სვაპის მიმდინარეობა",
-  "transactionDetailRetryTransfer": "გადარიცხვის ხელახლა ცდა {action}",
-  "transactionDetailRetrySwap": "სვაპის ხელახლა ცდა {action}",
-  "transactionDetailBumpFees": "საკომისიოს გაზრდა",
   "transactionFilterAll": "ყველა",
   "transactionFilterSend": "გაგზავნა",
   "transactionFilterReceive": "მიღება",
@@ -1405,7 +1368,6 @@
   "transactionFilterFunding": "შევსება",
   "transactionFilterReward": "ჯილდო",
   "transactionFilterRefund": "თანხის დაბრუნება",
-  "transactionFilterBalanceAdjustment": "კორექტირება",
   "transactionNetworkLightning": "Lightning",
   "transactionNetworkBitcoin": "Bitcoin",
   "transactionNetworkLiquid": "Liquid",
@@ -1421,41 +1383,6 @@
   "transactionStatusTransferExpired": "გადარიცხვას ვადა გაუვიდა",
   "transactionStatusSwapExpired": "სვაპს ვადა გაუვიდა",
   "transactionStatusPayjoinRequested": "Payjoin მოთხოვნილია",
-  "transactionLabelTransactionId": "ტრანზაქციის ID",
-  "transactionLabelToWallet": "საფულეში",
-  "transactionLabelFromWallet": "საფულიდან",
-  "transactionLabelRecipientAddress": "მიმღების მისამართი",
-  "transactionLabelAddress": "მისამართი",
-  "transactionLabelAddressNotes": "მისამართის შენიშვნები",
-  "transactionLabelAmountReceived": "მიღებული თანხა",
-  "transactionLabelAmountSent": "გაგზავნილი თანხა",
-  "transactionLabelTransactionFee": "ტრანზაქციის საკომისიო",
-  "transactionLabelStatus": "სტატუსი",
-  "transactionLabelConfirmationTime": "დადასტურების დრო",
-  "transactionLabelTransferId": "გადარიცხვის ID",
-  "transactionLabelSwapId": "სვაპის ID",
-  "transactionLabelSwapStatusRefunded": "დაბრუნებულია",
-  "transactionLabelLiquidTransactionId": "Liquid ტრანზაქციის ID",
-  "transactionLabelBitcoinTransactionId": "Bitcoin ტრანზაქციის ID",
-  "transactionLabelTotalTransferFees": "გადარიცხვის ჯამური საკომისიო",
-  "transactionLabelTotalSwapFees": "სვაპის ჯამური საკომისიო",
-  "transactionLabelNetworkFee": "ქსელის საკომისიო",
-  "transactionLabelTransferFee": "გადარიცხვის საკომისიო",
-  "transactionLabelBoltzSwapFee": "Boltz-ის სვაპის საკომისიო",
-  "transactionLabelCreatedAt": "შექმნის დრო",
-  "transactionLabelPayjoinStatus": "Payjoin სტატუსი",
-  "transactionLabelPayjoinCreationTime": "Payjoin შექმნის დრო",
-  "transactionPayjoinStatusExpired": "ვადა გაუვიდა",
-  "transactionOrderLabelOrderType": "შეკვეთის ტიპი",
-  "transactionOrderLabelOrderNumber": "შეკვეთის ნომერი",
-  "transactionOrderLabelPayinAmount": "შემომავალი თანხა",
-  "transactionOrderLabelPayoutAmount": "გადასახდელი თანხა",
-  "transactionOrderLabelExchangeRate": "გაცვლითი კურსი",
-  "transactionOrderLabelPayinMethod": "შემოტანის მეთოდი",
-  "transactionOrderLabelPayoutMethod": "გატანის მეთოდი",
-  "transactionOrderLabelPayinStatus": "შემოტანის სტატუსი",
-  "transactionOrderLabelOrderStatus": "შეკვეთის სტატუსი",
-  "transactionOrderLabelPayoutStatus": "გატანის სტატუსი",
   "transactionNotesLabel": "ტრანზაქციის შენიშვნები",
   "transactionSwapDescLnReceivePaid": "გადახდა მიღებულია! ჩვენ ახლა ვავრცელებთ ჯაჭვში ტრანზაქციას თქვენს საფულეში.",
   "transactionSwapDescLnReceiveClaimable": "ჯაჭვში ტრანზაქცია დადასტურებულია. ჩვენ ახლა ვითხოვთ თანხას თქვენი სვაპის დასასრულებლად.",
@@ -1485,11 +1412,7 @@
   "transactionSwapInfoRefundableSwap": "ეს სვაპი ავტომატურად დაბრუნდება რამდენიმე წამში. თუ ეს არ მოხდა, შეგიძლიათ სცადოთ ხელით დაბრუნება ღილაკზე „სვაპის დაბრუნების ხელახლა ცდა“ დაჭერით.",
   "transactionListOngoingTransfersTitle": "მიმდინარე გადარიცხვები",
   "transactionListOngoingTransfersDescription": "ეს გადარიცხვები ამჟამად მიმდინარეობს. თქვენი თანხა დაცულია და ხელმისაწვდომი გახდება გადარიცხვის დასრულებისას.",
-  "transactionListLoadingTransactions": "ტრანზაქციები იტვირთება...",
-  "transactionListNoTransactions": "ჯერ არ არის ტრანზაქციები.",
   "transactionListLoadingFailed": "ტრანზაქციების ჩატვირთვა ვერ მოხერხდა.",
-  "transactionListToday": "დღეს",
-  "transactionListYesterday": "გუშინ",
   "transactionSwapDoNotUninstall": "არ წაშალოთ აპლიკაცია სვაპის დასრულებამდე.",
   "transactionFeesDeductedFrom": "ეს საკომისიო გამოაკლდება გაგზავნილ თანხას",
   "transactionFeesTotalDeducted": "ეს არის ჯამური საკომისიო, გამოკლებული გაგზავნილი თანხიდან",
@@ -3735,5 +3658,9 @@
   "sendErrorExchangeOrderMismatch": "ეს გადახდა უკვე არ ემთხვევა შეკვეთას. გთხოვთ, დაიწყოთ გადახდა ხელახლა.",
   "sellUnexpectedError": "თქვენი გაყიდვის შეკვეთის დასრულება ამჟამად ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა ან დაუკავშირდეთ მხარდაჭერას.",
   "sellErrorFeeBelowRelayFloor": "ქსელის საკომისიო ძალიან დაბალია. აირჩიეთ უფრო მაღალი საკომისიო.",
-  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
+  "sellErrorFeesUnavailable": "ქსელის საკომისიოების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+  "transactionDetailLoadError": "ტრანზაქციის დეტალების ჩატვირთვა ვერ მოხერხდა.",
+  "transactionPayjoinBroadcastFailed": "საწყისი ტრანზაქციის გავრცელება ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",
+  "transactionPayjoinOriginalUnavailable": "საწყისი ტრანზაქცია აღარ არის ხელმისაწვდომი გასავრცელებლად.",
+  "transactionLabelLimitReached": "შეგიძლიათ გქონდეთ მაქსიმუმ 10 იარლიყი."
 }
