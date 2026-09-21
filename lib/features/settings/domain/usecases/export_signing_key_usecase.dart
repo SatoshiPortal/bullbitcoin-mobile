@@ -98,7 +98,13 @@ class ExportSigningKeyUsecase {
         derivationPath: derivationPath,
         network: network,
       );
-      final originPath = derivationPath.substring(2).replaceAll("'", 'h');
+      String origin(int account) {
+        final path = Bip48Derivation.path(
+          coinType: coinType,
+          account: account,
+        ).substring(2).replaceAll("'", 'h');
+        return '[${seed.masterFingerprint.toLowerCase()}/$path]';
+      }
 
       // A description failure does not undo the successful reservation.
       final descriptionSaved =
@@ -108,9 +114,7 @@ class ExportSigningKeyUsecase {
                   type: LabelType.extendedPublicKey,
                   reference: usedXpub,
                   label: description!.trim(),
-                  origin:
-                      '[${seed.masterFingerprint.toLowerCase()}/'
-                      '${Bip48Derivation.path(coinType: coinType, account: account!).substring(2)}]',
+                  origin: origin(account!),
                 ),
               )
               is Ok;
@@ -123,8 +127,7 @@ class ExportSigningKeyUsecase {
       }
       return Ok((
         account: selection.account,
-        descriptorKey:
-            '[${seed.masterFingerprint.toLowerCase()}/$originPath]$xpub',
+        descriptorKey: '${origin(selection.account)}$xpub',
         isReserved:
             selection.isReserved ||
             used.accounts.any((used) => used.account == selection.account),

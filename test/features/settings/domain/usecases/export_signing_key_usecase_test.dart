@@ -479,7 +479,7 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    expect(await usecase.execute(account: 1), isA<Ok>());
+    final previous = (await usecase.execute(account: 1) as Ok).value;
     final result = await usecase.execute(
       account: 1,
       markUsed: true,
@@ -488,7 +488,10 @@ void main() {
 
     expect(result, isA<Ok>());
     expect((result as Ok).value.account, 0);
-    expect(labels.saved.single.origin, "[5a3469b6/48'/0'/1'/2']");
+    expect(
+      labels.saved.single.origin,
+      '${previous.descriptorKey.split(']').first}]',
+    );
   });
 
   for (final labelFailure in [false, true]) {
