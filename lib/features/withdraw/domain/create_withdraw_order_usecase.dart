@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 
 class CreateWithdrawOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
