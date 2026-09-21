@@ -105,7 +105,6 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
       state.copyWith(
         account: account,
         descriptorKey: '',
-        usedAccounts: const [],
         isReserved: false,
         isLoading: true,
         clearFailure: true,
@@ -120,24 +119,33 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
     );
     if (isClosed || requestId != _requestId) return;
 
-    result.fold((export) {
-      if (markUsed) {
-        _requestedAccount = null;
-        _markUsed = false;
-        _description = null;
-      }
-      emit(
+    result.fold(
+      (export) {
+        if (markUsed) {
+          _requestedAccount = null;
+          _markUsed = false;
+          _description = null;
+        }
+        emit(
+          state.copyWith(
+            account: export.account,
+            descriptorKey: export.descriptorKey,
+            isReserved: export.isReserved,
+            isLoading: false,
+            markedAccount: export.markedAccount,
+            descriptionSaved: export.descriptionSaved,
+            usedAccounts: export.usedAccounts,
+            clearFailure: true,
+          ),
+        );
+      },
+      (failure) => emit(
         state.copyWith(
-          account: export.account,
-          descriptorKey: export.descriptorKey,
-          isReserved: export.isReserved,
           isLoading: false,
-          markedAccount: export.markedAccount,
-          descriptionSaved: export.descriptionSaved,
-          usedAccounts: export.usedAccounts,
-          clearFailure: true,
+          usedAccounts: const [],
+          failure: failure,
         ),
-      );
-    }, (failure) => emit(state.copyWith(isLoading: false, failure: failure)));
+      ),
+    );
   }
 }

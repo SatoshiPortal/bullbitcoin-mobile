@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
 import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
@@ -231,6 +232,10 @@ void main() {
     final export = _MockExportSigningKeyUsecase();
     final release = _MockReleaseSigningKeyAccountUsecase();
     when(release.execute).thenAnswer((_) async => const Ok(null));
+    final pending = Completer<void>();
+    addTearDown(() {
+      if (!pending.isCompleted) pending.complete();
+    });
     const rows = [
       UsedSigningKeyAccount(
         account: 0,
@@ -249,6 +254,10 @@ void main() {
       ),
     ).thenAnswer((invocation) async {
       final account = invocation.namedArguments[#account] as int? ?? 3;
+      if (account == 4) {
+        await pending.future;
+        return const Err(SettingsSigningKeyExportFailure());
+      }
       return Ok((
         account: account,
         descriptorKey: 'key-$account',
@@ -312,6 +321,20 @@ void main() {
     expect(cubit.state.account, 1);
     expect(cubit.state.isReserved, isTrue);
     expect(find.byType(QrDisplayWidget), findsNothing);
+    await tester.tap(find.byType(TextField));
+    await tester.enterText(find.byType(TextField), '4');
+    await tester.pump();
+    expect(cubit.state.isLoading, isTrue);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).focusNode!.hasFocus,
+      isTrue,
+    );
+    expect(find.text('Account 1 — Cold key'), findsOneWidget);
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Keys already used'), findsNothing);
+    expect(find.text('Retry'), findsOneWidget);
+    expect(cubit.state.usedAccounts, isEmpty);
   });
 
   testWidgets('failed load offers Retry without a partial list or key', (
