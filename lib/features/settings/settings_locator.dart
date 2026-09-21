@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
+    as domain;
 import 'package:bb_mobile/features/settings/data/payjoin_disclaimer_repository_impl.dart';
 import 'package:bb_mobile/features/settings/domain/repositories/payjoin_disclaimer_repository.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/get_payjoin_disclaimer_shown_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_testnet_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/mark_payjoin_disclaimer_shown_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
@@ -27,6 +30,9 @@ import 'package:get_it/get_it.dart';
 class SettingsLocator {
   static void setup(GetIt locator) {
     // Usecases
+    locator.registerFactory<GetTestnetModeUsecase>(
+      () => GetTestnetModeUsecase(locator<domain.SettingsRepository>()),
+    );
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -124,6 +130,7 @@ class SettingsLocator {
 
     locator.registerLazySingleton<SettingsFacade>(
       () => SettingsFacade(
+        locator<GetTestnetModeUsecase>(),
         setPayjoinEnabledUsecase: locator<SetPayjoinEnabledUsecase>(),
         watchPayjoinPolicyUsecase: locator<WatchPayjoinPolicyUsecase>(),
       ),

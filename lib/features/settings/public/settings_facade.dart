@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_testnet_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
 
@@ -10,13 +11,18 @@ export 'payjoin_disclaimer_dialog.dart';
 
 /// Public settings contract consumed by other features.
 class SettingsFacade {
+  final GetTestnetModeUsecase _getTestnetModeUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
 
-  SettingsFacade({
+  SettingsFacade(
+    this._getTestnetModeUsecase, {
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
   });
+
+  Future<Result<bool, SettingsFailure>> getTestnetMode() =>
+      _getTestnetModeUsecase.execute();
 
   Future<Result<bool, SettingsFailure>> setPayjoinEnabled(
     bool enabled, {

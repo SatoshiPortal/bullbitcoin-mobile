@@ -8,12 +8,14 @@ class BBTextFormField extends StatelessWidget {
     this.labelText,
     this.labelStyle,
     this.controller,
+    this.initialValue,
     this.focusNode,
     this.autofocus,
     this.inputFormatters,
     this.style,
     this.textInputAction,
     this.hintText,
+    this.errorText,
     this.onChanged,
     this.onFieldSubmitted,
     this.validator,
@@ -22,17 +24,23 @@ class BBTextFormField extends StatelessWidget {
     this.suffix,
     this.suffixText,
     this.disabled,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
+    this.smartQuotesType,
+    this.smartDashesType,
   });
 
   final String? labelText;
   final TextStyle? labelStyle;
   final TextEditingController? controller;
+  final String? initialValue;
   final FocusNode? focusNode;
   final bool? autofocus;
   final List<TextInputFormatter>? inputFormatters;
   final TextStyle? style;
   final TextInputAction? textInputAction;
   final String? hintText;
+  final String? errorText;
   final void Function(String)? onChanged;
   final void Function(String)? onFieldSubmitted;
   final String? Function(String?)? validator;
@@ -41,6 +49,10 @@ class BBTextFormField extends StatelessWidget {
   final String? suffixText;
   final Widget? suffix;
   final bool? disabled;
+  final bool enableSuggestions;
+  final bool autocorrect;
+  final SmartQuotesType? smartQuotesType;
+  final SmartDashesType? smartDashesType;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +78,7 @@ class BBTextFormField extends StatelessWidget {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
+          initialValue: controller == null ? initialValue : null,
           focusNode: focusNode,
           autofocus: autofocus ?? false,
           textInputAction: textInputAction,
@@ -74,6 +87,10 @@ class BBTextFormField extends StatelessWidget {
             color: isDisabled ? context.appColors.outline : null,
           ),
           enabled: !isDisabled,
+          enableSuggestions: enableSuggestions,
+          autocorrect: autocorrect,
+          smartQuotesType: smartQuotesType,
+          smartDashesType: smartDashesType,
           decoration: InputDecoration(
             fillColor: isDisabled
                 ? context.appColors.surfaceContainerHighest
@@ -101,6 +118,7 @@ class BBTextFormField extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
             hintText: hintText,
+            errorText: errorText,
             hintStyle: context.font.bodyMedium?.copyWith(
               color: context.appColors.outline,
             ),

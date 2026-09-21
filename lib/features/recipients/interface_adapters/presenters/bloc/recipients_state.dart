@@ -20,6 +20,8 @@ sealed class RecipientsState with _$RecipientsState {
     @Default('') String sinpeOwnerName,
     @Default(false) bool isAddingRecipient,
     Exception? failedToAddRecipient,
+    @Default(false) bool isUpdatingRecipient,
+    RecipientsFailure? failedToUpdateRecipient,
     Exception? failedToSelectRecipient,
   }) = _RecipientsState;
   const RecipientsState._();
@@ -27,6 +29,7 @@ sealed class RecipientsState with _$RecipientsState {
   bool get isLoading =>
       isLoadingRecipients ||
       isAddingRecipient ||
+      isUpdatingRecipient ||
       isCheckingSinpe ||
       isSearchingCadBillers;
 

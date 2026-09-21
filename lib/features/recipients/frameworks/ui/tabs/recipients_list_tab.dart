@@ -11,9 +11,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class RecipientsListTab extends StatefulWidget {
-  const RecipientsListTab({this.hookError, super.key});
+  const RecipientsListTab({required this.onEdit, this.hookError, super.key});
 
   final String? hookError;
+  final ValueChanged<RecipientViewModel> onEdit;
 
   @override
   RecipientsListTabState createState() => RecipientsListTabState();
@@ -204,6 +205,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               _selectedRecipient = recipient;
             });
           },
+          onEdit: () => widget.onEdit(recipient),
         );
       },
       itemCount: recipients.length,

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,11 +12,13 @@ class RecipientFormContinueButton extends StatelessWidget {
     required this.onPressed,
     this.hookError,
     this.formDisabled = false,
+    this.isEditing = false,
   });
 
   final VoidCallback onPressed;
   final String? hookError;
   final bool formDisabled;
+  final bool isEditing;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,12 @@ class RecipientFormContinueButton extends StatelessWidget {
     final failedToAddRecipient = context.select(
       (RecipientsBloc bloc) => bloc.state.failedToAddRecipient,
     );
+    final failedToUpdateRecipient = context.select(
+      (RecipientsBloc bloc) => bloc.state.failedToUpdateRecipient,
+    );
+    final failureText = isEditing
+        ? failedToUpdateRecipient?.toTranslated(context)
+        : failedToAddRecipient?.toString();
 
     return Column(
       children: [
@@ -38,18 +47,18 @@ class RecipientFormContinueButton extends StatelessWidget {
               ),
             ),
           ),
-        if (failedToAddRecipient != null)
+        if (failureText != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              '$failedToAddRecipient',
+              failureText,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
             ),
           ),
         BBButton.big(
-          label: context.loc.recipientsContinue,
+          label: isEditing ? context.loc.save : context.loc.recipientsContinue,
           disabled: isLoading || formDisabled,
           onPressed: onPressed,
           bgColor: context.appColors.secondary,

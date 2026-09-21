@@ -1,15 +1,16 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SpeiSmsMxnForm extends StatefulWidget {
-  const SpeiSmsMxnForm({super.key, this.hookError});
+  const SpeiSmsMxnForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -26,6 +27,16 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
   String _phoneNumber = '';
   String _name = '';
   String _label = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final recipient = widget.recipient;
+    _institutionCode = recipient?.institutionCode ?? '';
+    _phoneNumber = recipient?.phoneNumber ?? '';
+    _name = recipient?.name ?? '';
+    _label = recipient?.label ?? '';
+  }
 
   @override
   void dispose() {
@@ -45,7 +56,7 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -59,7 +70,9 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _institutionCode,
             labelText: context.loc.recipientsFieldInstitutionCode,
+            errorText: recipientUpdateFieldError(context, 'institutionCode'),
             hintText: context.loc.recipientsFieldInstitutionCodeHint,
             focusNode: _institutionCodeFocusNode,
             autofocus: true,
@@ -76,7 +89,9 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _phoneNumber,
             labelText: context.loc.recipientsFieldPhoneNumber,
+            errorText: recipientUpdateFieldError(context, 'phone'),
             hintText: context.loc.recipientsFieldPhoneNumberHint,
             focusNode: _phoneNumberFocusNode,
             textInputAction: .next,
@@ -92,7 +107,9 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _name,
             labelText: context.loc.recipientsFieldName,
+            errorText: recipientUpdateFieldError(context, 'name'),
             hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
@@ -108,7 +125,9 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
+            errorText: recipientUpdateFieldError(context, 'label'),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -124,6 +143,7 @@ class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),

@@ -1,15 +1,16 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class SpeiClabeMxnForm extends StatefulWidget {
-  const SpeiClabeMxnForm({super.key, this.hookError});
+  const SpeiClabeMxnForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -24,6 +25,15 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
   String _clabe = '';
   String _name = '';
   String _label = '';
+
+  @override
+  void initState() {
+    super.initState();
+    final recipient = widget.recipient;
+    _clabe = recipient?.clabe ?? '';
+    _name = recipient?.name ?? '';
+    _label = recipient?.label ?? '';
+  }
 
   @override
   void dispose() {
@@ -41,7 +51,7 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -55,7 +65,9 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _clabe,
             labelText: context.loc.recipientsFieldClabe,
+            errorText: recipientUpdateFieldError(context, 'clabe'),
             hintText: context.loc.recipientsFieldClabeHint,
             focusNode: _clabeFocusNode,
             autofocus: true,
@@ -72,7 +84,9 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _name,
             labelText: context.loc.recipientsFieldName,
+            errorText: recipientUpdateFieldError(context, 'name'),
             hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
@@ -88,7 +102,9 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
+            errorText: recipientUpdateFieldError(context, 'label'),
             hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
@@ -104,6 +120,7 @@ class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),

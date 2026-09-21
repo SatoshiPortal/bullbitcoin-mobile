@@ -59,8 +59,6 @@ class InteracEmailCadDetails extends RecipientDetails {
     final normalizedSecurityAnswer = trimmedSecurityAnswer?.isEmpty == false
         ? trimmedSecurityAnswer
         : null;
-    final hasCompleteSecurityDetails =
-        normalizedSecurityQuestion != null && normalizedSecurityAnswer != null;
 
     return InteracEmailCadDetails._(
       label: label,
@@ -68,12 +66,8 @@ class InteracEmailCadDetails extends RecipientDetails {
       isOwner: isOwner,
       email: email.trim(),
       name: name.trim(),
-      securityQuestion: hasCompleteSecurityDetails
-          ? normalizedSecurityQuestion
-          : null,
-      securityAnswer: hasCompleteSecurityDetails
-          ? normalizedSecurityAnswer
-          : null,
+      securityQuestion: normalizedSecurityQuestion,
+      securityAnswer: normalizedSecurityAnswer,
     );
   }
 
@@ -550,7 +544,14 @@ class BankAccountArgentinaDetails extends RecipientDetails {
 // ── PSE (Colombia)
 @immutable
 class PseColombiaDetails extends RecipientDetails {
-  final String name;
+  final String? name;
+  final String? lastname;
+  @override
+  final String? email;
+  @override
+  final bool? isCorporate;
+  @override
+  final String? corporateName;
   final String accountType;
   final String bankAccount;
   final String bankCode;
@@ -562,7 +563,11 @@ class PseColombiaDetails extends RecipientDetails {
     super.label,
     super.isDefault = false,
     super.isOwner,
-    required this.name,
+    this.name,
+    this.lastname,
+    this.email,
+    this.isCorporate,
+    this.corporateName,
     required this.accountType,
     required this.bankAccount,
     required this.bankCode,
@@ -575,7 +580,11 @@ class PseColombiaDetails extends RecipientDetails {
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    String? name,
+    String? lastname,
+    String? email,
+    bool? isCorporate,
+    String? corporateName,
     required String accountType,
     required String bankAccount,
     required String bankCode,
@@ -583,8 +592,12 @@ class PseColombiaDetails extends RecipientDetails {
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
+    if (isCorporate != true && (name == null || name.trim().isEmpty)) {
       throw ArgumentError('Name cannot be empty');
+    }
+    if (isCorporate == true &&
+        (corporateName == null || corporateName.trim().isEmpty)) {
+      throw ArgumentError('Corporate name cannot be empty');
     }
     if (accountType.trim().isEmpty) {
       throw ArgumentError('Account type cannot be empty');
@@ -607,7 +620,11 @@ class PseColombiaDetails extends RecipientDetails {
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      name: _nullIfBlank(name),
+      lastname: _nullIfBlank(lastname),
+      email: _nullIfBlank(email),
+      isCorporate: isCorporate,
+      corporateName: _nullIfBlank(corporateName),
       accountType: accountType.trim(),
       bankAccount: bankAccount.trim(),
       bankCode: bankCode.trim(),
@@ -627,7 +644,14 @@ class NequiColombiaDetails extends RecipientDetails {
   final String phoneNumber;
   final String documentId;
   final String documentType;
-  final String name;
+  final String? name;
+  final String? lastname;
+  @override
+  final String? email;
+  @override
+  final bool? isCorporate;
+  @override
+  final String? corporateName;
 
   const NequiColombiaDetails._({
     super.label,
@@ -636,20 +660,32 @@ class NequiColombiaDetails extends RecipientDetails {
     required this.phoneNumber,
     required this.documentId,
     required this.documentType,
-    required this.name,
+    this.name,
+    this.lastname,
+    this.email,
+    this.isCorporate,
+    this.corporateName,
   });
 
   factory NequiColombiaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    String? name,
+    String? lastname,
+    String? email,
+    bool? isCorporate,
+    String? corporateName,
     required String phoneNumber,
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
+    if (isCorporate != true && (name == null || name.trim().isEmpty)) {
       throw ArgumentError('Name cannot be empty');
+    }
+    if (isCorporate == true &&
+        (corporateName == null || corporateName.trim().isEmpty)) {
+      throw ArgumentError('Corporate name cannot be empty');
     }
     if (phoneNumber.trim().isEmpty) {
       throw ArgumentError('Phone number cannot be empty');
@@ -665,7 +701,11 @@ class NequiColombiaDetails extends RecipientDetails {
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      name: _nullIfBlank(name),
+      lastname: _nullIfBlank(lastname),
+      email: _nullIfBlank(email),
+      isCorporate: isCorporate,
+      corporateName: _nullIfBlank(corporateName),
       phoneNumber: phoneNumber.trim(),
       documentId: documentId.trim(),
       documentType: documentType.trim(),

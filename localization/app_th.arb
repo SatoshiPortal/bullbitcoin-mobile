@@ -11460,6 +11460,7 @@
   "recoverbullSettingsTitle": "การตั้งค่า Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL เซิร์ฟเวอร์คีย์",
   "recoverbullSettingsEdit": "แก้ไข",
+  "recipientsEdit": "แก้ไข",
   "recoverbullSettingsCancel": "ยกเลิก",
   "recoverbullSettingsSave": "บันทึก",
   "recoverbullSettingsUrlRequired": "ต้องระบุ URL",

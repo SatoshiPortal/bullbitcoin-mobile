@@ -4310,6 +4310,7 @@
   "recoverbullSettingsTitle": "Paramètres Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL du serveur de clés",
   "recoverbullSettingsEdit": "Modifier",
+  "recipientsEdit": "Modifier",
   "recoverbullSettingsCancel": "Annuler",
   "recoverbullSettingsSave": "Enregistrer",
   "recoverbullSettingsUrlRequired": "L'URL est requise",

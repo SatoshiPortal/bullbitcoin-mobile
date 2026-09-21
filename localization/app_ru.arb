@@ -4331,6 +4331,7 @@
   "recoverbullSettingsTitle": "Настройки Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL сервера ключей",
   "recoverbullSettingsEdit": "Изменить",
+  "recipientsEdit": "Изменить",
   "recoverbullSettingsCancel": "Отмена",
   "recoverbullSettingsSave": "Сохранить",
   "recoverbullSettingsUrlRequired": "URL обязателен",

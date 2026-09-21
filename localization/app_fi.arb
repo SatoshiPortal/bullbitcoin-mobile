@@ -4313,6 +4313,7 @@
   "recoverbullSettingsTitle": "Recoverbull-asetukset",
   "recoverbullSettingsKeyServerUrl": "Avainpalvelimen URL",
   "recoverbullSettingsEdit": "Muokkaa",
+  "recipientsEdit": "Muokkaa",
   "recoverbullSettingsCancel": "Peruuta",
   "recoverbullSettingsSave": "Tallenna",
   "recoverbullSettingsUrlRequired": "URL on pakollinen",

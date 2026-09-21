@@ -219,6 +219,10 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           documentId: d.documentId,
           documentType: d.documentType,
           name: d.name,
+          lastname: d.lastname,
+          email: d.email,
+          isCorporate: d.isCorporate,
+          corporateName: d.corporateName,
         );
       }(),
       RecipientType.nequiColombia => () {
@@ -233,6 +237,10 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           documentId: d.documentId,
           documentType: d.documentType,
           name: d.name,
+          lastname: d.lastname,
+          email: d.email,
+          isCorporate: d.isCorporate,
+          corporateName: d.corporateName,
         );
       }(),
     };

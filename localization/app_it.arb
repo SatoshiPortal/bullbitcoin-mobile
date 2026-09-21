@@ -4325,6 +4325,7 @@
   "recoverbullSettingsTitle": "Impostazioni Recoverbull",
   "recoverbullSettingsKeyServerUrl": "URL del server delle chiavi",
   "recoverbullSettingsEdit": "Modifica",
+  "recipientsEdit": "Modifica",
   "recoverbullSettingsCancel": "Annulla",
   "recoverbullSettingsSave": "Salva",
   "recoverbullSettingsUrlRequired": "L'URL è obbligatorio",

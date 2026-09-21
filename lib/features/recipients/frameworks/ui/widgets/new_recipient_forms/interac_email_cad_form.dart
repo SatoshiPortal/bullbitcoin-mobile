@@ -3,16 +3,19 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bb_mobile/features/recipients/ui/widgets/recipient_form_submission.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 
 class InteracEmailCadForm extends StatefulWidget {
-  const InteracEmailCadForm({super.key, this.hookError});
+  const InteracEmailCadForm({super.key, this.recipient, this.hookError});
 
+  final RecipientViewModel? recipient;
   final String? hookError;
 
   @override
@@ -41,9 +44,13 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
         .read<RecipientsBloc>()
         .state
         .onlyOwnerRecipients;
-    if (_onlyOwnerPermitted) {
-      _isMyAccount = true;
-    }
+    final recipient = widget.recipient;
+    _email = recipient?.email ?? '';
+    _name = recipient?.name ?? '';
+    _securityQuestion = recipient?.securityQuestion ?? '';
+    _securityAnswer = recipient?.securityAnswer ?? '';
+    _label = recipient?.label ?? '';
+    _isMyAccount = recipient?.isOwner ?? _onlyOwnerPermitted;
   }
 
   @override
@@ -61,13 +68,15 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
       final formData = InteracEmailCadFormDataModel(
         email: _email,
         name: _name,
-        securityQuestion: _securityQuestion,
-        securityAnswer: _securityAnswer,
+        securityQuestion: _securityQuestion.trim().isEmpty
+            ? null
+            : _securityQuestion,
+        securityAnswer: _securityAnswer.trim().isEmpty ? null : _securityAnswer,
         isOwner: _isMyAccount,
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      submitRecipientForm(context, formData, recipient: widget.recipient);
     }
   }
 
@@ -81,8 +90,10 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
+            initialValue: _email,
             labelText: context.loc.recipientsFieldEmailAddress,
             hintText: context.loc.recipientsFieldEmailAddressHint,
+            errorText: recipientUpdateFieldError(context, 'email'),
             focusNode: _emailFocusNode,
             autofocus: true,
             inputFormatters: [
@@ -104,11 +115,15 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
+            initialValue: _name,
             labelText: context.loc.recipientsFieldName,
             hintText: context.loc.recipientsFieldNameHint,
+            errorText: recipientUpdateFieldError(context, 'name'),
             focusNode: _nameFocusNode,
             textInputAction: .next,
-            onFieldSubmitted: (_) => _securityQuestionFocusNode.requestFocus(),
+            onFieldSubmitted: (_) => widget.recipient == null
+                ? _labelFocusNode.requestFocus()
+                : _securityQuestionFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? context.loc.recipientsValidationFieldRequired
                 : null,
@@ -118,62 +133,46 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
               });
             },
           ),
-          const Gap(12.0),
-          BBTextFormField(
-            labelText: context.loc.recipientsFieldSecurityQuestion,
-            hintText: context.loc.recipientsFieldSecurityQuestionHint,
-            focusNode: _securityQuestionFocusNode,
-            textInputAction: .next,
-            onFieldSubmitted: (_) => _securityAnswerFocusNode.requestFocus(),
-            inputFormatters: [LengthLimitingTextInputFormatter(40)],
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) {
-                return context.loc.recipientsValidationFieldRequired;
-              }
-              if (v.trim().length < 10) {
-                return context.loc.recipientsValidationSecurityQuestionMin;
-              }
-              return null;
-            },
-            onChanged: (value) {
-              setState(() {
-                _securityQuestion = value;
-              });
-            },
-          ),
-          if (_securityQuestion.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Text(
-                context.loc.recipientsCharCounter(_securityQuestion.length),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _securityQuestion.length < 10
-                      ? context.appColors.error
-                      : context.appColors.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
+          if (widget.recipient != null) ...[
+            const Gap(12.0),
+            BBTextFormField(
+              initialValue: _securityQuestion,
+              labelText: context.loc.recipientsFieldSecurityQuestion,
+              hintText: context.loc.withdrawInteracSecurityQuestionLengthError,
+              errorText: recipientUpdateFieldError(context, 'securityQuestion'),
+              focusNode: _securityQuestionFocusNode,
+              textInputAction: .next,
+              onFieldSubmitted: (_) => _securityAnswerFocusNode.requestFocus(),
+              validator: _validateSecurityQuestion,
+              onChanged: (value) {
+                setState(() => _securityQuestion = value);
+              },
             ),
+            const Gap(12.0),
+            BBTextFormField(
+              initialValue: _securityAnswer,
+              labelText: context.loc.recipientsFieldSecurityAnswer,
+              hintText: context.loc.withdrawInteracSecurityAnswerFormatError,
+              errorText: recipientUpdateFieldError(context, 'securityAnswer'),
+              focusNode: _securityAnswerFocusNode,
+              textInputAction: .next,
+              onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
+              enableSuggestions: false,
+              autocorrect: false,
+              smartDashesType: SmartDashesType.disabled,
+              smartQuotesType: SmartQuotesType.disabled,
+              validator: _validateSecurityAnswer,
+              onChanged: (value) {
+                setState(() => _securityAnswer = value);
+              },
+            ),
+          ],
           const Gap(12.0),
           BBTextFormField(
-            labelText: context.loc.recipientsFieldSecurityAnswer,
-            hintText: context.loc.recipientsFieldSecurityAnswerHint,
-            focusNode: _securityAnswerFocusNode,
-            textInputAction: .next,
-            onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
-            onChanged: (value) {
-              setState(() {
-                _securityAnswer = value;
-              });
-            },
-          ),
-          const Gap(12.0),
-          BBTextFormField(
+            initialValue: _label,
             labelText: context.loc.recipientsLabelOptional,
             hintText: context.loc.recipientsLabelHint,
+            errorText: recipientUpdateFieldError(context, 'label'),
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
@@ -225,9 +224,35 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            isEditing: widget.recipient != null,
           ),
         ],
       ),
     );
+  }
+
+  String? _validateSecurityQuestion(String? value) {
+    final question = value?.trim() ?? '';
+    final answer = _securityAnswer.trim();
+    if (question.isEmpty && answer.isEmpty) return null;
+    if (question.isEmpty) return context.loc.recipientsValidationFieldRequired;
+    if (question.length < 3 || question.length > 40) {
+      return context.loc.withdrawInteracSecurityQuestionLengthError;
+    }
+    return null;
+  }
+
+  String? _validateSecurityAnswer(String? value) {
+    final question = _securityQuestion.trim();
+    final answer = value?.trim() ?? '';
+    if (question.isEmpty && answer.isEmpty) return null;
+    if (answer.isEmpty) return context.loc.recipientsValidationFieldRequired;
+    if (answer.length < 3 || answer.length > 40) {
+      return context.loc.withdrawInteracSecurityAnswerLengthError;
+    }
+    if (!RegExp(r'^[a-zA-ZÀ-ž0-9\-]*$').hasMatch(answer)) {
+      return context.loc.withdrawInteracSecurityAnswerFormatError;
+    }
+    return null;
   }
 }

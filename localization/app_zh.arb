@@ -4209,6 +4209,7 @@
   "recoverbullSettingsTitle": "Recoverbull 设置",
   "recoverbullSettingsKeyServerUrl": "密钥服务器 URL",
   "recoverbullSettingsEdit": "编辑",
+  "recipientsEdit": "编辑",
   "recoverbullSettingsCancel": "取消",
   "recoverbullSettingsSave": "保存",
   "recoverbullSettingsUrlRequired": "URL 为必填项",
