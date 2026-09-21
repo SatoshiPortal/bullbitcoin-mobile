@@ -4906,5 +4906,8 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "bitcoinSettingsWalletsTitle": "Гаманець",
+  "walletsListTitle": "Деталі Wallet",
+  "walletsListNoWalletsMessage": "Немає гаманців"
 }

@@ -102,6 +102,7 @@ void main() {
         expect(item.path, ['Settings', 'Tools', item.title]);
       }
       expect(walletSettingsItemOrder, [
+        SettingsItemId.wallets,
         SettingsItemId.dataBackup,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,

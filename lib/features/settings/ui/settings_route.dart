@@ -8,6 +8,7 @@ enum SettingsRoute {
   language('language'),
   currency('currency'),
   backupSettings('backup-settings'),
+  walletDetailsWalletList('wallet-details'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
   walletRegistration('wallet-details/:walletId/registration'),
   walletAddresses('wallet-details/:walletId/addresses'),

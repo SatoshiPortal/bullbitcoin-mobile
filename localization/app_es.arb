@@ -4923,5 +4923,8 @@
   "signingKeyUsedTitle": "Claves ya utilizadas",
   "signingKeyUsedNoDescription": "Sin descripción",
   "signingKeyUsedSign": "Firmar",
-  "bullVaultRegisterExternalEntry": "Registrar un monedero multifirma externo"
+  "bullVaultRegisterExternalEntry": "Registrar un monedero multifirma externo",
+  "bitcoinSettingsWalletsTitle": "Billeteras",
+  "walletsListTitle": "Detalles de billetera",
+  "walletsListNoWalletsMessage": "No se encontraron billeteras"
 }

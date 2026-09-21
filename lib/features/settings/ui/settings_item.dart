@@ -38,6 +38,7 @@ enum SettingsItemId {
   recoverbull,
   labels,
   transactionHistory,
+  wallets,
   walletSettings,
   appSettings,
   btcMap,
@@ -68,6 +69,7 @@ enum SettingsItemId {
 enum SettingsItemSection { root, backup, wallet, bullvault, app, tools, help }
 
 const walletSettingsItemOrder = [
+  SettingsItemId.wallets,
   SettingsItemId.dataBackup,
   SettingsItemId.importWallet,
   SettingsItemId.electrum,
@@ -190,6 +192,19 @@ List<SettingsItem> buildSettingsItems({
       };
 
   final items = [
+    SettingsItem(
+      id: SettingsItemId.wallets,
+      section: SettingsItemSection.wallet,
+      title: localization.bitcoinSettingsWalletsTitle,
+      path: path(
+        SettingsItemSection.wallet,
+        localization.bitcoinSettingsWalletsTitle,
+      ),
+      icon: Icons.account_balance_wallet,
+      open: (context) =>
+          context.pushNamed(SettingsRoute.walletDetailsWalletList.name),
+      keywords: [english.bitcoinSettingsWalletsTitle],
+    ),
     SettingsItem(
       id: SettingsItemId.dataBackup,
       section: SettingsItemSection.wallet,

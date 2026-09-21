@@ -17407,5 +17407,17 @@
   "signingKeyUsedSign": "Sign",
   "@signingKeyUsedSign": {},
   "bullVaultRegisterExternalEntry": "Register an external multisig",
-  "@bullVaultRegisterExternalEntry": {}
+  "@bullVaultRegisterExternalEntry": {},
+  "bitcoinSettingsWalletsTitle": "Wallets",
+  "@bitcoinSettingsWalletsTitle": {
+    "description": "Wallet list entry in Settings"
+  },
+  "walletsListTitle": "Wallet details",
+  "@walletsListTitle": {
+    "description": "Title of the wallet list in Settings"
+  },
+  "walletsListNoWalletsMessage": "No wallets found",
+  "@walletsListNoWalletsMessage": {
+    "description": "Empty wallet list in Settings"
+  }
 }

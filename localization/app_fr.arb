@@ -4973,5 +4973,8 @@
   "signingKeyUsedTitle": "Clés déjà utilisées",
   "signingKeyUsedNoDescription": "Aucune description",
   "signingKeyUsedSign": "Signer",
-  "bullVaultRegisterExternalEntry": "Enregistrer un portefeuille multisig externe"
+  "bullVaultRegisterExternalEntry": "Enregistrer un portefeuille multisig externe",
+  "bitcoinSettingsWalletsTitle": "Portefeuilles",
+  "walletsListTitle": "Détails du portefeuille",
+  "walletsListNoWalletsMessage": "Aucun portefeuille trouvé"
 }

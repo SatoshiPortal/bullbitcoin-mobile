@@ -25,6 +25,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_export_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_registration_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
@@ -225,8 +226,16 @@ class SettingsRouter {
           TestWalletBackupRouter.route,
         ],
       ),
-      // A wallet is always reached from its own screen (wallet home → gear),
-      // never from a list, so these carry the shared prefix themselves.
+      GoRoute(
+        path: SettingsRoute.walletDetailsWalletList.path,
+        name: SettingsRoute.walletDetailsWalletList.name,
+        builder: (context, state) => BlocBuilder<WalletBloc, WalletState>(
+          builder: (context, state) => WalletsListScreen(
+            wallets: state.wallets,
+            isLoading: state.status == WalletStatus.loading,
+          ),
+        ),
+      ),
       GoRoute(
         path: SettingsRoute.walletDetailsSelectedWallet.path,
         name: SettingsRoute.walletDetailsSelectedWallet.name,

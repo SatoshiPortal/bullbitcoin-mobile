@@ -30,6 +30,7 @@ void main() {
     'wallet group reserves the selected order without a Passphrase slot',
     () {
       expect(walletSettingsItemOrder.map((id) => id.name), [
+        'wallets',
         'dataBackup',
         'importWallet',
         'electrum',
