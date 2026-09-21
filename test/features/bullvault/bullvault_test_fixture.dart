@@ -34,6 +34,7 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
   bool includesInheritance = false,
   bool usesBullMobile = true,
   String? mobilePassphrase,
+  BullVaultScheduleUnit scheduleUnit = BullVaultScheduleUnit.years,
 }) {
   final createdAt = DateTime.utc(2027);
   final everyday = _signer(
@@ -65,6 +66,7 @@ BullVaultRecoveryPackage testBullVaultRecoveryPackage({
   final schedule = BullVaultSchedule.defaultsFor(
     protection: protection,
     includesInheritance: includesInheritance,
+    unit: scheduleUnit,
   );
   final policy = BullVaultPolicy.build(
     lineageId: lineageId,
@@ -116,6 +118,7 @@ BullVaultCreateResult testBullVaultCreateResult({
   bool includesInheritance = false,
   bool usesBullMobile = true,
   String? mobilePassphrase,
+  BullVaultScheduleUnit scheduleUnit = BullVaultScheduleUnit.years,
 }) {
   final recoveryPackage = testBullVaultRecoveryPackage(
     previousVaultId: previousVaultId,
@@ -126,6 +129,7 @@ BullVaultCreateResult testBullVaultCreateResult({
     includesInheritance: includesInheritance,
     usesBullMobile: usesBullMobile,
     mobilePassphrase: mobilePassphrase,
+    scheduleUnit: scheduleUnit,
   );
   final policy = recoveryPackage.policy;
   final createdAt = DateTime.utc(2027);
