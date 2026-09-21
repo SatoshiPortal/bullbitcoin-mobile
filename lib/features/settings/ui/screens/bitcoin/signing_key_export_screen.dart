@@ -7,7 +7,8 @@ import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
-import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
+import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
+import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullInputText, Gap;
@@ -70,37 +71,43 @@ class _SigningKeyExportScreenState extends State<SigningKeyExportScreen> {
                     ),
                   ),
                   const Gap(24),
-                  Text(
-                    context.loc.signingKeyUsedTitle,
-                    style: context.font.titleMedium,
-                  ),
-                  const Gap(8),
-                  for (final used in state.usedAccounts) ...[
-                    BullBorderedTile(
-                      onTap: state.isLoading
-                          ? null
-                          : () => _selectAccount(context, used.account),
-                      child: Text(
-                        '${context.loc.signingKeyExportAccount} ${used.account} — '
-                        '${used.description ?? (used.source == UsedSigningKeySource.wallet ? context.loc.signingKeyUsedWallet : context.loc.signingKeyUsedLegacy)}',
-                        style: context.font.bodyMedium,
-                      ),
+                  if (state.usedAccounts.isNotEmpty) ...[
+                    Text(
+                      context.loc.signingKeyUsedTitle,
+                      style: context.font.titleMedium,
                     ),
                     const Gap(8),
+                    for (final used in state.usedAccounts) ...[
+                      BullBorderedTile(
+                        onTap: state.isLoading
+                            ? null
+                            : () => _selectAccount(context, used.account),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${context.loc.signingKeyExportAccount} ${used.account} — '
+                                '${used.description ?? context.loc.signingKeyUsedNoDescription}',
+                                style: context.font.bodyMedium,
+                              ),
+                            ),
+                            if (used.walletId case final walletId?)
+                              TextButton(
+                                onPressed: state.isLoading
+                                    ? null
+                                    : () => context.pushNamed(
+                                        const PsbtSigningFacade().routeName,
+                                        pathParameters: {'walletId': walletId},
+                                      ),
+                                child: Text(context.loc.signingKeyUsedSign),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const Gap(8),
+                    ],
+                    const Gap(24),
                   ],
-                  if (state.usedAccountsIncomplete)
-                    Text(
-                      context.loc.signingKeyUsedIncomplete,
-                      style: context.font.bodySmall,
-                    ),
-                  if (!state.isLoading &&
-                      state.usedAccounts.isEmpty &&
-                      !state.usedAccountsIncomplete)
-                    Text(
-                      context.loc.signingKeyUsedNone,
-                      style: context.font.bodySmall,
-                    ),
-                  const Gap(24),
                   _SigningKeyAccountInput(
                     account: state.account,
                     onChanged: (account) => _selectAccount(context, account),

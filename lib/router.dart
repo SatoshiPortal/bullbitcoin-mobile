@@ -243,7 +243,9 @@ class AppRouter {
       PsbtRouterConfig.route,
       PsbtSigningRouter.route,
       ImportWalletRouter.route,
-      ...BullVaultRouter.routes,
+      ...BullVaultRouter.routes(
+        registerExternalRouteName: ImportWatchOnlyWalletRoutes.import.name,
+      ),
       ...BackupSettingsRouter.recoveryRoutes(
         onVaultsRecovered: (result) {
           if (result.complete) {

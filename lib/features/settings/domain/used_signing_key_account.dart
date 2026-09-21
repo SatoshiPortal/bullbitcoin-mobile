@@ -1,15 +1,13 @@
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 
-enum UsedSigningKeySource { memo, wallet, legacy }
-
 final class UsedSigningKeyAccount {
   final int account;
-  final UsedSigningKeySource source;
+  final String? walletId;
   final String? description;
 
   const UsedSigningKeyAccount({
     required this.account,
-    required this.source,
+    this.walletId,
     this.description,
   });
 

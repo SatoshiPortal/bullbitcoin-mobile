@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/psbt_signing/public/psbt_signing_facade.dart';
 import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:go_router/go_router.dart';
@@ -50,13 +52,9 @@ void main() {
               usedAccounts: [
                 UsedSigningKeyAccount(
                   account: account,
-                  source: descriptionSaved
-                      ? UsedSigningKeySource.memo
-                      : UsedSigningKeySource.legacy,
                   description: descriptionSaved ? 'Family vault' : null,
                 ),
               ],
-              usedAccountsIncomplete: false,
             ));
           }
           return Ok((
@@ -66,7 +64,6 @@ void main() {
             markedAccount: null,
             descriptionSaved: true,
             usedAccounts: <UsedSigningKeyAccount>[],
-            usedAccountsIncomplete: false,
           ));
         });
         final cubit = SigningKeyExportCubit(
@@ -100,8 +97,8 @@ void main() {
           ),
         );
 
-        expect(find.text('Keys already used'), findsOneWidget);
-        expect(find.text('No keys handed out yet'), findsOneWidget);
+        expect(find.text('Keys already used'), findsNothing);
+        expect(find.text('No keys handed out yet'), findsNothing);
         expect(find.byType(TextField), findsOneWidget);
         expect(cubit.state.account, 0);
         expect(cubit.state.descriptorKey, 'signing-key-0');
@@ -153,7 +150,7 @@ void main() {
           find.text(
             descriptionSaved
                 ? 'Account 12 — Family vault'
-                : 'Account 12 — Used, no description',
+                : 'Account 12 — No description',
           ),
           findsOneWidget,
         );
@@ -194,7 +191,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: false,
       )),
     );
     final cubit = SigningKeyExportCubit(
@@ -238,19 +234,12 @@ void main() {
     const rows = [
       UsedSigningKeyAccount(
         account: 0,
-        source: UsedSigningKeySource.wallet,
+
         description: 'Home vault',
+        walletId: 'home-wallet',
       ),
-      UsedSigningKeyAccount(
-        account: 1,
-        source: UsedSigningKeySource.memo,
-        description: 'Cold key',
-      ),
-      UsedSigningKeyAccount(
-        account: 2,
-        source: UsedSigningKeySource.memo,
-        description: 'Inheritance key',
-      ),
+      UsedSigningKeyAccount(account: 1, description: 'Cold key'),
+      UsedSigningKeyAccount(account: 2, description: 'Inheritance key'),
     ];
     when(
       () => export.execute(
@@ -267,7 +256,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: rows,
-        usedAccountsIncomplete: false,
       ));
     });
     final cubit = SigningKeyExportCubit(
@@ -276,15 +264,31 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load();
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => BlocProvider.value(
+            value: cubit,
+            child: const SigningKeyExportScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/wallet/:walletId/sign-psbt',
+          name: const PsbtSigningFacade().routeName,
+          builder: (_, state) => Scaffold(
+            body: Text('Signing ${state.pathParameters['walletId']}'),
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
     await tester.pumpWidget(
-      MaterialApp(
+      MaterialApp.router(
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: BlocProvider.value(
-          value: cubit,
-          child: const SigningKeyExportScreen(),
-        ),
+        routerConfig: router,
       ),
     );
     final wallet = find.text('Account 0 — Home vault');
@@ -296,7 +300,13 @@ void main() {
       tester.getTopLeft(heir).dy,
       lessThan(tester.getTopLeft(find.byType(TextField)).dy),
     );
+    expect(find.text('Sign'), findsOneWidget);
+    await tester.tap(find.text('Sign'));
+    await tester.pumpAndSettle();
+    expect(find.text('Signing home-wallet'), findsOneWidget);
     expect(cubit.state.account, 3);
+    router.pop();
+    await tester.pumpAndSettle();
     await tester.tap(cold);
     await tester.pumpAndSettle();
     expect(cubit.state.account, 1);
@@ -304,7 +314,7 @@ void main() {
     expect(find.byType(QrDisplayWidget), findsNothing);
   });
 
-  testWidgets('does not present an incomplete empty list as unused keys', (
+  testWidgets('failed load offers Retry without a partial list or key', (
     tester,
   ) async {
     final export = _MockExportSigningKeyUsecase();
@@ -316,17 +326,7 @@ void main() {
         markUsed: any(named: 'markUsed'),
         description: any(named: 'description'),
       ),
-    ).thenAnswer(
-      (_) async => const Ok((
-        account: 0,
-        descriptorKey: 'key-0',
-        isReserved: false,
-        markedAccount: null,
-        descriptionSaved: true,
-        usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: true,
-      )),
-    );
+    ).thenAnswer((_) async => const Err(SettingsSigningKeyExportFailure()));
     final cubit = SigningKeyExportCubit(
       exportSigningKeyUsecase: export,
       releaseSigningKeyAccountUsecase: release,
@@ -344,7 +344,14 @@ void main() {
         ),
       ),
     );
-    expect(find.text('Some records could not be read'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+    expect(find.text('Keys already used'), findsNothing);
+    expect(find.byType(QrDisplayWidget), findsNothing);
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    verify(
+      () => export.execute(account: null, markUsed: false, description: null),
+    ).called(2);
     expect(find.text('No keys handed out yet'), findsNothing);
   });
 }

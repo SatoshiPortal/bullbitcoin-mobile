@@ -117,6 +117,34 @@ void main() {
       };
 
   test(
+    'a restored signer memo preserves its BIP48 origin in the label store',
+    () async {
+      const xpub =
+          'xpub6ECRn8ehyKtWTtyqrmt8Dt5Vs7VSbh9Y8Zcyq7vcLEufmoo86VxqdYBEHEtt3H342PrmAiUyUkdNiFzdmGNEyUg7xLYt922WvfMEn2h8pnR';
+      const origin = '[5a3469b6/48h/0h/0h/2h]';
+      expect(
+        await registry<LabelsFacade>().store(
+          NewLabel(
+            type: LabelType.extendedPublicKey,
+            reference: xpub,
+            label: 'Family multisig',
+            origin: origin,
+          ),
+        ),
+        isA<Ok>(),
+      );
+      final snapshot = await capture();
+      await db.delete(db.labels).go();
+      expect(await registry<LabelsFacade>().fetchAll(), isEmpty);
+      expect(await repository.apply(snapshot, {}), isA<Ok>());
+      final restored = (await registry<LabelsFacade>().fetchAll()).single;
+      expect(restored.reference, xpub);
+      expect(restored.origin, origin);
+      expect(restored.label, 'Family multisig');
+    },
+  );
+
+  test(
     'capture keeps portable preferences and remaps owner references',
     () async {
       expect(

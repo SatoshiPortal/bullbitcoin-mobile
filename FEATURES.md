@@ -58,6 +58,7 @@ graph TB
     PSBT_FLOW[PSBT Flow]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     IMPORT_WALLET[Import Wallet]
+    IMPORT_WATCH_ONLY[Import Watch-only Wallet]
     IMPORT_MNEMONIC[Seed Import]
     BULLVAULT[BullVault]
     KEYCHAIN[Keychain Inventory / Nostr Keys]
@@ -169,6 +170,7 @@ graph TB
     BULLVAULT --> SEND
     BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
     BULLVAULT --> SETTINGS
+    BULLVAULT -->|Import route injected by app router| IMPORT_WATCH_ONLY
     BULLVAULT -->|Selected-wallet route only| PSBT_SIGNING
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR

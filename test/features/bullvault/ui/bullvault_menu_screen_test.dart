@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/result.dart';
@@ -43,7 +44,10 @@ void main() {
           path: '/menu',
           builder: (_, _) => BlocProvider.value(
             value: cubit,
-            child: const BullVaultMenuScreen(),
+            child: BullVaultMenuScreen(
+              registerExternalRouteName:
+                  ImportWatchOnlyWalletRoutes.import.name,
+            ),
           ),
         ),
         GoRoute(
@@ -59,6 +63,11 @@ void main() {
         GoRoute(
           path: '/recover',
           name: BullVaultFacade.restoreRouteName,
+          builder: destination,
+        ),
+        GoRoute(
+          path: '/import',
+          name: ImportWatchOnlyWalletRoutes.import.name,
           builder: destination,
         ),
         GoRoute(
@@ -109,7 +118,21 @@ void main() {
       expect(find.text(loc.bullVaultCreateEntry), findsOneWidget);
       expect(find.text(loc.bullVaultRecoverEntry), findsOneWidget);
       expect(find.text(loc.bullVaultUseBullAsSigner), findsOneWidget);
+      expect(find.text('Register an external multisig'), findsOneWidget);
       expect(find.text(loc.bullVaultCreatePracticeEntry), findsOneWidget);
+      final register = find.text('Register an external multisig');
+      expect(
+        tester.getTopLeft(register).dy,
+        greaterThan(
+          tester.getTopLeft(find.text(loc.bullVaultUseBullAsSigner)).dy,
+        ),
+      );
+      await tester.tap(register);
+      await tester.pumpAndSettle();
+      expect(destinations.last.name, ImportWatchOnlyWalletRoutes.import.name);
+      expect(destinations.last.pathParameters, isEmpty);
+      router.pop();
+      await tester.pumpAndSettle();
       await tester.tap(find.text(loc.bullVaultUseBullAsSigner));
       await tester.pumpAndSettle();
       expect(destinations.last.name, SettingsRoute.signingKeyExport.name);

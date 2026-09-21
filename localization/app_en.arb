@@ -17402,12 +17402,10 @@
   },
   "signingKeyUsedTitle": "Keys already used",
   "@signingKeyUsedTitle": {},
-  "signingKeyUsedNone": "No keys handed out yet",
-  "@signingKeyUsedNone": {},
-  "signingKeyUsedLegacy": "Used, no description",
-  "@signingKeyUsedLegacy": {},
-  "signingKeyUsedIncomplete": "Some records could not be read",
-  "@signingKeyUsedIncomplete": {},
-  "signingKeyUsedWallet": "Wallet on this device",
-  "@signingKeyUsedWallet": {}
+  "signingKeyUsedNoDescription": "No description",
+  "@signingKeyUsedNoDescription": {},
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsedSign": {},
+  "bullVaultRegisterExternalEntry": "Register an external multisig",
+  "@bullVaultRegisterExternalEntry": {}
 }

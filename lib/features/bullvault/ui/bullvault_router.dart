@@ -20,8 +20,8 @@ import 'package:go_router/go_router.dart';
 abstract final class BullVaultRouter {
   static const scannerRouteName = 'bullVaultScanner';
 
-  static final routes = [
-    menuRoute,
+  static List<GoRoute> routes({required String registerExternalRouteName}) => [
+    menuRoute(registerExternalRouteName),
     route,
     scannerRoute,
     settingsRoute,
@@ -31,12 +31,14 @@ abstract final class BullVaultRouter {
     cosignerRoute,
   ];
 
-  static final menuRoute = GoRoute(
+  static GoRoute menuRoute(String registerExternalRouteName) => GoRoute(
     name: BullVaultFacade.menuRouteName,
     path: '/bullvault',
     builder: (context, state) => BlocProvider(
       create: (_) => locator<BullVaultSettingsCubit>()..load(),
-      child: const BullVaultMenuScreen(),
+      child: BullVaultMenuScreen(
+        registerExternalRouteName: registerExternalRouteName,
+      ),
     ),
   );
 

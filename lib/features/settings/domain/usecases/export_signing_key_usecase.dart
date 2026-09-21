@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/signing_key_account_session.dart';
 import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/list_used_signing_key_accounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_used_signing_key_accounts_usecase.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -17,14 +17,14 @@ class ExportSigningKeyUsecase {
   final GetSettingsUsecase _getSettingsUsecase;
   final SigningKeyAccountSession _accountSession;
   final LabelsFacade _labelsFacade;
-  final ListUsedSigningKeyAccountsUsecase _listUsedAccounts;
+  final SyncUsedSigningKeyAccountsUsecase _syncUsedAccounts;
 
   ExportSigningKeyUsecase(
     this._accountSession, {
     required this._getDefaultSeedUsecase,
     required this._getSettingsUsecase,
     required this._labelsFacade,
-    required this._listUsedAccounts,
+    required this._syncUsedAccounts,
   });
 
   @useResult
@@ -37,7 +37,6 @@ class ExportSigningKeyUsecase {
         int? markedAccount,
         bool descriptionSaved,
         List<UsedSigningKeyAccount> usedAccounts,
-        bool usedAccountsIncomplete,
       }),
       SettingsFailure
     >
@@ -58,10 +57,11 @@ class ExportSigningKeyUsecase {
       final isTestnet = settings.environment.isTestnet;
       final coinType = isTestnet ? 1 : 0;
       // Repair restored reservations before claiming the next export account.
-      var used = await _listUsedAccounts.execute(
+      var usedResult = await _syncUsedAccounts.execute(
         seedFingerprint: seed.masterFingerprint,
         coinType: coinType,
       );
+      if (usedResult case Err(:final failure)) return Err(failure);
       final network = isTestnet
           ? Network.bitcoinTestnet
           : Network.bitcoinMainnet;
@@ -120,21 +120,19 @@ class ExportSigningKeyUsecase {
               is Ok;
 
       if (markUsed) {
-        used = await _listUsedAccounts.execute(
+        usedResult = await _syncUsedAccounts.execute(
           seedFingerprint: seed.masterFingerprint,
           coinType: coinType,
         );
       }
+      if (usedResult case Err(:final failure)) return Err(failure);
       return Ok((
         account: selection.account,
         descriptorKey: '${origin(selection.account)}$xpub',
-        isReserved:
-            selection.isReserved ||
-            used.accounts.any((used) => used.account == selection.account),
+        isReserved: selection.isReserved,
         markedAccount: selection.markedAccount,
         descriptionSaved: descriptionSaved,
-        usedAccounts: used.accounts,
-        usedAccountsIncomplete: used.incomplete,
+        usedAccounts: (usedResult as Ok).value,
       ));
     } on Exception catch (error, stackTrace) {
       log.severe(

@@ -1,3 +1,13 @@
+import 'dart:typed_data';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
+import 'package:bb_mobile/features/nostr_identity/public/nostr_identity_facade.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_backup_snapshot.dart';
+import 'package:bb_mobile/features/wallet_backup/domain/entities/wallet_metadata_backup.dart';
+import '../backup_codec_fixture.dart';
+import '../backup_snapshot_fixture.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
 import 'package:bb_mobile/features/bullvault/public/bullvault_facade.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -241,6 +251,150 @@ void main() {
       SignerEntity.local,
     );
   });
+  for (final hasSeed in [true, false]) {
+    test(
+      'encrypted external 2-of-3 recovery verifies local keys (seed: $hasSeed)',
+      () async {
+        final seed = Uint8List.fromList(List.generate(32, (i) => i));
+        const path = "m/48'/0'/0'/2'";
+        final xpubs = [
+          for (var n = 0; n < 3; n++)
+            Bip32Derivation.deriveXpub(
+              seedBytes: Uint8List.fromList(List.generate(32, (i) => i + n)),
+              derivationPath: path,
+              network: Network.bitcoinMainnet,
+            ),
+        ];
+        const fingerprints = ['5a3469b6', 'cafebabe', 'feedbeef'];
+        final descriptor =
+            'wsh(sortedmulti(2,${[for (var n = 0; n < 3; n++) '[${fingerprints[n]}/48h/0h/0h/2h]${xpubs[n]}/<0;1>/*'].join(',')}))';
+        final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+          descriptor: descriptor,
+          isTestnet: false,
+        );
+        final keys = [
+          for (final (index, key) in parsed.keys.indexed)
+            WalletDescriptorKey(
+              id: 'key-$index',
+              signerId: 'signer-$index',
+              masterFingerprint: key.masterFingerprint,
+              xpubFingerprint: key.xpubFingerprint,
+              xpub: key.xpub,
+              derivationPath: key.derivationPath,
+              descriptorPath: key.descriptorPath,
+            ),
+        ];
+        when(
+          () => importer.parseBitcoinDescriptor(
+            descriptor: any(named: 'descriptor'),
+            network: Network.bitcoinMainnet,
+          ),
+        ).thenReturn((
+          descriptor: parsed.descriptor,
+          scriptType: null,
+          descriptorKeys: keys,
+          inferredChangePath: false,
+        ));
+        when(
+          () => seeds.matchesXpubs(
+            fingerprint: any(named: 'fingerprint'),
+            keys: any(named: 'keys'),
+          ),
+        ).thenAnswer(
+          (call) async =>
+              hasSeed &&
+              call.namedArguments[#fingerprint] == fingerprints.first &&
+              (call.namedArguments[#keys]
+                      as List<({String derivationPath, String xpub})>)
+                  .every(
+                    (key) => Bip32Derivation.seedMatchesXpub(
+                      seedBytes: seed,
+                      derivationPath: key.derivationPath,
+                      xpub: key.xpub,
+                    ),
+                  ),
+        );
+        final credential = BackupCredential.fromWords(backupFixtureWords);
+        final base = backupSnapshotFixture(credential, populated: false);
+        final memo = LabelEntity(
+          id: 1,
+          type: LabelType.extendedPublicKey,
+          reference: xpubs.first,
+          label: 'External family multisig',
+          origin: '[${fingerprints.first}/48h/0h/0h/2h]',
+        );
+        final snapshot = WalletBackupSnapshot(
+          manifest: KeychainManifest(
+            sourceFingerprint: base.manifest.sourceFingerprint,
+            wallets: [
+              BackupWallet(
+                reference: 'source-multisig',
+                network: Network.bitcoinMainnet,
+                publicDescriptor: parsed.descriptor,
+                signers: [
+                  for (final key in keys)
+                    WalletSigner(
+                      id: key.signerId,
+                      signer: key.xpub == xpubs.first
+                          ? SignerEntity.local
+                          : SignerEntity.none,
+                      signerDevice: null,
+                      localSeedFingerprint: key.xpub == xpubs.first
+                          ? fingerprints.first
+                          : null,
+                      descriptorKeys: [key],
+                    ),
+                ],
+                isDefault: false,
+                isHidden: false,
+                label: 'External family multisig',
+              ),
+            ],
+            derivations: [],
+            nostrKeys: [],
+            backupIdentities: base.manifest.backupIdentities,
+          ),
+          metadata: WalletMetadataBackup(
+            labels: [memo],
+            frozenOutputs: [],
+            settings: base.metadata.settings,
+          ),
+          vaults: [],
+        );
+        final codec = backupCodecFixture(_Vaults());
+        addTearDown(codec.dispose);
+        final encrypted = (codec.encrypt(snapshot, credential) as Ok).value;
+        final restored =
+            (codec.decrypt(encrypted, credential)
+                    as Ok<WalletBackupSnapshot, WalletBackupFailure>)
+                .value;
+        expect(await metadata.fetchAll(), isEmpty);
+        expect((await recover(restored.manifest.wallets)).complete, isTrue);
+        final wallet = (await metadata.fetch('target-id'))!;
+        final local = wallet.signers
+            .map((s) => s.toEntity())
+            .where((s) => s.signer == SignerEntity.local)
+            .toList();
+        expect(local.length, hasSeed ? 1 : 0);
+        if (hasSeed) {
+          expect(local.single.localSeedFingerprint, fingerprints.first);
+        }
+        expect(wallet.signers, hasLength(3));
+        expect(wallet.publicDescriptor, parsed.descriptor);
+        expect(wallet.label, 'External family multisig');
+        expect(restored.metadata.labels.single.origin, memo.origin);
+        expect(restored.metadata.labels.single.label, memo.label);
+        // The existing BIP-329 export remains valid; Data Backup preserves the origin.
+        final labelsCodec = Bip329LabelsCodec();
+        final labels = labelsCodec.decode(
+          labelsCodec.encode(restored.metadata.labels),
+        );
+        expect(labels.labels.single.reference, xpubs.first);
+        expect(labels.labels.single.label, memo.label);
+      },
+    );
+  }
+
   test(
     'forged key annotations fail before importing or checking a substitute xpub',
     () async {

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/list_used_signing_key_accounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_used_signing_key_accounts_usecase.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -29,7 +29,7 @@ class _MockBip48AccountRepository extends Mock
     implements Bip48AccountRepository {}
 
 class _MockUsedAccounts extends Mock
-    implements ListUsedSigningKeyAccountsUsecase {}
+    implements SyncUsedSigningKeyAccountsUsecase {}
 
 class _FakeLabels extends Fake implements LabelsFacade {
   final saved = <NewLabel>[];
@@ -81,13 +81,11 @@ void main() {
         seedFingerprint: any(named: 'seedFingerprint'),
         coinType: any(named: 'coinType'),
       ),
-    ).thenAnswer(
-      (_) async => (accounts: <UsedSigningKeyAccount>[], incomplete: false),
-    );
+    ).thenAnswer((_) async => const Ok(<UsedSigningKeyAccount>[]));
     usecase = ExportSigningKeyUsecase(
       accountSession,
       labelsFacade: labels,
-      listUsedAccounts: listUsed,
+      syncUsedAccounts: listUsed,
       getDefaultSeedUsecase: getDefaultSeed,
       getSettingsUsecase: getSettings,
     );
@@ -145,7 +143,7 @@ void main() {
       ),
     );
     final repaired =
-        Completer<({List<UsedSigningKeyAccount> accounts, bool incomplete})>();
+        Completer<Result<List<UsedSigningKeyAccount>, SettingsFailure>>();
     when(
       () => listUsed.execute(
         seedFingerprint: seed.masterFingerprint,
@@ -160,16 +158,11 @@ void main() {
         coinType: any(named: 'coinType'),
       ),
     );
-    repaired.complete((
-      accounts: const [
-        UsedSigningKeyAccount(
-          account: 1,
-          source: UsedSigningKeySource.memo,
-          description: 'Restored vault',
-        ),
-      ],
-      incomplete: false,
-    ));
+    repaired.complete(
+      const Ok([
+        UsedSigningKeyAccount(account: 1, description: 'Restored vault'),
+      ]),
+    );
     final result = await pending;
     expect(
       (result as Ok).value.usedAccounts.single.description,
@@ -183,38 +176,45 @@ void main() {
     ).called(1);
   });
 
-  test(
-    'known used accounts still warn when reservation repair fails',
-    () async {
-      when(() => getSettings.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
-      );
-      when(
-        () => listUsed.execute(
-          seedFingerprint: seed.masterFingerprint,
-          coinType: 0,
-        ),
-      ).thenAnswer(
-        (_) async => (
-          accounts: const [
-            UsedSigningKeyAccount(
-              account: 0,
-              source: UsedSigningKeySource.memo,
-              description: 'Restored vault',
-            ),
-          ],
-          incomplete: true,
-        ),
-      );
-      final result = await usecase.execute();
-      expect((result as Ok).value.isReserved, isTrue);
-      expect((result as Ok).value.usedAccountsIncomplete, isTrue);
-    },
-  );
+  test('failed sync blocks export until Retry succeeds', () async {
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(
+      () => listUsed.execute(
+        seedFingerprint: seed.masterFingerprint,
+        coinType: 0,
+      ),
+    ).thenAnswer((_) async => const Err(SettingsSigningKeyExportFailure()));
+    final cubit = SigningKeyExportCubit(
+      exportSigningKeyUsecase: usecase,
+      releaseSigningKeyAccountUsecase: releaseUsecase,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.failure, isA<SettingsSigningKeyExportFailure>());
+    expect(cubit.state.descriptorKey, isEmpty);
+    expect(cubit.state.usedAccounts, isEmpty);
+    verifyNever(
+      () => accountRepository.claimNext(
+        seedFingerprint: any(named: 'seedFingerprint'),
+        coinType: any(named: 'coinType'),
+      ),
+    );
+    when(
+      () => listUsed.execute(
+        seedFingerprint: seed.masterFingerprint,
+        coinType: 0,
+      ),
+    ).thenAnswer((_) async => const Ok(<UsedSigningKeyAccount>[]));
+    await cubit.load();
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.descriptorKey, isNotEmpty);
+  });
 
   test('reloads used accounts after saving the memo', () async {
     when(() => getSettings.execute()).thenAnswer(
@@ -230,17 +230,10 @@ void main() {
         coinType: 0,
       ),
     ).thenAnswer(
-      (_) async => (
-        accounts: [
-          for (final label in labels.saved)
-            UsedSigningKeyAccount(
-              account: 1,
-              source: UsedSigningKeySource.memo,
-              description: label.label,
-            ),
-        ],
-        incomplete: false,
-      ),
+      (_) async => Ok([
+        for (final label in labels.saved)
+          UsedSigningKeyAccount(account: 1, description: label.label),
+      ]),
     );
     expect(await usecase.execute(account: 1), isA<Ok>());
     final result = await usecase.execute(

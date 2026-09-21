@@ -4971,8 +4971,7 @@
   "bullVaultExperimentalWarningTitle": "Fonctionnalité expérimentale",
   "bullVaultExperimentalWarningMessage": "BullVault est expérimental. Ne l’utilisez pas avec des fonds réels.",
   "signingKeyUsedTitle": "Clés déjà utilisées",
-  "signingKeyUsedNone": "Aucune clé partagée pour le moment",
-  "signingKeyUsedLegacy": "Utilisée, sans description",
-  "signingKeyUsedIncomplete": "Certaines données n’ont pas pu être lues",
-  "signingKeyUsedWallet": "Portefeuille sur cet appareil"
+  "signingKeyUsedNoDescription": "Aucune description",
+  "signingKeyUsedSign": "Signer",
+  "bullVaultRegisterExternalEntry": "Enregistrer un portefeuille multisig externe"
 }

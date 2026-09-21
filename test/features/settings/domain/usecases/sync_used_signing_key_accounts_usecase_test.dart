@@ -13,7 +13,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/settings/domain/used_signing_key_account.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/list_used_signing_key_accounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/sync_used_signing_key_accounts_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _Labels extends Fake implements LabelsFacade {
@@ -133,20 +134,20 @@ void main() {
   late _Accounts accounts;
   late _Usages usages;
   late _Wallets wallets;
-  late ListUsedSigningKeyAccountsUsecase usecase;
+  late SyncUsedSigningKeyAccountsUsecase usecase;
   setUp(() {
     labels = _Labels();
     accounts = _Accounts();
     usages = _Usages();
     wallets = _Wallets();
-    usecase = ListUsedSigningKeyAccountsUsecase(
+    usecase = SyncUsedSigningKeyAccountsUsecase(
       labels: labels,
       accounts: accounts,
       usages: usages,
       getWallets: wallets,
     );
   });
-  Future<({List<UsedSigningKeyAccount> accounts, bool incomplete})> load() =>
+  Future<Result<List<UsedSigningKeyAccount>, SettingsFailure>> load() =>
       usecase.execute(seedFingerprint: 'DEADBEEF', coinType: 0);
 
   test(
@@ -156,16 +157,17 @@ void main() {
       usages.usages = [_usage(0), _usage(2)];
       wallets.wallets = [_wallet(0), _wallet(2)];
       accounts.reserved.addAll([2, 50]);
-      final result = await load();
-      expect(result.accounts.map((a) => (a.account, a.source, a.description)), [
-        (0, UsedSigningKeySource.wallet, 'Family vault'),
-        (1, UsedSigningKeySource.memo, 'Memo 1'),
-        (2, UsedSigningKeySource.memo, 'Memo 2'),
-        (50, UsedSigningKeySource.legacy, null),
+      final result =
+          (await load() as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
+              .value;
+      expect(result.map((a) => (a.account, a.description, a.walletId)), [
+        (0, 'Family vault', 'wallet-0'),
+        (1, 'Memo 1', null),
+        (2, 'Memo 2', 'wallet-2'),
+        (50, null, null),
       ]);
-      expect(result.incomplete, isFalse);
       expect(accounts.writes, unorderedEquals([0, 1]));
-      await load();
+      expect(await load(), isA<Ok>());
       expect(accounts.writes, unorderedEquals([0, 1]));
     },
   );
@@ -187,59 +189,37 @@ void main() {
           origin: "[deadbeef/48'/0'/6'/2']",
         ),
       ];
-      final result = await load();
-      expect(result.accounts.map((a) => a.account), [5]);
+      final result =
+          (await load() as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
+              .value;
+      expect(result.map((a) => a.account), [5]);
       expect(accounts.writes, [5]);
     },
   );
 
-  test(
-    'label failure retains wallet and legacy rows with incomplete status',
-    () async {
-      labels.fail = true;
+  for (final source in ['labels', 'usages', 'wallets', 'read', 'write']) {
+    test('$source failure returns an error instead of partial rows', () async {
+      labels.labels = [_memo(1)];
       usages.usages = [_usage(0)];
       wallets.wallets = [_wallet(0)];
-      accounts.reserved.add(50);
-      final result = await load();
-      expect(result.accounts.map((a) => a.account), [0, 50]);
-      expect(result.incomplete, isTrue);
-    },
-  );
-
-  test('wallet read failures retain memo and legacy rows', () async {
-    labels.labels = [_memo(1)];
-    accounts.reserved.add(50);
-    usages.fail = true;
-    final result = await load();
-    expect(result.accounts.map((a) => a.account), [1, 50]);
-    expect(result.incomplete, isTrue);
-  });
-
-  test(
-    'wallet name failure retains the usage with fallback and incomplete status',
-    () async {
-      usages.usages = [_usage(0)];
-      wallets.fail = true;
-      final result = await load();
-      expect(result.accounts.single.source, UsedSigningKeySource.wallet);
-      expect(result.accounts.single.description, isNull);
-      expect(result.incomplete, isTrue);
-    },
-  );
-
-  for (final readFailure in [true, false]) {
-    test(
-      'reservation failure retains known rows (read failure: $readFailure)',
-      () async {
-        labels.labels = [_memo(1)];
-        accounts.failRead = readFailure;
-        accounts.failWrite = !readFailure;
-        final result = await load();
-        expect(result.accounts.single.account, 1);
-        expect(result.incomplete, isTrue);
-      },
-    );
+      labels.fail = source == 'labels';
+      usages.fail = source == 'usages';
+      wallets.fail = source == 'wallets';
+      accounts.failRead = source == 'read';
+      accounts.failWrite = source == 'write';
+      expect(await load(), isA<Err>());
+    });
   }
+
+  test('uses the wallet identifier when it has no custom label', () async {
+    usages.usages = [_usage(0)];
+    wallets.wallets = [_wallet(0).copyWith(label: null)];
+    final rows =
+        (await load() as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
+            .value;
+    expect(rows.single.description, 'wallet-0');
+    expect(rows.single.walletId, 'wallet-0');
+  });
 
   test(
     'restored memos rebuild empty local reservations and survive restart',
@@ -252,16 +232,17 @@ void main() {
       );
       final repositoryBeforeRestart = repository();
       labels.labels = [_memo(1), _memo(0)];
-      usecase = ListUsedSigningKeyAccountsUsecase(
+      usecase = SyncUsedSigningKeyAccountsUsecase(
         labels: labels,
         accounts: repositoryBeforeRestart,
         usages: usages,
         getWallets: wallets,
       );
       expect(storage.values, isEmpty);
-      final result = await load();
-      expect(result.accounts.map((a) => a.account), [0, 1]);
-      expect(result.incomplete, isFalse);
+      final result =
+          (await load() as Ok<List<UsedSigningKeyAccount>, SettingsFailure>)
+              .value;
+      expect(result.map((a) => a.account), [0, 1]);
       final next = await repository().nextAvailable(
         seedFingerprint: 'deadbeef',
         coinType: 0,

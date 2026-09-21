@@ -51,7 +51,6 @@ void main() {
           markedAccount: null,
           descriptionSaved: true,
           usedAccounts: <UsedSigningKeyAccount>[],
-          usedAccountsIncomplete: false,
         )),
       );
       final pending = Completer<void>();
@@ -70,7 +69,6 @@ void main() {
           markedAccount: 0,
           descriptionSaved: true,
           usedAccounts: <UsedSigningKeyAccount>[],
-          usedAccountsIncomplete: false,
         ));
       });
       await cubit.load();
@@ -113,7 +111,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: false,
       )),
     );
 
@@ -139,7 +136,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: false,
       )),
     );
 
@@ -165,7 +161,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: false,
       )),
     );
     when(
@@ -183,7 +178,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: false,
       ));
     });
 
@@ -228,7 +222,6 @@ void main() {
           markedAccount: null,
           descriptionSaved: true,
           usedAccounts: <UsedSigningKeyAccount>[],
-          usedAccountsIncomplete: false,
         ));
       });
       when(
@@ -245,7 +238,6 @@ void main() {
           markedAccount: null,
           descriptionSaved: true,
           usedAccounts: <UsedSigningKeyAccount>[],
-          usedAccountsIncomplete: false,
         )),
       );
 
@@ -277,7 +269,6 @@ void main() {
           markedAccount: null,
           descriptionSaved: true,
           usedAccounts: <UsedSigningKeyAccount>[],
-          usedAccountsIncomplete: false,
         )),
       );
       when(
@@ -294,7 +285,6 @@ void main() {
           markedAccount: 0,
           descriptionSaved: true,
           usedAccounts: <UsedSigningKeyAccount>[],
-          usedAccountsIncomplete: false,
         )),
       );
 
@@ -322,7 +312,6 @@ void main() {
         markedAccount: null,
         descriptionSaved: true,
         usedAccounts: <UsedSigningKeyAccount>[],
-        usedAccountsIncomplete: false,
       )),
     );
 

@@ -4921,8 +4921,7 @@
   "bullVaultExperimentalWarningTitle": "Función experimental",
   "bullVaultExperimentalWarningMessage": "BullVault es experimental. No lo uses con fondos reales.",
   "signingKeyUsedTitle": "Claves ya utilizadas",
-  "signingKeyUsedNone": "Todavía no se ha compartido ninguna clave",
-  "signingKeyUsedLegacy": "Utilizada, sin descripción",
-  "signingKeyUsedIncomplete": "No se pudieron leer algunos registros",
-  "signingKeyUsedWallet": "Billetera en este dispositivo"
+  "signingKeyUsedNoDescription": "Sin descripción",
+  "signingKeyUsedSign": "Firmar",
+  "bullVaultRegisterExternalEntry": "Registrar un monedero multifirma externo"
 }

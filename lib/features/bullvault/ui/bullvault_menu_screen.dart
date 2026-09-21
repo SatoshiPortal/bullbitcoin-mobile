@@ -10,7 +10,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 final class BullVaultMenuScreen extends StatefulWidget {
-  const BullVaultMenuScreen({super.key});
+  final String registerExternalRouteName;
+  const BullVaultMenuScreen({
+    super.key,
+    required this.registerExternalRouteName,
+  });
   @override
   State<BullVaultMenuScreen> createState() => _BullVaultMenuScreenState();
 }
@@ -100,6 +104,11 @@ final class _BullVaultMenuScreenState extends State<BullVaultMenuScreen>
             icon: Icons.key_outlined,
             title: context.loc.bullVaultUseBullAsSigner,
             onTap: () => _open(SettingsRoute.signingKeyExport.name),
+          ),
+          SettingsEntryItem(
+            icon: Icons.playlist_add,
+            title: context.loc.bullVaultRegisterExternalEntry,
+            onTap: () => _open(widget.registerExternalRouteName),
           ),
           SettingsEntryItem(
             icon: Icons.science_outlined,

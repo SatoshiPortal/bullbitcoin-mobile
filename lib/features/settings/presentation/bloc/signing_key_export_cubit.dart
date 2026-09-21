@@ -13,7 +13,6 @@ class SigningKeyExportState {
   final int? markedAccount;
   final bool descriptionSaved;
   final List<UsedSigningKeyAccount> usedAccounts;
-  final bool usedAccountsIncomplete;
   final SettingsFailure? failure;
 
   const SigningKeyExportState({
@@ -24,7 +23,6 @@ class SigningKeyExportState {
     this.markedAccount,
     this.descriptionSaved = true,
     this.usedAccounts = const [],
-    this.usedAccountsIncomplete = false,
     this.failure,
   });
 
@@ -36,7 +34,6 @@ class SigningKeyExportState {
     int? markedAccount,
     bool? descriptionSaved,
     List<UsedSigningKeyAccount>? usedAccounts,
-    bool? usedAccountsIncomplete,
     bool clearMarkedAccount = false,
     SettingsFailure? failure,
     bool clearFailure = false,
@@ -50,8 +47,6 @@ class SigningKeyExportState {
         : markedAccount ?? this.markedAccount,
     descriptionSaved: descriptionSaved ?? this.descriptionSaved,
     usedAccounts: usedAccounts ?? this.usedAccounts,
-    usedAccountsIncomplete:
-        usedAccountsIncomplete ?? this.usedAccountsIncomplete,
     failure: clearFailure ? null : failure ?? this.failure,
   );
 }
@@ -110,6 +105,7 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
       state.copyWith(
         account: account,
         descriptorKey: '',
+        usedAccounts: const [],
         isReserved: false,
         isLoading: true,
         clearFailure: true,
@@ -139,7 +135,6 @@ class SigningKeyExportCubit extends Cubit<SigningKeyExportState> {
           markedAccount: export.markedAccount,
           descriptionSaved: export.descriptionSaved,
           usedAccounts: export.usedAccounts,
-          usedAccountsIncomplete: export.usedAccountsIncomplete,
           clearFailure: true,
         ),
       );
