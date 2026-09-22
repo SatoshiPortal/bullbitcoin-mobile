@@ -251,7 +251,6 @@
     }
   },
   "fundExchangeLabelBankAccountCountry": "银行账户",
-  "walletAddressTypeNestedSegwit": "Nest",
   "exchangeLandingFeature2": "DCA, Limit Order and Auto-buy",
   "payPaymentPending": "待付款",
   "payConfirmHighFee": "这项付款的收费为{percentage}%。 继续?",
@@ -277,7 +276,6 @@
   "fundExchangeLabelTransitNumber": "过境次数",
   "buyConfirmYouReceive": "您",
   "buyDocumentUpload": "载荷文件",
-  "walletAddressTypeConfidentialSegwit": "保密小组",
   "transactionDetailRetryTransfer": "转业{action}",
   "@transactionDetailRetryTransfer": {
     "placeholders": {
@@ -814,7 +812,6 @@
   "ledgerHelpStep1": "重新启动电解装置.",
   "swapAvailableBalance": "可用余额",
   "fundExchangeCrIbanCrcLabelPaymentDescription": "付款说明",
-  "walletTypeWatchSigner": "Watch-Signer",
   "ledgerConnectingSubtext": "建立安全联系.",
   "transactionError": "Error - {error}",
   "@transactionError": {
@@ -1108,7 +1105,6 @@
   "testBackupVerify": "全权证书",
   "transactionDetailLabelCreatedAt": "创立",
   "fundExchangeJurisdictionArgentina": "阿根廷",
-  "walletNetworkBitcoin": "联合国",
   "electrumAdvancedOptions": "A. 先进选择",
   "autoswapWarningCardSubtitle": "如果你的经常付款余额超过0.02BTC,则将启动交换.",
   "transactionStatusConfirmed": "1. 确认",
@@ -1132,7 +1128,6 @@
   "exchangeBitcoinWalletsEnterAddressHint": "出入地址",
   "withdrawAmountContinue": "继续",
   "allSeedViewSecurityWarningMessage": "显示种子短语是一种安全风险。 任何人如果看到你的种子,就可以获得你们的资金。 确保你位于一个私人地点,没有人能够看到你的屏幕.",
-  "walletNetworkBitcoinTestnet": "测试网",
   "recoverbullSeeMoreVaults": "See more vaults",
   "sellPayFromWallet": "付款钱包",
   "pinProtectionDescription": "您的 PIN 码用于保护对钱包和设置的访问，请确保它便于记忆",
@@ -1413,7 +1408,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "buyInputKycPending": "KYC ID 有待核查",
   "importWatchOnlySelectDerivation": "选择性衍生物",
-  "walletAddressTypeLegacy": "遗产",
   "hwPassport": "护照",
   "electrumInvalidStopGapError": "无效 差距值:{value}",
   "@electrumInvalidStopGapError": {
@@ -1555,7 +1549,6 @@
     }
   },
   "payReviewPayment": "审核",
-  "electrumBitcoinSslInfo": "如果未具体规定议定书,则将使用l.",
   "transactionTitle": "交易",
   "sellQrCode": "QR 法典",
   "walletDetailsUnnamedWalletFallback": "不详",
@@ -1662,7 +1655,6 @@
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "你的转让法.",
   "recoverVia12WordsDescription": "通过 12 个助记词恢复您的钱包",
   "fundExchangeFundAccount": "基金",
-  "electrumServerSettingsLabel": "电传服务器(Bit Issue node)",
   "dcaEnterLightningAddressLabel": "入光地址",
   "statusCheckOnline": "在线",
   "buyPayoutMethod": "薪酬办法",
@@ -1680,7 +1672,6 @@
   "fundExchangeLabelRecipientNameArs": "客户名称",
   "sendTo": "致",
   "gotItButton": "签字",
-  "walletTypeLiquidLightningNetwork": "流动和照明网络",
   "sendFeePriority": "妇女优先",
   "transactionPayjoinSendWithout": "无薪假",
   "paySelectCountry": "选择国家",
@@ -1738,20 +1729,6 @@
   "payDebitCardNumber": "借方卡",
   "receiveRequestInboundLiquidity": "请求接收能力",
   "backupWalletHowToDecideBackupMoreInfo": "访问后收集更多信息.",
-  "walletAutoTransferBlockedMessage": "企图转让{amount} BTC。 现行收费为{currentFee}%,收费门槛为{thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "Click the buttons to sign the trade on You Krux.",
   "exchangeSupportChatEmptyState": "尚未发出任何信息。 开始对话!",
   "payExternalWalletDescription": "从其他比特币钱包支付",
@@ -1857,7 +1834,6 @@
   },
   "sendBroadcastTransaction": "广播交易",
   "receiveBitcoinConfirmationMessage": "交易将同时确认.",
-  "walletTypeWatchOnly": "Watch-Only",
   "recoverbullDecryptVault": "加密",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "转账随时可以退款.",
@@ -1938,7 +1914,6 @@
       }
     }
   },
-  "walletNetworkLiquidTestnet": "流动测试",
   "electrumDeleteFailedError": "未能删除海关服务器",
   "@electrumDeleteFailedError": {
     "placeholders": {
@@ -2295,7 +2270,6 @@
     "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329 Labels",
-  "walletAutoTransferAllowButton": "允许",
   "autoswapSelectWalletRequired": "选择一个比特币钱包 *",
   "exchangeFeatureSellBitcoin": "• Sell, 获得有偿服务",
   "hwSeedSigner": "SeedSigner",
@@ -2798,7 +2772,6 @@
   "bitboxActionSignTransactionTitle": "交易",
   "testBackupGoogleDrivePrivacyPart3": "页: 1 ",
   "logSettingsErrorLoadingMessage": "负载记录: ",
-  "walletNetworkLiquid": "流动网络",
   "swapMaxButton": "最大",
   "transactionSwapStatusTransferStatus": "转让",
   "importQrDeviceSeedsignerStep8": "页: 1",
@@ -3403,7 +3376,6 @@
   "recoverbullRetry": "学历",
   "receiveCopyInvoice": "印 度",
   "exchangeAccountInfoLastNameLabel": "姓 名",
-  "walletAutoTransferBlockedTitle": "自动转移装置",
   "importQrDeviceJadeInstructionsTitle": "B. 集体指示",
   "paySendMax": "Max",
   "recoverbullGoogleDriveDeleteConfirmation": "你们是否希望删除这一ault? 这一行动是不可放弃的.",
@@ -3411,7 +3383,6 @@
   "transactionNoteEditTitle": "Edit note",
   "transactionDetailLabelCompletedAt": "页: 1",
   "passportStep9": "• 点击 but子在你护照上签字.",
-  "walletTypeBitcoinNetwork": "计算机网络",
   "electrumDeleteConfirmation": "你们是否希望删除这一服务器?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
     "placeholders": {
@@ -3517,7 +3488,6 @@
   },
   "fundExchangeWarningTacticsTitle": "B. 共同节奏战术",
   "payInstitutionCodeHint": "加入机构法",
-  "walletAddressTypeNativeSegwit": "Indigenous Segwit",
   "payOpenInvoice": "公开发票",
   "payMaximumAmount": "最多:{amount}",
   "@payMaximumAmount": {
@@ -3686,7 +3656,6 @@
   "payViewDetails": "观点细节",
   "withdrawOrderAlreadyConfirmedError": "这一撤销令已经得到确认.",
   "autoswapSelectWallet": "选择一个比特币钱包",
-  "walletAutoTransferBlockButton": "路障",
   "recoverbullGoogleDriveErrorSelectFailed": "未能从谷歌风暴中选取ault",
   "autoswapRecipientWalletRequired": "* E/CN.6/2009/1",
   "pinCodeLoading": "抢劫",
@@ -4906,5 +4875,10 @@
   "sendErrorExchangeOrderMismatch": "此支付已与订单不匹配。请重新开始支付。",
   "sellUnexpectedError": "您的卖出订单当前无法完成。请重试或联系客服。",
   "sellErrorFeeBelowRelayFloor": "网络手续费过低。请选择更高的手续费。",
-  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。"
+  "sellErrorFeesUnavailable": "无法加载网络手续费。请检查网络连接后重试。",
+  "walletLoadFailed": "无法加载您的钱包。请检查网络连接后重试。",
+  "walletWarningElectrumBitcoinDown": "Bitcoin 服务器不可用",
+  "walletWarningElectrumLiquidDown": "Liquid 服务器不可用",
+  "walletWarningElectrumBothDown": "Bitcoin 和 Liquid 服务器不可用",
+  "walletWarningElectrumAction": "点按以配置服务器设置"
 }

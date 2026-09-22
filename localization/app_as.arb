@@ -259,7 +259,6 @@
   "pinCodeSettingsLabel": "PIN কোড",
   "languageSettingsLabel": "ভাষা",
   "backupSettingsLabel": "Wallet বেকআপ",
-  "electrumServerSettingsLabel": "Electrum চাৰ্ভাৰ (Bitcoin নোড)",
   "fiatCurrencySettingsLabel": "Fiat মুদ্ৰা",
   "languageSettingsScreenTitle": "ভাষা",
   "settingsExchangeSettingsTitle": "Exchange ছেটিংছ",
@@ -1097,18 +1096,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Payjoin তৈয়াৰৰ সময়",
   "globalDefaultBitcoinWalletLabel": "সুৰক্ষিত Bitcoin",
   "globalDefaultLiquidWalletLabel": "তাৎক্ষণিক পৰিশোধ",
-  "walletTypeWatchOnly": "কেৱল চোৱা",
-  "walletTypeWatchSigner": "Watch-Signer",
-  "walletTypeBitcoinNetwork": "Bitcoin নেটৱৰ্ক",
-  "walletTypeLiquidLightningNetwork": "Liquid আৰু Lightning নেটৱৰ্ক",
-  "walletNetworkBitcoin": "Bitcoin নেটৱৰ্ক",
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "walletNetworkLiquid": "Liquid নেটৱৰ্ক",
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "walletAddressTypeConfidentialSegwit": "Confidential Segwit",
-  "walletAddressTypeNativeSegwit": "Native Segwit",
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "walletAddressTypeLegacy": "Legacy",
   "walletBalanceUnconfirmedIncoming": "চলি আছে",
   "walletButtonReceive": "গ্ৰহণ কৰক",
   "walletButtonSend": "প্ৰেৰণ কৰক",
@@ -7245,10 +7232,6 @@
   "@electrumEmptyFieldError": {
     "description": "Validation error for empty field"
   },
-  "electrumBitcoinSslInfo": "যদি কোনো protocol নিৰ্দিষ্ট কৰা নহয়, তেন্তে ডিফল্টৰূপে SSL ব্যৱহাৰ কৰা হ'ব।",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "electrumLiquidSslInfo": "কোনো protocol নিৰ্দিষ্ট কৰিব নালাগে, SSL স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰ কৰা হ'ব।",
   "@electrumLiquidSslInfo": {
     "description": "Info text for Liquid server protocol"
@@ -8291,33 +8274,6 @@
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
   },
-  "walletAutoTransferBlockedTitle": "স্বয়ংক্ৰিয় ট্ৰান্সফাৰ বাধা প্ৰাপ্ত",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC ট্ৰান্সফাৰ কৰিবলৈ চেষ্টা কৰা হৈছে। বৰ্তমানৰ মাচুল হৈছে ট্ৰান্সফাৰ পৰিমাণৰ {currentFee}% আৰু মাচুলৰ সীমা {thresholdFee}%-ত ছেট কৰা আছে",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
-  "walletAutoTransferBlockButton": "বাধা দিয়ক",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
-  "walletAutoTransferAllowButton": "অনুমতি দিয়ক",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
-  },
   "navigationTabWallet": "Wallet",
   "@navigationTabWallet": {
     "description": "Label for the Wallet tab in bottom navigation"
@@ -9336,5 +9292,10 @@
   "sendErrorExchangeOrderMismatch": "এই পৰিশোধ আৰু অৰ্ডাৰৰ সৈতে মিলা নাই। অনুগ্ৰহ কৰি পৰিশোধ পুনৰ আৰম্ভ কৰক।",
   "sellUnexpectedError": "এই মুহূৰ্তত আপোনাৰ বিক্ৰী অৰ্ডাৰ সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক বা সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "sellErrorFeeBelowRelayFloor": "নেটৱৰ্ক মাচুল বহুত কম। অধিক মাচুল বাছনি কৰক।",
-  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
+  "sellErrorFeesUnavailable": "নেটৱৰ্ক মাচুল ল'ড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletLoadFailed": "আপোনাৰ ৱালেটসমূহ লʼড কৰিব পৰা নগʼল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+  "walletWarningElectrumBitcoinDown": "Bitcoin ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumLiquidDown": "Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumBothDown": "Bitcoin আৰু Liquid ছাৰ্ভাৰ উপলব্ধ নহয়",
+  "walletWarningElectrumAction": "ছাৰ্ভাৰ ছেটিংছ কনফিগাৰ কৰিবলৈ টিপক"
 }

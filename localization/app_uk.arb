@@ -118,7 +118,6 @@
   "pinCodeSettingsLabel": "Поштовий індекс",
   "languageSettingsLabel": "Українська",
   "backupSettingsLabel": "Резервування стін",
-  "electrumServerSettingsLabel": "Електорний сервер (Bitcoin node)",
   "fiatCurrencySettingsLabel": "Фіат валюта",
   "languageSettingsScreenTitle": "Українська",
   "settingsExchangeSettingsTitle": "Налаштування Exchange",
@@ -638,17 +637,6 @@
   "transactionDetailLabelSendNetworkFee": "Закупи хостинг »",
   "transactionDetailLabelTransferFee": "Плата за трансфер",
   "transactionDetailLabelPayjoinStatus": "Статус на сервери",
-  "walletTypeWatchSigner": "Відгуки",
-  "walletTypeBitcoinNetwork": "Bitcoin мережа",
-  "walletTypeLiquidLightningNetwork": "Рідка та Lightning мережа",
-  "walletNetworkBitcoin": "Bitcoin мережа",
-  "walletNetworkBitcoinTestnet": "Біткойн Testnet",
-  "walletNetworkLiquid": "Мережа рідин",
-  "walletNetworkLiquidTestnet": "Рідкий Testnet",
-  "walletAddressTypeConfidentialSegwit": "Конфіденційний Segwit",
-  "walletAddressTypeNativeSegwit": "Нативний Segwit",
-  "walletAddressTypeNestedSegwit": "Нескінченний Segwit",
-  "walletAddressTypeLegacy": "Спадщина",
   "walletBalanceUnconfirmedIncoming": "Прогрес",
   "walletButtonReceive": "Отримати",
   "walletButtonSend": "Відправити",
@@ -841,7 +829,6 @@
   "transactionDetailLabelPayjoinCreationTime": "Час створення Payjoin",
   "globalDefaultBitcoinWalletLabel": "Bitcoin у USD",
   "globalDefaultLiquidWalletLabel": "Миттєві платежі",
-  "walletTypeWatchOnly": "Відгуки",
   "fundExchangeWarningDescription": "Якщо хтось запитує вас купити Біткойн або \"допомоги вам\", будьте обережні, вони можуть бути намагатися з вами!",
   "fundExchangeWarningTacticsTitle": "Поширена тактика шампана",
   "fundExchangeWarningTactic1": "Вони перспективні повернення інвестицій",
@@ -2143,7 +2130,6 @@
     }
   },
   "payReviewPayment": "Огляд платежів",
-  "electrumBitcoinSslInfo": "Якщо не вказано протокол, ssl буде використовуватися за замовчуванням.",
   "buyKYCLevel3": "Рівень 3 - Повний",
   "appStartupErrorMessageNoBackup": "Не вдалося ініціалізувати. Видаліть і перевстановіть, щоб виправити. Якщо ваша фраза відновлення не має резервної копії, ви можете переглянути її в Налаштування->Налаштування Bitcoin->Переглянути фрази після перевстановлення.",
   "keystoneStep8": "Після того, як угода була імпортована у Keystone, перевірте адресу призначення та суму.",
@@ -2280,20 +2266,6 @@
   "backupWalletHowToDecideBackupPhysicalRecommendation": "Фізична резервна копія: ",
   "receiveRequestInboundLiquidity": "Запит Отримання ємності",
   "backupWalletHowToDecideBackupMoreInfo": "Відвідайте rebull.com для отримання додаткової інформації.",
-  "walletAutoTransferBlockedMessage": "Спогади про передачу {amount} BTC. Поточна комісія {currentFee}% від суми переказу та порогу винагороди встановлюється на {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "Натисніть кнопку, щоб зареєструвати операцію на сайті Krux.",
   "exchangeSupportChatEmptyState": "Немає повідомлень. Почати розмову!",
   "electrumRetryCountEmptyError": "Рятівний граф не може бути порожнім",
@@ -2683,7 +2655,6 @@
     "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329 етикетки",
-  "walletAutoTransferAllowButton": "Смоктати",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Продати Bitcoin, оплачується з Bitcoin",
   "hwSeedSigner": "НасінняСинер",
@@ -3464,7 +3435,6 @@
   "coreScreensConfirmTransfer": "Підтвердження трансферу",
   "recoverbullRetry": "Птиця",
   "receiveCopyInvoice": "Статус на сервери",
-  "walletAutoTransferBlockedTitle": "Авто Трансфер блокується",
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Інструкції",
   "paySendMax": "Макс",
   "recoverbullGoogleDriveDeleteConfirmation": "Ви впевнені, що ви хочете видалити цю резервну копію? Ця дія не може бути неоновою.",
@@ -3691,7 +3661,6 @@
   "exchangeFeatureUnifiedHistory": "• Уніфікована історія транзакцій",
   "withdrawOrderAlreadyConfirmedError": "Цей порядок виведення вже було підтверджено.",
   "autoswapSelectWallet": "Виберіть гаманець Bitcoin",
-  "walletAutoTransferBlockButton": "Блоки",
   "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "ledgerSignTitle": "Реєстрація",
@@ -4903,5 +4872,10 @@
   "sendErrorExchangeOrderMismatch": "Цей платіж більше не відповідає замовленню. Будь ласка, розпочніть платіж заново.",
   "sellUnexpectedError": "Ваше замовлення на продаж наразі не вдалося завершити. Будь ласка, спробуйте ще раз або зверніться до підтримки.",
   "sellErrorFeeBelowRelayFloor": "Мережева комісія занадто низька. Виберіть вищу комісію.",
-  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз."
+  "sellErrorFeesUnavailable": "Не вдалося завантажити мережеві комісії. Перевірте з'єднання та спробуйте ще раз.",
+  "walletLoadFailed": "Не вдалося завантажити ваші гаманці. Перевірте підключення та спробуйте ще раз.",
+  "walletWarningElectrumBitcoinDown": "Сервер Bitcoin недоступний",
+  "walletWarningElectrumLiquidDown": "Сервер Liquid недоступний",
+  "walletWarningElectrumBothDown": "Сервери Bitcoin і Liquid недоступні",
+  "walletWarningElectrumAction": "Натисніть, щоб налаштувати параметри сервера"
 }

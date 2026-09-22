@@ -590,10 +590,6 @@
   "@dcaWalletLiquidSubtitle": {
     "description": "Subtitle/description for Liquid wallet option"
   },
-  "walletAddressTypeNestedSegwit": "Segwit aninhado",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "payPaymentPending": "Pagamento pendente",
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
@@ -704,10 +700,6 @@
   "customLocationTitle": "Localização personalizada",
   "@customLocationTitle": {
     "description": "Title for custom location screen"
-  },
-  "walletAddressTypeConfidentialSegwit": "Segwit confidencial",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "sellSendPaymentUsdBalance": "USD / USD Balanço",
   "@sellSendPaymentUsdBalance": {
@@ -2334,10 +2326,6 @@
   "@ledgerHelpStep4": {
     "description": "Fourth troubleshooting step for Ledger connection issues"
   },
-  "walletTypeWatchSigner": "Sinalizador de relógio",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "sellInsufficientBalance": "Balança de carteira insuficiente",
   "@sellInsufficientBalance": {
     "description": "Error when wallet lacks funds"
@@ -2964,10 +2952,6 @@
   "@bitboxActionPairDeviceProcessingSubtext": {
     "description": "Processing subtext for pair device"
   },
-  "walletNetworkBitcoin": "Rede de Bitcoin",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "backupSettingsExportVault": "Padrão de exportação",
   "@backupSettingsExportVault": {
     "description": "Button text to export encrypted vault file"
@@ -3344,10 +3328,6 @@
   "payValidating": "Validação...",
   "@payValidating": {
     "description": "Text shown while validating SINPE"
-  },
-  "walletNetworkBitcoinTestnet": "Teste de Bitcoin",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "importColdcardScanning": "A procurar...",
   "@importColdcardScanning": {
@@ -3935,10 +3915,6 @@
   "@sendType": {
     "description": "Label prefix for transaction type field"
   },
-  "walletAddressTypeLegacy": "Legado",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "payUseCoinjoin": "Use CoinJoin",
   "@payUseCoinjoin": {
     "description": "Option to use CoinJoin for privacy"
@@ -4228,10 +4204,6 @@
   "payFeePriority": "Prioridade de Taxas",
   "@payFeePriority": {
     "description": "Label for fee priority selection"
-  },
-  "electrumBitcoinSslInfo": "Se nenhum protocolo for especificado, o ssl será usado por padrão.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
   },
   "testBackupErrorUnexpectedSuccess": "Sucesso inesperado: backup deve combinar carteira existente",
   "@testBackupErrorUnexpectedSuccess": {
@@ -4597,10 +4569,6 @@
   "@fundExchangeDoneButton": {
     "description": "Button label to finish and exit the funding flow"
   },
-  "electrumServerSettingsLabel": "Servidor Electrum (nodo de Bitcoin)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "replaceByFeeBroadcastButton": "Transmissão",
   "@replaceByFeeBroadcastButton": {
     "description": "Button to broadcast the replacement transaction"
@@ -4693,10 +4661,6 @@
   "exchangeAccountInfoEmailLabel": "Email",
   "@exchangeAccountInfoEmailLabel": {
     "description": "Label for email field in account information"
-  },
-  "walletTypeLiquidLightningNetwork": "Rede Líquida e Relâmpago",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sellRoutingNumber": "Número de roteamento",
   "@sellRoutingNumber": {
@@ -5016,10 +4980,6 @@
   "connectHardwareWalletJade": "Blockstream Jade",
   "@connectHardwareWalletJade": {
     "description": "Blockstream Jade hardware wallet option"
-  },
-  "walletTypeWatchOnly": "Só com cuidado",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
   },
   "sendSelectedCoins": "{count} moedas selecionadas",
   "@sendSelectedCoins": {
@@ -5736,10 +5696,6 @@
   "payCorporateName": "Nome da Empresa",
   "@payCorporateName": {
     "description": "Label for corporate name field"
-  },
-  "walletNetworkLiquidTestnet": "Testnet líquido",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumMainnet": "Principal",
   "@electrumMainnet": {
@@ -7551,10 +7507,6 @@
   "sendSignWithLedger": "Sinal com Ledger",
   "@sendSignWithLedger": {
     "description": "Button to sign transaction with Ledger hardware wallet"
-  },
-  "walletNetworkLiquid": "Rede líquida",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "transactionListToday": "Hoje",
   "@transactionListToday": {
@@ -10067,17 +10019,9 @@
   "@importQrDeviceJadeStep4": {
     "description": "Jade instruction step 4"
   },
-  "walletTypeBitcoinNetwork": "Rede de Bitcoin",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
-  },
   "fundExchangeWarningTacticsTitle": "Táticas comuns do scammer",
   "@fundExchangeWarningTacticsTitle": {
     "description": "Title for the list of common scammer tactics"
-  },
-  "walletAddressTypeNativeSegwit": "Nativo Segwit",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "addressViewTitle": "Detalhes do endereço",
   "@addressViewTitle": {
@@ -11199,10 +11143,6 @@
   "@withdrawSuccessTitle": {
     "description": "Title shown when withdrawal is successfully initiated"
   },
-  "walletAutoTransferBlockButton": "Bloco",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
-  },
   "withdrawOwnershipMyAccount": "Esta é a minha conta",
   "@withdrawOwnershipMyAccount": {
     "description": "Option indicating the account belongs to the user"
@@ -11210,10 +11150,6 @@
   "withdrawOwnershipOtherAccount": "Esta é a conta de outra pessoa",
   "@withdrawOwnershipOtherAccount": {
     "description": "Option indicating the account belongs to someone else"
-  },
-  "walletAutoTransferBlockedTitle": "Transferência automática bloqueada",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
   },
   "withdrawOwnershipQuestion": "A quem pertence esta conta?",
   "@withdrawOwnershipQuestion": {
@@ -11223,21 +11159,6 @@
   "@navigationTabExchange": {
     "description": "Label for the Exchange tab in bottom navigation"
   },
-  "walletAutoTransferBlockedMessage": "Tentando transferir {amount} BTC. A taxa atual é {currentFee}% do valor de transferência e o limite de taxa é definido para {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "buyBelowMinAmountError": "Você está tentando comprar abaixo da quantidade mínima.",
   "@buyBelowMinAmountError": {
     "description": "Error message for amount below minimum during buy"
@@ -11245,10 +11166,6 @@
   "buyUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
   "@buyUnauthenticatedError": {
     "description": "Error message for unauthenticated user during buy"
-  },
-  "walletAutoTransferAllowButton": "Permitir",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
   "@buyAboveMaxAmountError": {
@@ -12212,5 +12129,10 @@
   "sendErrorExchangeOrderMismatch": "Este pagamento não corresponde mais ao pedido. Inicie o pagamento novamente.",
   "sellUnexpectedError": "Sua ordem de venda não pôde ser concluída no momento. Tente novamente ou entre em contato com o suporte.",
   "sellErrorFeeBelowRelayFloor": "Taxa de rede muito baixa. Escolha uma taxa mais alta.",
-  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente."
+  "sellErrorFeesUnavailable": "Não foi possível carregar as taxas de rede. Verifique sua conexão e tente novamente.",
+  "walletLoadFailed": "Não foi possível carregar suas carteiras. Verifique sua conexão e tente novamente.",
+  "walletWarningElectrumBitcoinDown": "Servidor Bitcoin indisponível",
+  "walletWarningElectrumLiquidDown": "Servidor Liquid indisponível",
+  "walletWarningElectrumBothDown": "Servidores Bitcoin e Liquid indisponíveis",
+  "walletWarningElectrumAction": "Toque para configurar as configurações do servidor"
 }

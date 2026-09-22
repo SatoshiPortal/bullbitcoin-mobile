@@ -250,7 +250,6 @@
     }
   },
   "fundExchangeLabelBankAccountCountry": "Paese",
-  "walletAddressTypeNestedSegwit": "Segwit annidato",
   "exchangeLandingFeature2": "DCA, ordini di limite e acquisto automatico",
   "payPaymentPending": "Pagamento in sospeso",
   "payConfirmHighFee": "La tassa per questo pagamento è {percentage}% dell'importo. Continua?",
@@ -276,7 +275,6 @@
   "fundExchangeLabelTransitNumber": "Numero di trasmissione",
   "buyConfirmYouReceive": "Ricevete",
   "buyDocumentUpload": "Documenti di caricamento",
-  "walletAddressTypeConfidentialSegwit": "Segwit riservati",
   "transactionDetailRetryTransfer": "Trasferimento di ripiani {action}",
   "@transactionDetailRetryTransfer": {
     "placeholders": {
@@ -813,7 +811,6 @@
   "ledgerHelpStep1": "Riavviare il dispositivo Ledger.",
   "swapAvailableBalance": "Bilancio disponibile",
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Descrizione del pagamento",
-  "walletTypeWatchSigner": "Guarda-Signer",
   "ledgerConnectingSubtext": "Stabilire un collegamento sicuro...",
   "transactionError": "Errore - {error}",
   "@transactionError": {
@@ -1107,7 +1104,6 @@
   "testBackupVerify": "Verifica",
   "transactionDetailLabelCreatedAt": "Creato a",
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
-  "walletNetworkBitcoin": "Rete Bitcoin",
   "electrumAdvancedOptions": "Opzioni avanzate",
   "autoswapWarningCardSubtitle": "Un swap verrà attivato se il saldo dei pagamenti istantanei supera 0,02 BTC.",
   "transactionStatusConfirmed": "Confermato",
@@ -1131,7 +1127,6 @@
   "exchangeBitcoinWalletsEnterAddressHint": "Inserisci l'indirizzo",
   "withdrawAmountContinue": "Continua",
   "allSeedViewSecurityWarningMessage": "Visualizzare frasi di seme è un rischio di sicurezza. Chiunque veda la tua frase di seme può accedere ai tuoi fondi. Assicurarsi di essere in una posizione privata e che nessuno può vedere lo schermo.",
-  "walletNetworkBitcoinTestnet": "Testnet di Bitcoin",
   "recoverbullSeeMoreVaults": "Vedi altre volte",
   "sellPayFromWallet": "Paga dal portafoglio",
   "pinProtectionDescription": "Il PIN protegge l'accesso al portafoglio e alle impostazioni. Tienilo memorabile.",
@@ -1412,7 +1407,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "buyInputKycPending": "Verifica dell'identità KYC in sospeso",
   "importWatchOnlySelectDerivation": "Selezionare la derivazione",
-  "walletAddressTypeLegacy": "Legacy",
   "hwPassport": "Passaporto della Fondazione",
   "electrumInvalidStopGapError": "Fermata non valida Valore di guadagno: {value}",
   "@electrumInvalidStopGapError": {
@@ -1554,7 +1548,6 @@
     }
   },
   "payReviewPayment": "Pagamento",
-  "electrumBitcoinSslInfo": "Se non viene specificato alcun protocollo, ssl verrà utilizzato per impostazione predefinita.",
   "transactionTitle": "Transazioni",
   "sellQrCode": "Codice QR QR",
   "walletDetailsUnnamedWalletFallback": "Portafoglio senza nome",
@@ -1661,7 +1654,6 @@
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Il tuo codice di trasferimento.",
   "recoverVia12WordsDescription": "Recuperare il portafoglio tramite 12 parole.",
   "fundExchangeFundAccount": "Finanziamento del tuo conto",
-  "electrumServerSettingsLabel": "Electrum server (nodo Bitcoin)",
   "dcaEnterLightningAddressLabel": "Inserisci l'indirizzo di illuminazione",
   "statusCheckOnline": "Online",
   "buyPayoutMethod": "Metodo di pagamento",
@@ -1679,7 +1671,6 @@
   "fundExchangeLabelRecipientNameArs": "Nome destinatario",
   "sendTo": "A",
   "gotItButton": "Capito",
-  "walletTypeLiquidLightningNetwork": "Rete di liquidi e fulmini",
   "sendFeePriority": "Priorità",
   "transactionPayjoinSendWithout": "Inviare senza pagamento",
   "paySelectCountry": "Seleziona il paese",
@@ -1737,20 +1728,6 @@
   "payDebitCardNumber": "Numero della carta di debito",
   "receiveRequestInboundLiquidity": "Richiedi capacità di ricezione",
   "backupWalletHowToDecideBackupMoreInfo": "Visitare Recoverbull.com per ulteriori informazioni.",
-  "walletAutoTransferBlockedMessage": "Tentare di trasferire {amount} BTC. La tassa attuale è {currentFee}% dell'importo di trasferimento e la soglia di tassa è impostata a {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "Fare clic sui pulsanti per firmare la transazione sul Krux.",
   "exchangeSupportChatEmptyState": "Nessun messaggio. Inizia una conversazione!",
   "payExternalWalletDescription": "Paga da un altro portafoglio Bitcoin",
@@ -1856,7 +1833,6 @@
   },
   "sendBroadcastTransaction": "Transazione di trasmissione",
   "receiveBitcoinConfirmationMessage": "La transazione Bitcoin richiederà un po 'per confermare.",
-  "walletTypeWatchOnly": "Guarda solo",
   "recoverbullDecryptVault": "Decrypt vault",
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "Il trasferimento è pronto per essere rimborsato.",
@@ -1937,7 +1913,6 @@
       }
     }
   },
-  "walletNetworkLiquidTestnet": "Testato liquido",
   "electrumDeleteFailedError": "Non è stato possibile eliminare server personalizzati",
   "@electrumDeleteFailedError": {
     "placeholders": {
@@ -2293,7 +2268,6 @@
     "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329 Etichette",
-  "walletAutoTransferAllowButton": "Consentire",
   "autoswapSelectWalletRequired": "Seleziona un portafoglio Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Vendere Bitcoin, ottenere pagato con Bitcoin",
   "hwSeedSigner": "SeedSigner",
@@ -2796,7 +2770,6 @@
   "bitboxActionSignTransactionTitle": "Transazione dei segni",
   "testBackupGoogleDrivePrivacyPart3": "lasciare il telefono ed è ",
   "logSettingsErrorLoadingMessage": "Tronchi di caricamento di errore: ",
-  "walletNetworkLiquid": "Rete liquida",
   "swapMaxButton": "MAX",
   "transactionSwapStatusTransferStatus": "Stato di trasferimento",
   "importQrDeviceSeedsignerStep8": "Scansiona il codice QR visualizzato sul tuo SeedSigner",
@@ -3403,7 +3376,6 @@
   "recoverbullRetry": "Reazione",
   "receiveCopyInvoice": "Copia fattura",
   "exchangeAccountInfoLastNameLabel": "Cognome",
-  "walletAutoTransferBlockedTitle": "Trasferimento automatico Bloccato",
   "importQrDeviceJadeInstructionsTitle": "Istruzioni Blockstream Jade",
   "paySendMax": "Max",
   "recoverbullGoogleDriveDeleteConfirmation": "Sei sicuro di voler eliminare questo backup della cassaforte? Questa azione non può essere annullata.",
@@ -3411,7 +3383,6 @@
   "transactionNoteEditTitle": "Modifica nota",
   "transactionDetailLabelCompletedAt": "Completato a",
   "passportStep9": "Fare clic sui pulsanti per firmare la transazione sul passaporto.",
-  "walletTypeBitcoinNetwork": "Rete Bitcoin",
   "electrumDeleteConfirmation": "Sei sicuro di voler eliminare questo server?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
     "placeholders": {
@@ -3517,7 +3488,6 @@
   },
   "fundExchangeWarningTacticsTitle": "Tattiche di truffatore comuni",
   "payInstitutionCodeHint": "Inserisci il codice dell'istituzione",
-  "walletAddressTypeNativeSegwit": "Nativo Segwit",
   "payOpenInvoice": "Fattura aperta",
   "payMaximumAmount": "Massimo: {amount}",
   "@payMaximumAmount": {
@@ -3687,7 +3657,6 @@
   "payViewDetails": "Visualizza dettagli",
   "withdrawOrderAlreadyConfirmedError": "Questo ordine di recesso è già stato confermato.",
   "autoswapSelectWallet": "Seleziona un portafoglio Bitcoin",
-  "walletAutoTransferBlockButton": "Blocco",
   "recoverbullGoogleDriveErrorSelectFailed": "Non selezionare la volta da Google Drive",
   "autoswapRecipientWalletRequired": "#",
   "pinCodeLoading": "Caricamento",
@@ -4906,5 +4875,10 @@
   "sendErrorExchangeOrderMismatch": "Questo pagamento non corrisponde più all'ordine. Riavvii il pagamento.",
   "sellUnexpectedError": "Il suo ordine di vendita non è stato completato al momento. Riprovi o contatti l'assistenza.",
   "sellErrorFeeBelowRelayFloor": "Commissione di rete troppo bassa. Scelga una commissione più alta.",
-  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi."
+  "sellErrorFeesUnavailable": "Non è stato possibile caricare le commissioni di rete. Controlli la connessione e riprovi.",
+  "walletLoadFailed": "Non è stato possibile caricare i tuoi portafogli. Controlla la connessione e riprova.",
+  "walletWarningElectrumBitcoinDown": "Server Bitcoin non disponibile",
+  "walletWarningElectrumLiquidDown": "Server Liquid non disponibile",
+  "walletWarningElectrumBothDown": "Server Bitcoin e Liquid non disponibili",
+  "walletWarningElectrumAction": "Tocca per configurare le impostazioni del server"
 }

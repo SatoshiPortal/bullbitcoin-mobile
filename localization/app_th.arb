@@ -678,10 +678,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "พระราชวัง",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, คําสั่งและคําสั่งซื้ออัตโนมัติ",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -758,10 +754,6 @@
   "buyDocumentUpload": "อัพโหลดเอกสาร",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "สอดคล้อง",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "โอนเงิน {action}",
   "@transactionDetailRetryTransfer": {
@@ -2439,10 +2431,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "ดูวิดีโอ",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "ระบบเชื่อมต่อที่ปลอดภัย ...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3338,10 +3326,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "เครือข่าย Bitcoin",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3433,10 +3417,6 @@
   "allSeedViewSecurityWarningMessage": "แสดงวลีเมล็ดพันธุ์เป็นความเสี่ยง ทุกคนที่เห็นวลีเมล็ดพันธุ์ของคุณสามารถเข้าถึงเงินของคุณ ตรวจสอบให้แน่ใจว่าคุณอยู่ในสถานที่ส่วนตัวและไม่มีหน้าจอของคุณ.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "การทดสอบ Bitcoin",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "ดูเพิ่มเติม",
   "@recoverbullSeeMoreVaults": {
@@ -4398,10 +4378,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "การลงโทษ",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "หนังสือเดินทาง",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4805,10 +4781,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "หากโปรโตคอลจะถูกระบุตามค่าเริ่มต้น.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "การทําธุรกรรม",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -5145,10 +5117,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "เซิร์ฟเวอร์ไฟฟ้า (Bitcoin ไม่)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "กด",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5193,10 +5161,6 @@
   "gotItButton": "ดู",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "เครือข่ายภายนอกและเครือข่าย",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "ค่าธรรมเนียม",
   "@sendFeePriority": {
@@ -5370,21 +5334,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "เยี่ยมชม กู้คืนข้อมูลเพิ่มเติม.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "กำลังพยายามโอน {amount} BTC ค่าธรรมเนียมปัจจุบันอยู่ที่ {currentFee}% ของจำนวนเงินที่โอน และเกณฑ์ค่าธรรมเนียมถูกตั้งไว้ที่ {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "คลิกที่ปุ่มไปยังการทําธุรกรรมในญาติของคุณ.",
   "@kruxStep11": {
@@ -5747,10 +5696,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "ดูวิดีโอ",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "ถอดรหัส",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -6002,10 +5947,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "การทดสอบของเหลว",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "ลบเซิร์ฟเวอร์ที่กำหนดเองไม่สำเร็จ",
   "@electrumDeleteFailedError": {
@@ -7079,10 +7020,6 @@
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "คุณสามารถเข้าถึง",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "เลือกกระเป๋าสตางค์ Bitcoin *",
   "@autoswapSelectWalletRequired": {
@@ -8552,10 +8489,6 @@
   "logSettingsErrorLoadingMessage": "บันทึกข้อผิดพลาด: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "เครือข่ายของเหลว",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "แม็กซ์",
   "@swapMaxButton": {
@@ -10346,10 +10279,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "การถ่ายโอนอัตโนมัติ",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "บล็อก",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -10377,10 +10306,6 @@
   "passportStep9": "คลิกที่ปุ่มไปยังการทําธุรกรรมในหนังสือเดินทางของคุณ.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "เครือข่าย Bitcoin",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "คุณต้องลบเซิร์ฟเวอร์นี้?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -10690,10 +10615,6 @@
   "payInstitutionCodeHint": "ป้อนสถาบัน",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Ative",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "เปิดใบแจ้งหนี้",
   "@payOpenInvoice": {
@@ -11215,10 +11136,6 @@
   "autoswapSelectWallet": "เลือกกระเป๋าสตางค์ Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "บล็อก",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "ค้นหาเลือก vault จาก Google Drive",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12204,5 +12121,10 @@
   "sendErrorExchangeOrderMismatch": "การชำระเงินนี้ไม่ตรงกับคำสั่งซื้ออีกต่อไป โปรดเริ่มการชำระเงินใหม่",
   "sellUnexpectedError": "ไม่สามารถดำเนินการคำสั่งขายของคุณได้ในขณะนี้ โปรดลองอีกครั้งหรือติดต่อฝ่ายสนับสนุน",
   "sellErrorFeeBelowRelayFloor": "ค่าธรรมเนียมเครือข่ายต่ำเกินไป เลือกค่าธรรมเนียมที่สูงขึ้น",
-  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
+  "sellErrorFeesUnavailable": "ไม่สามารถโหลดค่าธรรมเนียมเครือข่ายได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง",
+  "walletWarningElectrumBitcoinDown": "เซิร์ฟเวอร์ Bitcoin ไม่พร้อมใช้งาน",
+  "walletWarningElectrumLiquidDown": "เซิร์ฟเวอร์ Liquid ไม่พร้อมใช้งาน",
+  "walletWarningElectrumBothDown": "เซิร์ฟเวอร์ Bitcoin และ Liquid ไม่พร้อมใช้งาน",
+  "walletWarningElectrumAction": "แตะเพื่อตั้งค่าเซิร์ฟเวอร์"
 }

@@ -249,7 +249,6 @@
     }
   },
   "fundExchangeLabelBankAccountCountry": "Страна с банковским счетом",
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
   "exchangeLandingFeature2": "DCA, лимитные заказы и автоматическая покупка",
   "payPaymentPending": "Оплата не завершена",
   "payConfirmHighFee": "Плата за этот платеж {percentage}% от суммы. Продолжать?",
@@ -275,7 +274,6 @@
   "fundExchangeLabelTransitNumber": "Транзитный номер",
   "buyConfirmYouReceive": "Вы получите",
   "buyDocumentUpload": "Загрузка документов",
-  "walletAddressTypeConfidentialSegwit": "Конфиденциальный Segwit",
   "transactionDetailRetryTransfer": "Retry Transfer {action}",
   "@transactionDetailRetryTransfer": {
     "placeholders": {
@@ -811,7 +809,6 @@
   "ledgerHelpStep1": "Перезапустите устройство Ledger.",
   "swapAvailableBalance": "Имеющийся остаток",
   "fundExchangeCrIbanCrcLabelPaymentDescription": "Описание оплаты",
-  "walletTypeWatchSigner": "Watch-Signer",
   "ledgerConnectingSubtext": "Установление безопасного соединения...",
   "transactionError": "Ошибка - {error}",
   "@transactionError": {
@@ -1105,7 +1102,6 @@
   "testBackupVerify": "Проверка",
   "transactionDetailLabelCreatedAt": "Создано",
   "fundExchangeJurisdictionArgentina": "🇦🇷 Аргентина",
-  "walletNetworkBitcoin": "Bitcoin Network",
   "electrumAdvancedOptions": "Дополнительные параметры",
   "autoswapWarningCardSubtitle": "Свопа будет срабатывать, если ваш баланс Instant Payments превысит 0,02 BTC.",
   "transactionStatusConfirmed": "Подтверждено",
@@ -1129,7 +1125,6 @@
   "exchangeBitcoinWalletsEnterAddressHint": "Введите адрес",
   "withdrawAmountContinue": "Продолжить",
   "allSeedViewSecurityWarningMessage": "Отображение семенных фраз - это риск безопасности. Любой, кто видит вашу семенную фразу, может получить доступ к вашим средствам. Убедитесь, что вы находитесь в частном месте и что никто не может увидеть ваш экран.",
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
   "recoverbullSeeMoreVaults": "Смотрите больше сводов",
   "sellPayFromWallet": "Платить за кошелек",
   "pinProtectionDescription": "Ваш PIN защищает доступ к вашему кошельку и настройкам. Не забывай об этом.",
@@ -1410,7 +1405,6 @@
   "settingsRecoverbullTitle": "Recoverbull",
   "buyInputKycPending": "Проверка идентификации KYC",
   "importWatchOnlySelectDerivation": "Выбрать",
-  "walletAddressTypeLegacy": "Наследие",
   "hwPassport": "Паспорт",
   "electrumInvalidStopGapError": "Неверный стоп Значение разрыва: {value}",
   "@electrumInvalidStopGapError": {
@@ -1552,7 +1546,6 @@
     }
   },
   "payReviewPayment": "Оплата",
-  "electrumBitcoinSslInfo": "Если протокол не указан, ssl будет использоваться по умолчанию.",
   "transactionTitle": "Операции",
   "sellQrCode": "Код QR",
   "walletDetailsUnnamedWalletFallback": "Неназванный кошелек",
@@ -1659,7 +1652,6 @@
   "fundExchangeCrIbanUsdPaymentDescriptionHelp": "Ваш код передачи.",
   "recoverVia12WordsDescription": "Восстановите свой кошелек через 12 слов.",
   "fundExchangeFundAccount": "Фонд вашего счета",
-  "electrumServerSettingsLabel": "Electrum Server (Bitcoin node)",
   "dcaEnterLightningAddressLabel": "Адрес освещения",
   "statusCheckOnline": "Онлайн",
   "buyPayoutMethod": "Метод выплаты",
@@ -1677,7 +1669,6 @@
   "fundExchangeLabelRecipientNameArs": "Имя получателя",
   "sendTo": "В",
   "gotItButton": "Понял",
-  "walletTypeLiquidLightningNetwork": "Жидкая и осветительная сеть",
   "sendFeePriority": "Очередность",
   "transactionPayjoinSendWithout": "Отправить без оплаты",
   "paySelectCountry": "Выбор страны",
@@ -1735,20 +1726,6 @@
   "payDebitCardNumber": "Номер карты",
   "receiveRequestInboundLiquidity": "Получение запроса",
   "backupWalletHowToDecideBackupMoreInfo": "Посетите Recoverybull.com для получения дополнительной информации.",
-  "walletAutoTransferBlockedMessage": "Попытка передачи {amount} BTC. Текущий сбор составляет {currentFee}% от суммы перевода, и порог платы установлен на {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "Нажмите на кнопки, чтобы подписать транзакцию на Krux.",
   "exchangeSupportChatEmptyState": "Пока никаких сообщений. Начинайте разговор!",
   "payExternalWalletDescription": "Оплата за другой биткойн-кошелек",
@@ -1854,7 +1831,6 @@
   },
   "sendBroadcastTransaction": "Трансляция",
   "receiveBitcoinConfirmationMessage": "Биткоин-транзакция займет некоторое время, чтобы подтвердить.",
-  "walletTypeWatchOnly": "Смотреть онлайн",
   "recoverbullDecryptVault": "Зашифрованное хранилище",
   "connectHardwareWalletJade": "Жадный блок",
   "coreSwapsChainRefundable": "Перевод готов к возврату.",
@@ -1935,7 +1911,6 @@
       }
     }
   },
-  "walletNetworkLiquidTestnet": "Жидкий Тестет",
   "electrumDeleteFailedError": "Не удалось удалить пользовательский сервер ",
   "@electrumDeleteFailedError": {
     "placeholders": {
@@ -2292,7 +2267,6 @@
     "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329",
-  "walletAutoTransferAllowButton": "Разрешить",
   "autoswapSelectWalletRequired": "Выберите биткойн-кошелек*",
   "exchangeFeatureSellBitcoin": "• Продавайте биткойн, получите оплату с Bitcoin",
   "hwSeedSigner": "SeedSigner",
@@ -2795,7 +2769,6 @@
   "bitboxActionSignTransactionTitle": "Подписание",
   "testBackupGoogleDrivePrivacyPart3": "оставьте свой телефон и ",
   "logSettingsErrorLoadingMessage": "Загрузка журналов: ",
-  "walletNetworkLiquid": "Жидкая сеть",
   "swapMaxButton": "MAX",
   "transactionSwapStatusTransferStatus": "Статус передачи",
   "importQrDeviceSeedsignerStep8": "Сканировать QR-код, отображаемый на вашем SeedSigner",
@@ -3402,7 +3375,6 @@
   "recoverbullRetry": "Retry",
   "receiveCopyInvoice": "Счет-фактура",
   "exchangeAccountInfoLastNameLabel": "Имя",
-  "walletAutoTransferBlockedTitle": "Автоперенос заблокирован",
   "importQrDeviceJadeInstructionsTitle": "Инструкции по блок-потоку",
   "paySendMax": "Макс",
   "recoverbullGoogleDriveDeleteConfirmation": "Вы уверены, что хотите удалить это хранилище? Это действие нельзя отменить.",
@@ -3410,7 +3382,6 @@
   "transactionNoteEditTitle": "Правка",
   "transactionDetailLabelCompletedAt": "Завершено",
   "passportStep9": "Нажмите на кнопки, чтобы подписать транзакцию на вашем паспорте.",
-  "walletTypeBitcoinNetwork": "Сеть Bitcoin",
   "electrumDeleteConfirmation": "Вы уверены, что хотите удалить этот сервер?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
     "placeholders": {
@@ -3516,7 +3487,6 @@
   },
   "fundExchangeWarningTacticsTitle": "Общая тактика мошенничества",
   "payInstitutionCodeHint": "Код учреждения",
-  "walletAddressTypeNativeSegwit": "Native Segwit",
   "payOpenInvoice": "Открытый счет",
   "payMaximumAmount": "Максимум: {amount}",
   "@payMaximumAmount": {
@@ -3686,7 +3656,6 @@
   "payViewDetails": "Дополнительные сведения",
   "withdrawOrderAlreadyConfirmedError": "Этот приказ о выводе уже подтвержден.",
   "autoswapSelectWallet": "Выберите биткойн-кошелек",
-  "walletAutoTransferBlockButton": "Блок",
   "recoverbullGoogleDriveErrorSelectFailed": "Не удалось выбрать хранилище из Google Drive",
   "autoswapRecipientWalletRequired": "*",
   "pinCodeLoading": "Загрузка",
@@ -4912,5 +4881,10 @@
   "sendErrorExchangeOrderMismatch": "Этот платёж больше не соответствует заказу. Пожалуйста, начните платёж заново.",
   "sellUnexpectedError": "Ваш ордер на продажу сейчас не удалось выполнить. Пожалуйста, попробуйте снова или обратитесь в поддержку.",
   "sellErrorFeeBelowRelayFloor": "Сетевая комиссия слишком низкая. Выберите более высокую комиссию.",
-  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова."
+  "sellErrorFeesUnavailable": "Не удалось загрузить сетевые комиссии. Проверьте подключение и попробуйте снова.",
+  "walletLoadFailed": "Не удалось загрузить ваши кошельки. Проверьте подключение и попробуйте ещё раз.",
+  "walletWarningElectrumBitcoinDown": "Сервер Bitcoin недоступен",
+  "walletWarningElectrumLiquidDown": "Сервер Liquid недоступен",
+  "walletWarningElectrumBothDown": "Серверы Bitcoin и Liquid недоступны",
+  "walletWarningElectrumAction": "Нажмите, чтобы настроить параметры сервера"
 }

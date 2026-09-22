@@ -578,10 +578,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "Nested Segwit",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, εντολές περιορισμού και αυτόματη αγορά",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -658,10 +654,6 @@
   "buyDocumentUpload": "Μεταφορτώστε τα έγγραφα",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "Confidential Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "Retry Transfer {action}",
   "@transactionDetailRetryTransfer": {
@@ -2067,10 +2059,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "Watch-Signer",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "Δημιουργία ασφαλούς σύνδεσης...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -2834,10 +2822,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "Bitcoin Network",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "Προχωρημένες επιλογές",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -2917,10 +2901,6 @@
   "allSeedViewSecurityWarningMessage": "Η εμφάνιση φράσεων σπόρων είναι ένας κίνδυνος ασφαλείας. Όποιος βλέπει τη φράση του σπόρου σας μπορεί να έχει πρόσβαση στα χρήματά σας. Βεβαιωθείτε ότι βρίσκεστε σε ιδιωτική τοποθεσία και ότι κανείς δεν μπορεί να δει την οθόνη σας.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin Testnet",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "sellPayFromWallet": "Πληρώστε από το πορτοφόλι",
   "@sellPayFromWallet": {
@@ -3748,10 +3728,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "Legacy",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "Ίδρυμα Passport",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4069,10 +4045,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "Εάν δεν καθοριστεί πρωτόκολλο, το ssl θα χρησιμοποιηθεί από προεπιλογή.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "Συναλλαγές",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -4364,10 +4336,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Διακομιστής Electrum (κόμβος Bitcoin)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "statusCheckOnline": "Online",
   "@statusCheckOnline": {
     "description": "Status text when a service is online"
@@ -4404,10 +4372,6 @@
   "sendTo": "Για να",
   "@sendTo": {
     "description": "Label for the recipient/destination in a transaction"
-  },
-  "walletTypeLiquidLightningNetwork": "Liquid and Lightning Network",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "Προτεραιότητα",
   "@sendFeePriority": {
@@ -4549,21 +4513,6 @@
   "receiveRequestInboundLiquidity": "Αίτηση παραλαβής της ικανότητας",
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
-  },
-  "walletAutoTransferBlockedMessage": "Προσπάθεια μεταφοράς {amount} BTC. Η τρέχουσα χρέωση είναι {currentFee}% του ποσού μεταφοράς και το όριο χρέωσης έχει οριστεί στο {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο Krux σας.",
   "@kruxStep11": {
@@ -4882,10 +4831,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "Παρακολουθήστε μόνο",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "connectHardwareWalletJade": "Blockstream Jade",
   "@connectHardwareWalletJade": {
     "description": "Blockstream Jade hardware wallet option"
@@ -5078,10 +5023,6 @@
   "receivePaymentInProgress": "Πληρωμή σε πρόοδο",
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
-  },
-  "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "Επιθυμήθηκε να διαγράψει το προσαρμοσμένο διακομιστή[X30XX]",
   "@electrumDeleteFailedError": {
@@ -6000,10 +5941,6 @@
   "bip329LabelsTitle": "BIP329 ετικέτες",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "Επιτρέπει",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
   "@autoswapSelectWalletRequired": {
@@ -7203,10 +7140,6 @@
   "logSettingsErrorLoadingMessage": "Error φόρτωσης logs: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "Liquid Network",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "MAX",
   "@swapMaxButton": {
@@ -8659,10 +8592,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "Auto Transfer Blocked",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade Οδηγίες",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -8682,10 +8611,6 @@
   "passportStep9": "Κάντε κλικ στα κουμπιά για να υπογράψετε τη συναλλαγή στο διαβατήριό σας.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin δίκτυο Bitcoin",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτόν τον server;\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -8971,10 +8896,6 @@
   "payInstitutionCodeHint": "Εισάγετε κώδικα ιδρύματος",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "Ιθαγενής Segwitt",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "Ανοιχτό τιμολόγιο",
   "@payOpenInvoice": {
@@ -9415,10 +9336,6 @@
   "autoswapSelectWallet": "Επιλέξτε ένα πορτοφόλι Bitcoin",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "Block",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "pinCodeLoading": "Φόρτωση Φόρου",
   "@pinCodeLoading": {
@@ -12200,5 +12117,10 @@
   "sendErrorExchangeOrderMismatch": "Αυτή η πληρωμή δεν αντιστοιχεί πλέον στην εντολή. Ξεκινήστε ξανά την πληρωμή.",
   "sellUnexpectedError": "Η εντολή πώλησής σας δεν ήταν δυνατό να ολοκληρωθεί αυτή τη στιγμή. Δοκιμάστε ξανά ή επικοινωνήστε με την υποστήριξη.",
   "sellErrorFeeBelowRelayFloor": "Το τέλος δικτύου είναι πολύ χαμηλό. Επιλέξτε υψηλότερο τέλος.",
-  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+  "sellErrorFeesUnavailable": "Τα τέλη δικτύου δεν φορτώθηκαν. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+  "walletWarningElectrumBitcoinDown": "Ο διακομιστής Bitcoin δεν είναι διαθέσιμος",
+  "walletWarningElectrumLiquidDown": "Ο διακομιστής Liquid δεν είναι διαθέσιμος",
+  "walletWarningElectrumBothDown": "Οι διακομιστές Bitcoin και Liquid δεν είναι διαθέσιμοι",
+  "walletWarningElectrumAction": "Πατήστε για να ρυθμίσετε τον διακομιστή"
 }

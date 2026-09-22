@@ -682,10 +682,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "আভ্যন্তরীণ সেগউইট",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, সীমিত অর্ডার ও স্বয়ংক্রিয় ক্রয়",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -762,10 +758,6 @@
   "buyDocumentUpload": "নথিপত্র আপলোড করুন",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "গোপন সেগউইট",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "পুনরায় হস্তান্তর করুন {action}",
   "@transactionDetailRetryTransfer": {
@@ -2396,10 +2388,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "পর্যবেক্ষণ-স্বাক্ষরকারী",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "নিরাপদ সংযোগ স্থাপন করা হচ্ছে..।",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3260,10 +3248,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "বিটকয়েন নেটওয়ার্ক",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "উন্নত বিকল্প",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3351,10 +3335,6 @@
   "allSeedViewSecurityWarningMessage": "সিড ফ্রেজ প্রদর্শন করা একটি নিরাপত্তা ঝুঁকি। যেকোনো ব্যক্তি আপনার সিড ফ্রেজ দেখলে আপনার তহবিল অ্যাক্সেস করতে পারে। অনুগ্রহ করে নিশ্চিত করুন আপনি একটি ব্যক্তিগত স্থানে আছেন এবং কেউ আপনার স্ক্রিন দেখতে পাচ্ছে না।",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin টেস্টনেট",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "আরও ভল্ট দেখুন",
   "@recoverbullSeeMoreVaults": {
@@ -4282,10 +4262,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "পুরাতন",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "Foundation Passport",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4663,10 +4639,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "যদি কোনো প্রটোকল নির্দিষ্ট না করা হয়, ডিফল্টরূপে SSL ব্যবহার করা হবে।",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "লেনদেন",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -4995,10 +4967,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Electrum সার্ভার (Bitcoin নোড)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "লাইটনিং ঠিকানা লিখুন",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5043,10 +5011,6 @@
   "gotItButton": "বুঝেছি",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "লিকুইড ও লাইটনিং নেটওয়ার্ক",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "ফি অগ্রাধিকার",
   "@sendFeePriority": {
@@ -5216,21 +5180,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "আর তথ্যের জন্য recoverbull.com-এ যান।",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "{amount} BTC স্থানান্তর করার চেষ্টা হচ্ছে। স্থানান্তর পরিমাণের বর্তমান ফি {currentFee}% এবং ফি থ্রেশহোল্ডটি {thresholdFee}% এ সেট করা হয়েছে",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "Krux-এ লেনদেনটি স্বাক্ষর করতে বোতামগুলো ক্লিক করুন।",
   "@kruxStep11": {
@@ -5580,10 +5529,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "শুধু পর্যবেক্ষণ",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "ভল্ট ডিক্রিপ্ট করুন",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -5835,10 +5780,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "লিকুইড টেস্টনেট",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে",
   "@electrumDeleteFailedError": {
@@ -6870,10 +6811,6 @@
   "allSeedViewDeleteWarningMessage": "সিড মুছে ফেলা একটি অপরিবর্তনীয় ক্রিয়া। শুধুই তখন এটি করুন যদি আপনার কাছে এই সিডের নিরাপদ ব্যাকআপ থাকে বা সংশ্লিষ্ট ওয়ালেটগুলো সম্পূর্ণভাবে খালি হয়ে গেছে।",
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
-  },
-  "walletAutoTransferAllowButton": "অনুমতি দিন",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন *",
   "@autoswapSelectWalletRequired": {
@@ -8321,10 +8258,6 @@
   "logSettingsErrorLoadingMessage": "লগ লোড করতে ত্রুটি: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "লিকুইড নেটওয়ার্ক",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "সর্বোচ্চ",
   "@swapMaxButton": {
@@ -10067,10 +10000,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "স্বয়ংক্রিয় স্থানান্তর ব্লক করা হয়েছে",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "Blockstream Jade নির্দেশাবলী",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -10098,10 +10027,6 @@
   "passportStep9": "পাসপোর্টে লেনদেনটি স্বাক্ষর করতে বোতামগুলোতে ক্লিক করুন।",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "বিটকয়েন নেটওয়ার্ক",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "importMnemonicSelectType": "ইমপোর্ট করার জন্য একটি ওয়ালেট টাইপ নির্বাচন করুন",
   "@importMnemonicSelectType": {
@@ -10398,10 +10323,6 @@
   "payInstitutionCodeHint": "প্রতিষ্ঠান কোড লিখুন",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "স্থানীয় সেগউইট",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "চালান খুলুন",
   "@payOpenInvoice": {
@@ -10911,10 +10832,6 @@
   "autoswapSelectWallet": "একটি বিটকয়েন ওয়ালেট নির্বাচন করুন",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "ব্লক",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Google Drive থেকে ভল্ট নির্বাচন করতে ব্যর্থ হয়েছে",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12410,5 +12327,10 @@
   "sendErrorExchangeOrderMismatch": "এই পেমেন্ট আর অর্ডারের সাথে মিলছে না। অনুগ্রহ করে পেমেন্ট আবার শুরু করুন।",
   "sellUnexpectedError": "আপনার বিক্রয় অর্ডারটি এই মুহূর্তে সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন বা সহায়তার সাথে যোগাযোগ করুন।",
   "sellErrorFeeBelowRelayFloor": "নেটওয়ার্ক ফি খুব কম। উচ্চতর ফি বেছে নিন।",
-  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+  "sellErrorFeesUnavailable": "নেটওয়ার্ক ফি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+  "walletWarningElectrumBitcoinDown": "Bitcoin সার্ভার উপলব্ধ নয়",
+  "walletWarningElectrumLiquidDown": "Liquid সার্ভার উপলব্ধ নয়",
+  "walletWarningElectrumBothDown": "Bitcoin এবং Liquid সার্ভার উপলব্ধ নয়",
+  "walletWarningElectrumAction": "সার্ভার সেটিংস কনফিগার করতে ট্যাপ করুন"
 }

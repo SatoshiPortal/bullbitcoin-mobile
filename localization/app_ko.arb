@@ -678,10 +678,6 @@
   "@fundExchangeLabelBankAccountCountry": {
     "description": "Label for bank account country field"
   },
-  "walletAddressTypeNestedSegwit": "연락처",
-  "@walletAddressTypeNestedSegwit": {
-    "description": "Address type for BIP49 wallets"
-  },
   "exchangeLandingFeature2": "DCA, 제한 주문 및 자동 구매",
   "@exchangeLandingFeature2": {
     "description": "Second feature bullet point"
@@ -758,10 +754,6 @@
   "buyDocumentUpload": "문서 업로드",
   "@buyDocumentUpload": {
     "description": "Section for ID document submission"
-  },
-  "walletAddressTypeConfidentialSegwit": "기밀 Segwit",
-  "@walletAddressTypeConfidentialSegwit": {
-    "description": "Address type for Liquid wallets"
   },
   "transactionDetailRetryTransfer": "송금 {action}",
   "@transactionDetailRetryTransfer": {
@@ -2439,10 +2431,6 @@
   "@fundExchangeCrIbanCrcLabelPaymentDescription": {
     "description": "Label for payment description field in CR IBAN transfer"
   },
-  "walletTypeWatchSigner": "공지사항",
-  "@walletTypeWatchSigner": {
-    "description": "Wallet type label for watch-signer wallets"
-  },
   "ledgerConnectingSubtext": "보안 연결 설정 ...",
   "@ledgerConnectingSubtext": {
     "description": "Subtext shown while connecting to Ledger"
@@ -3338,10 +3326,6 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
-  "walletNetworkBitcoin": "Bitcoin 네트워크",
-  "@walletNetworkBitcoin": {
-    "description": "Network label for Bitcoin mainnet"
-  },
   "electrumAdvancedOptions": "고급 옵션",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -3433,10 +3417,6 @@
   "allSeedViewSecurityWarningMessage": "표시 씨앗 구문은 보안 위험입니다. 씨앗 구문을 보는 사람은 자금을 액세스 할 수 있습니다. 개인 위치에 있는지 확인하고 화면을 볼 수 없습니다.",
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
-  },
-  "walletNetworkBitcoinTestnet": "Bitcoin 테스트넷",
-  "@walletNetworkBitcoinTestnet": {
-    "description": "Network label for Bitcoin testnet"
   },
   "recoverbullSeeMoreVaults": "더 보기 vaults",
   "@recoverbullSeeMoreVaults": {
@@ -4398,10 +4378,6 @@
   "@importWatchOnlySelectDerivation": {
     "description": "Title for bottom sheet to select wallet derivation type"
   },
-  "walletAddressTypeLegacy": "이름 *",
-  "@walletAddressTypeLegacy": {
-    "description": "Address type for BIP44 wallets"
-  },
   "hwPassport": "기초 여권",
   "@hwPassport": {
     "description": "Name of Foundation Passport hardware wallet"
@@ -4805,10 +4781,6 @@
   "@payReviewPayment": {
     "description": "Title for payment review screen"
   },
-  "electrumBitcoinSslInfo": "프로토콜이 지정되지 않은 경우, SSL은 기본적으로 사용됩니다.",
-  "@electrumBitcoinSslInfo": {
-    "description": "Info text for Bitcoin server protocol"
-  },
   "transactionTitle": "계정 관리",
   "@transactionTitle": {
     "description": "Title for the transactions screen"
@@ -5145,10 +5117,6 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "Electrum 서버 (Bitcoin 노드)",
-  "@electrumServerSettingsLabel": {
-    "description": "The label for the button to access the electrum server settings"
-  },
   "dcaEnterLightningAddressLabel": "연락처",
   "@dcaEnterLightningAddressLabel": {
     "description": "Label for Lightning address text input field"
@@ -5193,10 +5161,6 @@
   "gotItButton": "뚱 베어",
   "@gotItButton": {
     "description": "Button label to acknowledge successful test"
-  },
-  "walletTypeLiquidLightningNetwork": "액체 및 번개 네트워크",
-  "@walletTypeLiquidLightningNetwork": {
-    "description": "Wallet type label for Liquid and Lightning network"
   },
   "sendFeePriority": "요금 우선",
   "@sendFeePriority": {
@@ -5370,21 +5334,6 @@
   "backupWalletHowToDecideBackupMoreInfo": "자세한 내용은 recoverbull.com 방문.",
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
-  },
-  "walletAutoTransferBlockedMessage": "전송을 시도 {amount} BTC. 현재 수수료는 송금 금액의 {currentFee} %이며 수수료 임계 값은 {thresholdFee} %로 설정됩니다",
-  "@walletAutoTransferBlockedMessage": {
-    "description": "Message explaining why auto-transfer was blocked",
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
   },
   "kruxStep11": "Krux에서 거래에 서명 버튼을 클릭합니다.",
   "@kruxStep11": {
@@ -5747,10 +5696,6 @@
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "walletTypeWatchOnly": "계정 정보",
-  "@walletTypeWatchOnly": {
-    "description": "Wallet type label for watch-only wallets"
-  },
   "recoverbullDecryptVault": "암호 해독",
   "@recoverbullDecryptVault": {
     "description": "Button text to decrypt the selected vault"
@@ -6002,10 +5947,6 @@
         "type": "String"
       }
     }
-  },
-  "walletNetworkLiquidTestnet": "액체 Testnet",
-  "@walletNetworkLiquidTestnet": {
-    "description": "Network label for Liquid testnet"
   },
   "electrumDeleteFailedError": "사용자 정의 서버 삭제 실패",
   "@electrumDeleteFailedError": {
@@ -7075,10 +7016,6 @@
   "bip329LabelsTitle": "BIP329 라벨",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
-  },
-  "walletAutoTransferAllowButton": "지원하다",
-  "@walletAutoTransferAllowButton": {
-    "description": "Button to allow auto-transfer despite high fees"
   },
   "autoswapSelectWalletRequired": "Bitcoin 지갑 선택 *",
   "@autoswapSelectWalletRequired": {
@@ -8552,10 +8489,6 @@
   "logSettingsErrorLoadingMessage": "오류 로딩 로그: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
-  },
-  "walletNetworkLiquid": "액체 네트워크",
-  "@walletNetworkLiquid": {
-    "description": "Network label for Liquid mainnet"
   },
   "swapMaxButton": "최대",
   "@swapMaxButton": {
@@ -10346,10 +10279,6 @@
   "@exchangeAccountInfoLastNameLabel": {
     "description": "Label for last name field in account information"
   },
-  "walletAutoTransferBlockedTitle": "자동 이동 차단",
-  "@walletAutoTransferBlockedTitle": {
-    "description": "Title for auto-swap fee warning when fees exceed threshold"
-  },
   "importQrDeviceJadeInstructionsTitle": "Blockstream 제이드 지침",
   "@importQrDeviceJadeInstructionsTitle": {
     "description": "Title for Jade setup instructions"
@@ -10377,10 +10306,6 @@
   "passportStep9": "여권에 거래를 등록하려면 버튼을 클릭합니다.",
   "@passportStep9": {
     "description": "Passport instruction for signing"
-  },
-  "walletTypeBitcoinNetwork": "Bitcoin 네트워크",
-  "@walletTypeBitcoinNetwork": {
-    "description": "Wallet type label for Bitcoin network"
   },
   "electrumDeleteConfirmation": "이 서버를 삭제하시겠습니까?\n\n{serverUrl}",
   "@electrumDeleteConfirmation": {
@@ -10690,10 +10615,6 @@
   "payInstitutionCodeHint": "기관 코드",
   "@payInstitutionCodeHint": {
     "description": "Hint for institution code input"
-  },
-  "walletAddressTypeNativeSegwit": "주요메뉴",
-  "@walletAddressTypeNativeSegwit": {
-    "description": "Address type for BIP84 wallets"
   },
   "payOpenInvoice": "연락처",
   "@payOpenInvoice": {
@@ -11215,10 +11136,6 @@
   "autoswapSelectWallet": "Bitcoin 지갑 선택",
   "@autoswapSelectWallet": {
     "description": "Placeholder for wallet dropdown"
-  },
-  "walletAutoTransferBlockButton": "제품정보",
-  "@walletAutoTransferBlockButton": {
-    "description": "Button to block auto-transfer until next execution"
   },
   "recoverbullGoogleDriveErrorSelectFailed": "Google Drive에서 vault를 선택 해제",
   "@recoverbullGoogleDriveErrorSelectFailed": {
@@ -12200,5 +12117,10 @@
   "sendErrorExchangeOrderMismatch": "이 결제가 주문과 더 이상 일치하지 않습니다. 결제를 다시 시작하세요.",
   "sellUnexpectedError": "판매 주문을 지금 완료할 수 없습니다. 다시 시도하거나 고객 지원에 문의하세요.",
   "sellErrorFeeBelowRelayFloor": "네트워크 수수료가 너무 낮습니다. 더 높은 수수료를 선택하세요.",
-  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요."
+  "sellErrorFeesUnavailable": "네트워크 수수료를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "walletLoadFailed": "지갑을 불러오지 못했습니다. 연결을 확인한 후 다시 시도하세요.",
+  "walletWarningElectrumBitcoinDown": "Bitcoin 서버를 사용할 수 없음",
+  "walletWarningElectrumLiquidDown": "Liquid 서버를 사용할 수 없음",
+  "walletWarningElectrumBothDown": "Bitcoin 및 Liquid 서버를 사용할 수 없음",
+  "walletWarningElectrumAction": "탭하여 서버 설정을 구성하세요"
 }
