@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/coins/ui/coins_router.dart';
 import 'package:bb_mobile/features/consolidation/ui/consolidation_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
+import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -160,7 +161,9 @@ class AppRouter {
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,
       ConsolidationRouter.route,
-      SettingsRouter.route,
+      SettingsRouter.route(
+        defaultWalletsFacade: locator<DefaultWalletsFacade>(),
+      ),
       TransactionsRouter.transactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
